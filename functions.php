@@ -1,9 +1,7 @@
 <?php
-	
-	// Belangrijk voor leveringsdagen!
-	date_default_timezone_set("Europe/Brussels");
-	// Geïnstalleerde taal lijkt niet 'nl_NL' te zijn, lokalisatie werkt enkel met strftime()!
-	setlocale(LC_ALL, array('Dutch_Netherlands', 'Dutch', 'nl_NL', 'nl', 'nl_NL.ISO8859-1'));
+
+	// Belangrijk voor correcte vertalingen in strftime()
+	setlocale( LC_ALL, array('Dutch_Netherlands', 'Dutch', 'nl_NL', 'nl', 'nl_NL.ISO8859-1') );
 
 	// Laad het child theme
 	add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
@@ -46,7 +44,7 @@
 	function get_latest_mailings() {
 		$server = substr(MC_APIKEY, strpos(MC_APIKEY, '-')+1);
 		$list_id = '53ee397c8b';
-		$folder_id = '0ad3dbe117';
+		$folder_id = '2a64174067';
 
 	    $args = array(
 		 	'headers' => array(
