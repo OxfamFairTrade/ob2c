@@ -66,4 +66,42 @@
 		return $mailings;
 	}
 
+	// Voeg een custom pagina toe onder de algemene opties
+	add_action( 'admin_menu', 'custom_oxfam_options' );
+
+	function custom_oxfam_options() {
+		add_options_page( 'Specifieke instellingen voor lokale webshops', 'Oxfam Fair Trade', 'shop_manager', 'options-oxfam.php', 'options_oxfam' );
+	}
+
+	// Output voor de optiepagina
+	function oxfam_options() {
+		echo "Hallo, ik ben Frederik.";
+	}
+
+	// Voeg specifieke instellingen toe aan WooCommerce (niet zo interessant als we die verbergen?)
+	add_filter( 'woocommerce_get_sections_shipping', 'oxfam_add_section' );
+	add_filter( 'woocommerce_get_settings_shipping', 'oxfam_all_settings', 10, 2 );
+	
+	function oxfam_add_section( $sections ) {
+		$sections['oxfam'] = 'Oxfam Fair Trade';
+		return $sections;
+	}
+	
+	function oxfam_all_settings( $settings, $current_section ) {
+		if ( $current_section == 'oxfam' ) {
+			$settings = array();
+			// Voeg titel toe
+			$settings[] = array(
+				'name'	=> 'Deadlines',
+				'type'	=> 'title',
+				'id' 	=> 'oxfam_testje',
+			);
+			$settings[] = array(
+				'type'	=> 'sectionend',
+				'id'	=> 'oxfam_testje',
+			);
+		}
+		return $settings;
+	}
+
 ?>

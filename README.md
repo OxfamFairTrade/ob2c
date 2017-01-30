@@ -1,3 +1,3 @@
-# Pilootproject B2C-webshop
+# Main features
 
-Info volgt, wordt tijdelijk privé gemaakt.
+To be continued.
