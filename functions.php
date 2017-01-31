@@ -42,13 +42,13 @@
     }
 
 	function get_latest_mailings() {
-		$server = substr(MC_APIKEY, strpos(MC_APIKEY, '-')+1);
+		$server = substr(MAILCHIMP_APIKEY, strpos(MALCHIMP_APIKEY, '-')+1);
 		$list_id = '53ee397c8b';
 		$folder_id = '2a64174067';
 
 	    $args = array(
 		 	'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode('user:'.MC_APIKEY)
+				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY)
 			)
 		);
 
