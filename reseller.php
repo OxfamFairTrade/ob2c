@@ -13,10 +13,10 @@
 	 */
 
 	// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-	require_once dirname(__FILE__).'../../../wp-blog-header.php' );
+	require_once '../../../wp-blog-header.php';
 
 	// Register autoloader
-	require_once dirname(__FILE__).'../../plugins/mollie-reseller-api/autoloader.php';
+	require_once '../../plugins/mollie-reseller-api/autoloader.php';
 	Mollie_Autoloader::register();
 
 	// Define configuration
@@ -37,5 +37,9 @@
 		die('An error occurred: '.$e->getMessage());
 	}
 
-	var_dump($simplexml);
+	if ( $simplexml->success == 'true' ) {
+		echo "<a href='".$simplexml->redirect_url."' target='_blank'>Log zonder wachtwoord in op je Mollie-betaalaccount!</a>";
+	} else {
+		var_dump($simplexml);
+	}
 ?>
