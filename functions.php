@@ -1,5 +1,7 @@
 <?php
 
+	require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
+		
 	// Belangrijk voor correcte vertalingen in strftime()
 	setlocale( LC_ALL, array('Dutch_Netherlands', 'Dutch', 'nl_NL', 'nl', 'nl_NL.ISO8859-1') );
 
@@ -38,7 +40,7 @@
 	}
 
 	// Schakel onnuttige widgets uit voor iedereen
-	add_action( 'admin_init', 'remove_dashboard_meta' );
+	// add_action( 'admin_init', 'remove_dashboard_meta' );
 
 	function remove_dashboard_meta() {
 		// remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
@@ -76,64 +78,74 @@
 		return $mailings;
 	}
 
+	// Voeg optievelden toe
+	add_action( 'admin_init', 'register_oxfam_settings' );
+
+	function register_oxfam_settings() {
+		register_setting( 'oxfam-option-group', 'mollie_partner_id', 'absint' );
+		// add_settings_section( 'mollie_partner_id', 'Partner-ID bij Mollie', 'eg_setting_section_callback_function', 'options-oxfam' );
+		add_settings_field( 'mollie_partner_id', 'Partner-ID bij Mollie', 'eg_setting_callback_function', 'options-oxfam', 'default', array( 'label_for' => 'mollie_partner_id' ) );
+	}
+
+	function eg_setting_callback_function( $arg ) {
+		echo '<p>id: ' . $arg['id'] . '</p>';
+		echo '<p>title: ' . $arg['title'] . '</p>';
+		echo '<p>callback: ' . $arg['callback'] . '</p>';
+	}
+
 	// Voeg een custom pagina toe onder de algemene opties
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_options_page( 'Specifieke instellingen voor lokale webshops', 'Oxfam Fair Trade', 'shop_manager', 'options-oxfam.php', 'options_oxfam' );
+		add_options_page( 'Instellingen voor lokale webshop', 'Oxfam Fair Trade', 'shop_manager', 'options-oxfam.php', 'options_oxfam' );
 	}
 
 	// Output voor de optiepagina
-	function oxfam_options() {
-		echo "<p>Hallo, ik ben Frederik.</p>";
-		
-		require_once '../../plugins/mollie-reseller-api/autoloader.php';
-		Mollie_Autoloader::register();
-		
-		$partner_id = 2485891;
-		$profile_key = 'C556F53A';
-		$mollie = new Mollie_Reseller( $partner_id, $profile_key, MOLLIE_APIKEY );
-		$partner_id_customer = '2842281';
+	function options_oxfam() {
+		?>
+			<div class="wrap">
+				<h1>Instellingen voor lokale webshop</h1>
+				<form method="post" action="options.php"> 
+			<?php
+				settings_fields( 'oxfam-option-group' );
+				do_settings_sections( 'oxfam-option-group' );
+			?>
+				<table class="form-table">
+        		<tr valign="top">
+        			<th scope="row">Test</th>
+      	  			<td><input type="text" name="mollie_partner_id" value="<?php echo esc_attr( get_option('partner_id_customer') ); ?>" /></td>
+        		</tr>
+        	<?php
+				submit_button();
 
-		$simplexml = $mollie->getLoginLink( $partner_id_customer );
-		echo "<p><a href='".$simplexml->redirect_url."' target='_blank'>Ga zonder wachtwoord naar je Mollie-betaalaccount!</a> Opgelet: deze link is slechts tijdelijk geldig. Herlaad desnoods even deze pagina.</p>";
+				Mollie_Autoloader::register();
+				$partner_id = 2485891;
+				$profile_key = 'C556F53A';
+
+				$mollie = new Mollie_Reseller( $partner_id, $profile_key, MOLLIE_APIKEY );
+				$partner_id_customer = '2842281';
+
+				$simplexml = $mollie->getLoginLink( $partner_id_customer );
+				echo "<p><a href='".$simplexml->redirect_url."' target='_blank'>Ga zonder wachtwoord naar je Mollie-betaalaccount!</a> Opgelet: deze link is slechts tijdelijk geldig. Herlaad desnoods even deze pagina.</p>";
+			?>
+				</form>
+			</div>
+		<?php
 	}
 
 	// Voeg een bericht toe bovenaan alle adminpagina's
-	add_action( 'admin_notices', 'sample_admin_notice' );
+	// add_action( 'admin_notices', 'sample_admin_notice' );
 
 	function sample_admin_notice() {
-	    ?>
-	    <div class="notice notice-info is-dismissible">
-	        <p>Betalingen met Bancontact zijn tijdelijk onmogelijk! We werken aan een oplossing.</p>
-	    </div>
-	    <?php
-	}
-
-	// Voeg specifieke instellingen toe aan WooCommerce (niet zo interessant als we die verbergen?)
-	add_filter( 'woocommerce_get_sections_shipping', 'oxfam_add_section' );
-	add_filter( 'woocommerce_get_settings_shipping', 'oxfam_all_settings', 10, 2 );
-	
-	function oxfam_add_section( $sections ) {
-		$sections['oxfam'] = 'Oxfam Fair Trade';
-		return $sections;
-	}
-	
-	function oxfam_all_settings( $settings, $current_section ) {
-		if ( $current_section == 'oxfam' ) {
-			$settings = array();
-			// Voeg titel toe
-			$settings[] = array(
-				'name'	=> 'Deadlines',
-				'type'	=> 'title',
-				'id' 	=> 'oxfam_testje',
-			);
-			$settings[] = array(
-				'type'	=> 'sectionend',
-				'id'	=> 'oxfam_testje',
-			);
+        global $pagenow, $current_user;
+	    if ( $pagenow === 'index.php' and current_user_can( 'manage_options' ) ) {
+	    	if ( ! get_user_meta( $current_user->ID, 'bancontact_20170131' ) ) {
+				?>
+			    <div class="notice notice-info is-dismissible">
+			        <p>Betalingen met Bancontact zijn tijdelijk onmogelijk! We werken aan een oplossing.</p>
+			    </div>
+			    <?php
+			}
 		}
-		return $settings;
 	}
-
 ?>
