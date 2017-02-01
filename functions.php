@@ -14,11 +14,21 @@
 	add_action( 'wp_dashboard_setup', 'add_pilot_widget' );
 
 	function add_pilot_widget() {
+		global $wp_meta_boxes;
+
 		wp_add_dashboard_widget(
 			'dashboard_pilot_news_widget',
 			'Nieuws over het pilootproject',
 			'dashboard_pilot_news_widget_function'
-		);	
+		);
+
+		$dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
+
+		$my_widget = array( 'dashboard_pilot_news_widget' => $dashboard['dashboard_pilot_news_widget'] );
+	 	unset( $dashboard['dashboard_pilot_news_widget'] );
+
+	 	$sorted_dashboard = array_merge( $my_widget, $dashboard );
+	 	$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
 	}
 	
 	// Stel de inhoud van de widget op
@@ -75,7 +85,29 @@
 
 	// Output voor de optiepagina
 	function oxfam_options() {
-		echo "Hallo, ik ben Frederik.";
+		echo "<p>Hallo, ik ben Frederik.</p>";
+		
+		require_once '../../plugins/mollie-reseller-api/autoloader.php';
+		Mollie_Autoloader::register();
+		
+		$partner_id = 2485891;
+		$profile_key = 'C556F53A';
+		$mollie = new Mollie_Reseller( $partner_id, $profile_key, MOLLIE_APIKEY );
+		$partner_id_customer = '2842281';
+
+		$simplexml = $mollie->getLoginLink( $partner_id_customer );
+		echo "<p><a href='".$simplexml->redirect_url."' target='_blank'>Ga zonder wachtwoord naar je Mollie-betaalaccount!</a> Opgelet: deze link is slechts tijdelijk geldig. Herlaad desnoods even deze pagina.</p>";
+	}
+
+	// Voeg een bericht toe bovenaan alle adminpagina's
+	add_action( 'admin_notices', 'sample_admin_notice' );
+
+	function sample_admin_notice() {
+	    ?>
+	    <div class="notice notice-info is-dismissible">
+	        <p>Betalingen met Bancontact zijn tijdelijk onmogelijk! We werken aan een oplossing.</p>
+	    </div>
+	    <?php
 	}
 
 	// Voeg specifieke instellingen toe aan WooCommerce (niet zo interessant als we die verbergen?)
