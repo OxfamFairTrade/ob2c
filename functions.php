@@ -54,7 +54,7 @@
     }
 
 	function get_latest_mailings() {
-		$server = substr(MAILCHIMP_APIKEY, strpos(MALCHIMP_APIKEY, '-')+1);
+		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
 		$list_id = '53ee397c8b';
 		$folder_id = '2a64174067';
 
