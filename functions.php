@@ -12,6 +12,43 @@
 	    wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css' );
 	}
 
+	// Verstop enkele adminlinks voor de shopmanagers
+	add_action( 'admin_menu', 'my_remove_menu_pages', 100, 0 );
+
+	function my_remove_menu_pages() {
+    	if ( ! current_user_can( 'create_sites' ) ) {
+    		remove_menu_page( 'pmxi-admin-home' );
+    	}
+	}
+
+	// Haal de pagina's niet enkel uit het menu, maak ze ook effectief ontoegankelijk
+	add_action( 'current_screen', 'restrict_menus' );
+
+	function restrict_menus() {
+		write_log($author);
+		$screen = get_current_screen();
+		if ( ! current_user_can( 'create_sites' ) ) {
+			$forbidden_strings = array(
+				'pmxi',
+			);
+		    foreach ( $forbidden_strings as $forbidden ) {
+		    	if ( strpos( $screen->base, $forbidden ) !== false ) {
+		    		wp_die( 'Uit veiligheidsoverwegingen is deze geavanceerde beheerpagina niet toegankelijk voor lokale winkelbeheerders. Ben je er toch van overtuigd dat je deze functionaliteit nodig hebt? Leg je case voor extra rechten aan ons voor via <a href="mailto:'.get_option( 'admin_email' ).'">'.get_option( 'admin_email' ).'</a>!' );
+		    	}
+		    }
+		}
+	}
+
+	// NIET NODIG, EN AANGEZIEN WE PROBLEMEN BIJVEN HEBBEN MET DE KOPPELING VAN DE FOTO'S ZULLEN WE GEWOON VIA BULKBEWERKING DE PUBLISH NAAR CHILDS UITLOKKEN
+	// add_action( 'pmxi_saved_post', 'resave_for_multistore', 10, 1 );
+
+	function resave_for_multistore( $post_id ) {
+		wp_update_post( array( 'ID' => $post_id, 'post_excerpt' => '16u00' ) );
+		// switch_to_blog( 2 );
+		// process_product( $post_id, get_post( $post_id ) );
+		// restore_current_blog();
+	}
+
 	// Voeg een custom dashboard widget toe met nieuws over het pilootproject
 	add_action( 'wp_dashboard_setup', 'add_pilot_widget' );
 
@@ -148,4 +185,18 @@
 			}
 		}
 	}
+
+	// Print variabelen op een overzichtelijke manier naar debug.log
+	if ( ! function_exists( 'write_log' ) ) {
+	    function write_log ( $log )  {
+	        if ( true === WP_DEBUG ) {
+	            if ( is_array( $log ) || is_object( $log ) ) {
+	                error_log( print_r( $log, true ) );
+	            } else {
+	                error_log( $log );
+	            }
+	        }
+	    }
+	}
+	
 ?>
