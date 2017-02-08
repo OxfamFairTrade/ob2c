@@ -1509,6 +1509,13 @@
                                     switch($key)
                                         {
 
+                                            // GEWIJZIGD: Overschrijf de voorraadvelden in child sites NOOIT!
+                                            case '_stock'           :
+                                                                        continue;
+
+                                            case '_stock_status'    :
+                                                                        continue;
+
                                             case '_thumbnail_id'    :
                                                                         
                                                                         if(empty($product_meta_item_row))
