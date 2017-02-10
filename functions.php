@@ -44,6 +44,16 @@
 		}
 	}
 
+	// Zorg ervoor dat ook bij producten revisies opgeslagen worden
+	add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+
+	function add_product_revisions( $args ) {
+		$args['supports'][] = 'revisions';
+		return $args;
+	}
+
+	// POSTMETA KAN WELLICHT BEST OPGEVOLGD WORDEN IN EEN LOG A LA VOORRAAD BIJ CRAFTS
+
 	
 	###############
 	# WOOCOMMERCE #
@@ -271,7 +281,7 @@
 	}
 
 	// Voeg een bericht toe bovenaan alle adminpagina's
-	// add_action( 'admin_notices', 'sample_admin_notice' );
+	add_action( 'admin_notices', 'sample_admin_notice' );
 
 	function sample_admin_notice() {
         global $pagenow, $current_user;
@@ -287,7 +297,7 @@
 	}
 
 	// Schakel onnuttige widgets uit voor iedereen
-	// add_action( 'admin_init', 'remove_dashboard_meta' );
+	add_action( 'admin_init', 'remove_dashboard_meta' );
 
 	function remove_dashboard_meta() {
 		// remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
