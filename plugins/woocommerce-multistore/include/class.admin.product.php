@@ -911,9 +911,9 @@
                                     //update comment status
                                     $child_post->comment_status =   $post->comment_status;
                                     
-                                    remove_action( 'save_post_product',                        array($this, 'save_post_product'), 999, 3 );
+
                                     wp_update_post( $child_post );
-                                    add_action( 'save_post_product',                        array($this, 'save_post_product'), 999, 3 );
+
                                                      
                                 }
                                 else
@@ -924,9 +924,9 @@
                                         $post_data->post_parent = 0;
 
                                         // Insert the post into the database
-                                        remove_action( 'save_post_product',                        array($this, 'save_post_product'), 999, 3 );
+
                                         $child_post_id  =   wp_insert_post( $post_data );
-                                        add_action( 'save_post_product',                        array($this, 'save_post_product'), 999, 3 );
+
                                         
                                         update_post_meta($child_post_id, '_woonet_network_is_child_product_id', $post_ID);
                                         update_post_meta($child_post_id, '_woonet_network_is_child_site_id', $parent_product_blog_id);
@@ -1002,9 +1002,9 @@
                                                         
                                                         switch_to_blog( $blog_details->blog_id );
                                                         
-                                                        remove_action( 'save_post_product',                        array($this, 'save_post_product'), 999, 3 );
+                                                        
                                                         $child_group_post_id  =   wp_insert_post( $post_data );
-                                                        add_action( 'save_post_product',                        array($this, 'save_post_product'), 999, 3 );
+                                                        
                                                         
                                                         update_post_meta($child_group_post_id, '_woonet_network_is_child_product_id', $product_data->post_parent);
                                                         update_post_meta($child_group_post_id, '_woonet_network_is_child_site_id', $blog_id);
@@ -1488,6 +1488,15 @@
                 }
             
        
+       
+            /**
+            * Save the meta data to object
+            * 
+            * @param mixed $product_meta
+            * @param mixed $attachments
+            * @param mixed $post_ID
+            * @param mixed $blog_id
+            */
             function save_meta_to_post($product_meta, $attachments, $post_ID, $blog_id)
                 {
                     
@@ -1632,6 +1641,28 @@
                                                                         
                                                                         break;
                                             
+                                            case (preg_match('/attribute_pa_/', $key) ? true : false);
+                                                                    
+                                                                        
+                                                                        //retrieve the original attribute to ensure we set the correct term on this blog, since terms are mapped using term name
+                                                                        restore_current_blog();
+                                                                        
+                                                                        $taxonomy   =   str_replace("attribute_pa_", "pa_", $key);
+                                                                        
+                                                                        $term_data  =   get_term_by('slug', $product_meta_item_row, $taxonomy);
+                                                                        
+                                                                        switch_to_blog( $blog_id );
+                                                                        
+                                                                        if(!is_object($term_data))
+                                                                            continue;
+                                                                            
+                                                                        //retrieve the term on local blog
+                                                                        $child_term_data    =   get_term_by("name", $term_data->name, $taxonomy);
+                                                                        update_post_meta( $post_ID, $key, $child_term_data->slug );
+                                                                    
+                                                                    
+                                                                        break;
+                                            
                                             default:
                                                         
                                                                     update_post_meta( $post_ID, $key, $product_meta_item_row );                       
@@ -1717,7 +1748,7 @@
                                         }
                                     
                                     //remove the product                                    
-                                    remove_action( 'save_post_product',                        array($this, 'save_post_product'), 999, 3 );
+
                                     
                                     //delete all child of this post, like variations
                                     $args   =   array(
@@ -1735,9 +1766,7 @@
                                         }
                                     
                                     wp_delete_post( $child_post->ID, TRUE );
-                                    
-                                    
-                                    add_action( 'save_post_product',                        array($this, 'save_post_product'), 999, 3 );
+
                                                      
                                 }
                                 
