@@ -6,7 +6,7 @@
 	setlocale( LC_ALL, array('Dutch_Netherlands', 'Dutch', 'nl_NL', 'nl', 'nl_NL.ISO8859-1') );
 
 	// Laad het child theme
-	add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
+	add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles', 1000 );
 
 	function theme_enqueue_styles() {
 	    wp_enqueue_style( 'parent-style', get_template_directory_uri().'/style.css' );
@@ -106,6 +106,74 @@
 	        }
 	    }
 	    return $new_order_statuses;
+	}
+
+	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
+	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_sku_sorting' );
+
+	function add_sku_sorting( $args ) {
+		$orderby_value = isset( $_GET['orderby'] ) ? wc_clean( $_GET['orderby'] ) : apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
+
+		if ( 'sku' === $orderby_value ) {
+			$args['orderby'] = 'meta_value_num';
+	    	$args['order'] = 'ASC';
+			$args['meta_key'] = '_sku';
+		}
+
+		if ( 'reverse_sku' === $orderby_value ) {
+			$args['orderby'] = 'meta_value_num';
+	    	$args['order'] = 'DESC';
+			$args['meta_key'] = '_sku';
+		}
+
+		if ( 'alpha' === $orderby_value ) {
+			$args['orderby'] = 'title';
+	    	$args['order'] = 'ASC';
+		}
+
+		if ( 'reverse_alpha' === $orderby_value ) {
+			$args['orderby'] = 'title';
+	    	$args['order'] = 'DESC';
+		}
+
+		return $args;
+	}
+	
+	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
+	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
+
+	function sku_sorting_orderby( $sortby ) {
+		$sortby['alpha'] = 'Omschrijving vanaf A';
+		$sortby['reverse_alpha'] = 'Omschrijving vanaf Z';
+		$sortby['sku'] = 'Stijgend artikelnummer';
+		$sortby['reverse_sku'] = 'Dalend artikelnummer';
+		return $sortby;
+	}
+
+	// Herlaad winkelmandje automatisch na aanpassing en activeer live search (indien plugin geactiveerd)
+	add_action( 'wp_footer', 'cart_update_qty_script' );
+	
+	function cart_update_qty_script() {
+		if ( is_cart() ) :
+		?>
+			<script>
+				var wto;
+				jQuery( 'div.woocommerce' ).on( 'change', '.qty', function() {
+					clearTimeout(wto);
+					// Time-out net iets groter dan buffertijd zodat we bij ingedrukt houden van de spinner niet gewoon +1/-1 doen
+					wto = setTimeout(function() {
+						jQuery( "[name='update_cart']" ).trigger( 'click' );
+					}, 500);
+
+				});
+			</script>
+		<?php
+		endif;
+		?>
+		<script>
+			jQuery( '.site-header' ).find( '.search-field' ).attr( 'data-swplive', 'true' );
+		</script>
+		<?php
 	}
 
 
@@ -309,6 +377,65 @@
 		remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
     }
+
+    function getLatestNewsletters() {
+		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
+		$list_id = '5cce3040aa';
+		$folder_id = 'bbc1d65c43';
+
+	    $args = array(
+		 	'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY)
+			)
+		);
+
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-3 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id, $args );
+		
+		$mailings = "";
+		if ( $response['response']['code'] == 200 ) {
+			$body = json_decode($response['body']);
+			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen drie maanden:</p><ul>";
+
+			foreach ( array_reverse($body->campaigns) as $campaign ) {
+				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.strftime( '%e %B %G', strtotime($campaign->send_time) ).')</li>';
+			}
+
+			$mailings .= "</ul>";
+		}		
+
+		return $mailings;
+	}
+
+	function getMailChimpStatus() {
+		$cur_user = wp_get_current_user();
+	    $server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
+		$list_id = '5cce3040aa';
+		$email = $cur_user->user_email;
+		$member = md5(strtolower($email));
+		
+	    $args = array(
+		 	'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY)
+			)
+		);
+
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
+		 
+		$msg = "";
+		if ( $response['response']['code'] == 200 ) {
+			$body = json_decode($response['body']);
+
+			if ( $body->status === "subscribed" ) {
+				$msg .= "is ".$status." geabonneerd op het digizine. ".$actie;
+			} else {
+				$msg .= "is niet langer geabonneerd op het digizine. <a href='http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$cur_user->user_firstname."&LNAME=".$cur_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>Vul het formulier in</a> om je weer te abonneren.";
+			}
+		} else {
+			$msg .= "was nog nooit ingeschreven op het digzine. <a href='http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$cur_user->user_firstname."&LNAME=".$cur_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>Vul het formulier in</a> om je te abonneren.";
+		}
+
+		return "<p>Het e-mailadres van de accounteigenaar (<a href='mailto:".$email."' target='_blank'>".$email."</a>) ".$msg."</p>";
+	}
 
 
 	#############

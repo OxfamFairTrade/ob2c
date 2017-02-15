@@ -1,9 +1,14 @@
 /*!
-	Theme Name:   	Oxfam-Wereldwinkels Online
+	Theme Name:   	Oxfam-Wereldwinkels Webshop
 	Author:       	Efraim Sebrechts & Frederik Neirynck
 	Author URI:		http://www.oxfamfairtrade.be
-	Description:  	Voorlopig childtheme!
-	Template:     	twentyseventeen
+	Description:  	Wordt dit het definitieve thema?
+	Template:     	savoy
 	Version:      	1.0.0
-	Text Domain:  	oxfam-online
+	Text Domain:  	oxfam-webshop
 */
+
+/* Toon de 'Winkelmandje bijwerken'-knop niet langer (gaat automatisch) */
+input[name=update_cart] {
+	display: none;
+}
