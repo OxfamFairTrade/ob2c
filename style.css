@@ -7,8 +7,3 @@
 	Version:      	1.0.0
 	Text Domain:  	oxfam-webshop
 */
-
-/* Toon de 'Winkelmandje bijwerken'-knop niet langer (gaat automatisch) */
-input[name=update_cart] {
-	display: none;
-}

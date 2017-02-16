@@ -17,6 +17,10 @@
 	# SECURITY #
 	############
 
+	// Voer shortcodes ook uit in widgets en titels
+	add_filter( 'widget_text', 'do_shortcode' );
+	add_filter( 'the_title', 'do_shortcode' );
+	
 	// Verstop enkele adminlinks voor de shopmanagers
 	add_action( 'admin_menu', 'my_remove_menu_pages', 100, 0 );
 
@@ -114,24 +118,12 @@
 	function add_sku_sorting( $args ) {
 		$orderby_value = isset( $_GET['orderby'] ) ? wc_clean( $_GET['orderby'] ) : apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
 
-		if ( 'sku' === $orderby_value ) {
-			$args['orderby'] = 'meta_value_num';
-	    	$args['order'] = 'ASC';
-			$args['meta_key'] = '_sku';
-		}
-
-		if ( 'reverse_sku' === $orderby_value ) {
-			$args['orderby'] = 'meta_value_num';
-	    	$args['order'] = 'DESC';
-			$args['meta_key'] = '_sku';
-		}
-
 		if ( 'alpha' === $orderby_value ) {
 			$args['orderby'] = 'title';
 	    	$args['order'] = 'ASC';
 		}
 
-		if ( 'reverse_alpha' === $orderby_value ) {
+		if ( 'alpha-desc' === $orderby_value ) {
 			$args['orderby'] = 'title';
 	    	$args['order'] = 'DESC';
 		}
@@ -143,10 +135,16 @@
 	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
 
 	function sku_sorting_orderby( $sortby ) {
-		$sortby['alpha'] = 'Omschrijving vanaf A';
-		$sortby['reverse_alpha'] = 'Omschrijving vanaf Z';
-		$sortby['sku'] = 'Stijgend artikelnummer';
-		$sortby['reverse_sku'] = 'Dalend artikelnummer';
+		unset($sortby['menu_order']);
+		unset($sortby['rating']);
+		$sortby['popularity'] = 'Best verkocht';
+		$sortby['date'] = 'Laatst toegevoegd';
+		$sortby['alpha'] = 'Van A tot Z';
+		$sortby['alpha-desc'] = 'Van Z tot A';
+		$sortby['price'] = 'Stijgende prijs';
+		$sortby['price-desc'] = 'Dalende prijs';
+		// $sortby['sku'] = 'Stijgend artikelnummer';
+		// $sortby['reverse_sku'] = 'Dalend artikelnummer';
 		return $sortby;
 	}
 
@@ -437,6 +435,40 @@
 		return "<p>Het e-mailadres van de accounteigenaar (<a href='mailto:".$email."' target='_blank'>".$email."</a>) ".$msg."</p>";
 	}
 
+
+	##############
+	# SHORTCODES #
+	##############
+
+	// Personaliseer de begroeting op de startpagina
+	add_shortcode ( 'bezoeker', 'print_customer' );
+	add_shortcode ( 'winkelnaam', 'print_business' );
+	add_shortcode ( 'openingsuren', 'print_office_hours' );
+
+	function print_customer() {
+		global $current_user;
+		return ( is_user_logged_in() and strlen($current_user->user_firstname) > 1 ) ? $current_user->user_firstname : "bezoeker";
+	}
+
+	function print_business() {
+		return get_bloginfo('name');
+	}
+
+	function print_office_hours() {
+		$msg = "";
+		$node = get_option('oxfam_shop_node');
+		$connection = ssh2_connect('web4.xio.be', 51234);
+		if ( ssh2_auth_password($connection, 'oxfam_ro', 'KYPlBsdv4GaGnWqczbqC') ) {
+			$msg = "Verbinding met OWW-site mislukt";
+		} else {
+			$tunnel = ssh2_tunnel($connection, '127.0.0.1', 3306);
+			// shell_exec("ssh -f -L 127.0.0.1:3307:127.0.0.1:3306 user@remote.rjmetrics.com sleep 60 >> logfile");
+			$db = mysqli_connect('127.0.0.1', 'oxfam_ro', 'dJBDJk8GPEhCywU5XUlZ', 'oxfamDb', 3306);
+			$msg = var_dump($db);
+			$msg = "op te halen uit OWW-site (node ".$node.")";
+		}
+		return $msg;
+	}
 
 	#############
 	# DEBUGGING #
