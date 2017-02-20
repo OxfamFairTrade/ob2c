@@ -1518,11 +1518,14 @@
                                     switch($key)
                                         {
 
-                                            // GEWIJZIGD: Overschrijf de voorraadvelden in child sites NOOIT!
+                                            // GEWIJZIGD: Overschrijf de voorraad en uitlichting in child sites nooit!
                                             case '_stock'           :
                                                                         continue;
 
                                             case '_stock_status'    :
+                                                                        continue;
+
+                                            case '_featured'        :
                                                                         continue;
 
                                             case '_thumbnail_id'    :

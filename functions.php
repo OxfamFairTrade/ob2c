@@ -5,7 +5,7 @@
 	// Belangrijk voor correcte vertalingen in strftime()
 	setlocale( LC_ALL, array('Dutch_Netherlands', 'Dutch', 'nl_NL', 'nl', 'nl_NL.ISO8859-1') );
 
-	// Laad het child theme
+	// Laad het child theme LIJKT WEINIG PRIORITEIT TE HEBBEN
 	add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles', 1000 );
 
 	function theme_enqueue_styles() {
@@ -21,24 +21,31 @@
 	add_filter( 'widget_text', 'do_shortcode' );
 	add_filter( 'the_title', 'do_shortcode' );
 	
-	// Verstop enkele adminlinks voor de shopmanagers
+	// Verstop enkele hardnekkige adminlinks voor de shopmanagers
+	// Omgekeerd: WP All Export toelaten door rol aan te passen in wp-all-export-pro.php
+	// Alle andere beperkingen via User Role Editor
 	add_action( 'admin_menu', 'my_remove_menu_pages', 100, 0 );
 
 	function my_remove_menu_pages() {
-    	if ( ! current_user_can( 'create_sites' ) ) {
-    		remove_menu_page( 'pmxi-admin-home' );
+    	if ( ! current_user_can( 'update_core' ) ) {
+    		remove_menu_page( 'vc-welcome' );
+    		remove_submenu_page( 'woocommerce', 'wc-settings' );
+    		remove_submenu_page( 'woocommerce', 'wc-status' );
+    		remove_submenu_page( 'woocommerce', 'wc-addons' );
     	}
 	}
 
-	// Haal de pagina's niet enkel uit het menu, maak ze ook effectief ontoegankelijk
+	// Haal de hardnekkige pagina's niet enkel uit het menu, maak ze ook effectief ontoegankelijk
 	add_action( 'current_screen', 'restrict_menus' );
 
 	function restrict_menus() {
-		write_log($author);
 		$screen = get_current_screen();
 		if ( ! current_user_can( 'create_sites' ) ) {
 			$forbidden_strings = array(
-				'pmxi',
+				'vc-welcome',
+				'wc-settings',
+				'wc-status',
+				'wc-addons',
 			);
 		    foreach ( $forbidden_strings as $forbidden ) {
 		    	if ( strpos( $screen->base, $forbidden ) !== false ) {
@@ -174,6 +181,163 @@
 		<?php
 	}
 
+	// Verhinder bepaalde selecties in de back-end
+	add_action( 'admin_footer', 'disable_custom_checkboxes' );
+
+	function disable_custom_checkboxes() {
+		?>
+		<script>
+			/* Disable hoofdcategorieën */
+			jQuery( '#in-product_cat-447' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-477' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-420' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-550' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-407' ).prop( 'disabled', true );
+
+			/* Disable rode en witte druiven */
+			jQuery( '#in-product_grape-575' ).prop( 'disabled', true );
+			jQuery( '#in-product_grape-574' ).prop( 'disabled', true );
+		</script>
+		<?php
+	}
+
+	add_action( 'admin_init', 'hide_wine_taxonomies' );
+
+	function hide_wine_taxonomies() {
+		if ( isset($_GET['action']) and $_GET['action'] === 'edit' ) {
+			$post_id = isset( $_GET['post'] ) ? $_GET['post'] : $_POST['post_ID'];
+			$categories = get_the_terms( $post_id, 'product_cat' );
+			if ( is_array( $categories ) ) {
+				foreach ( $categories as $category ) {
+					while ( $category->parent !== 0 ) {
+						$parent = get_term( $category->parent, 'product_cat' );
+						write_log($parent);
+						$category = $parent;
+					}
+				}
+			}
+			if ( $parent->slug !== 'wijn' ) {
+				remove_meta_box('product_grapediv', 'product', 'normal');
+				remove_meta_box('product_recipediv', 'product', 'normal');
+				remove_meta_box('product_tastediv', 'product', 'normal');
+			}
+		}
+	}
+
+	// Label en layout de factuurgegevens
+    add_filter( 'woocommerce_billing_fields', 'format_checkout_billing', 10, 1 );
+	
+	function format_checkout_billing( $address_fields ) {
+		$address_fields['billing_first_name']['label'] = "Voornaam";
+		$address_fields['billing_first_name']['placeholder'] = "Jan";
+		$address_fields['billing_last_name']['label'] = "Familienaam";
+		$address_fields['billing_last_name']['placeholder'] = "Peeters";
+		$address_fields['billing_phone']['label'] = "Telefoonnummer";
+		$address_fields['billing_email']['label'] = "E-mailadres";
+		$address_fields['billing_first_name']['class'] = array('form-row-first');
+		$address_fields['billing_last_name']['class'] = array('form-row-last');
+		$address_fields['billing_phone']['class'] = array('form-row-first');
+		$address_fields['billing_phone']['clear'] = false;
+		$address_fields['billing_email']['class'] = array('form-row-last');
+		$address_fields['billing_email']['clear'] = true;
+		$address_fields['billing_email']['required'] = true;
+		
+		$order = array(
+        	"billing_first_name",
+        	"billing_last_name",
+        	"billing_address_1",
+        	"billing_postcode",
+        	"billing_city",
+        	"billing_phone",
+        	"billing_email",
+    	);
+
+    	foreach($order as $field) {
+        	$ordered_fields[$field] = $address_fields[$field];
+        }
+
+        $address_fields = $ordered_fields;
+	    
+        return $address_fields;
+    }
+
+    // Verduidelijk de labels en layout
+	add_filter( 'woocommerce_default_address_fields', 'make_addresses_readonly', 10, 1 );
+
+    function make_addresses_readonly( $address_fields ) {
+		$address_fields['address_1']['label'] = "Straat en nummer";
+		$address_fields['address_1']['placeholder'] = '';
+		$address_fields['address_1']['required'] = true;
+		
+		$address_fields['postcode']['label'] = "Postcode";
+		$address_fields['postcode']['placeholder'] = '';
+		$address_fields['postcode']['required'] = true;
+		$address_fields['postcode']['class'] = array('form-row-first');
+		$address_fields['postcode']['clear'] = false;
+
+		$address_fields['city']['label'] = "Gemeente";
+		// $address_fields['city']['type'] = 'select';
+		// $address_fields['city']['options'] = array(
+		// 	'' => '(selecteer)',
+		// 	'1000' => 'Brussel',
+		// 	'8400' => 'Oostende',
+		// 	'8450' => 'Bredene',
+		// );
+		$address_fields['city']['required'] = true;
+		$address_fields['city']['class'] = array('form-row-last');
+		$address_fields['city']['clear'] = true;
+
+		return $address_fields;
+	}
+
+	// Geef B2B-hint 
+	// add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
+
+	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
+		wc_add_notice( 'Heb je een factuur nodig? Vraag de winkel om een B2B-account.', 'notice' );
+    };
+	
+	// Ship to a different address closed by default JAVASCRIPT CONFLICT?
+	// add_filter( 'woocommerce_ship_to_different_address_checked', '__return_false' );
+
+	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten
+	add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
+
+	function zero_rate_for_companies( $tax_class, $product ) {
+	    $current_user = wp_get_current_user();
+	    if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
+	    	$tax_class = 'vrijgesteld';
+	    }
+	    return $tax_class;
+	}
+
+	// Vervang de prijssuffix indien het om een ingelogde B2B-klant gaat
+	add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
+ 
+	function b2b_price_suffix( $suffix, $product ) {
+	    $current_user = wp_get_current_user();
+	    if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
+	    	$suffix = str_replace( 'incl', 'excl', $suffix );
+	    }
+	    return $suffix;
+	}
+
+	// Toon overschrijving indien B2B
+	add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
+
+	function b2b_restrict_to_bank_transfer( $gateways ) {
+		$current_user = wp_get_current_user();
+	    if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
+			unset( $gateways['mollie_wc_gateway_mistercash'] );
+			unset( $gateways['mollie_wc_gateway_creditcard'] );
+			unset( $gateways['mollie_wc_gateway_kbc'] );
+			unset( $gateways['mollie_wc_gateway_belfius'] );
+		} else {
+			unset( $gateways['mollie_wc_gateway_banktransfer'] );	
+		}
+		return $gateways;
+	}
+
 
 	############
 	# SETTINGS #
@@ -234,9 +398,9 @@
 		<?php
 	}
 
-	// Creëer een custom hiërarchische product taxonomie om partner/landinfo in op te slaan 
+	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan
 	add_action( 'init', 'register_partner_taxonomy', 0 );
-
+	
 	function register_partner_taxonomy() {
 		$taxonomy_name = 'product_part';
 		
@@ -252,11 +416,12 @@
 
 		$args = array(
 			'labels' => $labels,
-			'rewrite' => array( 'slug' => 'partner' ),
+			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'ep_mask' => 'test' ),
 			'hierarchical' => true,
 			'public' => true,
 			'show_ui' => true,
 			'show_in_quick_edit' => true,
+			'show_in_nav_menus' => true,
 			'show_admin_column' => true,
 			'show_in_rest' => true,
 			'show_tagcloud' => true,
@@ -265,6 +430,97 @@
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+	}
+
+	// Creëer drie custom hiërarchische taxonomieën op producten om wijninfo in op te slaan
+	add_action( 'init', 'register_wine_taxonomy', 0 );
+	
+	function register_wine_taxonomy() {
+		$name = 'druif';
+		$taxonomy_name = 'product_grape';
+		
+		$labels = array(
+			'name' => 'Druiven',
+			'singular_name' => 'Druif',
+			'all_items' => 'Alle druivensoorten',
+			'parent_item' => 'Druif',
+			'parent_item_colon' => 'Druif:',
+			'new_item_name' => 'Nieuwe druivensoort',
+			'add_new_item' => 'Voeg nieuwe druivensoort toe',
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'description' => 'Voeg de wijn toe aan een '.$name.' in de wijnkiezer',
+			'public' => false,
+			'publicly_queryable' => true,
+			'hierarchical' => true,
+			'show_ui' => true,
+			'show_in_menu' => false,
+			'show_in_nav_menus' => false,
+			'show_in_rest' => true,
+			'show_tagcloud' => true,
+			'show_in_quick_edit' => false,
+			'show_admin_column' => false,
+			'capabilities' => array( 'manage_terms' => 'create_sites', 'edit_terms' => 'create_sites', 'delete_terms' => 'create_sites', 'assign_terms' => 'edit_products' ),
+			// In de praktijk niet bereikbaar op deze URL want niet publiek!
+			'rewrite' => array( 'slug' => $name, 'with_front' => false, 'hierarchical' => false ),
+		);
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+
+		unset( $labels );
+		$name = 'gerecht';
+		$taxonomy_name = 'product_recipe';
+		
+		$labels = array(
+			'name' => 'Gerechten',
+			'singular_name' => 'Gerecht',
+			'all_items' => 'Alle gerechten',
+			'parent_item' => 'Gerecht',
+			'parent_item_colon' => 'Gerecht:',
+			'new_item_name' => 'Nieuw gerecht',
+			'add_new_item' => 'Voeg nieuw gerecht toe',
+		);
+
+		$args['labels'] = $labels;
+		$args['description'] = 'Voeg de wijn toe aan een '.$name.' in de wijnkiezer';
+		$args['rewrite']['slug'] = $name;
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+
+		unset( $labels );
+		$name = 'smaak';
+		$taxonomy_name = 'product_taste';
+		
+		$labels = array(
+			'name' => 'Smaken',
+			'singular_name' => 'Smaak',
+			'all_items' => 'Alle smaken',
+			'parent_item' => 'Smaak',
+			'parent_item_colon' => 'Smaak:',
+			'new_item_name' => 'Nieuwe smaak',
+			'add_new_item' => 'Voeg nieuwe smaak toe',
+		);
+
+		$args['labels'] = $labels;
+		$args['description'] = 'Voeg de wijn toe aan een '.$name.' in de wijnkiezer';
+		$args['rewrite']['slug'] = $name;
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+	}
+
+	// Vermijd dat geselecteerde termen in hiërarchische taxonomieën naar boven springen
+	add_filter( 'wp_terms_checklist_args', 'do_not_jump_to_top', 10, 2 );
+
+	function do_not_jump_to_top( $args, $post_id ) {
+		if ( is_admin() ) {
+			$args['checked_ontop'] = false;
+		}
+		return $args;
 	}
 
 
@@ -395,7 +651,7 @@
 			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen drie maanden:</p><ul>";
 
 			foreach ( array_reverse($body->campaigns) as $campaign ) {
-				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.strftime( '%e %B %G', strtotime($campaign->send_time) ).')</li>';
+				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.trim( strftime( '%e %B %G', strtotime($campaign->send_time) ) ).')</li>';
 			}
 
 			$mailings .= "</ul>";
@@ -441,9 +697,15 @@
 	##############
 
 	// Personaliseer de begroeting op de startpagina
+	add_shortcode ( 'topbar', 'print_welcome' );
 	add_shortcode ( 'bezoeker', 'print_customer' );
 	add_shortcode ( 'winkelnaam', 'print_business' );
+	add_shortcode ( 'copyright', 'print_copyright' );
 	add_shortcode ( 'openingsuren', 'print_office_hours' );
+
+	function print_welcome() {
+		return "Welkom ".print_customer()."! Lekker weertje, niet?";
+	}
 
 	function print_customer() {
 		global $current_user;
@@ -454,19 +716,38 @@
 		return get_bloginfo('name');
 	}
 
-	function print_office_hours() {
-		$msg = "";
-		$node = get_option('oxfam_shop_node');
-		$connection = ssh2_connect('web4.xio.be', 51234);
-		if ( ssh2_auth_password($connection, 'oxfam_ro', 'KYPlBsdv4GaGnWqczbqC') ) {
-			$msg = "Verbinding met OWW-site mislukt";
+	function print_copyright() {
+		if ( get_option('oxfam_shop_node') ) {
+			$node = 'node/'.get_option('oxfam_shop_node');
 		} else {
-			$tunnel = ssh2_tunnel($connection, '127.0.0.1', 3306);
-			// shell_exec("ssh -f -L 127.0.0.1:3307:127.0.0.1:3306 user@remote.rjmetrics.com sleep 60 >> logfile");
-			$db = mysqli_connect('127.0.0.1', 'oxfam_ro', 'dJBDJk8GPEhCywU5XUlZ', 'oxfamDb', 3306);
-			$msg = var_dump($db);
-			$msg = "op te halen uit OWW-site (node ".$node.")";
+			$node = 'nl';
 		}
+		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".print_business()." &copy; 2016-".date('Y')."</a>";
+	}
+
+	function print_office_hours() {
+		$node = get_option( 'oxfam_shop_node' );
+		
+		$msg = shell_exec( "ssh -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be" );  
+		$msg .= shell_exec( "mysql -h 127.0.0.1 -P 3307 -u oxfam_ro" );  
+		
+		$mysqli = new mysqli( '127.0.0.1:3306', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3306 );
+		
+		if ( $mysqli->connect_errno ) {
+		    $msg .= "Failed to connect to MySQL: (".$mysqli->connect_errno.") ".$mysqli->connect_error;
+		}
+		$msg .= $mysqli->host_info;
+
+		// $connection = ssh2_connect('web4.xio.be', 51234);
+		// if ( ssh2_auth_password($connection, 'oxfam_ro', XIO_FTP) ) {
+		// 	$msg = "Verbinding met OWW-site mislukt";
+		// } else {
+		// 	$tunnel = ssh2_tunnel($connection, '127.0.0.1', 3306);
+		// 	// shell_exec("ssh -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 60 >> logfile");
+		// 	$db = mysqli_connect('127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3306);
+		// 	$msg = var_dump($db);
+		// 	$msg = "op te halen uit OWW-site (node ".$node.")";
+		// }
 		return $msg;
 	}
 
