@@ -384,14 +384,16 @@
 				submit_button();
 
 				Mollie_Autoloader::register();
-				$partner_id = 2485891;
-				$profile_key = 'C556F53A';
-
-				$mollie = new Mollie_Reseller( $partner_id, $profile_key, MOLLIE_APIKEY );
+				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
+				
+				// Vervang door (niet bewerkbare) site_option!
 				$partner_id_customer = '2842281';
 
 				$simplexml = $mollie->getLoginLink( $partner_id_customer );
 				echo "<p><a href='".$simplexml->redirect_url."' target='_blank'>Ga zonder wachtwoord naar je Mollie-betaalaccount!</a> Opgelet: deze link is slechts tijdelijk geldig. Herlaad desnoods even deze pagina.</p>";
+
+				// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
+				// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
 			?>
 				</form>
 			</div>
