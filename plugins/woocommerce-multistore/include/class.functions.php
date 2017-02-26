@@ -68,7 +68,8 @@
             static function init()
                 {
                     
-                    self::register_custom_post_status();
+                    // GEWIJZIGD: Deze status hebben wij nergens voor nodig!
+                    // self::register_custom_post_status();
                     
                     add_filter('wc_order_statuses', array( __CLASS__ , 'wc_order_statuses'), 10);
                     
@@ -77,6 +78,37 @@
                 }
             
             
+            /**
+            * Register custom post status
+            *     
+            */
+            static function register_custom_post_status() 
+                {
+                    
+                    register_post_status( 'wc-backorder', array(
+                                                                'label'                     => _x( 'Reklamasjon', 'Order status', 'woonet' ),
+                                                                'public'                    => true,
+                                                                'exclude_from_search'       => false,
+                                                                'show_in_admin_all_list'    => true,
+                                                                'show_in_admin_status_list' => true,
+                                                                'label_count'               => _n_noop( 'Reklamasjon <span class="count">(%s)</span>', 'Reklamasjon <span class="count">(%s)</span>', 'woonet' )
+                                                                ) 
+                    );
+
+                }
+                
+            /**
+            * Append a new status to woocommerce
+            * 
+            */
+            static function wc_order_statuses($order_statuses)
+                {
+                    $order_statuses['wc-backorder'] =   _x( 'Reklamasjon', 'Order status', 'woonet' );
+                    
+                    return $order_statuses;   
+                }
+                
+
             /**
             * Reduce stock when new order, to parent (unless is already a parent product) then replicate to all network
             *     
