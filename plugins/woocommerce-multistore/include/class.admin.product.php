@@ -249,7 +249,8 @@
                             $this->product_fields[] =   array(
                                                                             'class'             => '_woonet_description inline',
                                                                             'label'             => __( 'Child product, can\'t be re-published to other sites', 'woonet' ),
-                                                                            'type'              => 'description'
+                                                                            'type'              => 'description',
+                                                                            'no_save'           =>  TRUE
                                                                         );
                             
                             $this->product_fields[] =   array(
@@ -709,34 +710,85 @@
             */
             function process_product($post_ID, $post, $_use_child_settings = FALSE)
                 {
-
-                    //check if is re-published product
+                    global $blog_id, $wpdb;
+                    
+                    //check if is re-published product and check for syncronize
                     $network_parent_product_id    =   get_post_meta($post_ID, '_woonet_network_is_child_product_id', TRUE);
                     if($network_parent_product_id   >   0)
                         {
+                            
                             $options    =   $this->functions->get_options();
                             
+                            $_woonet_child_inherit_updates          =   get_post_meta($post_ID , '_woonet_child_inherit_updates', TRUE);
+                            $_woonet_child_stock_synchronize        =   get_post_meta($post_ID , '_woonet_child_stock_synchronize', TRUE);
+                            
                             //chck for Always maintain stock synchronization;  If set, it also modify any stock change within child product to parent
-                            if($options['synchronize-stock']    !=  'yes')
+                            if($options['synchronize-stock']    !=  'yes'   &&  $_woonet_child_inherit_updates  !=  'yes'  &&  $_woonet_child_stock_synchronize    !=  'yes')
                                 return;
+                            
+                            /**
+                            * Syncronize the parent product then replicate to all network
+                            * 
+                            */
                                 
                             $_woonet_network_is_child_product_id    =   get_post_meta($post_ID, '_woonet_network_is_child_product_id', TRUE);   
                             $_woonet_network_is_child_site_id       =   get_post_meta($post_ID, '_woonet_network_is_child_site_id', TRUE);
-                            $_woonet_child_stock_synchronize        =   get_post_meta($post_ID , '_woonet_child_stock_synchronize', TRUE);
                             
-                            $new_stock                    =   (int)get_post_meta($post_ID , '_stock', TRUE);
+                            $args =     array(
+                                                'fields' => 'names'
+                                                );
+                            $product_type = wp_get_object_terms( $post_ID, 'product_type', $args);
+                            
+                            //get variations
+                            if(in_array('variable', $product_type))
+                                {
+                                    $_child_variations = get_children( 'post_parent='.$post_ID.'&post_type=product_variation');
+                                }
+                                else
+                                $_child_variations  =   array();
+                            
+                            $_stock                    =   (int)get_post_meta($post_ID , '_stock', TRUE);
+                            $_stock_status             =   get_post_meta($post_ID , '_stock_status', TRUE);
                             
                             switch_to_blog( $_woonet_network_is_child_site_id );
                                       
-                            update_post_meta($_woonet_network_is_child_product_id, '_stock', $new_stock);
-                            WOO_MSTORE_functions::update_stock_across_network($_woonet_network_is_child_product_id, $new_stock);
+                            update_post_meta($_woonet_network_is_child_product_id, '_stock', $_stock);
+                            update_post_meta($_woonet_network_is_child_product_id, '_stock_status', $_stock_status);
                             
                             restore_current_blog();
                             
+                            //update parent variations
+                            if (count ($_child_variations) > 0)
+                                {
+                                    foreach($_child_variations  as  $_child_variation)
+                                        {
+                                            
+                                            $_variation_woonet_network_is_child_product_id    =   get_post_meta($_child_variation->ID, '_woonet_network_is_child_product_id', TRUE);
+                                            $_variation_woonet_network_is_child_site_id       =   get_post_meta($_child_variation->ID, '_woonet_network_is_child_site_id',    TRUE);
+                                            
+                                            if(empty($_variation_woonet_network_is_child_product_id)  ||  empty($_variation_woonet_network_is_child_site_id) )
+                                                continue;
+                                            
+                                            $_stock                    =   (int)get_post_meta($_child_variation->ID , '_stock', TRUE);
+                                            $_stock_status             =   get_post_meta($_child_variation->ID , '_stock_status', TRUE);
+                                                                                    
+                                            switch_to_blog( $_variation_woonet_network_is_child_site_id);
+                                            
+                                            if($_stock  !==  '')
+                                                update_post_meta($_variation_woonet_network_is_child_product_id, '_stock',        $_stock);
+                                            if($_stock_status   !==  '')
+                                                update_post_meta($_variation_woonet_network_is_child_product_id, '_stock_status', $_stock_status);      
+                                            
+                                            restore_current_blog();
+                                                                                        
+                                        }
+                                }
+                            
+                            //syncronize all network
+                            WOO_MSTORE_functions::update_stock_across_network($_woonet_network_is_child_product_id, $_woonet_network_is_child_site_id, array($blog_id));
+                            
                             return;
                         }
-                    
-                    global $blog_id, $wpdb;
                     
                     $options    =   $this->functions->get_options();
                     
@@ -759,6 +811,14 @@
                     $product_meta   =   get_post_meta($post_ID);
                     $product_meta   =   $this->filter_product_meta($product_meta);
                     
+                    //relocate the _Stock_status to end to allow WooCommerce to syncronyze on actual stock value
+                    $data =     isset($variation_product_meta['_stock_status']) ?   $variation_product_meta['_stock_status']    :   '';
+                    if(!empty($data))
+                        {
+                            unset($variation_product_meta['_stock_status']);
+                            $variation_product_meta['_stock_status'] = $data;
+                        }
+                    
                     
                     $args =     array(
                                         'fields' => 'names'
@@ -768,7 +828,8 @@
                     $product_taxonomies_data    =   $this->get_product_taxonomies_terms_data($post_ID);
                     
                     //get stock which will be used later
-                    $main_product_stock  =   get_post_meta($post_ID, '_stock', TRUE);
+                    $main_product_stock         =   get_post_meta($post_ID, '_stock', TRUE);
+                    $main_product_stock_status  =   get_post_meta($post_ID, '_stock_status', TRUE);
                     
                     //get variations
                     if(in_array('variable', $product_type))
@@ -889,11 +950,45 @@
                                         {
                                             //update the child
                                             update_post_meta($child_post->ID, '_stock', $main_product_stock);
+                                            update_post_meta($child_post->ID, '_stock_status', $main_product_stock_status);
                                         }
                                         
                                     
                                     if($_woonet_child_inherit_updates != 'yes')
                                         {
+                                            
+                                            //check for syncronize the stocks
+                                            if($_woonet_child_stock_synchronize    ==  'yes'  ||  $options['synchronize-stock']    ==  'yes')
+                                                {
+                                                    $_child_variations = get_children( 'post_parent=' . $child_post->ID . '&post_type=product_variation');
+                                                    
+                                                    if(in_array('variable', $product_type)  &&  count($_child_variations) > 0)
+                                                        {
+                                                            foreach($_child_variations   as  $_child_variation)
+                                                                {
+                                                                    
+                                                                    $_woonet_network_is_child_product_id    =   get_post_meta($_child_variation->ID, '_woonet_network_is_child_product_id', TRUE);
+                                                                    $_woonet_network_is_child_site_id       =   get_post_meta($_child_variation->ID, '_woonet_network_is_child_site_id',    TRUE);
+                                                                    
+                                                                    if(empty($_woonet_network_is_child_product_id)  ||  empty($_woonet_network_is_child_site_id) )
+                                                                        continue;
+                                                                        
+                                                                    switch_to_blog( $_woonet_network_is_child_site_id);
+                                                                    
+                                                                    $parent_variation_stock             =   get_post_meta($_woonet_network_is_child_product_id, '_stock', TRUE);
+                                                                    $parent_variation_stock_status      =   get_post_meta($_woonet_network_is_child_product_id, '_stock_status', TRUE);
+                                                                    
+                                                                    restore_current_blog();
+                                                            
+                                                                    //update the child variation                                                                    
+                                                                    update_post_meta($_child_variation->ID, '_stock', $parent_variation_stock);
+                                                                    update_post_meta($_child_variation->ID, '_stock_status', $parent_variation_stock_status);
+                                                                    
+                                                                }   
+                                                        }
+                                                }
+                                            
+                                            
                                             restore_current_blog();
                                             continue;
                                         }
@@ -1019,6 +1114,14 @@
                                             $group_taxonomies_data  =   $this->get_product_taxonomies_terms_data($product_data->post_parent);
                                             $group_meta             =   get_post_meta($product_data->post_parent);
                                             $group_meta             =   $this->filter_product_meta($product_meta);
+                                            
+                                            //relocate the _Stock_status to end to allow WooCommerce to syncronyze on actual stock value
+                                            $data =     isset($variation_product_meta['_stock_status']) ?   $variation_product_meta['_stock_status']    :   '';
+                                            if(!empty($data))
+                                                {
+                                                    unset($variation_product_meta['_stock_status']);
+                                                    $variation_product_meta['_stock_status'] = $data;
+                                                }
                                     
                                             switch_to_blog( $blog_details->blog_id );
                                             
@@ -1056,7 +1159,15 @@
                                             
                                                     $variation_product_meta   =   get_post_meta($children_product->ID);
                                                     $variation_product_meta   =   $this->filter_product_meta($variation_product_meta);
-                                            
+                                                    
+                                                    //relocate the _Stock_status to end to allow WooCommerce to syncronyze on actual stock value
+                                                    $data =     isset($variation_product_meta['_stock_status']) ?   $variation_product_meta['_stock_status']    :   '';
+                                                    if(!empty($data))
+                                                        {
+                                                            unset($variation_product_meta['_stock_status']);
+                                                            $variation_product_meta['_stock_status'] = $data;
+                                                        }
+                                                                                                
                                                     switch_to_blog( $blog_details->blog_id );
                                                     
                                                     //check if the variation previously created
@@ -1374,7 +1485,7 @@
                     $terms = get_terms($taxonomy, $argv);
                     foreach($terms  as  $term)
                         {
-                            if( trim((string)$term_name )   ==  trim( (string)$term->name) )
+                            if( strtolower(trim((string)$term_name ))   ==  strtolower(trim( (string)$term->name)) )
                                 return $term->term_id;
                         }
                         
@@ -1497,7 +1608,7 @@
             * @param mixed $post_ID
             * @param mixed $blog_id
             */
-            function save_meta_to_post($product_meta, $attachments, $post_ID, $blog_id)
+            function save_meta_to_post($product_meta, $attachments, $post_ID, $blog_id, $ignore =   array())
                 {
                     
                     //retrieve any mapped images
@@ -1511,13 +1622,17 @@
                         
                     foreach($product_meta   as  $key    =>  $product_meta_item)
                         {
-                  
+                            
+                            //check if ths field is ignored
+                            if (in_array($key, $ignore))
+                                continue;
+                             
                             foreach($product_meta_item  as  $product_meta_item_row)
                                 {
                                     $product_meta_item_row = maybe_unserialize( $product_meta_item_row );
                                     switch($key)
                                         {
-
+                                            
                                             // GEWIJZIGD: Overschrijf de voorraad en uitlichting in child sites nooit!
                                             case '_stock'           :
                                                                         continue;

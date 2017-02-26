@@ -11,11 +11,61 @@
 	function theme_enqueue_styles() {
 	    wp_enqueue_style( 'parent-style', get_template_directory_uri().'/style.css' );
 	}
-
 	
 	############
 	# SECURITY #
 	############
+
+	// Poging om op 'geclaimd door mijn winkel' te filteren
+	add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_total' );
+
+	function woocommerce_shop_order_search_order_total( $search_fields ) {
+		$search_fields[] = '_edit_last';
+		return $search_fields;
+	}
+
+	// Creëer bovenaan de orderlijst een dropdown met de drie mogelijke oorsprongfilters (showroom/webshop/alle)
+	add_action( 'restrict_manage_posts', 'add_meta_value_to_orders' );
+
+	function add_meta_value_to_orders() {
+		global $pagenow, $post_type;
+	    if( $pagenow === 'edit.php' and $post_type === 'shop_order' ) {
+			$meta_values = array( 'oostende', 'brugge' );
+
+			echo '<select name="source" id="source">';
+				$all = ( ! empty($_GET['source']) and sanitize_text_field($_GET['source']) === 'all' ) ? ' selected' : '';
+				echo '<option value="all" '.$all.'>Alle winkels</option>';
+
+				foreach ( $meta_values as $meta_value ) {
+					$selected = ( ! empty($_GET['source']) and sanitize_text_field($_GET['source']) === $meta_value ) ? ' selected' : '';
+					echo '<option value="'.$meta_value.'" '.$selected.'>Enkel '.ucwords($meta_value).'</option>';
+				}
+
+			echo '</select>';
+		}
+	}
+
+	// Activeer de metadata-filter tijdens het opzoeken van orders in de lijst
+	add_action( 'parse_query', 'filter_orders_per_meta_value' );
+
+	function filter_orders_per_meta_value( $query ) {
+	    global $pagenow, $post_type;
+	    if( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty($_GET['source']) and $_GET['source'] !== 'all' ) {
+	        if ( $_GET['source'] === 'oostende' ) {
+	        	$query->query_vars['meta_query'][] = array(
+	            	'key' => '_edit_last',
+	            	'value' => '1',
+	            	'compare' => '=',
+	        	);
+	        } else {
+	        	$query->query_vars['meta_query'][] = array(
+	            	'key' => '_edit_last',
+	            	'value' => '1',
+	            	'compare' => '!=',
+	        	);
+	        }
+	    }
+	}
 
 	// Voer shortcodes ook uit in widgets en titels
 	add_filter( 'widget_text', 'do_shortcode' );
@@ -74,7 +124,8 @@
 	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 20;' ), 20 );
 
 	// Registreer de extra status voor WooCommerce-orders
-	add_action( 'init', 'register_claimed_by_member_order_status' );
+	// VIA PLUGIN
+	// add_action( 'init', 'register_claimed_by_member_order_status' );
 	
 	function register_claimed_by_member_order_status() {
 	    register_post_status( 'wc-claimed',
@@ -104,8 +155,8 @@
 		return $editable;
 	}
 	
-	//	Voeg de nieuwe status toe aan alle arrays
-	add_filter( 'wc_order_statuses', 'add_claimed_by_member' );
+	// Voeg de nieuwe status toe aan alle arrays
+	// add_filter( 'wc_order_statuses', 'add_claimed_by_member' );
 
 	function add_claimed_by_member( $order_statuses ) {
 	    $new_order_statuses = array();
@@ -156,7 +207,8 @@
 	}
 
 	// Herlaad winkelmandje automatisch na aanpassing en activeer live search (indien plugin geactiveerd)
-	add_action( 'wp_footer', 'cart_update_qty_script' );
+	// THEMA GEBRUIKT GEEN INLINE UPDATES OP WINKELMANDPAGINA DUS VOORLOPIG UITSCHAKELEN
+	// add_action( 'wp_footer', 'cart_update_qty_script' );
 	
 	function cart_update_qty_script() {
 		if ( is_cart() ) :
@@ -291,16 +343,16 @@
 	}
 
 	// Geef B2B-hint 
-	// add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
+	add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
 
 	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
 		wc_add_notice( 'Heb je een factuur nodig? Vraag de winkel om een B2B-account.', 'notice' );
     };
 	
-	// Ship to a different address closed by default JAVASCRIPT CONFLICT?
+	// Handig filtertje om het JavaScript-conflict op de checkout te debuggen
 	// add_filter( 'woocommerce_ship_to_different_address_checked', '__return_false' );
 
-	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten
+	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
 	add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
 
 	function zero_rate_for_companies( $tax_class, $product ) {
@@ -336,6 +388,82 @@
 			unset( $gateways['mollie_wc_gateway_banktransfer'] );	
 		}
 		return $gateways;
+	}
+
+	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
+	add_filter( 'woocommerce_cart_shipping_method_full_label', 'printEstimatedDelivery', 10, 2 );
+	
+	function printEstimatedDelivery( $label, $method ) {
+		global $user_ID;
+		$label = '&nbsp;'.$label;
+		$label = str_replace( '(Gratis)', '', $label );
+		$label .= '<br><small class="blauw">';
+		// $timestamp = estimateDelivery( $user_ID, $method->id );
+		$timestamp = strtotime('+4 days');
+		
+		switch ( $method->id ) {
+			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite?
+			// Alle instances van de 'Gratis afhaling in de winkel'-methode
+			case stristr( $method->id, 'local_pickup' ):
+				$timestamp = strtotime('+2 days');
+				$label .= 'Vanaf '.strftime('%A %d/%m/%Y', $timestamp);
+				break;
+			// Alle instances van thuislevering
+			case stristr( $method->id, 'flat_rate' ):
+				$label .= 'Ten laatste op '.strftime('%A %d/%m/%Y', $timestamp);
+				break;
+			default:
+				$label .= 'Geen schatting beschikbaar';
+		}
+		$label .= '</small>';
+		return $label;
+	}
+
+	// Disable verzending met externe partijen indien totale brutogewicht > 30 kg
+	add_filter( 'woocommerce_package_rates', 'hide_shipping_when_too_heavy', 10, 2 );
+	
+	function hide_shipping_when_too_heavy( $rates, $package ) {
+		global $woocommerce;
+		
+		// DEZE CHECK DIENT TE GEBEUREN NA HET INVULLEN VAN DE VERZENDCALCULATOR OF BIJ EEN GEWIJZIGDE POSTCODE IN DE CHECKOUT
+		$zip = intval( $woocommerce->customer->get_shipping_postcode() );
+		if ( $zip >= 1000 and $zip < 8400 ) {
+			wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode. Keer terug naar '.network_site_url().'.', 'woocommerce' ), 'error' );
+		}
+		
+		if ( $woocommerce->cart->cart_contents_weight > 30000 ) {
+	  		unset( $rates['flat_rate:2'] );
+	  		unset( $rates['flat_rate:4'] );
+	  		// wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'woocommerce' ), 'error' );
+	  	}
+
+	  	return $rates;
+	}
+
+
+	// Check of de persoon moet worden ingeschreven op het digizine 
+	add_action( 'woocommerce_after_checkout_validation', 'check_subscription_preference', 10, 1 );
+
+	function check_subscription_preference( $posted ) {
+		global $user_ID;
+		$checkout = WC()->checkout;
+		if ( ! empty($posted['subscribe_digizine']) ) {
+			if ( $posted['subscribe_digizine'] !== 1 ) {
+				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het digizine?', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'woocommerce' ), 'error' );
+			}
+		}
+	}
+
+	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen NOPE, WERKT NIET
+	// add_filter( 'woocommerce_coupon_message', 'remove_msg_filter', 10, 3 );
+
+	function remove_msg_filter( $msg, $msg_code, $this ) {
+		write_log("COUPON: ".$msg_code);
+		if ( is_checkout() ) {
+		    return "";
+		}
+		return $msg;
 	}
 
 
@@ -634,6 +762,26 @@
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
     }
 
+    // Maak alle orders onbewerkbaar, ongeacht de status
+    add_filter( 'wc_order_is_editable', 'limit_order_editing_to_backorder', 100, 2 );
+	
+	function limit_order_editing_to_backorder( $in_array, $instance ) {
+		if ( $instance->get_status() === 'backorder' ) {
+			$in_array = true;
+		} else {
+			$in_array = false;
+		}
+		return $in_array;
+	}
+
+    // Admin reports for custom order status
+    add_filter( 'woocommerce_reports_get_order_report_data_args', 'wc_reports_get_order_custom_report_data_args', 100, 1 );
+
+    function wc_reports_get_order_custom_report_data_args( $args ) {
+    	$args['order_status'] = array( 'on-hold', 'processing', 'claimed', 'completed' );
+    	return $args;
+    };
+
     function getLatestNewsletters() {
 		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
 		$list_id = '5cce3040aa';
@@ -750,7 +898,7 @@
 		// 	$msg = var_dump($db);
 		// 	$msg = "op te halen uit OWW-site (node ".$node.")";
 		// }
-		return $msg;
+		return "Open vanaf ???";
 	}
 
 	#############
