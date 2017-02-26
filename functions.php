@@ -5,8 +5,8 @@
 	// Belangrijk voor correcte vertalingen in strftime()
 	setlocale( LC_ALL, array('Dutch_Netherlands', 'Dutch', 'nl_NL', 'nl', 'nl_NL.ISO8859-1') );
 
-	// Laad het child theme LIJKT WEINIG PRIORITEIT TE HEBBEN
-	add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles', 1000 );
+	// Laad het child theme
+	add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
 
 	function theme_enqueue_styles() {
 	    wp_enqueue_style( 'parent-style', get_template_directory_uri().'/style.css' );
@@ -16,15 +16,16 @@
 	# SECURITY #
 	############
 
-	// Poging om op 'geclaimd door mijn winkel' te filteren
+	// Poging om 'geclaimd door winkel' op auteur te filteren
 	add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_total' );
 
 	function woocommerce_shop_order_search_order_total( $search_fields ) {
+		// Probleem: dit veld wordt niet ingesteld door een statuswijziging te doen!
 		$search_fields[] = '_edit_last';
 		return $search_fields;
 	}
 
-	// Creëer bovenaan de orderlijst een dropdown met de drie mogelijke oorsprongfilters (showroom/webshop/alle)
+	// Creëer bovenaan de orderlijst een dropdown met de deelnemende winkels uit de regio
 	add_action( 'restrict_manage_posts', 'add_meta_value_to_orders' );
 
 	function add_meta_value_to_orders() {
@@ -106,7 +107,7 @@
 	}
 
 	// Zorg ervoor dat ook bij producten revisies opgeslagen worden
-	add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+	// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 
 	function add_product_revisions( $args ) {
 		$args['supports'][] = 'revisions';
@@ -123,8 +124,7 @@
 	// Verhoog het aantal producten per winkelpagina
 	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 20;' ), 20 );
 
-	// Registreer de extra status voor WooCommerce-orders
-	// VIA PLUGIN
+	// Registreer de extra status voor WooCommerce-orders NU VIA PLUGIN
 	// add_action( 'init', 'register_claimed_by_member_order_status' );
 	
 	function register_claimed_by_member_order_status() {
@@ -142,29 +142,31 @@
 	    );
 	}
 
-	// Zorg ervoor dat we betaalde orders makkelijker kunnen bewerken GAAN WE DIT DOEN?
-	add_filter( 'wc_order_is_editable', 'wc_order_is_editable', 20, 2 );
+	// Zorg ervoor dat slechts bepaalde statussen bewerkbaar zijn
+	add_filter( 'wc_order_is_editable', 'limit_editable_orders', 20, 2 );
 
-	function wc_order_is_editable( $editable, $order ) {
+	function limit_editable_orders( $editable, $order ) {
 		// Slugs van alle extra orderstatussen (zonder 'wc'-prefix) die bewerkbaar moeten zijn
-		// Opmerking: 'pending', 'on-hold' en 'auto-draft' zijn sowieso al bewerkbaar
+		// Opmerking: standaard zijn 'pending', 'on-hold' en 'auto-draft' bewerkbaar
 		$editable_custom_statuses = array( 'claimed' );
 		if ( in_array( $order->get_status(), $editable_custom_statuses ) ) {
 			$editable = true;
+		} else {
+			$editable = false;
 		}
 		return $editable;
 	}
 	
-	// Voeg de nieuwe status toe aan alle arrays
-	// add_filter( 'wc_order_statuses', 'add_claimed_by_member' );
+	// Speel met de volgorde van de statussen
+	// add_filter( 'wc_order_statuses', 'rearrange_order_statuses' );
 
-	function add_claimed_by_member( $order_statuses ) {
+	function rearrange_order_statuses( $order_statuses ) {
 	    $new_order_statuses = array();
 	    foreach ( $order_statuses as $key => $status ) {
 	        $new_order_statuses[ $key ] = $status;
 	        // Plaats de status net na 'processing' (= order betaald en ontvangen)
 	        if ( 'wc-processing' === $key ) {    
-	            $new_order_statuses['wc-awaiting-shipment'] = 'Geclaimd door winkel';
+	            $new_order_statuses['wc-claimed'] = 'Geclaimd door mijn winkel';
 	        }
 	    }
 	    return $new_order_statuses;
@@ -342,16 +344,13 @@
 		return $address_fields;
 	}
 
-	// Geef B2B-hint 
-	add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
+	// Geef hint om B2B-klant te worden
+	// add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
 
 	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
 		wc_add_notice( 'Heb je een factuur nodig? Vraag de winkel om een B2B-account.', 'notice' );
     };
 	
-	// Handig filtertje om het JavaScript-conflict op de checkout te debuggen
-	// add_filter( 'woocommerce_ship_to_different_address_checked', '__return_false' );
-
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
 	add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
 
@@ -374,7 +373,7 @@
 	    return $suffix;
 	}
 
-	// Toon overschrijving indien B2B
+	// Toon overschrijving indien B2B-klant
 	add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
 
 	function b2b_restrict_to_bank_transfer( $gateways ) {
@@ -762,18 +761,6 @@
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
     }
 
-    // Maak alle orders onbewerkbaar, ongeacht de status
-    add_filter( 'wc_order_is_editable', 'limit_order_editing_to_backorder', 100, 2 );
-	
-	function limit_order_editing_to_backorder( $in_array, $instance ) {
-		if ( $instance->get_status() === 'backorder' ) {
-			$in_array = true;
-		} else {
-			$in_array = false;
-		}
-		return $in_array;
-	}
-
     // Admin reports for custom order status
     add_filter( 'woocommerce_reports_get_order_report_data_args', 'wc_reports_get_order_custom_report_data_args', 100, 1 );
 
@@ -904,6 +891,9 @@
 	#############
 	# DEBUGGING #
 	#############
+
+	// Handig filtertje om het JavaScript-conflict op de checkout te debuggen
+	// add_filter( 'woocommerce_ship_to_different_address_checked', '__return_false' );
 
 	// Print variabelen op een overzichtelijke manier naar debug.log
 	if ( ! function_exists( 'write_log' ) ) {
