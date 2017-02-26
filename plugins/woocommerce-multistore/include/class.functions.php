@@ -70,8 +70,7 @@
                     
                     // GEWIJZIGD: Deze status hebben wij nergens voor nodig!
                     // self::register_custom_post_status();
-                    
-                    add_filter('wc_order_statuses', array( __CLASS__ , 'wc_order_statuses'), 10);
+                    // add_filter('wc_order_statuses', array( __CLASS__ , 'wc_order_statuses'), 10);
                     
                     add_filter('woocommerce_reduce_order_stock', array( __CLASS__ , 'woocommerce_reduce_order_stock'), 10);
                     
