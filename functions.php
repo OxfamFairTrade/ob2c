@@ -151,7 +151,7 @@
 	function limit_editable_orders( $editable, $order ) {
 		// Slugs van alle extra orderstatussen (zonder 'wc'-prefix) die bewerkbaar moeten zijn
 		// Opmerking: standaard zijn 'pending', 'on-hold' en 'auto-draft' bewerkbaar
-		$editable_custom_statuses = array( 'claimed' );
+		$editable_custom_statuses = array( 'on-hold' );
 		if ( in_array( $order->get_status(), $editable_custom_statuses ) ) {
 			$editable = true;
 		} else {
