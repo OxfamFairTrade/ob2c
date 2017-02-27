@@ -16,17 +16,23 @@
 	# SECURITY #
 	############
 
+	add_action( 'woocommerce_order_status_processing_to_claimed', 'register_transition_author' );
+
+	function register_transition_author( $order_id ) {
+		$current_user = wp_get_current_user();
+		add_post_meta( $order_id, 'owner_of_order', $current_user->user_login, true );
+	}
+
 	// Poging om 'geclaimd door winkel' op auteur te filteren
-	add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_total' );
+	// add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_total' );
 
 	function woocommerce_shop_order_search_order_total( $search_fields ) {
-		// Probleem: dit veld wordt niet ingesteld door een statuswijziging te doen!
-		$search_fields[] = '_edit_last';
+		$search_fields[] = 'owner_of_order';
 		return $search_fields;
 	}
 
 	// Creëer bovenaan de orderlijst een dropdown met de deelnemende winkels uit de regio
-	add_action( 'restrict_manage_posts', 'add_meta_value_to_orders' );
+	// add_action( 'restrict_manage_posts', 'add_meta_value_to_orders' );
 
 	function add_meta_value_to_orders() {
 		global $pagenow, $post_type;
@@ -47,25 +53,22 @@
 	}
 
 	// Activeer de metadata-filter tijdens het opzoeken van orders in de lijst
-	add_action( 'parse_query', 'filter_orders_per_meta_value' );
+	// add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
 
 	function filter_orders_per_meta_value( $query ) {
 	    global $pagenow, $post_type;
-	    if( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty($_GET['source']) and $_GET['source'] !== 'all' ) {
-	        if ( $_GET['source'] === 'oostende' ) {
-	        	$query->query_vars['meta_query'][] = array(
-	            	'key' => '_edit_last',
-	            	'value' => '1',
-	            	'compare' => '=',
-	        	);
-	        } else {
-	        	$query->query_vars['meta_query'][] = array(
-	            	'key' => '_edit_last',
-	            	'value' => '1',
-	            	'compare' => '!=',
-	        	);
-	        }
-	    }
+	    $current_user = wp_get_current_user();
+	    if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty($_GET['post_status']) and $_GET['post_status'] === 'wc-claimed' ) {
+	    	// VERSTOORT OM GOD WEET WELKE REDEN DE CUSTOM ORDER STATUS
+	    	$meta_query_args = array(
+	    		array(
+	    			'key' => 'owner_of_order',
+	    			'value' => $current_user->user_login,
+	    			'compare' => '=',
+	    		)
+	    	);
+	    	$query->set( 'meta_query', $meta_query_args );
+		}
 	}
 
 	// Voer shortcodes ook uit in widgets en titels
