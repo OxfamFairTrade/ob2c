@@ -251,6 +251,10 @@
 			jQuery( '#in-product_cat-550' ).prop( 'disabled', true );
 			jQuery( '#in-product_cat-407' ).prop( 'disabled', true );
 
+			/* Disable allergeenklasses */
+			jQuery( '#in-product_allergen-615' ).prop( 'disabled', true );
+			jQuery( '#in-product_allergen-616' ).prop( 'disabled', true );
+
 			/* Disable rode en witte druiven */
 			jQuery( '#in-product_grape-575' ).prop( 'disabled', true );
 			jQuery( '#in-product_grape-574' ).prop( 'disabled', true );
