@@ -714,7 +714,7 @@
 	}
 
 	// Output de info voor de tabel
-	function woo_new_product_tab_content() {
+	function energy_allergen_tab_content() {
 		echo '<h2>Gemiddelde voedingswaarde (per 100 g)</h2>';
 		echo '<p>Let\'s foreach door alle parameters! Gebruik een logische volgorde.</p>';
 		echo '<div class="nm-additional-information-inner">';
