@@ -697,6 +697,27 @@
 		return $args;
 	}
 
+	// Registreer een extra tabje op de productdetailpagina voor de voedingswaardes
+	add_filter( 'woocommerce_product_tabs', 'add_energy_allergen_tab' );
+	
+	function add_energy_allergen_tab( $tabs ) {
+		$tabs['food-info'] = array(
+			'title' 	=> 'Voedingswaarde',
+			'priority' 	=> 50,
+			'callback' 	=> 'energy_allergen_tab_content',
+		);
+		return $tabs;
+	}
+
+	// Output de info voor de tabel
+	function woo_new_product_tab_content() {
+		echo '<h2>Gemiddelde voedingswaarde (per 100 g)</h2>';
+		echo '<p>Let\'s foreach door alle parameters! Gebruik een logische volgorde.</p>';
+		echo '<div class="nm-additional-information-inner">';
+		echo $product->list_attributes();
+		echo '</div>';
+	}
+
 
 	#############
 	# MULTISITE #
