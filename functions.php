@@ -534,7 +534,7 @@
 	add_action( 'init', 'register_partner_taxonomy', 0 );
 	
 	function register_partner_taxonomy() {
-		$taxonomy_name = 'product_part';
+		$taxonomy_name = 'product_partner';
 		
 		$labels = array(
 			'name' => 'Partners',
@@ -548,16 +548,20 @@
 
 		$args = array(
 			'labels' => $labels,
-			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'ep_mask' => 'test' ),
-			'hierarchical' => true,
+			'description' => 'Ken het product toe aan een partner/land',
 			'public' => true,
+			'publicly_queryable' => true,
+			'hierarchical' => true,
 			'show_ui' => true,
-			'show_in_quick_edit' => true,
+			'show_in_menu' => true,
 			'show_in_nav_menus' => true,
-			'show_admin_column' => true,
 			'show_in_rest' => true,
 			'show_tagcloud' => true,
+			'show_in_quick_edit' => true,
+			'show_admin_column' => true,
 			'query_var' => true,
+			'capabilities' => array( 'manage_terms' => 'create_sites', 'edit_terms' => 'create_sites', 'delete_terms' => 'create_sites', 'assign_terms' => 'edit_products' ),
+			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'ep_mask' => 'test' ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
@@ -640,6 +644,44 @@
 		$args['labels'] = $labels;
 		$args['description'] = 'Voeg de wijn toe aan een '.$name.' in de wijnkiezer';
 		$args['rewrite']['slug'] = $name;
+
+		register_taxonomy( $taxonomy_name, 'product', $args );
+		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+	}
+
+	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
+	add_action( 'init', 'register_allergen_taxonomy', 0 );
+
+	function register_allergen_taxonomy() {
+		$taxonomy_name = 'product_allergen';
+		
+		$labels = array(
+			'name' => 'Allergenen',
+			'singular_name' => 'Allergeen',
+			'all_items' => 'Alle allergenen',
+			'parent_item' => 'Allergeen',
+			'parent_item_colon' => 'Allergeen:',
+			'new_item_name' => 'Nieuw allergeen',
+			'add_new_item' => 'Voeg nieuw allergeen toe',
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'description' => 'Markeer dat het product dit allergeen bevat',
+			'public' => true,
+			'publicly_queryable' => true,
+			'hierarchical' => true,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'show_in_nav_menus' => true,
+			'show_in_rest' => true,
+			'show_tagcloud' => true,
+			'show_in_quick_edit' => true,
+			'show_admin_column' => true,
+			'query_var' => true,
+			'capabilities' => array( 'manage_terms' => 'create_sites', 'edit_terms' => 'create_sites', 'delete_terms' => 'create_sites', 'assign_terms' => 'edit_products' ),
+			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false, 'ep_mask' => 'test' ),
+		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
