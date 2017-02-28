@@ -10,6 +10,7 @@
 
 	function theme_enqueue_styles() {
 	    wp_enqueue_style( 'parent-style', get_template_directory_uri().'/style.css' );
+	    wp_enqueue_style( 'child-style', get_stylesheet_uri(), array( 'parent-style' ) );
 	}
 	
 	############
@@ -110,7 +111,7 @@
 	}
 
 	// Zorg ervoor dat ook bij producten revisies opgeslagen worden
-	// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+	add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 
 	function add_product_revisions( $args ) {
 		$args['supports'][] = 'revisions';
@@ -705,21 +706,153 @@
 	add_filter( 'woocommerce_product_tabs', 'add_energy_allergen_tab' );
 	
 	function add_energy_allergen_tab( $tabs ) {
-		$tabs['food-info'] = array(
-			'title' 	=> 'Voedingswaarde',
-			'priority' 	=> 50,
-			'callback' 	=> 'energy_allergen_tab_content',
+		global $product;
+		$tabs['allergen_info'] = array(
+			'title' 	=> 'Allergenen',
+			'priority' 	=> 75,
+			'callback' 	=> 'allergen_tab_content',
+		);
+		$parts = explode( ' ', $product->get_attribute( 'pa_inhoud' ) );
+		if ( $parts[1] === 'cl' ) {
+			// Ofwel op basis van categorie: Wijn (hoofdcategorie) of +/- Spirits, Fruitsap, Sauzen en Olie & azijn (subcategorie)
+			$suffix = 'ml';
+		} else {
+			$suffix = 'g';
+		}
+		$tabs['food_info'] = array(
+			'title' 	=> 'Voedingswaarde per 100 '.$suffix,
+			'priority' 	=> 100,
+			'callback' 	=> 'food_tab_content',
 		);
 		return $tabs;
 	}
 
-	// Output de info voor de tabel
-	function energy_allergen_tab_content() {
-		echo '<h2>Gemiddelde voedingswaarde (per 100 g)</h2>';
-		echo '<p>Let\'s foreach door alle parameters! Gebruik een logische volgorde.</p>';
+	// Output de info voor de allergenen
+	function allergen_tab_content() {
+		global $product;
 		echo '<div class="nm-additional-information-inner">';
-		echo $product->list_attributes();
+			$has_row    = false;
+			$alt        = 1;
+			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+			$label_c = get_term_by( 'id', '615', 'product_allergen' )->name;
+			$label_mc = get_term_by( 'id', '616', 'product_allergen' )->name;
+			foreach ( $allergens as $allergen ) {
+				if ( $allergen->parent === 615 ) {
+					$contains[] = $allergen;
+				} else {
+					$traces[] = $allergen;
+				}
+			}
+			?>
+			<table class="shop_attributes">
+				
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo $label_c; ?></th>
+					<td><?php
+						$i = 0;
+						$str = '';
+						foreach ( $contains as $substance ) {
+							$i++;
+							if ( $i === 1 ) {
+								$str .= $substance->name;
+							} else {
+								$str .= ', '.$substance->name;
+							}
+						}
+						echo $str;
+					?></td>
+				</tr>
+
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo $label_mc; ?></th>
+					<td><?php
+						$i = 0;
+						$str = '';
+						foreach ( $traces as $substance ) {
+							$i++;
+							if ( $i === 1 ) {
+								$str .= $substance->name;
+							} else {
+								$str .= ', '.$substance->name;
+							}
+						}
+						echo $str;
+					?></td>
+				</tr>
+				
+			</table>
+			<?php
 		echo '</div>';
+	}
+
+	// Output de info voor de voedingswaarden
+	function food_tab_content() {
+		global $product;
+		echo '<div class="nm-additional-information-inner">';
+			$has_row    = false;
+			$alt        = 1;
+			$attributes = $product->get_attributes();
+
+			ob_start();
+			?>
+			<table class="shop_attributes">
+
+				<?php foreach ( $attributes as $attribute ) :
+					// Logica omkeren: nu tonen we enkel de 'verborgen' attributen
+					if ( empty( $attribute['is_visible'] ) ) {
+						$has_row = true;
+					} else {
+						continue;
+					}
+					?>
+					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+						<th><?php
+							$subattributes = array( 'pa_fapucis', 'pa_famscis', 'pa_fasat', 'pa_polyl', 'pa_starch', 'pa_sugar' );
+							if ( in_array( $attribute['name'], $subattributes ) ) {
+								echo '<i style="padding-left: 20px;">waarvan '.lcfirst( wc_attribute_label( $attribute['name'] ) ).'</i>';
+							} else {
+								echo wc_attribute_label( $attribute['name'] );
+							}
+						?></th>
+						<td><?php
+							$values = wc_get_product_terms( $product->get_id(), $attribute['name'], array( 'fields' => 'names' ) );
+							if ( in_array( $attribute['name'], $subattributes ) ) {
+								echo '<i>'.apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values ).'</i>';
+							} else {
+								echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
+							}
+						?></td>
+					</tr>
+				<?php endforeach; ?>
+				
+			</table>
+			<?php
+			if ( $has_row ) {
+				echo ob_get_clean();
+			} else {
+				ob_end_clean();
+			}
+		echo '</div>';
+	}
+
+	// Formatteer de gewichten in de attributen
+	add_filter( 'woocommerce_attribute', 'add_weight_suffix', 10, 3 );
+
+	function add_weight_suffix( $wpautop, $attribute, $values ) {
+		$weighty_attributes = array( 'pa_choavl', 'pa_famscis', 'pa_fapucis', 'pa_fasat', 'pa_fat', 'pa_fibtg', 'pa_polyl', 'pa_pro', 'pa_salteq', 'pa_starch', 'pa_sugar' );
+		$percenty_attributes = array( 'pa_alcohol' );
+		$energy_attributes = array( 'pa_ener' );
+		if ( in_array( $attribute['name'], $weighty_attributes ) ) {
+			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' g';
+		} elseif ( in_array( $attribute['name'], $percenty_attributes ) ) {
+			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' %';
+		} elseif ( in_array( $attribute['name'], $energy_attributes ) ) {
+			$values[0] = number_format( $values[0], 0, ',', '.' ).' kJ';
+		} elseif ( $attribute['name'] === 'pa_ompak' ) {
+			$values[0] = $values[0].' stuks';
+		}
+		$wpautop = wpautop( wptexturize( implode( ', ', $values ) ) );
+		return $wpautop;
 	}
 
 
@@ -727,14 +860,25 @@
 	# MULTISITE #
 	#############
 
-	// NIET NODIG, EN AANGEZIEN WE PROBLEMEN BIJVEN HEBBEN MET DE KOPPELING VAN DE FOTO'S ZULLEN WE GEWOON VIA BULKBEWERKING DE PUBLISH NAAR CHILDS UITLOKKEN
-	// add_action( 'pmxi_saved_post', 'resave_for_multistore', 10, 1 );
+	// AANGEZIEN WE PROBLEMEN HEBBEN OM BROADCASTING PROGRAMMATORISCH UIT TE LOKKEN BLIJVEN WE VOORLOPIG VIA BULKBEWERKING DE PUBLISH NAAR CHILDS TRIGGEREN
+	// Stel de herkomst in op basis van de taxonomie product_partner
+	add_action( 'pmxi_saved_post', 'set_product_source', 10, 1 );
 
-	function resave_for_multistore( $post_id ) {
-		wp_update_post( array( 'ID' => $post_id, 'post_excerpt' => '16u00' ) );
-		// switch_to_blog( 2 );
-		// process_product( $post_id, get_post( $post_id ) );
-		// restore_current_blog();
+	function set_product_source( $post_id ) {
+		if ( get_post_type( $post_id ) === 'product' ) {
+			// Hoofdtermen (= landen) ontdubbellen en alfabetisch ordenen!
+			$source = 'TEST HERKOMST';
+			$term_taxonomy_ids = wp_set_object_terms( $post_id, $source, 'pa_herkomst', true );
+			$thedata = array( 'pa_herkomst' =>
+				array(
+					'name' => 'pa_herkomst',
+					'value' => $source,
+					'is_visible' => '1',
+					'is_taxonomy' => '1',
+				)
+			);
+     		update_post_meta( $post_id, '_product_attributes', $thedata ); 
+		}
 	}
 
 	// Zorg ervoor dat we niet met maandfolders werken
@@ -772,7 +916,7 @@
 	
 	// Stel de inhoud van de widget op
 	function dashboard_pilot_news_widget_function() {
-		echo "<div class='rss-widget'><p>Hier kunnen we o.a. de rechtstreekse links naar de mailings uit de 'Focusgroep Webshop'-map laten verschijnen. Of rechtstreeks linken naar onze FAQ. Dankzij Markdown gaat dat <a href='https://github.com/OxfamFairTrade/ob2c/wiki/FAQ#bestellingen' target='_blank'>heel makkelijk</a>.</p></div>";
+		echo "<div class='rss-widget'><p>Hier laten we o.a. de rechtstreekse links naar de mailings uit de 'Focusgroep Webshop'-map verschijnen. Rechtstreeks linken naar onze FAQ kan ook <a href='https://github.com/OxfamFairTrade/ob2c/wiki#bestellingen' target='_blank'>heel makkelijk</a>.</p></div>";
 		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
 	}
 
@@ -806,14 +950,14 @@
 
 	function sample_admin_notice() {
         global $pagenow, $current_user;
-	    if ( $pagenow === 'index.php' and current_user_can( 'manage_options' ) ) {
-	    	if ( ! get_user_meta( $current_user->ID, 'bancontact_20170131' ) ) {
-				?>
-			    <div class="notice notice-info is-dismissible">
-			        <p>Betalingen met Bancontact zijn tijdelijk onmogelijk! We werken aan een oplossing.</p>
-			    </div>
-			    <?php
-			}
+	    if ( $pagenow === 'index.php' and current_user_can( 'edit_products' ) ) {
+		    echo '<div class="notice notice-info">';
+			    if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
+			    	echo '<p>Alle betalingen op deze site zijn momenteel fake!</p>';
+			    } else {
+			    	echo '<p>Alle betalingen op deze site zijn momenteel live!</p>';
+			    }
+		    echo '</div>';
 		}
 	}
 

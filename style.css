@@ -7,3 +7,12 @@
 	Version:      	1.0.0
 	Text Domain:  	oxfam-webshop
 */
+
+#tab-additional_information .shop_attributes th,
+#tab-allergen_info .shop_attributes th {
+	width: 30%;
+}
+
+#tab-food_info .shop_attributes th {
+	width: 50%;
+}
