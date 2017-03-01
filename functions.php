@@ -273,7 +273,6 @@
 				foreach ( $categories as $category ) {
 					while ( $category->parent !== 0 ) {
 						$parent = get_term( $category->parent, 'product_cat' );
-						write_log($parent);
 						$category = $parent;
 					}
 				}
@@ -707,8 +706,9 @@
 	
 	function add_energy_allergen_tab( $tabs ) {
 		global $product;
+		$tabs['additional_information']['title'] = 'Eigenschappen';
 		$tabs['allergen_info'] = array(
-			'title' 	=> 'Allergenen',
+			'title' 	=> 'Allergeneninfo',
 			'priority' 	=> 75,
 			'callback' 	=> 'allergen_tab_content',
 		);
@@ -750,13 +750,15 @@
 					<th><?php echo $label_c; ?></th>
 					<td><?php
 						$i = 0;
-						$str = '';
-						foreach ( $contains as $substance ) {
-							$i++;
-							if ( $i === 1 ) {
-								$str .= $substance->name;
-							} else {
-								$str .= ', '.$substance->name;
+						$str = '/';
+						if ( count( $contains ) > 0 ) {
+							foreach ( $contains as $substance ) {
+								$i++;
+								if ( $i === 1 ) {
+									$str = $substance->name;
+								} else {
+									$str .= ', '.$substance->name;
+								}
 							}
 						}
 						echo $str;
@@ -767,13 +769,15 @@
 					<th><?php echo $label_mc; ?></th>
 					<td><?php
 						$i = 0;
-						$str = '';
-						foreach ( $traces as $substance ) {
-							$i++;
-							if ( $i === 1 ) {
-								$str .= $substance->name;
-							} else {
-								$str .= ', '.$substance->name;
+						$str = '/';
+						if ( count( $traces ) > 0 ) {
+							foreach ( $traces as $substance ) {
+								$i++;
+								if ( $i === 1 ) {
+									$str = $substance->name;
+								} else {
+									$str .= ', '.$substance->name;
+								}
 							}
 						}
 						echo $str;
@@ -840,17 +844,31 @@
 
 	function add_weight_suffix( $wpautop, $attribute, $values ) {
 		$weighty_attributes = array( 'pa_choavl', 'pa_famscis', 'pa_fapucis', 'pa_fasat', 'pa_fat', 'pa_fibtg', 'pa_polyl', 'pa_pro', 'pa_salteq', 'pa_starch', 'pa_sugar' );
-		$percenty_attributes = array( 'pa_alcohol' );
+		$percenty_attributes = array( 'pa_alcohol', 'pa_fairtrade' );
 		$energy_attributes = array( 'pa_ener' );
+
+		// HOE BEPALEN WE MET WELKE PRODUCT-ID WE HIER BEZIG ZIJN?
+		$product = wc_get_product( 1270 );
+		$parts = explode( ' ', $product->get_attribute( 'pa_inhoud' ) );
+		if ( $parts[1] === 'cl' ) {
+			// Ofwel op basis van categorie: Wijn (hoofdcategorie) of +/- Spirits, Fruitsap, Sauzen en Olie & azijn (subcategorie)
+			$suffix = 'liter';
+		} else {
+			$suffix = 'kilogram';
+		}
+
 		if ( in_array( $attribute['name'], $weighty_attributes ) ) {
 			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' g';
 		} elseif ( in_array( $attribute['name'], $percenty_attributes ) ) {
 			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' %';
 		} elseif ( in_array( $attribute['name'], $energy_attributes ) ) {
 			$values[0] = number_format( $values[0], 0, ',', '.' ).' kJ';
+		} elseif ( $attribute['name'] === 'pa_eenheidsprijs' ) {
+			$values[0] = '&euro; '.number_format( str_replace( ',', '.', $values[0] ), 2, ',', '.' ).' per '.$suffix;
 		} elseif ( $attribute['name'] === 'pa_ompak' ) {
 			$values[0] = $values[0].' stuks';
 		}
+
 		$wpautop = wpautop( wptexturize( implode( ', ', $values ) ) );
 		return $wpautop;
 	}
@@ -862,22 +880,47 @@
 
 	// AANGEZIEN WE PROBLEMEN HEBBEN OM BROADCASTING PROGRAMMATORISCH UIT TE LOKKEN BLIJVEN WE VOORLOPIG VIA BULKBEWERKING DE PUBLISH NAAR CHILDS TRIGGEREN
 	// Stel de herkomst in op basis van de taxonomie product_partner
-	add_action( 'pmxi_saved_post', 'set_product_source', 10, 1 );
+	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
 
 	function set_product_source( $post_id ) {
 		if ( get_post_type( $post_id ) === 'product' ) {
 			// Hoofdtermen (= landen) ontdubbellen en alfabetisch ordenen!
 			$source = 'TEST HERKOMST';
 			$term_taxonomy_ids = wp_set_object_terms( $post_id, $source, 'pa_herkomst', true );
-			$thedata = array( 'pa_herkomst' =>
-				array(
-					'name' => 'pa_herkomst',
-					'value' => $source,
-					'is_visible' => '1',
-					'is_taxonomy' => '1',
-				)
+			$price = '99';
+			$term_taxonomy_ids = wp_set_object_terms( $post_id, $price, 'pa_eenheidsprijs', true );
+			$thedata = array(
+				'pa_herkomst' 	=>		array(
+											'name' => 'pa_herkomst',
+											'value' => $source,
+											'is_visible' => '1',
+											'is_taxonomy' => '0',
+										),
+				'pa_eenheidsprijs'	=>	array(
+											'name' => 'pa_eenheidsprijs',
+											'value' => $price,
+											'is_visible' => '1',
+											'is_taxonomy' => '0',
+										),
 			);
-     		update_post_meta( $post_id, '_product_attributes', $thedata ); 
+     		update_post_meta( $post_id, '_product_attributes', $thedata );
+		}
+	}
+
+	function update_calculated_attributes( $post_id ) {
+		if ( get_post_type( $post_id ) === 'product' ) {
+			write_log("HALLO");
+			// Belangrijk: zorg ervoor dat '_product_attributes' alle attributen bevat in de juiste volgorde
+			// De waarden zelf zitten allemaal als termen opgeslagen, maar om te verschijnen bij het product moeten ze wel 'aangekondigd' worden
+			$attributes = wc_get_product( 1270 )->get_attributes();
+			$product = wc_get_product( $post_id );
+			$product->set_attributes( $attributes );
+
+			// REPLACE ALL
+			// WORDT AUTOMATISCH ALFABETISCHE GEORDEND EN ONTDUBBELD!
+
+			$term_taxonomy_ids = wp_set_object_terms( $post_id, '88,88', 'pa_eenheidsprijs', false );
+			$term_taxonomy_ids = wp_set_object_terms( $post_id, array('Frankrijk', 'België', 'India', 'België'), 'pa_herkomst', false );
 		}
 	}
 
@@ -949,7 +992,7 @@
 	add_action( 'admin_notices', 'sample_admin_notice' );
 
 	function sample_admin_notice() {
-        global $pagenow, $current_user;
+        global $pagenow, $post_type, $current_user;
 	    if ( $pagenow === 'index.php' and current_user_can( 'edit_products' ) ) {
 		    echo '<div class="notice notice-info">';
 			    if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
@@ -957,6 +1000,10 @@
 			    } else {
 			    	echo '<p>Alle betalingen op deze site zijn momenteel live!</p>';
 			    }
+		    echo '</div>';
+		} elseif ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
+		    echo '<div class="notice notice-warning">';
+			    echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
 		    echo '</div>';
 		}
 	}

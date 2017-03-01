@@ -37,22 +37,23 @@
 		$results = $woocommerce->get($endpoint, $parameters);
 		
 		foreach ($results as $category) {
-			echo $category['name'].' ('.$category['count'].')<br>';
+			// echo $category['name'].' ('.$category['count'].')<br>';
 		}
 
 		$endpoint = 'products';
 		unset($parameters);
-		// term-ID 601 = Oxfam Fair Trade
-		// per_page mag niet te groot zijn, anders error
+		// Term-ID 601 = Oxfam Fair Trade, dus 'attribute_term' => 601 toevoegen om te filteren
+		// Parameter 'per_page' mag niet te groot zijn, anders error!
 		$parameters = array( 'attribute' => 'pa_leverancier', 'status' => 'publish', 'orderby' => 'date', 'order' => 'desc', 'per_page' => 100 );
 		$results = $woocommerce->get($endpoint, $parameters);
-		
-		// var_dump($results);
 		
 		echo '<div class="container-fluid">';
 			echo '<div class="row">';
 
 			foreach ($results as $product) {
+				if ( $product['sku'] === '27009' ) {
+					write_log($product);
+				}
 				// Opgelet: indien er geen foto aan het product gelinkt is krijgen we de placeholder door, maar zonder id!
 				$image_shopthumb = wp_get_attachment_image_src( $product['images'][0]['id'], 'shop_thumbnail' );
 				$image_thumb = wp_get_attachment_image_src( $product['images'][0]['id'], 'thumbnail' );
@@ -60,12 +61,13 @@
 				$image_large = wp_get_attachment_image_src( $product['images'][0]['id'], 'large' );
 				$image_full = wp_get_attachment_image_src( $product['images'][0]['id'], 'full' );
 				if ( ! empty($image_thumb) ) {
-					echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em; text-align: center;">'.$product['sku'].'<br>';
+					echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em; text-align: center;"><small style="color: vampire grey; font-style: italic;">OFT '.$product['sku'].'</small><br>';
 					echo '<a href="'.$product['permalink'].'"><img src="'.$image_shopthumb[0].'"></a><br>';
 					echo $product['name'].'<br><br>';
-					echo '<a href="'.$image_medium[0].'">Medium</a> ('.$image_medium[1].' x '.$image_medium[2].' px)<br>';
-					echo '<a href="'.$image_large[0].'">Large</a> ('.$image_large[1].' x '.$image_large[2].' px)<br>';
-					echo '<a href="'.$image_full[0].'">Full</a> ('.$image_full[1].' x '.$image_full[2].' px)</div>';
+					echo '<a href="'.$image_full[0].'" target="_blank">Full</a> ('.$image_full[1].' x '.$image_full[2].' px)<br>';
+					echo '<a href="'.$image_large[0].'" target="_blank">Large</a> ('.$image_large[1].' x '.$image_large[2].' px)<br>';
+					echo '<a href="'.$image_medium[0].'" target="_blank">Medium</a> ('.$image_medium[1].' x '.$image_medium[2].' px)<br>';
+					echo '<a href="'.$image_thumb[0].'" target="_blank">Small</a> ('.$image_thumb[1].' x '.$image_thumb[2].' px)</div>';
 				}
 			}
 
