@@ -36,6 +36,11 @@
                     
                     add_action( 'admin_init',                               array(  $this, 'admin_init'), 1);
                     add_action( 'current_screen', array(  $this, 'current_screen'), 1);
+                    
+                    //add ignore fields
+                    add_filter('woo_mstore/save_meta_to_post/ignore_meta_fields', array(  $this, 'on_save_meta_to_post__ignore_meta_fields'), 10, 2);  
+                    
+                    
                 }
             
             function admin_init()
@@ -726,66 +731,10 @@
                             if($options['synchronize-stock']    !=  'yes'   &&  $_woonet_child_inherit_updates  !=  'yes'  &&  $_woonet_child_stock_synchronize    !=  'yes')
                                 return;
                             
-                            /**
-                            * Syncronize the parent product then replicate to all network
-                            * 
-                            */
-                                
-                            $_woonet_network_is_child_product_id    =   get_post_meta($post_ID, '_woonet_network_is_child_product_id', TRUE);   
-                            $_woonet_network_is_child_site_id       =   get_post_meta($post_ID, '_woonet_network_is_child_site_id', TRUE);
-                            
-                            $args =     array(
-                                                'fields' => 'names'
-                                                );
-                            $product_type = wp_get_object_terms( $post_ID, 'product_type', $args);
-                            
-                            //get variations
-                            if(in_array('variable', $product_type))
-                                {
-                                    $_child_variations = get_children( 'post_parent='.$post_ID.'&post_type=product_variation');
-                                }
-                                else
-                                $_child_variations  =   array();
-                            
-                            $_stock                    =   (int)get_post_meta($post_ID , '_stock', TRUE);
-                            $_stock_status             =   get_post_meta($post_ID , '_stock_status', TRUE);
-                            
-                            switch_to_blog( $_woonet_network_is_child_site_id );
-                                      
-                            update_post_meta($_woonet_network_is_child_product_id, '_stock', $_stock);
-                            update_post_meta($_woonet_network_is_child_product_id, '_stock_status', $_stock_status);
-                            
-                            restore_current_blog();
-                            
-                            //update parent variations
-                            if (count ($_child_variations) > 0)
-                                {
-                                    foreach($_child_variations  as  $_child_variation)
-                                        {
-                                            
-                                            $_variation_woonet_network_is_child_product_id    =   get_post_meta($_child_variation->ID, '_woonet_network_is_child_product_id', TRUE);
-                                            $_variation_woonet_network_is_child_site_id       =   get_post_meta($_child_variation->ID, '_woonet_network_is_child_site_id',    TRUE);
-                                            
-                                            if(empty($_variation_woonet_network_is_child_product_id)  ||  empty($_variation_woonet_network_is_child_site_id) )
-                                                continue;
-                                            
-                                            $_stock                    =   (int)get_post_meta($_child_variation->ID , '_stock', TRUE);
-                                            $_stock_status             =   get_post_meta($_child_variation->ID , '_stock_status', TRUE);
-                                                                                    
-                                            switch_to_blog( $_variation_woonet_network_is_child_site_id);
-                                            
-                                            if($_stock  !==  '')
-                                                update_post_meta($_variation_woonet_network_is_child_product_id, '_stock',        $_stock);
-                                            if($_stock_status   !==  '')
-                                                update_post_meta($_variation_woonet_network_is_child_product_id, '_stock_status', $_stock_status);      
-                                            
-                                            restore_current_blog();
-                                                                                        
-                                        }
-                                }
+                            list($_woonet_network_is_child_product_id, $_woonet_network_is_child_site_id, $ignore_blogs) = $this->functions->on_child_product_change__update_parent( $post_ID );
                             
                             //syncronize all network
-                            WOO_MSTORE_functions::update_stock_across_network($_woonet_network_is_child_product_id, $_woonet_network_is_child_site_id, array($blog_id));
+                            WOO_MSTORE_functions::update_stock_across_network($_woonet_network_is_child_product_id, $_woonet_network_is_child_site_id, $ignore_blogs);
                             
                             return;
                         }
@@ -809,7 +758,7 @@
                     $product_data   =   get_post($post_ID);
                     
                     $product_meta   =   get_post_meta($post_ID);
-                    $product_meta   =   $this->filter_product_meta($product_meta);
+                    $product_meta   =   $this->functions->filter_product_meta($product_meta);
                     
                     //relocate the _Stock_status to end to allow WooCommerce to syncronyze on actual stock value
                     $data =     isset($variation_product_meta['_stock_status']) ?   $variation_product_meta['_stock_status']    :   '';
@@ -992,9 +941,12 @@
                                             restore_current_blog();
                                             continue;
                                         }
+                                    
+                                    $ignore_meta_fields =   apply_filters('woo_mstore/save_meta_to_post/ignore_meta_fields', array(), $blog_id);
                                         
-                                    //update the title and content
-                                    $child_post->post_title     =   $post->post_title;   
+                                    if(!in_array('post_title', $ignore_meta_fields))
+                                        $child_post->post_title     =   $post->post_title;   
+                                    
                                     $child_post->post_content   =   $post->post_content;
                                     
                                     //update post status
@@ -1047,7 +999,7 @@
                             //Create / Update the taxonomies terms on this child product site
                             $this->save_taxonomies_to_post($product_taxonomies_data, $child_post->ID, $blog_details->blog_id);
                                                                
-                            $this->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id);
+                            $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id);
                             
                             
                             //check if this belong to a grouped
@@ -1113,7 +1065,7 @@
                                                         
                                             $group_taxonomies_data  =   $this->get_product_taxonomies_terms_data($product_data->post_parent);
                                             $group_meta             =   get_post_meta($product_data->post_parent);
-                                            $group_meta             =   $this->filter_product_meta($product_meta);
+                                            $group_meta             =   $this->functions->filter_product_meta($product_meta);
                                             
                                             //relocate the _Stock_status to end to allow WooCommerce to syncronyze on actual stock value
                                             $data =     isset($variation_product_meta['_stock_status']) ?   $variation_product_meta['_stock_status']    :   '';
@@ -1128,7 +1080,7 @@
                                             //replicate the data to child group
                                             $this->save_taxonomies_to_post($group_taxonomies_data, $child_group_post->ID, $blog_details->blog_id);
                                                                
-                                            $this->save_meta_to_post($group_meta, array(), $child_group_post->ID, $blog_details->blog_id);
+                                            $this->functions->save_meta_to_post($group_meta, array(), $child_group_post->ID, $blog_details->blog_id);
                             
                                             //pdate the child post, and make it child for group
                                             $child_post->post_parent    =   $child_group_post->ID;
@@ -1151,14 +1103,14 @@
                                                 }
                                             
                                             $_child_variations_processed = array();
-                                            
+                                                                                        
                                             //process all variations
                                             foreach($children_products   as  $children_product)
                                                 {
                                                     restore_current_blog();
                                             
                                                     $variation_product_meta   =   get_post_meta($children_product->ID);
-                                                    $variation_product_meta   =   $this->filter_product_meta($variation_product_meta);
+                                                    $variation_product_meta   =   $this->functions->filter_product_meta($variation_product_meta);
                                                     
                                                     //relocate the _Stock_status to end to allow WooCommerce to syncronyze on actual stock value
                                                     $data =     isset($variation_product_meta['_stock_status']) ?   $variation_product_meta['_stock_status']    :   '';
@@ -1205,7 +1157,7 @@
                                                         }
                                                         
                                                     //replicate the meta
-                                                    $this->save_meta_to_post($variation_product_meta, array(), $child_variation_id, $blog_details->blog_id);
+                                                    $this->functions->save_meta_to_post($variation_product_meta, array(), $child_variation_id, $blog_details->blog_id);
                                                         
                                                     $_child_variations_processed[]  =   $child_variation_id;
                                                     
@@ -1243,33 +1195,7 @@
                 }
                 
                 
-            function filter_product_meta($product_meta)
-                {
-                    //filter certain keys
-                    unset($product_meta['_edit_lock']);
-                    unset($product_meta['_edit_last']);
-                    
-                    //remove the network mapping
-                    unset($product_meta['_network_sites_map']);   
-                                        
-                    //exclude all _woonet
-                    foreach($product_meta   as  $key    =>  $product_meta_item)
-                        {
-                            if(strpos($key, '_woonet') === 0)
-                                unset($product_meta[$key]);
-                        }
-                    
-                    
-                    /**
-                    * ToDo
-                    * Maybe filter our empty fields?
-                    */
-                    
-                    
-                    $product_meta    =   apply_filters('woonet/admin_product/filter_product_meta/product_meta', $product_meta);
-                    
-                    return $product_meta;
-                }
+            
             
             
             /**
@@ -1493,41 +1419,7 @@
                 }
                             
                 
-            function save_image_locally($image_path)
-                {
-                    $pathinfo           = pathinfo($image_path);
-                    
-                    $newfilename        = $pathinfo['filename']   .   "." .  $pathinfo['extension'];
-                    
-                    $uploads            = wp_upload_dir();
-                    
-                    $filename           = wp_unique_filename( $uploads['path'], $newfilename, $unique_filename_callback = null );
-                    $wp_filetype        = wp_check_filetype($filename, null );
-                    $fullpathfilename   = $uploads['path'] . "/" . $filename;
 
-                        
-                    $image_content  = file_get_contents($image_path);
-                    $fileSaved      = file_put_contents($uploads['path'] . "/" . $filename, $image_content);
-                                      
-                    $attachment = array(
-                                         'post_mime_type'   => $wp_filetype['type'],
-                                         'post_title'       => preg_replace('/\.[^.]+$/', '', $filename),
-                                         'post_content'     => '',
-                                         'post_status'      => 'inherit',
-                                         'guid'             => $uploads['url'] . "/" . $filename
-                                    );
-                    $attach_id = wp_insert_attachment( $attachment, $fullpathfilename );
-                  
-                    require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-                    $attach_data = wp_generate_attachment_metadata( $attach_id, $fullpathfilename );
-                    wp_update_attachment_metadata( $attach_id,  $attach_data );
-                    
-                    return $attach_id;
-                
-                    
-                }
-                
-            
             function save_taxonomies_to_post($product_taxonomies_data, $post_ID, $blog_id)
                 {
                     global $wpdb; 
@@ -1598,206 +1490,7 @@
                     
                 }
             
-       
-       
-            /**
-            * Save the meta data to object
-            * 
-            * @param mixed $product_meta
-            * @param mixed $attachments
-            * @param mixed $post_ID
-            * @param mixed $blog_id
-            */
-            function save_meta_to_post($product_meta, $attachments, $post_ID, $blog_id, $ignore =   array())
-                {
-                    
-                    //retrieve any mapped images
-                    /**
-                    * the format is [parent_site_image_id] = to_site_image_id
-                    */
-                    switch_to_blog( $blog_id );
-                    $_woonet_images_mapping =   (array)get_post_meta($post_ID, '_woonet_images_mapping', TRUE);
-                    $_woonet_images_mapping =   array_filter($_woonet_images_mapping);
-                    restore_current_blog();
-                        
-                    foreach($product_meta   as  $key    =>  $product_meta_item)
-                        {
-                            
-                            //check if ths field is ignored
-                            if (in_array($key, $ignore))
-                                continue;
-                             
-                            foreach($product_meta_item  as  $product_meta_item_row)
-                                {
-                                    $product_meta_item_row = maybe_unserialize( $product_meta_item_row );
-                                    switch($key)
-                                        {
-                                            
-                                            // GEWIJZIGD: Overschrijf de voorraad en uitlichting in child sites nooit!
-                                            case '_stock'           :
-                                                                        continue;
-
-                                            case '_stock_status'    :
-                                                                        continue;
-
-                                            case '_featured'        :
-                                                                        continue;
-
-                                            case '_thumbnail_id'    :
-                                                                        
-                                                                        if(empty($product_meta_item_row))
-                                                                            continue;
-                                                                        
-                                                                        //process the image attachments and import to this blog
-                                                                        $found_attachment =   '';
-                                                                        foreach($attachments as $attachment)
-                                                                            {
-                                                                                if($product_meta_item_row   !=  $attachment->ID)
-                                                                                    continue;
-                                                                                
-                                                                                $found_attachment   =   $attachment;
-                                                                                break;
-                                                                            }
-                                                                        
-                                                                        //this image is not attached to post, retrieve the data from parent blog
-                                                                        if($found_attachment  ==  '')
-                                                                            {
-                                                                                restore_current_blog();
-                                                                                
-                                                                                $found_attachment =   get_post($product_meta_item_row);
-                                                                                
-                                                                                switch_to_blog( $blog_id );
-                                                                            }    
-                                                                            
-                                                                        if(!isset($_woonet_images_mapping[$found_attachment->ID]))
-                                                                            {
-                                                                                restore_current_blog();
-                                                                                
-                                                                                $file_path = get_attached_file( $found_attachment->ID);
-                                                                                
-                                                                                switch_to_blog( $blog_id );
-                                                                                
-                                                                                $image_id = $this->save_image_locally($file_path);
-                                                                                
-                                                                                //attache the image to this post
-                                                                                $image_data = get_post($image_id);
-                                                                                $image_data->post_parent    =   $post_ID;
-                                                                                wp_update_post($image_data);
-                                                                                
-                                                                                $_woonet_images_mapping[$found_attachment->ID]    =   $image_id;
-                                                                            }
-                                                                            else
-                                                                            $image_id   =   $_woonet_images_mapping[$found_attachment->ID];
-                                                                        
-                                                                        $_thumbnail_id  =   $product_meta_item_row;
-                                                                        //process the featured image
-                                                                        update_post_meta( $post_ID, '_thumbnail_id', $_woonet_images_mapping[ $_thumbnail_id  ] );
-                                                                        
-                                                                        break;   
-                                            
-                                            case    '_product_image_gallery':
-                                                                            
-                                                                        //process the product image gallery
-                                                                        $_product_image_gallery =   $product_meta_item_row;
-                                                                        $_product_image_gallery =   explode(",", $_product_image_gallery);
-                                                                        $_product_image_gallery =   array_filter($_product_image_gallery);
-                                                                        $_child_product_image_gallery   =   '';
-                                                                        if(count($_product_image_gallery)   >   0)
-                                                                            {
-                                                                                $_child_product_image_gallery_array   =   array();
-                                                                                foreach($_product_image_gallery as  $_product_image)   
-                                                                                    {
-                                                                                        
-                                                                                        $found_attachment =   '';
-                                                                                        foreach($attachments as $attachment)
-                                                                                            {
-                                                                                                if($_product_image   !=  $attachment->ID)
-                                                                                                    continue;
-                                                                                                    
-                                                                                                $found_attachment   =   $attachment;
-                                                                                                break;
-                                                                                                    
-                                                                                            }
-                                                                                        
-                                                                                        //this image is not attached to post, retrieve the data from parent blog
-                                                                                        if($found_attachment  ==  '')
-                                                                                            {
-                                                                                                restore_current_blog();
-                                                                                                
-                                                                                                $found_attachment =   get_post($_product_image);
-                                                                                                
-                                                                                                switch_to_blog( $blog_id );
-                                                                                            } 
-                                                                                            
-                                                                                        if(!isset($_woonet_images_mapping[$found_attachment->ID]))
-                                                                                            {
-                                                                                                restore_current_blog();
-                                                                                
-                                                                                                $file_path = get_attached_file( $found_attachment->ID);
-                                                                                                
-                                                                                                switch_to_blog( $blog_id );
-                                                                                                
-                                                                                                $image_id = $this->save_image_locally($file_path);
-                                                                                                
-                                                                                                //attache the image to this post
-                                                                                                $image_data = get_post($image_id);
-                                                                                                $image_data->post_parent    =   $post_ID;
-                                                                                                wp_update_post($image_data);
-                                                                                                
-                                                                                                $_woonet_images_mapping[$found_attachment->ID]    =   $image_id;
-                                                                                            }
-                                                                                            else
-                                                                                            $image_id   =   $_woonet_images_mapping[$found_attachment->ID];
-                                                                                        
-                                                                                        $_child_product_image_gallery_array[] =   $_woonet_images_mapping[ $_product_image  ];
-                                                                                    }
-                                                                                if(count($_child_product_image_gallery_array) > 0)    
-                                                                                    $_child_product_image_gallery   =   implode(",", $_child_product_image_gallery_array);
-                                                                            }
-                                                                        update_post_meta( $post_ID, '_product_image_gallery', $_child_product_image_gallery );
-                                            
-                                                                        
-                                                                        break;
-                                            
-                                            case (preg_match('/attribute_pa_/', $key) ? true : false);
-                                                                    
-                                                                        
-                                                                        //retrieve the original attribute to ensure we set the correct term on this blog, since terms are mapped using term name
-                                                                        restore_current_blog();
-                                                                        
-                                                                        $taxonomy   =   str_replace("attribute_pa_", "pa_", $key);
-                                                                        
-                                                                        $term_data  =   get_term_by('slug', $product_meta_item_row, $taxonomy);
-                                                                        
-                                                                        switch_to_blog( $blog_id );
-                                                                        
-                                                                        if(!is_object($term_data))
-                                                                            continue;
-                                                                            
-                                                                        //retrieve the term on local blog
-                                                                        $child_term_data    =   get_term_by("name", $term_data->name, $taxonomy);
-                                                                        update_post_meta( $post_ID, $key, $child_term_data->slug );
-                                                                    
-                                                                    
-                                                                        break;
-                                            
-                                            default:
-                                                        
-                                                                    update_post_meta( $post_ID, $key, $product_meta_item_row );                       
-                                                                    break;   
-                                        }
-                                    
-                                }
-                            
-                        }
-                           
-                    
-                    //save theimages mapping data
-                    update_post_meta($post_ID, '_woonet_images_mapping', $_woonet_images_mapping);
-                }
-       
-       
-            
+                     
             /**
             * Delete all porduct childs
             * 
@@ -2067,6 +1760,34 @@
                             
                             restore_current_blog();
                         }   
+                    
+                }
+       
+       
+            /**
+            * Set ignore fields
+            * This return fields related to blog id
+            * 
+            */
+            function on_save_meta_to_post__ignore_meta_fields( $ignore_meta_fields, $blog_id )
+                {
+                    $options    =   $this->functions->get_options();
+                    
+                    if($options['child_inherit_changes_fields_control__title'][$blog_id] ==   'no')
+                        {
+                            $ignore_meta_fields[]   =   'post_title';
+                        }
+                    
+                    if($options['child_inherit_changes_fields_control__price'][$blog_id] ==   'no')
+                        {
+                            $ignore_meta_fields[]   =   '_regular_price';
+                            $ignore_meta_fields[]   =   '_sale_price';
+                            $ignore_meta_fields[]   =   '_sale_price';
+                            $ignore_meta_fields[]   =   '_sale_price_dates_from';
+                            $ignore_meta_fields[]   =   '_sale_price_dates_to';
+                        }
+                    
+                    return $ignore_meta_fields;   
                     
                 }
        
