@@ -878,6 +878,56 @@
 	# MULTISITE #
 	#############
 
+	// Doe leuke dingen na afloop van een WP All Import
+	add_action('pmxi_after_xml_import', 'after_xml_import', 10, 1);
+	
+	function after_xml_import($import_id) {
+		if ( $import_id == 2 ) {
+			// Trash de hoofdproducten die de waarde 'naar_prullenmand' meekregen tijdens de import (moet lukken in één query zolang het om een paar 100 producten gaat)
+			$args = array(
+				'post_type'			=> 'product',
+				// Want WP_Query vraagt buiten de adminomgeving (zoals een cron) normaal enkel gepubliceerde posts op!
+				'post_status'		=> array( 'publish', 'draft' ),
+				'posts_per_page'	=> -1,
+				'meta_key'			=> 'naar_prullenmand', 
+				'meta_value'		=> 'ja',
+				'meta_compare'		=> '=',
+			);
+
+			$trashers = new WP_Query( $args );
+			
+			if ( $trashers->have_posts() ) {
+				while ( $trashers->have_posts() ) {
+					$trashers->the_post();
+					// Normale producten verwijzen we eerst naar de prullenmand
+					wp_trash_post( get_the_ID() );
+					write_log( "ART. NR. ".get_post_meta( get_the_ID(), '_sku', true )." VERPLAATST NAAR PRULLENMAND" );
+				}
+				wp_reset_postdata();
+			}
+
+			// Verwijder de key 'naar_prullenmand' van producten die succesvol getrashed zijn, ook als dat al tijdens een eerdere import gebeurde!
+			$args = array(
+				'post_type'			=> 'product',
+				'post_status'		=> array( 'trash' ),
+				'posts_per_page'	=> -1,
+				'meta_key'			=> 'naar_prullenmand', 
+				'meta_value'		=> 'ja',
+				'meta_compare'		=> '=',
+			);
+
+			$trashed = new WP_Query( $args );
+
+			if ( $trashed->have_posts() ) {
+				while ( $trashed->have_posts() ) {
+					$trashed->the_post();
+					delete_post_meta( get_the_ID(), 'naar_prullenmand' );
+				}
+				wp_reset_postdata();
+			}
+		}
+	}
+
 	// AANGEZIEN WE PROBLEMEN HEBBEN OM BROADCASTING PROGRAMMATORISCH UIT TE LOKKEN BLIJVEN WE VOORLOPIG VIA BULKBEWERKING DE PUBLISH NAAR CHILDS TRIGGEREN
 	// Stel de herkomst in op basis van de taxonomie product_partner
 	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
@@ -930,6 +980,17 @@
 	// 	update_option('uploads_use_yearmonth_folders', false);
 	// 	restore_current_blog();
 	// });
+
+	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke productupdate
+	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
+
+	function ignore_featured_and_stock( $ignored_fields, $blog_id ) {
+		write_log("SUBSITE NUMMER ".$blog_id);
+		$ignored_fields[] = '_stock';
+		$ignored_fields[] = '_stock_status';
+		$ignored_fields[] = '_featured';
+		return $ignored_fields;
+	}
 
 
 	################
@@ -1126,27 +1187,33 @@
 	function print_office_hours() {
 		$node = get_option( 'oxfam_shop_node' );
 		
-		$msg = shell_exec( "ssh -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be" );  
-		$msg .= shell_exec( "mysql -h 127.0.0.1 -P 3307 -u oxfam_ro" );  
+		// PROBLEEM: Hierna moeten we XIO_FTP handmatig ingeven (kan niet als parameter met gewone ssh!)
+		$msg = shell_exec( "ssh -p 51234 -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 600 >> logfile" );
 		
-		$mysqli = new mysqli( '127.0.0.1:3306', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3306 );
-		
-		if ( $mysqli->connect_errno ) {
-		    $msg .= "Failed to connect to MySQL: (".$mysqli->connect_errno.") ".$mysqli->connect_error;
-		}
-		$msg .= $mysqli->host_info;
+		// DIT WERKT VIA COMMANDLINE IN ANTAGONIST
+		$msg = shell_exec( "mysql -u oxfam_ro -p ".XIO_MYSQL." -h 127.0.0.1 oxfamDb -P 3307" );  
 
+		// MAAR DIT IS DE PHP-FUNCTIE DIE WE UITEINDELIJK WILLEN GEBRUIKEN
+		$mysqli = mysqli_connect('127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3307);
+		$mysqli = new mysqli( '127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3307 );
+		if ( $mysqli->connect_errno ) {
+		    $msg = "Failed to connect to MySQL: ".$mysqli->connect_error;
+		} else {
+			$msg = $mysqli->host_info;
+		}
+
+		// WERKT ENKEL INDIEN SSH2-MODULE ENABLED IN SETTINGS PHP (ANTAGONIST = OK, COMBELL NIET)
 		// $connection = ssh2_connect('web4.xio.be', 51234);
 		// if ( ssh2_auth_password($connection, 'oxfam_ro', XIO_FTP) ) {
-		// 	$msg = "Verbinding met OWW-site mislukt";
+		// 	$msg .= "Verbinding met OWW-site mislukt";
 		// } else {
-		// 	$tunnel = ssh2_tunnel($connection, '127.0.0.1', 3306);
-		// 	// shell_exec("ssh -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 60 >> logfile");
-		// 	$db = mysqli_connect('127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3306);
-		// 	$msg = var_dump($db);
-		// 	$msg = "op te halen uit OWW-site (node ".$node.")";
+		// 	$tunnel = ssh2_tunnel($connection, '127.0.0.1', 3307);
+		// 	// shell_exec("ssh -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 600 >> logfile");
+		// 	$mysqli = mysqli_connect('127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3307);
+		// 	$msg .= "op te halen uit OWW-site (node ".$node.")";
 		// }
-		return "Open vanaf ???";
+
+		return $msg;
 	}
 
 	#############
