@@ -28,9 +28,6 @@
     		]
 		);
 
-		// Tip: ook als we het commando via cURL willen doen, moeten we de parameters als query string meegeven
-		// curl "https://www.fairtradecrafts.be/wp-json/wc/v1/products/categories?consumer_key=ck_cf51cffd512a82d9cebcbb289bbe2b1910de45c4&consumer_secret=cs_ce88f29f8cec89fa52d6919f3afe7fc2f7c2863a"
-
 		$endpoint = 'products/categories';
 		$parameters = array( 'orderby' => 'name', 'per_page' => 10, 'parent' => 0 );
 		

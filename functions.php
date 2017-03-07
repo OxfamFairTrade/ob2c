@@ -37,7 +37,7 @@
 
 	function add_meta_value_to_orders() {
 		global $pagenow, $post_type;
-	    if( $pagenow === 'edit.php' and $post_type === 'shop_order' ) {
+		if( $pagenow === 'edit.php' and $post_type === 'shop_order' ) {
 			$meta_values = array( 'oostende', 'brugge' );
 
 			echo '<select name="source" id="source">';
@@ -57,18 +57,18 @@
 	// add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
 
 	function filter_orders_per_meta_value( $query ) {
-	    global $pagenow, $post_type;
-	    $current_user = wp_get_current_user();
-	    if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty($_GET['post_status']) and $_GET['post_status'] === 'wc-claimed' ) {
-	    	// VERSTOORT OM GOD WEET WELKE REDEN DE CUSTOM ORDER STATUS
-	    	$meta_query_args = array(
-	    		array(
-	    			'key' => 'owner_of_order',
-	    			'value' => $current_user->user_login,
-	    			'compare' => '=',
-	    		)
-	    	);
-	    	$query->set( 'meta_query', $meta_query_args );
+		global $pagenow, $post_type;
+		$current_user = wp_get_current_user();
+		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty($_GET['post_status']) and $_GET['post_status'] === 'wc-claimed' ) {
+			// VERSTOORT OM GOD WEET WELKE REDEN DE CUSTOM ORDER STATUS
+			$meta_query_args = array(
+				array(
+					'key' => 'owner_of_order',
+					'value' => $current_user->user_login,
+					'compare' => '=',
+					)
+				);
+			$query->set( 'meta_query', $meta_query_args );
 		}
 	}
 
@@ -82,12 +82,12 @@
 	add_action( 'admin_menu', 'my_remove_menu_pages', 100, 0 );
 
 	function my_remove_menu_pages() {
-    	if ( ! current_user_can( 'update_core' ) ) {
-    		remove_menu_page( 'vc-welcome' );
-    		remove_submenu_page( 'woocommerce', 'wc-settings' );
-    		remove_submenu_page( 'woocommerce', 'wc-status' );
-    		remove_submenu_page( 'woocommerce', 'wc-addons' );
-    	}
+		if ( ! current_user_can( 'update_core' ) ) {
+			remove_menu_page( 'vc-welcome' );
+			remove_submenu_page( 'woocommerce', 'wc-settings' );
+			remove_submenu_page( 'woocommerce', 'wc-status' );
+			remove_submenu_page( 'woocommerce', 'wc-addons' );
+		}
 	}
 
 	// Haal de hardnekkige pagina's niet enkel uit het menu, maak ze ook effectief ontoegankelijk
@@ -102,11 +102,11 @@
 				'wc-status',
 				'wc-addons',
 			);
-		    foreach ( $forbidden_strings as $forbidden ) {
-		    	if ( strpos( $screen->base, $forbidden ) !== false ) {
-		    		wp_die( 'Uit veiligheidsoverwegingen is deze geavanceerde beheerpagina niet toegankelijk voor lokale winkelbeheerders. Ben je er toch van overtuigd dat je deze functionaliteit nodig hebt? Leg je case voor extra rechten aan ons voor via <a href="mailto:'.get_option( 'admin_email' ).'">'.get_option( 'admin_email' ).'</a>!' );
-		    	}
-		    }
+			foreach ( $forbidden_strings as $forbidden ) {
+				if ( strpos( $screen->base, $forbidden ) !== false ) {
+					wp_die( 'Uit veiligheidsoverwegingen is deze geavanceerde beheerpagina niet toegankelijk voor lokale winkelbeheerders. Ben je er toch van overtuigd dat je deze functionaliteit nodig hebt? Leg je case voor extra rechten aan ons voor via <a href="mailto:'.get_option( 'admin_email' ).'">'.get_option( 'admin_email' ).'</a>!' );
+				}
+			}
 		}
 	}
 
@@ -132,18 +132,18 @@
 	// add_action( 'init', 'register_claimed_by_member_order_status' );
 	
 	function register_claimed_by_member_order_status() {
-	    register_post_status( 'wc-claimed',
-	    	array(
-		        'label' => 'Geclaimd door winkel',
-		        'public' => true,
-		        'internal' => true,
-		        'private' => false,
-		        'exclude_from_search' => false,
-		        'show_in_admin_all_list' => true,
-		        'show_in_admin_status_list' => true,
-		        'label_count' => _n_noop( 'Geclaimd door winkel <span class="count">(%s)</span>', 'Geclaimd door winkel <span class="count">(%s)</span>' )
-	    	)
-	    );
+		register_post_status( 'wc-claimed',
+			array(
+				'label' => 'Geclaimd door winkel',
+				'public' => true,
+				'internal' => true,
+				'private' => false,
+				'exclude_from_search' => false,
+				'show_in_admin_all_list' => true,
+				'show_in_admin_status_list' => true,
+				'label_count' => _n_noop( 'Geclaimd door winkel <span class="count">(%s)</span>', 'Geclaimd door winkel <span class="count">(%s)</span>' )
+				)
+			);
 	}
 
 	// Zorg ervoor dat slechts bepaalde statussen bewerkbaar zijn
@@ -165,15 +165,15 @@
 	// add_filter( 'wc_order_statuses', 'rearrange_order_statuses' );
 
 	function rearrange_order_statuses( $order_statuses ) {
-	    $new_order_statuses = array();
-	    foreach ( $order_statuses as $key => $status ) {
-	        $new_order_statuses[ $key ] = $status;
-	        // Plaats de status net na 'processing' (= order betaald en ontvangen)
-	        if ( 'wc-processing' === $key ) {    
-	            $new_order_statuses['wc-claimed'] = 'Geclaimd door mijn winkel';
-	        }
-	    }
-	    return $new_order_statuses;
+		$new_order_statuses = array();
+		foreach ( $order_statuses as $key => $status ) {
+			$new_order_statuses[ $key ] = $status;
+			// Plaats de status net na 'processing' (= order betaald en ontvangen)
+			if ( 'wc-processing' === $key ) {    
+				$new_order_statuses['wc-claimed'] = 'Geclaimd door mijn winkel';
+			}
+		}
+		return $new_order_statuses;
 	}
 
 	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
@@ -184,12 +184,12 @@
 
 		if ( 'alpha' === $orderby_value ) {
 			$args['orderby'] = 'title';
-	    	$args['order'] = 'ASC';
+			$args['order'] = 'ASC';
 		}
 
 		if ( 'alpha-desc' === $orderby_value ) {
 			$args['orderby'] = 'title';
-	    	$args['order'] = 'DESC';
+			$args['order'] = 'DESC';
 		}
 
 		return $args;
@@ -286,7 +286,7 @@
 	}
 
 	// Label en layout de factuurgegevens
-    add_filter( 'woocommerce_billing_fields', 'format_checkout_billing', 10, 1 );
+	add_filter( 'woocommerce_billing_fields', 'format_checkout_billing', 10, 1 );
 	
 	function format_checkout_billing( $address_fields ) {
 		$address_fields['billing_first_name']['label'] = "Voornaam";
@@ -325,11 +325,11 @@
     // Verduidelijk de labels en layout
 	add_filter( 'woocommerce_default_address_fields', 'make_addresses_readonly', 10, 1 );
 
-    function make_addresses_readonly( $address_fields ) {
+	function make_addresses_readonly( $address_fields ) {
 		$address_fields['address_1']['label'] = "Straat en nummer";
 		$address_fields['address_1']['placeholder'] = '';
 		$address_fields['address_1']['required'] = true;
-		
+
 		$address_fields['postcode']['label'] = "Postcode";
 		$address_fields['postcode']['placeholder'] = '';
 		$address_fields['postcode']['required'] = true;
@@ -356,28 +356,28 @@
 
 	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
 		wc_add_notice( 'Heb je een factuur nodig? Vraag de winkel om een B2B-account.', 'notice' );
-    };
+	};
 	
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
 	add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
 
 	function zero_rate_for_companies( $tax_class, $product ) {
-	    $current_user = wp_get_current_user();
-	    if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
-	    	$tax_class = 'vrijgesteld';
-	    }
-	    return $tax_class;
+		$current_user = wp_get_current_user();
+		if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
+			$tax_class = 'vrijgesteld';
+		}
+		return $tax_class;
 	}
 
 	// Vervang de prijssuffix indien het om een ingelogde B2B-klant gaat
 	add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
- 
+
 	function b2b_price_suffix( $suffix, $product ) {
-	    $current_user = wp_get_current_user();
-	    if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
-	    	$suffix = str_replace( 'incl', 'excl', $suffix );
-	    }
-	    return $suffix;
+		$current_user = wp_get_current_user();
+		if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
+			$suffix = str_replace( 'incl', 'excl', $suffix );
+		}
+		return $suffix;
 	}
 
 	// Toon overschrijving indien B2B-klant
@@ -385,7 +385,7 @@
 
 	function b2b_restrict_to_bank_transfer( $gateways ) {
 		$current_user = wp_get_current_user();
-	    if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
+		if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
 			unset( $gateways['mollie_wc_gateway_mistercash'] );
 			unset( $gateways['mollie_wc_gateway_creditcard'] );
 			unset( $gateways['mollie_wc_gateway_kbc'] );
@@ -1029,10 +1029,10 @@
 		$list_id = '53ee397c8b';
 		$folder_id = '2a64174067';
 
-	    $args = array(
-		 	'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY)
-			)
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY),
+			),
 		);
 
 		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-6 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id, $args );
@@ -1053,19 +1053,19 @@
 	add_action( 'admin_notices', 'sample_admin_notice' );
 
 	function sample_admin_notice() {
-        global $pagenow, $post_type, $current_user;
-	    if ( $pagenow === 'index.php' and current_user_can( 'edit_products' ) ) {
-		    echo '<div class="notice notice-info">';
-			    if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
-			    	echo '<p>Alle betalingen op deze site zijn momenteel fake!</p>';
-			    } else {
-			    	echo '<p>Alle betalingen op deze site zijn momenteel live!</p>';
-			    }
-		    echo '</div>';
+		global $pagenow, $post_type, $current_user;
+		if ( $pagenow === 'index.php' and current_user_can( 'edit_products' ) ) {
+			echo '<div class="notice notice-info">';
+			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
+				echo '<p>Alle betalingen op deze site zijn momenteel fake!</p>';
+			} else {
+				echo '<p>Alle betalingen op deze site zijn momenteel live!</p>';
+			}
+			echo '</div>';
 		} elseif ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
-		    echo '<div class="notice notice-warning">';
-			    echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
-		    echo '</div>';
+			echo '<div class="notice notice-warning">';
+			echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
+			echo '</div>';
 		}
 	}
 
@@ -1081,29 +1081,29 @@
 		remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
 		remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
-    }
+	}
 
-    // Admin reports for custom order status
-    add_filter( 'woocommerce_reports_get_order_report_data_args', 'wc_reports_get_order_custom_report_data_args', 100, 1 );
+	// Admin reports for custom order status
+	add_filter( 'woocommerce_reports_get_order_report_data_args', 'wc_reports_get_order_custom_report_data_args', 100, 1 );
 
-    function wc_reports_get_order_custom_report_data_args( $args ) {
-    	$args['order_status'] = array( 'on-hold', 'processing', 'claimed', 'completed' );
-    	return $args;
-    };
+	function wc_reports_get_order_custom_report_data_args( $args ) {
+		$args['order_status'] = array( 'on-hold', 'processing', 'claimed', 'completed' );
+		return $args;
+	};
 
-    function getLatestNewsletters() {
+	function getLatestNewsletters() {
 		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
 		$list_id = '5cce3040aa';
 		$folder_id = 'bbc1d65c43';
 
-	    $args = array(
-		 	'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY)
-			)
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY),
+			),
 		);
 
 		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-3 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id, $args );
-		
+
 		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
 			$body = json_decode($response['body']);
@@ -1121,15 +1121,15 @@
 
 	function getMailChimpStatus() {
 		$cur_user = wp_get_current_user();
-	    $server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
+		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
 		$list_id = '5cce3040aa';
 		$email = $cur_user->user_email;
 		$member = md5(strtolower($email));
-		
-	    $args = array(
-		 	'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY)
-			)
+
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY),
+			),
 		);
 
 		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
@@ -1225,15 +1225,15 @@
 
 	// Print variabelen op een overzichtelijke manier naar debug.log
 	if ( ! function_exists( 'write_log' ) ) {
-	    function write_log ( $log )  {
-	        if ( true === WP_DEBUG ) {
-	            if ( is_array( $log ) || is_object( $log ) ) {
-	                error_log( print_r( $log, true ) );
-	            } else {
-	                error_log( $log );
-	            }
-	        }
-	    }
+		function write_log ( $log )  {
+			if ( true === WP_DEBUG ) {
+				if ( is_array( $log ) || is_object( $log ) ) {
+					error_log( print_r( $log, true ) );
+				} else {
+					error_log( $log );
+				}
+			}
+		}
 	}
 	
 ?>
