@@ -728,15 +728,16 @@
 	
 	function add_energy_allergen_tab( $tabs ) {
 		global $product;
-		$tabs['additional_information']['title'] = 'Eigenschappen';
+		// Titel wijzigen van standaardtab kan, maar prioriteit niet
+		$tabs['additional_information']['title'] = 'Technisch';
 		$tabs['partner_info'] = array(
-			'title' 	=> 'Partnerinfo',
-			'priority' 	=> 50,
+			'title' 	=> 'Herkomst',
+			'priority' 	=> 60,
 			'callback' 	=> 'partner_tab_content',
 		);
 		$tabs['allergen_info'] = array(
-			'title' 	=> 'Allergeneninfo',
-			'priority' 	=> 75,
+			'title' 	=> 'Allergenen',
+			'priority' 	=> 100,
 			'callback' 	=> 'allergen_tab_content',
 		);
 		$parts = explode( ' ', $product->get_attribute( 'pa_inhoud' ) );
@@ -748,7 +749,7 @@
 		}
 		$tabs['food_info'] = array(
 			'title' 	=> 'Voedingswaarde per 100 '.$suffix,
-			'priority' 	=> 100,
+			'priority' 	=> 80,
 			'callback' 	=> 'food_tab_content',
 		);
 		return $tabs;
@@ -870,25 +871,33 @@
 	function partner_tab_content() {
 		global $product;
 		echo '<div class="nm-additional-information-inner">';
-			$has_row = false;
 			$alt = 1;
 			$terms = get_the_terms( $product->get_id(), 'product_partner' );
+
+			// ID's van de continenten (integers!)
+			$continents = array( 828, 829, 830, 831 );
 			foreach ( $terms as $term ) {
-				$continents = array( 828, 829, 830, 831 );
-				var_dump($term);
 				// Check op een strikte manier of we niet met een land bezig zijn
-				if ( $allergen->parent !== 0 and ! in_array( $allergen->parent, $continents, true ) ) {
+				if ( ! in_array( $term->parent, $continents, true ) ) {
 					$partners[] = $term;
+					// Voeg het land van deze partner toe aan de landen
+					$parent_term = get_term_by( 'id', $term->parent, 'product_partner' );
+					// Opgelet, dit moet nog ontdubbeld en geordend worden!
+					$countries[] = $parent_term->name;
 				} else {
-					// Kan geen continent zijn want die selectie wordt niet toegestaan
-					$countries[] = $term;
+					// Kan geen continent zijn want die selectie wordt niet toegestaan en enkel de laagste taxonomie wordt toegekend
+					$countries[] = $term->name;
 				}
 			}
+
+			$countries = array_unique( $countries );
+			asort($countries);
+			ob_start();
 			?>
 			<table class="shop_attributes">
 				
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo 'Herkomst' ?></th>
+					<th>Herkomstlanden</th>
 					<td><?php
 						$i = 0;
 						$str = '/';
@@ -896,9 +905,9 @@
 							foreach ( $countries as $country ) {
 								$i++;
 								if ( $i === 1 ) {
-									$str = $country->name;
+									$str = $country;
 								} else {
-									$str .= '<br>'.$country->name;
+									$str .= '<br>'.$country;
 								}
 							}
 						}
@@ -907,31 +916,42 @@
 				</tr>
 
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo 'Partners' ?></th>
+					<th>A- en B-partners</th>
 					<td><?php
 						$i = 0;
-						$str = '/';
+						$msg = '<i>(uit FLO-register)</i>';
 						if ( count( $partners ) > 0 ) {
 							foreach ( $partners as $partner ) {
 								$i++;
-								if ( $i === 1 ) {
-									$str = '<a href="https://www.oxfamwereldwinkels.be/partner/" target="_blank">'.$partner->name.'</a>';
+								// DIT BESTAAT NIET MEER IN PHP 7
+								// $link = mssql_connect('5.134.1.119', 'sa', OFT_FTP, 'Comm_owwbe');
+								if ( $link ) {
+									$result = mssql_fetch_array(mssql_query("SELECT * FROM [dbo].[partners] WHERE [part_naam] = ".$partner->name));
+									$node = $result['part_website'];
 								} else {
-									$str .= '<br><a href="https://www.oxfamwereldwinkels.be/partner/" target="_blank">'.$partner->name.'</a>';
+									// Val terug op de termbeschrijving die misschien toegevoegd is
+									$node = $partner->description;
+								}
+								
+								if ( strlen($node) > 3 ) {
+									$text = '<a href="https://www.oxfamwereldwinkels.be/"'.$node.' target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner->name.'</a>';
+								} else {
+									$text = $partner->name;
+								}
+								if ( $i === 1 ) {
+									$msg = $text;
+								} else {
+									$msg .= '<br>'.$text;
 								}
 							}
 						}
-						echo $str;
+						echo $msg;
 					?></td>
 				</tr>
 				
 			</table>
 			<?php
-			if ( $has_row ) {
-				echo ob_get_clean();
-			} else {
-				ob_end_clean();
-			}
+			echo ob_get_clean();
 		echo '</div>';
 	}
 
@@ -943,8 +963,8 @@
 		$percenty_attributes = array( 'pa_alcohol', 'pa_fairtrade' );
 		$energy_attributes = array( 'pa_ener' );
 
-		// HOE BEPALEN WE MET WELKE PRODUCT-ID WE HIER BEZIG ZIJN?
-		$product = wc_get_product( 1270 );
+		// HOE BEPALEN WE MET WELKE PRODUCT-ID WE HIER BEZIG ZIJN? => GLOBAL WERKT
+		global $product;
 		$parts = explode( ' ', $product->get_attribute( 'pa_inhoud' ) );
 		if ( $parts[1] === 'cl' ) {
 			// Ofwel op basis van categorie: Wijn (hoofdcategorie) of +/- Spirits, Fruitsap, Sauzen en Olie & azijn (subcategorie)
@@ -954,7 +974,7 @@
 		}
 
 		if ( in_array( $attribute['name'], $weighty_attributes ) ) {
-			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' g';
+			$values[0] = str_replace('.', ',', $values[0]).' g';
 		} elseif ( in_array( $attribute['name'], $percenty_attributes ) ) {
 			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' %';
 		} elseif ( in_array( $attribute['name'], $energy_attributes ) ) {
@@ -1025,7 +1045,7 @@
 	}
 
 	// AANGEZIEN WE PROBLEMEN HEBBEN OM BROADCASTING PROGRAMMATORISCH UIT TE LOKKEN BLIJVEN WE VOORLOPIG VIA BULKBEWERKING DE PUBLISH NAAR CHILDS TRIGGEREN
-	// Stel de herkomst in op basis van de taxonomie product_partner
+	// Stel de attributen in die berekend moeten worden uit andere waarden
 	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
 
 	function set_product_source( $post_id ) {
@@ -1055,18 +1075,43 @@
 
 	function update_calculated_attributes( $post_id ) {
 		if ( get_post_type( $post_id ) === 'product' ) {
-			write_log("HALLO");
 			// Belangrijk: zorg ervoor dat '_product_attributes' alle attributen bevat in de juiste volgorde
 			// De waarden zelf zitten allemaal als termen opgeslagen, maar om te verschijnen bij het product moeten ze wel 'aangekondigd' worden
-			$attributes = wc_get_product( 1270 )->get_attributes();
 			$product = wc_get_product( $post_id );
-			$product->set_attributes( $attributes );
-
-			// REPLACE ALL
+			$attributes = $product->get_attributes();
+			// write_log($attributes);
+			
+			$price = floatval($product->get_price());
+			$parts = explode( ' ', $product->get_attribute( 'pa_inhoud' ) );
+			$content = intval($parts[0]);
+			if ( $parts[1] === 'g' ) {
+				$calc = $price / $content * 1000;
+			} elseif ( $parts[1] === 'cl' ) {
+				$calc = $price / $content * 100;
+			} else {
+				$calc = 0;
+			}
+			$string = number_format( $calc, 2, ',', '.' );
+			$calc = round( $calc, 2 );
+			write_log("EENHEIDSPRIJS: ".$calc);
+			
+			// REPLACE ALL TERMS
+			$term_taxonomy_ids = wp_set_object_terms( $post_id, $string, 'pa_eenheidsprijs', false );
 			// WORDT AUTOMATISCH ALFABETISCHE GEORDEND EN ONTDUBBELD!
+			// $term_taxonomy_ids = wp_set_object_terms( $post_id, array('Frankrijk', 'België', 'India', 'België'), 'pa_herkomst', false );
+			// update_post_meta( $post_id, '_product_attributes', $thedata );
 
-			$term_taxonomy_ids = wp_set_object_terms( $post_id, '88,88', 'pa_eenheidsprijs', false );
-			$term_taxonomy_ids = wp_set_object_terms( $post_id, array('Frankrijk', 'België', 'India', 'België'), 'pa_herkomst', false );
+			$attributes[] = array(
+				'pa_eenheidsprijs'	=>	array(
+											'name' => 'pa_eenheidsprijs',
+											'value' => $string,
+											'is_visible' => '1',
+											'is_taxonomy' => '1',
+										),
+			);
+     		
+     		$product->set_attributes( $attributes );
+     		$product->save();
 		}
 	}
 
@@ -1283,15 +1328,96 @@
 
 	function print_office_hours() {
 		$node = get_option( 'oxfam_shop_node' );
+		$hours = "<br>";
 		
+		if ( ( $handle = fopen( WP_CONTENT_DIR."/office-hours.csv", "r" ) ) !== false ) {
+			// Loop over alle rijen (indien de datafile geopend kon worden)
+			$headers = fgetcsv( $handle, 0, "\t" );
+			while ( ( $row2 = fgetcsv( $handle, 0, "\t" ) ) !== false ) {
+				$row = array_combine($headers, $row2);
+				if ( $row['entity_id'] == $node ) {
+					if ( intval($row['field_sellpoint_office_hours_day']) === 1 ) {
+						$start = $row['field_sellpoint_office_hours_starthours'];
+						$end = $row['field_sellpoint_office_hours_endhours'];
+						if ( ! isset($monday) ) {
+							$hours .= "<br>Maandag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+							$monday = true;
+						} else {
+							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+						}
+					}
+					if ( intval($row['field_sellpoint_office_hours_day']) === 2 ) {
+						$start = $row['field_sellpoint_office_hours_starthours'];
+						$end = $row['field_sellpoint_office_hours_endhours'];
+						if ( ! isset($tuesday) ) {
+							$hours .= "<br>Dinsdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+							$tuesday = true;
+						} else {
+							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+						}
+					}
+					if ( intval($row['field_sellpoint_office_hours_day']) === 3 ) {
+						$start = $row['field_sellpoint_office_hours_starthours'];
+						$end = $row['field_sellpoint_office_hours_endhours'];
+						if ( ! isset($wednesday) ) {
+							$hours .= "<br>Woensdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+							$wednesday = true;
+						} else {
+							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+						}
+					}
+					if ( intval($row['field_sellpoint_office_hours_day']) === 4 ) {
+						$start = $row['field_sellpoint_office_hours_starthours'];
+						$end = $row['field_sellpoint_office_hours_endhours'];
+						if ( ! isset($thursday) ) {
+							$hours .= "<br>Donderdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+							$thursday = true;
+						} else {
+							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+						}
+					}
+					if ( intval($row['field_sellpoint_office_hours_day']) === 5 ) {
+						$start = $row['field_sellpoint_office_hours_starthours'];
+						$end = $row['field_sellpoint_office_hours_endhours'];
+						if ( ! isset($friday) ) {
+							$hours .= "<br>Vrijdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+							$friday = true;
+						} else {
+							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+						}
+					}
+					if ( intval($row['field_sellpoint_office_hours_day']) === 6 ) {
+						$start = $row['field_sellpoint_office_hours_starthours'];
+						$end = $row['field_sellpoint_office_hours_endhours'];
+						if ( ! isset($saturday) ) {
+							$hours .= "<br>Zaterdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+							$saturday = true;
+						} else {
+							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+						}
+					}
+					if ( intval($row['field_sellpoint_office_hours_day']) === 0 ) {
+						$start = $row['field_sellpoint_office_hours_starthours'];
+						$end = $row['field_sellpoint_office_hours_endhours'];
+						if ( ! isset($sunday) ) {
+							$hours .= "<br>Zondag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+							$sunday = true;
+						} else {
+							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+						}
+					}
+				}
+			}
+		}
+		fclose($handle);
+
 		// PROBLEEM: Hierna moeten we XIO_FTP handmatig ingeven (kan niet als parameter met gewone ssh!)
-		$msg = shell_exec( "ssh -p 51234 -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 600 >> logfile" );
+		$msg = shell_exec( "ssh -p 51234 -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 60 >> logfile" );
 		
 		// DIT WERKT VIA COMMANDLINE IN ANTAGONIST
 		$msg = shell_exec( "mysql -u oxfam_ro -p ".XIO_MYSQL." -h 127.0.0.1 oxfamDb -P 3307" );  
 
 		// MAAR DIT IS DE PHP-FUNCTIE DIE WE UITEINDELIJK WILLEN GEBRUIKEN
-		$mysqli = mysqli_connect('127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3307);
 		$mysqli = new mysqli( '127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3307 );
 		if ( $mysqli->connect_errno ) {
 		    $msg = "Failed to connect to MySQL: ".$mysqli->connect_error;
@@ -1310,7 +1436,7 @@
 		// 	$msg .= "op te halen uit OWW-site (node ".$node.")";
 		// }
 
-		return $msg;
+		return $hours;
 	}
 
 	function print_shop_selection() {
