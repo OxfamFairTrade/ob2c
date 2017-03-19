@@ -239,6 +239,22 @@
 		<?php
 	}
 
+	// Activeer Smartlook
+	// add_action( 'wp_footer', 'watch_visitor_action' );
+
+	function watch_visitor_action() {
+		?>
+			<script type="text/javascript">
+				window.smartlook||(function(d) {
+				var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
+				var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
+				c.charset='utf-8';c.src='//rec.smartlook.com/recorder.js';h.appendChild(c);
+				})(document);
+				smartlook('init', '3d9961c07dc7d4cf87b08f94779107bbc7b79aae');
+			</script>
+		<?php
+	}
+
 	// Verhinder bepaalde selecties in de back-end
 	add_action( 'admin_footer', 'disable_custom_checkboxes' );
 
@@ -251,6 +267,12 @@
 			jQuery( '#in-product_cat-420' ).prop( 'disabled', true );
 			jQuery( '#in-product_cat-550' ).prop( 'disabled', true );
 			jQuery( '#in-product_cat-407' ).prop( 'disabled', true );
+
+			/* Disable continenten */
+			jQuery( '#in-product_partner-828' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-829' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-830' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-831' ).prop( 'disabled', true );
 
 			/* Disable allergeenklasses */
 			jQuery( '#in-product_allergen-615' ).prop( 'disabled', true );
@@ -707,6 +729,11 @@
 	function add_energy_allergen_tab( $tabs ) {
 		global $product;
 		$tabs['additional_information']['title'] = 'Eigenschappen';
+		$tabs['partner_info'] = array(
+			'title' 	=> 'Partnerinfo',
+			'priority' 	=> 50,
+			'callback' 	=> 'partner_tab_content',
+		);
 		$tabs['allergen_info'] = array(
 			'title' 	=> 'Allergeneninfo',
 			'priority' 	=> 75,
@@ -731,8 +758,8 @@
 	function allergen_tab_content() {
 		global $product;
 		echo '<div class="nm-additional-information-inner">';
-			$has_row    = false;
-			$alt        = 1;
+			$has_row = false;
+			$alt = 1;
 			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 			$label_c = get_term_by( 'id', '615', 'product_allergen' )->name;
 			$label_mc = get_term_by( 'id', '616', 'product_allergen' )->name;
@@ -828,6 +855,75 @@
 						?></td>
 					</tr>
 				<?php endforeach; ?>
+				
+			</table>
+			<?php
+			if ( $has_row ) {
+				echo ob_get_clean();
+			} else {
+				ob_end_clean();
+			}
+		echo '</div>';
+	}
+
+	// Output de info over de partners
+	function partner_tab_content() {
+		global $product;
+		echo '<div class="nm-additional-information-inner">';
+			$has_row = false;
+			$alt = 1;
+			$terms = get_the_terms( $product->get_id(), 'product_partner' );
+			foreach ( $terms as $term ) {
+				$continents = array( 828, 829, 830, 831 );
+				var_dump($term);
+				// Check op een strikte manier of we niet met een land bezig zijn
+				if ( $allergen->parent !== 0 and ! in_array( $allergen->parent, $continents, true ) ) {
+					$partners[] = $term;
+				} else {
+					// Kan geen continent zijn want die selectie wordt niet toegestaan
+					$countries[] = $term;
+				}
+			}
+			?>
+			<table class="shop_attributes">
+				
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo 'Herkomst' ?></th>
+					<td><?php
+						$i = 0;
+						$str = '/';
+						if ( count( $countries ) > 0 ) {
+							foreach ( $countries as $country ) {
+								$i++;
+								if ( $i === 1 ) {
+									$str = $country->name;
+								} else {
+									$str .= '<br>'.$country->name;
+								}
+							}
+						}
+						echo $str;
+					?></td>
+				</tr>
+
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo 'Partners' ?></th>
+					<td><?php
+						$i = 0;
+						$str = '/';
+						if ( count( $partners ) > 0 ) {
+							foreach ( $partners as $partner ) {
+								$i++;
+								if ( $i === 1 ) {
+									$str = '<a href="https://www.oxfamwereldwinkels.be/partner/" target="_blank">'.$partner->name.'</a>';
+								} else {
+									$str .= '<br><a href="https://www.oxfamwereldwinkels.be/partner/" target="_blank">'.$partner->name.'</a>';
+								}
+							}
+						}
+						echo $str;
+					?></td>
+				</tr>
 				
 			</table>
 			<?php
@@ -1161,6 +1257,7 @@
 	add_shortcode ( 'winkelnaam', 'print_business' );
 	add_shortcode ( 'copyright', 'print_copyright' );
 	add_shortcode ( 'openingsuren', 'print_office_hours' );
+	add_shortcode ( 'toon_shops', 'print_shop_selection' );
 
 	function print_welcome() {
 		return "Welkom ".print_customer()."! Lekker weertje, niet?";
@@ -1214,6 +1311,19 @@
 		// }
 
 		return $msg;
+	}
+
+	function print_shop_selection() {
+		$zips = array( 8400, 8420, 8450 );
+		update_option( 'oxfam_zip_codes', $zips );
+		var_dump(get_blog_details());
+		$sites = get_sites();
+		foreach( $sites as $site ){
+			switch_to_blog( $site->blog_id );
+			get_option('oxfam_zip_codes');
+			restore_current_blog();
+		}
+ 		return true;
 	}
 
 	#############
