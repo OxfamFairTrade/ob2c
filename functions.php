@@ -331,6 +331,8 @@
         	"billing_address_1",
         	"billing_postcode",
         	"billing_city",
+        	// NODIG VOOR SERVICE POINT!
+        	"billing_country",
         	"billing_phone",
         	"billing_email",
     	);
@@ -503,9 +505,9 @@
 	add_action( 'admin_init', 'register_oxfam_settings' );
 
 	function register_oxfam_settings() {
-		register_setting( 'oxfam-option-group', 'mollie_partner_id', 'absint' );
+		register_setting( 'oxfam-option-group', 'oxfam_mollie_partner_id', 'absint' );
 		// add_settings_section( 'mollie_partner_id', 'Partner-ID bij Mollie', 'eg_setting_section_callback_function', 'options-oxfam' );
-		add_settings_field( 'mollie_partner_id', 'Partner-ID bij Mollie', 'oxfam_setting_callback_function', 'options-oxfam', 'default', array( 'label_for' => 'mollie_partner_id' ) );
+		add_settings_field( 'oxfam_mollie_partner_id', 'Partner-ID bij Mollie', 'oxfam_setting_callback_function', 'options-oxfam', 'default', array( 'label_for' => 'oxfam_mollie_partner_id' ) );
 	}
 
 	function oxfam_setting_callback_function( $arg ) {
@@ -531,26 +533,75 @@
 				settings_fields( 'oxfam-option-group' );
 				do_settings_sections( 'oxfam-option-group' );
 			?>
-				<table class="form-table">
+				<table class="form-table"><tr><td>
+			<?php
+				submit_button();
+			?>
+        		</td></tr><tr valign="top">
+        			<th colspan="2"><label for="oxfam_mollie_partner_id">Mollie Partner-ID:</label></th>
+      	  			<td colspan="6"><input type="text" name="oxfam_mollie_partner_id" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>" readonly></td>
+        		</tr>
         		<tr valign="top">
-        			<th scope="row">Test</th>
-      	  			<td><input type="text" name="mollie_partner_id" value="<?php echo esc_attr( get_option('partner_id_customer') ); ?>" /></td>
+        			<th colspan="2"><label for="oxfam_zip_codes">Postcodes:</label></th>
+      	  			<td colspan="6"><input type="text" name="oxfam_zip_codes" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_zip_codes') ); ?>" readonly></td>
+        		</tr>
+        		<tr valign="top">
+        			<th colspan="2"><label for="oxfam_shop_node">Nodenummer:</label></th>
+      	  			<td colspan="6"><input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>" readonly></td>
         		</tr>
         	<?php
-				submit_button();
-
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 				
 				// Vervang door (niet bewerkbare) site_option!
-				$partner_id_customer = '2842281';
+				$partner_id_customer = get_option( 'oxfam_mollie_partner_id' );
 
 				$simplexml = $mollie->getLoginLink( $partner_id_customer );
-				echo "<p><a href='".$simplexml->redirect_url."' target='_blank'>Ga zonder wachtwoord naar je Mollie-betaalaccount!</a> Opgelet: deze link is slechts tijdelijk geldig. Herlaad desnoods even deze pagina.</p>";
+				echo "<tr><th colspan='2'><a href='".$simplexml->redirect_url."' target='_blank'>Log automatisch in op je Mollie-betaalaccount &raquo;</a></th><td colspan='6'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td></tr>";
+
+				echo "<tr><th colspan='2'><a href='https://panel.sendcloud.sc/' target='_blank'>Log handmatig in op je SendCloud-verzendaccount &raquo;</a></th><td colspan='6'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td></tr>";
 
 				// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 				// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
+				$args = array(
+					'post_type'			=> 'product',
+					'post_status'		=> array( 'publish' ),
+					'posts_per_page'	=> -1,
+					'meta_key'			=> '_sku',
+					'orderby'			=> 'meta_value_num',
+					'order'				=> 'ASC',
+				);
+
+				$products = new WP_Query( $args );
+
+				if ( $products->have_posts() ) {
+					$i = 1;
+					while ( $products->have_posts() ) {
+						$products->the_post();
+						// HERSCHRIJVEN NAAR WC 3.0 METHODES
+						$sku = get_post_meta( get_the_ID(), '_sku', true );
+						$stock = get_post_meta( get_the_ID(), '_stock_status', true );
+						if ( is_numeric( $sku ) ) {
+							$image = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID() ), 'thumbnail' );
+							if ( $i % 2 === 1 ) echo '<tr>';
+							echo '<th colspan="2">'.$sku.': '.get_the_title().'<br><br><select name="_stock_status">';
+							if ( $stock === 'instock' ) {
+								echo '<option value="instock" selected>Op voorraad</option><option value="outofstock">Uit voorraad</option>';
+							} else {
+								echo '<option value="instock">Op voorraad</option><option value="outofstock" selected>Uit voorraad</option>';
+							}
+							echo '</select><br><br><input type="checkbox" name="_featured"> Uitgelicht</th><td colspan="2"><img src="'.$image[0].'"></td>';
+							if ( $i % 2 === 0 ) echo '<tr>';
+							$i++;
+						}
+					}
+					wp_reset_postdata();
+				}
+
+				echo '<tr><td>';
+				submit_button();
 			?>
+				</td></tr></table>
 				</form>
 			</div>
 		<?php
@@ -1243,12 +1294,12 @@
 			),
 		);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-3 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id, $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-6 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id, $args );
 
 		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
 			$body = json_decode($response['body']);
-			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen drie maanden:</p><ul>";
+			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen zes maanden:</p><ul>";
 
 			foreach ( array_reverse($body->campaigns) as $campaign ) {
 				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.trim( strftime( '%e %B %G', strtotime($campaign->send_time) ) ).')</li>';
@@ -1303,9 +1354,10 @@
 	add_shortcode ( 'copyright', 'print_copyright' );
 	add_shortcode ( 'openingsuren', 'print_office_hours' );
 	add_shortcode ( 'toon_shops', 'print_shop_selection' );
+	add_shortcode ( 'toon_kaart', 'print_map' );
 
 	function print_welcome() {
-		return "Welkom ".print_customer()."! Lekker weertje, niet?";
+		return "Dag ".print_customer()."! Ben je klaar om de wereld een klein beetje te veranderen?";
 	}
 
 	function print_customer() {
@@ -1412,18 +1464,18 @@
 		fclose($handle);
 
 		// PROBLEEM: Hierna moeten we XIO_FTP handmatig ingeven (kan niet als parameter met gewone ssh!)
-		$msg = shell_exec( "ssh -p 51234 -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 60 >> logfile" );
+		// $msg = shell_exec( "ssh -p 51234 -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 60 >> logfile" );
 		
 		// DIT WERKT VIA COMMANDLINE IN ANTAGONIST
-		$msg = shell_exec( "mysql -u oxfam_ro -p ".XIO_MYSQL." -h 127.0.0.1 oxfamDb -P 3307" );  
+		// $msg = shell_exec( "mysql -u oxfam_ro -p ".XIO_MYSQL." -h 127.0.0.1 oxfamDb -P 3307" );  
 
 		// MAAR DIT IS DE PHP-FUNCTIE DIE WE UITEINDELIJK WILLEN GEBRUIKEN
-		$mysqli = new mysqli( '127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3307 );
-		if ( $mysqli->connect_errno ) {
-		    $msg = "Failed to connect to MySQL: ".$mysqli->connect_error;
-		} else {
-			$msg = $mysqli->host_info;
-		}
+		// $mysqli = new mysqli( '127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3307 );
+		// if ( $mysqli->connect_errno ) {
+		//     $msg = "Failed to connect to MySQL: ".$mysqli->connect_error;
+		// } else {
+		// 	$msg = $mysqli->host_info;
+		// }
 
 		// WERKT ENKEL INDIEN SSH2-MODULE ENABLED IN SETTINGS PHP (ANTAGONIST = OK, COMBELL NIET)
 		// $connection = ssh2_connect('web4.xio.be', 51234);
@@ -1439,17 +1491,54 @@
 		return $hours;
 	}
 
-	function print_shop_selection() {
+	function set_oxfam_zip_codes() {
 		$zips = array( 8400, 8420, 8450 );
-		update_option( 'oxfam_zip_codes', $zips );
-		var_dump(get_blog_details());
+		update_option( 'oxfam_zip_codes', $zips );	
+	}
+
+	function get_shops() {
+		$global_zips = array();
 		$sites = get_sites();
-		foreach( $sites as $site ){
+		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
-			get_option('oxfam_zip_codes');
+			$local_zips = get_option( 'oxfam_zip_codes' );
+			foreach ( $local_zips as $zip ) {
+				if ( isset($global_zips[$zip]) ) {
+					write_log("CONSISTENTIEFOUT: Postcode ".$zip." is reeds gelinkt aan ".$global_zips[$zip].'!');
+				}
+				$global_zips[$zip] = $site->path;
+			}
 			restore_current_blog();
 		}
- 		return true;
+		ksort($global_zips);
+		return $global_zips;
+	}
+
+	function print_shop_selection() {
+		$msg = "";
+		$global_zips = get_shops();
+		foreach ( $global_zips as $zip => $path ) {
+			$msg .= '<a href="'.$path.'">'.$zip.'</a><br>';
+		}
+		return $msg;
+	}
+
+	function print_map() {
+		# Header
+		$myfile = fopen("newoutput.kml", "w");
+		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
+		# Styles
+		$str .= "<Style id='1'><IconStyle><Icon><href>https://www.fairtradecrafts.be/wp-content/uploads/cropped-favico-32x32.png</href></Icon></IconStyle></Style>";
+		# Placemarks
+		$zips = get_shops();
+		foreach ( $zips as $zip => $path ) {
+ 			$str .= "<Placemark><name>".$path."</name><styleUrl>#1</styleUrl><description><![CDATA[".get_option('oxfam_addresses')."<br><a href=".get_site_url().">Naar de webshop »</a>]]></description><Point><coordinates>3.8,51.0</coordinates></Point></Placemark>";
+ 		}
+ 		# Footer
+		$str .= "</Document></kml>";
+		fwrite($myfile, $str);
+		fclose($myfile);
+		return do_shortcode("[flexiblemap src='".site_url()."/newoutput.kml?v=".rand()."' width='100%' height='600px' zoom='9']");
 	}
 
 	#############
