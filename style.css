@@ -2,17 +2,61 @@
 	Theme Name:   	Oxfam-Wereldwinkels Webshop
 	Author:       	Efraim Sebrechts & Frederik Neirynck
 	Author URI:		http://www.oxfamfairtrade.be
-	Description:  	Wordt dit het definitieve thema?
+	Description:  	Aanpassingen aan het definitieve thema
 	Template:     	savoy
 	Version:      	1.0.0
 	Text Domain:  	oxfam-webshop
 */
 
+/* Maak de kolommen in de technische productinfo breder/smaller */
 #tab-additional_information .shop_attributes th,
+#tab-partner_info .shop_attributes th,
 #tab-allergen_info .shop_attributes th {
 	width: 30%;
 }
-
 #tab-food_info .shop_attributes th {
 	width: 50%;
+}
+
+/* Zorg dat de beschrijvende tekst boven een categoriefoto beter leesbaar wordt */
+.nm-product-category-text {
+    width: 100%;
+    background-color: transparent;
+    background-color: rgba(255,255,255,0.5);
+}
+.nm-product-category-heading {
+    color: black;
+}
+.nm-product-category-text > .invert-color {
+    color: black;
+}
+
+/* Beperk de afmetingen van producten op de cataloguspagina's (+ centreer in kolom en maak achtergrond wit) */
+.nm-shop-loop-thumbnail > a > img {
+	max-width: 300px;
+	margin: 0 auto;
+}
+.nm-shop-loop-thumbnail > a {
+	background-color: white;	
+}
+
+/* Zet bioproducten in de verf */
+li.product.pa_bio-ja {
+	// border-left: 3px solid #61a534;
+}
+
+/* Verberg overtollige info */
+.nm-coupon-wrap,
+.nm-checkout-login-coupon,
+#customer_details #billing_country_field {
+	display: none;
+}
+
+.pickup_location > th {
+	width: 100px;
+}
+
+.wc-pickup-location-note {
+	width: 300px;
+	float: right;
 }

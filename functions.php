@@ -357,10 +357,12 @@
 		$address_fields['postcode']['label'] = "Postcode";
 		$address_fields['postcode']['placeholder'] = '';
 		$address_fields['postcode']['required'] = true;
-		$address_fields['postcode']['class'] = array('form-row-first');
+		// Zorgt ervoor dat de totalen automatisch bijgewerkt worden na aanpassen
+		$address_fields['postcode']['class'] = array('form-row-first update_totals_on_change');
 		$address_fields['postcode']['clear'] = false;
 
 		$address_fields['city']['label'] = "Gemeente";
+		// Vervang vrije postcode- en gemeentevelden eventueel door een gemeenschappelijke dropdown (zeker handig voor verzendadressen tijdens opstart: enkel reeds beschikbare postcodes tonen)
 		// $address_fields['city']['type'] = 'select';
 		// $address_fields['city']['options'] = array(
 		// 	'' => '(selecteer)',
@@ -464,7 +466,7 @@
 		if ( $woocommerce->cart->cart_contents_weight > 30000 ) {
 	  		unset( $rates['flat_rate:2'] );
 	  		unset( $rates['flat_rate:4'] );
-	  		// wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'woocommerce' ), 'error' );
+	  		wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'woocommerce' ), 'error' );
 	  	}
 
 	  	return $rates;
@@ -1378,9 +1380,12 @@
 		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".print_business()." &copy; 2016-".date('Y')."</a>";
 	}
 
-	function print_office_hours() {
-		$node = get_option( 'oxfam_shop_node' );
-		$hours = "<br>";
+	function print_office_hours( $atts = [] ) {
+		// normalize attribute keys, lowercase
+		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
+		// override default attributes with user attributes
+		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
+		$node = $atts['node'];
 		
 		if ( ( $handle = fopen( WP_CONTENT_DIR."/office-hours.csv", "r" ) ) !== false ) {
 			// Loop over alle rijen (indien de datafile geopend kon worden)
@@ -1448,18 +1453,20 @@
 							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
 						}
 					}
+					// OMDAT DE NUL ALS EERSTE STAAT IN ONZE HUIDIGE TEKSTFILE MOETEN WE EEN TRUCJE DOEN OM DEZE DAG ACHTERAAN TE ZETTEN
 					if ( intval($row['field_sellpoint_office_hours_day']) === 0 ) {
 						$start = $row['field_sellpoint_office_hours_starthours'];
 						$end = $row['field_sellpoint_office_hours_endhours'];
 						if ( ! isset($sunday) ) {
-							$hours .= "<br>Zondag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+							$hours_sunday = "<br>Zondag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
 							$sunday = true;
 						} else {
-							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
+							$hours_sunday .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
 						}
 					}
 				}
 			}
+			$hours .= $hours_sunday;
 		}
 		fclose($handle);
 
