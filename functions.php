@@ -410,6 +410,7 @@
 	add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
 
 	function b2b_restrict_to_bank_transfer( $gateways ) {
+		global $woocommerce;
 		$current_user = wp_get_current_user();
 		if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
 			unset( $gateways['mollie_wc_gateway_mistercash'] );
@@ -419,6 +420,15 @@
 		} else {
 			unset( $gateways['mollie_wc_gateway_banktransfer'] );	
 		}
+		// Eventueel bestelminimum om te kunnen afrekenen
+		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < 10 ) {
+	  		unset( $gateways['mollie_wc_gateway_mistercash'] );
+			unset( $gateways['mollie_wc_gateway_creditcard'] );
+			unset( $gateways['mollie_wc_gateway_kbc'] );
+			unset( $gateways['mollie_wc_gateway_belfius'] );
+			unset( $gateways['mollie_wc_gateway_banktransfer'] );
+	  		wc_add_notice( __( 'Online bestellingen van minder dan 10 euro kunnen we niet verwerken.', 'woocommerce' ), 'error' );
+	  	}
 		return $gateways;
 	}
 
@@ -463,9 +473,14 @@
 			wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode. Keer terug naar '.network_site_url().'.', 'woocommerce' ), 'error' );
 		}
 		
-		if ( $woocommerce->cart->cart_contents_weight > 30000 ) {
+		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
 	  		unset( $rates['flat_rate:2'] );
 	  		unset( $rates['flat_rate:4'] );
+	  		unset( $rates['flat_rate:15'] );
+	  		unset( $rates['service_point_shipping_method:8'] );
+	  		unset( $rates['free_shipping:11'] );
+	  		unset( $rates['free_shipping:12'] );
+	  		unset( $rates['free_shipping:16'] );
 	  		wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'woocommerce' ), 'error' );
 	  	}
 
