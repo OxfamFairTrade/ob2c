@@ -596,19 +596,25 @@
 					$i = 1;
 					while ( $products->have_posts() ) {
 						$products->the_post();
-						// HERSCHRIJVEN NAAR WC 3.0 METHODES
-						$sku = get_post_meta( get_the_ID(), '_sku', true );
-						$stock = get_post_meta( get_the_ID(), '_stock_status', true );
+						$product = wc_get_product( get_the_ID() );
+						$sku = $product->get_sku();
+						// Verhinder dat leeggoed ook opduikt
 						if ( is_numeric( $sku ) ) {
-							$image = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID() ), 'thumbnail' );
 							if ( $i % 2 === 1 ) echo '<tr>';
-							echo '<th colspan="2">'.$sku.': '.get_the_title().'<br><br><select name="_stock_status">';
-							if ( $stock === 'instock' ) {
+							echo '<th colspan="2">'.$sku.': '.$product->get_title().'<br><br>';
+							echo '<select name="_stock_status">';
+							if ( $product->is_in_stock() ) {
 								echo '<option value="instock" selected>Op voorraad</option><option value="outofstock">Uit voorraad</option>';
 							} else {
 								echo '<option value="instock">Op voorraad</option><option value="outofstock" selected>Uit voorraad</option>';
 							}
-							echo '</select><br><br><input type="checkbox" name="_featured"> Uitgelicht</th><td colspan="2"><img src="'.$image[0].'"></td>';
+							echo '</select><br><br>';
+							if ( $product->is_featured() ) {
+								echo '<input type="checkbox" name="_featured" checked> Uitgelicht</th>';
+							} else {
+								echo '<input type="checkbox" name="_featured"> Uitgelicht</th>';
+							}
+							echo '<td colspan="2"><img src="'.$product->get_image( 'shop-thumbnail' ).'"></td>';
 							if ( $i % 2 === 0 ) echo '<tr>';
 							$i++;
 						}
