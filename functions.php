@@ -543,7 +543,7 @@
 		?>
 			<div class="wrap">
 				<h1>Instellingen voor lokale webshop</h1>
-				<form method="post" action="admin.php"> 
+				<form method="post" action="options.php"> 
 			<?php
 				settings_fields( 'oxfam-option-group' );
 				do_settings_sections( 'oxfam-option-group' );
@@ -551,7 +551,6 @@
 				<table class="form-table"><tr><td>
 			<?php
 				submit_button();
-				var_dump($_POST);
 			?>
         		</td></tr>
         		<tr valign="top">
@@ -568,17 +567,6 @@
         		</tr>
         		
         	<?php
-				Mollie_Autoloader::register();
-				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
-				
-				// Vervang door (niet bewerkbare) site_option!
-				$partner_id_customer = get_option( 'oxfam_mollie_partner_id' );
-
-				$simplexml = $mollie->getLoginLink( $partner_id_customer );
-				echo "<tr><th colspan='2'><a href='".$simplexml->redirect_url."' target='_blank'>Log automatisch in op je Mollie-betaalaccount &raquo;</a></th><td colspan='6'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td></tr>";
-
-				echo "<tr><th colspan='2'><a href='https://panel.sendcloud.sc/' target='_blank'>Log handmatig in op je SendCloud-verzendaccount &raquo;</a></th><td colspan='6'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td></tr>";
-
 				// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 				// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
 				$args = array(
