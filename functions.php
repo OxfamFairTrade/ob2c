@@ -420,15 +420,6 @@
 		} else {
 			unset( $gateways['mollie_wc_gateway_banktransfer'] );	
 		}
-		// Eventueel bestelminimum om te kunnen afrekenen
-		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < 10 ) {
-	  		unset( $gateways['mollie_wc_gateway_mistercash'] );
-			unset( $gateways['mollie_wc_gateway_creditcard'] );
-			unset( $gateways['mollie_wc_gateway_kbc'] );
-			unset( $gateways['mollie_wc_gateway_belfius'] );
-			unset( $gateways['mollie_wc_gateway_banktransfer'] );
-	  		wc_add_notice( __( 'Online bestellingen van minder dan 10 euro kunnen we niet verwerken.', 'woocommerce' ), 'error' );
-	  	}
 		return $gateways;
 	}
 
@@ -472,7 +463,7 @@
 		if ( $zip < 1000 or $zip > 9992 ) {
 			wc_add_notice( __( 'Dit is geen geldige postcode!', 'woocommerce' ), 'error' );
 		} elseif ( ! in_array($zip, $local_zips)  ) {
-			wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode! Keer terug naar <a href="'.network_site_url().'">de hoofdpagina</a> om de juiste winkel te vinden die jouw levering kan afwerken.', 'woocommerce' ), 'error' );
+			wc_add_notice( esc_html__( 'Deze winkel doet geen thuisleveringen naar deze postcode! Keer terug naar <a href="'.network_site_url().'">de hoofdpagina</a> om de juiste winkel te vinden die jouw levering kan afwerken.', 'woocommerce' ), 'error' );
 		}
 		
 		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
@@ -494,17 +485,21 @@
 	add_action( 'woocommerce_after_checkout_validation', 'check_subscription_preference', 10, 1 );
 
 	function check_subscription_preference( $posted ) {
-		global $user_ID;
-		$checkout = WC()->checkout;
+		global $user_ID, $woocommerce;
 		if ( ! empty($posted['subscribe_digizine']) ) {
 			if ( $posted['subscribe_digizine'] !== 1 ) {
 				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het digizine?', 'woocommerce' ), 'error' );
 				wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'woocommerce' ), 'error' );
 			}
 		}
+
+		// Eventueel bestelminimum om te kunnen afrekenen
+		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < 10 ) {
+	  		wc_add_notice( __( 'Online bestellingen van minder dan 10 euro kunnen we niet verwerken.', 'woocommerce' ), 'error' );
+	  	}
 	}
 
-	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen NOPE, WERKT NIET
+	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen WERKT NIET DUS VIA CSS GEDAAN
 	// add_filter( 'woocommerce_coupon_message', 'remove_msg_filter', 10, 3 );
 
 	function remove_msg_filter( $msg, $msg_code, $this ) {
@@ -1231,7 +1226,7 @@
 	
 	// Stel de inhoud van de widget op
 	function dashboard_pilot_news_widget_function() {
-		echo "<div class='rss-widget'><p>Hier laten we o.a. de rechtstreekse links naar de mailings uit de 'Focusgroep Webshop'-map verschijnen. Rechtstreeks linken naar onze FAQ kan ook <a href='https://github.com/OxfamFairTrade/ob2c/wiki#bestellingen' target='_blank'>heel makkelijk</a>.</p></div>";
+		echo "<div class='rss-widget'><p>We bouwen momenteel aan een online FAQ voor webshopbeheerders waarin alle mogelijke vragen en problemen beantwoord worden met screenshots. In afwachting kun je <a href='https://github.com/OxfamFairTrade/ob2c/wiki#bestellingen' target='_blank'>de Powerpoint van de 1ste opleidingssessie</a> raadplegen.</p></div>";
 		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
 	}
 
