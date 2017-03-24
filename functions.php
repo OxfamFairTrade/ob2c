@@ -520,8 +520,8 @@
 	add_action( 'admin_init', 'register_oxfam_settings' );
 
 	function register_oxfam_settings() {
+		register_setting( 'oxfam-option-group', 'oxfam_shp_node', 'absint' );
 		register_setting( 'oxfam-option-group', 'oxfam_mollie_partner_id', 'absint' );
-		// add_settings_section( 'mollie_partner_id', 'Partner-ID bij Mollie', 'eg_setting_section_callback_function', 'options-oxfam' );
 		add_settings_field( 'oxfam_mollie_partner_id', 'Partner-ID bij Mollie', 'oxfam_setting_callback_function', 'options-oxfam', 'default', array( 'label_for' => 'oxfam_mollie_partner_id' ) );
 	}
 
@@ -551,7 +551,7 @@
 				<table class="form-table"><tr><td>
 			<?php
 				submit_button();
-				echo $_POST;
+				var_dump($_POST);
 			?>
         		</td></tr>
         		<tr valign="top">
