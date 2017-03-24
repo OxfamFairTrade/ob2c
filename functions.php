@@ -467,10 +467,12 @@
 	function hide_shipping_when_too_heavy( $rates, $package ) {
 		global $woocommerce;
 		
-		// DEZE CHECK DIENT TE GEBEUREN NA HET INVULLEN VAN DE VERZENDCALCULATOR OF BIJ EEN GEWIJZIGDE POSTCODE IN DE CHECKOUT
 		$zip = intval( $woocommerce->customer->get_shipping_postcode() );
-		if ( $zip >= 1000 and $zip < 8400 ) {
-			wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode. Keer terug naar '.network_site_url().'.', 'woocommerce' ), 'error' );
+		$local_zips = get_option( 'oxfam_zip_codes' );
+		if ( $zip < 1000 or $zip > 9992 ) {
+			wc_add_notice( __( 'Dit is geen geldige postcode!', 'woocommerce' ), 'error' );
+		} elseif ( ! in_array($zip, $local_zips)  ) {
+			wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode! Keer terug naar <a href="'.network_site_url().'">de hoofdpagina</a> om de juiste winkel te vinden die jouw levering kan afwerken.', 'woocommerce' ), 'error' );
 		}
 		
 		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
@@ -1266,9 +1268,9 @@
 		if ( $pagenow === 'index.php' and current_user_can( 'edit_products' ) ) {
 			echo '<div class="notice notice-info">';
 			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
-				echo '<p>Alle betalingen op deze site zijn momenteel fake!</p>';
+				echo '<p>De betalingen op deze site zijn momenteel fake!</p>';
 			} else {
-				echo '<p>Alle betalingen op deze site zijn momenteel live!</p>';
+				echo '<p>De betalingen op deze site zijn momenteel live!</p>';
 			}
 			echo '</div>';
 		} elseif ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
