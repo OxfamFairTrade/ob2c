@@ -463,7 +463,7 @@
 		if ( $zip < 1000 or $zip > 9992 ) {
 			wc_add_notice( __( 'Dit is geen geldige postcode!', 'woocommerce' ), 'error' );
 		} elseif ( ! in_array($zip, $local_zips)  ) {
-			wc_add_notice( esc_html__( 'Deze winkel doet geen thuisleveringen naar deze postcode! Keer terug naar <a href="'.network_site_url().'">de hoofdpagina</a> om de juiste winkel te vinden die jouw levering kan afwerken.', 'woocommerce' ), 'error' );
+			wc_add_notice( esc_html_e( 'Deze winkel doet geen leveringen naar deze postcode! Keer terug naar <a href="'.network_site_url().'">de hoofdpagina</a> om de juiste webshop te vinden die jouw bestelling thuis kan leveren.', 'woocommerce' ), 'error' );
 		}
 		
 		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
@@ -482,7 +482,7 @@
 
 
 	// Check of de persoon moet worden ingeschreven op het digizine 
-	add_action( 'woocommerce_after_checkout_validation', 'check_subscription_preference', 10, 1 );
+	add_action( 'woocommerce_checkout_process', 'check_subscription_preference', 10, 1 );
 
 	function check_subscription_preference( $posted ) {
 		global $user_ID, $woocommerce;
