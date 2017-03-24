@@ -535,7 +535,7 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_menu_page( 'Instellingen voor lokale webshop', 'Productbeheer', 'local_manager', 'oxfam-products', 'options_oxfam', 'dashicons-store', '20' );
+		add_menu_page( 'Instellingen voor lokale webshop', 'Productbeheer', 'local_manager', 'oxfam-products', 'options_oxfam', 'dashicons-visibility', '58' );
 	}
 
 	// Output voor de optiepagina
@@ -567,6 +567,18 @@
         		</tr>
         		
         	<?php
+				Mollie_Autoloader::register();
+				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
+				$partner_id_customer = get_option( 'oxfam_mollie_partner_id' );
+				
+				// Check of we niet op de hoofdaccount zitten, want dan krijgen we een fatale error bij getLoginLink()
+				if ( $partner_id_customer != 2485891 ) {
+					$simplexml = $mollie->getLoginLink( $partner_id_customer );
+					echo "<tr><th colspan='2'><a href='".$simplexml->redirect_url."' target='_blank'>Log automatisch in op je Mollie-betaalaccount &raquo;</a></th><td colspan='6'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td></tr>";
+
+					echo "<tr><th colspan='2'><a href='https://panel.sendcloud.sc/' target='_blank'>Log handmatig in op je SendCloud-verzendaccount &raquo;</a></th><td colspan='6'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td></tr>";
+				}
+
 				// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 				// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
 				$args = array(
