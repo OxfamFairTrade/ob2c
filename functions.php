@@ -614,7 +614,8 @@
 							} else {
 								echo '<input type="checkbox" name="_featured"> Uitgelicht</th>';
 							}
-							echo '<td colspan="2"><img src="'.$product->get_image( 'shop-thumbnail' ).'"></td>';
+							// Nieuwe functie output ook al <img>-tag
+							echo '<td colspan="2">'.$product->get_image( 'thumbnail' ).'</td>';
 							if ( $i % 2 === 0 ) echo '<tr>';
 							$i++;
 						}
