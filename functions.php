@@ -535,7 +535,7 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_options_page( 'Instellingen voor lokale webshop', 'Oxfam Fair Trade', 'local_manager', 'options-oxfam.php', 'options_oxfam' );
+		add_menu_page( 'Instellingen voor lokale webshop', 'Beheer producten', 'local_manager', 'oxfam-products', 'options_oxfam' );
 	}
 
 	// Output voor de optiepagina
