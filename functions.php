@@ -84,6 +84,7 @@
 	function my_remove_menu_pages() {
 		if ( ! current_user_can( 'update_core' ) ) {
 			remove_menu_page( 'vc-welcome' );
+			remove_menu_page( 'order_delivery_date_lite' );
 			remove_submenu_page( 'woocommerce', 'wc-settings' );
 			remove_submenu_page( 'woocommerce', 'wc-status' );
 			remove_submenu_page( 'woocommerce', 'wc-addons' );
@@ -446,7 +447,7 @@
 				$label .= 'Ten laatste op '.strftime('%A %d/%m/%Y', $timestamp);
 				break;
 			default:
-				$label .= 'Geen schatting beschikbaar';
+				$label .= __( 'Geen schatting beschikbaar', 'wc-oxfam' );
 		}
 		$label .= '</small>';
 		return $label;
@@ -461,9 +462,9 @@
 		$zip = intval( $woocommerce->customer->get_shipping_postcode() );
 		$local_zips = get_option( 'oxfam_zip_codes' );
 		if ( $zip < 1000 or $zip > 9992 ) {
-			wc_add_notice( __( 'Dit is geen geldige postcode!', 'woocommerce' ), 'error' );
+			wc_add_notice( __( 'Dit is geen geldige postcode!', 'wc-oxfam' ), 'error' );
 		} elseif ( ! in_array($zip, $local_zips)  ) {
-			wc_add_notice( __( 'Deze winkel doet geen leveringen naar deze postcode! Keer terug naar het hoofddomein om de juiste webshop te vinden die jouw bestelling thuis kan leveren.' ), 'error' );
+			wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode! Keer terug naar het hoofddomein om de juiste webshop te vinden.', 'wc-oxfam' ), 'error' );
 		}
 		
 		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
@@ -474,7 +475,7 @@
 	  		unset( $rates['free_shipping:11'] );
 	  		unset( $rates['free_shipping:12'] );
 	  		unset( $rates['free_shipping:16'] );
-	  		wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'woocommerce' ), 'error' );
+	  		wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'wc-oxfam' ), 'error' );
 	  	}
 
 	  	return $rates;
@@ -534,7 +535,7 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_options_page( 'Instellingen voor lokale webshop', 'Oxfam Fair Trade', 'shop_manager', 'options-oxfam.php', 'options_oxfam' );
+		add_options_page( 'Instellingen voor lokale webshop', 'Oxfam Fair Trade', 'local_manager', 'options-oxfam.php', 'options_oxfam' );
 	}
 
 	// Output voor de optiepagina
