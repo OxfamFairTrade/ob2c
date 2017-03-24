@@ -535,7 +535,7 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_menu_page( 'Instellingen voor lokale webshop', 'Productbeheer', 'local_manager', 'oxfam-products', 'options_oxfam', 'dashicons-visibility', '55' );
+		add_menu_page( 'Instellingen voor lokale webshop', 'Productbeheer', 'local_manager', 'oxfam-products', 'options_oxfam', 'dashicons-visibility', '56' );
 	}
 
 	// Output voor de optiepagina
@@ -600,8 +600,8 @@
 						// Verhinder dat leeggoed ook opduikt
 						if ( is_numeric( $product->get_sku() ) ) {
 							if ( $i % 2 === 1 ) echo '<tr>';
-							$color = $product->is_in_stock() ? 'green' : 'red'; 
-							echo '<th colspan="2" style="border-right: 8px solid '.$color.'">'.$product->get_sku().': '.$product->get_title().'<br><br>';
+							$color = $product->is_in_stock() ? '#61a534' : '#e70052'; 
+							echo '<th colspan="2" style="border-right: 5px solid '.$color.'">'.$product->get_sku().': '.$product->get_title().'<br><br>';
 							echo '<select name="_stock_status">';
 							echo '<option value="instock" '.selected( $product->is_in_stock(), true ).'>Op voorraad</option><option value="outofstock" '.selected( $product->is_in_stock(), false ).'>Uit voorraad</option>';
 							echo '</select><br><br>';
