@@ -463,7 +463,7 @@
 		if ( $zip < 1000 or $zip > 9992 ) {
 			wc_add_notice( __( 'Dit is geen geldige postcode!', 'woocommerce' ), 'error' );
 		} elseif ( ! in_array($zip, $local_zips)  ) {
-			wc_add_notice( sprintf( __( 'Deze winkel doet geen leveringen naar deze postcode! Keer terug naar <a href="%s">de hoofdpagina</a> om de juiste webshop te vinden die jouw bestelling thuis kan leveren.', 'woocommerce' ), network_site_url() ), 'error' );
+			wc_add_notice( __( 'Deze winkel doet geen leveringen naar deze postcode! Keer terug naar het hoofddomein om de juiste webshop te vinden die jouw bestelling thuis kan leveren.' ), 'error' );
 		}
 		
 		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
