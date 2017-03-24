@@ -535,7 +535,7 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_menu_page( 'Instellingen voor lokale webshop', 'Beheer producten', 'local_manager', 'oxfam-products', 'options_oxfam' );
+		add_menu_page( 'Instellingen voor lokale webshop', 'Productbeheer', 'local_manager', 'oxfam-products', 'options_oxfam', 'dashicons-store', '1' );
 	}
 
 	// Output voor de optiepagina
