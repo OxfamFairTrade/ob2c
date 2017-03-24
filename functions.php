@@ -76,7 +76,7 @@
 	add_filter( 'widget_text', 'do_shortcode' );
 	add_filter( 'the_title', 'do_shortcode' );
 	
-	// Verstop enkele hardnekkige adminlinks voor de shopmanagers
+	// Verstop enkele hardnekkige adminlinks voor de lokale shopmanagers
 	// Omgekeerd: WP All Export toelaten door rol aan te passen in wp-all-export-pro.php
 	// Alle andere beperkingen via User Role Editor
 	add_action( 'admin_menu', 'my_remove_menu_pages', 100, 0 );
@@ -551,19 +551,22 @@
 				<table class="form-table"><tr><td>
 			<?php
 				submit_button();
+				echo $_POST;
 			?>
-        		</td></tr><tr valign="top">
-        			<th colspan="2"><label for="oxfam_mollie_partner_id">Mollie Partner-ID:</label></th>
+        		</td></tr>
+        		<tr valign="top">
+        			<th colspan="2"><label for="oxfam_shop_node">Nodenummer OWW-site:</label></th>
+      	  			<td colspan="6"><input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>" readonly></td>
+        		</tr>
+        		<tr valign="top">
+        			<th colspan="2"><label for="oxfam_mollie_partner_id">Partner-ID Mollie:</label></th>
       	  			<td colspan="6"><input type="text" name="oxfam_mollie_partner_id" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>" readonly></td>
         		</tr>
         		<tr valign="top">
-        			<th colspan="2"><label for="oxfam_zip_codes">Postcodes:</label></th>
+        			<th colspan="2"><label for="oxfam_zip_codes">Postcodes voor thuislevering:</label></th>
       	  			<td colspan="6"><input type="text" name="oxfam_zip_codes" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_zip_codes') ); ?>" readonly></td>
         		</tr>
-        		<tr valign="top">
-        			<th colspan="2"><label for="oxfam_shop_node">Nodenummer:</label></th>
-      	  			<td colspan="6"><input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>" readonly></td>
-        		</tr>
+        		
         	<?php
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
