@@ -535,7 +535,7 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_menu_page( 'Instellingen voor lokale webshop', 'Productbeheer', 'local_manager', 'oxfam-products', 'options_oxfam', 'dashicons-store', '1' );
+		add_menu_page( 'Instellingen voor lokale webshop', 'Productbeheer', 'local_manager', 'oxfam-products', 'options_oxfam', 'dashicons-store', '20' );
 	}
 
 	// Output voor de optiepagina
@@ -543,7 +543,7 @@
 		?>
 			<div class="wrap">
 				<h1>Instellingen voor lokale webshop</h1>
-				<form method="post" action="options.php"> 
+				<form method="post" action="admin.php"> 
 			<?php
 				settings_fields( 'oxfam-option-group' );
 				do_settings_sections( 'oxfam-option-group' );
