@@ -461,7 +461,7 @@
 		
 		$zip = intval( $woocommerce->customer->get_shipping_postcode() );
 		$local_zips = get_option( 'oxfam_zip_codes' );
-		if ( $zip < 1000 or $zip > 9992 ) {
+		if ( is_checkout() and ( $zip < 1000 or $zip > 9992 ) ) {
 			wc_add_notice( __( 'Dit is geen geldige postcode!', 'wc-oxfam' ), 'error' );
 		} elseif ( ! in_array($zip, $local_zips)  ) {
 			wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode! Keer terug naar het hoofddomein om de juiste webshop te vinden.', 'wc-oxfam' ), 'error' );
@@ -554,18 +554,18 @@
 			?>
         		</td></tr>
         		<tr valign="top">
-        			<th colspan="2"><label for="oxfam_shop_node">Nodenummer OWW-site:</label></th>
-      	  			<td colspan="6"><input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>" readonly></td>
+        			<th colspan="3"><label for="oxfam_shop_node">Nodenummer OWW-site:</label></th>
+      	  			<td colspan="5"><input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>" readonly></td>
         		</tr>
         		<tr valign="top">
-        			<th colspan="2"><label for="oxfam_mollie_partner_id">Partner-ID Mollie:</label></th>
-      	  			<td colspan="6"><input type="text" name="oxfam_mollie_partner_id" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>" readonly></td>
+        			<th colspan="3"><label for="oxfam_mollie_partner_id">Partner-ID Mollie:</label></th>
+      	  			<td colspan="5"><input type="text" name="oxfam_mollie_partner_id" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>" readonly></td>
         		</tr>
         		<tr valign="top">
-        			<th colspan="2"><label for="oxfam_zip_codes">Postcodes voor thuislevering:</label></th>
-      	  			<td colspan="6"><input type="text" name="oxfam_zip_codes" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_zip_codes') ); ?>" readonly></td>
+        			<th colspan="3"><label for="oxfam_zip_codes">Postcodes voor thuislevering:</label></th>
+      	  			<td colspan="5"><input type="text" name="oxfam_zip_codes" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_zip_codes') ); ?>" readonly></td>
         		</tr>
-        		
+
         	<?php
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
@@ -574,10 +574,13 @@
 				// Check of we niet op de hoofdaccount zitten, want dan krijgen we een fatale error bij getLoginLink()
 				if ( $partner_id_customer != 2485891 ) {
 					$simplexml = $mollie->getLoginLink( $partner_id_customer );
-					echo "<tr><th colspan='2'><a href='".$simplexml->redirect_url."' target='_blank'>Log automatisch in op je Mollie-betaalaccount &raquo;</a></th><td colspan='6'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td></tr>";
+					echo "<tr><th colspan='3'><a href='".$simplexml->redirect_url."' target='_blank'>Log automatisch in op je Mollie-betaalaccount &raquo;</a></th><td colspan='5'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td></tr>";
 
-					echo "<tr><th colspan='2'><a href='https://panel.sendcloud.sc/' target='_blank'>Log handmatig in op je SendCloud-verzendaccount &raquo;</a></th><td colspan='6'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td></tr>";
+					echo "<tr><th colspan='3'><a href='https://panel.sendcloud.sc/' target='_blank'>Log in op je SendCloud-verzendaccount &raquo;</a></th><td colspan='5'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td></tr>";
 				}
+
+				echo '</td></tr></table>';
+				echo '<table><tr><td>';
 
 				// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 				// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
@@ -603,15 +606,11 @@
 							$color = $product->is_in_stock() ? '#61a534' : '#e70052'; 
 							echo '<th colspan="2" style="border-right: 5px solid '.$color.'">'.$product->get_sku().': '.$product->get_title().'<br><br>';
 							echo '<select name="_stock_status">';
-							echo '<option value="instock" '.selected( $product->is_in_stock(), true ).'>Op voorraad</option><option value="outofstock" '.selected( $product->is_in_stock(), false ).'>Uit voorraad</option>';
+							echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option><option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uit voorraad</option>';
 							echo '</select><br><br>';
-							if ( $product->is_featured() ) {
-								echo '<input type="checkbox" name="_featured" checked> Uitgelicht</th>';
-							} else {
-								echo '<input type="checkbox" name="_featured"> Uitgelicht</th>';
-							}
+							echo '<input type="checkbox" name="_featured" '.checked( $product->is_featured(), true, false ).'> Uitgelicht</th>';
 							// Nieuwe functie output ook al <img>-tag
-							echo '<td colspan="2">'.$product->get_image( 'thumbnail' ).'</td>';
+							echo '<td colspan="2" style="text-align: center;">'.$product->get_image( 'thumbnail' ).'</td>';
 							if ( $i % 2 === 0 ) echo '<tr>';
 							$i++;
 						}
