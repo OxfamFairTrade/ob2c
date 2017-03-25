@@ -851,7 +851,23 @@
                 }
                 
                 
-            
+            /**
+            * Cretae a filed collation 
+            * 
+            */
+            function get_field_collation( $field_name )
+                {
+                    
+                    global $wpdb;
+                    
+                    $db_collation =   $wpdb->collate;
+                    
+                    if(empty($db_collation))
+                        return $field_name;
+                        
+                    return $field_name . " COLLATE " . $db_collation . " AS " . $field_name;                    
+                    
+                }
            
         } 
     

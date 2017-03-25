@@ -1786,6 +1786,9 @@
                             $ignore_meta_fields[]   =   '_sale_price_dates_from';
                             $ignore_meta_fields[]   =   '_sale_price_dates_to';
                         }
+
+                    $ignore_meta_fields[]   =   '_stock';
+                    $ignore_meta_fields[]   =   '_stock_status';
                     
                     return $ignore_meta_fields;   
                     

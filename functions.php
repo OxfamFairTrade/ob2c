@@ -520,8 +520,11 @@
 	add_action( 'admin_init', 'register_oxfam_settings' );
 
 	function register_oxfam_settings() {
-		register_setting( 'oxfam-option-group', 'oxfam_shp_node', 'absint' );
+		// Zie https://developer.wordpress.org/reference/functions/register_setting/ voor meer
+		register_setting( 'oxfam-option-group', 'oxfam_shop_node', 'absint' );
 		register_setting( 'oxfam-option-group', 'oxfam_mollie_partner_id', 'absint' );
+		// Probleem: wordt niet geserialiseerd opgeslagen in database
+		// register_setting( 'oxfam-option-group', 'oxfam_zip_codes', 'array' );
 		add_settings_field( 'oxfam_mollie_partner_id', 'Partner-ID bij Mollie', 'oxfam_setting_callback_function', 'options-oxfam', 'default', array( 'label_for' => 'oxfam_mollie_partner_id' ) );
 	}
 
@@ -1232,7 +1235,7 @@
 	
 	// Stel de inhoud van de widget op
 	function dashboard_pilot_news_widget_function() {
-		echo "<div class='rss-widget'><p>We bouwen momenteel aan een online FAQ voor webshopbeheerders waarin alle mogelijke vragen en problemen beantwoord worden met screenshots. In afwachting kun je <a href='https://github.com/OxfamFairTrade/ob2c/wiki#bestellingen' target='_blank'>de Powerpoint van de 1ste opleidingssessie</a> raadplegen.</p></div>";
+		echo "<div class='rss-widget'><p>We bouwen momenteel aan een online FAQ voor webshopbeheerders waarin alle mogelijke vragen en problemen beantwoord worden met screenshots. In afwachting kun je <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>de Powerpoint van de 1ste opleidingssessie</a> raadplegen.</p></div>";
 		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
 	}
 
@@ -1247,7 +1250,7 @@
 			),
 		);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-6 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id, $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-9 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id, $args );
 		
 		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
@@ -1485,6 +1488,8 @@
 				}
 			}
 			$hours .= $hours_sunday;
+			// Knip de eerste <br> er weer af!
+			$hours = substr($hours, 4);
 		}
 		fclose($handle);
 
@@ -1543,7 +1548,7 @@
 		$msg = "";
 		$global_zips = get_shops();
 		foreach ( $global_zips as $zip => $path ) {
-			$msg .= '<a href="'.$path.'">'.$zip.'</a><br>';
+			$msg .= '<p style="text-align: center;"><a href="'.$path.'">'.$zip.'</a></p>';
 		}
 		return $msg;
 	}
@@ -1557,7 +1562,12 @@
 		# Placemarks
 		$zips = get_shops();
 		foreach ( $zips as $zip => $path ) {
- 			$str .= "<Placemark><name>".$path."</name><styleUrl>#1</styleUrl><description><![CDATA[".get_option('oxfam_addresses')."<br><a href=".get_site_url().">Naar de webshop »</a>]]></description><Point><coordinates>3.8,51.0</coordinates></Point></Placemark>";
+			if ( $zip !== 9000 ) {
+				$ll = '2.909586000000,51.226419000000';
+			} else {
+				$ll = '3.728363000000,51.048020000000';
+			}
+ 			$str .= "<Placemark><name>".$path."</name><styleUrl>#1</styleUrl><description><![CDATA[".get_option('oxfam_addresses')."<br><a href=".$path.">Naar de webshop »</a>]]></description><Point><coordinates>".$ll."</coordinates></Point></Placemark>";
  		}
  		# Footer
 		$str .= "</Document></kml>";
