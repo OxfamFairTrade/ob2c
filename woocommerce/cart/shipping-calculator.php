@@ -10,7 +10,7 @@
  * happen. When this occurs the version of the template file will be bumped and
  * the readme will list any important changes.
  *
- * @see 	    https://docs.woocommerce.com/document/template-structure/
+ * @see 	    http://docs.woothemes.com/document/template-structure/
  * @author 		WooThemes
  * @package 	WooCommerce/Templates
  * @version     2.0.8
@@ -20,7 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) || ! WC()->cart->needs_shipping() ) {
+// GEWIJZIGD: Ook uitschakelen indien winkel geen thuislevering doet
+if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) || ! WC()->cart->needs_shipping() || ! does_home_delivery() ) {
 	return;
 }
 
@@ -30,15 +31,15 @@ if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) || ! WC()->cart->
 
 <form class="woocommerce-shipping-calculator" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post">
 
-	<p><a href="#" class="shipping-calculator-button">Bereken verzendkost naar postcode</a></p>
+	<p><a href="#" class="shipping-calculator-button"><?php _e( 'Calculate Shipping', 'woocommerce' ); ?></a></p>
 
-	<section class="shipping-calculator-form" style="display: none;">
+	<section class="shipping-calculator-form" style="display:none;">
 
-		<p class="form-row form-row-wide" id="calc_shipping_country_field" style="display: none;">
+		<p class="form-row form-row-wide" id="calc_shipping_country_field">
 			<select name="calc_shipping_country" id="calc_shipping_country" class="country_to_state" rel="calc_shipping_state">
 				<option value=""><?php _e( 'Select a country&hellip;', 'woocommerce' ); ?></option>
 				<?php
-					foreach ( WC()->countries->get_shipping_countries() as $key => $value )
+					foreach( WC()->countries->get_shipping_countries() as $key => $value )
 						echo '<option value="' . esc_attr( $key ) . '"' . selected( WC()->customer->get_shipping_country(), esc_attr( $key ), false ) . '>' . esc_html( $value ) . '</option>';
 				?>
 			</select>
@@ -53,17 +54,17 @@ if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) || ! WC()->cart->
 				// Hidden Input
 				if ( is_array( $states ) && empty( $states ) ) {
 
-					?><input type="hidden" name="calc_shipping_state" id="calc_shipping_state" placeholder="<?php esc_attr_e( 'State / County', 'woocommerce' ); ?>" /><?php
+					?><input type="hidden" name="calc_shipping_state" id="calc_shipping_state" placeholder="<?php esc_attr_e( 'State / county', 'woocommerce' ); ?>" /><?php
 
 				// Dropdown Input
 				} elseif ( is_array( $states ) ) {
 
 					?><span>
-						<select name="calc_shipping_state" id="calc_shipping_state" placeholder="<?php esc_attr_e( 'State / County', 'woocommerce' ); ?>">
+						<select name="calc_shipping_state" id="calc_shipping_state" placeholder="<?php esc_attr_e( 'State / county', 'woocommerce' ); ?>">
 							<option value=""><?php _e( 'Select a state&hellip;', 'woocommerce' ); ?></option>
 							<?php
 								foreach ( $states as $ckey => $cvalue )
-									echo '<option value="' . esc_attr( $ckey ) . '" ' . selected( $current_r, $ckey, false ) . '>' . __( esc_html( $cvalue ), 'woocommerce' ) . '</option>';
+									echo '<option value="' . esc_attr( $ckey ) . '" ' . selected( $current_r, $ckey, false ) . '>' . __( esc_html( $cvalue ), 'woocommerce' ) .'</option>';
 							?>
 						</select>
 					</span><?php
@@ -71,7 +72,7 @@ if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) || ! WC()->cart->
 				// Standard Input
 				} else {
 
-					?><input type="text" class="input-text" value="<?php echo esc_attr( $current_r ); ?>" placeholder="<?php esc_attr_e( 'State / County', 'woocommerce' ); ?>" name="calc_shipping_state" id="calc_shipping_state" /><?php
+					?><input type="text" class="input-text" value="<?php echo esc_attr( $current_r ); ?>" placeholder="<?php esc_attr_e( 'State / county', 'woocommerce' ); ?>" name="calc_shipping_state" id="calc_shipping_state" /><?php
 
 				}
 			?>
@@ -93,7 +94,7 @@ if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) || ! WC()->cart->
 
 		<?php endif; ?>
 
-		<p><button type="submit" name="calc_shipping" value="1" class="button"><?php _e( 'Update totals', 'woocommerce' ); ?></button></p>
+		<p><button type="submit" name="calc_shipping" value="1" class="button border"><?php _e( 'Update Totals', 'woocommerce' ); ?></button></p>
 
 		<?php wp_nonce_field( 'woocommerce-cart' ); ?>
 	</section>

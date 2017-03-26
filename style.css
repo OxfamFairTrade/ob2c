@@ -40,6 +40,10 @@
 	background-color: white;	
 }
 
+.woocommerce-message {
+	color: #61a534 !important;
+}
+
 /* Zet bioproducten in de verf */
 li.product.pa_bio-ja {
 	// border-left: 3px solid #61a534;
@@ -48,10 +52,13 @@ li.product.pa_bio-ja {
 /* Verberg overtollige info */
 .nm-coupon-wrap,
 .nm-checkout-login-coupon,
-#customer_details #billing_country_field {
+#calc_shipping_country_field,
+#customer_details #billing_country_field,
+#customer_details #shipping_country_field {
 	display: none;
 }
 
+/* Zorg dat de openingsuren de volledige breedte kunnen innemen */
 .pickup_location > th {
 	width: 100px;
 }
