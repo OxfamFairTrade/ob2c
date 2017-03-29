@@ -51,6 +51,7 @@ li.product.pa_bio-ja {
 
 /* Verberg overtollige info */
 .nm-coupon-wrap,
+.shop_table input[name=update_cart],
 .nm-checkout-login-coupon,
 #calc_shipping_country_field,
 #customer_details #billing_country_field,

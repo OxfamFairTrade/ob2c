@@ -409,15 +409,15 @@
 		// Formatteer vaste telefoonnummers
 		if ( mb_strlen($temp_tel) === 9 ) {
 			if ( intval($temp_tel[1]) === 2 or intval($temp_tel[1]) === 3 or intval($temp_tel[1]) === 4 or intval($temp_tel[1]) === 9 ) {
-				$phone = substr($temp_tel, 0, 2)."/".substr($temp_tel, 2, 3).".".substr($temp_tel, 5, 2).".".substr($temp_tel, 7, 2);
+				$phone = substr($temp_tel, 0, 2)." ".substr($temp_tel, 2, 3)." ".substr($temp_tel, 5, 2)." ".substr($temp_tel, 7, 2);
 			} else {
-				$phone = substr($temp_tel, 0, 3)."/".substr($temp_tel, 3, 2).".".substr($temp_tel, 5, 2).".".substr($temp_tel, 7, 2);
+				$phone = substr($temp_tel, 0, 3)." ".substr($temp_tel, 3, 2)." ".substr($temp_tel, 5, 2)." ".substr($temp_tel, 7, 2);
 			}
 		}
 
 		// Formatteer mobiele telefoonnummers
 		if ( mb_strlen($temp_tel) === 10 ) {
-			$phone = substr($temp_tel, 0, 4)."/".substr($temp_tel, 4, 2).".".substr($temp_tel, 6, 2).".".substr($temp_tel, 8, 2);
+			$phone = substr($temp_tel, 0, 4)." ".substr($temp_tel, 4, 3)." ".substr($temp_tel, 7, 3);
 		}
 		
 		return $phone;
@@ -474,25 +474,28 @@
 	
 	function printEstimatedDelivery( $label, $method ) {
 		global $user_ID;
-		$label = '&nbsp;'.$label;
-		$label = str_replace( '(Gratis)', '', $label );
-		$label .= '<br><small class="blauw">';
+		// $label = str_replace( '(Gratis)', '', $label );
+		$label .= '<br><small>';
 		// $timestamp = estimateDelivery( $user_ID, $method->id );
 		$timestamp = strtotime('+4 days');
 		
 		switch ( $method->id ) {
 			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite?
-			// Alle instances van de 'Gratis afhaling in de winkel'-methode
+			// Alle instances van de 'Gratis afhaling in winkel'-methode
 			case stristr( $method->id, 'local_pickup' ):
 				$timestamp = strtotime('+2 days');
 				$label .= 'Beschikbaar vanaf '.strftime('%Amiddag %d/%m/%Y', $timestamp);
 				break;
 			// Alle instances van postpuntlevering
-			case stristr( $method->id, 'service_point' ):
+			case stristr( $method->id, 'service_point_shipping_method' ):
 				$label .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
 				break;
 			// Alle instances van thuislevering
 			case stristr( $method->id, 'flat_rate' ):
+				$label .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
+				break;
+			// Alle instances van gratis thuislevering
+			case stristr( $method->id, 'free_shipping' ):
 				$label .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
 				break;
 			default:
@@ -532,27 +535,43 @@
 		}
 	}
 	
-	// Disable verzending met externe partijen indien totale brutogewicht > 30 kg
-	add_filter( 'woocommerce_package_rates', 'hide_shipping_when_too_heavy', 10, 2 );
+	// Disable sommige verzendmethoden onder bepaalde voorwaarden
+	add_filter( 'woocommerce_package_rates', 'hide_shipping_methods', 10, 2 );
 	
-	function hide_shipping_when_too_heavy( $rates, $package ) {
+	function hide_shipping_methods( $rates, $package ) {
 		global $woocommerce;
 		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 		
-		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
-	  		unset( $rates['flat_rate:2'] );
-	  		unset( $rates['flat_rate:4'] );
-	  		unset( $rates['flat_rate:15'] );
+		write_log($rates);
+		
+		// Verberg alle betalende methodes indien er een gratis levering beschikbaar is (= per definitie geen afhaling want Local Plus creëert geen methodes)
+	  	if ( isset($rates['free_shipping:2']) or isset($rates['free_shipping:4']) or isset($rates['free_shipping:6']) ) {
+	  		unset( $rates['flat_rate:1'] );
+	  		unset( $rates['flat_rate:3'] );
+	  		unset( $rates['flat_rate:5'] );
+	  		unset( $rates['service_point_shipping_method:7'] );
+	  	} else {
+	  		unset( $rates['free_shipping:2'] );
+	  		unset( $rates['free_shipping:4'] );
+	  		unset( $rates['free_shipping:6'] );
 	  		unset( $rates['service_point_shipping_method:8'] );
-	  		unset( $rates['free_shipping:11'] );
-	  		unset( $rates['free_shipping:12'] );
-	  		unset( $rates['free_shipping:16'] );
+	  	}
+
+		// Verhinder externe levermethodes indien totale brutogewicht > 30 kg
+		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
+	  		unset( $rates['flat_rate:1'] );
+	  		unset( $rates['flat_rate:3'] );
+	  		unset( $rates['flat_rate:5'] );
+	  		unset( $rates['free_shipping:2'] );
+	  		unset( $rates['free_shipping:4'] );
+	  		unset( $rates['free_shipping:6'] );
+	  		unset( $rates['service_point_shipping_method:7'] );
+	  		unset( $rates['service_point_shipping_method:8'] );
 	  		wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'wc-oxfam' ), 'error' );
 	  	}
 
 	  	return $rates;
 	}
-
 
 	// Check of de persoon moet worden ingeschreven op het digizine 
 	add_action( 'woocommerce_checkout_process', 'check_subscription_preference', 10, 1 );
@@ -1309,8 +1328,10 @@
 	
 	// Stel de inhoud van de widget op
 	function dashboard_pilot_news_widget_function() {
-		echo "<div class='rss-widget'><p>We bouwen momenteel aan een online FAQ voor webshopbeheerders waarin alle mogelijke vragen en problemen beantwoord worden met screenshots. In afwachting kun je <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>de Powerpoint van de 1ste opleidingssessie</a> raadplegen.</p>";
-		echo "<p>De technische probleempjes met ontbrekende rechten en actieknoppen zijn opgelost!</p></div>";
+		echo "<div class='rss-widget'>";
+		echo "<p>We bouwen momenteel aan <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>een online FAQ voor webshopbeheerders</a> waarin alle mogelijke vragen en problemen beantwoord worden met screenshots. In afwachting kun je <a href='http://demo.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 1ste opleidingssessie</a> raadplegen.</p>";
+		echo "<p>We herhalen nog eens dat de site nog in volle ontwikkeling is. Je zult dagelijks dingen verbeterd zien worden. De verlate release van <a href='https://wordpress.com/read/blogs/96396764/posts/3767' target='_blank'>WooCommerce 3.0</a> speelt ons gedeeltelijk parten maar dat belet niet dat de basisstructuur definitief is en lanceren in mei realistisch blijft.</p>";
+		echo "</div>";
 		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
 	}
 
@@ -1347,11 +1368,14 @@
 		$screen = get_current_screen();
 		write_log($screen);
 		if ( $pagenow === 'index.php' ) {
+			echo '<div class="notice notice-warning">';
+			echo '<p>De technische probleempjes van zaterdag (ontbrekende gebruikersrechten en verdwenen shortcuts om bestellingen te beheren) zijn inmiddels van de baan!</p>';
+			echo '</div>';
 			echo '<div class="notice notice-info">';
 			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
-				echo '<p>De betalingen op deze site zijn momenteel fake!</p>';
+				echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust bestellingen te plaatsen en te beheren.</p>';
 			} else {
-				echo '<p>De betalingen op deze site zijn momenteel live!</p>';
+				echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
 			}
 			echo '</div>';
 		} elseif ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
@@ -1703,8 +1727,9 @@
 		# Header
 		$myfile = fopen("newoutput.kml", "w");
 		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
-		# Styles
-		$str .= "<Style id='1'><IconStyle><Icon><href>http://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
+		# Styles (upscalen werkt helaas niet ...)
+		$str .= "<Style id='1'><IconStyle><scale>1.21875</scale><w>39</w>
+          <h>51</h><Icon><href>http://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
 		# Placemarks
 		$zips = get_shops();
 		foreach ( $zips as $zip => $path ) {
