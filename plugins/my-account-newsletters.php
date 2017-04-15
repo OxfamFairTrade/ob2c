@@ -4,7 +4,7 @@
 	Description: Zorg ervoor dat er een tabblaadje 'Digizine' verschijnt en 'Dashboard', 'Downloads' en 'Uitloggen' verborgen worden.
 	Version:     1.0.0
 	Author:      Le Couperet
-	Author URI:  http://www.lecouperet.net/
+	Author URI:  https://www.lecouperet.net/
 	Text Domain: my-account-newsletters
 	*/
 

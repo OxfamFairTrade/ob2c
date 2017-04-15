@@ -629,98 +629,101 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_menu_page( 'Instellingen voor lokale webshop', 'Productbeheer', 'local_manager', 'oxfam-products', 'options_oxfam', 'dashicons-visibility', '56' );
+		add_menu_page( 'Instellingen voor lokale webshop', 'Lokale instellingen', 'manage_options', 'oxfam-options', 'oxfam_options_callback', 'dashicons-visibility', '56' );
+		add_submenu_page( 'woocommerce', 'Stel de voorraad in voor je lokale webshop', 'Voorraadbeheer', 'local_manager', 'oxfam-products', 'oxfam_products_callback' );
 	}
 
-	// Output voor de optiepagina
-	function options_oxfam() {
-		?>
-			<div class="wrap">
-				<h1>Instellingen voor lokale webshop</h1>
-				<form method="post" action="options.php"> 
-			<?php
-				settings_fields( 'oxfam-option-group' );
-				do_settings_sections( 'oxfam-option-group' );
-			?>
-				<table class="form-table"><tr><td>
-			<?php
-				submit_button();
-			?>
-        		</td></tr>
-        		<tr valign="top">
-        			<th colspan="3"><label for="oxfam_shop_node">Nodenummer OWW-site:</label></th>
-      	  			<td colspan="5"><input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>" readonly></td>
-        		</tr>
-        		<tr valign="top">
-        			<th colspan="3"><label for="oxfam_mollie_partner_id">Partner-ID Mollie:</label></th>
-      	  			<td colspan="5"><input type="text" name="oxfam_mollie_partner_id" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>" readonly></td>
-        		</tr>
-        		<tr valign="top">
-        			<th colspan="3"><label for="oxfam_zip_codes">Postcodes voor thuislevering:</label></th>
-      	  			<td colspan="5"><input type="text" name="oxfam_zip_codes" style="width: 50%;" value="<?php echo implode ( ", ", get_option('oxfam_zip_codes') ); ?>" readonly></td>
-        		</tr>
+	function oxfam_options_callback() {
+		include get_stylesheet_directory().'/update-options.php';
+	}
 
-        	<?php
-				Mollie_Autoloader::register();
-				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
-				$partner_id_customer = get_option( 'oxfam_mollie_partner_id' );
-				
-				// Check of we niet op de hoofdaccount zitten, want dan krijgen we een fatale error bij getLoginLink()
-				if ( $partner_id_customer != 2485891 ) {
-					$simplexml = $mollie->getLoginLink( $partner_id_customer );
-					echo "<tr><th colspan='3'><a href='".$simplexml->redirect_url."' target='_blank'>Log automatisch in op je Mollie-betaalaccount &raquo;</a></th><td colspan='5'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td></tr>";
+	function oxfam_products_callback() {
+		include get_stylesheet_directory().'/update-stock.php';
+	}
+	
+	// Registreer de AJAX-acties
+	add_action( 'wp_ajax_oxfam_action', 'oxfam_action_callback' );
 
-					if ( does_sendcloud_delivery() ) {
-						echo "<tr><th colspan='3'><a href='https://panel.sendcloud.sc/' target='_blank'>Log handmatig in op je SendCloud-verzendaccount &raquo;</a></th><td colspan='5'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td></tr>";
-					}
-				}
+	function oxfam_action_callback() {
+		echo register_photo($_POST['name'], $_POST['timestamp'], $_POST['path']);
+    	wp_die();
+	}
 
-				echo '</td></tr></table>';
-				echo '<table><tr><td>';
+	function wp_get_attachment_id_by_post_name($post_title) {
+        $args = array(
+            // We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
+            'posts_per_page'	=> 1,
+            'post_type'			=> 'attachment',
+            // Moet er in principe bij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
+            'post_status'		=> 'inherit',
+            // De titel is steeds gelijk aan de bestandsnaam en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
+            'title'				=> trim($post_title),
+        );
+        $attachments = new WP_Query($args);
+        if ( $attachments->have_posts() ) {
+        	$attachments->the_post();
+        	$attachment_id = get_the_ID();
+        	wp_reset_postdata();
+        } else {
+        	$attachment_id = false;
+        }
+        return $attachment_id;
+    }
 
-				// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
-				// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
-				$args = array(
-					'post_type'			=> 'product',
-					'post_status'		=> array( 'publish' ),
-					'posts_per_page'	=> -1,
-					'meta_key'			=> '_sku',
-					'orderby'			=> 'meta_value_num',
-					'order'				=> 'ASC',
-				);
+    function register_photo($filename, $filestamp, $filepath) {			
+    	// Parse de fototitel
+    	$filetitle = explode('.jpg', $filename);
+	    $filetitle = $filetitle[0];
+    	
+    	// Check of er al een vorige versie bestaat
+    	$updated = false;
+    	$deleted = false;
+    	$old_id= wp_get_attachment_id_by_post_name($filetitle);
+		if ( $old_id ) {
+			// Stel het originele bestand veilig
+			rename($filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg');
+			// Verwijder de versie
+			if ( wp_delete_attachment($old_id, true) ) {
+				// Extra check op het succesvol verwijderen
+				$deleted = true;
+			}
+			$updated = true;
+			// Hernoem opnieuw zodat de links weer naar de juiste file wijzen 
+			rename(WP_CONTENT_DIR.'/uploads/temporary.jpg', $filepath);
+		}
+		
+		// Creëer de parameters voor de foto
+		$wp_filetype = wp_check_filetype($filename, null);
+		$attachment = array(
+			'post_mime_type' => $wp_filetype['type'],
+			'post_title' => $filetitle,
+			'post_content' => '',
+			'post_author' => get_current_user_id(),
+			'post_status' => 'inherit',
+		);
 
-				$products = new WP_Query( $args );
+		// Probeer de foto in de mediabibliotheek te stoppen
+		$msg = "";
+		$attachment_id = wp_insert_attachment( $attachment, $filepath );
+		if (!is_wp_error($attachment_id)) {
+			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $filepath );
+			// Registreer ook de metadata en toon een succesboodschap
+			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
+			if ($updated) {
+				$deleted = $deleted ? "verwijderd en opnieuw aangemaakt" : "bijgewerkt";
+				$msg .= "<i>".$filename."</i> ".$deleted." in de mediabibliotheek om ".date('H:i:s')." ...";
+			} else {
+				$msg .= "<i>".$filename."</i> aangemaakt in de mediabibliotheek om ".date('H:i:s')." ...";
+			}
+			// Sla het uploadtijdstip van de laatste succesvolle registratie op (kan gebruikt worden als limiet voor nieuwe foto's!)
+			update_option('laatste_registratie_timestamp', $filestamp);
+			$registered = true;
+		} else {
+			// Geef een waarschuwing als de aanmaak mislukte
+			$msg .= "Opgelet, er liep iets mis met <i>".$filename."</i>!";
+		}
 
-				if ( $products->have_posts() ) {
-					$i = 1;
-					while ( $products->have_posts() ) {
-						$products->the_post();
-						$product = wc_get_product( get_the_ID() );
-						// Verhinder dat leeggoed ook opduikt
-						if ( is_numeric( $product->get_sku() ) ) {
-							if ( $i % 2 === 1 ) echo '<tr>';
-							$color = $product->is_in_stock() ? '#61a534' : '#e70052'; 
-							echo '<th colspan="2" style="border-right: 5px solid '.$color.'">'.$product->get_sku().': '.$product->get_title().'<br><br>';
-							echo '<select name="_stock_status">';
-							echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option><option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uit voorraad</option>';
-							echo '</select><br><br>';
-							echo '<input type="checkbox" name="_featured" '.checked( $product->is_featured(), true, false ).'> Uitgelicht</th>';
-							// Nieuwe functie output ook al <img>-tag
-							echo '<td colspan="2" style="text-align: center;">'.$product->get_image( 'thumbnail' ).'</td>';
-							if ( $i % 2 === 0 ) echo '<tr>';
-							$i++;
-						}
-					}
-					wp_reset_postdata();
-				}
-
-				echo '<tr><td>';
-				submit_button();
-			?>
-				</td></tr></table>
-				</form>
-			</div>
-		<?php
+		return $msg;
 	}
 
 	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan
@@ -1329,7 +1332,7 @@
 	// Stel de inhoud van de widget op
 	function dashboard_pilot_news_widget_function() {
 		echo "<div class='rss-widget'>";
-		echo "<p>We bouwen momenteel aan <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>een online FAQ voor webshopbeheerders</a> waarin alle mogelijke vragen en problemen beantwoord worden met screenshots. In afwachting kun je <a href='http://demo.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 1ste opleidingssessie</a> raadplegen.</p>";
+		echo "<p>We bouwen momenteel aan <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>een online FAQ voor webshopbeheerders</a> waarin alle mogelijke vragen en problemen beantwoord worden met screenshots. In afwachting kun je <a href='https://demo.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 1ste opleidingssessie</a> raadplegen.</p>";
 		echo "<p>We herhalen nog eens dat de site nog in volle ontwikkeling is. Je zult dagelijks dingen verbeterd zien worden. De verlate release van <a href='https://wordpress.com/read/blogs/96396764/posts/3767' target='_blank'>WooCommerce 3.0</a> speelt ons gedeeltelijk parten maar dat belet niet dat de basisstructuur definitief is en lanceren in mei realistisch blijft.</p>";
 		echo "</div>";
 		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
@@ -1729,7 +1732,7 @@
 		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 		# Styles (upscalen werkt helaas niet ...)
 		$str .= "<Style id='1'><IconStyle><scale>1.21875</scale><w>39</w>
-          <h>51</h><Icon><href>http://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
+          <h>51</h><Icon><href>https://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
 		# Placemarks
 		$zips = get_shops();
 		foreach ( $zips as $zip => $path ) {

@@ -30,7 +30,7 @@
 
 	try {
 		// $simplexml = $mollie->accountCreate( 'owwoostende', array( 'name' => 'Frederik Neirynck', 'company_name' => 'Oxfam-Wereldwinkel Oostende', 'address' => 'Torhoutsesteenweg 25', 'zipcode' => '8400', 'city' => 'Oostende', 'country' => 'BE', 'email' => 'frederik.neirynck@oft.be', 'registration_number' => '0446474568', 'legal_form' => 'vzw-be', 'vat_number' => 'BE0446474568', 'representative' => 'Edwin Vanden Abeele', 'billing_address' => 'Torhoutsesteenweg 25', 'billing_zipcode' => '8400', 'billing_city' => 'Oostende', 'billing_country' => 'BE' ) );
-		// $simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, array( 'name' => 'Oxfam-Wereldwinkel Oostende', 'website' => 'http://shop.oxfamwereldwinkels.be/oostende', 'email' => 'frederik.neirynck@oft.be', 'phone' => '059513700', 'category' => '5499' ) );
+		// $simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, array( 'name' => 'Oxfam-Wereldwinkel Oostende', 'website' => 'https://shop.oxfamwereldwinkels.be/oostende', 'email' => 'frederik.neirynck@oft.be', 'phone' => '059513700', 'category' => '5499' ) );
 		// $simplexml = $mollie->availablePaymentMethodsByPartnerId( $partner_id_customer );
 		$simplexml = $mollie->getLoginLink( $partner_id_customer );
 	} catch (Mollie_Exception $e) {
