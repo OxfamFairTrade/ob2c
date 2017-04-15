@@ -41,7 +41,8 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
     <?php if ( ! WC()->cart->is_empty() ) : ?>
 
         <?php
-            foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
+            // GEWIJZIGD: Plaats het laatst toegevoegde product bovenaan door de te doorlopen array om te keren
+            foreach ( array_reverse(WC()->cart->get_cart()) as $cart_item_key => $cart_item ) {
                 $_product     = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
                 $product_id   = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
 
@@ -92,7 +93,10 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                                         echo apply_filters( 'woocommerce_widget_cart_item_quantity', '<span class="quantity">' . esc_html__( 'Qty', 'woocommerce' ) . ': ' . $cart_item['quantity'] . '</span>', $cart_item, $cart_item_key );
                                     ?>
                                 <?php endif; ?>
-                                <?php if ( $_product->is_visible() ) : ?>
+                                <?php
+                                    // GEWIJZIGD: Toon hoeveelheidsknoppen enkel indien het product zichtbaar is (= niet bij leeggoed!)
+                                    if ( $_product->is_visible() ) :
+                                ?>
                                     <div class="product-quantity" data-title="<?php _e( 'Quantity', 'woocommerce' ); ?>">
                                         <?php
                                             $product_quantity = woocommerce_quantity_input( array(

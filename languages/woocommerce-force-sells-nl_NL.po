@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce Force Sells\n"
 "POT-Creation-Date: 2017-04-15 12:09+0200\n"
-"PO-Revision-Date: 2017-04-15 12:12+0200\n"
+"PO-Revision-Date: 2017-04-15 18:37+0200\n"
 "Last-Translator: \n"
 "Language-Team: contact@lecouperet.net\n"
 "Language: nl_NL\n"
@@ -27,7 +27,7 @@ msgstr "Hoort bij"
 
 #: woocommerce-force-sells.php:191
 msgid "Force Sells"
-msgstr ""
+msgstr "Verplichte aankoop"
 
 #: woocommerce-force-sells.php:197 woocommerce-force-sells.php:207
 #: woocommerce-force-sells.php:225 woocommerce-force-sells.php:235
@@ -42,7 +42,7 @@ msgstr ""
 
 #: woocommerce-force-sells.php:219
 msgid "Synced Force Sells"
-msgstr ""
+msgstr "Gesynchroniseerde verplichte aankoop"
 
 #: woocommerce-force-sells.php:247
 msgid ""
@@ -53,6 +53,8 @@ msgstr ""
 #: woocommerce-force-sells.php:302
 msgid "This will also add the following products to your cart:"
 msgstr ""
+"Opgelet, dit statiegeld wordt automatisch toegevoegd bij aankoop van dit "
+"product:"
 
 #: woocommerce-force-sells.php:359
 #, php-format
