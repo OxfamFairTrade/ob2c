@@ -1371,15 +1371,15 @@
 		$screen = get_current_screen();
 		write_log($screen);
 		if ( $pagenow === 'index.php' ) {
-			echo '<div class="notice notice-warning">';
-			echo '<p>De technische probleempjes van zaterdag (ontbrekende gebruikersrechten en verdwenen shortcuts om bestellingen te beheren) zijn inmiddels van de baan!</p>';
-			echo '</div>';
 			echo '<div class="notice notice-info">';
 			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
 				echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust bestellingen te plaatsen en te beheren.</p>';
 			} else {
 				echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
 			}
+			echo '</div>';
+			echo '<div class="notice notice-info">';
+			echo '<p>Download <a href="http://demo.oxfamwereldwinkels.be/wp-content/uploads/verzendtarieven-B2C-pakketten.pdf" target="_blank">de nota met tarieven en voorwaarden</a> bij externe verzending via Bpost of Bubble Post. Kun je met een lokale duurzame speler samenwerken? Des te beter! Bezorg ons vóór de 2de opleidingssessie een ruwe schatting van de kostprijs zodat we kunnen bekijken hoe we dit in de voorgestelde vergoeding van 5,74 euro excl. BTW voor thuislevering kunnen inpassen.</p>';
 			echo '</div>';
 		} elseif ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
 			echo '<div class="notice notice-warning">';
