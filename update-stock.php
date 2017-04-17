@@ -1,4 +1,4 @@
-<h3>Registratie van nieuwe craftsfoto's</h3>
+<h1>Voorraadbeheer van lokale producten</h1>
 <table>
 	<?php
 		// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
@@ -42,6 +42,14 @@
 		function oxfam_action_javascript() { ?>
 			<script type="text/javascript">
 				jQuery(document).ready(function() {
+					jQuery("input[type=checkbox]").on( 'change', function() {
+						if ( jQuery(this).is(":checked") ) {
+							alert("Wil je dit opslaan?");
+        				} else {
+        					alert("In dit geval zetten we het af!");
+        				} 
+					});
+
 					var data = <?php echo json_encode(list_new_images()); ?>;
 
 					if ( data !== null ) {

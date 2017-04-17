@@ -709,7 +709,7 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_menu_page( 'Instellingen voor lokale webshop', 'Lokale instellingen', 'manage_options', 'local_manager', 'oxfam_options_callback', 'dashicons-visibility', '56' );
+		add_menu_page( 'Instellingen voor lokale webshop', 'Instellingen', 'local_manager', 'oxfam-settings', 'oxfam_options_callback', 'dashicons-visibility', '56' );
 		add_submenu_page( 'woocommerce', 'Stel de voorraad in voor je lokale webshop', 'Voorraadbeheer', 'local_manager', 'oxfam-products', 'oxfam_products_callback' );
 	}
 
@@ -1474,6 +1474,7 @@
 			echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
 			echo '</div>';
 		}
+		var_dump($screen);
 		if ( $screen->parent_base == 'oxfam-products' ) {
 			echo '<div class="notice notice-warning">';
 			echo '<p>Wijzigingen aan voorraad en uitlichting opslaan via deze pagina werkt op dit moment nog niet!</p>';
