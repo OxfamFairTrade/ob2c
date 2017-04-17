@@ -6,21 +6,18 @@
 			do_settings_sections( 'oxfam-option-group' );
 		?>
 			<table class="form-table"><tr><td>
-		<?php
-			submit_button();
-		?>
 			</td></tr>
 			<tr valign="top">
 				<th colspan="3"><label for="oxfam_shop_node">Nodenummer OWW-site:</label></th>
-		  			<td colspan="5"><input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>"></td>
+		  			<td colspan="5"><input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>></td>
 			</tr>
 			<tr valign="top">
 				<th colspan="3"><label for="oxfam_mollie_partner_id">Partner-ID Mollie:</label></th>
-		  			<td colspan="5"><input type="text" name="oxfam_mollie_partner_id" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"></td>
+		  			<td colspan="5"><input type="text" name="oxfam_mollie_partner_id" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>></td>
 			</tr>
 			<tr valign="top">
 				<th colspan="3"><label for="oxfam_zip_codes">Postcodes voor thuislevering:</label></th>
-		  			<td colspan="5"><input type="text" name="oxfam_zip_codes" style="width: 50%;" value="<?php echo implode ( ", ", get_option('oxfam_zip_codes') ); ?>"></td>
+		  			<td colspan="5"><input type="text" name="oxfam_zip_codes" style="width: 50%;" value="<?php echo implode ( ", ", get_option('oxfam_zip_codes') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>></td>
 			</tr>
 
 		<?php

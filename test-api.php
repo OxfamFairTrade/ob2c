@@ -21,7 +21,7 @@
 			site_url(), WC_KEY, WC_SECRET,
 			[
         		'wp_api' => true,
-        		// v2 nodig voor WC 2.7
+        		// v2 nodig voor WC 3.0
         		'version' => 'wc/v2',
         		// Moet erbij, anders miserie!
         		'query_string_auth' => true,
@@ -31,7 +31,7 @@
 		$endpoint = 'products/categories';
 		$parameters = array( 'orderby' => 'name', 'per_page' => 10, 'parent' => 0 );
 		
-		$results = $woocommerce->get($endpoint, $parameters);
+		// $results = $woocommerce->get($endpoint, $parameters);
 		
 		foreach ($results as $category) {
 			// echo $category['name'].' ('.$category['count'].')<br>';
@@ -41,16 +41,13 @@
 		unset($parameters);
 		// Term-ID 601 = Oxfam Fair Trade, dus 'attribute_term' => 601 toevoegen om te filteren
 		// Parameter 'per_page' mag niet te groot zijn, anders error!
-		$parameters = array( 'attribute' => 'pa_leverancier', 'status' => 'publish', 'orderby' => 'date', 'order' => 'desc', 'per_page' => 100 );
+		$parameters = array( 'attribute' => 'pa_merk', 'status' => 'publish', 'orderby' => 'date', 'order' => 'desc', 'per_page' => 100 );
 		$results = $woocommerce->get($endpoint, $parameters);
 		
 		echo '<div class="container-fluid">';
 			echo '<div class="row">';
 
 			foreach ($results as $product) {
-				if ( $product['sku'] === '27009' ) {
-					write_log($product);
-				}
 				// Opgelet: indien er geen foto aan het product gelinkt is krijgen we de placeholder door, maar zonder id!
 				$image_shopthumb = wp_get_attachment_image_src( $product['images'][0]['id'], 'shop_thumbnail' );
 				$image_thumb = wp_get_attachment_image_src( $product['images'][0]['id'], 'thumbnail' );

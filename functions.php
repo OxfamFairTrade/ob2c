@@ -375,6 +375,7 @@
 		$address_fields['postcode']['placeholder'] = '';
 		$address_fields['postcode']['required'] = true;
 		// Zorgt ervoor dat de totalen automatisch bijgewerkt worden na aanpassen
+		// Werkt enkel indien de voorgaande verplichte velden niet-leeg zijn, zie maybe_update_checkout() in woocommerce/assets/js/frontend/checkout.js 
 		$address_fields['postcode']['class'] = array('form-row-first update_totals_on_change');
 		$address_fields['postcode']['clear'] = false;
 
@@ -421,6 +422,85 @@
 		}
 		
 		return $phone;
+	}
+
+	// Verduidelijk de profiellabels in de back-end	
+	add_filter( 'woocommerce_customer_meta_fields', 'modify_user_admin_fields', 10, 1 );
+
+	function modify_user_admin_fields( $profile_fields ) {
+		$profile_fields['billing']['title'] = 'Klantgegevens';
+		$profile_fields['billing']['fields']['billing_first_name']['label'] = 'Voornaam';
+		$profile_fields['billing']['fields']['billing_last_name']['label'] = 'Familienaam';
+		$profile_fields['billing']['fields']['billing_address_1']['label'] = 'Straat en nummer';
+		$profile_fields['billing']['fields']['billing_postcode']['label'] = 'Postcode';
+		$profile_fields['billing']['fields']['billing_city']['label'] = 'Gemeente';
+		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
+		$profile_fields['billing']['fields']['billing_email']['label'] = 'Mail bestelcommunicatie naar';
+		unset($profile_fields['billing']['fields']['billing_address_2']);
+		unset($profile_fields['billing']['fields']['billing_company']);
+		unset($profile_fields['billing']['fields']['billing_state']);
+		
+		$profile_fields['shipping']['title'] = 'Verzendgegevens';
+		$profile_fields['shipping']['fields']['shipping_first_name']['label'] = 'Voornaam';
+		$profile_fields['shipping']['fields']['shipping_last_name']['label'] = 'Familienaam';
+		$profile_fields['shipping']['fields']['shipping_address_1']['label'] = 'Straat en nummer';
+		$profile_fields['shipping']['fields']['shipping_postcode']['label'] = 'Postcode';
+		$profile_fields['shipping']['fields']['shipping_city']['label'] = 'Gemeente';
+		unset($profile_fields['shipping']['fields']['shipping_address_2']);
+		unset($profile_fields['shipping']['fields']['shipping_company']);
+		unset($profile_fields['shipping']['fields']['shipping_state']);
+
+		$profile_fields['billing']['fields'] = array_swap_assoc('billing_city', 'billing_postcode', $profile_fields['billing']['fields']);
+		$profile_fields['shipping']['fields'] = array_swap_assoc('shipping_city', 'shipping_postcode', $profile_fields['shipping']['fields']);
+		
+		return $profile_fields;
+	}
+
+	// Verberg bepaalde profielvelden (en niet verwijderen, want dat reset sommige waardes!)
+	add_action( 'admin_footer-profile.php', 'hide_own_profile_fields' );
+	add_action( 'admin_footer-user-edit.php', 'hide_others_profile_fields' );
+	
+	function hide_own_profile_fields() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+		?>
+			<script type="text/javascript">
+				jQuery("tr.user-rich-editing-wrap").hide();
+				jQuery("tr.user-comment-shortcuts-wrap").hide();
+				jQuery("tr.user-admin-bar-front-wrap").hide();
+				jQuery("tr.user-language-wrap").hide();
+				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
+				jQuery("tr.user-nickname-wrap").hide();
+				jQuery("tr.user-url-wrap").hide();
+				jQuery("h2:contains('Over jezelf')").next('.form-table').hide();
+				jQuery("h2:contains('Over jezelf')").hide();
+				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
+				jQuery("h2:contains('Over de gebruiker')").hide();
+			</script>
+		<?php
+		}
+	}
+
+	function hide_others_profile_fields() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+		?>
+			<script type="text/javascript">
+				jQuery("tr.user-rich-editing-wrap").hide();
+				jQuery("tr.user-admin-color-wrap").hide();
+				jQuery("tr.user-comment-shortcuts-wrap").hide();
+				jQuery("tr.user-admin-bar-front-wrap").hide();
+				jQuery("tr.user-language-wrap").hide();
+				/* Kunnen we eventueel verbergen maar is ook bereikbaar via knop op overzichtsscherm dus wacht op User Role Editor Pro */
+				jQuery("tr.user-role-wrap").show();
+				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
+				jQuery("tr.user-nickname-wrap").hide();
+				jQuery("tr.user-url-wrap").hide();
+				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
+				jQuery("h2:contains('Over de gebruiker')").hide();
+				jQuery("h3:contains('Aanvullende rechten')").next('.form-table').hide();
+				jQuery("h3:contains('Aanvullende rechten')").hide();
+			</script>
+		<?php
+		}
 	}
 
 	// Geef hint om B2B-klant te worden
@@ -629,7 +709,7 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_menu_page( 'Instellingen voor lokale webshop', 'Lokale instellingen', 'manage_options', 'oxfam-options', 'oxfam_options_callback', 'dashicons-visibility', '56' );
+		add_menu_page( 'Instellingen voor lokale webshop', 'Lokale instellingen', 'manage_options', 'local_manager', 'oxfam_options_callback', 'dashicons-visibility', '56' );
 		add_submenu_page( 'woocommerce', 'Stel de voorraad in voor je lokale webshop', 'Voorraadbeheer', 'local_manager', 'oxfam-products', 'oxfam_products_callback' );
 	}
 
@@ -724,6 +804,14 @@
 		}
 
 		return $msg;
+	}
+
+	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
+	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-fruitsap
+	add_action( 'woocommerce_single_product_summary', 'show_delivery_warning', 200 );
+
+	function show_delivery_warning() {
+		echo "Opgelet: hier komt een boodschap indien het product niet thuisgeleverd wordt (of enkel per zes verkocht wordt, maar dat idee gaan we wellicht afvoeren).";
 	}
 
 	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan
@@ -1781,6 +1869,21 @@
 				}
 			}
 		}
+	}
+
+	// Verwissel twee associatieve keys in een array
+	function array_swap_assoc($key1, $key2, $array) {
+		$newArray = array ();
+		foreach ($array as $key => $value) {
+			if ($key == $key1) {
+				$newArray[$key2] = $array[$key2];
+			} elseif ($key == $key2) {
+				$newArray[$key1] = $array[$key1];
+			} else {
+				$newArray[$key] = $value;
+			}
+		}
+		return $newArray;
 	}
 	
 ?>
