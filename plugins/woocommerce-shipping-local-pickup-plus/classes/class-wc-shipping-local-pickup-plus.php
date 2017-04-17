@@ -18,7 +18,7 @@
  *
  * @package     WC-Shipping-Local-Pickup-Plus
  * @author      SkyVerge
- * @copyright   Copyright (c) 2012-2016, SkyVerge, Inc.
+ * @copyright   Copyright (c) 2012-2017, SkyVerge, Inc.
  * @license     http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License v3.0
  */
 
@@ -74,8 +74,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 	public function __construct() {
 
 		if ( SV_WC_Plugin_Compatibility::is_wc_version_gte_2_6() ) {
-
-			// only WC 2.6 intorduces the __construct() method on the class parent
+			// only WC 2.6 introduces the __construct() method on the class parent
 			parent::__construct();
 		}
 
@@ -101,14 +100,25 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		// add actions
 		if ( $this->is_available( array() ) ) {
 
-			add_action( 'woocommerce_after_template_part',     array( $this, 'review_order_shipping_pickup_location' ), 10, 4 );
-			add_action( 'woocommerce_add_order_item_meta',     array( $this, 'associate_order_item_to_cart_item' ),     10, 3 );
-			add_action( 'woocommerce_add_shipping_order_item', array( $this, 'checkout_add_shipping_order_item' ),      10, 3 );
+			add_action( 'woocommerce_after_template_part', array( $this, 'review_order_shipping_pickup_location' ), 10, 4 );
+
+	        if ( SV_WC_Plugin_Compatibility::is_wc_version_gte_3_0() ) {
+		        add_action( 'woocommerce_new_order_item',          array( $this, 'associate_order_item_to_cart_item' ), 10, 3 );
+		        add_action( 'woocommerce_new_order_item',          array( $this, 'checkout_new_shipping_order_item' ), 15, 3 );
+	        } else {
+		        add_action( 'woocommerce_add_order_item_meta',     array( $this, 'associate_order_item_to_cart_item' ), 10, 3 );
+				add_action( 'woocommerce_add_shipping_order_item', array( $this, 'checkout_add_shipping_order_item' ),  10, 3 );
+	        }
 
 			// add local pickup location selection row to recurring shipping rates tables in Subscriptions v2.0.18+
 			add_action( 'woocommerce_subscriptions_after_recurring_shipping_rates', array( $this, 'subscription_review_recurrent_shipping_pickup_location' ), 10, 4 );
 			// prevents Subscriptions firing a notice if a discount is applied to a cart containing a subscription
-			add_filter( 'woocommerce_subscriptions_validate_coupon_type', array( $this, 'validate_subscription_pickup_coupon' ), 10, 2 );
+			add_filter( 'woocommerce_subscriptions_validate_coupon_type',           array( $this, 'validate_subscription_pickup_coupon' ), 10, 2 );
+
+			// discount display handling (coupon)
+			add_filter( 'woocommerce_cart_totals_coupon_label', array( $this, 'coupon_label' ) );
+			add_filter( 'woocommerce_cart_totals_coupon_html',  array( $this, 'coupon_remove_label' ), 10, 2 );
+			add_filter( 'woocommerce_coupon_message',           array( $this, 'coupon_remove_message' ), 10, 3 );
 
 			// add the local pickup location to the shipping package so that changing it forces a recalculation
 			add_filter( 'woocommerce_cart_shipping_packages', array( $this, 'update_shipping_packages' ) );
@@ -120,11 +130,6 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 			add_filter( 'woocommerce_customer_taxable_address', array( $this, 'taxable_address' ) );
 
 			add_filter( 'woocommerce_per_product_shipping_skip_free_method_local_pickup_plus', array( $this, 'per_product_shipping_skip_free_method' ) );
-
-			// discount display handling (coupon)
-			add_filter( 'woocommerce_cart_totals_coupon_label', array( $this, 'coupon_label' ) );
-			add_filter( 'woocommerce_cart_totals_coupon_html',  array( $this, 'coupon_remove_label' ), 10, 2 );
-			add_filter( 'woocommerce_coupon_message',           array( $this, 'coupon_remove_message' ), 10, 3 );
 		}
 
 		// TODO split the following in a separate admin class in rewrite {FN 2016-09-21}
@@ -183,15 +188,19 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		// if there's a discount for local pickup,
 		// add a note to the displayed shipping method title
 		if ( (bool) $discount ) {
+
+			// If it's numeric just show the fixed price, or show a percentage.
 			$discount_display = is_numeric( $discount ) ? wc_price( $discount ) : $discount;
+
 			/* translators: Placeholder: %s - discount amount when using Local Pickup Plus shipping method */
 			$label .= ' (' . sprintf( _x( 'save %s', 'Discount amount', 'woocommerce-shipping-local-pickup-plus' ), strip_tags( $discount_display ) ) . ')';
 		}
 
 		$rate = array(
-			'id'    => $this->id,
-			'label' => $label,
-			'cost'  => $cost,
+			'id'       => $this->id,
+			'label'    => $label,
+			'cost'     => (float) $cost,
+			'calc_tax' => 'per_order',
 		);
 
 		$this->add_rate( $rate );
@@ -324,12 +333,9 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		// if coupons are not enabled, disable the discount fields and add a call to action
 		if ( ! $this->coupons_enabled() ) {
-			$this->form_fields['discount']['description'] = sprintf(
-				/* translators: %1$s - <a> tag, %2$s - </a> tag */
-				__( 'To enable discounts for Local Pickup orders, you must first %1$senable the use of coupons%2$s', 'woocommerce-shipping-local-pickup-plus' ),
-				'<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' ) . '">',
-				'</a>'
-			);
+
+			/* translators: %1$s - <a> tag, %2$s - </a> tag */
+			$this->form_fields['discount']['description'] = sprintf( __( 'To enable discounts for Local Pickup orders, you must first %1$senable the use of coupons%2$s', 'woocommerce-shipping-local-pickup-plus' ),  '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' ) . '">',  '</a>' );
 			$this->form_fields['discount']['disabled'] = true;
 		}
 	}
@@ -341,7 +347,6 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 	 * Overridden from parent class
 	 */
 	public function admin_options() {
-
 		global $wp_version;
 
 		// NOTE:  an index is not specified in the arrayed input elements below as in the original
@@ -390,32 +395,32 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 				<td class="forminp" id="<?php echo esc_attr( $this->id ); ?>_pickup_locations">
 					<table class="shippingrows widefat" cellspacing="0">
 						<thead>
-							<tr>
-								<th class="check-column"><input type="checkbox" /></th>
+						<tr>
+							<th class="check-column"><input type="checkbox" /></th>
+							<?php
+							foreach ( $pickup_fields as $key => $field ) {
+								echo "<th>{$field['label']}</th>";
+							}
+							?>
+							<th>
 								<?php
-								foreach ( $pickup_fields as $key => $field ) {
-									echo "<th>{$field['label']}</th>";
-								}
+								esc_html_e( 'Cost', 'woocommerce-shipping-local-pickup-plus' );
+								echo wc_help_tip( __( 'Cost for this pickup location, enter an amount, eg. 0 or 2.50, or leave empty to use the default cost configured above.', 'woocommerce-shipping-local-pickup-plus' ) );
 								?>
-								<th>
-									<?php
-										_e( 'Cost', 'woocommerce-shipping-local-pickup-plus' );
-										echo SV_WC_Plugin_Compatibility::wc_help_tip( __( 'Cost for this pickup location, enter an amount, eg. 0 or 2.50, or leave empty to use the default cost configured above.', 'woocommerce-shipping-local-pickup-plus' ) );
-									?>
-								</th>
-								<th>
-									<?php
-										_e( 'Notes', 'woocommerce-shipping-local-pickup-plus' );
-										echo SV_WC_Plugin_Compatibility::wc_help_tip( __( 'Free-form notes to be displayed below the pickup location on checkout/receipt.  HTML content is allowed.', 'woocommerce-shipping-local-pickup-plus' ) );
-									?>
-								</th>
-							</tr>
+							</th>
+							<th>
+								<?php
+								esc_html_e( 'Notes', 'woocommerce-shipping-local-pickup-plus' );
+								echo wc_help_tip( __( 'Free-form notes to be displayed below the pickup location on checkout/receipt.  HTML content is allowed.', 'woocommerce-shipping-local-pickup-plus' ) );
+								?>
+							</th>
+						</tr>
 						</thead>
 						<tfoot>
-							<tr>
-								<th colspan="<?php echo count( $pickup_fields ) + 3 ?>"><a href="#" class="add button"><?php _e( '+ Add Pickup Location', 'woocommerce-shipping-local-pickup-plus' ); ?></a>
+						<tr>
+							<th colspan="<?php echo count( $pickup_fields ) + 3 ?>"><a href="#" class="add button"><?php _e( '+ Add Pickup Location', 'woocommerce-shipping-local-pickup-plus' ); ?></a>
 								<a href="#" class="remove button"><?php _e( 'Delete Pickup Location', 'woocommerce-shipping-local-pickup-plus' ); ?></a></th>
-							</tr>
+						</tr>
 						</tfoot>
 						<tbody class="pickup_locations">
 						<?php
@@ -461,42 +466,15 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 				</td>
 			</tr>
 		</table><!--/.form-table-->
+
 		<script type="text/javascript">
 			jQuery( document ).ready( function( $ ) {
 
 				$( '#<?php echo $this->id; ?>_pickup_locations a.add' ).live( 'click', function() {
 
-					$( '<tr class="pickup_location">\
-							  <td class="check-column" style="width:20px;"><input type="checkbox" name="select" />\
-								<input type="hidden" name="<?php echo $this->id ?>_id[]" value="" />\
-								<input type="hidden" name="<?php echo $this->id ?>_country[]" value="<?php echo $base_country; ?>" />\
-							  </td>\<?php
-								foreach ( $pickup_fields as $key => $field ) {
-									echo '<td>';
-									if ( 'state' == $key ) {
-										if ( $states = WC()->countries->get_states( $base_country ) ) {
-											// state select box
-											echo '<select name="'.$this->id.'_state[]" class="select">';
+				    var row = '<tr class="pickup_location"><td class="check-column" style="width:20px;"><input type="checkbox" name="select" /><input type="hidden" name="<?php echo $this->id ?>_id[]" value="" /><input type="hidden" name="<?php echo $this->id ?>_country[]" value="<?php echo $base_country; ?>" /></td><?php foreach ( $pickup_fields as $key => $field ) : ?><td><?php if ( 'state' === $key ) : ?><?php if ( $states = WC()->countries->get_states( $base_country ) ) : ?><select name="<?php echo $this->id . '_state[]'; ?>" class="select"><?php foreach ( $states as $key => $value ) : ?><option <?php echo $base_state === $key ? ' selected="selected"' : ''; echo 'value="' . $key . '">'; echo esc_js( $value ); ?></option><?php endforeach; ?><?php else : ?><input type="text" value="<?php echo $base_state; ?>" name="<?php echo $this->id . '_state[]'; ?>" /><?php endif; ?><?php else : ?><input type="text" name="<?php echo $this->id . '_' . $key . '[]'; ?>" value="" placeholder="<?php echo ( in_array( $key, array( 'company', 'address_2', 'phone' ) ) ? __( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) : '' ); ?>" /><?php endif; ?></td><?php endforeach;?><td><input type="text" name="<?php echo $this->id ?>_cost[]" value="" placeholder="<?php _e( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) ?>" /></td><td><textarea name="<?php echo $this->id ?>_note[]" placeholder="<?php _e( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) ?>"></textarea></td></tr>';
 
-											foreach ( $states as $key => $value ) {
-												echo '<option';
-												if ( $base_state == $key ) echo ' selected="selected"';
-												echo ' value="' . $key . '">' . $value . '</option>';
-											}
-
-										} else {
-											// state input box
-											echo '<input type="text" value="' . $base_state . '" name="' . $this->id . '_state[]" />';
-										}
-									} else {
-										echo '<input type="text" name="' . $this->id . '_' . $key . '[]" value="" placeholder="' . ( in_array( $key, array( 'company', 'address_2', 'phone' ) ) ? __( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) : '' ) . '" />';
-									}
-
-									echo '</td>';
-								}
-							?><td><input type="text" name="<?php echo $this->id ?>_cost[]" value="" placeholder="<?php _e( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) ?>" /></td>\
-							  <td><textarea name="<?php echo $this->id ?>_note[]" placeholder="<?php _e( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) ?>"></textarea></td>\
-							  </tr>').appendTo( '#<?php echo $this->id; ?>_pickup_locations table tbody.pickup_locations' );
+					$( '#<?php echo $this->id; ?>_pickup_locations table tbody.pickup_locations' ).append( row );
 
 					return false;
 				} );
@@ -657,7 +635,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 	 */
 	public function coupon_label( $label ) {
 
-		if ( false !== stristr( $label, 'WC_LOCAL_PICKUP_PLUS' ) ) {
+		if ( false !== stripos( $label, 'WC_LOCAL_PICKUP_PLUS' ) ) {
 			$label = esc_html( __( 'Pickup', 'woocommerce-shipping-local-pickup-plus' ) );
 		}
 
@@ -675,7 +653,13 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 	 */
 	public function coupon_remove_label( $value, $coupon ) {
 
-		if ( $coupon->code === $this->get_discount_code() ) {
+		if ( SV_WC_Plugin_Compatibility::is_wc_version_gte_3_0() ) {
+			$coupon_code = $coupon->get_code();
+		} else {
+			$coupon_code = $coupon->code;
+		}
+
+		if ( $coupon_code === $this->get_discount_code() ) {
 			$value = preg_replace( '/<a.+\[Remove\].+a>/', '', $value );
 		}
 
@@ -693,7 +677,14 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 	 * @return false|string
 	 */
 	public function coupon_remove_message( $msg, $msg_code, $coupon ) {
-		return $coupon->code === $this->get_discount_code() ? false : $msg;
+
+		if ( SV_WC_Plugin_Compatibility::is_wc_version_gte_3_0() ) {
+			$coupon_code = $coupon->get_code();
+		} else {
+			$coupon_code = $coupon->code;
+		}
+
+		return $coupon_code === $this->get_discount_code() ? false : $msg;
 	}
 
 
@@ -726,6 +717,45 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 			);
 		}
 
+		if ( ! empty( $data['coupon_amount'] ) ) {
+
+			$data = wp_parse_args( $data, array(
+
+				'id'                         => true,
+				'code'                       => $code,
+
+				// TODO pay attention: these keys seem to have changed between WC 2.6 and WC 3.0 {FN 2017-03-14}
+				'type'                       => isset( $data['discount_type'] ) ? $data['discount_type'] : 'fixed_cart',
+				'discount_type'              => isset( $data['discount_type'] ) ? $data['discount_type'] : 'fixed_cart',
+				'amount'                     => max( 0, abs( $data['coupon_amount'] ) ),
+				'coupon_amount'              => max( 0, abs( $data['coupon_amount'] ) ),
+
+				'date_created'               => '',
+				'date_modified'              => '',
+				'date_expires'               => '',
+				'individual_use'             => false,
+				'usage_count'                => '',
+				'usage_limit'                => '',
+				'usage_limit_per_user'       => 0,
+				'limit_usage_to_x_items'     => 0,
+				'expiry_date'                => '',
+				'apply_before_tax'           => true,
+				'free_shipping'              => false,
+				'product_categories'         => array(),
+				'exclude_product_categories' => array(),
+				'exclude_sale_items'         => false,
+				'product_ids'                => array(),
+				'excluded_product_ids'       => array(),
+				'minimum_amount'             => '',
+				'maximum_amount'             => '',
+				'customer_email'             => '',
+				'email_restrictions'         => array(),
+				'used_by'                    => array(),
+				'description'                => '',
+
+			) );
+		}
+
 		return $data;
 	}
 
@@ -748,26 +778,35 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		// Need the last two checks for the case of an LPP eligible product being removed
 		// and LPP no longer being available or needed, otherwise we get a phantom coupon
 		// shown until the subsequent page refresh
-		if ( in_array( $this->id, $chosen_shipping_methods ) && $this->is_available( WC()->cart->get_shipping_packages() ) && WC()->cart->needs_shipping() ) {
+		if (    in_array( $this->id, $chosen_shipping_methods, false )
+		     && WC()->cart->needs_shipping()
+		     && $this->is_available( WC()->cart->get_shipping_packages() ) ) {
+
 			if ( WC()->cart->has_discount( $this->get_discount_code() ) ) {
+
 				// LPP selected and discount has already been applied
 				return;
 			}
+
 		} else {
 
 			if ( WC()->cart->has_discount( $this->get_discount_code() ) ) {
+
 				// LPP not selected, remove the discount
 				WC()->cart->remove_coupon( $this->get_discount_code() );
 
 				// refresh the cart coupons, since this happens prior to our current action
 				WC()->cart->coupons = WC()->cart->get_coupons();
 			}
+
 			return;
 		}
 
 		// apply the discount
 		remove_action( 'woocommerce_applied_coupon', array( WC()->cart, 'calculate_totals' ), 20, 0 );
+
 		WC()->cart->add_discount( $this->generate_discount_code() );
+
 		add_action( 'woocommerce_applied_coupon', array( WC()->cart, 'calculate_totals' ), 20, 0 );
 
 		// refresh the cart coupons, since this happens prior to our current action
@@ -844,7 +883,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		$package = array(
 			'contents'        => $package_contents,
-			'contents_cost'   => array_sum( @wp_list_pluck( $package_contents, 'line_total' ) ),
+			'contents_cost'   => max( 0, @array_sum( @wp_list_pluck( $package_contents, 'line_total' ) ) ),
 			'applied_coupons' => WC()->cart->get_applied_coupons(),
 			'user'            => array(
 				'ID' => get_current_user_id(),
@@ -892,13 +931,20 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		// and probably needs to be overhauled
 		$allow_other_methods_for_found_categories = apply_filters( 'wc_shipping_local_pickup_plus_allow_other_methods_categories', false );
 
+		$subscriptions_version     = class_exists( 'WC_Subscriptions' ) && ! empty( WC_Subscriptions::$version ) ? WC_Subscriptions::$version : null;
+		$subscriptions_is_lt_2_1_4 = $subscriptions_version && version_compare( $subscriptions_version, '2.1.4', '<' );
+
 		// loop the existing packages
 		foreach ( $packages as $package_index => $package ) {
 
 			// currently, Subscriptions recurring shipping packages do not use the recurring cart key for the index in this array,
 			// but they do use it in the chosen shipping methods array; we do a little dance of the indices here to fix this disparity
 			if ( isset( $package['recurring_cart_key'] ) && 'none' !== $package['recurring_cart_key'] && wc_local_pickup_plus()->is_subscriptions_active() ) {
-				$package_index = WC_Subscriptions_Cart::get_recurring_shipping_package_key( $package['recurring_cart_key'], $package_index );
+
+				// after Subscriptions v2.1.4 the index might be fixed already and we need to avoid a key string duplication
+				if ( $subscriptions_is_lt_2_1_4 || $package['recurring_cart_key'] !== $package_index ) {
+					$package_index = WC_Subscriptions_Cart::get_recurring_shipping_package_key( $package['recurring_cart_key'], $package_index );
+				}
 			}
 
 			list( $found_products, $other_products ) = $this->get_products_by_allowed_category( $package['contents'] );
@@ -992,22 +1038,28 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		// make sure we're working with multiple packages
 		if ( count( $packages ) > 1 ) {
 
-			foreach ( $packages as $package ) {
+			foreach ( $packages as &$package ) {
 
 				$location_id = isset( $package['pickup_location'] ) && is_numeric( $package['pickup_location'] ) ? $package['pickup_location'] : null;
 
+				// check specifically for null, as 0 is a valid location ID
+				if ( is_null( $location_id ) ) {
+					continue;
+				}
+
 				// check if we've seen a package with the same location id earlier in the loop
-				if ( in_array( $location_id, $pickup_locations ) ) {
+				if ( in_array( $location_id, $pickup_locations, false ) ) {
 
 					// sanity check that rates are set as expected
-					if ( isset( $package['rates']['local_pickup_plus'] ) && $rate = $package['rates']['local_pickup_plus'] ) {
+					if ( isset( $package['rates']['local_pickup_plus'] ) ) {
 
 						// remove costs and taxes
-						$rate->cost  = 0;
-						$rate->taxes = array();
+						$package['rates']['local_pickup_plus']->cost  = 0;
+						$package['rates']['local_pickup_plus']->taxes = array();
 					}
 
 				} else {
+
 					$pickup_locations[] = $location_id;
 				}
 			}
@@ -1029,8 +1081,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		$chosen_shipping_methods = $this->get_chosen_shipping_methods();
 
-		if ( in_array( $this->id, $chosen_shipping_methods ) &&
-			'yes' == $this->apply_pickup_location_tax ) {
+		if (    in_array( $this->id, $chosen_shipping_methods, true )
+		     && 'yes' === $this->apply_pickup_location_tax ) {
 
 			// there can be only one taxable address, so if there are multiple pickup locations chosen, just use the first one we find
 			foreach ( $chosen_shipping_methods as $package_index => $shipping_method_id ) {
@@ -1135,12 +1187,12 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		$this->load_pickup_locations();
 
 		echo '<tr class="pickup_location">';
-		echo '<th colspan="1">' . ( 1 == count( $this->pickup_locations ) ? __( 'Your Pickup Location', 'woocommerce-shipping-local-pickup-plus'  ) : __( 'Kies je afhaallocatie:', 'woocommerce-shipping-local-pickup-plus' ) ) . '</th>';
+		echo '<th colspan="1">' . ( 1 == count( $this->pickup_locations ) ? __( 'Your Pickup Location', 'woocommerce-shipping-local-pickup-plus'  ) : __( 'Choose Pickup Location', 'woocommerce-shipping-local-pickup-plus' ) . ' <abbr class="required" title="required" style="border:none;">*</abbr>' ) . '</th>';
 		echo '<td class="update_totals_on_change">';
 
 		do_action( 'woocommerce_review_order_before_local_pickup_location', $this->pickup_locations, array(), $package_index );
 
-		if ( 1 == count( $this->pickup_locations ) ) {
+		if ( 1 === count( $this->pickup_locations ) ) {
 
 			$chosen_pickup_location = $this->pickup_locations[0];
 			echo $this->get_formatted_address_helper( $chosen_pickup_location, true );
@@ -1151,7 +1203,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 			$chosen_pickup_location_id = $this->get_chosen_pickup_location_id( $package_index );
 			$chosen_pickup_location    = null;
 
-			if ( 'select' == $this->get_checkout_pickup_location_styling() ) {
+			if ( 'select' === $this->get_checkout_pickup_location_styling() ) {
 				echo '<select name="pickup_location[' . $package_index . ']" class="pickup_location" data-placeholder="' . __( 'Choose One', 'woocommerce-shipping-local-pickup-plus' ) . '" style="width: 100%;">';
 				echo '<option value=""></option>';
 				foreach ( $this->pickup_locations as $location ) {
@@ -1173,6 +1225,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 						$chosen_pickup_location = $location;
 					}
 					echo '<li style="margin-left:0;">';
+					// GEWIJZIGD: Voeg Savoy-klasses toe zodat styling identiek is
 					echo '<input type="radio" name="pickup_location[' . $package_index . ']" id="pickup_location_' . $package_index . '_' . $location['id'] . '" value="' . esc_attr( $location['id'] ) . '" class="nm-custom-radio pickup_location" ' . checked( $location['id'], $chosen_pickup_location_id, false ) . ' />';
 					echo '<label class="nm-custom-radio-label" for="pickup_location_' . $package_index . '_' . $location['id'] . '">' . $this->get_formatted_address_helper( $location, true, true ) . '</label>';
 					echo '</li>';
@@ -1183,6 +1236,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		// show the note for the selected pickup location, if any
 		if ( $chosen_pickup_location && isset( $chosen_pickup_location['note'] ) && $chosen_pickup_location['note'] ) {
+			// GEWIJZIGD: Zorg ervoor dat de openingsuren in de shortcode uitgeschreven worden
 			echo '<div class="wc-pickup-location-note">' . do_shortcode($chosen_pickup_location['note']) . '</div>';
 		}
 
@@ -1297,7 +1351,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 				if ( $this->id == $shipping_method_id ) {
 					// local pickup plus shipping method selected
-					if ( 'yes' == $this->categories_pickup_only && count( $other_products ) > 0 ) {
+					if ( 'yes' === $this->categories_pickup_only && count( $other_products ) > 0 ) {
 						wc_add_notice( sprintf( __( 'Some of your cart products are not eligible for local pickup, please remove %s, or select a different shipping method to continue', 'woocommerce-shipping-local-pickup-plus' ), '<strong>' . implode( ', ', $other_products ) . '</strong>' ), 'error' );
 						$has_errors = true;
 					}
@@ -1335,7 +1389,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		$index = strlen( ' (' . __( 'Free', 'woocommerce-shipping-local-pickup-plus' ) . ')' );
 
-		if ( $this->get_discount() && substr( $full_label, -$index ) == ' (' . __( 'Free', 'woocommerce-shipping-local-pickup-plus' ) . ')' ) {
+		if ( $this->get_discount() && substr( $full_label, -$index ) === ' (' . __( 'Free', 'woocommerce-shipping-local-pickup-plus' ) . ')' ) {
 			$full_label = substr( $full_label, 0, -$index );
 		}
 
@@ -1350,31 +1404,120 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 	 * _shipping_item_id item meta), which we wouldn't otherwise be able to do
 	 * after checkout.
 	 *
+	 * This hook callback has different args according to WC version pre/post WC 3.0.
+	 *
 	 * @since 1.5
-	 * @see WC_Shipping_Local_Pickup_Plus::checkout_add_shipping_order_item()
-	 * @param int $item_id order item identifier
-	 * @param array $values item values
-	 * @param string $cart_item_key the cart item key hash
+	 * @see WC_Shipping_Local_Pickup_Plus::checkout_add_shipping_order_item().
+	 * @param int $item_id Order item meta ID.
+	 * @param array|\WC_Order_Item_Shipping|\WC_Order_Item $item_or_values Item object (WC 3.0+) or values in versions before WC 3.0
+	 * @param string $cart_item_key The cart item key hash in versions before WC 3.0 or the order ID if WC 3.0 onwards.
 	 */
-	public function associate_order_item_to_cart_item( $item_id, $values, $cart_item_key ) {
-		$this->cart_item_to_order_item[ $cart_item_key ] = $item_id;
+	public function associate_order_item_to_cart_item( $item_id, $item_or_values, $cart_item_key ) {
+
+		if ( SV_WC_Plugin_Compatibility::is_wc_version_lt_3_0() ) {
+			$this->cart_item_to_order_item[ $cart_item_key ] = $item_id;
+		} elseif ( $item_or_values instanceof WC_Order_Item_Product && isset( $item_or_values->legacy_cart_item_key ) ) {
+			$this->cart_item_to_order_item[ $item_or_values->legacy_cart_item_key ] = $item_id;
+		}
+	}
+
+
+	/**
+	 * Set the selected pickup locations on the shipping order item when it's added.
+	 *
+	 * Compatibility callback method for WooCommerce version 3.0+.
+	 *
+	 * @internal
+	 *
+	 * @since 1.14.0
+	 * @param int $shipping_item_id
+	 * @param \WC_Order_Item_Shipping $shipping_item
+	 * @param int $order_id
+	 */
+	public function checkout_new_shipping_order_item( $shipping_item_id, $shipping_item, $order_id ) {
+
+		if ( ! $shipping_item instanceof WC_Order_Item_Shipping ) {
+			return;
+		}
+
+		$package_index = isset( $shipping_item->legacy_package_key ) ? $shipping_item->legacy_package_key : null;
+
+		// pickup location for this shipping package
+		if (    null !== $package_index
+		     && isset( $_POST['pickup_location'][ $package_index ] )
+		     && ( $pickup_location = $this->get_pickup_location_by_id( $_POST['pickup_location'][ $package_index ] ) ) ) {
+
+			$order            = wc_get_order( $order_id );
+			$shipping_methods = $order->get_shipping_methods();
+
+			// the shipping item is indeed using local pickup plus, so add the selected pickup location
+			if (    isset( $shipping_methods[ $shipping_item_id ]['method_id'] )
+			     && $this->id == $shipping_methods[ $shipping_item_id ]['method_id'] ) {
+
+				// seems like we shouldn't be storing the note field in the order meta,
+				// this seems reasonable to look up from the options settings
+				unset( $pickup_location['note'] );
+
+				wc_update_order_item_meta( $shipping_item_id, 'pickup_location', $pickup_location );
+
+				// remember which pickup location they used.  Since the packages could be different upon the next
+				//  checkout, really the correct thing to do here would be to just save one pickup location as the
+				//  default for all packages, but that will require some additional code, figuring out when we've
+				//  hit the last package so we can clear out the session, etc
+				$chosen_pickup_location                   = WC()->session->get( 'chosen_pickup_locations' );
+				$chosen_pickup_location[ $package_index ] = $pickup_location['id'];
+
+				WC()->session->set( 'chosen_pickup_locations', $chosen_pickup_location );
+
+				// figure out which order items were shipped by what shipping method?
+				// we have: order item id, package item id, cart item id
+				// we want to associate a package item id with an order item id
+				$packages = WC()->shipping()->get_packages();
+
+				foreach ( $packages[ $package_index ]['contents'] as $cart_item_id => $values ) {
+
+					$order_item_id = isset( $this->cart_item_to_order_item[ $cart_item_id ] ) ? $this->cart_item_to_order_item[ $cart_item_id ] : null;
+
+					if ( $order_item_id ) {
+
+						wc_update_order_item_meta( $order_item_id, '_shipping_item_id', $shipping_item_id );
+
+						/** @type WC_Product $product */
+						$product = isset( $values['data'] ) ? $values['data'] : null;
+
+						// skip virtual items
+						if ( ! $product->needs_shipping() ) {
+							continue;
+						}
+
+						// GEWIJZIGD: Schrijf de ophaallocatie niet expliciet weg bij elke bestellijn
+						// wc_update_order_item_meta( $order_item_id, __( 'Pickup Location', 'woocommerce-shipping-local-pickup-plus' ), $this->get_formatted_address_helper( $pickup_location, true ) );
+					}
+				}
+			}
+		}
 	}
 
 
 	/**
 	 * Set the selected pickup locations on the shipping order item when it's added
 	 *
+	 * Compatibility callback method for WooCommerce versions earlier than 3.0.
+	 *
+	 * @internal2
+	 * @deprecated
+	 *
 	 * @since 1.5
 	 * @see WC_Shipping_Local_Pickup_Plus::associate_order_item_to_cart_item()
 	 * @param int $order_id order identifier
-	 * @param int $item_id shipping order item identifier
+	 * @param int $shipping_item_id shipping order item identifier
 	 * @param int $package_index the package index for this shipping order item
 	 */
 	public function checkout_add_shipping_order_item( $order_id, $shipping_item_id, $package_index ) {
 
 		// pickup location for this shipping package
-		if ( isset( $_POST['pickup_location'][ $package_index ] ) &&
-			( $pickup_location = $this->get_pickup_location_by_id( $_POST['pickup_location'][ $package_index ] ) ) ) {
+		if (    isset( $_POST['pickup_location'][ $package_index ] )
+		     && ( $pickup_location = $this->get_pickup_location_by_id( $_POST['pickup_location'][ $package_index ] ) ) ) {
 
 			$order            = wc_get_order( $order_id );
 			$shipping_methods = $order->get_shipping_methods();
@@ -1384,14 +1527,16 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 				// seems like we shouldn't be storing the note field in the order meta, this seems reasonable to look up from the options settings
 				unset( $pickup_location['note'] );
+
 				wc_update_order_item_meta( $shipping_item_id, 'pickup_location', $pickup_location );
 
 				// remember which pickup location they used.  Since the packages could be different upon the next
 				//  checkout, really the correct thing to do here would be to just save one pickup location as the
 				//  default for all packages, but that will require some additional code, figuring out when we've
 				//  hit the last package so we can clear out the session, etc
-				$chosen_pickup_location = WC()->session->get( 'chosen_pickup_locations' );
+				$chosen_pickup_location                   = WC()->session->get( 'chosen_pickup_locations' );
 				$chosen_pickup_location[ $package_index ] = $pickup_location['id'];
+
 				WC()->session->set( 'chosen_pickup_locations', $chosen_pickup_location );
 
 				// figure out which order items were shipped by what shipping method?
@@ -1402,22 +1547,22 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 				foreach ( $packages[ $package_index ]['contents'] as $cart_item_id => $values ) {
 
-					$order_item_id = $this->cart_item_to_order_item[ $cart_item_id ];
+					$order_item_id = isset( $this->cart_item_to_order_item ) ? $this->cart_item_to_order_item[ $cart_item_id ] : null;
 
-					wc_update_order_item_meta( $order_item_id, '_shipping_item_id', $shipping_item_id );
+					if ( $order_item_id ) {
 
-					// skip virtual items
-					if ( ! $values['data']->needs_shipping() ) {
-						continue;
+						wc_update_order_item_meta( $order_item_id, '_shipping_item_id', $shipping_item_id );
+
+						// skip virtual items
+						if ( ! $values['data']->needs_shipping() ) {
+							continue;
+						}
+
+						wc_update_order_item_meta( $order_item_id, __( 'Pickup Location', 'woocommerce-shipping-local-pickup-plus' ), $this->get_formatted_address_helper( $pickup_location, true ) );
 					}
-
-					 // GEWIJZIGD: Schrijf de ophaallocatie niet expliciet weg bij elke bestellijn
-					 // wc_update_order_item_meta( $order_item_id, __( 'Pickup Location', 'woocommerce-shipping-local-pickup-plus' ), $this->get_formatted_address_helper( $pickup_location, true ) );
-
 				}
 			}
 		}
-
 	}
 
 
@@ -1529,11 +1674,13 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		$pickup_locations = array();
 
 		foreach ( $order->get_shipping_methods() as $shipping_item ) {
+
 			if ( $this->id == $shipping_item['method_id'] && isset( $shipping_item['pickup_location'] ) ) {
+
 				$location = maybe_unserialize( $shipping_item['pickup_location'] );
 
 				// get the note from the global location, if it's still configured
-				$global_location = $this->get_pickup_location_by_id( $location['id'] );
+				$global_location  = $this->get_pickup_location_by_id( $location['id'] );
 				$location['note'] = isset( $global_location['note'] ) ? $global_location['note'] : '';
 
 				$pickup_locations[] = $location;
@@ -1758,7 +1905,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 			}
 
 			// clean up the old style data
-			delete_post_meta( $order->id, '_pickup_location' );
+			SV_WC_Order_Compatibility::delete_meta_data( $order, '_pickup_location' );
 		}
 
 		// Normal WC 2.1+ behavior
@@ -1804,7 +1951,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 	 * @return boolean true if coupons are enabled in core WooCommerce settings
 	 */
 	private function coupons_enabled() {
-		return 'yes' === get_option( 'woocommerce_enable_coupons' );
+		return (bool) wc_coupons_enabled();
 	}
 
 	/**
@@ -1899,8 +2046,12 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 	 */
 	private function get_pickup_location_by_id( $id ) {
 
+		if ( empty( $this->pickup_locations ) ) {
+			$this->load_pickup_locations();
+		}
+
 		foreach ( $this->pickup_locations as $location ) {
-			if ( $location['id'] === $id ) {
+			if ( $location['id'] == $id ) {
 				return $location;
 			}
 		}
