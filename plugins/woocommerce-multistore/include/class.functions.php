@@ -687,7 +687,8 @@
                     
                     $filename           = wp_unique_filename( $uploads['path'], $newfilename, $unique_filename_callback = null );
                     $wp_filetype        = wp_check_filetype($filename, null );
-                    $fullpathfilename   = $uploads['path'] . "/" . $filename;
+                    // GEWIJZIGD: Upload enkel de grootste thumbnail naar de dochtersites
+                    $fullpathfilename   = $uploads['path'] . "/" . str_replace('.jpg', '-2000x2000.jpg', $filename);
 
                         
                     $image_content  = file_get_contents($image_path);
