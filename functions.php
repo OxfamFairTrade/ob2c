@@ -1474,8 +1474,7 @@
 			echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
 			echo '</div>';
 		}
-		var_dump($screen);
-		if ( $screen->parent_base == 'oxfam-products' ) {
+		if ( $screen->base == 'woocommerce_page_oxfam-products' ) {
 			echo '<div class="notice notice-warning">';
 			echo '<p>Wijzigingen aan voorraad en uitlichting opslaan via deze pagina werkt op dit moment nog niet!</p>';
 			echo '</div>';
