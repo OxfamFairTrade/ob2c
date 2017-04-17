@@ -395,6 +395,20 @@
 		return $address_fields;
 	}
 
+	// Zet hoofdletters aan namen
+	add_filter( 'woocommerce_process_checkout_field_billing_first_name', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_last_name', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_city', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_first_name', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_last_name', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_address_1', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_city', 'uppercase_words', 10, 1 );
+	
+	function uppercase_words( $name ) {
+		return ucwords($name);
+	}
+
 	// Herschrijf telefoonnummers tijdens het afrekenen in de standaardformaten 0472 788 515 (gsm) of 059 32 49 59 (vast)
 	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_phone_number', 10, 1 );
 
