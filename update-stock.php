@@ -1,88 +1,104 @@
-<h1>Voorraadbeheer van lokale producten</h1>
-<table>
-	<?php
-		// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
-		// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
-		$args = array(
-			'post_type'			=> 'product',
-			'post_status'		=> array( 'publish' ),
-			'posts_per_page'	=> -1,
-			'meta_key'			=> '_sku',
-			'orderby'			=> 'meta_value_num',
-			'order'				=> 'ASC',
-		);
+<div class="wrap">
+	<h1>Voorraadbeheer van lokale producten</h1>
 
-		$products = new WP_Query( $args );
+	<div style="display: table; border-collapse: separate; border-spacing: 0px 25px;" id="oxfam-products">
+		<?php
+			// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
+			// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
+			$args = array(
+				'post_type'			=> 'product',
+				'post_status'		=> array( 'publish' ),
+				'posts_per_page'	=> -1,
+				'meta_key'			=> '_sku',
+				'orderby'			=> 'meta_value_num',
+				'order'				=> 'ASC',
+			);
 
-		if ( $products->have_posts() ) {
-			$i = 1;
-			while ( $products->have_posts() ) {
-				$products->the_post();
-				$product = wc_get_product( get_the_ID() );
-				// Verhinder dat leeggoed ook opduikt
-				if ( is_numeric( $product->get_sku() ) ) {
-					if ( $i % 2 === 1 ) echo '<tr>';
-					$color = $product->is_in_stock() ? '#61a534' : '#e70052'; 
-					echo '<th colspan="2" style="border-right: 5px solid '.$color.'">'.$product->get_sku().': '.$product->get_title().'<br><br>';
-					echo '<select name="_stock_status">';
-					echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option><option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uit voorraad</option>';
-					echo '</select><br><br>';
-					echo '<input type="checkbox" name="_featured" '.checked( $product->is_featured(), true, false ).'> Uitgelicht</th>';
-					// Nieuwe functie output ook al <img>-tag
-					echo '<td colspan="2" style="text-align: center;">'.$product->get_image( 'thumbnail' ).'</td>';
-					if ( $i % 2 === 0 ) echo '<tr>';
-					$i++;
-				}
-			}
-			wp_reset_postdata();
-		}
+			$products = new WP_Query( $args );
 
-		add_action('admin_footer', 'oxfam_action_javascript');
-
-		function oxfam_action_javascript() { ?>
-			<script type="text/javascript">
-				jQuery(document).ready(function() {
-					jQuery("input[type=checkbox]").on( 'change', function() {
-						if ( jQuery(this).is(":checked") ) {
-							alert("Wil je dit opslaan?");
-        				} else {
-        					alert("In dit geval zetten we het af!");
-        				} 
-					});
-
-					var data = <?php echo json_encode(list_new_images()); ?>;
-
-					if ( data !== null ) {
-						dump(data);
-						var s = "";
-						if ( data.length !== 1 ) s = "'s";
-						jQuery(".input").prepend("<pre>We vonden "+data.length+" nieuwe of gewijzigde foto"+s+"!</pre>");
-						if ( data.length > 0 ) jQuery(".run").prop('disabled', false);
-						
-						jQuery(".run").on('click', function() {
-							jQuery(".run").prop('disabled', true);
-							jQuery(".run").text('Ik ben aan het nadenken ...');
-							jQuery('#wpcontent').css('background-color', 'orange');
-							jQuery(".output").before("<p>&nbsp;</p>");
-							ajaxCall(0);
-						});
-					} else {
-						jQuery(".input").prepend("<pre>We vonden geen enkele nieuwe of gewijzigde foto!</pre>");
+			if ( $products->have_posts() ) {
+				$i = 1;
+				while ( $products->have_posts() ) {
+					$products->the_post();
+					$product = wc_get_product( get_the_ID() );
+					// Verhinder dat leeggoed ook opduikt
+					if ( is_numeric( $product->get_sku() ) ) {
+						if ( $i % 2 === 1 ) echo '<div style="display: table-row;">';
+						$color = $product->is_in_stock() ? '#61a534' : '#e70052'; 
+						echo '<div id="'.get_the_ID().'" style="box-sizing: border-box; text-align: center; padding: 0px 25px; width: 35%; height: 160px; display: table-cell;"><p class="title" style="font-weight: bold;">'.$product->get_sku().': '.$product->get_title().'</p>';
+						echo '<input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'> In de kijker?<br>';
+						echo '<select id="'.get_the_ID().'-stockstatus" style="margin-top: 10px;">';
+						echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option><option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uit voorraad</option>';
+						echo '</select>';
+						echo '<p class="output" style="color: orange;">&nbsp;</p></div>';
+						// Nieuwe functie output ook al <img>-tag
+						echo '<div style="width: 15%; vertical-align: middle; display: table-cell; box-sizing: border-box; text-align: center; border-left: 5px solid '.$color.'">'.$product->get_image( 'thumbnail' ).'</div>';
+						if ( $i % 2 === 0 ) echo '</div>';
+						$i++;
 					}
+				}
+				wp_reset_postdata();
+			}
 
-					jQuery(".input").prepend("<pre>Uploadtijdstip laatst verwerkte foto: <?php echo date('d/m/Y H:i:s', get_option('laatste_registratie_timestamp', '946681200')); ?></pre>");
+			add_action('admin_footer', 'oxfam_action_javascript');
 
-					var tries = 0;
+			function oxfam_action_javascript() { ?>
+				<script type="text/javascript">
+					jQuery(document).ready(function() {
+						jQuery("#oxfam-products").find("input[type=checkbox]").on( 'change', function() {
+							var name = jQuery(this).parent().children(".title").first().html();
+							var field = jQuery(this).attr('id');
+							var parts = field.split("-");
+							var id = parts[0];
+							var meta = parts[1];
+							var go = confirm("Ben je zeker dat je de uitlichting wil bijwerken van "+name+"?");
+							if ( go == true ) {
+								if ( jQuery(this).is(":checked") ) {
+									ajaxCall(id, meta, 'yes');
+								} else {
+									ajaxCall(id, meta, 'no');
+								}
+							} else {
+								alert("Je hebt geannuleerd, er wordt niets gewijzigd!");
+								jQuery(this).prop("checked", !jQuery(this).is(":checked") );
+							}
+						});
 
-					function ajaxCall(i) {
-						if ( i < data.length ) {
-							var photo = data[i];
+						jQuery("#oxfam-products").find("select").on( 'change', function() {
+							var name = jQuery(this).parent().children(".title").first().html();
+							var field = jQuery(this).attr('id');
+							var parts = field.split("-");
+							var id = parts[0];
+							var meta = parts[1];
+							var go = confirm("Ben je zeker dat je de voorraadstatus wil bijwerken van "+name+"?");
+							if ( go == true ) {
+								ajaxCall( id, meta, jQuery(this).find(":selected").val() );
+								/* UPDATE RANDKLEUR VAN FOTO */
+								var color = '#61a534';
+								if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
+									color = '#e70052';
+								}
+								jQuery("#"+id).next('div').css('border-left-color', color);
+							} else {
+								alert("Je hebt geannuleerd, er wordt niets gewijzigd!");
+								var fallback = 'outofstock';
+								if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
+									fallback = 'instock';
+								}
+								jQuery(this).val(fallback);
+							}
+						});
+
+						var tries = 0;
+
+						function ajaxCall(id, meta, value) {
+							jQuery("#"+id).find(".output").html("Aan het opslaan ...");
 
 							var input = {
-								'action': 'oxfam_action',
-								'name': photo['name'],
-								'timestamp': photo['timestamp'],
-								'path': photo['path'],
+								'action': 'oxfam_product_action',
+								'id': id,
+								'meta': meta,
+								'value': value,
 							};
 				    		
 				    		jQuery.ajax({
@@ -92,41 +108,30 @@
 				    			dataType: 'html',
 				    			success: function(msg) {
 							    	tries = 0;
-									jQuery(".output").prepend("<p>"+msg+"</p>");
-							    	ajaxCall(i+1);
+							    	jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(5000).animate({
+							    		opacity: 0,
+							    	}, 1000, function(){
+										jQuery(this).html("&nbsp;").css('opacity', 1);
+									});
 								},
 								error: function(jqXHR, statusText, errorThrown) {
 									tries++;
-									jQuery(".output").prepend("<p>Asynchroon laden van PHP-file mislukt ... (poging: "+tries+" &mdash; "+statusText+": "+errorThrown+")"+"</p>");
 									if ( tries < 5 ) {
-										ajaxCall(i);
+										ajaxCall(id, meta, value);
 									} else {
 										tries = 0;
-										jQuery(".output").prepend("<p>Skip <i>"+photo['name']+"</i>, we schuiven door naar de volgende foto!</p>");
-										ajaxCall(i+1);
+										jQuery("#"+id).find(".output").html("Wijzigingen mislukt!").delay(10000).animate({
+								    		opacity: 0,
+								    	}, 1000, function(){
+											jQuery(this).html("&nbsp;").css('opacity', 1);
+										});
 									}
 								},
 							});
-				    	} else {
-				    		jQuery("#wpcontent").css("background-color", "limegreen");
-				    		jQuery(".output").prepend("<p>Klaar, we hebben "+i+" foto's verwerkt!</p>");
-				    		jQuery(".run").text("Registreer nieuwe / gewijzigde foto's");
-				    	}
-					}
-					
-					function dump(obj) {
-					    var out = '';
-					    for ( var i in obj ) {
-					        if ( typeof obj[i] === 'object' ){
-					            dump(obj[i]);
-					        } else {
-					            if ( i != 'timestamp' ) out += i + ": " + obj[i] + "<br>";
-					        }
-					    }
-					    jQuery(".input").append('<pre>'+out+'</pre>');
-					}
-				});
-			</script>
-		<?php }
-	?>
-</table>
+						}
+					});
+				</script>
+			<?php }
+		?>
+	</div>
+</div>

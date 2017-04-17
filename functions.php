@@ -722,85 +722,24 @@
 	}
 	
 	// Registreer de AJAX-acties
-	add_action( 'wp_ajax_oxfam_action', 'oxfam_action_callback' );
+	add_action( 'wp_ajax_oxfam_product_action', 'oxfam_product_action_callback' );
 
-	function oxfam_action_callback() {
-		echo register_photo($_POST['name'], $_POST['timestamp'], $_POST['path']);
+	function oxfam_product_action_callback() {
+		echo save_local_product_details($_POST['id'], $_POST['meta'], $_POST['value']);
     	wp_die();
 	}
 
-	function wp_get_attachment_id_by_post_name($post_title) {
-        $args = array(
-            // We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
-            'posts_per_page'	=> 1,
-            'post_type'			=> 'attachment',
-            // Moet er in principe bij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
-            'post_status'		=> 'inherit',
-            // De titel is steeds gelijk aan de bestandsnaam en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
-            'title'				=> trim($post_title),
-        );
-        $attachments = new WP_Query($args);
-        if ( $attachments->have_posts() ) {
-        	$attachments->the_post();
-        	$attachment_id = get_the_ID();
-        	wp_reset_postdata();
-        } else {
-        	$attachment_id = false;
-        }
-        return $attachment_id;
-    }
-
-    function register_photo($filename, $filestamp, $filepath) {			
-    	// Parse de fototitel
-    	$filetitle = explode('.jpg', $filename);
-	    $filetitle = $filetitle[0];
-    	
-    	// Check of er al een vorige versie bestaat
-    	$updated = false;
-    	$deleted = false;
-    	$old_id= wp_get_attachment_id_by_post_name($filetitle);
-		if ( $old_id ) {
-			// Stel het originele bestand veilig
-			rename($filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg');
-			// Verwijder de versie
-			if ( wp_delete_attachment($old_id, true) ) {
-				// Extra check op het succesvol verwijderen
-				$deleted = true;
-			}
-			$updated = true;
-			// Hernoem opnieuw zodat de links weer naar de juiste file wijzen 
-			rename(WP_CONTENT_DIR.'/uploads/temporary.jpg', $filepath);
-		}
-		
-		// Creëer de parameters voor de foto
-		$wp_filetype = wp_check_filetype($filename, null);
-		$attachment = array(
-			'post_mime_type' => $wp_filetype['type'],
-			'post_title' => $filetitle,
-			'post_content' => '',
-			'post_author' => get_current_user_id(),
-			'post_status' => 'inherit',
-		);
-
-		// Probeer de foto in de mediabibliotheek te stoppen
-		$msg = "";
-		$attachment_id = wp_insert_attachment( $attachment, $filepath );
-		if (!is_wp_error($attachment_id)) {
-			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $filepath );
-			// Registreer ook de metadata en toon een succesboodschap
-			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
-			if ($updated) {
-				$deleted = $deleted ? "verwijderd en opnieuw aangemaakt" : "bijgewerkt";
-				$msg .= "<i>".$filename."</i> ".$deleted." in de mediabibliotheek om ".date('H:i:s')." ...";
-			} else {
-				$msg .= "<i>".$filename."</i> aangemaakt in de mediabibliotheek om ".date('H:i:s')." ...";
-			}
-			// Sla het uploadtijdstip van de laatste succesvolle registratie op (kan gebruikt worden als limiet voor nieuwe foto's!)
-			update_option('laatste_registratie_timestamp', $filestamp);
-			$registered = true;
-		} else {
-			// Geef een waarschuwing als de aanmaak mislukte
-			$msg .= "Opgelet, er liep iets mis met <i>".$filename."</i>!";
+	function save_local_product_details($id, $meta, $value) {			
+    	$msg = "";
+    	$product = wc_get_product($id);
+		if ( $meta === 'stockstatus' ) {
+			$product->set_stock_status($value);
+			$product->save();
+			$msg .= "Voorraadstatus opgeslagen!";
+		} elseif ( $meta === 'featured' ) {
+			$product->set_featured($value);
+			$product->save();
+			$msg .= "Uitlichting opgeslagen!";
 		}
 
 		return $msg;
@@ -1475,8 +1414,8 @@
 			echo '</div>';
 		}
 		if ( $screen->base == 'woocommerce_page_oxfam-products' ) {
-			echo '<div class="notice notice-warning">';
-			echo '<p>Wijzigingen aan voorraad en uitlichting opslaan via deze pagina werkt op dit moment nog niet!</p>';
+			echo '<div class="notice notice-info">';
+			echo '<p>Wijzigingen aan voorraad en uitlichting opslaan is inmiddels mogelijk! Voorlopig nog met bevestigingsvenster, AJAX-debugging volop aan de gang.</p>';
 			echo '</div>';
 		}
 	}
