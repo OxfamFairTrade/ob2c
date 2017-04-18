@@ -1081,7 +1081,7 @@
 
 	// Output de info over de partners
 	function partner_tab_content() {
-		global $product;
+		global $product, $wpdb;
 		echo '<div class="nm-additional-information-inner">';
 			$alt = 1;
 			$terms = get_the_terms( $product->get_id(), 'product_partner' );
@@ -1128,25 +1128,26 @@
 				</tr>
 
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th>A- en B-partners</th>
+					<th>Onze partners</th>
 					<td><?php
 						$i = 0;
-						$msg = '<i>(uit FLO-register)</i>';
+						$msg = '<i>(aankoop via andere fairtradeorganisatie)</i>';
 						if ( count( $partners ) > 0 ) {
 							foreach ( $partners as $partner ) {
 								$i++;
-								// DIT BESTAAT NIET MEER IN PHP 7
-								// $link = mssql_connect('5.134.1.119', 'sa', OFT_FTP, 'Comm_owwbe');
-								if ( $link ) {
-									$result = mssql_fetch_array(mssql_query("SELECT * FROM [dbo].[partners] WHERE [part_naam] = ".$partner->name));
-									$node = $result['part_website'];
+								$row = $wpdb->get_row( 'SELECT * FROM partners WHERE part_naam = '.$partner->name );
+								if ( $row ) {
+									$url = 'https://www.oxfamwereldwinkels.be/'.trim($row->part_website);
 								} else {
 									// Val terug op de termbeschrijving die misschien toegevoegd is
-									$node = $partner->description;
+									$link = $partner->description;
+									$url = explode($link, 'href="');
+									$parts = explode($url[1], '"');
+									$url = $parts[0];
 								}
 								
-								if ( strlen($node) > 3 ) {
-									$text = '<a href="https://www.oxfamwereldwinkels.be/"'.$node.' target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner->name.'</a>';
+								if ( strlen($url) > 10 ) {
+									$text = '<a href="'.$url.' target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner->name.'</a>';
 								} else {
 									$text = $partner->name;
 								}
