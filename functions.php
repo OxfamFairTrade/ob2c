@@ -1140,14 +1140,13 @@
 									$url = 'https://www.oxfamwereldwinkels.be/'.trim($row->part_website);
 								} else {
 									// Val terug op de termbeschrijving die misschien toegevoegd is
-									$link = $partner->description;
-									$url = explode($link, 'href="');
-									$parts = explode($url[1], '"');
+									$url = explode('href="', $partner->description);
+									$parts = explode('"', $url[1]);
 									$url = $parts[0];
 								}
 								
 								if ( strlen($url) > 10 ) {
-									$text = '<a href="'.$url.' target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner->name.'</a>';
+									$text = '<a href="'.$url.'" target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner->name.'</a>';
 								} else {
 									$text = $partner->name;
 								}
