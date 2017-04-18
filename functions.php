@@ -1041,8 +1041,9 @@
 			<table class="shop_attributes">
 
 				<?php foreach ( $attributes as $attribute ) :
+					// $forbidden = array( 'pa_ompak', 'pa_ompak_ean', 'pa_pal_perlaag', 'pa_pal_lagen' );
 					// Logica omkeren: nu tonen we enkel de 'verborgen' attributen
-					if ( empty( $attribute['is_visible'] ) ) {
+					if ( empty( $attribute['is_visible'] ) and ! in_array( $attribute['name'], $forbidden ) ) {
 						$has_row = true;
 					} else {
 						continue;
@@ -1423,9 +1424,9 @@
 			echo '<p>Download <a href="http://demo.oxfamwereldwinkels.be/wp-content/uploads/verzendtarieven-B2C-pakketten.pdf" target="_blank">de nota met tarieven en voorwaarden</a> bij externe verzending via Bpost of Bubble Post. Kun je met een lokale duurzame speler samenwerken? Des te beter! Bezorg ons vóór de 2de opleidingssessie een ruwe schatting van de kostprijs zodat we kunnen bekijken hoe we dit in de voorgestelde vergoeding van 5,74 euro excl. BTW voor thuislevering kunnen inpassen.</p>';
 			echo '</div>';
 		} elseif ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
-			echo '<div class="notice notice-warning">';
-			echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
-			echo '</div>';
+			// echo '<div class="notice notice-warning">';
+			// echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
+			// echo '</div>';
 		}
 		if ( $screen->base == 'woocommerce_page_oxfam-products' ) {
 			echo '<div class="notice notice-info">';

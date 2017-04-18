@@ -688,11 +688,12 @@
                     $filename           = wp_unique_filename( $uploads['path'], $newfilename, $unique_filename_callback = null );
                     $wp_filetype        = wp_check_filetype($filename, null );
                     
-                    $fullpathfilename   = $uploads['path'] . "/" . str_replace('.jpg', '-1500x1500.jpg', $filename);
+                    $fullpathfilename   = $uploads['path'] . "/" . $filename;
 
                     // GEWIJZIGD: Upload enkel de grootste thumbnail naar de dochtersites
-                    $small_image_path = str_replace('.jpg', '-1500x1500.jpg', $image_path);
+                    $small_image_path = str_replace('.jpg', '-2000x2000.jpg', $image_path);
                     $image_path = file_exists($small_image_path) ?  $small_image_path : $image_path;
+                    write_log($image_path);
                     
                     $image_content  = file_get_contents($image_path);
                     $fileSaved      = file_put_contents($uploads['path'] . "/" . $filename, $image_content);
