@@ -40,7 +40,7 @@ msgstr ""
 
 #: lib/init.php:85 lib/init.php:86
 msgid "User searches"
-msgstr "Zoeklogs"
+msgstr "Zoeklogboek"
 
 #: lib/interface.php:6
 msgid "Relevanssi Premium Search Options"
@@ -52,7 +52,7 @@ msgstr ""
 
 #: lib/interface.php:81
 msgid "User Searches"
-msgstr ""
+msgstr "Zoeklogboek"
 
 #: lib/interface.php:83
 msgid "Relevanssi User Searches"
@@ -61,10 +61,11 @@ msgstr ""
 #: lib/interface.php:111
 msgid "Enable query logging to see stats here."
 msgstr ""
+"Schakel het loggen van zoekopdrachten in om statistieken te zien verschijnen."
 
 #: lib/interface.php:126
 msgid "Logs clear!"
-msgstr ""
+msgstr "Zoeklogboek gewist!"
 
 #: lib/interface.php:320
 #, php-format
@@ -160,12 +161,14 @@ msgstr "Zoekopdrachten zonder resultaat"
 
 #: lib/interface.php:486
 msgid "Reset Logs"
-msgstr "Wis de logboeken"
+msgstr "Wis zoekgeschiedenis"
 
 #: lib/interface.php:489
 #, php-format
 msgid "To reset the logs, type \"reset\" into the box here %s and click %s"
 msgstr ""
+"Typ ‘reset’ in dit vakje %s en klik op %s om de historiek van de "
+"zoekopdrachten op deze site te wissen."
 
 #: lib/interface.php:505
 msgid "Last 30 days"
@@ -173,7 +176,7 @@ msgstr "Afgelopen 30 dagen"
 
 #: lib/interface.php:506
 msgid "Forever"
-msgstr "Sinds het begin"
+msgstr "Sinds de opstart"
 
 #: lib/interface.php:508
 msgid "When"
@@ -185,7 +188,7 @@ msgstr "Zoekopdrachten?"
 
 #: lib/interface.php:540
 msgid "Query"
-msgstr "Zoekterm"
+msgstr "Zoektermen"
 
 #: lib/interface.php:540
 msgid "Hits"
@@ -229,11 +232,11 @@ msgstr "Stopwoorden"
 
 #: lib/interface.php:860
 msgid "Import/export options"
-msgstr ""
+msgstr "Importeer/exporteer instellingen"
 
 #: lib/interface.php:863
 msgid "Buy Relevanssi Premium"
-msgstr ""
+msgstr "Koop Relevanssi Premium"
 
 #: lib/interface.php:868
 msgid "Quick tools"
@@ -293,33 +296,37 @@ msgstr "Hoogst geïndexeerde post-ID"
 
 #: lib/interface.php:895
 msgid "Use search for admin:"
-msgstr ""
+msgstr "Gebruik Relevanssi in back-end:"
 
 #: lib/interface.php:897
 msgid "If checked, Relevanssi will be used for searches in the admin interface"
 msgstr ""
+"Indien aangevinkt wordt Relevanssi ook gebruikt voor zoekopdrachten in de "
+"adminomgeving"
 
 #: lib/interface.php:901
 msgid "Default operator for the search?"
-msgstr ""
+msgstr "Standaard zoekmethode?"
 
 #: lib/interface.php:903
 msgid "AND - require all terms"
-msgstr ""
+msgstr "AND - vereist alle zoektermen"
 
 #: lib/interface.php:904
 msgid "OR - any term present is enough"
-msgstr ""
+msgstr "OR - één van de zoektermen volstaat"
 
 #: lib/interface.php:906
 msgid ""
 "If you choose AND and the search finds no matches, it will automatically do "
 "an OR search."
 msgstr ""
+"Indien je voor AND kiest en er geen resultaten gevonden worden, schakelt "
+"Relevanssi automatisch over op OR."
 
 #: lib/interface.php:910
 msgid "Disable OR fallback:"
-msgstr ""
+msgstr "Schakel OR-fallback uit:"
 
 #: lib/interface.php:912
 msgid ""
@@ -443,31 +450,37 @@ msgstr ""
 
 #: lib/interface.php:1012
 msgid "Keep a log of user queries:"
-msgstr ""
+msgstr "Hou een logboek bij van de zoekopdrachten:"
 
 #: lib/interface.php:1014
 msgid ""
 "If checked, Relevanssi will log user queries. The log appears in 'User "
 "searches' on the Dashboard admin menu."
 msgstr ""
+"Indien aangevinkt logt Relevanssi de zoekopdrachten van gebruikers. Deze "
+"statistieken verschijnen onder ‘Zoeklogboek’ in het dashboardmenu."
 
 #: lib/interface.php:1018
 msgid "Log the user's IP with the queries:"
-msgstr ""
+msgstr "Log het IP-adres van de gebruikers:"
 
 #: lib/interface.php:1020
 msgid "If checked, Relevanssi will log user's IP-Adress with the queries."
 msgstr ""
+"Indien aangevinkt bewaart Relevanssi het IP-adres van de gebruiker bij elke "
+"zoekopdracht."
 
 #: lib/interface.php:1024
 msgid "Don't log queries from these users:"
-msgstr ""
+msgstr "Met uitzondering van deze gebruikers"
 
 #: lib/interface.php:1026
 msgid ""
 "Comma-separated list of numeric user IDs or user login names that will not "
 "be logged."
 msgstr ""
+"Geef een door komma’s gescheiden lijst op van user-ID’s of gebruikersnamen "
+"die niet gelogd mogen worden."
 
 #: lib/interface.php:1029
 msgid ""
@@ -478,10 +491,11 @@ msgstr ""
 #: lib/interface.php:1031
 msgid "Logs are also needed to use the 'Did you mean?' feature."
 msgstr ""
+"Logboeken zijn ook nodig als je de ‘Bedoelde je soms?’-functie wil gebruiken."
 
 #: lib/interface.php:1040
 msgid "Restrict search to these categories and tags:"
-msgstr ""
+msgstr "Beperk het zoeken tot deze categorieën en tags:"
 
 #: lib/interface.php:1042
 msgid ""
@@ -897,25 +911,27 @@ msgstr ""
 
 #: relevanssi.php:1449
 msgid "Options updated!"
-msgstr ""
+msgstr "Instellingen bijgewerkt!"
 
 #: relevanssi.php:1517
 msgid "API key is set"
-msgstr ""
+msgstr "API-key ingesteld"
 
 #: relevanssi.php:1518
 msgid "Remove the API key."
-msgstr ""
+msgstr "Verwijder de API-key."
 
 #: relevanssi.php:1520 relevanssi.php:1528
 msgid ""
 "API key is required to use the automatic update feature. Get yours from "
 "Relevanssi.com."
 msgstr ""
+"Een API-key is vereist om automatische updates te ontvangen. Koop jouw "
+"licentie via Relevanssi.com."
 
 #: relevanssi.php:1526
 msgid "Set the API key:"
-msgstr ""
+msgstr "Stel de API-key in:"
 
 #: relevanssi.php:1537
 msgid "How to index internal links:"
@@ -1143,19 +1159,19 @@ msgstr ""
 
 #: relevanssi.php:1815
 msgid "Relevanssi on Facebook"
-msgstr ""
+msgstr "Facebook"
 
 #: relevanssi.php:1816
 msgid "Check out the Relevanssi page on Facebook"
-msgstr ""
+msgstr "Volg de Facebook-pagina van Relevanssi"
 
 #: relevanssi.php:1817
 msgid "for news and updates about your favourite plugin."
-msgstr ""
+msgstr "voor nieuws en updates over je favoriete plug-in."
 
 #: relevanssi.php:1819
 msgid "Help and support"
-msgstr ""
+msgstr "Help en ondersteuning"
 
 #: relevanssi.php:1820
 msgid "For Relevanssi support, see:"
@@ -1167,11 +1183,11 @@ msgstr ""
 
 #: relevanssi.php:1822
 msgid "WordPress.org forum"
-msgstr ""
+msgstr "WordPress.org"
 
 #: relevanssi.php:1824
 msgid "Did you know this feature?"
-msgstr ""
+msgstr "Ken je deze functie?"
 
 #: relevanssi.php:1825
 msgid ""
@@ -1199,7 +1215,7 @@ msgstr ""
 
 #: relevanssi.php:1830
 msgid "cats -dogs"
-msgstr ""
+msgstr "kat -hond"
 
 #: relevanssi.php:1831
 msgid "Boolean AND"
@@ -1252,11 +1268,11 @@ msgstr ""
 
 #: relevanssi.php:2200
 msgid "Relevanssi Premium network options"
-msgstr ""
+msgstr "Relevanssi Premium netwerkinstellingen"
 
 #: relevanssi.php:2225
 msgid "Copy options from one site to other sites"
-msgstr ""
+msgstr "Kopieer instellingen van één subsite naar alle andere"
 
 #: relevanssi.php:2226
 msgid ""
@@ -1264,51 +1280,56 @@ msgid ""
 "that have active Relevanssi Premium. Be careful! There's no way to undo the "
 "procedure!"
 msgstr ""
+"Kies een blog en kopieer de instellingen van die subsite naar alle andere "
+"subsites waarop Relevanssi Premium geactiveerd is. Opgelet: er bestaat geen "
+"manier om dit proces ongedaan te maken!"
 
 #: relevanssi.php:2245
 msgid "Copy options to all other subsites"
-msgstr ""
+msgstr "Kopieer instellingen naar alle andere subsites"
 
 #: relevanssi.php:2258
 #, php-format
 msgid "Copying options from blog %s"
-msgstr ""
+msgstr "Instellingen aan het kopiëren van blog %s …"
 
 #: relevanssi.php:2271
 #, php-format
 msgid "Processing blog %s:"
-msgstr ""
+msgstr "Blog %s aan het verwerken:"
 
 #: relevanssi.php:2273
 msgid "Relevanssi is not active in this blog."
-msgstr ""
+msgstr "Relevanssi is niet geactiveerd in deze blog."
 
 #: relevanssi.php:2280
 msgid "Options updated."
-msgstr ""
+msgstr "Instellingen bijgewerkt!"
 
 #: relevanssi.php:2300
 msgid "Click OK to copy Relevanssi options to all subsites"
-msgstr ""
+msgstr "Klik op OK om deze instellingen te kopiëren naar alle andere subsites"
 
 #. Plugin Name of the plugin/theme
 msgid "Relevanssi Premium"
-msgstr ""
+msgstr "Relevanssi Premium"
 
 #. Plugin URI of the plugin/theme
 msgid "http://www.relevanssi.com/"
-msgstr ""
+msgstr "http://www.relevanssi.com/"
 
 #. Description of the plugin/theme
 msgid ""
 "This premium plugin replaces WordPress search with a relevance-sorting "
 "search."
 msgstr ""
+"Deze geavanceerde plug-in vervangt de standaard zoekfunctie van WordPress "
+"door zoekresultaten gesorteerd op relevantie."
 
 #. Author of the plugin/theme
 msgid "Mikko Saari"
-msgstr ""
+msgstr "Mikko Saari"
 
 #. Author URI of the plugin/theme
 msgid "http://www.mikkosaari.fi/"
-msgstr ""
+msgstr "http://www.mikkosaari.fi/"

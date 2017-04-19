@@ -4,7 +4,7 @@
 	Author URI:		http://www.oxfamfairtrade.be
 	Description:  	Aanpassingen aan het definitieve thema
 	Template:     	savoy
-	Version:      	1.0.0
+	Version:      	1.1.0
 	Text Domain:  	oxfam-webshop
 */
 
@@ -36,6 +36,7 @@
 	padding: 5px 0 0 80px !important;
 }
 
+/* Zet vinkje en tekst bij algemene voorwaarden op zelfde lijn */
 .woocommerce-form__label-for-checkbox > span {
 	display: inline !important;
 }
@@ -62,7 +63,7 @@
 	color: #61a534 !important;
 }
 
-/* Toon een flapje bij bioproducten (probleem: wordt overschreven door latere ::before's op deze li.product!)  */
+/* Toon een flapje bij bioproducten (opgelet: wordt overschreven door latere ::before's op deze li.product!)  */
 li.product.pa_bio-ja {
 	overflow: hidden;
 }
@@ -85,7 +86,7 @@ li.product.pa_bio-ja:hover::before {
 	transition: background-color 1s ease-out 0s;
 }
 
-/* Toon een icoontje bij de niet-thuisgeleverde goederen */
+/* Toon een flapje bij producten die niet beschikbaar zijn voor thuislevering */
 li.product.product_shipping_class-fruitsap {
 	overflow: hidden;
 }
@@ -109,7 +110,7 @@ li.product.product_shipping_class-fruitsap:hover::after {
 }
 
 /* Toon een icoontje bij de goederen die per zes besteld moeten worden */
-li.product.product_shipping_class-wijn::after {
+li.product.product_shipping_class-wijnDISABLE::after {
 	font-family: FontAwesome;
 	font-size: 130%;
 	color: #61a534;
@@ -120,8 +121,7 @@ li.product.product_shipping_class-wijn::after {
 	z-index: 1000;
 	content: "\f247";
 }
-
-li.product.product_shipping_class-wijn:hover::after {
+li.product.product_shipping_class-wijnDISABLE:hover::after {
 	font-size: 90%;
 	top: 32px;
 	content: "Enkel thuisgeleverd per zes";
@@ -139,11 +139,10 @@ li.product.product_shipping_class-wijn:hover::after {
 	display: none !important;
 }
 
-/* Zorg dat de openingsuren de volledige breedte kunnen innemen */
+/* Zorg ervoor dat de openingsuren de volledige breedte kunnen innemen */
 .pickup_location > th {
 	width: 100px;
 }
-
 .wc-pickup-location-note {
 	width: 300px;
 	float: right;
