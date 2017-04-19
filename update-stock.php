@@ -5,7 +5,7 @@
 
 	<p>Nieuwe producten (= de afgelopen twee maanden beschikbaar geworden op <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a>) hebben een blauwe achtergrond. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat jullie zelf alle tijd hebben om te beslissen of je het product online wil aanbieden. Oude producten worden pas verwijderd van zodra we zeker zijn dat er geen lokale voorraden meer bestaan.</p>
 
-	<div style="display: table; border-collapse: separate; border-spacing: 0px 25px; width: 100%;" id="oxfam-products">
+	<div id="oxfam-products">
 		<?php
 			// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 			// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
@@ -30,28 +30,30 @@
 						if ( $i % 2 === 1 ) echo '<div style="display: table-row;">';
 						$color = $product->is_in_stock() ? '#61a534' : '#e70052'; 
 						
-						// Linkerdeel
-						echo '<div id="'.get_the_ID().'" class="oxfam-products-admin-left"';
-						if ( get_the_date('U') > strtotime('-1 months') ) echo ' style="background-color: blue;"';
-						echo '>';
-							echo '<p class="oxfam-products-title">'.$product->get_sku().': '.$product->get_title().'</p>';
-							echo '<p>';
-								echo '<input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
-								echo '<label for="'.get_the_ID().'-featured" style="margin-left: 5px;">In de kijker?</label>';
-							echo '</p>';
-							echo '<select id="'.get_the_ID().'-stockstatus" style="margin-top: 10px;">';
-								echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
-								echo '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Niet op voorraad</option>';
-							echo '</select>';
-							echo '<p class="output" style="color: orange;">&nbsp;</p>';
+						echo '<div class="block">';
+							// Linkerdeel
+							echo '<div id="'.get_the_ID().'" class="pane-left';
+							if ( get_the_date('U') > strtotime('-1 months') ) echo ' new';
+							echo '">';
+								echo '<p class="title">'.$product->get_sku().': '.$product->get_title().'</p>';
+								echo '<p>';
+									echo '<input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
+									echo '<label for="'.get_the_ID().'-featured" style="margin-left: 5px;">In de kijker?</label>';
+								echo '</p>';
+								echo '<p><select id="'.get_the_ID().'-stockstatus">';
+									echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
+									echo '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Niet op voorraad</option>';
+								echo '</select></p>';
+								echo '<p class="output">&nbsp;</p>';
+							echo '</div>';
+							
+							// Rechterdeel
+							echo '<div class="pane-right" style="border-color: '.$color.'">';
+								// Verhinder dat de (grote) placeholder uitgespuwd wordt indien een product per ongeluk geen foto heeft
+								echo '<a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'thumbnail', $attr, false ).'</a>';
+							echo '</div>';
 						echo '</div>';
-						
-						// Rechterdeel
-						echo '<div class="oxfam-products-admin-right" style="border-left: 5px solid '.$color.'">';
-							// Verhinder dat de (grote) placeholder uitgespuwd wordt indien een product per ongeluk geen foto heeft
-							echo '<a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'thumbnail', $attr, false ).'</a>';
-						echo '</div>';
-						
+
 						if ( $i % 2 === 0 ) echo '</div>';
 						$i++;
 					}
@@ -65,7 +67,7 @@
 				<script type="text/javascript">
 					jQuery(document).ready(function() {
 						jQuery("#oxfam-products input[type=checkbox], #oxfam-products select").on( 'change', function() {
-							var name = jQuery(this).parents('div').first().children(".oxfam-products-title").first().html();
+							var name = jQuery(this).parents('div').first().children(".title").first().html();
 							var parts = jQuery(this).attr('id').split("-");
 							var id = parts[0];
 							var meta = parts[1];

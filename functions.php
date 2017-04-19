@@ -1862,24 +1862,53 @@
 				text-align: center;
 			}
 
-			.oxfam-products-admin-left {
+			#oxfam-products {
+				display: table;
+				width: 100%;
+				border-collapse: separate;
+				border-spacing: 0px 25px;
+			}
+
+			#oxfam-products .block {
+				display: inline-block;
+				box-sizing: border-box;
+				width: 50%;
+			}
+
+			#oxfam-products .pane-left {
 				display: table-cell;
 				box-sizing: border-box;
 				text-align: center;
 				padding: 0px 25px;
-				width: 35%;
+				width: 30%;
 			}
 
-			.oxfam-products-admin-right {
+			#oxfam-products .pane-right {
 				display: table-cell;
 				box-sizing: border-box;
 				text-align: center;
 				vertical-align: middle;
-				width: 15%;
+				width: 20%;
+				border-left: 5px solid black;
 			}
 
-			.oxfam-products-title {
+			#oxfam-products .title {
 				font-weight: bold;
+			}
+
+			#oxfam-products .output {
+				color: #f16e22;
+			}
+
+			#oxfam-products .new {
+				background-color: #0b9cda;
+			}
+
+			@media (max-width: 1024px) {
+				#oxfam-products .block {
+					display: block;
+					width: 100%;
+				}
 			}
 		</style>
 		<?php
