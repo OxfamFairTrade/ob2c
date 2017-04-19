@@ -1843,13 +1843,26 @@
 		return $newArray;
 	}
 
-	// Voeg CSS toe aan adminomgeving
+	// Voeg CSS toe aan adminomgeving voor Relevanssi en Voorraadbeheer
 	add_action( 'admin_head', 'custom_admin_css' );
 
 	function custom_admin_css() {
 		?>
 		<style>
-			div.oxfam-products-admin-left {
+			.dashboard_page_relevanssi-premium-relevanssi .postbox-container {
+				width: 100%;
+			}
+
+			.dashboard_page_relevanssi-premium-relevanssi .postbox-container .widefat {
+				margin-bottom: 4em;
+			}
+
+			.dashboard_page_relevanssi-premium-relevanssi .postbox-container th,
+			.dashboard_page_relevanssi-premium-relevanssi .postbox-container tr {
+				text-align: center;
+			}
+
+			.oxfam-products-admin-left {
 				display: table-cell;
 				box-sizing: border-box;
 				text-align: center;
@@ -1857,7 +1870,7 @@
 				width: 35%;
 			}
 
-			div.oxfam-products-admin-right {
+			.oxfam-products-admin-right {
 				display: table-cell;
 				box-sizing: border-box;
 				text-align: center;
@@ -1865,7 +1878,7 @@
 				width: 15%;
 			}
 
-			p.oxfam-products-title {
+			.oxfam-products-title {
 				font-weight: bold;
 			}
 		</style>
