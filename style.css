@@ -31,13 +31,30 @@
     color: black;
 }
 
+/* Fix overlap foto en tekst in widget */
+.widget_recently_viewed_products .product_list_widget > li {
+	padding: 5px 0 0 80px !important;
+}
+
+.woocommerce-form__label-for-checkbox > span {
+	display: inline !important;
+}
+
 /* Beperk de afmetingen van producten op de cataloguspagina's (+ centreer in kolom en maak achtergrond wit) */
 .nm-shop-loop-thumbnail > a > img {
-	max-width: 300px;
+	max-width: 350px;
 	margin: 0 auto;
 }
 .nm-shop-loop-thumbnail > a {
 	background-color: white;	
+}
+
+/* Beperk de afmetingen van producten op de detailpagina's */
+.thumbnails-vertical .woocommerce-product-gallery__wrapper {
+	text-align: center;
+}
+.woocommerce-product-gallery__image a img {
+	max-width: 595px;
 }
 
 /* Maak de tekstboodschappen groen */
@@ -45,42 +62,50 @@
 	color: #61a534 !important;
 }
 
-/* Toon een icoontje bij bioproducten (probleem: wordt overschreven door latere ::before's op deze li.product!)  */
-li.product.pa_bio-ja::before {
-	font-family: FontAwesome;
-	font-size: 130%;
-	color: #61a534;
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	z-index: 1000;
-	content: "\f0fa";
+/* Toon een flapje bij bioproducten (probleem: wordt overschreven door latere ::before's op deze li.product!)  */
+li.product.pa_bio-ja {
+	overflow: hidden;
 }
-
+li.product.pa_bio-ja::before {
+	color: white;
+	width: 250px;
+	position: absolute;
+	text-align: center;
+	padding-top: 18px;
+	top: -11px;
+	z-index: 50;
+	
+	transform: rotate(-45deg);
+	background-color: #61a534;
+	left: -114px;
+	content: "BIO"; 
+}
 li.product.pa_bio-ja:hover::before {
-	font-size: 90%;
-	top: 6px;
-	content: "Biogecertificeerd product";
+	background-color: black;
+	transition: background-color 1s ease-out 0s;
 }
 
 /* Toon een icoontje bij de niet-thuisgeleverde goederen */
-li.product.product_shipping_class-fruitsap::after {
-	font-family: FontAwesome;
-	font-size: 130%;
-	color: #61a534;
-	position: absolute;
-	right: 0;
-	top: 25px;
-	width: 100%;
-	z-index: 1000;
-	content: "\f071";
+li.product.product_shipping_class-fruitsap {
+	overflow: hidden;
 }
-
+li.product.product_shipping_class-fruitsap::after {
+	color: white;
+	width: 250px;
+	position: absolute;
+	text-align: center;
+	padding-top: 18px;
+	top: -11px;
+	z-index: 50;
+	
+	transform: rotate(45deg);
+	background-color: orange;
+	right: -114px;
+	content: "SHOP";
+}
 li.product.product_shipping_class-fruitsap:hover::after {
-	font-size: 90%;
-	top: 32px;
-	content: "Enkel beschikbaar voor afhaling";
+	background-color: black;
+	transition: background-color 1s ease-out 0s;
 }
 
 /* Toon een icoontje bij de goederen die per zes besteld moeten worden */
@@ -104,12 +129,14 @@ li.product.product_shipping_class-wijn:hover::after {
 
 /* Verberg overtollige info */
 .nm-coupon-wrap,
+.nm-single-product-menu,
 .shop_table input[name=update_cart],
 .nm-checkout-login-coupon,
 #calc_shipping_country_field,
 #customer_details #billing_country_field,
-#customer_details #shipping_country_field {
-	display: none;
+#customer_details #shipping_country_field,
+.products li.outofstock .nm-shop-loop-thumbnail > a:after {
+	display: none !important;
 }
 
 /* Zorg dat de openingsuren de volledige breedte kunnen innemen */

@@ -41,8 +41,11 @@
 		unset($parameters);
 		// Term-ID 601 = Oxfam Fair Trade, dus 'attribute_term' => 601 toevoegen om te filteren
 		// Parameter 'per_page' mag niet te groot zijn, anders error!
-		$parameters = array( 'attribute' => 'pa_merk', 'status' => 'publish', 'orderby' => 'date', 'order' => 'desc', 'per_page' => 100 );
-		$results = $woocommerce->get($endpoint, $parameters);
+		$parameters1 = array( 'attribute' => 'pa_merk', 'status' => 'publish', 'orderby' => 'date', 'order' => 'asc', 'per_page' => 100, 'page' => 1, );
+		$parameters2 = array( 'attribute' => 'pa_merk', 'status' => 'publish', 'orderby' => 'date', 'order' => 'asc', 'per_page' => 100, 'page' => 2, );
+		$parameters3 = array( 'attribute' => 'pa_merk', 'status' => 'publish', 'orderby' => 'date', 'order' => 'asc', 'per_page' => 100, 'page' => 3, );
+		$results = array_merge( $woocommerce->get($endpoint, $parameters1), $woocommerce->get($endpoint, $parameters2), $woocommerce->get($endpoint, $parameters3) );
+		// var_dump($results[0]);
 		
 		echo '<div class="container-fluid">';
 			echo '<div class="row">';
@@ -54,22 +57,26 @@
 				$wp_medium = wp_get_attachment_image_src( $product['images'][0]['id'], 'medium' );
 				$shop_single = wp_get_attachment_image_src( $product['images'][0]['id'], 'shop_single' );
 				$shop_catalog = wp_get_attachment_image_src( $product['images'][0]['id'], 'shop_catalog' );
-				$wp_thumbnail = wp_get_attachment_image_src( $product['images'][0]['id'], 'thumbnail' );
+				$shop_thumbnail = wp_get_attachment_image_src( $product['images'][0]['id'], 'shop_thumbnail' );
 				
-				if ( ! empty($wp_thumbnail) ) {
-					echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em; text-align: center;"><small style="color: vampire grey; font-style: italic;">OFT '.$product['sku'].'</small><br>';
-					echo '<a href="'.$product['permalink'].'"><img src="'.$shop_catalog[0].'"></a><br>';
-					echo $product['name'].'<br><br>';
-					echo '<a href="'.$wp_full[0].'" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' px)<br>';
+				if ( ! empty($shop_thumbnail) ) {
+					// Staat pa_merk nu toevallig als eerste in de lijst of niet? 
+					echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em; text-align: center; border-bottom: 1px solid black;"><small style="color: vampire grey; font-style: italic;">'.$product['attributes'][0]['options'][0].' '.$product['sku'].'</small><br>';
+					echo '<p style="padding: 0 10%; height: 30px;"><b>'.$product['name'].'</b></p>';
+					echo '<a href="'.$product['permalink'].'"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
+					echo '<u>Downloads:</u><br>';
+					echo '<a href="'.$wp_full[0].'" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' pixels)<br>';
 					if ( $wp_full[1] !== $wp_large[1] ) {
-						echo '<a href="'.$wp_large[0].'" target="_blank">Large</a> ('.$wp_large[1].' x '.$wp_large[2].' px)<br>';
+						echo '<a href="'.$wp_large[0].'" target="_blank">Large</a> ('.$wp_large[1].' x '.$wp_large[2].' pixels)<br>';
 					}
 					if ( $wp_large[1] !== $wp_medium[1] ) {
-						echo '<a href="'.$wp_medium[0].'" target="_blank">Medium</a> ('.$wp_medium[1].' x '.$wp_medium[2].' px)<br>';
+						echo '<a href="'.$wp_medium[0].'" target="_blank">Medium</a> ('.$wp_medium[1].' x '.$wp_medium[2].' pixels)<br>';
 					}
-					echo '<a href="'.$shop_single[0].'" target="_blank">Single</a> ('.$shop_single[1].' x '.$shop_single[2].' px)</div>';
-					echo '<a href="'.$shop_catalog[0].'" target="_blank">Catalog</a> ('.$shop_catalog[1].' x '.$shop_catalog[2].' px)</div>';
-					echo '<a href="'.$wp_thumbnail[0].'" target="_blank">Thumbnail</a> ('.$wp_thumbnail[1].' x '.$wp_thumbnail[2].' px)</div>';
+					if ( $wp_medium[1] !== $shop_single[1] ) {
+						echo '<a href="'.$shop_single[0].'" target="_blank">Detail</a> ('.$shop_single[1].' x '.$shop_single[2].' pixels)<br>';
+					}
+					echo '<a href="'.$shop_catalog[0].'" target="_blank">Catalog</a> ('.$shop_catalog[1].' x '.$shop_catalog[2].' pixels)<br>';
+					echo '<a href="'.$shop_thumbnail[0].'" target="_blank">Thumbnail</a> ('.$shop_thumbnail[1].' x '.$shop_thumbnail[2].' pixels)</div>';
 				}
 			}
 

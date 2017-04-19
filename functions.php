@@ -1,7 +1,10 @@
 <?php
 
 	require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
-		
+	
+	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
+	$content_width = 2000;
+
 	// Belangrijk voor correcte vertalingen in strftime()
 	setlocale( LC_ALL, array('Dutch_Netherlands', 'Dutch', 'nl_NL', 'nl', 'nl_NL.ISO8859-1') );
 
@@ -1391,7 +1394,7 @@
 			),
 		);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-9 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id, $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-9 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
 		
 		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
@@ -1430,7 +1433,7 @@
 		}
 		if ( $screen->base == 'woocommerce_page_oxfam-products' ) {
 			echo '<div class="notice notice-info">';
-			echo '<p>Wijzigingen aan voorraad en uitlichting opslaan is inmiddels mogelijk! Voorlopig nog met bevestigingsvenster, AJAX-debugging volop aan de gang.</p>';
+			echo '<p>Wijzigingen opslaan op deze pagina is inmiddels mogelijk!</p>';
 			echo '</div>';
 		}
 	}
@@ -1468,7 +1471,7 @@
 			),
 		);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-6 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id, $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-6 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
 
 		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
@@ -1838,6 +1841,35 @@
 			}
 		}
 		return $newArray;
+	}
+
+	// Voeg CSS toe aan adminomgeving
+	add_action( 'admin_head', 'custom_admin_css' );
+
+	function custom_admin_css() {
+		?>
+		<style>
+			div.oxfam-products-admin-left {
+				display: table-cell;
+				box-sizing: border-box;
+				text-align: center;
+				padding: 0px 25px;
+				width: 35%;
+			}
+
+			div.oxfam-products-admin-right {
+				display: table-cell;
+				box-sizing: border-box;
+				text-align: center;
+				vertical-align: middle;
+				width: 15%;
+			}
+
+			p.oxfam-products-title {
+				font-weight: bold;
+			}
+		</style>
+		<?php
 	}
 	
 ?>
