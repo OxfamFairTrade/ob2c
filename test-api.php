@@ -49,19 +49,27 @@
 
 			foreach ($results as $product) {
 				// Opgelet: indien er geen foto aan het product gelinkt is krijgen we de placeholder door, maar zonder id!
-				$image_shopthumb = wp_get_attachment_image_src( $product['images'][0]['id'], 'shop_thumbnail' );
-				$image_thumb = wp_get_attachment_image_src( $product['images'][0]['id'], 'thumbnail' );
-				$image_medium = wp_get_attachment_image_src( $product['images'][0]['id'], 'medium' );
-				$image_large = wp_get_attachment_image_src( $product['images'][0]['id'], 'large' );
-				$image_full = wp_get_attachment_image_src( $product['images'][0]['id'], 'full' );
-				if ( ! empty($image_thumb) ) {
+				$wp_full = wp_get_attachment_image_src( $product['images'][0]['id'], 'full' );
+				$wp_large = wp_get_attachment_image_src( $product['images'][0]['id'], 'large' );
+				$wp_medium = wp_get_attachment_image_src( $product['images'][0]['id'], 'medium' );
+				$shop_single = wp_get_attachment_image_src( $product['images'][0]['id'], 'shop_single' );
+				$shop_catalog = wp_get_attachment_image_src( $product['images'][0]['id'], 'shop_catalog' );
+				$wp_thumbnail = wp_get_attachment_image_src( $product['images'][0]['id'], 'thumbnail' );
+				
+				if ( ! empty($wp_thumbnail) ) {
 					echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em; text-align: center;"><small style="color: vampire grey; font-style: italic;">OFT '.$product['sku'].'</small><br>';
-					echo '<a href="'.$product['permalink'].'"><img src="'.$image_shopthumb[0].'"></a><br>';
+					echo '<a href="'.$product['permalink'].'"><img src="'.$shop_catalog[0].'"></a><br>';
 					echo $product['name'].'<br><br>';
-					echo '<a href="'.$image_full[0].'" target="_blank">Full</a> ('.$image_full[1].' x '.$image_full[2].' px)<br>';
-					echo '<a href="'.$image_large[0].'" target="_blank">Large</a> ('.$image_large[1].' x '.$image_large[2].' px)<br>';
-					echo '<a href="'.$image_medium[0].'" target="_blank">Medium</a> ('.$image_medium[1].' x '.$image_medium[2].' px)<br>';
-					echo '<a href="'.$image_thumb[0].'" target="_blank">Small</a> ('.$image_thumb[1].' x '.$image_thumb[2].' px)</div>';
+					echo '<a href="'.$wp_full[0].'" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' px)<br>';
+					if ( $wp_full[1] !== $wp_large[1] ) {
+						echo '<a href="'.$wp_large[0].'" target="_blank">Large</a> ('.$wp_large[1].' x '.$wp_large[2].' px)<br>';
+					}
+					if ( $wp_large[1] !== $wp_medium[1] ) {
+						echo '<a href="'.$wp_medium[0].'" target="_blank">Medium</a> ('.$wp_medium[1].' x '.$wp_medium[2].' px)<br>';
+					}
+					echo '<a href="'.$shop_single[0].'" target="_blank">Single</a> ('.$shop_single[1].' x '.$shop_single[2].' px)</div>';
+					echo '<a href="'.$shop_catalog[0].'" target="_blank">Catalog</a> ('.$shop_catalog[1].' x '.$shop_catalog[2].' px)</div>';
+					echo '<a href="'.$wp_thumbnail[0].'" target="_blank">Thumbnail</a> ('.$wp_thumbnail[1].' x '.$wp_thumbnail[2].' px)</div>';
 				}
 			}
 
