@@ -670,6 +670,20 @@
 	  	return $rates;
 	}
 
+	// Zorg dat afhalingen als standaard levermethode geselecteerd worden (want Local Pickup werkt niet volgens de zones!)
+	add_filter( 'woocommerce_shipping_chosen_method', 'wf_default_shipping_method', 10 );
+
+	function wf_default_shipping_method( $method ) {
+		// If the shipping method has been chosen don't do anything
+		if ( ! empty( $method ) ) {
+			return $method;
+		}
+		
+		// Set 'Local Pickup Plus' as the default shipping method
+		$method = 'local_pickup';
+		return $method;
+	}
+
 	// Check of de persoon moet worden ingeschreven op het digizine 
 	add_action( 'woocommerce_checkout_process', 'check_subscription_preference', 10, 1 );
 

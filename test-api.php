@@ -47,6 +47,8 @@
 		$results = array_merge( $woocommerce->get($endpoint, $parameters1), $woocommerce->get($endpoint, $parameters2), $woocommerce->get($endpoint, $parameters3) );
 		// var_dump($results[0]);
 		
+		$cnt = 0;
+
 		echo '<div class="container-fluid">';
 			echo '<div class="row">';
 
@@ -60,6 +62,8 @@
 				$shop_thumbnail = wp_get_attachment_image_src( $product['images'][0]['id'], 'shop_thumbnail' );
 				
 				if ( ! empty($shop_thumbnail) ) {
+					$cnt++;
+					
 					// Staat pa_merk nu toevallig als eerste in de lijst of niet? 
 					echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em; text-align: center; border-bottom: 1px solid black;"><small style="color: vampire grey; font-style: italic;">'.$product['attributes'][0]['options'][0].' '.$product['sku'].'</small><br>';
 					echo '<p style="padding: 0 10%; height: 30px;"><b>'.$product['name'].'</b></p>';
@@ -82,6 +86,8 @@
 
 			echo '</div>';
 		echo '</div>';
+
+		echo '<p>Deze pagina toont '.$cnt.' producten.</p>';
 
 	?>
 
