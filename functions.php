@@ -803,6 +803,11 @@
     	$deleted = false;
     	$old_id= wp_get_attachment_id_by_post_name($filetitle);
 		if ( $old_id ) {
+			// Bewaar de post_parent van het originele attachment
+			$product_id = wp_get_post_parent_id($old_id);
+			// CHECK OF DE UPLOADLOCATIE OP DIT PUNT AL INGEGEVEN IS
+			if ( $product_id ) $product = wc_get_product( $product_id );
+			
 			// Stel het originele bestand veilig
 			rename($filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg');
 			// Verwijder de versie
@@ -828,7 +833,20 @@
 		// Probeer de foto in de mediabibliotheek te stoppen
 		$msg = "";
 		$attachment_id = wp_insert_attachment( $attachment, $filepath );
-		if (!is_wp_error($attachment_id)) {
+		if ( !is_wp_error($attachment_id) ) {
+			if ( isset($product) ) {
+				// Voeg de nieuwe attachment-ID toe aan het oorspronkelijke product
+				$product->set_image_id($attachment_id);
+				$product->save();
+				// Stel de uploadlocatie van de nieuwe afbeelding in op die van het origineel
+				wp_update_post(
+					array(
+						'ID' => $attachment_id, 
+						'post_parent' => $product_id,
+					)
+				);
+			}
+
 			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $filepath );
 			// Registreer ook de metadata en toon een succesboodschap
 			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
