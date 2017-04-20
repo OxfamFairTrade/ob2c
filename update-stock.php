@@ -107,7 +107,7 @@
 							jQuery("#"+id).find(".output").html("Aan het opslaan ...");
 
 							var input = {
-								'action': 'oxfam_product_action',
+								'action': 'oxfam_stock_action',
 								'id': id,
 								'meta': meta,
 								'value': value,

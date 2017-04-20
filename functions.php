@@ -726,8 +726,13 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_menu_page( 'Instellingen voor lokale webshop', 'Instellingen', 'local_manager', 'oxfam-settings', 'oxfam_options_callback', 'dashicons-visibility', '56' );
+		add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'manage_options', 'oxfam-photos', 'oxfam_photos_callback' );
+		add_menu_page( 'Instellingen voor lokale webshop', 'Instellingen', 'local_manager', 'oxfam-options', 'oxfam_options_callback', 'dashicons-visibility', '56' );
 		add_submenu_page( 'woocommerce', 'Stel de voorraad in voor je lokale webshop', 'Voorraadbeheer', 'local_manager', 'oxfam-products', 'oxfam_products_callback' );
+	}
+
+	function oxfam_photos_callback() {
+		include get_stylesheet_directory().'/register-bulk-images.php';
 	}
 
 	function oxfam_options_callback() {
@@ -739,9 +744,10 @@
 	}
 	
 	// Registreer de AJAX-acties
-	add_action( 'wp_ajax_oxfam_product_action', 'oxfam_product_action_callback' );
+	add_action( 'wp_ajax_oxfam_stock_action', 'oxfam_stock_action_callback' );
+	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
 
-	function oxfam_product_action_callback() {
+	function oxfam_stock_action_callback() {
 		echo save_local_product_details($_POST['id'], $_POST['meta'], $_POST['value']);
     	wp_die();
 	}
@@ -751,12 +757,93 @@
     	$product = wc_get_product($id);
 		if ( $meta === 'stockstatus' ) {
 			$product->set_stock_status($value);
-			$product->save();
 			$msg .= "Voorraadstatus opgeslagen!";
 		} elseif ( $meta === 'featured' ) {
 			$product->set_featured($value);
-			$product->save();
 			$msg .= "Uitlichting opgeslagen!";
+		}
+		// Retourneert product-ID on success?
+		$product->save();
+		return $msg;
+	}
+
+	function oxfam_photo_action_callback() {
+		echo register_photo($_POST['name'], $_POST['timestamp'], $_POST['path']);
+    	wp_die();
+	}
+
+	function wp_get_attachment_id_by_post_name($post_title) {
+        $args = array(
+            // We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
+            'posts_per_page'	=> 1,
+            'post_type'			=> 'attachment',
+            // Moet er in principe bij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
+            'post_status'		=> 'inherit',
+            // De titel is steeds gelijk aan de bestandsnaam en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
+            'title'				=> trim($post_title),
+        );
+        $attachments = new WP_Query($args);
+        if ( $attachments->have_posts() ) {
+        	$attachments->the_post();
+        	$attachment_id = get_the_ID();
+        	wp_reset_postdata();
+        } else {
+        	$attachment_id = false;
+        }
+        return $attachment_id;
+    }
+
+    function register_photo($filename, $filestamp, $filepath) {			
+    	// Parse de fototitel
+    	$filetitle = explode('.jpg', $filename);
+	    $filetitle = $filetitle[0];
+    	
+    	// Check of er al een vorige versie bestaat
+    	$updated = false;
+    	$deleted = false;
+    	$old_id= wp_get_attachment_id_by_post_name($filetitle);
+		if ( $old_id ) {
+			// Stel het originele bestand veilig
+			rename($filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg');
+			// Verwijder de versie
+			if ( wp_delete_attachment($old_id, true) ) {
+				// Extra check op het succesvol verwijderen
+				$deleted = true;
+			}
+			$updated = true;
+			// Hernoem opnieuw zodat de links weer naar de juiste file wijzen 
+			rename(WP_CONTENT_DIR.'/uploads/temporary.jpg', $filepath);
+		}
+		
+		// Creëer de parameters voor de foto
+		$wp_filetype = wp_check_filetype($filename, null);
+		$attachment = array(
+			'post_mime_type' => $wp_filetype['type'],
+			'post_title' => $filetitle,
+			'post_content' => '',
+			'post_author' => get_current_user_id(),
+			'post_status' => 'inherit',
+		);
+
+		// Probeer de foto in de mediabibliotheek te stoppen
+		$msg = "";
+		$attachment_id = wp_insert_attachment( $attachment, $filepath );
+		if (!is_wp_error($attachment_id)) {
+			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $filepath );
+			// Registreer ook de metadata en toon een succesboodschap
+			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
+			if ($updated) {
+				$deleted = $deleted ? "verwijderd en opnieuw aangemaakt" : "bijgewerkt";
+				$msg .= "<i>".$filename."</i> ".$deleted." in de mediabibliotheek om ".date('H:i:s')." ...";
+			} else {
+				$msg .= "<i>".$filename."</i> aangemaakt in de mediabibliotheek om ".date('H:i:s')." ...";
+			}
+			// Sla het uploadtijdstip van de laatste succesvolle registratie op (kan gebruikt worden als limiet voor nieuwe foto's!)
+			update_option('laatste_registratie_timestamp', $filestamp);
+			$registered = true;
+		} else {
+			// Geef een waarschuwing als de aanmaak mislukte
+			$msg .= "Opgelet, er liep iets mis met <i>".$filename."</i>!";
 		}
 
 		return $msg;
@@ -1044,7 +1131,7 @@
 			<table class="shop_attributes">
 
 				<?php foreach ( $attributes as $attribute ) :
-					// $forbidden = array( 'pa_ompak', 'pa_ompak_ean', 'pa_pal_perlaag', 'pa_pal_lagen' );
+					$forbidden = array( 'pa_ompak', 'pa_ompak_ean', 'pa_pal_perlaag', 'pa_pal_lagen' );
 					// Logica omkeren: nu tonen we enkel de 'verborgen' attributen
 					if ( empty( $attribute['is_visible'] ) and ! in_array( $attribute['name'], $forbidden ) ) {
 						$has_row = true;
@@ -1138,7 +1225,9 @@
 						if ( count( $partners ) > 0 ) {
 							foreach ( $partners as $partner ) {
 								$i++;
-								$row = $wpdb->get_row( 'SELECT * FROM partners WHERE part_naam = '.$partner->name );
+								// Let op: de naam is een string, dus er moeten quotes rond!
+								$row = $wpdb->get_row( 'SELECT * FROM partners WHERE part_naam = "'.$partner->name.'"' );
+								
 								if ( $row ) {
 									$url = 'https://www.oxfamwereldwinkels.be/'.trim($row->part_website);
 								} else {
@@ -1542,13 +1631,13 @@
 
 	function print_address() {
 		global $wpdb;
-		$row1 = $wpdb->get_row( 'SELECT * FROM field_revision_field_sellpoint_place WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		$row1 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_place WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$street = trim($row1->field_sellpoint_place_value);
-		$row2 = $wpdb->get_row( 'SELECT * FROM field_revision_field_sellpoint_zipcode WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		$row2 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_zipcode WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$zip = trim($row2->field_sellpoint_zipcode_value);
-		$row3 = $wpdb->get_row( 'SELECT * FROM field_revision_field_sellpoint_city WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		$row3 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_city WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$city = trim($row3->field_sellpoint_city_value);
-		$row4 = $wpdb->get_row( 'SELECT * FROM field_revision_field_sellpoint_telephone WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		$row4 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_telephone WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$phone = format_phone_number( $row4->field_sellpoint_telephone_value );
 		$msg = $street."<br>".$zip." ".$city."<br>".$phone."<br><a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a>";
 		return $msg;
@@ -1556,11 +1645,11 @@
 
 	function print_map_address() {
 		global $wpdb;
-		$row1 = $wpdb->get_row( 'SELECT * FROM field_revision_field_sellpoint_place WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		$row1 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_place WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$street = trim($row1->field_sellpoint_place_value);
-		$row2 = $wpdb->get_row( 'SELECT * FROM field_revision_field_sellpoint_zipcode WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		$row2 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_zipcode WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$zip = trim($row2->field_sellpoint_zipcode_value);
-		$row3 = $wpdb->get_row( 'SELECT * FROM field_revision_field_sellpoint_city WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		$row3 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_city WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$city = trim($row3->field_sellpoint_city_value);
 		$msg = $street.", ".$zip." ".$city;
 		echo $msg;
@@ -1582,7 +1671,7 @@
 
 	function print_widget_contact() {
 		global $wpdb;
-		$row = $wpdb->get_row( 'SELECT * FROM field_revision_field_sellpoint_telephone WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_telephone WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$phone = format_phone_number( $row->field_sellpoint_telephone_value );
 		$msg = "Mail naar <a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a><br>Bel naar ".$phone;
 		return $msg;
