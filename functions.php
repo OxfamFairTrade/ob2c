@@ -579,7 +579,7 @@
 		switch ( $method->id ) {
 			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite?
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
-			case stristr( $method->id, 'local_pickup' ):
+			case stristr( $method->id, 'local_pickup_plus' ):
 				$timestamp = strtotime('+2 days');
 				$label .= 'Beschikbaar vanaf '.strftime('%Amiddag %d/%m/%Y', $timestamp);
 				break;
@@ -670,17 +670,13 @@
 	  	return $rates;
 	}
 
-	// Zorg dat afhalingen als standaard levermethode geselecteerd worden (want Local Pickup werkt niet volgens de zones!)
-	add_filter( 'woocommerce_shipping_chosen_method', 'wf_default_shipping_method', 10 );
+	// Zorg dat afhalingen in de winkel als standaard levermethode geselecteerd worden
+	// Nodig omdat Local Pickup Plus geen verzendzones gebruikt maar alles overkoepelt
+	// Documentatie in class-wc-shipping.php: "If not set, not available, or available methods have changed, set to the DEFAULT option"
+	add_filter( 'woocommerce_shipping_chosen_method', 'set_pickup_as_default_shipping', 10 );
 
-	function wf_default_shipping_method( $method ) {
-		// If the shipping method has been chosen don't do anything
-		if ( ! empty( $method ) ) {
-			return $method;
-		}
-		
-		// Set 'Local Pickup Plus' as the default shipping method
-		$method = 'local_pickup';
+	function set_pickup_as_default_shipping( $method ) {
+		$method = 'local_pickup_plus';
 		return $method;
 	}
 
