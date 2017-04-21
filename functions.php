@@ -813,7 +813,7 @@
 		if ( $old_id ) {
 			// Bewaar de post_parent van het originele attachment
 			$product_id = wp_get_post_parent_id($old_id);
-			// CHECK OF DE UPLOADLOCATIE OP DIT PUNT AL INGEGEVEN IS
+			// Check of de uploadlocatie op dit punt al ingegeven is!
 			if ( $product_id ) $product = wc_get_product( $product_id );
 			
 			// Stel het originele bestand veilig
@@ -841,9 +841,9 @@
 		// Probeer de foto in de mediabibliotheek te stoppen
 		$msg = "";
 		$attachment_id = wp_insert_attachment( $attachment, $filepath );
-		if ( !is_wp_error($attachment_id) ) {
+		if ( ! is_wp_error($attachment_id) ) {
 			if ( isset($product) ) {
-				// Voeg de nieuwe attachment-ID toe aan het oorspronkelijke product
+				// Voeg de nieuwe attachment-ID weer toe aan het oorspronkelijke product
 				$product->set_image_id($attachment_id);
 				$product->save();
 				// Stel de uploadlocatie van de nieuwe afbeelding in op die van het origineel

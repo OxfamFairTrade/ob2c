@@ -39,9 +39,9 @@
 
 	list_new_images();
 
-	add_action('admin_footer', 'oxfam_action_javascript');
+	add_action('admin_footer', 'oxfam_photo_action_javascript');
 
-	function oxfam_action_javascript() { ?>
+	function oxfam_photo_action_javascript() { ?>
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
 				var data = <?php echo json_encode(list_new_images()); ?>;
@@ -126,11 +126,11 @@
 	}
 ?>
 
-<p>Hieronder zie je een lijstje met alle originelen die sinds de laatste fotoregistratie naar de webshop geüpload werden. De meest recente bestanden staan onderaan. Elke donderdag en vrijdag worden om 11 uur de foto's uit <a href="file:///\\vmfile\data\Crafts\Foto's\PUBLISH\">F:\Crafts\Foto's\PUBLISH\</a> (mits enkele controles) naar <a href="file:///\\vmfile\data\Crafts\WebshopImport\Webshopfoto's\">F:\Crafts\WebshopImport\Webshopfoto's\</a> verplaatst en vindt er een opwaartse synchronisatie plaats van alle nieuwe of gewijzigde foto's naar de uploadmap van de webshop.</p>
+<p>Hieronder zie je een lijstje met alle originelen die sinds de laatste fotoregistratie naar de FTP-server geüpload werden. De meest recente bestanden staan onderaan. Elke middag worden om 14 uur de foto's uit <a href="file:///\\vmfile\data\Vormgeving & Publicaties\Productfoto's\">F:\Vormgeving & Publicaties\Productfoto's\</a> (mits enkele controles) naar <a href="file:///\\vmfile\data\Crafts\WebshopImport\Webshopfoto's\">F:\Crafts\WebshopImport\Webshopfoto's\</a> verplaatst en vindt er een opwaartse synchronisatie plaats van alle nieuwe of gewijzigde foto's naar de uploadmap van de webshop.</p>
 
-<p>Om de thumbnails aan te maken en de foto's te registreren in de mediabib dient een sitebeheerder daarna nog op onderstaande knop te klikken. Foto's kunnen hierbij niet langer dubbel geüpload worden. Dankzij het gebruik van een individuele AJAX-call per foto kan deze tool in principe een onbeperkt aantal foto's in één keer verwerken. In de praktijk is de capaciteit gelimiteerd tot ongeveer 500 foto's per uur, in het bijzonder door het gebruik van de WP Smush-compressiemodule. Sluit dit venster niet zolang de achtergrond oranje is!</p>
+<p>Om de thumbnails aan te maken en de foto's te registreren in de mediabib dient een sitebeheerder daarna nog op onderstaande knop te klikken. Foto's kunnen hierbij niet langer dubbel geüpload worden. Bijgewerkte foto's die al aan een product gelinkt waren, worden daar opnieuw aan gelinkt (op voorwaarde dat de uploadlocatie bekend was). In het andere geval is het wachten tot de volgende ERP-import.</p>
 
-<p>Opgelet: foto's die bijgewerkt worden, worden pas tijdens de volgende update opnieuw aan het product gekoppeld. Klik bij voorkeur dus pas even voor de start van de update op de knop. Is er een foutje gebeurd of wil je een bepaalde foto definitief verwijderen? Dan dien je de foto zowel te verwijderen <a href="<?php echo home_url('/wp-admin/upload.php'); ?>">uit de mediabibliotheek</a> als uit <a href="file:///\\vmfile\data\Crafts\WebshopImport\Webshopfoto's\">F:\Crafts\WebshopImport\Webshopfoto's\</a>. Zo niet zal de foto elke vrijdag weer als 'nieuwe' foto opduiken en geregistreerd worden in de webshop. De synchronisatie werkt immers niet in twee richtingen, maar enkel opwaarts richting webserver!</p>
+<p>Is er een foutje gebeurd of wil je een bepaalde foto definitief verwijderen? Dan dien je de foto zowel te verwijderen <a href="<?php echo home_url('/wp-admin/upload.php'); ?>">uit de mediabibliotheek</a> als uit <a href="file:///\\vmfile\data\Vormgeving & Publicaties\Productfoto's\">F:\Vormgeving & Publicaties\Productfoto's\</a>. Zo niet zal de foto elke dag weer als 'nieuwe' foto opduiken en geregistreerd worden in de webshop. De synchronisatie werkt immers niet in twee richtingen, maar enkel opwaarts richting webserver!</p>
 
 <div class="output"></div>
 
