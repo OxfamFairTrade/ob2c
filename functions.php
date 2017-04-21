@@ -606,8 +606,6 @@
 	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_service_point', 10, 2 ); 
 	
 	function hide_shipping_address_on_service_point( $array, $instance ) {
-		write_log("TO HIDE");
-		write_log($instance);
 		$array[] = 'service_point';
 		return $array; 
 	};
@@ -1425,7 +1423,6 @@
 			}
 			$string = number_format( $calc, 2, ',', '.' );
 			$calc = round( $calc, 2 );
-			write_log("EENHEIDSPRIJS: ".$calc);
 			
 			// REPLACE ALL TERMS
 			$term_taxonomy_ids = wp_set_object_terms( $post_id, $string, 'pa_eenheidsprijs', false );
@@ -1531,7 +1528,6 @@
 	function sample_admin_notice() {
 		global $pagenow, $post_type, $current_user;
 		$screen = get_current_screen();
-		write_log($screen);
 		if ( $pagenow === 'index.php' ) {
 			echo '<div class="notice notice-info">';
 			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
@@ -1701,7 +1697,7 @@
 		global $wpdb;
 		$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_telephone WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$phone = format_phone_number( $row->field_sellpoint_telephone_value );
-		$msg = "Mail naar <a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a><br>Bel naar ".$phone;
+		$msg = "<a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a><br>".$phone;
 		return $msg;
 	}
 
