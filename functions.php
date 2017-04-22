@@ -661,7 +661,7 @@
 		global $woocommerce;
 		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 		
-		write_log($rates);
+		// write_log($rates);
 		
 		// Verberg alle betalende methodes indien er een gratis levering beschikbaar is (= per definitie geen afhaling want Local Plus creëert geen methodes)
 	  	if ( isset($rates['free_shipping:2']) or isset($rates['free_shipping:4']) or isset($rates['free_shipping:6']) ) {
@@ -731,32 +731,44 @@
 		return $msg;
 	}
 
-	// only add one force sell product to the cart no matter how many of the original product are added
-	add_filter( 'wc_force_sell_add_to_cart_product', 'my_wc_force_sell_add_to_cart_product' );
+	// Voeg bakken leeggoed enkel toe per 6 of 24 flessen
+	add_filter( 'wc_force_sell_add_to_cart_product', 'check_plastic_empties_quantity', 10, 2 );
 
-	function my_wc_force_sell_add_to_cart_product( $product ) {
-		var_dump($product);
-		$product_key = WC()->cart->find_product_in_cart( $product['id'] );
-
-		if ( ! empty( $product_key ) ) {
-			$product_quantity = WC()->cart->cart_contents[ $product_key ]['quantity'];
-			if ( $product['id'] == 3959 ) {
-				$product['quantity'] = floor( $product_quantity / 6 );
-			}
+	function check_plastic_empties_quantity( $empties, $product_item ) {
+		$empties_product = wc_get_product( $empties['id'] );
+		switch ( $empties_product->get_sku() ) {
+			case 'WLBS6M':
+				$empties['quantity'] = floor( intval($product_item['quantity']) / 6 );
+				break;
+			case 'WLBS24M':
+				$empties['quantity'] = floor( intval($product_item['quantity']) / 24 );
+				break;
 		}
 
-		return $product;
+		return $empties;
 	}
-	
-	// when a synced force sell product is updated always set it to 1
-	// add_filter( 'wc_force_sell_update_quantity', 'my_wc_force_sell_update_quantity' );
 
-	function my_wc_force_sell_update_quantity( $quantity, $product ) {
-		if ( $product['id'] == 3959 ) {
-			return floor( $quantity / 6);	
-		} else {
-			return $quantity;
+	// Zorg ervoor dat het basisproduct toch gekocht kan worden als de bak hierboven nog niet toevoegd mag worden NIET ALS OPLOSSING GEBRUIKEN VOOR VOORRAADSTATUS LEEGGOED
+	add_filter( 'wc_force_sell_disallow_no_stock', '__return_false' );
+	
+	// Check bij de bakken leeggoed of we al aan een volledige set van 6 of 24 flessen zitten 
+	add_filter( 'wc_force_sell_update_quantity', 'update_plastic_empties_quantity', 10, 2 );
+
+	function update_plastic_empties_quantity( $quantity, $empties_item ) {
+		write_log("IK LOOP DOOR FORCE_SELL_UPDATE_QUANTITY");
+		$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
+		$empties_product = wc_get_product( $empties_item['product_id'] );
+		switch ( $empties_product->get_sku() ) {
+			case 'WLBS6M':
+				return floor( intval($product_item['quantity']) / 6 );
+			case 'WLBS24M':
+				return floor( intval($product_item['quantity']) / 24 );
+			default:
+				return $quantity;
 		}
+
+		// PROBLEEM: winkelmandje is forced sell 'vergeten' wanneer hij wél 6/24 flessen
+		// SCHRIJF FUNCTIE OM BAKKEN TOE TE VOEGEN INDIEN TRESHOLD BEREIKT IS
 	}
 	
 
