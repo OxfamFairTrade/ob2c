@@ -3,9 +3,9 @@
 
 	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Een bevestigingsvenster behoedt je voor onbedoelde wijzigingen.</p>
 
-	<p>Nieuwe producten, die in de loop van de twee voorbije maanden beschikbaar werden op <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a>, hebben een blauwe achtergrond. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat jullie zelf alle tijd hebben om te beslissen of je het product online wil aanbieden.</p>
+	<p>Nieuwe producten, die in de loop van de twee voorbije maanden beschikbaar werden op <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a>, hebben een blauwe achtergrond. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden.</p>
 
-	<p>Oude producten die niet langer bestelbaar zijn <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a> krijgen een oranje achtergrond, zodat het duidelijk is dat dit product op zijn laatste benen loopt. Het wordt pas na 6 maanden definitief uit de catalogus verwijderd, zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan.</p>
+	<p>Oude producten die niet langer bestelbaar zijn via <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a> krijgen een gele achtergrond, zodat het duidelijk is dat dit product op zijn laatste benen loopt. Het product wordt pas na 6 maanden definitief uit de catalogus verwijderd, zodat we er vrij zeker kunnen van zijn dat er geen lokale voorraden meer bestaan.</p>
 
 	<div id="oxfam-products">
 		<?php

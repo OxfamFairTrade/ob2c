@@ -2017,6 +2017,7 @@
 				box-sizing: border-box;
 				text-align: center;
 				vertical-align: middle;
+				min-height: 204px;
 				width: 20%;
 				border-left: 5px solid black;
 			}
@@ -2031,6 +2032,10 @@
 
 			#oxfam-products .new {
 				background-color: #0b9cda;
+			}
+
+			#oxfam-products .old {
+				background-color: #fbc43a;
 			}
 
 			@media (max-width: 1024px) {
