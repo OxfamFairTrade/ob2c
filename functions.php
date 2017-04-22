@@ -1653,17 +1653,33 @@
 	add_shortcode ( 'contact_address', 'print_address' );
 	add_shortcode ( 'map_address', 'print_map_address' );
 
+	function get_oxfam_shop_data( $key ) {
+		global $wpdb;
+		$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		if ( ${'row->field_sellpoint_'.$key.'_value'} ) {
+			return ucwords( ${'row->field_sellpoint_'.$key.'_value'} );
+		} else {
+			return "UNKNOWN";
+		}
+	}
+
+	function get_oxfam_shop_phone() {
+		global $wpdb;
+		$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_telephone WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+		if ( $row->field_sellpoint_telephone_value ) {
+			return format_phone_number( $row->field_sellpoint_telephone_value );
+		} else {
+			return "UNKNOWN";
+		}
+	}
+
 	function print_address() {
 		global $wpdb;
 		$row1 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_place WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$street = trim($row1->field_sellpoint_place_value);
 		$row2 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_zipcode WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 		$zip = trim($row2->field_sellpoint_zipcode_value);
-		$row3 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_city WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		$city = trim($row3->field_sellpoint_city_value);
-		$row4 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_telephone WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		$phone = format_phone_number( $row4->field_sellpoint_telephone_value );
-		$msg = $street."<br>".$zip." ".$city."<br>".$phone."<br><a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a>";
+		$msg = $street."<br>".$zip." ".get_oxfam_shop_data('city')."<br>".get_oxfam_shop_phone()."<br><a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a>";
 		return $msg;
 	}
 
