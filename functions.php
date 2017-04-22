@@ -114,16 +114,40 @@
 		}
 	}
 
-	// Zorg ervoor dat ook bij producten revisies opgeslagen worden
-	add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
-
+	// Zorg ervoor dat revisies ook bij producten bijgehouden worden op de hoofdsite
+	// Log de post_meta op basis van de algemene update_post_metadata-filter (of beter door WC-functies te hacken?)
+	if ( is_main_site( get_current_blog_id() ) ) {
+		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+		add_action( 'update_post_metadata', 'log_product_changes', 1, 4 );
+	}
+	
 	function add_product_revisions( $args ) {
 		$args['supports'][] = 'revisions';
 		return $args;
 	}
 
-	// POSTMETA KAN WELLICHT BEST OPGEVOLGD WORDEN IN EEN LOG A LA VOORRAAD BIJ CRAFTS
-
+	function log_product_changes( $meta_id, $post_id, $meta_key, $meta_value ) {
+		// Check of er een belangwekkende wijzing was indien het om een stockupdate gaat
+		if ( $meta_key === '_stock_status' ) {
+			$new = $meta_value;
+	    	// Vergelijk nieuwe waarde met de actuele
+			$old = get_post_meta( $post_id, '_stock_status', true );
+			
+			if ( strcmp( $new, $old ) !== 0 ) {
+				if ( $meta_value === 'instock' ) {
+					$str = "IN STOCK";
+				} elseif ( $meta_value === 'outofstock' ) {
+					$str = "UIT STOCK";
+				}
+				
+				// Schrijf weg in voorraadlog per weeknummer (zonder leading zero's) 
+				$str = date( 'd/m/Y H:i:s' ) . "\t" . $str . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+			    file_put_contents(WP_CONTENT_DIR."/stock-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+			}
+		}
+		// Zet de normale postmeta-functie verder
+		update_post_meta($meta_id, $post_id, $meta_key, $meta_value);
+	}
 	
 	###############
 	# WOOCOMMERCE #
