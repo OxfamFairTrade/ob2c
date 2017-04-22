@@ -731,6 +731,34 @@
 		return $msg;
 	}
 
+	// only add one force sell product to the cart no matter how many of the original product are added
+	add_filter( 'wc_force_sell_add_to_cart_product', 'my_wc_force_sell_add_to_cart_product' );
+
+	function my_wc_force_sell_add_to_cart_product( $product ) {
+		var_dump($product);
+		$product_key = WC()->cart->find_product_in_cart( $product['id'] );
+
+		if ( ! empty( $product_key ) ) {
+			$product_quantity = WC()->cart->cart_contents[ $product_key ]['quantity'];
+			if ( $product['id'] == 3959 ) {
+				$product['quantity'] = floor( $product_quantity / 6 );
+			}
+		}
+
+		return $product;
+	}
+	
+	// when a synced force sell product is updated always set it to 1
+	// add_filter( 'wc_force_sell_update_quantity', 'my_wc_force_sell_update_quantity' );
+
+	function my_wc_force_sell_update_quantity( $quantity, $product ) {
+		if ( $product['id'] == 3959 ) {
+			return floor( $quantity / 6);	
+		} else {
+			return $quantity;
+		}
+	}
+	
 
 	############
 	# SETTINGS #

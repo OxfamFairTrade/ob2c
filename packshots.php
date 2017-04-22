@@ -60,7 +60,7 @@
 							// Staat pa_merk nu toevallig als eerste in de lijst of niet? 
 							echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em; text-align: center; border-bottom: 1px solid black;">';
 								echo '<small style="color: vampire grey; font-style: italic;">'.$product['attributes'][0]['options'][0].' '.$product['sku'].'</small><br>';
-								echo '<div style="padding: 0 10%; height: 50px; display: flex; align-items: center;"><p style="font-weight: bold; margin: 0; text-align: center; width: 100%;">'.$product['name'].'</p></div>';
+								echo '<div style="padding: 0; height: 50px; display: flex; align-items: center;"><p style="font-weight: bold; margin: 0; text-align: center; width: 100%;">'.$product['name'].'</p></div>';
 								echo '<a href="'.$product['permalink'].'"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
 								echo '<u>Downloads:</u><br>';
 								echo '<a href="'.$wp_full[0].'" title="Bekijk in nationale webshop" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' pixels)<br>';
