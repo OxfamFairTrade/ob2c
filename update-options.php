@@ -39,10 +39,34 @@
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en zouden dus niet automatisch opgeslagen mogen worden!-->
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_btw">BTW-nummer winkel:</label>
+					<label for="oxfam_tax">BTW-nummer winkel:</label>
 				</th>
 		  		<td colspan="5">
-		  			<input type="text" name="oxfam_btw" style="width: 50%;" value="<?php echo get_oxfam_shop_data('phone'); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_tax" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  		</td>
+			</tr>
+			<tr valign="top">
+				<th colspan="3">
+					<label for="oxfam_account">Bankrekening winkel:</label>
+				</th>
+		  		<td colspan="5">
+		  			<input type="text" name="oxfam_account" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'account' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  		</td>
+			</tr>
+			<tr valign="top">
+				<th colspan="3">
+					<label for="oxfam_street">Adres winkel:</label>
+				</th>
+		  		<td colspan="5">
+		  			<input type="text" name="oxfam_street" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'street' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  		</td>
+			</tr>
+			<tr valign="top">
+				<th colspan="3">
+					<label for="oxfam_zipcode">Postcode winkel:</label>
+				</th>
+		  		<td colspan="5">
+		  			<input type="text" name="oxfam_zipcode" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'zipcode' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -50,7 +74,7 @@
 					<label for="oxfam_city">Stad winkel:</label>
 				</th>
 		  		<td colspan="5">
-		  			<input type="text" name="oxfam_city" style="width: 50%;" value="<?php echo get_oxfam_shop_data('city'); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_city" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'city' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -58,7 +82,7 @@
 					<label for="oxfam_city">Telefoon winkel:</label>
 				</th>
 		  		<td colspan="5">
-		  			<input type="text" name="oxfam_phone" style="width: 50%;" value="<?php echo get_oxfam_shop_data('phone'); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_telephone" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'telephone' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
 		  		</td>
 			</tr>
 

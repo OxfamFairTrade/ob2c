@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce Force Sells\n"
 "POT-Creation-Date: 2017-04-15 12:09+0200\n"
-"PO-Revision-Date: 2017-04-15 18:37+0200\n"
+"PO-Revision-Date: 2017-04-23 01:09+0200\n"
 "Last-Translator: \n"
 "Language-Team: contact@lecouperet.net\n"
 "Language: nl_NL\n"
@@ -49,17 +49,21 @@ msgid ""
 "These products will be added to the cart when the main product is added and "
 "quantity will be synced in case the main product quantity changes."
 msgstr ""
+"Deze producten worden toegevoegd aan het winkelmandje wanneer het "
+"hoofdproduct toegevoegd wordt. Het aantal stuks wordt gesynchroniseerd met "
+"elke hoeveelheidswijziging."
 
 #: woocommerce-force-sells.php:302
 msgid "This will also add the following products to your cart:"
 msgstr ""
-"Opgelet, dit statiegeld wordt automatisch toegevoegd bij aankoop van dit "
-"product:"
+"Dit leeggoed wordt automatisch toegevoegd bij aankoop van dit product:"
 
 #: woocommerce-force-sells.php:359
 #, php-format
 msgid "%s will also be removed as they're sold together."
 msgstr ""
+"&laquo; %s &raquo; is gelinkt aan dit product wordt ook uit je winkelmandje "
+"verwijderd."
 
 #. Plugin Name of the plugin/theme
 msgid "WooCommerce Force Sells"

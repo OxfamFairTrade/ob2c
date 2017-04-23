@@ -37,6 +37,7 @@
 							echo '<div id="'.get_the_ID().'" class="pane-left';
 							if ( get_the_date('U') > strtotime('-2 months') ) echo ' new';
 							// Leeggoed is ook verborgen (en daardoor 'oud') maar reeds hogerop uit deze lijst gefilterd
+							// CHECK VISIBILITY VAN MOEDER PRODUCT, NIET VAN DEZE!
 							if ( $product->get_catalog_visibility() !== 'visible' ) echo ' old';
 							echo '">';
 								echo '<p class="title">'.$product->get_sku().': '.$product->get_title().'</p>';

@@ -330,7 +330,13 @@
 		$address_fields['billing_last_name']['label'] = "Familienaam";
 		$address_fields['billing_last_name']['placeholder'] = "Peeters";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
+		$address_fields['billing_phone']['placeholder'] = "059 32 49 59";
 		$address_fields['billing_email']['label'] = "E-mailadres";
+		$address_fields['billing_email']['placeholder'] = "jan@peeters.be";
+		// $address_fields['billing_company']['label'] = "Bedrijf";
+		// $address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
+		// $address_fields['billing_address_2']['label'] = "BTW-nummer";
+		// $address_fields['billing_address_2']['placeholder'] = "BE 0453.066.016";
 		$address_fields['billing_first_name']['class'] = array('form-row-first');
 		$address_fields['billing_last_name']['class'] = array('form-row-last');
 		$address_fields['billing_phone']['class'] = array('form-row-first');
@@ -391,9 +397,9 @@
     }
 
     // Verduidelijk de labels en layout
-	add_filter( 'woocommerce_default_address_fields', 'make_addresses_readonly', 10, 1 );
+	add_filter( 'woocommerce_default_address_fields', 'format_addresses_frontend', 10, 1 );
 
-	function make_addresses_readonly( $address_fields ) {
+	function format_addresses_frontend( $address_fields ) {
 		$address_fields['address_1']['label'] = "Straat en nummer";
 		$address_fields['address_1']['placeholder'] = '';
 		$address_fields['address_1']['required'] = true;
@@ -407,14 +413,6 @@
 		$address_fields['postcode']['clear'] = false;
 
 		$address_fields['city']['label'] = "Gemeente";
-		// Vervang vrije postcode- en gemeentevelden eventueel door een gemeenschappelijke dropdown (zeker handig voor verzendadressen tijdens opstart: enkel reeds beschikbare postcodes tonen)
-		// $address_fields['city']['type'] = 'select';
-		// $address_fields['city']['options'] = array(
-		// 	'' => '(selecteer)',
-		// 	'1000' => 'Brussel',
-		// 	'8400' => 'Oostende',
-		// 	'8450' => 'Bredene',
-		// );
 		$address_fields['city']['required'] = true;
 		$address_fields['city']['class'] = array('form-row-last');
 		$address_fields['city']['clear'] = true;
@@ -755,7 +753,6 @@
 	add_filter( 'wc_force_sell_update_quantity', 'update_plastic_empties_quantity', 10, 2 );
 
 	function update_plastic_empties_quantity( $quantity, $empties_item ) {
-		write_log("IK LOOP DOOR FORCE_SELL_UPDATE_QUANTITY");
 		$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
 		$empties_product = wc_get_product( $empties_item['product_id'] );
 		switch ( $empties_product->get_sku() ) {
@@ -763,12 +760,23 @@
 				return floor( intval($product_item['quantity']) / 6 );
 			case 'WLBS24M':
 				return floor( intval($product_item['quantity']) / 24 );
+			// PROBLEEM: winkelmandje is forced sell 'vergeten' wanneer hij wél 6/24 flessen
+			case 'WLFSG':
+				if ( intval($product_item['quantity']) === 6 ) {
+					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
+					$args['forced_by'] = $empties_item['forced_by'];
+					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS6M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
+				}
+				return $quantity;
+			case 'WLFSK';
+				if ( intval($product_item['quantity']) === 24 ) {
+					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
+					$args['forced_by'] = $empties_item['forced_by'];
+					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS24M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
+				}
 			default:
 				return $quantity;
 		}
-
-		// PROBLEEM: winkelmandje is forced sell 'vergeten' wanneer hij wél 6/24 flessen
-		// SCHRIJF FUNCTIE OM BAKKEN TOE TE VOEGEN INDIEN TRESHOLD BEREIKT IS
 	}
 	
 
@@ -1719,44 +1727,48 @@
 
 	function get_oxfam_shop_data( $key ) {
 		global $wpdb;
-		$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		if ( ${'row->field_sellpoint_'.$key.'_value'} ) {
-			return ucwords( ${'row->field_sellpoint_'.$key.'_value'} );
+		if ( $key === 'tax' or $key === 'account' ) {
+			$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop' ) );
+			if ( ${'row->field_shop_'.$key.'_value'} ) {
+				if ( $key === 'tax' ) {
+					return format_tax_number( trim( ${'row->field_shop_'.$key.'_value'} ) );
+				} else {
+					return format_account_number( trim( ${'row->field_shop_'.$key.'_value'} ) );
+				}
+			} else {
+				return "UNKNOWN";
+			}
 		} else {
-			return "UNKNOWN";
-		}
-	}
-
-	function get_oxfam_shop_phone() {
-		global $wpdb;
-		$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_telephone WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		if ( $row->field_sellpoint_telephone_value ) {
-			return format_phone_number( $row->field_sellpoint_telephone_value );
-		} else {
-			return "UNKNOWN";
+			$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+			if ( ${'row->field_sellpoint_'.$key.'_value'} ) {
+				if ( $key === 'telephone' ) {
+					return format_phone_number( trim( ${'row->field_sellpoint_'.$key.'_value'} ) );
+				} elseif ( $key === 'shop' ) {
+					return ${'row->field_sellpoint_'.$key.'_value'};
+				} else {
+					return ucwords( trim( ${'row->field_sellpoint_'.$key.'_value'} ) );
+				}
+			} else {
+				return "UNKNOWN";
+			}
 		}
 	}
 
 	function print_address() {
 		global $wpdb;
-		$row1 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_place WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		$street = trim($row1->field_sellpoint_place_value);
-		$row2 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_zipcode WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		$zip = trim($row2->field_sellpoint_zipcode_value);
-		$msg = $street."<br>".$zip." ".get_oxfam_shop_data('city')."<br>".get_oxfam_shop_phone()."<br><a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a>";
-		return $msg;
+		$street = get_oxfam_shop_data( 'place' );
+		$zip = get_oxfam_shop_data( 'zipcode' );
+		$city = get_oxfam_shop_data( 'city' );
+		$phone = get_oxfam_shop_data( 'telephone' );
+		return $street."<br>".$zip." ".$city."<br>".$phone."<br><a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a>";
 	}
 
 	function print_map_address() {
 		global $wpdb;
-		$row1 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_place WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		$street = trim($row1->field_sellpoint_place_value);
-		$row2 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_zipcode WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		$zip = trim($row2->field_sellpoint_zipcode_value);
-		$row3 = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_city WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		$city = trim($row3->field_sellpoint_city_value);
-		$msg = $street.", ".$zip." ".$city;
-		echo $msg;
+		$street = get_oxfam_shop_data( 'place' );
+		$zip = get_oxfam_shop_data( 'zipcode' );
+		$city = get_oxfam_shop_data( 'city' );
+		echo $street.", ".$zip." ".$city;
 	}
 
 	function print_widget_usp() {
