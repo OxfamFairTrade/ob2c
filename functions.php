@@ -400,7 +400,7 @@
 	add_filter( 'woocommerce_default_address_fields', 'format_addresses_frontend', 10, 1 );
 
 	function format_addresses_frontend( $address_fields ) {
-		$address_fields['address_1']['label'] = "Straat en nummer";
+		$address_fields['address_1']['label'] = "Straat en huisnummer";
 		$address_fields['address_1']['placeholder'] = '';
 		$address_fields['address_1']['required'] = true;
 
@@ -420,26 +420,48 @@
 		return $address_fields;
 	}
 
-	// Zet hoofdletters aan namen
+	// Herschrijf bepaalde klantendata tijdens het afrekenen naar standaardformaten
 	add_filter( 'woocommerce_process_checkout_field_billing_first_name', 'uppercase_words', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_last_name', 'uppercase_words', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'uppercase_words', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_billing_city', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'format_place', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_postcode', 'format_zipcode', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_city', 'format_city', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_telephone', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_first_name', 'uppercase_words', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_last_name', 'uppercase_words', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_shipping_address_1', 'uppercase_words', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_shipping_city', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_address_1', 'format_place', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_postcode', 'format_zipcode', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_city', 'format_city', 10, 1 );
 	
-	function uppercase_words( $name ) {
-		return ucwords($name);
+	function uppercase_words( $value ) {
+		return ucwords( trim($value) );
 	}
 
-	// Herschrijf telefoonnummers tijdens het afrekenen in de standaardformaten 0472 788 515 (gsm) of 059 32 49 59 (vast)
-	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_phone_number', 10, 1 );
+	function format_tax( $value ) {
+		$value = str_replace( 'BE', '', $value );
+		return 'BE '.ucwords( trim($value) );
+	}
 
-	function format_phone_number( $phone ) {
+	function format_account( $value ) {
+		$value = str_replace( 'IBAN', '', $value );
+		return ucwords( trim($value) );
+	}
+
+	function format_place( $value ) {
+		return ucwords( trim($value) );
+	}
+	
+	function format_zipcode( $value ) {
+		return ucwords( trim($value) );
+	}
+
+	function format_city( $value ) {
+		return ucwords( trim($value) );
+	}
+	
+	function format_telephone( $value ) {
 		// Wis alle spaties, leestekens en landcodes
-		$temp_tel = preg_replace( '/\s+/', '', $phone );
+		$temp_tel = preg_replace( '/\s+/', '', $value );
 		$temp_tel = str_replace( '/', '', $temp_tel );
 		$temp_tel = str_replace( '-', '', $temp_tel );
 		$temp_tel = str_replace( '.', '', $temp_tel );
@@ -449,18 +471,18 @@
 		// Formatteer vaste telefoonnummers
 		if ( mb_strlen($temp_tel) === 9 ) {
 			if ( intval($temp_tel[1]) === 2 or intval($temp_tel[1]) === 3 or intval($temp_tel[1]) === 4 or intval($temp_tel[1]) === 9 ) {
-				$phone = substr($temp_tel, 0, 2)." ".substr($temp_tel, 2, 3)." ".substr($temp_tel, 5, 2)." ".substr($temp_tel, 7, 2);
+				$value = substr($temp_tel, 0, 2)."/".substr($temp_tel, 2, 3).".".substr($temp_tel, 5, 2).".".substr($temp_tel, 7, 2);
 			} else {
-				$phone = substr($temp_tel, 0, 3)." ".substr($temp_tel, 3, 2)." ".substr($temp_tel, 5, 2)." ".substr($temp_tel, 7, 2);
+				$value = substr($temp_tel, 0, 3)."/".substr($temp_tel, 3, 2).".".substr($temp_tel, 5, 2).".".substr($temp_tel, 7, 2);
 			}
 		}
 
 		// Formatteer mobiele telefoonnummers
 		if ( mb_strlen($temp_tel) === 10 ) {
-			$phone = substr($temp_tel, 0, 4)." ".substr($temp_tel, 4, 3)." ".substr($temp_tel, 7, 3);
+			$value = substr($temp_tel, 0, 4)."/".substr($temp_tel, 4, 3).".".substr($temp_tel, 7, 3);
 		}
 		
-		return $phone;
+		return $value;
 	}
 
 	// Verduidelijk de profiellabels in de back-end	
@@ -470,7 +492,7 @@
 		$profile_fields['billing']['title'] = 'Klantgegevens';
 		$profile_fields['billing']['fields']['billing_first_name']['label'] = 'Voornaam';
 		$profile_fields['billing']['fields']['billing_last_name']['label'] = 'Familienaam';
-		$profile_fields['billing']['fields']['billing_address_1']['label'] = 'Straat en nummer';
+		$profile_fields['billing']['fields']['billing_address_1']['label'] = 'Straat en huisnummer';
 		$profile_fields['billing']['fields']['billing_postcode']['label'] = 'Postcode';
 		$profile_fields['billing']['fields']['billing_city']['label'] = 'Gemeente';
 		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
@@ -482,7 +504,7 @@
 		$profile_fields['shipping']['title'] = 'Verzendgegevens';
 		$profile_fields['shipping']['fields']['shipping_first_name']['label'] = 'Voornaam';
 		$profile_fields['shipping']['fields']['shipping_last_name']['label'] = 'Familienaam';
-		$profile_fields['shipping']['fields']['shipping_address_1']['label'] = 'Straat en nummer';
+		$profile_fields['shipping']['fields']['shipping_address_1']['label'] = 'Straat en huisnummer';
 		$profile_fields['shipping']['fields']['shipping_postcode']['label'] = 'Postcode';
 		$profile_fields['shipping']['fields']['shipping_city']['label'] = 'Gemeente';
 		unset($profile_fields['shipping']['fields']['shipping_address_2']);
@@ -1746,24 +1768,22 @@
 		global $wpdb;
 		if ( $key === 'tax' or $key === 'account' ) {
 			$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop' ) );
-			if ( ${'row->field_shop_'.$key.'_value'} ) {
-				if ( $key === 'tax' ) {
-					return format_tax_number( trim( ${'row->field_shop_'.$key.'_value'} ) );
-				} else {
-					return format_account_number( trim( ${'row->field_shop_'.$key.'_value'} ) );
-				}
+			write_log("SHOP QUERY");
+			write_log($row);
+			if ( $row ) {
+				return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
 			} else {
 				return "UNKNOWN";
 			}
 		} else {
 			$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-			if ( ${'row->field_sellpoint_'.$key.'_value'} ) {
-				if ( $key === 'telephone' ) {
-					return format_phone_number( trim( ${'row->field_sellpoint_'.$key.'_value'} ) );
-				} elseif ( $key === 'shop' ) {
-					return ${'row->field_sellpoint_'.$key.'_value'};
+			write_log("SELLPOINT QUERY");
+			write_log($row);
+			if ( $row ) {
+				if ( $key === 'shop' ) {
+					return $row->field_sellpoint_shop_nid;
 				} else {
-					return ucwords( trim( ${'row->field_sellpoint_'.$key.'_value'} ) );
+					return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 				}
 			} else {
 				return "UNKNOWN";
@@ -1803,11 +1823,7 @@
 	}
 
 	function print_widget_contact() {
-		global $wpdb;
-		$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_telephone WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-		$phone = format_phone_number( $row->field_sellpoint_telephone_value );
-		$msg = "<a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a><br>".$phone;
-		return $msg;
+		return "<a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a><br>".get_oxfam_shop_data( 'telephone' );
 	}
 
 	function print_welcome() {
@@ -2252,6 +2268,14 @@
 
 			#oxfam-products .old {
 				background-color: #fbc43a;
+			}
+
+			#oxfam-products .border-color-green {
+				border-color: #61a534;
+			}
+
+			#oxfam-products .border-color-red {
+				border-color: #e70052;
 			}
 
 			@media (max-width: 1024px) {

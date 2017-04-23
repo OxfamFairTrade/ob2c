@@ -1,16 +1,33 @@
 <div class="wrap">
 	<h1>Instellingen voor lokale webshop</h1>
 	
-	<form method="post" action="options.php"> 
-		<?php
-			settings_fields( 'oxfam-option-group' );
-			do_settings_sections( 'oxfam-option-group' );
-		?>
-		
+	<form method="post" action="options.php">
 		<table class="form-table">
-			<tr>
-				<td></td>
-			</tr>
+			<?php
+				settings_fields( 'oxfam-option-group' );
+				do_settings_sections( 'oxfam-option-group' );
+
+				Mollie_Autoloader::register();
+				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
+				$partner_id_customer = get_option( 'oxfam_mollie_partner_id' );
+				
+				// Check of we niet op de hoofdaccount zitten, want dan krijgen we een fatale error bij getLoginLink()
+				if ( $partner_id_customer != 2485891 ) {
+					$result = $mollie->getLoginLink( $partner_id_customer );
+					echo "<tr>";
+						echo "<th colspan='3'><a href='".$result->redirect_url."' target='_blank'>Log automatisch in op je Mollie-betaalaccount &raquo;</a></th>";
+						echo "<td colspan='5'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td>";
+					echo "</tr>";
+
+					if ( does_sendcloud_delivery() ) {
+						echo "<tr>";
+							echo "<th colspan='3'><a href='https://panel.sendcloud.sc/' target='_blank'>Log handmatig in op je SendCloud-verzendaccount &raquo;</a></th>";
+							echo "<td colspan='5'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td>";
+						echo "</tr>";
+					}
+				}
+			?>
+
 			<tr valign="top">
 				<th colspan="3">
 					<label for="oxfam_shop_node">Nodenummer OWW-site:</label>
@@ -39,73 +56,68 @@
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en zouden dus niet automatisch opgeslagen mogen worden!-->
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_tax">BTW-nummer winkel:</label>
+					<label for="oxfam_tax">BTW-nummer:</label>
 				</th>
 		  		<td colspan="5">
-		  			<input type="text" name="oxfam_tax" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_tax" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_account">Bankrekening winkel:</label>
+					<label for="oxfam_account">IBAN-rekeningnummer:</label>
 				</th>
 		  		<td colspan="5">
-		  			<input type="text" name="oxfam_account" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'account' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_account" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'account' ); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_street">Adres winkel:</label>
+					<label for="oxfam_place">Straat en huisnummer:</label>
 				</th>
 		  		<td colspan="5">
-		  			<input type="text" name="oxfam_street" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'street' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_place" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'place' ); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_zipcode">Postcode winkel:</label>
+					<label for="oxfam_zipcode">Postcode:</label>
 				</th>
 		  		<td colspan="5">
-		  			<input type="text" name="oxfam_zipcode" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'zipcode' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_zipcode" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'zipcode' ); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_city">Stad winkel:</label>
+					<label for="oxfam_city">Gemeente:</label>
 				</th>
 		  		<td colspan="5">
-		  			<input type="text" name="oxfam_city" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'city' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_city" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'city' ); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_city">Telefoon winkel:</label>
+					<label for="oxfam_city">Telefoonnummer:</label>
 				</th>
 		  		<td colspan="5">
-		  			<input type="text" name="oxfam_telephone" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'telephone' ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_telephone" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'telephone' ); ?>" readonly>
 		  		</td>
 			</tr>
-
+			<tr valign="top">
+				<th colspan="3">
+					<label for="oxfam_email">E-mailadres:</label>
+				</th>
+		  		<td colspan="5">
+		  			<input type="text" name="oxfam_email" style="width: 50%;" value="<?php echo get_option( 'admin_email' ); ?>" readonly>
+		  		</td>
+			</tr>
+			
 			<?php
-				Mollie_Autoloader::register();
-				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
-				$partner_id_customer = get_option( 'oxfam_mollie_partner_id' );
-				
-				// Check of we niet op de hoofdaccount zitten, want dan krijgen we een fatale error bij getLoginLink()
-				if ( $partner_id_customer != 2485891 ) {
-					$result = $mollie->getLoginLink( $partner_id_customer );
-					echo "<tr><th colspan='3'><a href='".$result->redirect_url."' target='_blank'>Log automatisch in op je Mollie-betaalaccount &raquo;</a></th>";
-					echo "<td colspan='5'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td></tr>";
-
-					if ( does_sendcloud_delivery() ) {
-						echo "<tr><th colspan='3'><a href='https://panel.sendcloud.sc/' target='_blank'>Log handmatig in op je SendCloud-verzendaccount &raquo;</a></th>";
-						echo "<td colspan='5'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td></tr>";
-					}
+				if ( current_user_can( 'manage_options' ) ) {
+					echo "<tr><td>";
+					submit_button();
+					echo "</td></tr>";
 				}
-
-				if ( current_user_can( 'manage_options' ) ) submit_button();
 			?>
 		</table>
-
 	</form>
 </div>

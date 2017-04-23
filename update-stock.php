@@ -23,22 +23,30 @@
 			$products = new WP_Query( $args );
 
 			if ( $products->have_posts() ) {
-				$i = 1;
+				$i = 0;
+				$cnt = 0;
 				while ( $products->have_posts() ) {
 					$products->the_post();
 					$product = wc_get_product( get_the_ID() );
 					// Verhinder dat leeggoed ook opduikt
 					if ( is_numeric( $product->get_sku() ) ) {
-						if ( $i % 2 === 1 ) echo '<div style="display: table-row;">';
-						$color = $product->is_in_stock() ? '#61a534' : '#e70052'; 
-						
+						if ( $i % 2 === 0 ) echo '<div style="display: table-row;">';
+						if ( $product->is_in_stock() ) {
+							$class = 'border-color-green';
+							$cnt++;
+						} else {
+							$class = 'border-color-red';
+						}
 						echo '<div class="block">';
 							// Linkerdeel
 							echo '<div id="'.get_the_ID().'" class="pane-left';
 							if ( get_the_date('U') > strtotime('-2 months') ) echo ' new';
-							// Leeggoed is ook verborgen (en daardoor 'oud') maar reeds hogerop uit deze lijst gefilterd
-							// CHECK VISIBILITY VAN MOEDER PRODUCT, NIET VAN DEZE!
-							if ( $product->get_catalog_visibility() !== 'visible' ) echo ' old';
+							// CHECK STOCK VAN MOEDER PRODUCT, NIET VAN DEZE!
+							$main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
+							// switch_to_blog(1);
+							// $main_product = wc_get_product( $main_product_id );
+							// restore_current_blog();
+							// if ( ! $main_product->is_in_stock() ) echo ' old';
 							echo '">';
 								echo '<p class="title">'.$product->get_sku().': '.$product->get_title().'</p>';
 								echo '<p>';
@@ -53,17 +61,22 @@
 							echo '</div>';
 							
 							// Rechterdeel
-							echo '<div class="pane-right" style="border-color: '.$color.'">';
+							echo '<div class="pane-right '.$class.'">';
 								// Verhinder dat de (grote) placeholder uitgespuwd wordt indien een product per ongeluk geen foto heeft
 								echo '<a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'thumbnail', $attr, false ).'</a>';
 							echo '</div>';
 						echo '</div>';
 
-						if ( $i % 2 === 0 ) echo '</div>';
+						if ( $i % 2 === 1 ) echo '</div>';
 						$i++;
 					}
 				}
 				wp_reset_postdata();
+				// Extra afsluitende </div> nodig indien oneven aantal producten!
+				if ( $i % 2 === 1 ) echo '</div>';
+				echo '<div style="display: table-row; width: 100%;">';
+					echo '<p style="text-align: right;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="available-count">'.$cnt.'</span> voorradig zijn.</p>';
+				echo '</div>';
 			}
 
 			add_action('admin_footer', 'oxfam_action_javascript');
@@ -82,20 +95,15 @@
 									ajaxCall(id, meta, jQuery(this).is(":checked"));
 								}
 								if ( meta == 'stockstatus' ) {
-									ajaxCall( id, meta, jQuery(this).find(":selected").val() );
-									if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
-										var color = '#e70052';
-									} else {
-										var color = '#61a534';
-									}
-									jQuery("#"+id).next('div').css('border-left-color', color);
+									var value = jQuery(this).find(":selected").val();
+									ajaxCall( id, meta, value );
 								}
 							} else {
 								if ( meta == 'featured' ) {
 									jQuery(this).prop("checked", !jQuery(this).is(":checked") );
 								}
 								if ( meta == 'stockstatus' ) {
-									if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
+									if ( value == 'outofstock' ) {
 										var fallback = 'instock';
 									} else {
 										var fallback = 'outofstock';
@@ -125,6 +133,14 @@
 				    			dataType: 'html',
 				    			success: function(msg) {
 							    	tries = 0;
+									
+									if ( value == 'outofstock' ) {
+										jQuery("#"+id).next('div').removeClass('border-color-green').addClass('border-color-red');
+									} else if ( value == 'instock' ) {
+										jQuery("#"+id).next('div').removeClass('border-color-red').addClass('border-color-green');
+									}
+									jQuery("#available-count").html(jQuery(".border-color-green").length);
+							    	
 							    	jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(3000).animate({
 							    		opacity: 0,
 							    	}, 1000, function(){
