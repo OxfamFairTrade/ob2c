@@ -479,6 +479,19 @@
             
             
             
+            // GEWIJZIGD: Voeg functie toe die post-ID's van de hoofdsite vertaalt naar de subsite (op basis van artikelnummer)
+            function translate_main_to_local_ids( $local_product_id, $metakey, $product_meta_item_row ) {
+                if ( $product_meta_item_row ) {
+                    foreach ( $product_meta_item_row as $main_product_id ) {
+                        switch_to_blog( 1 );
+                        $main_product = wc_get_product( $main_product_id );
+                        restore_current_blog();
+                        $local_product_ids[] = wc_get_product_id_by_sku( $main_product->get_sku() );
+                    }
+                    update_post_meta( $local_product_id, $metakey, $local_product_ids );
+                }
+            }
+            
             
             
             /**
@@ -516,17 +529,22 @@
                                     switch($key)
                                         {
 
-                                            // GEWIJZIGD: Vertaal de post-ID's in het 'forced sells'-veld naar de lokale versies (via SKU)
-                                            case '_force_sell_synced_ids'  :
-                                                                        $empties_ids = unserialize($product_meta_item[0]);
-                                                                        foreach ( $empties_ids as $emptie_id ) {
-                                                                            switch_to_blog( 1 );
-                                                                            $emptie = wc_get_product( $emptie_id );
-                                                                            restore_current_blog();
-                                                                            $local_product_meta_item[] = wc_get_product_id_by_sku( $emptie->get_sku() );
-                                                                        }
+                                            // GEWIJZIGD: Vertaal de nationale post-ID's in bepaalde metavelden naar de lokale post-ID's
+                                            
+                                            case '_force_sell_ids'  :
+                                                                        translate_national_to_local_ids( $post_ID, $key, $product_meta_item_row );
+                                                                        break;
 
-                                                                        update_post_meta( $post_ID, '_force_sell_synced_ids', $local_product_meta_item );
+                                            case '_force_sell_synced_ids'  :
+                                                                        translate_national_to_local_ids( $post_ID, $key, $product_meta_item_row );
+                                                                        break;
+
+                                            case '_upsell_ids'  :
+                                                                        translate_national_to_local_ids( $post_ID, $key, $product_meta_item_row );
+                                                                        break;
+
+                                            case '_crosssell_ids'  :
+                                                                        translate_national_to_local_ids( $post_ID, $key, $product_meta_item_row );
                                                                         break;
 
                                             case '_thumbnail_id'    :

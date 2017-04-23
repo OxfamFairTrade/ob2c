@@ -1070,9 +1070,9 @@
                             // GEWIJZIGD: Laat de voorraadvelden enkel negeren indien het om de update van een product gaat dat reeds verspreid is
                             if ( $_product_just_publish ) {
                                 write_log("FIRST METADATA PUBLISH!");
-                                // Expliciet outofstock zetten zoals bij taxonomie?
+                                // Expliciet op outofstock zetten, zoals bij taxonomie
+                                $product_meta['_stock_status'] = array( 'outofstock' );
                                 write_log($product_meta);
-                                $product_meta = $product_meta;
                                 $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id);
                             } else {
                                 write_log("UPDATING PRODUCT, IGNORE STOCK METADATA!");

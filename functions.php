@@ -312,11 +312,11 @@
 						$category = $parent;
 					}
 				}
-			}
-			if ( $parent->slug !== 'wijn' ) {
-				remove_meta_box('product_grapediv', 'product', 'normal');
-				remove_meta_box('product_recipediv', 'product', 'normal');
-				remove_meta_box('product_tastediv', 'product', 'normal');
+				if ( $parent->slug !== 'wijn' ) {
+					remove_meta_box('product_grapediv', 'product', 'normal');
+					remove_meta_box('product_recipediv', 'product', 'normal');
+					remove_meta_box('product_tastediv', 'product', 'normal');
+				}
 			}
 		}
 	}
@@ -1560,13 +1560,18 @@
 	// 	restore_current_blog();
 	// });
 
-	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke update VOOR DE ZEKERHEID INGESCHAKELD HOUDEN?
+	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke update
 	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
 
 	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
 		write_log("NEGEER POST META OP POST-ID ".$post_id);
 		$ignored_fields[] = '_featured';
 		$ignored_fields[] = '_visibility';
+		$ignored_fields[] = '_wc_review_count';
+		$ignored_fields[] = '_wc_rating_count';
+		$ignored_fields[] = '_wc_average_rating';
+		$ignored_fields[] = '_vc_post_settings';
+		$ignored_fields[] = '_wpb_vc_js_status';
 		return $ignored_fields;
 	}
 
