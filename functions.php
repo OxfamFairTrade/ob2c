@@ -681,8 +681,6 @@
 		global $woocommerce;
 		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 		
-		// write_log($rates);
-		
 		// Verberg alle betalende methodes indien er een gratis levering beschikbaar is (= per definitie geen afhaling want Local Plus creëert geen methodes)
 	  	if ( isset($rates['free_shipping:2']) or isset($rates['free_shipping:4']) or isset($rates['free_shipping:6']) ) {
 	  		unset( $rates['flat_rate:1'] );
@@ -1570,6 +1568,7 @@
 		$ignored_fields[] = '_stock';
 		$ignored_fields[] = '_stock_status';
 		$ignored_fields[] = '_featured';
+		$ignored_fields[] = '_visibility';
 		return $ignored_fields;
 	}
 
@@ -1768,8 +1767,6 @@
 		global $wpdb;
 		if ( $key === 'tax' or $key === 'account' ) {
 			$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop' ) );
-			write_log("SHOP QUERY");
-			write_log($row);
 			if ( $row ) {
 				return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
 			} else {
@@ -1777,8 +1774,6 @@
 			}
 		} else {
 			$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-			write_log("SELLPOINT QUERY");
-			write_log($row);
 			if ( $row ) {
 				if ( $key === 'shop' ) {
 					return $row->field_sellpoint_shop_nid;
