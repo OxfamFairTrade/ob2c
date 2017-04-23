@@ -24,7 +24,8 @@
 
 			if ( $products->have_posts() ) {
 				$i = 0;
-				$cnt = 0;
+				$instock_cnt = 0;
+				$featured_cnt = 0;
 				while ( $products->have_posts() ) {
 					$products->the_post();
 					$product = wc_get_product( get_the_ID() );
@@ -33,16 +34,19 @@
 						if ( $i % 2 === 0 ) echo '<div style="display: table-row;">';
 						if ( $product->is_in_stock() ) {
 							$class = 'border-color-green';
-							$cnt++;
+							$instock_cnt++;
 						} else {
 							$class = 'border-color-red';
+						}
+						if ( $product->is_featured() ) {
+							$featured_cnt++;
 						}
 						echo '<div class="block">';
 							// Linkerdeel
 							echo '<div id="'.get_the_ID().'" class="pane-left';
 							if ( get_the_date('U') > strtotime('-2 months') ) echo ' new';
 							// CHECK STOCK VAN MOEDER PRODUCT, NIET VAN DEZE!
-							$main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
+							// $main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
 							// switch_to_blog(1);
 							// $main_product = wc_get_product( $main_product_id );
 							// restore_current_blog();
@@ -55,7 +59,7 @@
 								echo '</p>';
 								echo '<p><select id="'.get_the_ID().'-stockstatus">';
 									echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
-									echo '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Niet op voorraad</option>';
+									echo '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 								echo '</select></p>';
 								echo '<p class="output">&nbsp;</p>';
 							echo '</div>';
@@ -75,7 +79,7 @@
 				// Extra afsluitende </div> nodig indien oneven aantal producten!
 				if ( $i % 2 === 1 ) echo '</div>';
 				echo '<div style="display: table-row; width: 100%;">';
-					echo '<p style="text-align: right;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="available-count">'.$cnt.'</span> voorradig zijn.</p>';
+					echo '<p style="text-align: right;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
 				echo '</div>';
 			}
 
@@ -139,7 +143,8 @@
 									} else if ( value == 'instock' ) {
 										jQuery("#"+id).next('div').removeClass('border-color-red').addClass('border-color-green');
 									}
-									jQuery("#available-count").html(jQuery(".border-color-green").length);
+									jQuery("#instock-cnt").html(jQuery("#oxfam-products").find(".border-color-green").length);
+									jQuery("#featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
 							    	
 							    	jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(3000).animate({
 							    		opacity: 0,
