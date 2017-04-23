@@ -35,7 +35,14 @@
                     add_action( 'admin_menu',                               array(  $this, 'custom_menu_page'), 999 );
                     
                     add_action( 'admin_init',                               array(  $this, 'admin_init'), 1);
-                    add_action( 'current_screen', array(  $this, 'current_screen'), 1);
+                    add_action( 'current_screen',                           array(  $this, 'current_screen'), 1);
+                    
+                    add_action( 'bulk_actions-edit-product',                array(  $this, 'bulk_actions_edit_product'));
+                    add_action( 'admin_footer',                             array(  $this, 'admin_footer_bulk_distribution'));
+                    
+                    add_action( 'manage_product_posts_custom_column',      array(  $this, 'manage_products_columns'), 10, 2 );
+
+
                     
                     //add ignore fields
                     add_filter('woo_mstore/save_meta_to_post/ignore_meta_fields', array(  $this, 'on_save_meta_to_post__ignore_meta_fields'), 10, 2);  
@@ -50,7 +57,7 @@
                     
                     // Hooks 
                     
-                    add_action( 'woocommerce_product_write_panels',         array(  $this, 'product_write_panel' ) );
+                    add_action( 'woocommerce_product_data_panels',         array(  $this, 'product_write_panel' ) );
                     add_filter( 'woocommerce_process_product_meta',         array(  $this, 'product_save_data' ) );
                     
                     add_action( 'woocommerce_process_product_meta',         array(  $this, 'woocommerce_process_product_meta'), 999, 3 );
@@ -75,6 +82,15 @@
                             
                             wp_register_script( 'woosl-product', WOO_MSTORE_URL . '/assets/js/woosl-product.js', array( 'jquery' ) );
                             wp_enqueue_script('woosl-product');   
+                            
+                        }
+                        
+                    //bulk distribution
+                    if(is_object($current_screen) && $current_screen->id  ==  'edit-product')
+                        {
+                              
+                            wp_register_script( 'bulk-distribution', WOO_MSTORE_URL . '/assets/js/bulk-distribution.js', array( 'jquery' ) );
+                            wp_enqueue_script('bulk-distribution');   
                             
                         }
                     
@@ -224,6 +240,57 @@
                     wp_redirect( network_site_url('wp-admin/network/admin.php?page=woonet-woocommerce-products'));
                     exit;   
                 }
+            
+            
+            /**
+            * Add custom actions within buclk dropdown
+            * 
+            */
+            function bulk_actions_edit_product( $actions )
+                {
+                    
+                    $actions['bulk_distribution']  =   __( 'Bulk Distribution', 'woonet' );   
+                    
+                    return $actions;
+                       
+                }
+            
+            
+            /**
+            * Bulk distribution load html
+            * 
+            */
+            function admin_footer_bulk_distribution()
+                {
+                    $current_screen = get_current_screen();
+                    
+                    if(is_object($current_screen) && $current_screen->id  ==  'edit-product')
+                        {
+                            include( WOO_MSTORE_PATH . '/include/admin/views/html-bulk-distribution-product.php' );          
+                        }
+                    
+                }
+            
+            
+            /**
+            * Add additional checkbox for cb to be used for Bulk Distribution
+            * 
+            * @param mixed $column
+            * @param mixed $post_id
+            */
+            function manage_products_columns( $column, $post_id ) 
+                {   
+                    global $blog_id; 
+                    
+                    switch ( $column ) 
+                        {
+                            case "thumb":
+                                            echo '<input style="display: none" class="network-cb-select" name="network-post[]" value="'.$blog_id .'_'.$post_id.'" type="checkbox" />';
+                                            break;
+        
+                        }
+                }
+            
                  
                
             /**
@@ -429,7 +496,7 @@
                 {
 
                     ?>
-                    <li class="woonet_tab hide_if_grouped"><a href="#woonet_data"><?php _e( 'MultiStore', 'woonet'); ?></a></li>
+                    <li class="woonet_tab hide_if_grouped"><a href="#woonet_data"><span><?php _e( 'MultiStore', 'woonet'); ?></span></a></li>
                     <?php
                 }
 
@@ -774,7 +841,8 @@
                                         );
                     $product_type = wp_get_object_terms( $post_ID, 'product_type', $args);
 
-                    $product_taxonomies_data    =   $this->get_product_taxonomies_terms_data($post_ID);
+                    // GEWIJZIGD: Geef tweede parameter mee die aangeeft of het product voor het eerst verspreid wordt
+                    $product_taxonomies_data    =   $this->get_product_taxonomies_terms_data($post_ID, $_product_just_publish);
                     
                     //get stock which will be used later
                     $main_product_stock         =   get_post_meta($post_ID, '_stock', TRUE);
@@ -998,8 +1066,19 @@
                              
                             //Create / Update the taxonomies terms on this child product site
                             $this->save_taxonomies_to_post($product_taxonomies_data, $child_post->ID, $blog_details->blog_id);
-                                                               
-                            $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id);
+
+                            // GEWIJZIGD: Laat de voorraadvelden enkel negeren indien het om de update van een product gaat dat reeds verspreid is
+                            if ( $_product_just_publish ) {
+                                write_log("FIRST METADATA PUBLISH!");
+                                // Expliciet outofstock zetten zoals bij taxonomie?
+                                write_log($product_meta);
+                                $product_meta = $product_meta;
+                                $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id);
+                            } else {
+                                write_log("UPDATING PRODUCT, IGNORE STOCK METADATA!");
+                                write_log($product_meta);
+                                $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id, array( '_stock', '_stock_status' ));
+                            }
                             
                             
                             //check if this belong to a grouped
@@ -1203,7 +1282,8 @@
             *     
             * @param mixed $post_ID
             */
-            function get_product_taxonomies_terms_data($post_ID)
+            // GEWIJZIGD: Tweede optionele parameter toegevoegd 
+            function get_product_taxonomies_terms_data($post_ID, $first_publish = false)
                 {
                     $product_taxonomies = get_object_taxonomies( 'product' );
                     $product_taxonomies_data = array();
@@ -1309,7 +1389,36 @@
                             
                             $product_taxonomies_data[$product_taxonomy] =   $taxonomy_terms_data;
                         }
-                        
+                    
+                    // GEWIJZIGD: Schakel het kopiëren van taxonomieën die de zichtbaarheid bepalen uit
+                    write_log("ORIGINAL PRODUCT VISIBILITY DATA ON POST-ID ".$post_ID.":");
+                    write_log($product_taxonomies_data['product_visibility']);
+                    
+                    // Enkel doen indien het om normale producten met een numerieke SKU gaat!
+                    $productje = wc_get_product($post_ID);
+                    if ( is_numeric( $productje->get_sku() ) ) {
+                        // Negeer alles wat door de lokale voorraadinstellingen beheerd (en dus niet overschreven) dient te worden, tenzij bij eerste publish
+                        if ( $first_publish ) {
+                            write_log("FIRST TAXONOMY PUBLISH!");
+                            // Forceer op outofstock?
+                            $product_taxonomies_data['product_visibility'][11] = array( 'term_name' => 'outofstock', 'selected' => 1, 'childs' => array() );
+                        } else {
+                            write_log("UPDATING PRODUCT, IGNORE STOCK TAXONOMY!");
+                            // Negeer 'exclude-from-catalog'
+                            unset($product_taxonomies_data['product_visibility'][8]);
+                            // Negeer 'exclude-from-search'
+                            unset($product_taxonomies_data['product_visibility'][9]);
+                            // Negeer 'outofstock'
+                            unset($product_taxonomies_data['product_visibility'][11]);
+                        }
+                    }
+
+                    // Taxonomie 'featured' moet altijd genegeerd worden 
+                    unset($product_taxonomies_data['product_visibility'][10]);
+
+                    write_log("TWEAKED PRODUCT VISIBILITY DATA ON POST-ID ".$post_ID.":");
+                    write_log($product_taxonomies_data['product_visibility']);
+                    
                     return $product_taxonomies_data;
                     
                 }
@@ -1373,6 +1482,12 @@
                 {
                     if(count($group_data) > 0)
                         {
+                            
+                            //set the $parent_term_id   to FALSE if attribute, since this is no hierarhical 
+                            //this also ensure backward compatibility with older WooCommerce
+                            if(strpos($taxonomy, 'pa_') === 0)
+                                $parent_term_id =   FALSE;    
+                            
                             foreach($group_data as  $network_term_id =>  $term_data)
                                 {
                                     //check if the term already exists
@@ -1401,13 +1516,18 @@
                         }    
                 }
                 
-            function get_term_id_by_name($taxonomy, $term_name , $term_parent)
+            function get_term_id_by_name($taxonomy, $term_name , $term_parent   =   FALSE)
                 {
                     $argv = array(
-                                    'parent'        =>  $term_parent,
-                                    'child_of'      =>  $term_parent,
                                     'hide_empty'    =>  FALSE
                                     );
+                    
+                    if($term_parent !== FALSE)
+                        {
+                            $argv['parent']     =   $term_parent;
+                            $argv['child_of']   =   $term_parent;
+                        }
+                    
                     $terms = get_terms($taxonomy, $argv);
                     foreach($terms  as  $term)
                         {
@@ -1773,12 +1893,12 @@
                 {
                     $options    =   $this->functions->get_options();
                     
-                    if($options['child_inherit_changes_fields_control__title'][$blog_id] ==   'no')
+                    if(!empty($options['child_inherit_changes_fields_control__title'][$blog_id])    &&  $options['child_inherit_changes_fields_control__title'][$blog_id] ==   'no')
                         {
                             $ignore_meta_fields[]   =   'post_title';
                         }
                     
-                    if($options['child_inherit_changes_fields_control__price'][$blog_id] ==   'no')
+                    if(!empty($options['child_inherit_changes_fields_control__price'][$blog_id])    &&  $options['child_inherit_changes_fields_control__price'][$blog_id] ==   'no')
                         {
                             $ignore_meta_fields[]   =   '_regular_price';
                             $ignore_meta_fields[]   =   '_sale_price';
@@ -1786,9 +1906,6 @@
                             $ignore_meta_fields[]   =   '_sale_price_dates_from';
                             $ignore_meta_fields[]   =   '_sale_price_dates_to';
                         }
-
-                    $ignore_meta_fields[]   =   '_stock';
-                    $ignore_meta_fields[]   =   '_stock_status';
                     
                     return $ignore_meta_fields;   
                     

@@ -159,10 +159,16 @@
             */
             static function get_order_number($order_number, $order)
                 {
+                    
+                    remove_filter( 'woocommerce_order_number',                         'WOO_SON::get_order_number' , 10, 2 );
+                    $_order_nubmer  =   $order->get_order_number();
+                    add_filter( 'woocommerce_order_number',                         'WOO_SON::get_order_number' , 10, 2 );
+                    
+                    
                     //if set the order number, return
-                    if ( $order->order_number ) 
+                    if ( !empty( $_order_nubmer )) 
                         {
-                            return $order->order_number;
+                            return $_order_nubmer;
                         }
 
                     // GEWIJZIGD: Voeg prefix en leading zero's toe (+ fix voor het oproepen van $order->order_number: query '_order_number' rechtstreeks)

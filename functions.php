@@ -1560,13 +1560,11 @@
 	// 	restore_current_blog();
 	// });
 
-	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke productupdate
+	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke update VOOR DE ZEKERHEID INGESCHAKELD HOUDEN?
 	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
 
-	function ignore_featured_and_stock( $ignored_fields, $blog_id ) {
-		write_log("SUBSITE NUMMER ".$blog_id);
-		$ignored_fields[] = '_stock';
-		$ignored_fields[] = '_stock_status';
+	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
+		write_log("NEGEER POST META OP POST-ID ".$post_id);
 		$ignored_fields[] = '_featured';
 		$ignored_fields[] = '_visibility';
 		return $ignored_fields;

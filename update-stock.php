@@ -63,7 +63,7 @@
 							// Rechterdeel
 							echo '<div class="pane-right '.$class.'">';
 								// Verhinder dat de (grote) placeholder uitgespuwd wordt indien een product per ongeluk geen foto heeft
-								echo '<a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'thumbnail', $attr, false ).'</a>';
+								echo '<a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'thumbnail', null, false ).'</a>';
 							echo '</div>';
 						echo '</div>';
 
