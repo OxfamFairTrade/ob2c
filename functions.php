@@ -778,6 +778,23 @@
 				return $quantity;
 		}
 	}
+
+	// Tel leeggoed niet mee bij aantal items in winkelmandje
+	add_filter( 'woocommerce_cart_contents_count',  'so_28359520_cart_contents_count' );
+	
+	function so_28359520_cart_contents_count( $count ) {
+		$cart = WC()->cart->get_cart();
+		
+		$subtract = 0;
+		foreach ( $cart as $key => $value ) {
+			if ( isset( $value['forced_by'] ) ) {
+				$subtract += $value['quantity'];
+				write_log($subtract);
+			}
+		}
+
+		return $count - $subtract;
+	}
 	
 
 	############
@@ -2013,6 +2030,129 @@
 	}, 10, 2);
 
 	
+	##########
+	# SEARCH #
+	##########
+
+	// Probeert reguliere meervouden en verkleinwoorden automatisch weg te laten uit zoektermen (én index)
+	add_filter( 'relevanssi_stemmer', 'relevanssi_dutch_stemmer' );
+
+	function relevanssi_dutch_stemmer( $term ) {
+		// De 'synoniemen' die een woord simpelweg verlengen voeren we pas door nu de content opgesplitst is in woorden
+		$synonyms = array( 'blauw' => 'blauwe', 'groen' => 'groene', 'wit' => 'witte', 'zwart' => 'zwarte', 'paars' => 'paarse', 'bruin' => 'bruine' );
+		foreach ( $synonyms as $search => $replace ) {
+			if ( strcmp( $term, $search ) === 0 ) $term = $replace;
+		}
+		
+		$len = strlen($term);
+		
+		if ( $len > 4 ) {
+			$last_3 = substr($term, -3, 3);
+			$last_4 = substr($term, -4, 4);
+			$vowels = array( "a", "e", "i", "o", "u" );
+
+			// Knip alle meervouden op 's' weg
+			if ( substr($term, -2, 2) === "'s" ) {
+				$term = substr($term, 0, -2);
+			} elseif ( in_array( $last_4, array( "eaus", "eaux" ) ) ) {
+				$term = substr($term, 0, -1);
+			} elseif ( substr($term, -1, 1) === "s" and ! in_array( substr($term, -2, 1), array( "a", "i", "o", "u" ), true ) and ! ( in_array( substr($term, -2, 1), $vowels, true ) and in_array( substr($term, -3, 1), $vowels, true ) ) ) {
+				// Behalve na een klinker (m.u.v. 'e') of een tweeklank!
+				$term = substr($term, 0, -1);
+			}
+
+			// Knip de speciale meervouden op 'en' met een wisselende eindletter weg
+			if ( $last_3 === "'en" ) {
+				$term = substr($term, 0, -3);
+			} elseif ( $last_3 === "eën" ) {
+				$term = substr($term, 0, -3)."e";
+			} elseif ( $last_3 === "iën" ) {
+				$term = substr($term, 0, -3)."ie";
+			} elseif ( $last_4 === "ozen" ) {
+				// Andere onregelmatige meervouden vangen we op via de synoniemen!
+				$term = substr($term, 0, -3)."os";
+			}
+
+			// Knip de gewone meervouden op 'en' weg
+			if ( substr($term, -2, 2) === "en" and ! in_array( substr($term, -3, 1), $vowels, true ) ) {
+				$term = substr($term, 0, -2);
+			}
+
+			// Knip de verkleinende suffixen weg
+			if ( substr($term, -4, 4) === "ltje" ) {
+				$term = substr($term, 0, -3);
+			} elseif ( substr($term, -4, 4) === "mpje" ) {
+				$term = substr($term, 0, -3);
+			} elseif ( substr($term, -4, 4) === "etje" ) {
+				$term = substr($term, 0, -4);
+			} elseif ( substr($term, -2, 2) === "je" ) {
+				// Moeilijk te achterhalen wanneer de laatste 't' ook weg moet!
+				$term = substr($term, 0, -2);
+			}
+
+			// Knip de overblijvende verdubbelde eindletters weg
+			if ( in_array( substr($term, -2, 2), array( "bb", "dd", "ff", "gg", "kk", "ll", "mm", "nn", "pp", "rr", "ss", "tt" ) ) ) {
+				$term = substr($term, 0, -1);
+			}
+		}
+
+		return $term;
+	}
+
+	// Plaats een zoeksuggestie net onder de titel van zoekpagina's als er minder dan 5 resultaten zijn
+	add_action( 'woocommerce_archive_description', 'add_didyoumean' );
+
+	function add_didyoumean() {
+		if ( is_search() ) relevanssi_didyoumean(get_search_query(), "<p>Bedoelde je misschien <i>", "</i>?</p>", 5);
+	}
+
+	// Verhinder dat zeer zeldzame zoektermen in de index de machine learning verstoren
+	add_filter('relevanssi_get_words_query', 'limit_suggestions');
+	
+	function limit_suggestions( $query ) {
+	    $query = $query." HAVING COUNT(term) > 1";
+	    return $query;
+	}
+
+	// Toon de bestsellers op zoekpagina's zonder resultaten 
+	add_action( 'woocommerce_after_main_content', 'add_bestsellers' );
+
+	function add_bestsellers() {
+		global $wp_query;
+		if ( is_search() and $wp_query->found_posts == 0 ) {
+			echo "<br><h2 style='text-align: center;''><strong>Of werp een blik op onze bestsellers ...</strong></h2><hr/>".do_shortcode('[best_selling_products per_page="9" columns="3" orderby="rand"]');
+		}
+	}
+
+	// Voeg ook het artikelnummer en de bovenliggende categorie toe aan de te indexeren content van een product
+	add_filter( 'relevanssi_content_to_index', 'add_sku_and_parent_category', 10, 2 );
+
+	function add_sku_and_parent_category( $content, $post ) {
+		global $relevanssi_variables;
+		$content .= get_post_meta( $post->ID, '_sku', true ).' ';
+		$categories = get_the_terms( $post->ID, 'product_cat' );
+		if ( is_array( $categories ) ) {
+			foreach ( $categories as $category ) {
+				if ( ! empty( $category->parent ) ) {
+					$parent = get_term( $category->parent, 'product_cat' );
+					// Voer de synoniemen ook hierop door
+					$search = array_keys($relevanssi_variables['synonyms']);
+					$replace = array_values($relevanssi_variables['synonyms']);
+					$content .= str_ireplace($search, $replace, $parent->name).' ';
+				}
+			}
+		}
+		return $content;
+	}
+	
+	// Verleng de logs tot 90 dagen
+	add_filter( 'relevanssi_30days', 'prolong_relevanssi_logs' );
+
+	function prolong_relevanssi_logs() {
+		return 90;
+	}
+
+
 	#############
 	# DEBUGGING #
 	#############
