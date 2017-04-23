@@ -117,7 +117,7 @@
 	// Zorg ervoor dat revisies ook bij producten bijgehouden worden op de hoofdsite
 	// Log de post_meta op basis van de algemene update_post_metadata-filter (of beter door WC-functies te hacken?)
 	if ( is_main_site( get_current_blog_id() ) ) {
-		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+		// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		add_action( 'update_post_metadata', 'log_product_changes', 1, 4 );
 	}
 	
@@ -241,7 +241,6 @@
 	}
 
 	// Herlaad winkelmandje automatisch na aanpassing en zorg dat postcode altijd gecheckt wordt (en activeer live search indien plugin geactiveerd)
-	// THEMA GEBRUIKT HELAAS GEEN INLINE UPDATES!
 	add_action( 'wp_footer', 'cart_update_qty_script' );
 	
 	function cart_update_qty_script() {
@@ -270,7 +269,7 @@
 	}
 
 	// Verhinder bepaalde selecties in de back-end
-	add_action( 'admin_footer', 'disable_custom_checkboxes' );
+	// add_action( 'admin_footer', 'disable_custom_checkboxes' );
 
 	function disable_custom_checkboxes() {
 		?>
@@ -1564,16 +1563,32 @@
 	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
 
 	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
-		write_log("NEGEER POST META OP POST-ID ".$post_id);
-		$ignored_fields[] = '_featured';
-		$ignored_fields[] = '_visibility';
 		$ignored_fields[] = '_wc_review_count';
 		$ignored_fields[] = '_wc_rating_count';
 		$ignored_fields[] = '_wc_average_rating';
-		$ignored_fields[] = '_vc_post_settings';
-		$ignored_fields[] = '_wpb_vc_js_status';
 		return $ignored_fields;
 	}
+
+	// Functie die post-ID's van de hoofdsite vertaalt en het metaveld opslaat in de huidige subsite (op basis van artikelnummer)
+	/**
+    * @param int $local_product_id
+    * @param string $metakey
+    * @param array $product_meta_item_row
+    */	
+    function translate_main_to_local_ids( $local_product_id, $metakey, $product_meta_item_row ) {
+        if ( $product_meta_item_row ) {
+            foreach ( $product_meta_item_row as $main_product_id ) {
+                switch_to_blog( 1 );
+                $main_product = wc_get_product( $main_product_id );
+                restore_current_blog();
+                $local_product_ids[] = wc_get_product_id_by_sku( $main_product->get_sku() );
+            }
+            update_post_meta( $local_product_id, $metakey, $local_product_ids );
+        } else {
+        	// Zorg ervoor dat het veld ook bij de child geleegd wordt!
+        	update_post_meta( $local_product_id, $metakey, null );
+        }
+    }
 
 
 	################
