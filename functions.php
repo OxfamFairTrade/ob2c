@@ -1563,6 +1563,8 @@
 	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
 
 	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
+		$ignored_fields[] = '_stock';
+		$ignored_fields[] = '_stock_status';
 		$ignored_fields[] = '_wc_review_count';
 		$ignored_fields[] = '_wc_rating_count';
 		$ignored_fields[] = '_wc_average_rating';
