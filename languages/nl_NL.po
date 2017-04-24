@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Savoy Theme\n"
-"POT-Creation-Date: 2016-11-16 16:52+0100\n"
-"PO-Revision-Date: 2016-11-16 18:48+0100\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2017-04-14 17:22+0200\n"
+"PO-Revision-Date: 2017-04-24 17:40+0200\n"
+"Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: NordicMade\n"
 "Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 2.0.1\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: style.css\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -109,8 +109,8 @@ msgstr "1 commentaar"
 
 #: content-classic.php:57
 #, php-format
-msgid "% comments"
-msgstr "% opmerkingen"
+msgid "%s comments"
+msgstr "%s opmerkingen"
 
 #: content-grid.php:62
 msgid "More &nbsp;&rarr;"
@@ -134,7 +134,9 @@ msgid "It seems we can&rsquo;t find what you&rsquo;re looking for."
 msgstr "We kunnen blijkbaar niet vinden waar u naar op zoek bent."
 
 #: footer.php:100
-msgid "Search Products"
+#, fuzzy
+#| msgid "Search Products"
+msgid "Search products"
 msgstr "Zoek producten"
 
 #: footer.php:168 includes/woocommerce/woocommerce-template-functions.php:54
@@ -145,65 +147,69 @@ msgstr "Winkelmand"
 msgid "Close"
 msgstr "Sluit"
 
-#: functions.php:617
+#: functions.php:567
 msgid "Top Bar Menu"
 msgstr "Top Bar Menu"
 
-#: functions.php:618
+#: functions.php:568
 msgid "Main Menu"
 msgstr "Hoofdmenu"
 
-#: functions.php:619
+#: functions.php:569
 msgid "Right Menu"
 msgstr "Menu Rechts"
 
-#: functions.php:620
+#: functions.php:570
 msgid "Footer Menu"
 msgstr "Footer Menu "
 
-#: functions.php:686
+#: functions.php:636
 msgid "Pingback:"
 msgstr "Pingback:"
 
-#: functions.php:686 functions.php:711
+#: functions.php:636 functions.php:661
 msgid "Edit"
 msgstr "Bewerk"
 
-#: functions.php:698
+#: functions.php:648
 #, php-format
 msgid "%1$s at %2$s"
 msgstr "%1$s op %2$s"
 
-#: functions.php:703
+#: functions.php:653
 msgid "Your comment is awaiting moderation"
 msgstr "Uw reactie wacht op moderatie."
 
-#: functions.php:801
+#: functions.php:751
 msgid "Categories"
 msgstr "Categorieën"
 
-#: functions.php:802 includes/translation-strings-dummy.php:60
+#: functions.php:752 includes/translation-strings-dummy.php:60
 #: includes/woocommerce/woocommerce-template-functions.php:164
 msgid "All"
 msgstr "Alles"
 
-#: functions.php:941
+#: functions.php:891
 msgid "Sidebar"
 msgstr "Zijbalk"
 
-#: functions.php:983 functions.php:992
+#: functions.php:933 functions.php:942
 msgid "Shop"
 msgstr "Winkel"
 
-#: functions.php:1004
+#: functions.php:954
 msgid "Footer"
 msgstr "Footer"
 
-#: functions.php:1015
+#: functions.php:965
 msgid "Visual Composer - Widgetised Sidebar"
 msgstr "Visual Composer - Widgetised Sidebar"
 
-#: includes/custom-styles.php:568
+#: includes/custom-styles.php:540
+msgid "Out of stock"
+msgstr ""
+
+#: includes/custom-styles.php:570
 msgid "Required field."
 msgstr "Verplicht veld."
 
@@ -212,7 +218,7 @@ msgid "Shopping Cart"
 msgstr "Winkelmand"
 
 #: includes/translation-strings-dummy.php:8
-msgid "Enter Coupon"
+msgid "Enter coupon"
 msgstr "Voer de kortingscode in"
 
 #: includes/translation-strings-dummy.php:11
@@ -353,12 +359,12 @@ msgstr "Knop met tekst"
 msgid "Search store"
 msgstr "Zoek in de winkel"
 
-#: includes/woocommerce/woocommerce-functions.php:336
+#: includes/woocommerce/woocommerce-functions.php:162
 #, php-format
 msgid "%s products"
 msgstr "%s producten"
 
-#: includes/woocommerce/woocommerce-functions.php:459
+#: includes/woocommerce/woocommerce-functions.php:494
 msgid "Please fill in the required fields"
 msgstr "Vul aub de verplichte velden in"
 
