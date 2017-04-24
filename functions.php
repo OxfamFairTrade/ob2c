@@ -663,6 +663,17 @@
 		return $array; 
 	};
 
+	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat
+	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
+	
+	function skip_shipping_address_on_local_pickup( $needs_shipping_address ) {
+		// Hoe kunnen we hier de geselecteerde shipping_method in WC_Cart vinden?
+		if ( 1 == 1 ) {
+			$needs_shipping_address = false;
+		}
+		return $needs_shipping_address;
+	}
+
 	function validate_zip_code( $zip ) {
 		if ( does_home_delivery() and $zip !== 0 ) {
 			if ( ! in_array( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
