@@ -335,13 +335,13 @@
 	
 	function format_checkout_billing( $address_fields ) {
 		$address_fields['billing_first_name']['label'] = "Voornaam";
-		$address_fields['billing_first_name']['placeholder'] = "Jan";
+		$address_fields['billing_first_name']['placeholder'] = "George";
 		$address_fields['billing_last_name']['label'] = "Familienaam";
-		$address_fields['billing_last_name']['placeholder'] = "Peeters";
+		$address_fields['billing_last_name']['placeholder'] = "Foreman";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
-		$address_fields['billing_phone']['placeholder'] = "059 32 49 59";
+		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'phone' );
 		$address_fields['billing_email']['label'] = "E-mailadres";
-		$address_fields['billing_email']['placeholder'] = "jan@peeters.be";
+		$address_fields['billing_email']['placeholder'] = "george@foreman.com";
 		// $address_fields['billing_company']['label'] = "Bedrijf";
 		// $address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
 		// $address_fields['billing_address_2']['label'] = "BTW-nummer";
@@ -380,9 +380,9 @@
 	
 	function format_checkout_shipping( $address_fields ) {
 		$address_fields['shipping_first_name']['label'] = "Voornaam";
-		$address_fields['shipping_first_name']['placeholder'] = "Jan";
+		$address_fields['shipping_first_name']['placeholder'] = "Muhammad";
 		$address_fields['shipping_last_name']['label'] = "Familienaam";
-		$address_fields['shipping_last_name']['placeholder'] = "Peeters";
+		$address_fields['shipping_last_name']['placeholder'] = "Ali";
 		$address_fields['shipping_first_name']['class'] = array('form-row-first');
 		$address_fields['shipping_last_name']['class'] = array('form-row-last');
 		
@@ -410,11 +410,11 @@
 
 	function format_addresses_frontend( $address_fields ) {
 		$address_fields['address_1']['label'] = "Straat en huisnummer";
-		$address_fields['address_1']['placeholder'] = '';
+		$address_fields['address_1']['placeholder'] = 'Stationstraat 16';
 		$address_fields['address_1']['required'] = true;
 
 		$address_fields['postcode']['label'] = "Postcode";
-		$address_fields['postcode']['placeholder'] = '';
+		$address_fields['postcode']['placeholder'] = get_oxfam_shop_data( 'zipcode' );
 		$address_fields['postcode']['required'] = true;
 		// Zorgt ervoor dat de totalen automatisch bijgewerkt worden na aanpassen
 		// Werkt enkel indien de voorgaande verplichte velden niet-leeg zijn, zie maybe_update_checkout() in woocommerce/assets/js/frontend/checkout.js 
@@ -422,6 +422,7 @@
 		$address_fields['postcode']['clear'] = false;
 
 		$address_fields['city']['label'] = "Gemeente";
+		$address_fields['city']['placeholder'] = get_oxfam_shop_data( 'city' );
 		$address_fields['city']['required'] = true;
 		$address_fields['city']['class'] = array('form-row-last');
 		$address_fields['city']['clear'] = true;
@@ -635,7 +636,7 @@
 			case stristr( $method->id, 'local_pickup' ):
 				$timestamp = strtotime('+2 days');
 				$descr .= 'Beschikbaar vanaf '.strftime('%Amiddag %d/%m/%Y', $timestamp);
-				$label .= ' (gratis)';
+				$label .= wc_price(0.0);
 				break;
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
@@ -653,7 +654,7 @@
 				$descr .= __( 'Geen schatting beschikbaar', 'wc-oxfam' );
 		}
 		$descr .= '</small>';
-		return $label.'<br>'.$msg;
+		return $label.'<br>'.$descr;
 	}
 
 	// Verberg het verzendadres ook bij een postpuntlevering
