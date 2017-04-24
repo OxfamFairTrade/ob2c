@@ -624,35 +624,36 @@
 	
 	function printEstimatedDelivery( $label, $method ) {
 		global $user_ID;
-		// $label = str_replace( '(Gratis)', '', $label );
-		$label .= '<br><small>';
+		$descr .= '<small>';
+		
 		// $timestamp = estimateDelivery( $user_ID, $method->id );
 		$timestamp = strtotime('+4 days');
 		
 		switch ( $method->id ) {
 			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite?
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
-			case stristr( $method->id, 'local_pickup_plus' ):
+			case stristr( $method->id, 'local_pickup' ):
 				$timestamp = strtotime('+2 days');
-				$label .= 'Beschikbaar vanaf '.strftime('%Amiddag %d/%m/%Y', $timestamp);
+				$descr .= 'Beschikbaar vanaf '.strftime('%Amiddag %d/%m/%Y', $timestamp);
+				$label .= ' (gratis)';
 				break;
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
-				$label .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
+				$descr .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
 				break;
 			// Alle instances van thuislevering
 			case stristr( $method->id, 'flat_rate' ):
-				$label .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
+				$descr .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
 				break;
 			// Alle instances van gratis thuislevering
 			case stristr( $method->id, 'free_shipping' ):
-				$label .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
+				$descr .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
 				break;
 			default:
-				$label .= __( 'Geen schatting beschikbaar', 'wc-oxfam' );
+				$descr .= __( 'Geen schatting beschikbaar', 'wc-oxfam' );
 		}
-		$label .= '</small>';
-		return $label;
+		$descr .= '</small>';
+		return $label.'<br>'.$msg;
 	}
 
 	// Verberg het verzendadres ook bij een postpuntlevering
