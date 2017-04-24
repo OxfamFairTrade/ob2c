@@ -430,20 +430,31 @@
 		return $address_fields;
 	}
 
-	// Herschrijf bepaalde klantendata tijdens het afrekenen naar standaardformaten
-	add_filter( 'woocommerce_process_checkout_field_billing_first_name', 'uppercase_words', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_billing_last_name', 'uppercase_words', 10, 1 );
+	// Herschrijf bepaalde klantendata naar standaardformaten tijdens afrekenen én bijwerken vanaf accountpagina
+	add_filter( 'woocommerce_process_checkout_field_billing_first_name', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_first_name', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'format_place', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_address_1', 'format_place', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_postcode', 'format_zipcode', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_city', 'format_city', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_city', 'format_city', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_telephone', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_shipping_first_name', 'uppercase_words', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_shipping_last_name', 'uppercase_words', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_telephone', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_last_name', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_shipping_last_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_address_1', 'format_place', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_shipping_address_1', 'format_place', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_postcode', 'format_zipcode', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_shipping_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_city', 'format_city', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_shipping_city', 'format_city', 10, 1 );
 	
-	function uppercase_words( $value ) {
+	function trim_and_uppercase( $value ) {
 		return ucwords( trim($value) );
 	}
 
@@ -476,20 +487,20 @@
 		$temp_tel = str_replace( '-', '', $temp_tel );
 		$temp_tel = str_replace( '.', '', $temp_tel );
 		$temp_tel = str_replace( '+32', '0', $temp_tel );
-		$temp_tel = str_replace( '0032', '0', $temp_tel );
+		$temp_tel = preg_replace( '/(^|\s)0032/', '0', $temp_tel );
 		
 		// Formatteer vaste telefoonnummers
 		if ( mb_strlen($temp_tel) === 9 ) {
 			if ( intval($temp_tel[1]) === 2 or intval($temp_tel[1]) === 3 or intval($temp_tel[1]) === 4 or intval($temp_tel[1]) === 9 ) {
-				$value = substr($temp_tel, 0, 2)."/".substr($temp_tel, 2, 3).".".substr($temp_tel, 5, 2).".".substr($temp_tel, 7, 2);
+				$value = substr($temp_tel, 0, 2)." ".substr($temp_tel, 2, 3)." ".substr($temp_tel, 5, 2)." ".substr($temp_tel, 7, 2);
 			} else {
-				$value = substr($temp_tel, 0, 3)."/".substr($temp_tel, 3, 2).".".substr($temp_tel, 5, 2).".".substr($temp_tel, 7, 2);
+				$value = substr($temp_tel, 0, 3)." ".substr($temp_tel, 3, 2)." ".substr($temp_tel, 5, 2)." ".substr($temp_tel, 7, 2);
 			}
 		}
 
 		// Formatteer mobiele telefoonnummers
 		if ( mb_strlen($temp_tel) === 10 ) {
-			$value = substr($temp_tel, 0, 4)."/".substr($temp_tel, 4, 3).".".substr($temp_tel, 7, 3);
+			$value = substr($temp_tel, 0, 4)." ".substr($temp_tel, 4, 2)." ".substr($temp_tel, 6, 2)." ".substr($temp_tel, 8, 2);
 		}
 		
 		return $value;
@@ -666,7 +677,7 @@
 	};
 
 	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat
-	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
+	// add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
 	
 	function skip_shipping_address_on_local_pickup( $needs_shipping_address ) {
 		// Hoe kunnen we hier de geselecteerde shipping_method in WC_Cart vinden?
@@ -1761,7 +1772,7 @@
 		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
 		$list_id = '5cce3040aa';
 		$email = $cur_user->user_email;
-		$member = md5(strtolower($email));
+		$member = md5(mb_strtolower($email));
 
 		$args = array(
 			'headers' => array(
