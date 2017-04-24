@@ -261,15 +261,10 @@
 			</script>
 		<?php
 		endif;
-		?>
-			<script>
-				jQuery( '.site-header' ).find( '.search-field' ).attr( 'data-swplive', 'true' );
-			</script>
-		<?php
 	}
 
 	// Verhinder bepaalde selecties in de back-end
-	// add_action( 'admin_footer', 'disable_custom_checkboxes' );
+	add_action( 'admin_footer', 'disable_custom_checkboxes' );
 
 	function disable_custom_checkboxes() {
 		?>
@@ -1772,7 +1767,7 @@
 	// Personaliseer de begroeting op de startpagina
 	add_shortcode ( 'topbar', 'print_welcome' );
 	add_shortcode ( 'bezoeker', 'print_customer' );
-	add_shortcode ( 'winkelnaam', 'print_business' );
+	add_shortcode ( 'winkelnaam', 'get_company' );
 	add_shortcode ( 'copyright', 'print_copyright' );
 	add_shortcode ( 'openingsuren', 'print_office_hours' );
 	add_shortcode ( 'toon_shops', 'print_shop_selection' );
@@ -1780,8 +1775,8 @@
 	add_shortcode ( 'widget_usp', 'print_widget_usp' );
 	add_shortcode ( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode ( 'widget_contact', 'print_widget_contact' );
-	add_shortcode ( 'contact_address', 'print_address' );
-	add_shortcode ( 'map_address', 'print_map_address' );
+	add_shortcode ( 'contact_address', 'get_company_contact' );
+	add_shortcode ( 'map_address', 'get_company_address' );
 
 	function get_oxfam_shop_data( $key ) {
 		global $wpdb;
@@ -1797,6 +1792,9 @@
 			if ( $row ) {
 				if ( $key === 'shop' ) {
 					return $row->field_sellpoint_shop_nid;
+				} elseif ( $key === 'll' ) {
+					// Voor KML-file moet longitude voor latitude komen!
+					return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
 				} else {
 					return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 				}
@@ -1806,21 +1804,12 @@
 		}
 	}
 
-	function print_address() {
-		global $wpdb;
-		$street = get_oxfam_shop_data( 'place' );
-		$zip = get_oxfam_shop_data( 'zipcode' );
-		$city = get_oxfam_shop_data( 'city' );
-		$phone = get_oxfam_shop_data( 'telephone' );
-		return $street."<br>".$zip." ".$city."<br>".$phone."<br><a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a>";
+	function get_company_contact() {
+		return get_company_address()."<br>".get_oxfam_shop_data( 'telephone' )."<br><a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a>";
 	}
 
-	function print_map_address() {
-		global $wpdb;
-		$street = get_oxfam_shop_data( 'place' );
-		$zip = get_oxfam_shop_data( 'zipcode' );
-		$city = get_oxfam_shop_data( 'city' );
-		echo $street.", ".$zip." ".$city;
+	function get_company_address() {
+		return get_oxfam_shop_data( 'place' )."<br>".get_oxfam_shop_data( 'zipcode' )." ".get_oxfam_shop_data( 'city' );
 	}
 
 	function print_widget_usp() {
@@ -1850,7 +1839,7 @@
 		return ( is_user_logged_in() and strlen($current_user->user_firstname) > 1 ) ? $current_user->user_firstname : "bezoeker";
 	}
 
-	function print_business() {
+	function get_company() {
 		return get_bloginfo('name');
 	}
 
@@ -1860,7 +1849,7 @@
 		} else {
 			$node = 'nl';
 		}
-		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".print_business()." &copy; 2016-".date('Y')."</a>";
+		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".get_company()." &copy; 2016-".date('Y')."</a>";
 	}
 
 	function print_office_hours( $atts = [] ) {
@@ -2016,11 +2005,17 @@
 	}
 
 	function print_shop_selection() {
-		$msg = "";
-		$global_zips = get_shops();
-		foreach ( $global_zips as $zip => $path ) {
-			$msg .= '<p style="text-align: center;"><a href="'.$path.'">'.$zip.'</a></p>';
+		$msg = '<p style="text-align: center;"><select>';
+ 		$global_zips = get_shops();
+ 		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
+ 		foreach ( $all_zips as $zip ) {
+			if ( isset( $global_zips[$zip] ) ) {
+				$msg .= '<option value="'.$global_zips[$zip].'">'.$zip.'</option>';
+			} else {
+				$msg .= '<option value="">'.$zip.'</option>';
+			}
 		}
+		$msg .= '</select></p>';
 		return $msg;
 	}
 
@@ -2028,20 +2023,32 @@
 		# Header
 		$myfile = fopen("newoutput.kml", "w");
 		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
-		# Styles (upscalen werkt helaas niet ...)
-		$str .= "<Style id='1'><IconStyle><scale>1.21875</scale><w>39</w>
-          <h>51</h><Icon><href>https://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
+		
+		# Styles (icon upscalen boven 32x32 pixels werkt helaas niet)
+		$str .= "<Style id='1'><IconStyle><scale>1.21875</scale><w>39</w><h>51</h><Icon><href>https://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
+		
 		# Placemarks
-		$zips = get_shops();
-		foreach ( $zips as $zip => $path ) {
-			if ( $zip !== 9000 ) {
-				$ll = '2.909586000000,51.226419000000';
-			} else {
-				$ll = '3.728363000000,51.048020000000';
+		$sites = get_sites();
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site->blog_id );
+			// Sluit hoofdsite uit
+			if ( ! is_main_site() ) {
+				$local_zips = get_option( 'oxfam_zip_codes' );
+				if ( count($local_zips) >= 1 ) {
+					$i = 0;
+					$thuislevering = "Doet thuislevering in ";
+					foreach ( $local_zips as $zip ) {
+						$i++;
+						$thuislevering .= $zip;
+						if ( $i < count($local_zips) ) $thuislevering .= ", ";
+					}
+					$str .= "<Placemark><name><![CDATA[".get_company()."]]></name><styleUrl>#1</styleUrl><description><![CDATA[".get_company_address()."<br>".$thuislevering.".<br><a href=".get_site_url().">Naar deze webshop »</a>]]></description><Point><coordinates>".get_oxfam_shop_data( 'll' )."</coordinates></Point></Placemark>";
+				}
 			}
- 			$str .= "<Placemark><name>".$path."</name><styleUrl>#1</styleUrl><description><![CDATA[".get_option('oxfam_addresses')."<br><a href=".$path.">Naar de webshop »</a>]]></description><Point><coordinates>".$ll."</coordinates></Point></Placemark>";
- 		}
- 		# Footer
+			restore_current_blog();
+		}
+
+		# Footer
 		$str .= "</Document></kml>";
 		fwrite($myfile, $str);
 		fclose($myfile);
