@@ -117,7 +117,8 @@
 	// Zorg ervoor dat revisies ook bij producten bijgehouden worden op de hoofdsite
 	// Log de post_meta op basis van de algemene update_post_metadata-filter (of beter door WC-functies te hacken?)
 	if ( is_main_site( get_current_blog_id() ) ) {
-		// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+		// WORDT VOORLOPIG NOG TEGENGEHOUDEN DOOR WP-CONFIG.PHP 
+		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		add_action( 'update_post_metadata', 'log_product_changes', 1, 4 );
 	}
 	
@@ -281,6 +282,14 @@
 			jQuery( '#in-product_partner-829' ).prop( 'disabled', true );
 			jQuery( '#in-product_partner-830' ).prop( 'disabled', true );
 			jQuery( '#in-product_partner-831' ).prop( 'disabled', true );
+
+			/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
+			jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]:checked' ).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', true );
+
+			/* Disable/enable het bovenliggende land bij aan/afvinken van een partner */
+			jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+				jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', jQuery(this).is(":checked") );
+			});
 
 			/* Disable allergeenklasses */
 			jQuery( '#in-product_allergen-615' ).prop( 'disabled', true );
@@ -1054,7 +1063,8 @@
 			'show_tagcloud' => true,
 			'show_in_quick_edit' => false,
 			'show_admin_column' => false,
-			'capabilities' => array( 'manage_terms' => 'create_sites', 'edit_terms' => 'create_sites', 'delete_terms' => 'create_sites', 'assign_terms' => 'edit_products' ),
+			// Geef catmans rechten om zelf termen toe te kennen / te bewerken / toe te voegen
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'edit_products', 'manage_terms' => 'edit_products', 'delete_terms' => 'create_sites' ),
 			// In de praktijk niet bereikbaar op deze URL want niet publiek!
 			'rewrite' => array( 'slug' => $name, 'with_front' => false, 'hierarchical' => false ),
 		);
@@ -1135,8 +1145,9 @@
 			'show_in_quick_edit' => true,
 			'show_admin_column' => true,
 			'query_var' => true,
-			'capabilities' => array( 'manage_terms' => 'create_sites', 'edit_terms' => 'create_sites', 'delete_terms' => 'create_sites', 'assign_terms' => 'edit_products' ),
-			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false, 'ep_mask' => 'test' ),
+			// Allergenen zullen in principe nooit meer toegevoegd moeten worden, dus catmans enkel rechten geven op toekenning
+			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'create_sites', 'manage_terms' => 'create_sites', 'delete_terms' => 'create_sites' ),
+			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
