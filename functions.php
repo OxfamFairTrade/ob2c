@@ -114,11 +114,17 @@
 		}
 	}
 
+	// OMDATE TIJDSDUUR IN WP-CONFIG.PHP NIET GERESPECTEERD WORDT 
+	add_action('wp_print_scripts','disable_autosave');
+	
+	function disable_autosave() {
+		wp_deregister_script('autosave');
+	}
+
 	// Zorg ervoor dat revisies ook bij producten bijgehouden worden op de hoofdsite
 	// Log de post_meta op basis van de algemene update_post_metadata-filter (of beter door WC-functies te hacken?)
 	if ( is_main_site( get_current_blog_id() ) ) {
-		// WORDT VOORLOPIG NOG TEGENGEHOUDEN DOOR WP-CONFIG.PHP 
-		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+		// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		add_action( 'update_post_metadata', 'log_product_changes', 1, 4 );
 	}
 	
