@@ -2358,9 +2358,32 @@
 				min-width: 100px;
 			}
 
+			#oxfam-options .left {
+				width: 30%;
+				min-width: 400px;
+				text-align: right;
+			}
+
+			#oxfam-options .right {
+				width: 70%;
+				min-width: 300px;
+			}
+
+			#oxfam-options .text-input {
+				width: 70%;
+				max-width: 400px;
+			}
+
 			@media (max-width: 1024px) {
 				#oxfam-products .block {
 					display: block;
+					width: 100%;
+				}
+
+				#oxfam-options .left,
+				#oxfam-options .right {
+					display: block;
+					text-align: left;
 					width: 100%;
 				}
 			}
