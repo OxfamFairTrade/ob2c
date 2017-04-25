@@ -25,13 +25,31 @@
 					echo "</tr>";
 
 					$methods = $mollie->availablePaymentMethodsByPartnerId( $partner_id_customer );
-					var_dump($methods);
+					if ( $methods->resultcode == '10' ) {
+						$must_be = array( 'mistercash', 'creditcard', 'belfius', 'kbc', 'banktransfer', 'ideal' );
+						foreach ( $must_be as $service ) {
+							if ( $methods->services->{$service} == 'false' ) {
+								$lacking[] = $service;
+							}
+						}
+
+						if ( count($lacking) > 0 ) {
+							echo "<tr>";
+								echo "<th colspan='3' style='color: red;'>Activeer dringend deze verplichte betaalmethodes:</th>";
+								echo "<td colspan='5'>";
+									foreach ( $lacking as $service ) {
+										echo strtoupper($service)."&nbsp;&nbsp;&nbsp;&nbsp;";
+									}
+								echo "</td>";
+							echo "</tr>";	
+						}
+					}
 
 					$profile = $mollie->profilesByPartnerId( $partner_id_customer );
-					var_dump($profile);
+					write_log($profile);
 
 					$account = $mollie->bankAccountsByPartnerId( $partner_id_customer );
-					var_dump($account);
+					write_log($account);
 
 					if ( does_sendcloud_delivery() ) {
 						echo "<tr>";
@@ -67,10 +85,10 @@
 		  		</td>
 			</tr>
 
-			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en zouden dus niet automatisch opgeslagen mogen worden!-->
+			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database!-->
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: (<a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">kloppen gegevens in KBO-databank nog?</a>)</label>
+					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: (<a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">kloppen gegevens in KBO nog?</a>)</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_tax" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>" readonly>

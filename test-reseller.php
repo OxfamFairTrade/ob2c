@@ -29,16 +29,14 @@
 	$partner_id_customer = '2842281';
 
 	try {
-		// $simplexml = $mollie->accountCreate( 'owwoostende', array( 'name' => 'Frederik Neirynck', 'company_name' => 'Oxfam-Wereldwinkel Oostende', 'address' => 'Torhoutsesteenweg 25', 'zipcode' => '8400', 'city' => 'Oostende', 'country' => 'BE', 'email' => 'frederik.neirynck@oft.be', 'registration_number' => '0446474568', 'legal_form' => 'vzw-be', 'vat_number' => 'BE0446474568', 'representative' => 'Edwin Vanden Abeele', 'billing_address' => 'Torhoutsesteenweg 25', 'billing_zipcode' => '8400', 'billing_city' => 'Oostende', 'billing_country' => 'BE' ) );
-		// $simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, array( 'name' => 'Oxfam-Wereldwinkel Oostende', 'website' => 'https://shop.oxfamwereldwinkels.be/oostende', 'email' => 'frederik.neirynck@oft.be', 'phone' => '059513700', 'category' => '5499' ) );
-		// $simplexml = $mollie->availablePaymentMethodsByPartnerId( $partner_id_customer );
-		$simplexml = $mollie->getLoginLink( $partner_id_customer );
+		// $simplexml = $mollie->accountCreate( 'owwoostende', array( 'testmode' => '1', 'name' => 'Frederik Neirynck', 'company_name' => 'Oxfam-Wereldwinkel Oostende', 'address' => 'Torhoutsesteenweg 25', 'zipcode' => '8400', 'city' => 'Oostende', 'country' => 'BE', 'email' => 'webshop.oostende@oxfamwereldwinkels.be', 'registration_number' => '0446474568', 'legal_form' => 'vzw-be', 'vat_number' => 'BE0446474568', 'representative' => 'Roland Dehoorne', 'billing_address' => 'Torhoutsesteenweg 25', 'billing_zipcode' => '8400', 'billing_city' => 'Oostende', 'billing_country' => 'BE' ) );
+		$simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, 'Oxfam-Wereldwinkel Oostende', 'https://demo.oxfamwereldwinkels.be/oostende', 'webshop.oostende@oxfamwereldwinkels.be', '059 51 37 00', 'category' => 5499 ) );
 	} catch (Mollie_Exception $e) {
 		die('An error occurred: '.$e->getMessage());
 	}
 
 	if ( $simplexml->success == 'true' ) {
-		echo "<a href='".$simplexml->redirect_url."' target='_blank'>Log zonder wachtwoord in op je Mollie-betaalaccount!</a>";
+		echo "Profiel succesvol gecreëerd!";
 	} else {
 		var_dump($simplexml);
 	}
