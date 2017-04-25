@@ -19,7 +19,6 @@
 					echo "</tr>";
 
 					$login_link = $mollie->getLoginLink( $partner_id_customer );
-					echo "<pre>".var_export($login_link, true)."</pre>";
 					echo "<tr>";
 						echo "<th class='left'><a href='".$login_link->redirect_url."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
 						echo "<td class='right'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td>";
@@ -39,7 +38,7 @@
 								echo "<th class='left' style='color: red;'>Activeer dringend deze verplichte betaalmethodes:</th>";
 								echo "<td class='right'>";
 									foreach ( $lacking as $service ) {
-										echo strtoupper($service)."&nbsp;&nbsp;&nbsp;&nbsp;";
+										echo strtoupper($service)."&nbsp;&nbsp;&nbsp;";
 									}
 								echo "</td>";
 							echo "</tr>";	
@@ -48,7 +47,7 @@
 
 					$profiles = $mollie->profilesByPartnerId( $partner_id_customer );
 					if ( $profiles->resultcode == '10' ) {
-						if ( get_oxfam_shop_data( 'company_name' ) != trim_and_uppercase($profiles->items->profile->name) ) {
+						if ( get_company_name() != trim_and_uppercase($profiles->items->profile->name) ) {
 							$name_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
 						if ( get_oxfam_shop_data( 'telephone' ) != format_telephone($profiles->items->profile->phone) ) {
@@ -60,7 +59,12 @@
 					}
 
 					$accounts = $mollie->bankAccountsByPartnerId( $partner_id_customer );
-					write_log($accounts);
+					// echo "<pre>".var_export($accounts, true)."</pre>";
+					if ( $accounts->resultcode == '10' ) {
+						if ( get_oxfam_shop_data( 'account' ) != $accounts->bankaccount->account_iban ) {
+							$account_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander rekeningnummer geregistreerd!</small>";
+						}
+					}
 					
 					if ( does_sendcloud_delivery() ) {
 						echo "<tr>";
@@ -99,7 +103,7 @@
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database!-->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer:<br><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">Kloppen onze gegevens in de KBO-databank nog?</a></small></label>
+					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: <?php echo $tax_warning; ?><br><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">Kloppen onze gegevens in de KBO-databank nog?</a></small></label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_tax" class="text-input" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>" readonly>
@@ -107,7 +111,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_account" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">IBAN-rekeningnummer:</label>
+					<label for="oxfam_account" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">IBAN-rekeningnummer: <?php echo $account_warning; ?></label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_account" class="text-input" value="<?php echo get_oxfam_shop_data( 'account' ); ?>" readonly>
