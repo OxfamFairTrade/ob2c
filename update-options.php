@@ -13,15 +13,20 @@
 				
 				// Check of we niet op de hoofdaccount zitten, want dan krijgen we een fatale error bij getLoginLink()
 				if ( $partner_id_customer != 2485891 ) {
+					echo "<tr>";
+						echo "<th colspan='3'><a href='https://login.microsoftonline.com/' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>";
+						echo "<td colspan='5'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>";
+					echo "</tr>";
+
 					$result = $mollie->getLoginLink( $partner_id_customer );
 					echo "<tr>";
-						echo "<th colspan='3'><a href='".$result->redirect_url."' target='_blank'>Log automatisch in op je Mollie-betaalaccount &raquo;</a></th>";
+						echo "<th colspan='3'><a href='".$result->redirect_url."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
 						echo "<td colspan='5'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td>";
 					echo "</tr>";
 
 					if ( does_sendcloud_delivery() ) {
 						echo "<tr>";
-							echo "<th colspan='3'><a href='https://panel.sendcloud.sc/' target='_blank'>Log handmatig in op je SendCloud-verzendaccount &raquo;</a></th>";
+							echo "<th colspan='3'><a href='https://panel.sendcloud.sc/' target='_blank'>Log in op je SendCloud-verzendaccount &raquo;</a></th>";
 							echo "<td colspan='5'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td>";
 						echo "</tr>";
 					}
@@ -30,7 +35,7 @@
 
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_shop_node">Nodenummer OWW-site:</label>
+					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we openingsuren en adresinfo op in de database achter oxfamwereldwinkels.be">Nodenummer OWW-site:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>

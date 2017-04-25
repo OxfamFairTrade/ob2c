@@ -517,7 +517,7 @@
 		$profile_fields['billing']['fields']['billing_postcode']['label'] = 'Postcode';
 		$profile_fields['billing']['fields']['billing_city']['label'] = 'Gemeente';
 		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
-		$profile_fields['billing']['fields']['billing_email']['label'] = 'Mail bestelcommunicatie naar';
+		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
 		unset($profile_fields['billing']['fields']['billing_address_2']);
 		unset($profile_fields['billing']['fields']['billing_company']);
 		unset($profile_fields['billing']['fields']['billing_state']);
@@ -1808,7 +1808,6 @@
 	// Personaliseer de begroeting op de startpagina
 	add_shortcode ( 'topbar', 'print_welcome' );
 	add_shortcode ( 'bezoeker', 'print_customer' );
-	add_shortcode ( 'winkelnaam', 'get_company' );
 	add_shortcode ( 'copyright', 'print_copyright' );
 	add_shortcode ( 'openingsuren', 'print_office_hours' );
 	add_shortcode ( 'toon_shops', 'print_shop_selection' );
@@ -1816,6 +1815,7 @@
 	add_shortcode ( 'widget_usp', 'print_widget_usp' );
 	add_shortcode ( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode ( 'widget_contact', 'print_widget_contact' );
+	add_shortcode ( 'company_name', 'get_company_name' );
 	add_shortcode ( 'contact_address', 'get_company_contact' );
 	add_shortcode ( 'map_address', 'get_company_address' );
 
@@ -1843,6 +1843,10 @@
 				return "UNKNOWN";
 			}
 		}
+	}
+
+	function get_company_name() {
+		return get_bloginfo( 'name' );
 	}
 
 	function get_company_contact() {
@@ -1880,17 +1884,13 @@
 		return ( is_user_logged_in() and strlen($current_user->user_firstname) > 1 ) ? $current_user->user_firstname : "bezoeker";
 	}
 
-	function get_company() {
-		return get_bloginfo('name');
-	}
-
 	function print_copyright() {
 		if ( get_option('oxfam_shop_node') ) {
 			$node = 'node/'.get_option('oxfam_shop_node');
 		} else {
 			$node = 'nl';
 		}
-		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".get_company()." &copy; 2016-".date('Y')."</a>";
+		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".get_company_name()." &copy; 2016-".date('Y')."</a>";
 	}
 
 	function print_office_hours( $atts = [] ) {
@@ -2083,7 +2083,7 @@
 						$thuislevering .= $zip;
 						if ( $i < count($local_zips) ) $thuislevering .= ", ";
 					}
-					$str .= "<Placemark><name><![CDATA[".get_company()."]]></name><styleUrl>#1</styleUrl><description><![CDATA[".get_company_address()."<br>".$thuislevering.".<br><a href=".get_site_url().">Naar deze webshop »</a>]]></description><Point><coordinates>".get_oxfam_shop_data( 'll' )."</coordinates></Point></Placemark>";
+					$str .= "<Placemark><name><![CDATA[".get_company_name()."]]></name><styleUrl>#1</styleUrl><description><![CDATA[".get_company_address()."<br>".$thuislevering.".<br><a href=".get_site_url().">Naar deze webshop »</a>]]></description><Point><coordinates>".get_oxfam_shop_data( 'll' )."</coordinates></Point></Placemark>";
 				}
 			}
 			restore_current_blog();
