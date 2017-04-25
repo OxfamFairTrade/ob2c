@@ -18,11 +18,20 @@
 						echo "<td colspan='5'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>";
 					echo "</tr>";
 
-					$result = $mollie->getLoginLink( $partner_id_customer );
+					$login_link = $mollie->getLoginLink( $partner_id_customer );
 					echo "<tr>";
-						echo "<th colspan='3'><a href='".$result->redirect_url."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
+						echo "<th colspan='3'><a href='".$login_link->redirect_url."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
 						echo "<td colspan='5'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td>";
 					echo "</tr>";
+
+					$methods = $mollie->availablePaymentMethodsByPartnerId( $partner_id_customer );
+					var_dump($methods);
+
+					$profile = $mollie->profilesByPartnerId( $partner_id_customer );
+					var_dump($profile);
+
+					$account = $mollie->bankAccountsByPartnerId( $partner_id_customer );
+					var_dump($account);
 
 					if ( does_sendcloud_delivery() ) {
 						echo "<tr>";
@@ -35,7 +44,7 @@
 
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we openingsuren en adresinfo op in de database achter oxfamwereldwinkels.be">Nodenummer OWW-site:</label>
+					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Nodenummer OWW-site:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_shop_node" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
@@ -43,7 +52,7 @@
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_mollie_partner_id">Partner-ID Mollie:</label>
+					<label for="oxfam_mollie_partner_id" title="Je betaalaccount valt onder het contract dat Oxfam Fair Trade sloot met Mollie. Aan de hand van deze ID kunnen we de nodige API-keys invullen en in geval van nood inloggen op jullie lokale account.">Partner-ID Mollie:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_mollie_partner_id" style="width: 50%;" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
@@ -51,7 +60,7 @@
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_zip_codes">Postcodes voor thuislevering:</label>
+					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_zip_codes" style="width: 50%;" value="<?php echo implode ( ", ", get_option('oxfam_zip_codes') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
@@ -61,7 +70,7 @@
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en zouden dus niet automatisch opgeslagen mogen worden!-->
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_tax">BTW-nummer:</label>
+					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: (<a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">kloppen gegevens in KBO-databank nog?</a>)</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_tax" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>" readonly>
@@ -69,7 +78,7 @@
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_account">IBAN-rekeningnummer:</label>
+					<label for="oxfam_account" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">IBAN-rekeningnummer:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_account" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'account' ); ?>" readonly>
@@ -77,7 +86,7 @@
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_place">Straat en huisnummer:</label>
+					<label for="oxfam_place" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Straat en huisnummer:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_place" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'place' ); ?>" readonly>
@@ -85,7 +94,7 @@
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_zipcode">Postcode:</label>
+					<label for="oxfam_zipcode" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Postcode:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_zipcode" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'zipcode' ); ?>" readonly>
@@ -93,7 +102,7 @@
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_city">Gemeente:</label>
+					<label for="oxfam_city" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Gemeente:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_city" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'city' ); ?>" readonly>
@@ -101,7 +110,7 @@
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_city">Telefoonnummer:</label>
+					<label for="oxfam_city" title="Zie je een fout staan? Werk je telefoonnummer bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Telefoonnummer:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_telephone" style="width: 50%;" value="<?php echo get_oxfam_shop_data( 'telephone' ); ?>" readonly>
@@ -109,7 +118,7 @@
 			</tr>
 			<tr valign="top">
 				<th colspan="3">
-					<label for="oxfam_email">E-mailadres:</label>
+					<label for="oxfam_email" title="Deze Office 365-mailbox wordt ingesteld als het algemene contactadres van deze subsite en is initieel ook ekoppeld aan de lokale beheeraccount. Opgelet: via de profielpagina kun je deze hoofdgebruiker aan een andere mailbox linken (of schakelen we dat uit? niet handig indien we voor meerdere lokale beheerders opteren!) maar het contactadres naar klanten blijft altijd dit e-mailadres!">E-mailadres:</label>
 				</th>
 		  		<td colspan="5">
 		  			<input type="text" name="oxfam_email" style="width: 50%;" value="<?php echo get_option( 'admin_email' ); ?>" readonly>
