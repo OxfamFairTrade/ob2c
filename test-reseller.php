@@ -8,7 +8,7 @@
 	 * @copyright   Copyright © 2012 Mollie B.V.
 	 * @link        https://www.mollie.com
 	 * @category    Mollie
-	 * @version     1.6
+	 * @version     1.8
 	 *
 	 */
 
@@ -30,14 +30,17 @@
 
 	try {
 		// $simplexml = $mollie->accountCreate( 'owwoostende', array( 'testmode' => '1', 'name' => 'Frederik Neirynck', 'company_name' => 'Oxfam-Wereldwinkel Oostende', 'address' => 'Torhoutsesteenweg 25', 'zipcode' => '8400', 'city' => 'Oostende', 'country' => 'BE', 'email' => 'webshop.oostende@oxfamwereldwinkels.be', 'registration_number' => '0446474568', 'legal_form' => 'vzw-be', 'vat_number' => 'BE0446474568', 'representative' => 'Roland Dehoorne', 'billing_address' => 'Torhoutsesteenweg 25', 'billing_zipcode' => '8400', 'billing_city' => 'Oostende', 'billing_country' => 'BE' ) );
-		$simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, 'Oxfam-Wereldwinkel Oostende', 'https://demo.oxfamwereldwinkels.be/oostende', 'webshop.oostende@oxfamwereldwinkels.be', '059 51 37 00', 'category' => 5499 ) );
+		// $simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, 'Oxfam-Wereldwinkel Oostende', 'https://demo.oxfamwereldwinkels.be/oostende', 'webshop.oostende@oxfamwereldwinkels.be', '059 51 37 00', 5499 );
 	} catch (Mollie_Exception $e) {
 		die('An error occurred: '.$e->getMessage());
 	}
 
-	if ( $simplexml->success == 'true' ) {
-		echo "Profiel succesvol gecreëerd!";
-	} else {
-		var_dump($simplexml);
+	if ( $simplexml->resultcode == '10' ) {
+		echo "<p>Profiel ".$simplexml->profile->website." voor ".$simplexml->profile->name." succesvol gecreëerd!<p>";
+		echo "<p>TEST API: ".$simplexml->profile->api_keys->test."</p>";
+		echo "<p>LIVE API: ".$simplexml->profile->api_keys->live."</p>";
+		echo "<p></p>";
 	}
+
+	echo '<pre>'.var_export($simplexml, true).'</pre>';
 ?>

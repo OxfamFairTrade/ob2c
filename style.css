@@ -134,7 +134,8 @@ li.product.product_shipping_class-wijnDISABLE:hover::after {
 .nm-checkout-login-coupon,
 #calc_shipping_country_field,
 #customer_details #billing_country_field,
-#customer_details #shipping_country_field,
+.woocommerce-address-fields #billing_country_field,
+.woocommerce-address-fields #shipping_country_field,
 .products li.outofstock .nm-shop-loop-thumbnail > a:after {
 	display: none !important;
 }

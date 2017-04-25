@@ -548,7 +548,6 @@
 			<script type="text/javascript">
 				jQuery("tr.user-rich-editing-wrap").hide();
 				jQuery("tr.user-comment-shortcuts-wrap").hide();
-				jQuery("tr.user-admin-bar-front-wrap").hide();
 				jQuery("tr.user-language-wrap").hide();
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
 				jQuery("tr.user-nickname-wrap").hide();
@@ -571,15 +570,14 @@
 				jQuery("tr.user-comment-shortcuts-wrap").hide();
 				jQuery("tr.user-admin-bar-front-wrap").hide();
 				jQuery("tr.user-language-wrap").hide();
-				/* Kunnen we eventueel verbergen maar is ook bereikbaar via knop op overzichtsscherm dus wacht op User Role Editor Pro */
-				jQuery("tr.user-role-wrap").show();
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
 				jQuery("tr.user-nickname-wrap").hide();
 				jQuery("tr.user-url-wrap").hide();
 				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
 				jQuery("h2:contains('Over de gebruiker')").hide();
-				jQuery("h3:contains('Aanvullende rechten')").next('.form-table').hide();
-				jQuery("h3:contains('Aanvullende rechten')").hide();
+				/* Let op: als deze string plots vertaald wordt, verschijnt het blokje opnieuw! */
+				jQuery("h3:contains('Additional capabilities')").next('.form-table').hide();
+				jQuery("h3:contains('Additional capabilities')").hide();
 			</script>
 		<?php
 		}
@@ -2339,6 +2337,21 @@
 
 			#oxfam-products .border-color-red {
 				border-color: #e70052;
+			}
+
+			#oxfam-options .left {
+				width: 40%;
+				min-width: 300px;
+			}
+
+			#oxfam-options .right {
+				width: 60%;
+				min-width: 300px;
+			}
+
+			#oxfam-options .text-input {
+				width: 50%;
+				min-width: 100px;
 			}
 
 			@media (max-width: 1024px) {
