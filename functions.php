@@ -80,9 +80,9 @@
 	add_filter( 'the_title', 'do_shortcode' );
 	
 	// Verstop enkele hardnekkige adminlinks voor de lokale shopmanagers
-	// Omgekeerd: WP All Export toelaten door rol aan te passen in wp-all-export-pro.php
-	// Alle andere beperkingen via User Role Editor
-	add_action( 'admin_menu', 'my_remove_menu_pages', 100, 0 );
+	// Let wel: toegangrechten voor WP All Export versoepeld door rol aan te passen in wp-all-export-pro.php!
+	// VOORLOPIG ALLEMAAL VIA USER ROLE EDITOR
+	// add_action( 'admin_menu', 'my_remove_menu_pages', 100, 0 );
 
 	function my_remove_menu_pages() {
 		if ( ! current_user_can( 'update_core' ) ) {
@@ -95,7 +95,8 @@
 	}
 
 	// Haal de hardnekkige pagina's niet enkel uit het menu, maak ze ook effectief ontoegankelijk
-	add_action( 'current_screen', 'restrict_menus' );
+	// VOORLOPIG ALLEMAAL VIA USER ROLE EDITOR
+	// add_action( 'current_screen', 'restrict_menus' );
 
 	function restrict_menus() {
 		$screen = get_current_screen();
@@ -124,7 +125,7 @@
 	// Zorg ervoor dat revisies ook bij producten bijgehouden worden op de hoofdsite
 	// Log de post_meta op basis van de algemene update_post_metadata-filter (of beter door WC-functies te hacken?)
 	if ( is_main_site( get_current_blog_id() ) ) {
-		// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		add_action( 'update_post_metadata', 'log_product_changes', 1, 4 );
 	}
 	
@@ -133,27 +134,22 @@
 		return $args;
 	}
 
-	function log_product_changes( $meta_id, $post_id, $meta_key, $meta_value ) {
-		// Check of er een belangwekkende wijzing was indien het om een stockupdate gaat
-		if ( $meta_key === '_stock_status' ) {
-			$new = $meta_value;
-	    	// Vergelijk nieuwe waarde met de actuele
-			$old = get_post_meta( $post_id, '_stock_status', true );
+	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
+		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
+		$watched_metas = array( 'price', '_stock_status', '_tax_class', '_length', '_width', '_height', '_weight', '_thumbnail_id', '_force_sell_synced_ids' );
+		// Check of er een belangwekkende wijzing was
+		foreach ( $watched_metas as $meta_key ) {
+			// Vergelijk nieuwe waarde met de actuele
+			$old_meta_value = get_post_meta( $post_id, $meta_key, true );
 			
-			if ( strcmp( $new, $old ) !== 0 ) {
-				if ( $meta_value === 'instock' ) {
-					$str = "IN STOCK";
-				} elseif ( $meta_value === 'outofstock' ) {
-					$str = "UIT STOCK";
-				}
-				
+			if ( strcmp( $new_meta_value, $old_meta_value ) !== 0 ) {
 				// Schrijf weg in voorraadlog per weeknummer (zonder leading zero's) 
-				$str = date( 'd/m/Y H:i:s' ) . "\t" . $str . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
-			    file_put_contents(WP_CONTENT_DIR."/stock-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+				$str = date( 'd/m/Y H:i:s' ) . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+			    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
 			}
 		}
 		// Zet de normale postmeta-functie verder
-		update_post_meta($meta_id, $post_id, $meta_key, $meta_value);
+		update_post_meta( $meta_id, $post_id, $meta_key, $new_meta_value );
 	}
 	
 	###############
@@ -163,7 +159,8 @@
 	// Verhoog het aantal producten per winkelpagina
 	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 20;' ), 20 );
 
-	// Registreer de extra status voor WooCommerce-orders NU VIA PLUGIN
+	// Registreer de extra status voor WooCommerce-orders
+	// NU VIA WOOCOMMERCE ORDER STATUS PLUGIN
 	// add_action( 'init', 'register_claimed_by_member_order_status' );
 	
 	function register_claimed_by_member_order_status() {
@@ -181,6 +178,22 @@
 			);
 	}
 
+	// Speel met de volgorde van de statussen
+	// NU VIA WOOCOMMERCE ORDER STATUS PLUGIN
+	// add_filter( 'wc_order_statuses', 'rearrange_order_statuses' );
+
+	function rearrange_order_statuses( $order_statuses ) {
+		$new_order_statuses = array();
+		foreach ( $order_statuses as $key => $status ) {
+			$new_order_statuses[ $key ] = $status;
+			// Plaats de status net na 'processing' (= order betaald en ontvangen)
+			if ( 'wc-processing' === $key ) {    
+				$new_order_statuses['wc-claimed'] = 'Geclaimd door mijn winkel';
+			}
+		}
+		return $new_order_statuses;
+	}
+
 	// Zorg ervoor dat slechts bepaalde statussen bewerkbaar zijn
 	add_filter( 'wc_order_is_editable', 'limit_editable_orders', 20, 2 );
 
@@ -196,21 +209,6 @@
 		return $editable;
 	}
 	
-	// Speel met de volgorde van de statussen
-	// add_filter( 'wc_order_statuses', 'rearrange_order_statuses' );
-
-	function rearrange_order_statuses( $order_statuses ) {
-		$new_order_statuses = array();
-		foreach ( $order_statuses as $key => $status ) {
-			$new_order_statuses[ $key ] = $status;
-			// Plaats de status net na 'processing' (= order betaald en ontvangen)
-			if ( 'wc-processing' === $key ) {    
-				$new_order_statuses['wc-claimed'] = 'Geclaimd door mijn winkel';
-			}
-		}
-		return $new_order_statuses;
-	}
-
 	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
 	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_sku_sorting' );
 
