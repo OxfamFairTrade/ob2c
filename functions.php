@@ -1812,7 +1812,7 @@
 	add_shortcode ( 'toon_kaart', 'print_map' );
 	add_shortcode ( 'widget_usp', 'print_widget_usp' );
 	add_shortcode ( 'widget_delivery', 'print_widget_delivery' );
-	add_shortcode ( 'widget_contact', 'print_widget_contact' );
+	add_shortcode ( 'widget_contact', 'get_full_company' );
 	add_shortcode ( 'company_name', 'get_company_name' );
 	add_shortcode ( 'contact_address', 'get_company_contact' );
 	add_shortcode ( 'map_address', 'get_company_address' );
@@ -1847,12 +1847,20 @@
 		return get_bloginfo( 'name' );
 	}
 
+	function get_company_email() {
+		return get_option( 'admin_email' );
+	}
+
 	function get_company_contact() {
-		return get_company_address()."<br>".get_oxfam_shop_data( 'telephone' )."<br><a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a>";
+		return get_oxfam_shop_data( 'telephone' )."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a>";
 	}
 
 	function get_company_address() {
 		return get_oxfam_shop_data( 'place' )."<br>".get_oxfam_shop_data( 'zipcode' )." ".get_oxfam_shop_data( 'city' );
+	}
+
+	function get_full_company() {
+		return get_company_name()."<br>".get_company_contact()."<br>".get_company_address();
 	}
 
 	function print_widget_usp() {
@@ -1867,10 +1875,6 @@
 			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, kan je de volgende dag 's middags afhalen in de winkel.";
 		}
 		return $msg;
-	}
-
-	function print_widget_contact() {
-		return "<a href='mailto:".get_option( 'admin_email' )."'>".get_option( 'admin_email' )."</a><br>".get_oxfam_shop_data( 'telephone' );
 	}
 
 	function print_welcome() {

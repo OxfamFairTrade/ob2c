@@ -19,6 +19,7 @@
 					echo "</tr>";
 
 					$login_link = $mollie->getLoginLink( $partner_id_customer );
+					echo "<pre>".var_export($login_link, true)."</pre>";
 					echo "<tr>";
 						echo "<th class='left'><a href='".$login_link->redirect_url."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
 						echo "<td class='right'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td>";
@@ -47,18 +48,20 @@
 
 					$profiles = $mollie->profilesByPartnerId( $partner_id_customer );
 					if ( $profiles->resultcode == '10' ) {
-						echo "<pre>".var_export($profiles->items->profile, true)."</pre>";
-						if ( get_oxfam_shop_data( 'telephone' ) != format_telephone($profiles->items->profile->phone) ) {
-							$phone_warning = "<span style='color: red;'>(ander contactnummer geregistreerd bij Mollie)</span>";
+						if ( get_oxfam_shop_data( 'company_name' ) != trim_and_uppercase($profiles->items->profile->name) ) {
+							$name_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
-						if ( get_option( 'admin_email' ) != $profiles->items->profile->email ) {
-							$mail_warning = "<span style='color: red;'>(ander contactadres geregistreerd bij Mollie)</span>";
+						if ( get_oxfam_shop_data( 'telephone' ) != format_telephone($profiles->items->profile->phone) ) {
+							$phone_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
+						}
+						if ( get_company_email() != $profiles->items->profile->email ) {
+							$mail_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactadres geregistreerd!</small>";
 						}
 					}
 
-					$account = $mollie->bankAccountsByPartnerId( $partner_id_customer );
-					write_log($account);
-
+					$accounts = $mollie->bankAccountsByPartnerId( $partner_id_customer );
+					write_log($accounts);
+					
 					if ( does_sendcloud_delivery() ) {
 						echo "<tr>";
 							echo "<th class='left'><a href='https://panel.sendcloud.sc/' target='_blank'>Log in op je SendCloud-verzendaccount &raquo;</a></th>";
@@ -96,7 +99,7 @@
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database!-->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: (<a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">kloppen gegevens in KBO nog?</a>)</label>
+					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer:<br><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">Kloppen onze gegevens in de KBO-databank nog?</a></small></label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_tax" class="text-input" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>" readonly>
@@ -108,6 +111,14 @@
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_account" class="text-input" value="<?php echo get_oxfam_shop_data( 'account' ); ?>" readonly>
+		  		</td>
+			</tr>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_company" title="Dit is ook de titel van deze subsite en kan enkel door Frederik gewijzigd worden.">Bedrijfsnaam: <?php echo $name_warning; ?></label>
+				</th>
+		  		<td class="right">
+		  			<input type="text" name="oxfam_company" class="text-input" value="<?php echo get_company_name(); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -147,7 +158,7 @@
 					<label for="oxfam_email" title="Deze Office 365-mailbox wordt ingesteld als het algemene contactadres van deze subsite en is initieel ook ekoppeld aan de lokale beheeraccount. Opgelet: via de profielpagina kun je deze hoofdgebruiker aan een andere mailbox linken (of schakelen we dat uit? niet handig indien we voor meerdere lokale beheerders opteren!) maar het contactadres naar klanten blijft altijd dit e-mailadres!">E-mailadres: <?php echo $mail_warning; ?></label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_email" class="text-input" value="<?php echo get_option( 'admin_email' ); ?>" readonly>
+		  			<input type="text" name="oxfam_email" class="text-input" value="<?php echo get_company_email(); ?>" readonly>
 		  		</td>
 			</tr>
 			
