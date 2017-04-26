@@ -498,7 +498,13 @@
 		return trim_and_uppercase( $value );
 	}
 	
-	function format_telephone( $value ) {
+	// Sta een optionele parameter toe om puntjes te zetten in plaats van spaties (maar: wordt omgezet in streepjes door wc_format_phone() dus niet gebruiken in verkoop!)
+	function format_telephone( $value, $delim = ' ' ) {
+		if ( $delim === '.' ) {
+			$slash = '/';
+		} else {
+			$slash = $delim;
+		}
 		// Wis alle spaties, leestekens en landcodes
 		$temp_tel = preg_replace( '/[\s\-\.\/]/', '', $value );
 		$temp_tel = str_replace( '+32', '0', $temp_tel );
@@ -507,15 +513,15 @@
 		// Formatteer vaste telefoonnummers
 		if ( mb_strlen($temp_tel) === 9 ) {
 			if ( intval($temp_tel[1]) === 2 or intval($temp_tel[1]) === 3 or intval($temp_tel[1]) === 4 or intval($temp_tel[1]) === 9 ) {
-				$value = substr($temp_tel, 0, 2)." ".substr($temp_tel, 2, 3)." ".substr($temp_tel, 5, 2)." ".substr($temp_tel, 7, 2);
+				$value = substr($temp_tel, 0, 2) . $slash . substr($temp_tel, 2, 3).$delim.substr($temp_tel, 5, 2) . $delim . substr($temp_tel, 7, 2);
 			} else {
-				$value = substr($temp_tel, 0, 3)." ".substr($temp_tel, 3, 2)." ".substr($temp_tel, 5, 2)." ".substr($temp_tel, 7, 2);
+				$value = substr($temp_tel, 0, 3) . $slash . substr($temp_tel, 3, 2).$delim.substr($temp_tel, 5, 2) . $delim . substr($temp_tel, 7, 2);
 			}
 		}
 
 		// Formatteer mobiele telefoonnummers
 		if ( mb_strlen($temp_tel) === 10 ) {
-			$value = substr($temp_tel, 0, 4)." ".substr($temp_tel, 4, 2)." ".substr($temp_tel, 6, 2)." ".substr($temp_tel, 8, 2);
+			$value = substr($temp_tel, 0, 4) . $slash . substr($temp_tel, 4, 2) . $delim . substr($temp_tel, 6, 2) . $delim . substr($temp_tel, 8, 2);
 		}
 		
 		return $value;
@@ -1847,13 +1853,21 @@
 		} else {
 			$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
 			if ( $row ) {
-				if ( $key === 'shop' ) {
-					return $row->field_sellpoint_shop_nid;
-				} elseif ( $key === 'll' ) {
-					// Voor KML-file moet longitude voor latitude komen!
-					return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
-				} else {
-					return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
+				switch ($key) {
+					case 'shop':
+						return $row->field_sellpoint_shop_nid;
+						break;
+					case 'll':
+						// Voor KML-file moet longitude voor latitude komen!
+						return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
+						break;
+					case 'telephone':
+						// Geef alternatieve delimiter mee
+						return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'}, '.' );
+						break;
+					default:
+						return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
+						break;
 				}
 			} else {
 				return "UNKNOWN";
