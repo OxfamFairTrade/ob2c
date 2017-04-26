@@ -1772,7 +1772,8 @@
 		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
 			$body = json_decode($response['body']);
-			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen zes maanden:</p><ul>";
+			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen zes maanden:</p>";
+			$mailings .= "<ul style='margin-left: 20px; margin-bottom: 1em;'>";
 
 			foreach ( array_reverse($body->campaigns) as $campaign ) {
 				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.trim( strftime( '%e %B %G', strtotime($campaign->send_time) ) ).')</li>';

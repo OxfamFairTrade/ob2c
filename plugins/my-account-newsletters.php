@@ -59,7 +59,6 @@
 		public function endpoint_content() {
 			if ( self::$endpoint === 'nieuwsbrief' ) {
 				echo get_latest_newsletters();
-				echo '<p>&nbsp;</p>';
 				echo get_mailchimp_status();
 			} else {
 				echo 'In de toekomst leuke andere dingen?';
