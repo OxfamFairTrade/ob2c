@@ -663,15 +663,15 @@
 		$timestamp = estimate_delivery_date( $method->id );
 		
 		switch ( $method->id ) {
-			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite?
+			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite!
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
 			case stristr( $method->id, 'local_pickup' ):
-				$descr .= 'Beschikbaar vanaf '.strftime('%A %d/%m/%Y om %k uur', $timestamp);
+				$descr .= 'Beschikbaar op '.strftime('%A %d/%m/%Y vanaf %ku%M', $timestamp);
 				$label .= wc_price(0.0);
 				break;
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
-				$descr .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
+				$descr .= 'Ten laatste beschikbaar vanaf '.strftime('%A %d/%m/%Y', $timestamp);
 				break;
 			// Alle instances van thuislevering
 			case stristr( $method->id, 'flat_rate' ):
@@ -689,11 +689,10 @@
 	}
 
 	// Haal de openingsuren van de node voor een bepaalde dag op
+	// WERKT MET DAGINDEXES VAN 0 TOT 6!
 	function get_office_hours_for_day( $day, $node = 0 ) {
 		global $wpdb;
-		if ( $node === 0 ) {
-			$node = get_option( 'oxfam_shop_node' );
-		}
+		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
 		$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.$node.' AND field_sellpoint_office_hours_day = '.$day.' ORDER BY delta ASC' );
 		if ( count($rows) > 0 ) {
 			$i = 0;
@@ -709,14 +708,13 @@
 	}
 
 	// Stop de openingsuren in een logische array
+	// ANTWOORDT MET DAGINDEXES VAN 1 TOT 7!
 	function get_office_hours( $node = 0 ) {
-		if ( $node === 0 ) {
-			$node = get_option( 'oxfam_shop_node' );
-		}
-		for ( $day = 0; $day < 7; $day++ ) {
+		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
+		for ( $day = 0; $day <= 6; $day++ ) {
 			$hours[$day] = get_office_hours_for_day( $day, $node );
 		}
-		// DAGNUMMERING FORCEREN NAAR 1 TOT 7
+		// Forceer 'natuurlijke' nummering
 		$hours[7] = $hours[0];
 		unset($hours[0]);
 		return $hours;
@@ -756,67 +754,65 @@
 		$from = $order_date ? strtotime($order_date) : time();
 		
 		write_log($shipping_id);
+		$timestamp = $from;
+		write_log(date('d/m/Y H:i', $timestamp));
+		
 		switch ( $shipping_id ) {
 			// Alle instances van winkelafhalingen
 			case stristr( $shipping_id, 'local_pickup' ):
-				$timestamp = $from;
-				write_log(date('d/m/Y', $timestamp));
-				// Zoek de eerstvolgende werkdag na de volgende middagdeadline
-				if ( date('N', $from) < 6 and date('G', $from) < 12 ) {
-					// We zitten nog voor de deadline van een werkdag
-					$timestamp = strtotime("+1 weekday", $from);
-					write_log(date('d/m/Y', $timestamp));
-				} else {
-					// We zitten al na de deadline van een werkdag
-					$timestamp = strtotime("+2 weekdays", $from);
-					write_log(date('d/m/Y', $timestamp));
-				}
+				// Zoek de eerste werkdag na de volgende middagdeadline
+				$timestamp = get_first_working_day( $from );
 
-				// Tel feestdagen in de verwerkingsperiode erbij
+				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 				
-				// NOG CHECKEN OF DE WINKEL NA 12U OPEN IS OP DIE DAG
-				// get_office_hours_for_day() werkt met indexes van 0 tot 6!
-				$hours = get_office_hours_for_day( date('w', $timestamp) );
-				foreach ( $hours as $part ) {
-					$start = intval( substr($part['start'], 0, 2) );
-					$end = intval( substr($part['end'], 0, 2) );
-					if ( $end >= 12 ) {
-						// Neem het openingsuur van dit dagdeel
-						$timestamp = strtotime( date('Y-m-d', $timestamp)." ".$start.":00" );
-					} else {
-						$timestamp = strtotime("+1 weekday", $timestamp);
-						// RECURSIEF MAKEN
-					}
-				}
+				// Check of de winkel op deze dag effectief nog geopend is na 12u
+				// ONDERSTEUNING VOOR ALTERNATIEVE NODES TOEVOEGEN
+				$hours = get_office_hours();
+				
+				$timestamp = find_first_opening_hour( $hours, $timestamp ):
 
 				break;
 
 			// Alle (gratis/betalende) instances van postpuntlevering en thuislevering
 			default:
-				$timestamp = $from;
-				write_log(date('d/m/Y', $timestamp));
-				// Zoek de eerstvolgende werkdag na de volgende middagdeadline
-				if ( date('N', $from) < 6 and date('G', $from) < 12 ) {
-					// We zitten nog voor de deadline van een werkdag
-					$timestamp = strtotime("+3 weekdays", $from);
-					write_log(date('d/m/Y', $timestamp));
-				} else {
-					// We zitten al na de deadline van een werkdag
-					$timestamp = strtotime("+4 weekdays", $from);
-					write_log(date('d/m/Y', $timestamp));
-				}
+				// Zoek de eerste werkdag na de volgende middagdeadline
+				$timestamp = get_first_working_day( $from );
 
-				// Tel feestdagen in de verwerkingsperiode erbij
+				// Geef nog twee extra werkdagen voor de thuislevering
+				$timestamp = strtotime("+2 weekdays", $from);
+
+				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 		}
 		return $timestamp;
 	}
 
-	// Check of er feestdagen in een bepaalde periode liggen, zo ja tel die dagen bij de einddag
-	// Neemt twee timestamps en antwoordt met de nieuwe timestamp
+	// Ontvangt een timestamp en antwoordt met eerste werkdag die er toe doet
+	function get_first_working_day( $from ) {
+		if ( date('N', $from) < 6 and date('G', $from) < 12 ) {
+			// Geen actie nodig
+		} else {
+			// We zitten al na de deadline van een werkdag, begin pas vanaf morgen te tellen
+			$from = strtotime("+1 weekday", $from));
+		}
+
+		// Bepaal de eerstvolgende werkdag
+		$timestamp = strtotime("+1 weekday", $from);
+		write_log(date('d/m/Y H:i', $timestamp));
+
+		return $timestamp;
+	}
+
+	// Check of er feestdagen in een bepaalde periode liggen, en zo ja: tel die dagen bij de einddag
+	// Neemt een begin- en eindpunt en retourneert het nieuwe eindpunt (allemaal in timestamps)
 	function move_date_on_holidays( $from, $till ) {
-		$first = date( 'Y-m-d', $from );
+		// Check of de startdag ook nog in beschouwing genomen moet worden
+		if ( date('N', $from) < 6 and date('G', $from) >= 12 ) {
+			$first = date( 'Y-m-d', strtotime("+1 weekday", $from) );
+		} else {
+			$first = date( 'Y-m-d', $from );
+		}
 		$last = date( 'Y-m-d', $till );
 		
 		// Enkel de feestdagen die niet in het weekend vallen invullen!
@@ -827,12 +823,50 @@
 		foreach ( $holidays as $holiday ) {
 			if ( ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				$till = strtotime("+1 weekday", $till);
-				write_log(date('d/m/Y', $till));
+				write_log(date('d/m/Y H:i', $till));
 				$last = date('Y-m-d', $till);
 			}
 		}
 
 		return $till;
+	}
+
+	// Zoek het eerstvolgende openeningsuur op een dag (indien $afternoon: pas vanaf 12u)
+	function find_first_opening_hour( $hours, $from, $afternoon = true ) {
+		// date('N') want get_office_hours() werkt van 1 tot 7!
+		$i = date('N', $from);
+		if ( $hours[$i] ) {
+			$day_part = $hours[$i][0];
+			$start = intval( substr($day_part['start'], 0, 2) );
+			$end = intval( substr($day_part['end'], 0, 2) );
+			if ( $afternoon ) {
+				if ( $end > 12 ) {
+					// Neem het openingsuur van het eerste deel
+					$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+				} else {
+					unset($day_part);
+					// Ga naar het tweede dagdeel (we gaan er van uit dat er nooit drie zijn!)
+					$day_part = $hours[$i][1];
+					$start = intval( substr($day_part['start'], 0, 2) );
+					$end = intval( substr($day_part['end'], 0, 2) );
+					if ( $end > 12 ) {
+						// Neem het openingsuur van dit deel
+						$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+					} else {
+						// Het mag ook een dag in het weekend zijn, de wachttijd is vervuld!
+						$timestamp = find_first_opening_hour( $hours, strtotime('tomorrow midnight'), false );
+					}
+				}
+			} else {
+				// Neem sowieso het openingsuur van het eerste dagdeel
+				$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+			}
+		} else {
+			// Vandaag zijn we gesloten, probeer het morgen opnieuw
+			// Het mag ook een dag in het weekend zijn, de wachttijd is vervuld!
+			$timestamp = find_first_opening_hour( $hours, strtotime('tomorrow midnight'), false );
+		}
+		return $timestamp;
 	}
 
 	// Verberg het verzendadres ook bij een postpuntlevering

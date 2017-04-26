@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-04-26 23:21+0200\n"
+"PO-Revision-Date: 2017-04-26 23:48+0200\n"
 "Language-Team: Le Couperet\n"
 "X-Generator: Poedit 2.0.1\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
@@ -23,17 +23,19 @@ msgstr "Afhaalpunten"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:82
 msgid "Local Pickup Plus"
-msgstr "Local Pickup Plus"
+msgstr "Afhalingen"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:84
 msgid ""
 "Local pickup is a simple method which allows the customer to pick up their "
 "order themselves at a specified pickup location."
 msgstr ""
+"Met deze eenvoudige plugin kunnen klanten zelf aangeven in welk afhaalpunt "
+"ze hun bestelling willen afhalen."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:184
 msgid "from"
-msgstr ""
+msgstr "vanaf"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:252
 msgid "All Categories"
@@ -41,7 +43,7 @@ msgstr "Alle categorieën"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:268
 msgid "Enable"
-msgstr "Inschakelen"
+msgstr "Status"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:270
 msgid "Enable local pickup plus"
@@ -49,12 +51,12 @@ msgstr "Schakel afhaalpunten in"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:275
 msgid "Title"
-msgstr "Benaming"
+msgstr "Omschrijving"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:277
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
-"Dit bepaalt welke benaming de klant te zien krijgt tijdens het afrekenen."
+"Dit bepaalt welke omschrijving de klant te zien krijgt tijdens het afrekenen."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:278
 msgid "Local Pickup"
@@ -71,6 +73,9 @@ msgid ""
 "no default cost.  The default cost can be overriden by setting a cost per "
 "pickup location below."
 msgstr ""
+"Standaardprijs (excl. BTW). Vul een bedrag in of laat leeg indien gratis. "
+"Deze algemene prijs kan overschreven worden door een specifieke kostprijs "
+"per locatie onderaan."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:289
 msgid "Discount"
@@ -82,6 +87,9 @@ msgid ""
 "e.g. 2.50, or a percentage, e.g 5% to discount the order total (pre-tax) "
 "when this shipping method is used."
 msgstr ""
+"Toe te kennen korting aan het winkelmandje indien voor deze levermethode "
+"gekozen wordt. Vul een absoluut bedrag of een percentage in dat vòòr "
+"belastingen afgetrokken wordt van het totaalbedrag."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:296
 msgid "Categories"
@@ -90,10 +98,12 @@ msgstr "Categorieën"
 #: classes/class-wc-shipping-local-pickup-plus.php:298
 msgid "Optional, these categories of products may only be locally picked up."
 msgstr ""
+"Geef eventueel bepaalde productcategorieën op die enkel beschikbaar zijn "
+"voor afhaling."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:304
 msgid "Categories Only"
-msgstr ""
+msgstr "Uitsluitend"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:306
 msgid ""
@@ -103,7 +113,7 @@ msgstr ""
 
 #: classes/class-wc-shipping-local-pickup-plus.php:311
 msgid "Pickup Location Tax"
-msgstr ""
+msgstr "Belasting op basis van afhaalpunt"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:313
 msgid ""
@@ -144,12 +154,16 @@ msgid ""
 "To enable discounts for Local Pickup orders, you must first %1$senable the "
 "use of coupons%2$s"
 msgstr ""
+"Om kortingen voor afhalingen in te schakelen dien je eerst %1$shet gebruik "
+"van kortingsbonnen te aciveren%2$s."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:408
 msgid ""
 "Cost for this pickup location, enter an amount, eg. 0 or 2.50, or leave "
 "empty to use the default cost configured above."
 msgstr ""
+"Kostprijs voor deze locatie. Vul en bedrag in of laat leeg om de "
+"standaardprijs toe te passen."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:413
 msgid "Notes"
@@ -184,7 +198,7 @@ msgstr "Geselecteerde afhaalpunten verwijderen?"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:639
 msgid "Pickup"
-msgstr ""
+msgstr "Afhalen"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1190
 msgid "Your Pickup Location"
@@ -192,7 +206,7 @@ msgstr "Jouw afhaalpunt"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1190
 msgid "Choose Pickup Location"
-msgstr "Selecteer je afhaalpunt"
+msgstr "Selecteer afhaalpunt"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1207
 msgid "Choose One"
@@ -207,6 +221,9 @@ msgid ""
 "Some of your cart products are not eligible for local pickup, please remove "
 "%s, or select a different shipping method to continue"
 msgstr ""
+"Enkele producten uit je winkelmandje zijn niet beschikbaar voor afhaling in "
+"de winkel. Gelieve %s te verwijderen of een andere verzendmethode te kiezen "
+"om verder te gaan."
 
 #. translators: %1$s - list of eligible products, %2$s - Local Pickup plus
 #. shipping method name
@@ -237,7 +254,7 @@ msgstr "Afhaalpunt"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1833
 msgid "No pickup location set."
-msgstr ""
+msgstr "Geen afhaalpunt ingesteld."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1918
 msgid "Pickup location changed to %s"
@@ -265,6 +282,9 @@ msgid ""
 "local pickup locations, which the customer can then choose from when making "
 "a purchase."
 msgstr ""
+"A shipping plugin for WooCommerce that allows the store operator to define "
+"local pickup locations, which the customer can then choose from when making "
+"a purchase."
 
 #. Author of the plugin/theme
 msgid "SkyVerge"
