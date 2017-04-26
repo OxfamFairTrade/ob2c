@@ -346,7 +346,7 @@
 		$address_fields['billing_last_name']['label'] = "Familienaam";
 		$address_fields['billing_last_name']['placeholder'] = "Foreman";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
-		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'phone' );
+		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
 		$address_fields['billing_email']['label'] = "E-mailadres";
 		$address_fields['billing_email']['placeholder'] = "george@foreman.com";
 		// $address_fields['billing_company']['label'] = "Bedrijf";
@@ -766,11 +766,11 @@
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 				
-				// Check of de winkel op deze dag effectief nog geopend is na 12u
 				// ONDERSTEUNING VOOR ALTERNATIEVE NODES TOEVOEGEN
 				$hours = get_office_hours();
 				
-				$timestamp = find_first_opening_hour( $hours, $timestamp ):
+				// Check of de winkel op deze dag effectief nog geopend is na 12u
+				$timestamp = find_first_opening_hour( $hours, $timestamp );
 
 				break;
 
@@ -785,6 +785,7 @@
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 		}
+		
 		return $timestamp;
 	}
 
