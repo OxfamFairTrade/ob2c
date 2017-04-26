@@ -458,32 +458,40 @@
 
 	function format_tax( $value ) {
 		$value = str_replace( 'BE', '', $value );
-		return 'BE '.ucwords( trim($value) );
+		trim_and_uppercase( $value ) );
+		if ( mb_strlen($value) === 10 ) {
+			return 'BE '.substr( $value, 0, 4 )." ".substr( $value, 4, 4 )." ".substr( $value, 8, 4 )." ".substr( $value, 12, 4 );
+		} else {
+			return 'BE 0'.substr( $value, 0, 3 )." ".substr( $value, 3, 4 )." ".substr( $value, 7, 4 )." ".substr( $value, 11, 4 );
+		}
 	}
 
 	function format_account( $value ) {
+		$value = str_replace( 'BE', '', $value );
 		$value = str_replace( 'IBAN', '', $value );
-		return ucwords( trim($value) );
+		preg_replace( '/[\s\-\.\/\\]/', '', $value );
+		if ( mb_strlen($value) === 14 ) {
+			return 'BE'.substr( $value, 0, 2 )." ".substr( $value, 2, 4 )." ".substr( $value, 6, 4 )." ".substr( $value, 10, 4 );
+		} else {
+			return 'ONGELDIG';
+		}
 	}
 
 	function format_place( $value ) {
-		return ucwords( trim($value) );
+		return trim_and_uppercase( $value );
 	}
 	
 	function format_zipcode( $value ) {
-		return ucwords( trim($value) );
+		return trim_and_uppercase( $value );
 	}
 
 	function format_city( $value ) {
-		return ucwords( trim($value) );
+		return trim_and_uppercase( $value );
 	}
 	
 	function format_telephone( $value ) {
 		// Wis alle spaties, leestekens en landcodes
-		$temp_tel = preg_replace( '/\s+/', '', $value );
-		$temp_tel = str_replace( '/', '', $temp_tel );
-		$temp_tel = str_replace( '-', '', $temp_tel );
-		$temp_tel = str_replace( '.', '', $temp_tel );
+		$temp_tel = preg_replace( '/[\s\-\.\/\\]/', '', $value );
 		$temp_tel = str_replace( '+32', '0', $temp_tel );
 		$temp_tel = preg_replace( '/(^|\s)0032/', '0', $temp_tel );
 		
@@ -1717,13 +1725,17 @@
 	add_action( 'admin_init', 'remove_dashboard_meta' );
 
 	function remove_dashboard_meta() {
-		// remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
+		remove_meta_box( 'dashboard_primary', 'dashboard-network', 'normal' );
+		remove_meta_box( 'network_dashboard_right_now', 'dashboard-network', 'normal' );
+		remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
 		remove_meta_box( 'dashboard_activity', 'dashboard', 'normal' );
-		// remove_meta_box( 'dashboard_pilot_news_widget', 'dashboard', 'normal' );
 		remove_meta_box( 'woocommerce_dashboard_recent_reviews', 'dashboard', 'normal' );
+		// remove_meta_box( 'dashboard_pilot_news_widget', 'dashboard', 'normal' );
 		// remove_meta_box( 'woocommerce_dashboard_status', 'dashboard', 'normal' );
 		remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
 		remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
+		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item' );
+		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item-network' );
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
 	}
 

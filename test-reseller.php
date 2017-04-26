@@ -29,17 +29,21 @@
 	$partner_id_customer = '2842281';
 
 	try {
-		// Account werd nog aangemaakt zonder IBAN-gegevens!
-		$simplexml = $mollie->accountEditByPartnerId( 'owwoostende', array( 'testmode' => '1', 'name' => 'Frederik Neirynck', 'company_name' => 'Oxfam-Wereldwinkel Oostende', 'address' => 'Torhoutsesteenweg 25', 'zipcode' => '8400', 'city' => 'Oostende', 'country' => 'BE', 'email' => 'webshop.oostende@oxfamwereldwinkels.be', 'registration_number' => '0446474568', 'legal_form' => 'vzw-be', 'vat_number' => 'BE0446474568', 'representative' => 'Roland Dehoorne', 'billing_address' => 'Torhoutsesteenweg 25', 'billing_zipcode' => '8400', 'billing_city' => 'Oostende', 'billing_country' => 'BE', 'bankaccount_iban' => 'BE82 0010 7723 0668', 'bankaccount_bic' => 'GEBA BE BB', 'bankaccount_bankname' => 'BNP Paribas Fortis', 'bankaccount_location' => 'Brussel', ) );
+		// $simplexml = $mollie->accountCreate( 'owwoostende', array( 'testmode' => 1, 'name' => 'Melissa Vandewalle', 'company_name' => 'Oxfam-Wereldwinkel Oostende', 'address' => 'Torhoutsesteenweg 25', 'zipcode' => '8400', 'city' => 'Oostende', 'country' => 'BE', 'email' => 'webshop.oostende@oxfamwereldwinkels.be', 'registration_number' => '0446474568', 'legal_form' => 'vzw-be', 'vat_number' => 'BE0446474568', 'representative' => 'Roland Dehoorne', 'billing_address' => 'Torhoutsesteenweg 25', 'billing_zipcode' => '8400', 'billing_city' => 'Oostende', 'billing_country' => 'BE', 'bankaccount_iban' => 'BE82 0010 7723 0668', 'bankaccount_bic' => 'GEBA BE BB', 'bankaccount_bankname' => 'BNP Paribas Fortis', 'bankaccount_location' => 'Brussel', ) );
+		// Account werd nog aangemaakt zonder IBAN-gegevens! LIJKT GEEN ZIN TE HEBBEN
+		$simplexml = $mollie->accountEditByPartnerId( $partner_id_customer, array( 'name' => 'Melissa Vandewalle', 'company_name' => 'Oxfam-Wereldwinkel Oostende', 'address' => 'Torhoutsesteenweg 25', 'zipcode' => '8400', 'city' => 'Oostende', 'country' => 'BE', 'email' => 'webshop.oostende@oxfamwereldwinkels.be', 'registration_number' => '0446474568', 'legal_form' => 'vzw-be', 'vat_number' => 'BE0446474568', 'representative' => 'Roland Dehoorne', 'billing_address' => 'Torhoutsesteenweg 25', 'billing_zipcode' => '8400', 'billing_city' => 'Oostende', 'billing_country' => 'BE', 'bankaccount_iban' => 'BE82 0010 7723 0668', 'bankaccount_bic' => 'GEBA BE BB', 'bankaccount_bankname' => 'BNP Paribas Fortis', 'bankaccount_location' => 'Brussel', ) );
 		// $simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, 'Oxfam-Wereldwinkel Oostende', 'https://demo.oxfamwereldwinkels.be/oostende', 'webshop.oostende@oxfamwereldwinkels.be', '059 51 37 00', 5499 );
 	} catch (Mollie_Exception $e) {
 		die('An error occurred: '.$e->getMessage());
 	}
 
-	if ( $simplexml->resultcode == '10' and isset($simplexml->profile) ) {
-		echo "<p>Profiel ".$simplexml->profile->website." voor ".$simplexml->profile->name." succesvol gecreëerd!<p>";
-		echo "<p>TEST API: ".$simplexml->profile->api_keys->test."</p>";
-		echo "<p>LIVE API: ".$simplexml->profile->api_keys->live."</p>";
+	if ( $simplexml->resultcode == '10' ) {
+		echo "<p>".$simplexml->resultmessage."</p>";
+		if ( isset($simplexml->profile) ) {
+			echo "<p>Profiel ".$simplexml->profile->website." voor ".$simplexml->profile->name." succesvol gecreëerd!<p>";
+			echo "<p>TEST API: ".$simplexml->profile->api_keys->test."</p>";
+			echo "<p>LIVE API: ".$simplexml->profile->api_keys->live."</p>";
+		}
 		echo "<p></p>";
 	}
 
