@@ -458,7 +458,7 @@
 
 	function format_tax( $value ) {
 		$value = str_replace( 'BE', '', $value );
-		trim_and_uppercase( $value ) );
+		$value = preg_replace( '/[\s\-\.\/\\]/', '', $value );
 		if ( mb_strlen($value) === 10 ) {
 			return 'BE '.substr( $value, 0, 4 )." ".substr( $value, 4, 4 )." ".substr( $value, 8, 4 )." ".substr( $value, 12, 4 );
 		} else {
@@ -469,7 +469,7 @@
 	function format_account( $value ) {
 		$value = str_replace( 'BE', '', $value );
 		$value = str_replace( 'IBAN', '', $value );
-		preg_replace( '/[\s\-\.\/\\]/', '', $value );
+		$value = preg_replace( '/[\s\-\.\/\\]/', '', $value );
 		if ( mb_strlen($value) === 14 ) {
 			return 'BE'.substr( $value, 0, 2 )." ".substr( $value, 2, 4 )." ".substr( $value, 6, 4 )." ".substr( $value, 10, 4 );
 		} else {
