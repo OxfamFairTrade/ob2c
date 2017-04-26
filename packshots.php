@@ -12,8 +12,8 @@
 
 	<?php
 
-		require_once '../../../wp-blog-header.php';
-		require_once '../../../wc-api/autoload.php';
+		require_once 'wp-blog-header.php';
+		require_once 'wc-api/autoload.php';
 
 		use Automattic\WooCommerce\Client;
 
@@ -27,23 +27,30 @@
 		);
 
 		$cat_parameters = array( 'orderby' => 'name', 'per_page' => 10, 'parent' => 0 );
-		$categories = $woocommerce->get('products/categories', $cat_parameters);
+		$categories = $woocommerce->get( 'products/categories', $cat_parameters );
 
 		$product_count = 0;
 		$photo_count = 0;
 
 		echo '<div class="container-fluid">';
-			foreach ($categories as $category) {
+			foreach ( $categories as $category ) {
 				echo '<div class="row" style="margin-bottom: 5em;">';
 					echo '<div class="col-sm-12 col-md-12 col-xl-12" style="padding: 0; margin: 0; border-bottom: 3px solid black;">';
 						echo '<h2>'.$category['name'].' ('.$category['count'].' producten)</h2>';
 					echo '</div>';
 					// Parameter 'per_page' mag niet te groot zijn, anders error!
 					// Laat de 4 leeggoeditems weg uit de telling
-					$prod_parameters = array( 'category' => $category['id'], 'status' => 'publish', 'exclude' => array( 2378, 2380, 2608, 2610 ), 'orderby' => 'title', 'order' => 'asc', 'per_page' => 100, );
-					$products = $woocommerce->get('products', $prod_parameters);
+					$prod_parameters = array( 'category' => $category['id'], 'status' => 'publish', 'exclude' => array( 2378, 2380, 2608, 2610 ), 'orderby' => 'title', 'order' => 'asc', 'per_page' => 125, );
+					$products = $woocommerce->get( 'products', $prod_parameters );
 
-					foreach ($products as $product) {
+					// Stop alle producten in een array met als key hun artikelnummer
+					foreach ( $products as $product ) {
+						$ordered_products[$product['sku']] = $product;
+					}
+					// Orden de resultaten uit de categorie op artikelnummer
+					ksort($ordered_products);
+
+					foreach ( $ordered_products as $product ) {
 						$product_count++;
 						
 						// Opgelet: indien er geen foto aan het product gelinkt is krijgen we de placeholder door, maar zonder id!
@@ -57,9 +64,16 @@
 						if ( ! empty($shop_thumbnail) ) {
 							$photo_count++;
 							
-							// Staat pa_merk nu toevallig als eerste in de lijst of niet? 
-							echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em; text-align: center; border-bottom: 1px solid black;">';
-								echo '<small style="color: vampire grey; font-style: italic;">'.$product['attributes'][0]['options'][0].' '.$product['sku'].'</small><br>';
+							echo '<div class="col-sm-6 col-md-4 col-xl-3" style="padding: 2em 1em; text-align: center; border-bottom: 1px solid black;">';
+								// Het 'pa_merk'-attribuut stond slechts toevallig als eerste in de lijst, refactor!
+								foreach ( $product['attributes'] as $attribute ) {
+									if ( $attribute['name'] === 'Merk' ) {
+										$merk = $attribute['options'][0];
+										break;
+									}
+								}
+								// echo '<pre>'.var_export($product['attributes'], true).'</pre>';
+								echo '<small style="color: vampire grey; font-style: italic;">'.$merk.' '.$product['sku'].'</small><br>';
 								echo '<div style="padding: 0; height: 50px; display: flex; align-items: center;"><p style="font-weight: bold; margin: 0; text-align: center; width: 100%;">'.$product['name'].'</p></div>';
 								echo '<a href="'.$product['permalink'].'"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
 								echo '<u>Downloads:</u><br>';
@@ -79,6 +93,8 @@
 						}
 					}
 				echo '</div>';
+				// Zorg dat de producten niet opduiken in de volgende categorie
+				unset($ordered_products);
 			}
 		echo '</div>';
 
@@ -89,6 +105,7 @@
 	?>
 
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 
 </body>
