@@ -527,6 +527,11 @@
 		return $value;
 	}
 
+	function format_hour( $value ) {
+		// Is al behoorlijk clean bij XIO (ingesteld via selects)
+		return substr($value, 0, 2) . ':' . substr($value, 2, 2);
+	}
+
 	// Verduidelijk de profiellabels in de back-end	
 	add_filter( 'woocommerce_customer_meta_fields', 'modify_user_admin_fields', 10, 1 );
 
@@ -654,18 +659,14 @@
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'printEstimatedDelivery', 10, 2 );
 	
 	function printEstimatedDelivery( $label, $method ) {
-		global $user_ID;
-		$descr .= '<small>';
-		
-		// $timestamp = estimate_delivery( $user_ID, $method->id );
-		$timestamp = strtotime('+4 days');
+		$descr = '<small>';
+		$timestamp = estimate_delivery_date( $method->id );
 		
 		switch ( $method->id ) {
 			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite?
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
 			case stristr( $method->id, 'local_pickup' ):
-				$timestamp = strtotime('+2 days');
-				$descr .= 'Beschikbaar vanaf '.strftime('%Amiddag %d/%m/%Y', $timestamp);
+				$descr .= 'Beschikbaar vanaf '.strftime('%A %d/%m/%Y om %k uur', $timestamp);
 				$label .= wc_price(0.0);
 				break;
 			// Alle instances van postpuntlevering
@@ -687,101 +688,151 @@
 		return $label.'<br>'.$descr;
 	}
 
-	// Haal de openingsuren  voor een bepaalde dag op (by default van de standaard oxfam_shop_node)
-	function get_office_hours_for_day( $day, $node = get_site_option( 'oxfam_shop_node' ) ) {
+	// Haal de openingsuren van de node voor een bepaalde dag op
+	function get_office_hours_for_day( $day, $node = 0 ) {
 		global $wpdb;
-		$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.get_option( 'oxfam_shop_node' ).' AND field_sellpoint_office_hours_day = '.$day );
+		if ( $node === 0 ) {
+			$node = get_option( 'oxfam_shop_node' );
+		}
+		$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.$node.' AND field_sellpoint_office_hours_day = '.$day.' ORDER BY delta ASC' );
 		if ( count($rows) > 0 ) {
+			$i = 0;
 			foreach ( $rows as $row ) {
-				$hours[]['start'] = format_hour( $row->field_sellpoint_office_hours_starthours );
-				$hours[]['end'] = format_hour( $row->field_sellpoint_office_hours_endhours );
+				$hours[$i]['start'] = format_hour( $row->field_sellpoint_office_hours_starthours );
+				$hours[$i]['end'] = format_hour( $row->field_sellpoint_office_hours_endhours );
+				$i++;
 			}
 		} else {
-			$hours = "UNKNOWN";
+			$hours = false;
 		}
-		// OMDAT DE NUL ALS EERSTE STAAT IN ONZE HUIDIGE TEKSTFILE MOETEN WE EEN TRUCJE DOEN OM DEZE DAG ACHTERAAN TE ZETTEN
 		return $hours;
 	}
 
-	// Stop de openingsuren in een logische array (by default van de standaard oxfam_shop_node)
-	function get_office_hours( $node = get_site_option( 'oxfam_shop_node' ) ) {
-		for ( $day = 1; $day < 8; $day++ ) {
+	// Stop de openingsuren in een logische array
+	function get_office_hours( $node = 0 ) {
+		if ( $node === 0 ) {
+			$node = get_option( 'oxfam_shop_node' );
+		}
+		for ( $day = 0; $day < 7; $day++ ) {
 			$hours[$day] = get_office_hours_for_day( $day, $node );
 		}
+		// DAGNUMMERING FORCEREN NAAR 1 TOT 7
+		$hours[7] = $hours[0];
+		unset($hours[0]);
 		return $hours;
 	}
 
-	// Print de openingsuren in een logische array (by default van de standaard oxfam_shop_node)
-	function new_print_office_hours( $node = get_site_option( 'oxfam_shop_node' ) ) {
+	// Print de openingsuren in een logische array
+	function print_office_hours( $atts = [] ) {
+		// Normaliseer de attributen
+		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
+		// Overschrijf defaults met expliciete data van de gebruiker
+		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
+		
+		$output = '';
+		$node = $atts['node'];
 		$days = get_office_hours( $node );
-		write_log($days);
-		foreach ( $days as $day => $hours ) {
-			if ( $day === 1 ) {
-				if ( ! isset( $monday ) ) {
-					$list .= "<br>Maandag: " . substr( $hours[0]['start'], 0, -2 ) . ":" . substr( $hours[0]['start'], -2) . " - " . substr( $hours[0]['end'], 0, -2 ) . ":" . substr( $hours[0]['end'], -2 );
-					$monday = true;
-				} else {
-					$list .= " en " . substr( $hours[1]['start'], 0, -2 ) . ":" . substr( $hours[1]['start'], -2) . " - " . substr( $hours[1]['end'], 0, -2 ) . ":" . substr( $hours[1]['end'], -2 );
+		foreach ( $days as $day_index => $hours ) {
+			// Check of er voor deze dag wel openingsuren bestaan
+			if ( $hours ) {
+				foreach ( $hours as $part => $part_hours ) {
+					if ( ! isset( $$day_index ) ) {
+						$output .= "<br>".ucwords( strftime( '%A', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
+						$$day_index = true;
+					} else {
+						$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
+					}
 				}
 			}
 		}
-		return $list;
+		return $output;
 	}
 
-	// Bereken de eerst mogelijke leverdatum voor de opgegeven user en verzendmethode (retourneert een timestamp) 
-	function estimate_delivery( $customer_id, $shipping_id, $order_date = false ) {
+	// Bereken de eerst mogelijke leverdatum voor de opgegeven verzendmethode (retourneert een timestamp) 
+	function estimate_delivery_date( $shipping_id, $order_date = false ) {
 		$deadline = get_office_hours();
 		
 		// We gebruiken het geregistreerde besteltijdstip OF het live tijdstip voor schattingen van de leverdatum
 		$from = $order_date ? strtotime($order_date) : time();
 		
-		// Enkel de feestdagen die niet in het weekend vallen zijn noodzakelijk!
-		$holidays = array( '01/05/2017', '25/05/2017', '05/06/2017', '21/07/2017', '15/08/2017', '01/05/2018', '24/05/2018' );
-		
-		if ( $shipping_id === 'free_shipping:1' ) {
-			// Indien geen routecode beschikbaar is, verschijnt deze verzendmethode niet
-			$routecode = intval(get_user_meta($customer_id, 'shipping_state', true));
-			// Bepaal de routedag in de Engelse tekst
-			$weekday = date('l', strtotime("Sunday +".$routecode." days", $from));
-
-			// Verschuif de WOBAL-leveringen met een week door de datum pas vanaf 9 januari te berekenen (voor alle bestellingen, dus ook de oude!)
-			// $from = strtotime("9 January 2017");
-
-			// Zoek de eerstvolgende routedag na de volgende deadline om 11u van deze routecode
-			if ( date('l', $from) == $deadline[$routecode-1] and date('G', $from) < 11 ) {
-				// Correctie voor bestellingen op de dag van de deadline zelf
-				$timestamp = strtotime("next ".$weekday, $from);
-			} else {
-				$timestamp = strtotime("next ".$weekday, strtotime("next ".$deadline[$routecode-1], $from)+11*60*60);
-			}
-
-			// Tel er twaalf uur bij om zeker te zijn dat we door tijdzoneverschillen niet op de vorige dag belanden in de Excel
-			$timestamp = $timestamp+12*60*60;
-			// Indien na 11u: check of de eerstvolgende werkdag (waarop normaal de verwerking gebeurt) een feestdag is, zo ja tel er sowieso een dagje bij
-			// if ( date('G', $from) > 10 and in_array(date('d/m/Y', strtotime('+1 weekday', $from)+12*60*60), $holidays) ) $delay++;
-		} else {
-			// Verschuif de afhalingen en expresleveringen naar woensdag door de leverdatum pas vanaf 10 januari te berekenen
-			// $from = strtotime("10 January 2017");
-
-			$timestamp = $from;
-			while ( in_array(date('d/m/Y', $timestamp), $holidays) or date('N', $timestamp) > 5 ) {
-				$timestamp = $timestamp+24*60*60;
-			}
-			// Trek er weer eentje vanaf indien we in het weekend of op een feestdag toch al 's middags aan het bestellen zijn
-			if ( ( in_array(date('d/m/Y', $from), $holidays) or date('N', $from) > 5 ) and date('G', $from) > 10 ) {
-				$timestamp = $timestamp-24*60*60;
-			}
-			// Voor 11u: D+1, na 11u: D+2
-			$delay = ( date('G', $from) < 11 ) ? 1 : 2;
-			for ($i = 1; $i <= $delay; $i++) {
-				$timestamp = $timestamp+24*60*60;
-				// Tel er een dag bij tot we niet langer in een weekend of op een feestdag zitten
-				while ( in_array(date('d/m/Y', $timestamp), $holidays) or date('N', $timestamp) > 5 ) {
-					$timestamp = $timestamp+24*60*60;
+		write_log($shipping_id);
+		switch ( $shipping_id ) {
+			// Alle instances van winkelafhalingen
+			case stristr( $shipping_id, 'local_pickup' ):
+				$timestamp = $from;
+				write_log(date('d/m/Y', $timestamp));
+				// Zoek de eerstvolgende werkdag na de volgende middagdeadline
+				if ( date('N', $from) < 6 and date('G', $from) < 12 ) {
+					// We zitten nog voor de deadline van een werkdag
+					$timestamp = strtotime("+1 weekday", $from);
+					write_log(date('d/m/Y', $timestamp));
+				} else {
+					// We zitten al na de deadline van een werkdag
+					$timestamp = strtotime("+2 weekdays", $from);
+					write_log(date('d/m/Y', $timestamp));
 				}
-			}
+
+				// Tel feestdagen in de verwerkingsperiode erbij
+				$timestamp = move_date_on_holidays( $from, $timestamp );
+				
+				// NOG CHECKEN OF DE WINKEL NA 12U OPEN IS OP DIE DAG
+				// get_office_hours_for_day() werkt met indexes van 0 tot 6!
+				$hours = get_office_hours_for_day( date('w', $timestamp) );
+				foreach ( $hours as $part ) {
+					$start = intval( substr($part['start'], 0, 2) );
+					$end = intval( substr($part['end'], 0, 2) );
+					if ( $end >= 12 ) {
+						// Neem het openingsuur van dit dagdeel
+						$timestamp = strtotime( date('Y-m-d', $timestamp)." ".$start.":00" );
+					} else {
+						$timestamp = strtotime("+1 weekday", $timestamp);
+						// RECURSIEF MAKEN
+					}
+				}
+
+				break;
+
+			// Alle (gratis/betalende) instances van postpuntlevering en thuislevering
+			default:
+				$timestamp = $from;
+				write_log(date('d/m/Y', $timestamp));
+				// Zoek de eerstvolgende werkdag na de volgende middagdeadline
+				if ( date('N', $from) < 6 and date('G', $from) < 12 ) {
+					// We zitten nog voor de deadline van een werkdag
+					$timestamp = strtotime("+3 weekdays", $from);
+					write_log(date('d/m/Y', $timestamp));
+				} else {
+					// We zitten al na de deadline van een werkdag
+					$timestamp = strtotime("+4 weekdays", $from);
+					write_log(date('d/m/Y', $timestamp));
+				}
+
+				// Tel feestdagen in de verwerkingsperiode erbij
+				$timestamp = move_date_on_holidays( $from, $timestamp );
 		}
 		return $timestamp;
+	}
+
+	// Check of er feestdagen in een bepaalde periode liggen, zo ja tel die dagen bij de einddag
+	// Neemt twee timestamps en antwoordt met de nieuwe timestamp
+	function move_date_on_holidays( $from, $till ) {
+		$first = date( 'Y-m-d', $from );
+		$last = date( 'Y-m-d', $till );
+		
+		// Enkel de feestdagen die niet in het weekend vallen invullen!
+		// IN DIT FORMAAT ZIJN DATUM- EN TEKSTSORTERING EQUIVALENT
+		$holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15' );
+		sort($holidays);
+
+		foreach ( $holidays as $holiday ) {
+			if ( ( $holiday > $first ) and ( $holiday <= $last ) ) {
+				$till = strtotime("+1 weekday", $till);
+				write_log(date('d/m/Y', $till));
+				$last = date('Y-m-d', $till);
+			}
+		}
+
+		return $till;
 	}
 
 	// Verberg het verzendadres ook bij een postpuntlevering
@@ -2021,126 +2072,6 @@
 			$node = 'nl';
 		}
 		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".get_company_name()." &copy; 2016-".date('Y')."</a>";
-	}
-
-	function print_office_hours( $atts = [] ) {
-		// normalize attribute keys, lowercase
-		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
-		// override default attributes with user attributes
-		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
-		$node = $atts['node'];
-		
-		if ( ( $handle = fopen( WP_CONTENT_DIR."/office-hours.csv", "r" ) ) !== false ) {
-			// Loop over alle rijen (indien de datafile geopend kon worden)
-			$headers = fgetcsv( $handle, 0, "\t" );
-			while ( ( $row2 = fgetcsv( $handle, 0, "\t" ) ) !== false ) {
-				$row = array_combine($headers, $row2);
-				if ( $row['entity_id'] == $node ) {
-					if ( intval($row['field_sellpoint_office_hours_day']) === 1 ) {
-						$start = $row['field_sellpoint_office_hours_starthours'];
-						$end = $row['field_sellpoint_office_hours_endhours'];
-						if ( ! isset($monday) ) {
-							$hours .= "<br>Maandag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-							$monday = true;
-						} else {
-							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-						}
-					}
-					if ( intval($row['field_sellpoint_office_hours_day']) === 2 ) {
-						$start = $row['field_sellpoint_office_hours_starthours'];
-						$end = $row['field_sellpoint_office_hours_endhours'];
-						if ( ! isset($tuesday) ) {
-							$hours .= "<br>Dinsdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-							$tuesday = true;
-						} else {
-							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-						}
-					}
-					if ( intval($row['field_sellpoint_office_hours_day']) === 3 ) {
-						$start = $row['field_sellpoint_office_hours_starthours'];
-						$end = $row['field_sellpoint_office_hours_endhours'];
-						if ( ! isset($wednesday) ) {
-							$hours .= "<br>Woensdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-							$wednesday = true;
-						} else {
-							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-						}
-					}
-					if ( intval($row['field_sellpoint_office_hours_day']) === 4 ) {
-						$start = $row['field_sellpoint_office_hours_starthours'];
-						$end = $row['field_sellpoint_office_hours_endhours'];
-						if ( ! isset($thursday) ) {
-							$hours .= "<br>Donderdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-							$thursday = true;
-						} else {
-							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-						}
-					}
-					if ( intval($row['field_sellpoint_office_hours_day']) === 5 ) {
-						$start = $row['field_sellpoint_office_hours_starthours'];
-						$end = $row['field_sellpoint_office_hours_endhours'];
-						if ( ! isset($friday) ) {
-							$hours .= "<br>Vrijdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-							$friday = true;
-						} else {
-							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-						}
-					}
-					if ( intval($row['field_sellpoint_office_hours_day']) === 6 ) {
-						$start = $row['field_sellpoint_office_hours_starthours'];
-						$end = $row['field_sellpoint_office_hours_endhours'];
-						if ( ! isset($saturday) ) {
-							$hours .= "<br>Zaterdag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-							$saturday = true;
-						} else {
-							$hours .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-						}
-					}
-					// OMDAT DE NUL ALS EERSTE STAAT IN ONZE HUIDIGE TEKSTFILE MOETEN WE EEN TRUCJE DOEN OM DEZE DAG ACHTERAAN TE ZETTEN
-					if ( intval($row['field_sellpoint_office_hours_day']) === 0 ) {
-						$start = $row['field_sellpoint_office_hours_starthours'];
-						$end = $row['field_sellpoint_office_hours_endhours'];
-						if ( ! isset($sunday) ) {
-							$hours_sunday = "<br>Zondag: ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-							$sunday = true;
-						} else {
-							$hours_sunday .= " en ".substr($start, 0, -2).":".substr($start, -2)." - ".substr($end, 0, -2).":".substr($end, -2);
-						}
-					}
-				}
-			}
-			$hours .= $hours_sunday;
-			// Knip de eerste <br> er weer af!
-			$hours = substr($hours, 4);
-		}
-		fclose($handle);
-
-		// PROBLEEM: Hierna moeten we XIO_FTP handmatig ingeven (kan niet als parameter met gewone ssh!)
-		// $msg = shell_exec( "ssh -p 51234 -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 60 >> logfile" );
-		
-		// DIT WERKT VIA COMMANDLINE IN ANTAGONIST
-		// $msg = shell_exec( "mysql -u oxfam_ro -p ".XIO_MYSQL." -h 127.0.0.1 oxfamDb -P 3307" );  
-
-		// MAAR DIT IS DE PHP-FUNCTIE DIE WE UITEINDELIJK WILLEN GEBRUIKEN
-		// $mysqli = new mysqli( '127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3307 );
-		// if ( $mysqli->connect_errno ) {
-		//     $msg = "Failed to connect to MySQL: ".$mysqli->connect_error;
-		// } else {
-		// 	$msg = $mysqli->host_info;
-		// }
-
-		// WERKT ENKEL INDIEN SSH2-MODULE ENABLED IN SETTINGS PHP (ANTAGONIST = OK, COMBELL NIET)
-		// $connection = ssh2_connect('web4.xio.be', 51234);
-		// if ( ssh2_auth_password($connection, 'oxfam_ro', XIO_FTP) ) {
-		// 	$msg .= "Verbinding met OWW-site mislukt";
-		// } else {
-		// 	$tunnel = ssh2_tunnel($connection, '127.0.0.1', 3307);
-		// 	// shell_exec("ssh -f -L 3307:127.0.0.1:3306 oxfam_ro@web4.xio.be sleep 600 >> logfile");
-		// 	$mysqli = mysqli_connect('127.0.0.1', 'oxfam_ro', XIO_MYSQL, 'oxfamDb', 3307);
-		// 	$msg .= "op te halen uit OWW-site (node ".$node.")";
-		// }
-
-		return $hours;
 	}
 
 	function set_flemish_zip_codes() {
