@@ -82,9 +82,9 @@
 	// Verstop enkele hardnekkige adminlinks voor de lokale shopmanagers
 	// Let wel: toegangrechten voor WP All Export versoepeld door rol aan te passen in wp-all-export-pro.php!
 	// VOORLOPIG ALLEMAAL VIA USER ROLE EDITOR
-	// add_action( 'admin_menu', 'my_remove_menu_pages', 100, 0 );
+	// add_action( 'admin_menu', 'hide_menus_from_plebs', 100, 0 );
 
-	function my_remove_menu_pages() {
+	function hide_menus_from_plebs() {
 		if ( ! current_user_can( 'update_core' ) ) {
 			remove_menu_page( 'vc-welcome' );
 			remove_menu_page( 'order_delivery_date_lite' );
@@ -92,6 +92,15 @@
 			remove_submenu_page( 'woocommerce', 'wc-status' );
 			remove_submenu_page( 'woocommerce', 'wc-addons' );
 		}
+	}
+
+	// Andere filter nodig voor hardnekkige Jetpack
+	add_action( 'jetpack_admin_menu', 'hide_jetpack_from_others' );
+	
+	function hide_jetpack_from_others() {
+    	if ( ! current_user_can( 'update_core' ) ) {
+    		remove_menu_page( 'jetpack' );
+    	}
 	}
 
 	// Haal de hardnekkige pagina's niet enkel uit het menu, maak ze ook effectief ontoegankelijk
@@ -458,18 +467,18 @@
 
 	function format_tax( $value ) {
 		$value = str_replace( 'BE', '', $value );
-		$value = preg_replace( '/[\s\-\.\/\\]/', '', $value );
+		$value = preg_replace( '/[\s\-\.\/]/', '', $value );
 		if ( mb_strlen($value) === 10 ) {
-			return 'BE '.substr( $value, 0, 4 )." ".substr( $value, 4, 4 )." ".substr( $value, 8, 4 )." ".substr( $value, 12, 4 );
+			return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
 		} else {
-			return 'BE 0'.substr( $value, 0, 3 )." ".substr( $value, 3, 4 )." ".substr( $value, 7, 4 )." ".substr( $value, 11, 4 );
+			return 'BE 0'.substr( $value, 0, 3 ).".".substr( $value, 3, 3 ).".".substr( $value, 6, 3 );
 		}
 	}
 
 	function format_account( $value ) {
 		$value = str_replace( 'BE', '', $value );
 		$value = str_replace( 'IBAN', '', $value );
-		$value = preg_replace( '/[\s\-\.\/\\]/', '', $value );
+		$value = preg_replace( '/[\s\-\.\/]/', '', $value );
 		if ( mb_strlen($value) === 14 ) {
 			return 'BE'.substr( $value, 0, 2 )." ".substr( $value, 2, 4 )." ".substr( $value, 6, 4 )." ".substr( $value, 10, 4 );
 		} else {
@@ -491,7 +500,7 @@
 	
 	function format_telephone( $value ) {
 		// Wis alle spaties, leestekens en landcodes
-		$temp_tel = preg_replace( '/[\s\-\.\/\\]/', '', $value );
+		$temp_tel = preg_replace( '/[\s\-\.\/]/', '', $value );
 		$temp_tel = str_replace( '+32', '0', $temp_tel );
 		$temp_tel = preg_replace( '/(^|\s)0032/', '0', $temp_tel );
 		
@@ -1734,8 +1743,8 @@
 		// remove_meta_box( 'woocommerce_dashboard_status', 'dashboard', 'normal' );
 		remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
 		remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
-		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item' );
-		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item-network' );
+		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item', 'side' );
+		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item-network', 'side' );
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
 	}
 
@@ -1747,7 +1756,7 @@
 		return $args;
 	};
 
-	function getLatestNewsletters() {
+	function get_latest_newsletters() {
 		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
 		$list_id = '5cce3040aa';
 		$folder_id = 'bbc1d65c43';
@@ -1775,7 +1784,7 @@
 		return $mailings;
 	}
 
-	function getMailChimpStatus() {
+	function get_mailchimp_status() {
 		$cur_user = wp_get_current_user();
 		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
 		$list_id = '5cce3040aa';
@@ -1795,23 +1804,21 @@
 			$body = json_decode($response['body']);
 
 			if ( $body->status === "subscribed" ) {
-				$msg .= "is ".$status." geabonneerd op het digizine. ".$actie;
+				$msg .= "al geabonneerd op het Digizine. Aan het begin van elke maand sturen we je een (h)eerlijke mail boordevol fairtradenieuws (Even checken of je dit al nagelezen hebt, Griet!)";
 			} else {
-				$msg .= "is niet langer geabonneerd op het digizine. <a href='http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$cur_user->user_firstname."&LNAME=".$cur_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>Vul het formulier in</a> om je weer te abonneren.";
+				$msg .= "helaas niet langer geabonneerd op het Digizine. <a href='http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$cur_user->user_firstname."&LNAME=".$cur_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>Vul het formulier in</a> om je weer te abonneren.";
 			}
 		} else {
-			$msg .= "was nog nooit ingeschreven op het digzine. <a href='http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$cur_user->user_firstname."&LNAME=".$cur_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>Vul het formulier in</a> om je te abonneren.";
+			$msg .= "nog nooit geabonneerd geweest op het Digzine. <a href='http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$cur_user->user_firstname."&LNAME=".$cur_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>Vul het formulier in</a> om je te abonneren.";
 		}
 
-		return "<p>Het e-mailadres van de accounteigenaar (<a href='mailto:".$email."' target='_blank'>".$email."</a>) ".$msg."</p>";
+		return "<p>Je bent met het e-mailadres <a href='mailto:".$email."' target='_blank'>".$email."</a> ".$msg."</p>";
 	}
 
 
 	##############
 	# SHORTCODES #
 	##############
-
-	add_filter( 'widget_text','do_shortcode' );
 
 	// Personaliseer de begroeting op de startpagina
 	add_shortcode ( 'topbar', 'print_welcome' );

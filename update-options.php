@@ -35,7 +35,7 @@
 
 						if ( count($lacking) > 0 ) {
 							echo "<tr>";
-								echo "<th class='left' style='color: red;'>Activeer dringend deze verplichte betaalmethodes:</th>";
+								echo "<th class='left' style='color: red;'>Activeer dringend volgende verplichte betaalmethodes:</th>";
 								echo "<td class='right'>";
 									foreach ( $lacking as $service ) {
 										echo strtoupper($service)."&nbsp;&nbsp;&nbsp;";
@@ -62,7 +62,7 @@
 					// echo "<pre>".var_export($accounts, true)."</pre>";
 					if ( $accounts->resultcode == '10' ) {
 						if ( get_oxfam_shop_data( 'account' ) != $accounts->bankaccount->account_iban ) {
-							$account_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander rekeningnummer geregistreerd!</small>";
+							$account_warning = "<br><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geregistreerd!</small>";
 						}
 					}
 					
@@ -103,7 +103,7 @@
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database!-->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: <?php echo $tax_warning; ?><br><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">Kloppen onze gegevens in de KBO-databank nog?</a></small></label>
+					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: <?php if ( isset($tax_warning) ) echo $tax_warning; ?><br><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">Kloppen jullie gegevens in de KBO-databank nog?</a></small></label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_tax" class="text-input" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>" readonly>
@@ -111,7 +111,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_account" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">IBAN-rekeningnummer: <?php echo $account_warning; ?></label>
+					<label for="oxfam_account" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">IBAN-rekeningnummer: <?php if ( isset($account_warning) ) echo $account_warning; ?></label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_account" class="text-input" value="<?php echo get_oxfam_shop_data( 'account' ); ?>" readonly>
@@ -119,7 +119,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_company" title="Dit is ook de titel van deze subsite en kan enkel door Frederik gewijzigd worden.">Bedrijfsnaam: <?php echo $name_warning; ?></label>
+					<label for="oxfam_company" title="Dit is ook de titel van deze subsite en kan enkel door Frederik gewijzigd worden.">Bedrijfsnaam: <?php if ( isset($name_warning) ) echo $name_warning; ?></label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_company" class="text-input" value="<?php echo get_company_name(); ?>" readonly>
@@ -151,7 +151,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_city" title="Zie je een fout staan? Werk je telefoonnummer bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Telefoonnummer: <?php echo $phone_warning; ?></label>
+					<label for="oxfam_city" title="Zie je een fout staan? Werk je telefoonnummer bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Telefoonnummer: <?php if ( isset($phone_warning) ) echo $phone_warning; ?></label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_telephone" class="text-input" value="<?php echo get_oxfam_shop_data( 'telephone' ); ?>" readonly>
@@ -159,7 +159,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_email" title="Deze Office 365-mailbox wordt ingesteld als het algemene contactadres van deze subsite en is initieel ook ekoppeld aan de lokale beheeraccount. Opgelet: via de profielpagina kun je deze hoofdgebruiker aan een andere mailbox linken (of schakelen we dat uit? niet handig indien we voor meerdere lokale beheerders opteren!) maar het contactadres naar klanten blijft altijd dit e-mailadres!">E-mailadres: <?php echo $mail_warning; ?></label>
+					<label for="oxfam_email" title="Deze Office 365-mailbox wordt ingesteld als het algemene contactadres van deze subsite en is initieel ook ekoppeld aan de lokale beheeraccount. Opgelet: via de profielpagina kun je deze hoofdgebruiker aan een andere mailbox linken (of schakelen we dat uit? niet handig indien we voor meerdere lokale beheerders opteren!) maar het contactadres naar klanten blijft altijd dit e-mailadres!">E-mailadres: <?php if ( isset($mail_warning) ) echo $mail_warning; ?></label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_email" class="text-input" value="<?php echo get_company_email(); ?>" readonly>
