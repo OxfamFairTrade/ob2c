@@ -766,11 +766,10 @@
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 				
-				// ONDERSTEUNING VOOR ALTERNATIEVE NODES TOEVOEGEN
-				$hours = get_office_hours();
+				// ONDERSTEUNING VOOR ALTERNATIEVE WINKELNODES NOG TOEVOEGEN
 				
 				// Check of de winkel op deze dag effectief nog geopend is na 12u
-				$timestamp = find_first_opening_hour( $hours, $timestamp );
+				$timestamp = find_first_opening_hour( get_office_hours(), $timestamp );
 
 				break;
 
@@ -780,7 +779,7 @@
 				$timestamp = get_first_working_day( $from );
 
 				// Geef nog twee extra werkdagen voor de thuislevering
-				$timestamp = strtotime("+2 weekdays", $from);
+				$timestamp = strtotime("+2 weekdays", $timestamp);
 
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
@@ -795,7 +794,7 @@
 			// Geen actie nodig
 		} else {
 			// We zitten al na de deadline van een werkdag, begin pas vanaf morgen te tellen
-			$from = strtotime("+1 weekday", $from));
+			$from = strtotime("+1 weekday", $from);
 		}
 
 		// Bepaal de eerstvolgende werkdag
@@ -2006,9 +2005,9 @@
 	}
 
 
-	##############
-	# SHORTCODES #
-	##############
+	####################
+	# HELPER FUNCTIONS #
+	####################
 
 	// Personaliseer de begroeting op de startpagina
 	add_shortcode ( 'topbar', 'print_welcome' );
@@ -2059,6 +2058,11 @@
 
 	function get_company_name() {
 		return get_bloginfo( 'name' );
+	}
+
+	function get_main_shop_node() {
+		$list = get_option( 'oxfam_shop_nodes' );
+		return $list[0];
 	}
 
 	function get_company_email() {

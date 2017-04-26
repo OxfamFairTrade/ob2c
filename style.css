@@ -127,6 +127,16 @@ li.product.product_shipping_class-wijnDISABLE:hover::after {
 	content: "Enkel thuisgeleverd per zes";
 }
 
+/* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
+tr.shipping .woocommerce-Price-amount {
+	float: right;
+}
+
+/* Plaats de belastingen op een nieuwe regel bij het afrekenoverzicht */
+.woocommerce-checkout-review-order small.includes_tax {
+	display: block;
+}
+
 /* Verberg overtollige info */
 .nm-coupon-wrap,
 .nm-single-product-menu,
