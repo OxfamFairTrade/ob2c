@@ -50,7 +50,7 @@
 						if ( get_company_name() != trim_and_uppercase($profiles->items->profile->name) ) {
 							$name_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
-						if ( get_oxfam_shop_data( 'telephone' ) != format_telephone($profiles->items->profile->phone) ) {
+						if ( get_oxfam_shop_data( 'telephone' ) != format_telephone( $profiles->items->profile->phone, '.' ) ) {
 							$phone_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
 						}
 						if ( get_company_email() != $profiles->items->profile->email ) {

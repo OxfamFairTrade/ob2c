@@ -657,7 +657,7 @@
 		global $user_ID;
 		$descr .= '<small>';
 		
-		// $timestamp = estimateDelivery( $user_ID, $method->id );
+		// $timestamp = estimate_delivery( $user_ID, $method->id );
 		$timestamp = strtotime('+4 days');
 		
 		switch ( $method->id ) {
@@ -685,6 +685,103 @@
 		}
 		$descr .= '</small>';
 		return $label.'<br>'.$descr;
+	}
+
+	// Haal de openingsuren  voor een bepaalde dag op (by default van de standaard oxfam_shop_node)
+	function get_office_hours_for_day( $day, $node = get_site_option( 'oxfam_shop_node' ) ) {
+		global $wpdb;
+		$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.get_option( 'oxfam_shop_node' ).' AND field_sellpoint_office_hours_day = '.$day );
+		if ( count($rows) > 0 ) {
+			foreach ( $rows as $row ) {
+				$hours[]['start'] = format_hour( $row->field_sellpoint_office_hours_starthours );
+				$hours[]['end'] = format_hour( $row->field_sellpoint_office_hours_endhours );
+			}
+		} else {
+			$hours = "UNKNOWN";
+		}
+		// OMDAT DE NUL ALS EERSTE STAAT IN ONZE HUIDIGE TEKSTFILE MOETEN WE EEN TRUCJE DOEN OM DEZE DAG ACHTERAAN TE ZETTEN
+		return $hours;
+	}
+
+	// Stop de openingsuren in een logische array (by default van de standaard oxfam_shop_node)
+	function get_office_hours( $node = get_site_option( 'oxfam_shop_node' ) ) {
+		for ( $day = 1; $day < 8; $day++ ) {
+			$hours[$day] = get_office_hours_for_day( $day, $node );
+		}
+		return $hours;
+	}
+
+	// Print de openingsuren in een logische array (by default van de standaard oxfam_shop_node)
+	function new_print_office_hours( $node = get_site_option( 'oxfam_shop_node' ) ) {
+		$days = get_office_hours( $node );
+		write_log($days);
+		foreach ( $days as $day => $hours ) {
+			if ( $day === 1 ) {
+				if ( ! isset( $monday ) ) {
+					$list .= "<br>Maandag: " . substr( $hours[0]['start'], 0, -2 ) . ":" . substr( $hours[0]['start'], -2) . " - " . substr( $hours[0]['end'], 0, -2 ) . ":" . substr( $hours[0]['end'], -2 );
+					$monday = true;
+				} else {
+					$list .= " en " . substr( $hours[1]['start'], 0, -2 ) . ":" . substr( $hours[1]['start'], -2) . " - " . substr( $hours[1]['end'], 0, -2 ) . ":" . substr( $hours[1]['end'], -2 );
+				}
+			}
+		}
+		return $list;
+	}
+
+	// Bereken de eerst mogelijke leverdatum voor de opgegeven user en verzendmethode (retourneert een timestamp) 
+	function estimate_delivery( $customer_id, $shipping_id, $order_date = false ) {
+		$deadline = get_office_hours();
+		
+		// We gebruiken het geregistreerde besteltijdstip OF het live tijdstip voor schattingen van de leverdatum
+		$from = $order_date ? strtotime($order_date) : time();
+		
+		// Enkel de feestdagen die niet in het weekend vallen zijn noodzakelijk!
+		$holidays = array( '01/05/2017', '25/05/2017', '05/06/2017', '21/07/2017', '15/08/2017', '01/05/2018', '24/05/2018' );
+		
+		if ( $shipping_id === 'free_shipping:1' ) {
+			// Indien geen routecode beschikbaar is, verschijnt deze verzendmethode niet
+			$routecode = intval(get_user_meta($customer_id, 'shipping_state', true));
+			// Bepaal de routedag in de Engelse tekst
+			$weekday = date('l', strtotime("Sunday +".$routecode." days", $from));
+
+			// Verschuif de WOBAL-leveringen met een week door de datum pas vanaf 9 januari te berekenen (voor alle bestellingen, dus ook de oude!)
+			// $from = strtotime("9 January 2017");
+
+			// Zoek de eerstvolgende routedag na de volgende deadline om 11u van deze routecode
+			if ( date('l', $from) == $deadline[$routecode-1] and date('G', $from) < 11 ) {
+				// Correctie voor bestellingen op de dag van de deadline zelf
+				$timestamp = strtotime("next ".$weekday, $from);
+			} else {
+				$timestamp = strtotime("next ".$weekday, strtotime("next ".$deadline[$routecode-1], $from)+11*60*60);
+			}
+
+			// Tel er twaalf uur bij om zeker te zijn dat we door tijdzoneverschillen niet op de vorige dag belanden in de Excel
+			$timestamp = $timestamp+12*60*60;
+			// Indien na 11u: check of de eerstvolgende werkdag (waarop normaal de verwerking gebeurt) een feestdag is, zo ja tel er sowieso een dagje bij
+			// if ( date('G', $from) > 10 and in_array(date('d/m/Y', strtotime('+1 weekday', $from)+12*60*60), $holidays) ) $delay++;
+		} else {
+			// Verschuif de afhalingen en expresleveringen naar woensdag door de leverdatum pas vanaf 10 januari te berekenen
+			// $from = strtotime("10 January 2017");
+
+			$timestamp = $from;
+			while ( in_array(date('d/m/Y', $timestamp), $holidays) or date('N', $timestamp) > 5 ) {
+				$timestamp = $timestamp+24*60*60;
+			}
+			// Trek er weer eentje vanaf indien we in het weekend of op een feestdag toch al 's middags aan het bestellen zijn
+			if ( ( in_array(date('d/m/Y', $from), $holidays) or date('N', $from) > 5 ) and date('G', $from) > 10 ) {
+				$timestamp = $timestamp-24*60*60;
+			}
+			// Voor 11u: D+1, na 11u: D+2
+			$delay = ( date('G', $from) < 11 ) ? 1 : 2;
+			for ($i = 1; $i <= $delay; $i++) {
+				$timestamp = $timestamp+24*60*60;
+				// Tel er een dag bij tot we niet langer in een weekend of op een feestdag zitten
+				while ( in_array(date('d/m/Y', $timestamp), $holidays) or date('N', $timestamp) > 5 ) {
+					$timestamp = $timestamp+24*60*60;
+				}
+			}
+		}
+		return $timestamp;
 	}
 
 	// Verberg het verzendadres ook bij een postpuntlevering
@@ -1863,11 +1960,10 @@
 						break;
 					case 'telephone':
 						// Geef alternatieve delimiter mee
-						return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'}, '.' );
+						return call_user_func( 'format_telephone', $row->field_sellpoint_telephone_value, '.' );
 						break;
 					default:
 						return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
-						break;
 				}
 			} else {
 				return "UNKNOWN";
