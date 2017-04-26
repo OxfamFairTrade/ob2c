@@ -11,31 +11,31 @@
 	defined( 'ABSPATH' ) or die( 'Rechtstreekse toegang verboden!' );
 
 	class Custom_My_Account_Endpoint {
-		public $endpoint;
+		public static $endpoint;
 
-		public function __construct( $endpoint ) {
-			$this->endpoint = $endpoint;
+		public function __construct( $param ) {
+			self::$endpoint = $param;
 			add_action( 'init', array( $this, 'add_endpoints' ) );
 			add_filter( 'query_vars', array( $this, 'add_query_vars' ), 0 );
 			add_filter( 'the_title', array( $this, 'endpoint_title' ) );
 			add_filter( 'woocommerce_account_menu_items', array( $this, 'new_menu_items' ) );
-			add_action( 'woocommerce_account_'.$this->endpoint.'_endpoint', array( $this, 'endpoint_content' ) );
+			add_action( 'woocommerce_account_'.self::$endpoint.'_endpoint', array( $this, 'endpoint_content' ) );
 		}
 
 		public function add_endpoints() {
-			add_rewrite_endpoint( $this->endpoint, EP_ROOT | EP_PAGES );
+			add_rewrite_endpoint( self::$endpoint, EP_ROOT | EP_PAGES );
 		}
 
 		public function add_query_vars( $vars ) {
-			$vars[] = $this->endpoint;
+			$vars[] = self::$endpoint;
 			return $vars;
 		}
 
 		public function endpoint_title( $title ) {
 			global $wp_query;
-			$is_endpoint = isset( $wp_query->query_vars[$this->endpoint] );
+			$is_endpoint = isset( $wp_query->query_vars[self::$endpoint] );
 			if ( $is_endpoint && ! is_admin() && is_main_query() && in_the_loop() && is_account_page() ) {
-				if ( $this->endpoint === 'nieuwsbrief' ) {
+				if ( self::$endpoint === 'nieuwsbrief' ) {
 					$title = 'Beheer je abonnement op ons Digizine';
 				} else {
 					$title = 'Ook deze site is future proof!';
@@ -57,7 +57,7 @@
 		}
 
 		public function endpoint_content() {
-			if ( $this->endpoint === 'nieuwsbrief' ) {
+			if ( self::$endpoint === 'nieuwsbrief' ) {
 				echo get_latest_newsletters();
 				echo get_mailchimp_status();
 			} else {
@@ -66,7 +66,7 @@
 		}
 
 		public static function install() {
-			add_rewrite_endpoint( $this->endpoint, EP_ROOT | EP_PAGES );
+			add_rewrite_endpoint( self::$endpoint, EP_ROOT | EP_PAGES );
 			flush_rewrite_rules();
 		}
 	}
