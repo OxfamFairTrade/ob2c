@@ -145,16 +145,25 @@
 
 	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
 		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
-		$watched_metas = array( 'price', '_stock_status', '_tax_class', '_length', '_width', '_height', '_weight', '_thumbnail_id', '_force_sell_synced_ids' );
+		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_length', '_width', '_height', '_weight', '_thumbnail_id', '_force_sell_synced_ids' );
 		// Check of er een belangwekkende wijzing was
 		foreach ( $watched_metas as $meta_key ) {
 			// Vergelijk nieuwe waarde met de actuele
 			$old_meta_value = get_post_meta( $post_id, $meta_key, true );
 			
-			if ( strcmp( $new_meta_value, $old_meta_value ) !== 0 ) {
-				// Schrijf weg in voorraadlog per weeknummer (zonder leading zero's) 
-				$str = date( 'd/m/Y H:i:s' ) . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
-			    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+			// Check welk type variabele het is
+			if ( is_array( $new_meta_value ) ) {
+				if ( count( array_diff( $new_meta_value, $old_meta_value ) ) > 0 ) {
+					// Schrijf weg in log per weeknummer (zonder leading zero's) 
+					$str = date( 'd/m/Y H:i:s' ) . "\t" . serialize($new_meta_value) . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+				    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+				}
+			} else {
+				if ( strcmp( $new_meta_value, $old_meta_value ) !== 0 ) {
+					// Schrijf weg in log per weeknummer (zonder leading zero's) 
+					$str = date( 'd/m/Y H:i:s' ) . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+				    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+				}
 			}
 		}
 		// Zet de normale postmeta-functie verder
