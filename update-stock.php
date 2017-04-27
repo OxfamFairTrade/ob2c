@@ -1,7 +1,7 @@
 <div class="wrap">
 	<h1>Voorraadbeheer van lokale producten</h1>
 
-	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Een bevestigingsvenster behoedt je voor onbedoelde wijzigingen.</p>
+	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Een bevestigingsvenster behoedt je voor onbedoelde wijzigingen. Later wordt het misschien mogelijk om voorraadlijsten in te lezen.</p>
 
 	<p>Nieuwe producten, die in de loop van de twee voorbije maanden beschikbaar werden op <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a>, hebben een blauwe achtergrond. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden.</p>
 
