@@ -775,7 +775,7 @@
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 				
-				// ONDERSTEUNING VOOR ALTERNATIEVE WINKELNODES NOG TOEVOEGEN
+				// + ONDERSTEUNING VOOR ALTERNATIEVE WINKELNODES TOEVOEGEN
 				
 				// Check of de winkel op deze dag effectief nog geopend is na 12u
 				$timestamp = find_first_opening_hour( get_office_hours(), $timestamp );
@@ -822,15 +822,16 @@
 		} else {
 			$first = date( 'Y-m-d', $from );
 		}
+		// In dit formaat zijn datum- en tekstsortering equivalent!
 		$last = date( 'Y-m-d', $till );
-		
-		// Enkel de feestdagen die niet in het weekend vallen invullen!
-		// IN DIT FORMAAT ZIJN DATUM- EN TEKSTSORTERING EQUIVALENT
-		$holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15' );
-		sort($holidays);
 
+		// Vang het niet bestaan van de optie op
+		$holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-02' );
+		$holidays = get_option( 'oxfam_holidays', $holidays );
+		
 		foreach ( $holidays as $holiday ) {
-			if ( ( $holiday > $first ) and ( $holiday <= $last ) ) {
+			// Enkel de feestdagen die niet in het weekend moeten we in beschouwing nemen!
+			if ( date('N', strtotime($holiday)) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				$till = strtotime("+1 weekday", $till);
 				write_log(date('d/m/Y H:i', $till));
 				$last = date('Y-m-d', $till);
@@ -878,7 +879,9 @@
 		return $timestamp;
 	}
 
-	// Verberg het verzendadres ook bij een postpuntlevering
+	// Handig filtertje om verzendcalculator uit te schakelen in shops met enkel afhaling: woocommerce_cart_ready_to_calc_shipping
+
+	// Verberg het verzendadres ook bij een postpuntlevering EENMAAL EEN ORDER GEPLAATST IS
 	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_service_point', 10, 2 ); 
 	
 	function hide_shipping_address_on_service_point( $array, $instance ) {
@@ -887,11 +890,13 @@
 	};
 
 	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat
-	// add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
+	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
 	
 	function skip_shipping_address_on_local_pickup( $needs_shipping_address ) {
-		// Hoe kunnen we hier de geselecteerde shipping_method in WC_Cart vinden?
-		if ( 1 == 1 ) {
+		$chosen_methods = WC()->session->get('chosen_shipping_methods');
+		write_log("CHECK OF WE HET VERZENDADRES MOETEN OPSLAAN TIJDENS HET AFREKENEN");
+		write_log($chosen_methods);
+		if ( strpos( $chosen_methods[0], 'local_pickup' ) !== false ) {
 			$needs_shipping_address = false;
 		}
 		return $needs_shipping_address;
@@ -1067,19 +1072,38 @@
 	// Voeg optievelden toe
 	add_action( 'admin_init', 'register_oxfam_settings' );
 
+	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
-		// Zie https://developer.wordpress.org/reference/functions/register_setting/ voor meer
-		register_setting( 'oxfam-option-group', 'oxfam_shop_node', 'absint' );
-		register_setting( 'oxfam-option-group', 'oxfam_mollie_partner_id', 'absint' );
+		register_setting( 'oxfam-options', 'oxfam_shop_node', 'absint' );
+		register_setting( 'oxfam-options', 'oxfam_mollie_partner_id', 'absint' );
 		// Probleem: wordt niet geserialiseerd opgeslagen in database
-		// register_setting( 'oxfam-option-group', 'oxfam_zip_codes', 'array' );
-		add_settings_field( 'oxfam_mollie_partner_id', 'Partner-ID bij Mollie', 'oxfam_setting_callback_function', 'options-oxfam', 'default', array( 'label_for' => 'oxfam_mollie_partner_id' ) );
+		register_setting( 'oxfam-options', 'oxfam_zip_codes', 'comma_string_to_array' );
+		register_setting( 'oxfam-options', 'oxfam_holidays', 'comma_string_to_array' );
+		// add_settings_field( 'oxfam_mollie_partner_id', 'Partner-ID bij Mollie', 'oxfam_mollie_partner_id_callback', 'oxfam-options', 'oxfam-payment', array( 'value' => get_option('oxfam_mollie_partner_id'), 'label_for' => 'oxfam_mollie_partner_id' ) );
+		// add_settings_section( 'oxfam-payment', 'Betalingen', 'section_payment_intro', 'oxfam-options' );
 	}
 
-	function oxfam_setting_callback_function( $arg ) {
-		echo '<p>id: ' . $arg['id'] . '</p>';
-		echo '<p>title: ' . $arg['title'] . '</p>';
-		echo '<p>callback: ' . $arg['callback'] . '</p>';
+	function oxfam_mollie_partner_id_callback( $args ) {
+		echo '<input type="text" name="oxfam_mollie_partner_id" id="oxfam_mollie_partner_id" class="text-input" value="'.$args['value'].'">';
+	}
+
+	function section_payment_intro() {
+		echo '';
+	}
+
+	function comma_string_to_array( $values ) {
+		$values = preg_replace( "/\s/", "", $values );
+		$array = preg_split( "/(,|;|&)/", $values );
+		foreach ( $array as $key => $value ) {
+			if ( strlen( $value ) === 0 ) {
+				unset($array[$key]);
+			} else {
+				$array[$key] = preg_replace( "/\//", "-", $value );
+			}
+		}
+		sort($array);
+		// + DATUMS UIT HET VERLEDEN VERWIJDEREN
+		return $array;
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties

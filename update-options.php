@@ -4,9 +4,9 @@
 	<form method="post" action="options.php">
 		<table class="form-table" id="oxfam-options">
 			<?php
-				settings_fields( 'oxfam-option-group' );
-				do_settings_sections( 'oxfam-option-group' );
-
+				settings_fields( 'oxfam-options' );
+				// do_settings_sections( 'oxfam-options' );
+				
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 				$partner_id_customer = get_option( 'oxfam_mollie_partner_id' );
@@ -65,14 +65,15 @@
 							$account_warning = "<br><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geregistreerd!</small>";
 						}
 					}
-					
-					if ( does_sendcloud_delivery() ) {
-						echo "<tr>";
-							echo "<th class='left'><a href='https://panel.sendcloud.sc/' target='_blank'>Log in op je SendCloud-verzendaccount &raquo;</a></th>";
-							echo "<td class='right'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td>";
-						echo "</tr>";
-					}
 				}
+				if ( does_sendcloud_delivery() ) {
+					echo "<tr>";
+						echo "<th class='left'><a href='https://panel.sendcloud.sc/' target='_blank'>Log in op je SendCloud-verzendaccount &raquo;</a></th>";
+						echo "<td class='right'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td>";
+					echo "</tr>";
+				}
+
+				$holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-02' );
 			?>
 
 			<tr valign="top">
@@ -96,7 +97,15 @@
 					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering:</label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_zip_codes" class="text-input" value="<?php echo implode ( ", ", get_option('oxfam_zip_codes') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<textarea name="oxfam_zip_codes" rows="2" class="text-input" placeholder="8400, 8450, 9000" <?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>><?php echo implode ( ', ', get_option('oxfam_zip_codes') ); ?></textarea>
+		  		</td>
+			</tr>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien verschijnt bovenaan een rode banner zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:</label>
+				</th>
+		  		<td class="right">
+		  			<textarea name="oxfam_holidays" rows="2" class="text-input" placeholder="2017-12-25"><?php echo implode ( ', ', get_option( 'oxfam_holidays', $holidays ) ); ?></textarea>
 		  		</td>
 			</tr>
 
