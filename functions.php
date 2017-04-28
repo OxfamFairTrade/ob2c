@@ -2,6 +2,9 @@
 
 	require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
 	
+	// Beheer alle wettelijke feestdagen uit de testperiode centraal
+	$default_holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-02' );
+	
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
 	$content_width = 2000;
 
@@ -816,6 +819,8 @@
 	// Check of er feestdagen in een bepaalde periode liggen, en zo ja: tel die dagen bij de einddag
 	// Neemt een begin- en eindpunt en retourneert het nieuwe eindpunt (allemaal in timestamps)
 	function move_date_on_holidays( $from, $till ) {
+		global $default_holidays;
+
 		// Check of de startdag ook nog in beschouwing genomen moet worden
 		if ( date('N', $from) < 6 and date('G', $from) >= 12 ) {
 			$first = date( 'Y-m-d', strtotime("+1 weekday", $from) );
@@ -826,8 +831,7 @@
 		$last = date( 'Y-m-d', $till );
 
 		// Vang het niet bestaan van de optie op
-		$holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-02' );
-		$holidays = get_option( 'oxfam_holidays', $holidays );
+		$holidays = get_option( 'oxfam_holidays', $default_holidays );
 		
 		foreach ( $holidays as $holiday ) {
 			// Enkel de feestdagen die niet in het weekend moeten we in beschouwing nemen!

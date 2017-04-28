@@ -4,6 +4,8 @@
 	<form method="post" action="options.php">
 		<table class="form-table" id="oxfam-options">
 			<?php
+				global $default_holidays;
+
 				// Best een strikter onderscheid maken tussen opties die nationaal of lokaal beheerd worden!
 				settings_fields( 'oxfam-options' );
 				// Semi-automatisch formatteren van de instellingen, niet interessant voor ons
@@ -74,12 +76,6 @@
 						echo "<td class='right'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td>";
 					echo "</tr>";
 				}
-
-				$holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-02' );
-
-				if ( current_user_can( 'manage_options' ) ) {
-					echo "<tr><td>".submit_button()."</td></tr>";
-				}
 			?>
 
 			<tr valign="top">
@@ -100,7 +96,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering:<small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden!</small></label>
+					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering:<br><small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden!</small></label>
 				</th>
 		  		<td class="right">
 		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="8400, 8450, 9000" <?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>><?php echo implode ( ', ', get_option('oxfam_zip_codes') ); ?></textarea>
@@ -108,10 +104,10 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien verschijnt bovenaan een rode banner zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:<small>Geef alle datums in volgens het formaat YYYY-MM-DD en scheid ze met een komma!</small></label>
+					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien verschijnt bovenaan een rode banner zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:<br><small>Geef alle datums in volgens het formaat YYYY-MM-DD en scheid ze met een komma!</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="2017-12-25"><?php echo implode ( ', ', get_option( 'oxfam_holidays', $holidays ) ); ?></textarea>
+		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="2017-12-25"><?php echo implode ( ', ', get_option( 'oxfam_holidays', $default_holidays ) ); ?></textarea>
 		  		</td>
 			</tr>
 
