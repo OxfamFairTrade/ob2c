@@ -82,7 +82,7 @@
 				}
 
 				if ( current_user_can( 'manage_options' ) ) {
-					echo "<tr><td>";
+					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
 				}
@@ -109,7 +109,7 @@
 					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering:<br><small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="8400, 8450, 9000" <?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode ( ', ', get_option('oxfam_zip_codes') ) ); ?></textarea>
+		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo get_oxfam_shop_data( 'zip' ); ?>" <?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode ( ', ', get_option('oxfam_zip_codes') ) ); ?></textarea>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -117,7 +117,7 @@
 					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op de contactpagina een rode banner verschijnen zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:<br><small>Typ alle datums waarop de webshop 'gesloten' is in het formaat YYYY-MM-DD en scheid ze met een komma.</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="2017-12-25"><?php echo esc_textarea( implode ( ', ', get_option( 'oxfam_holidays', $default_holidays ) ) ); ?></textarea>
+		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="<?php echo implode ( ', ', $default_holidays ); ?>"><?php echo esc_textarea( implode ( ', ', get_option('oxfam_holidays') ) ); ?></textarea>
 		  		</td>
 			</tr>
 
@@ -189,7 +189,7 @@
 			
 			<?php
 				if ( current_user_can( 'manage_options' ) ) {
-					echo "<tr><td>";
+					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
 				}
