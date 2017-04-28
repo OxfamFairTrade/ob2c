@@ -1,3 +1,7 @@
+<?php
+	if ( ! defined('ABSPATH') ) exit;
+?>
+
 <div class="wrap">
 	<h1>Instellingen voor lokale webshop</h1>
 	
@@ -99,7 +103,7 @@
 					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering:<br><small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden!</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="8400, 8450, 9000" <?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>><?php echo implode ( ', ', get_option('oxfam_zip_codes') ); ?></textarea>
+		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="8400, 8450, 9000" <?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode ( ', ', get_option('oxfam_zip_codes') ) ); ?></textarea>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -107,7 +111,7 @@
 					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien verschijnt bovenaan een rode banner zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:<br><small>Geef alle datums in volgens het formaat YYYY-MM-DD en scheid ze met een komma!</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="2017-12-25"><?php echo implode ( ', ', get_option( 'oxfam_holidays', $default_holidays ) ); ?></textarea>
+		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="2017-12-25"><?php echo esc_textarea( implode ( ', ', get_option( 'oxfam_holidays', $default_holidays ) ) ); ?></textarea>
 		  		</td>
 			</tr>
 

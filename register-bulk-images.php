@@ -1,3 +1,7 @@
+<?php
+	if ( ! defined('ABSPATH') ) exit;
+?>
+
 <div class="wrap">
 	<h1>Registratie van nieuwe productfoto's</h1>
 	<?php

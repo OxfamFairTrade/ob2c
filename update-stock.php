@@ -1,3 +1,7 @@
+<?php
+	if ( ! defined('ABSPATH') ) exit;
+?>
+
 <div class="wrap">
 	<h1>Voorraadbeheer van lokale producten</h1>
 

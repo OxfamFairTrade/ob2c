@@ -17,6 +17,10 @@
 
 		use Automattic\WooCommerce\Client;
 
+		if ( $_GET['import_key'] !== IMPORT_KEY ) {
+			die("Helaba, dit mag niet!");
+		}
+
 		$woocommerce = new Client(
 			site_url(), WC_KEY, WC_SECRET,
 			[

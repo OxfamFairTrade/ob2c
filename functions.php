@@ -2,6 +2,8 @@
 
 	require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
 	
+	if ( ! defined('ABSPATH') ) exit;
+
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
 	$default_holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-02' );
 	

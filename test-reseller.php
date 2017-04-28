@@ -19,6 +19,10 @@
 	require_once '../../plugins/mollie-reseller-api/autoloader.php';
 	Mollie_Autoloader::register();
 
+	if ( $_GET['import_key'] !== IMPORT_KEY ) {
+		die("Helaba, dit mag niet!");
+	}
+
 	// Define configuration
 	$partner_id = 2485891;
 	$profile_key = 'C556F53A';
