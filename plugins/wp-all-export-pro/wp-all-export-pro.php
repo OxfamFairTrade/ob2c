@@ -3,11 +3,9 @@
 Plugin Name: WP All Export Pro
 Plugin URI: http://www.wpallimport.com/export/
 Description: Export any post type to a CSV or XML file. Edit the exported data, and then re-import it later using WP All Import.
-Version: 1.4.5
+Version: 1.4.6
 Author: Soflyy
 */
-
-require_once(__DIR__.'/classes/CdataStrategyFactory.php');
 
 if( ! defined( 'PMXE_SESSION_COOKIE' ) )
 	define( 'PMXE_SESSION_COOKIE', '_pmxe_session' );
@@ -51,7 +49,7 @@ else {
 	 */
 	define('PMXE_PREFIX', 'pmxe_');
 
-    define('PMXE_VERSION', '1.4.5');
+    define('PMXE_VERSION', '1.4.6');
 
 	define('PMXE_EDITION', 'paid');
 
@@ -233,8 +231,14 @@ else {
 		 * @param string $pluginFilePath Plugin main file
 		 */
 		protected function __construct() {
+
+			require_once (self::ROOT_DIR . '/classes/installer.php');
 			
-			//$this->load_plugin_textdomain();
+			$installer = new PMXE_Installer();
+			$installer->checkActivationConditions();
+			
+			// uncaught exception doesn't prevent plugin from being activated, therefore replace it with fatal error so it does
+			set_exception_handler(create_function('$e', 'trigger_error($e->getMessage(), E_USER_ERROR);'));
 
 			// register autoloading method
 			spl_autoload_register(array($this, 'autoload'));
@@ -479,14 +483,16 @@ else {
 						return TRUE;
 					}
 				}
-			}
+			}			
+
+			require_once (self::ROOT_DIR . '/classes/CdataStrategyFactory.php');
 
 			if(strpos($className, '\\') !== false){
 				// project-specific namespace prefix
 				$prefix = 'Wpae\\';
 
 				// base directory for the namespace prefix
-				$base_dir = __DIR__ . '/src/';
+				$base_dir = self::ROOT_DIR . '/src/';
 
 				// does the class use the namespace prefix?
 				$len = strlen($prefix);
@@ -551,13 +557,7 @@ else {
 		/**
 		 * Plugin activation logic
 		 */
-		public function activation() {
-
-			$installer = new PMXE_Installer();
-			$installer->checkActivationConditions();
-			
-			// uncaught exception doesn't prevent plugin from being activated, therefore replace it with fatal error so it does
-			set_exception_handler(create_function('$e', 'trigger_error($e->getMessage(), E_USER_ERROR);'));
+		public function activation() {			
 
 			// create plugin options
 			$option_name = get_class($this) . '_Options';
@@ -790,7 +790,7 @@ else {
 				'show_cdata_in_preview' => 0,
 				'taxonomy_to_export' => '',
 				'created_at_version' => '',
-        		'export_variations' => XmlExportEngine::VARIABLE_PRODUCTS_EXPORT_VARIATION,
+        		'export_variations' => XmlExportEngine::VARIABLE_PRODUCTS_EXPORT_PARENT_AND_VARIATION,
 				'export_variations_title' => XmlExportEngine::VARIATION_USE_PARENT_TITLE,
                 'include_header_row' => 1,
 				'wpml_lang' => 'all'

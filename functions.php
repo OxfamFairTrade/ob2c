@@ -1897,8 +1897,9 @@
 	// Stel de inhoud van de widget op
 	function dashboard_pilot_news_widget_function() {
 		echo "<div class='rss-widget'>";
-		echo "<p>We bouwen momenteel aan <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>een online FAQ voor webshopbeheerders</a> waarin alle mogelijke vragen en problemen beantwoord worden met screenshots. In afwachting kun je <a href='https://demo.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 1ste opleidingssessie</a> raadplegen.</p>";
-		echo "<p>We herhalen nog eens dat de site nog in volle ontwikkeling is. Je zult dagelijks dingen verbeterd zien worden. De verlate release van <a href='https://wordpress.com/read/blogs/96396764/posts/3767' target='_blank'>WooCommerce 3.0</a> speelt ons gedeeltelijk parten maar dat belet niet dat de basisstructuur definitief is en lanceren in mei realistisch blijft.</p>";
+		echo "<p>De eerste ruwe versie van de <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>online FAQ voor webshopbeheerders</a> staat inmiddels online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Daarnaast kun je nog altijd <a href='https://demo.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 1ste opleidingssessie</a> raadplegen voor een overzicht van alle afspraken.</p>";
+		echo "<p>Met name op het vlak van lay-out (lokale startpagina en nationale portaalpagina) en communicatie (werkwijze, bevestigingsmails en algemene voorwaarden) is er in mei nog werk aan de winkel. De technische basisstructuur is echter voldoende solide, dus bij deze is het definitief: we lanceren op 1 juni! Vanaf 22 mei kun je als deelnemende winkel een mail verwachten met alle toegangsgegevens (mailbox, website, Mollie en eventueel SendCloud) voor jullie persoonlijke webshop.</p>";
+		echo "<p>De link naar de slides van de 2de opleidingssessie komt spoedig hier te staan. Voor overleg onderling en met ons kun je vanaf nu terecht op <a href='https://oxfamfairtrade.slack.com' target='_blank'>Slack</a>. Voor dringende problemen bel je vanaf 1 juni gewoon naar de Klantendienst, die een opleiding krijgt om jullie bij te staan bij het beheer.</p>";
 		echo "</div>";
 		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
 	}
@@ -2509,6 +2510,11 @@
 			#oxfam-options .text-input {
 				width: 70%;
 				max-width: 400px;
+			}
+
+			/* Dirty fix om 'Exporteren als CSV' te verbergen */
+			#adminmenu #menu-posts-feedback {
+				display: none;
 			}
 
 			@media (max-width: 1024px) {
