@@ -896,7 +896,7 @@
 	};
 
 	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat
-	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
+	// add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
 	
 	function skip_shipping_address_on_local_pickup( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
@@ -981,7 +981,7 @@
 		global $user_ID, $woocommerce;
 		if ( ! empty($posted['subscribe_digizine']) ) {
 			if ( $posted['subscribe_digizine'] !== 1 ) {
-				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het digizine?', 'woocommerce' ), 'error' );
+				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het digizine, hoe kan dat nu?', 'woocommerce' ), 'error' );
 				wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'woocommerce' ), 'error' );
 			}
 		}
@@ -1063,7 +1063,6 @@
 		foreach ( $cart as $key => $value ) {
 			if ( isset( $value['forced_by'] ) ) {
 				$subtract += $value['quantity'];
-				write_log($subtract);
 			}
 		}
 
