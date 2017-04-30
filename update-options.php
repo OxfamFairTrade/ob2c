@@ -3,15 +3,16 @@
 ?>
 
 <div class="wrap">
-	<h1>Instellingen voor lokale webshop</h1>
+	<h1>Handige gegevens voor je lokale webshop</h1>
 	
 	<form method="post" action="options.php">
-		<table class="form-table" id="oxfam-options-local">
+		<table class="form-table" id="oxfam-options">
 			<?php
 				global $default_holidays;
 
-				// Best een strikter onderscheid maken tussen opties die nationaal of lokaal beheerd worden (want anders toch bereikbaar door HTML te manipuleren)
+				// Strikter onderscheid maken tussen opties die nationaal of lokaal beheerd worden (want anders toch bereikbaar door HTML te manipuleren)
 				settings_fields( 'oxfam-options-local' );
+				// settings_fields( 'oxfam-options-global' );
 				
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );

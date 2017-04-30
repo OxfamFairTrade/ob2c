@@ -3,13 +3,13 @@
 ?>
 
 <div class="wrap">
-	<h1>Voorraadbeheer van lokale producten</h1>
+	<h1>Stel de voorraad van je lokale webshop in</h1>
 
-	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Een bevestigingsvenster behoedt je voor onbedoelde wijzigingen. Later wordt het misschien mogelijk om voorraadlijsten in te lezen.</p>
+	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Een bevestigingsvenster behoedt je voor onbedoelde wijzigingen. Tip: met Ctrl+F kun je snel zoeken naar een product. We voegen nog een compactere weergave toe (zonder foto's en pop-ups) om sneller te kunnen werken. Later wordt het misschien mogelijk om voorraadlijsten in te lezen uit bv. ShopPlus.</p>
 
-	<p>Nieuwe producten, die in de loop van de twee voorbije maanden beschikbaar werden op <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a>, hebben een blauwe achtergrond. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden.</p>
+	<p>Nieuwe producten, die in de loop van de voorbije twee maanden beschikbaar werden op <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a>, zullen een blauwe achtergrond hebben. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden.</p>
 
-	<p>Oude producten die niet langer bestelbaar zijn via <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a> krijgen een gele achtergrond, zodat het duidelijk is dat dit product op zijn laatste benen loopt. Het product wordt pas na 6 maanden definitief uit de catalogus verwijderd, zodat we er vrij zeker kunnen van zijn dat er geen lokale voorraden meer bestaan.</p>
+	<p>Producten die momenteel onbeschikbaar zijn op <a href="http://www.bestelweb.be" target="_blank">bestelweb.be</a> krijgen een gele achtergrond, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt. Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na 6 maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 
 	<div id="oxfam-products">
 		<?php
