@@ -584,23 +584,33 @@
 	
 	function hide_own_profile_fields() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-		?>
+			?>
 			<script type="text/javascript">
 				jQuery("tr.user-rich-editing-wrap").hide();
 				jQuery("tr.user-comment-shortcuts-wrap").hide();
 				jQuery("tr.user-language-wrap").hide();
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
 				jQuery("tr.user-nickname-wrap").hide();
-				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
-				jQuery("tr.user-email-wrap").find('input[type=email]').prop('readonly',true);
-				jQuery("tr.user-email-wrap").find('input[type=email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox.</span>');
 				jQuery("tr.user-url-wrap").hide();
 				jQuery("h2:contains('Over jezelf')").next('.form-table').hide();
 				jQuery("h2:contains('Over jezelf')").hide();
 				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
 				jQuery("h2:contains('Over de gebruiker')").hide();
 			</script>
-		<?php
+			<?php
+		}
+		
+		$current_user = wp_get_current_user();
+		$user_meta = get_userdata($current_user->ID);
+		$user_roles = $user_meta->roles;
+		if ( in_array( 'local_manager', $user_roles) ) {
+			?>
+			<script type="text/javascript">
+				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
+				jQuery("tr.user-email-wrap").find('input[type=email]').prop('readonly',true);
+				jQuery("tr.user-email-wrap").find('input[type=email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox.</span>');
+			</script>
+			<?php
 		}
 	}
 

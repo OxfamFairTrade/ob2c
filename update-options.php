@@ -80,15 +80,6 @@
 						echo "<td class='right'>Merk op dat het wachtwoord van deze account volledig los staat van de webshop.</td>";
 					echo "</tr>";
 				}
-
-				$current_user = wp_get_current_user();
-				$user_meta = get_userdata($current_user->ID);
-				$user_roles = $user_meta->roles;
-				if ( in_array( 'local_manager', $user_roles) ) {
-					echo "<tr><th class='left'></th><td class='right'>";
-					submit_button();
-					echo "</td></tr>";
-				}
 			?>
 
 			<tr valign="top">
@@ -123,7 +114,13 @@
 		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="<?php echo implode ( ', ', $default_holidays ); ?>"><?php echo esc_textarea( implode ( ', ', get_option('oxfam_holidays') ) ); ?></textarea>
 		  		</td>
 			</tr>
-
+			<?php
+				if ( current_user_can( 'manage_options' ) ) {
+					echo "<tr><th class='left'></th><td class='right'>";
+					submit_button();
+					echo "</td></tr>";
+				}
+			?>
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database!-->
 			<tr valign="top">
 				<th class="left">
@@ -189,14 +186,6 @@
 		  			<input type="text" name="oxfam_email" class="text-input" value="<?php echo get_company_email(); ?>" readonly>
 		  		</td>
 			</tr>
-			
-			<?php
-				if ( current_user_can( 'manage_options' ) ) {
-					echo "<tr><th class='left'></th><td class='right'>";
-					submit_button();
-					echo "</td></tr>";
-				}
-			?>
 		</table>
 	</form>
 </div>
