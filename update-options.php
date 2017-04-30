@@ -87,7 +87,7 @@
 					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Nodenummer OWW-site:</label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_shop_node" class="text-input" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_shop_node" class="text-input" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -95,7 +95,7 @@
 					<label for="oxfam_mollie_partner_id" title="Je betaalaccount valt onder het contract dat Oxfam Fair Trade sloot met Mollie. Aan de hand van deze ID kunnen we de nodige API-keys invullen en in geval van nood inloggen op jullie lokale account.">Partner-ID Mollie:</label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_mollie_partner_id" class="text-input" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"<?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_mollie_partner_id" class="text-input" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -103,7 +103,7 @@
 					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering:<br><small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo get_oxfam_shop_data( 'zipcode' ); ?>" <?php if ( ! current_user_can( 'manage_options' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode ( ', ', get_option('oxfam_zip_codes') ) ); ?></textarea>
+		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo get_oxfam_shop_data( 'zipcode' ); ?>" <?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode ( ', ', get_option('oxfam_zip_codes') ) ); ?></textarea>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -115,7 +115,7 @@
 		  		</td>
 			</tr>
 			<?php
-				if ( current_user_can( 'manage_options' ) ) {
+				if ( current_user_can( 'create_sites' ) ) {
 					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
