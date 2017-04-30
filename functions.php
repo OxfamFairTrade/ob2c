@@ -1094,35 +1094,24 @@
 
 	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
-		register_setting( 'oxfam-options', 'oxfam_shop_node', 'absint' );
-		register_setting( 'oxfam-options', 'oxfam_mollie_partner_id', 'absint' );
-		// Probleem: wordt niet geserialiseerd opgeslagen in database
-		register_setting( 'oxfam-options', 'oxfam_zip_codes', 'comma_string_to_array' );
-		register_setting( 'oxfam-options', 'oxfam_holidays', 'comma_string_to_array' );
-		// add_settings_field( 'oxfam_mollie_partner_id', 'Partner-ID bij Mollie', 'oxfam_mollie_partner_id_callback', 'oxfam-options', 'oxfam-payment', array( 'value' => get_option('oxfam_mollie_partner_id'), 'label_for' => 'oxfam_mollie_partner_id' ) );
-		// add_settings_section( 'oxfam-payment', 'Betalingen', 'section_payment_intro', 'oxfam-options' );
-	}
-
-	function oxfam_mollie_partner_id_callback( $args ) {
-		echo '<input type="text" name="oxfam_mollie_partner_id" id="oxfam_mollie_partner_id" class="text-input" value="'.$args['value'].'">';
-	}
-
-	function section_payment_intro() {
-		echo '';
+		register_setting( 'oxfam-options-global', 'oxfam_shop_node', 'absint' );
+		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', 'absint' );
+		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', 'comma_string_to_array' );
+		register_setting( 'oxfam-options-local', 'oxfam_holidays', 'comma_string_to_array' );
 	}
 
 	function comma_string_to_array( $values ) {
 		$values = preg_replace( "/\s/", "", $values );
 		$array = preg_split( "/(,|;|&)/", $values );
 		foreach ( $array as $key => $value ) {
-			if ( strlen( $value ) === 0 ) {
+			// DATUMS UIT HET VERLEDEN VERWIJDEREN
+			if ( strlen( $value ) === 0 or $array[$key] < date( 'Y-m-d' ) ) {
 				unset($array[$key]);
 			} else {
 				$array[$key] = preg_replace( "/\//", "-", $value );
 			}
 		}
 		sort($array);
-		// + DATUMS UIT HET VERLEDEN VERWIJDEREN
 		return $array;
 	}
 
@@ -1131,7 +1120,7 @@
 
 	function custom_oxfam_options() {
 		add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'manage_options', 'oxfam-photos', 'oxfam_photos_callback' );
-		add_menu_page( 'Instellingen voor lokale webshop', 'Instellingen', 'local_manager', 'oxfam-options', 'oxfam_options_callback', 'dashicons-visibility', '56' );
+		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'local_manager', 'oxfam-options', 'oxfam_options_callback', 'dashicons-visibility', '56' );
 		add_submenu_page( 'woocommerce', 'Stel de voorraad in voor je lokale webshop', 'Voorraadbeheer', 'local_manager', 'oxfam-products', 'oxfam_products_callback' );
 	}
 

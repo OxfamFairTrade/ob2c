@@ -6,20 +6,18 @@
 	<h1>Instellingen voor lokale webshop</h1>
 	
 	<form method="post" action="options.php">
-		<table class="form-table" id="oxfam-options">
+		<table class="form-table" id="oxfam-options-local">
 			<?php
 				global $default_holidays;
 
-				// Best een strikter onderscheid maken tussen opties die nationaal of lokaal beheerd worden!
-				settings_fields( 'oxfam-options' );
-				// Semi-automatisch formatteren van de instellingen, niet interessant voor ons
-				// do_settings_sections( 'oxfam-options' );
+				// Best een strikter onderscheid maken tussen opties die nationaal of lokaal beheerd worden (want anders toch bereikbaar door HTML te manipuleren)
+				settings_fields( 'oxfam-options-local' );
 				
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 				$partner_id_customer = get_option( 'oxfam_mollie_partner_id' );
 				
-				// Check of we niet op de hoofdaccount zitten, want dan krijgen we een fatale error bij getLoginLink()
+				// Check of we niet op de hoofdaccount zitten, want anders fatale API-error
 				if ( $partner_id_customer != 2485891 ) {
 					echo "<tr>";
 						echo "<th class='left'><a href='https://login.microsoftonline.com/' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>";
@@ -115,7 +113,7 @@
 		  		</td>
 			</tr>
 			<?php
-				if ( current_user_can( 'create_sites' ) ) {
+				if ( current_user_can( 'manage_options' ) ) {
 					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
