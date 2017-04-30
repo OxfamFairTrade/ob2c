@@ -1100,11 +1100,19 @@
 		register_setting( 'oxfam-options-local', 'oxfam_holidays', 'comma_string_to_array' );
 	}
 
+	// Zorg dat je ook zonder 'manage_options' de feestdagen kunt opslaan
+	add_filter( 'option_page_capability_oxfam-options', 'lower_manage_options_capability' );
+	
+	function lower_manage_options_capability( $cap ) {
+    	return 'manage_woocommerce';
+    }
+
 	function comma_string_to_array( $values ) {
 		$values = preg_replace( "/\s/", "", $values );
 		$array = preg_split( "/(,|;|&)/", $values );
 		foreach ( $array as $key => $value ) {
 			// DATUMS UIT HET VERLEDEN VERWIJDEREN
+			// CONFLICTEERT WELLICHT MET POSTCODES -> OPSPLITSEN
 			if ( strlen( $value ) === 0 or $array[$key] < date( 'Y-m-d' ) ) {
 				unset($array[$key]);
 			} else {
@@ -1120,8 +1128,8 @@
 
 	function custom_oxfam_options() {
 		add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
-		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'local_manager', 'oxfam-products', 'oxfam_products_callback', 'dashicons-admin-settings', '55' );
-		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'local_manager', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '56' );
+		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'local_manager', 'oxfam-products', 'oxfam_products_callback', 'dashicons-admin-settings', '56' );
+		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'local_manager', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '57' );
 	}
 
 	function oxfam_photos_callback() {

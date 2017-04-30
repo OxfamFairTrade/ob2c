@@ -114,7 +114,7 @@
 		  		</td>
 			</tr>
 			<?php
-				if ( current_user_can( 'manage_options' ) ) {
+				if ( current_user_can( 'manage_woocommerce' ) ) {
 					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
