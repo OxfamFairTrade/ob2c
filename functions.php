@@ -1100,8 +1100,8 @@
 		register_setting( 'oxfam-options-local', 'oxfam_holidays', 'comma_string_to_array' );
 	}
 
-	// Zorg dat je ook zonder 'manage_options' de feestdagen kunt opslaan
-	add_filter( 'option_page_capability_oxfam-options', 'lower_manage_options_capability' );
+	// Zorg ervoor dat je lokale opties ook zonder 'manage_options'-rechten opgeslagen kunnen worden
+	add_filter( 'option_page_capability_oxfam-options-local', 'lower_manage_options_capability' );
 	
 	function lower_manage_options_capability( $cap ) {
     	return 'manage_woocommerce';

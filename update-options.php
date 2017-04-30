@@ -12,7 +12,9 @@
 
 				// Strikter onderscheid maken tussen opties die nationaal of lokaal beheerd worden (want anders toch bereikbaar door HTML te manipuleren)
 				settings_fields( 'oxfam-options-local' );
-				// settings_fields( 'oxfam-options-global' );
+				if ( current_user_can( 'create_sites' ) ) {
+					settings_fields( 'oxfam-options-global' );
+				}
 				
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
