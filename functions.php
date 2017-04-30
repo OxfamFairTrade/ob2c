@@ -593,7 +593,7 @@
 				jQuery("tr.user-nickname-wrap").hide();
 				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
 				jQuery("tr.user-email-wrap").find('input[type=email]').prop('readonly',true);
-				jQuery("tr.user-email-wrap").after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox.</span>');
+				jQuery("tr.user-email-wrap").find('input[type=email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox.</span>');
 				jQuery("tr.user-url-wrap").hide();
 				jQuery("h2:contains('Over jezelf')").next('.form-table').hide();
 				jQuery("h2:contains('Over jezelf')").hide();

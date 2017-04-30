@@ -81,7 +81,10 @@
 					echo "</tr>";
 				}
 
-				if ( current_user_can( 'manage_options' ) ) {
+				$current_user = wp_get_current_user();
+				$user_meta = get_userdata($current_user->ID);
+				$user_roles = $user_meta->roles;
+				if ( in_array( 'local_manager', $user_roles) ) {
 					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
@@ -188,11 +191,7 @@
 			</tr>
 			
 			<?php
-				$current_user = wp_get_current_user();
-				$user_meta = get_userdata($current_user->ID);
-				$user_roles = $user_meta->roles;
-				if ( in_array( 'local_manager', $user_roles) ) {
-				// if ( current_user_can( 'manage_options' ) ) {
+				if ( current_user_can( 'manage_options' ) ) {
 					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
