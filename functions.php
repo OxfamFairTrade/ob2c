@@ -100,7 +100,7 @@
 	}
 
 	// Andere filter nodig voor hardnekkige Jetpack
-	add_action( 'jetpack_admin_menu', 'hide_jetpack_from_others' );
+	// add_action( 'jetpack_admin_menu', 'hide_jetpack_from_others' );
 	
 	function hide_jetpack_from_others() {
     	if ( ! current_user_can( 'update_core' ) ) {
@@ -591,6 +591,8 @@
 				jQuery("tr.user-language-wrap").hide();
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
 				jQuery("tr.user-nickname-wrap").hide();
+				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
+				jQuery("tr.user-email-wrap").find('input[type=email]').prop('readonly',true);
 				jQuery("tr.user-url-wrap").hide();
 				jQuery("h2:contains('Over jezelf')").next('.form-table').hide();
 				jQuery("h2:contains('Over jezelf')").hide();
@@ -616,8 +618,8 @@
 				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
 				jQuery("h2:contains('Over de gebruiker')").hide();
 				/* Let op: als deze string plots vertaald wordt, verschijnt het blokje opnieuw! */
-				jQuery("h3:contains('Additional capabilities')").next('.form-table').hide();
-				jQuery("h3:contains('Additional capabilities')").hide();
+				jQuery("h3:contains('Additional Capabilities')").next('.form-table').hide();
+				jQuery("h3:contains('Additional Capabilities')").hide();
 			</script>
 		<?php
 		}
@@ -982,13 +984,15 @@
 		if ( ! empty($posted['subscribe_digizine']) ) {
 			if ( $posted['subscribe_digizine'] !== 1 ) {
 				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het digizine, hoe kan dat nu?', 'woocommerce' ), 'error' );
-				wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'wc-oxfam' ), 'error' );
 			}
 		}
 
 		// Eventueel bestelminimum om te kunnen afrekenen
 		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < 10 ) {
-	  		wc_add_notice( __( 'Online bestellingen van minder dan 10 euro kunnen we niet verwerken.', 'woocommerce' ), 'error' );
+	  		wc_add_notice( __( 'Online bestellingen van minder dan 10 euro kunnen we niet verwerken.', 'wc-oxfam' ), 'error' );
+	  	} elseif ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) > 500 ) {
+	  		wc_add_notice( __( 'Dit is een wel erg grote bestelling. Neem contact met ons op om te bekijken of we dit wel tijdig kunnen leveren.', 'wc-oxfam' ), 'error' );
 	  	}
 	}
 
@@ -2168,7 +2172,7 @@
 
 	function get_shops() {
 		$global_zips = array();
-		$sites = get_sites();
+		$sites = get_sites( array( 'archived' => 0 ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			$local_zips = get_option( 'oxfam_zip_codes' );
@@ -2200,18 +2204,18 @@
 	}
 
 	function print_map() {
-		# Header
+		// Open de file
 		$myfile = fopen("newoutput.kml", "w");
 		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 		
-		# Styles (icon upscalen boven 32x32 pixels werkt helaas niet)
+		// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet)
 		$str .= "<Style id='1'><IconStyle><scale>1.21875</scale><w>39</w><h>51</h><Icon><href>https://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
 		
-		# Placemarks
-		$sites = get_sites();
+		// Haal alle shopdata op (en sluit gearchiveerde webshops uit!)
+		$sites = get_sites( array( 'archived' => 0 ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
-			// Sluit hoofdsite uit
+			// Sla de hoofdsite over
 			if ( ! is_main_site() ) {
 				$local_zips = get_option( 'oxfam_zip_codes' );
 				if ( count($local_zips) >= 1 ) {
@@ -2228,10 +2232,11 @@
 			restore_current_blog();
 		}
 
-		# Footer
+		// Sluit document af
 		$str .= "</Document></kml>";
 		fwrite($myfile, $str);
 		fclose($myfile);
+		
 		return do_shortcode("[flexiblemap src='".site_url()."/newoutput.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true' maptype='light_monochrome']");
 	}
 
