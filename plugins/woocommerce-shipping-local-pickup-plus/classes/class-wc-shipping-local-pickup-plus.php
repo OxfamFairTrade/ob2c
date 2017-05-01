@@ -1195,7 +1195,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		if ( 1 === count( $this->pickup_locations ) ) {
 
 			$chosen_pickup_location = $this->pickup_locations[0];
-			echo $this->get_formatted_address_helper( $chosen_pickup_location, true );
+			// GEWIJZIGD: Zorg ervoor dat shortcodes in het adres uitgeschreven worden
+			echo do_shortcode( $this->get_formatted_address_helper( $chosen_pickup_location, true ) );
 
 			echo '<input type="hidden" name="pickup_location[' . $package_index . ']" value="' . esc_attr( $chosen_pickup_location['id'] ) . '" />';
 		} else {

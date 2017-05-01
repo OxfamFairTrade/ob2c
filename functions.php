@@ -2263,18 +2263,19 @@
 		return get_option( 'oxfam_zip_codes' );
 	}
 
-	function get_oxfam_shop_data( $key ) {
+	function get_oxfam_shop_data( $key, $node = 0 ) {
 		global $wpdb;
+		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
 		if ( ! is_main_site() ) {
 			if ( $key === 'tax' or $key === 'account' ) {
-				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop' ) );
+				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop', $node ) );
 				if ( $row ) {
 					return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
 				} else {
 					return "UNKNOWN";
 				}
 			} else {
-				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.$node );
 				if ( $row ) {
 					switch ($key) {
 						case 'shop':
