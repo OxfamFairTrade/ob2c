@@ -1150,7 +1150,7 @@
 	}
 
 	function oxfam_products_callback() {
-		include get_stylesheet_directory().'/update-stock.php';
+		include get_stylesheet_directory().'/update-stock-photos.php';
 	}
 	
 	// Registreer de AJAX-acties
@@ -1282,7 +1282,10 @@
 	add_action( 'woocommerce_single_product_summary', 'show_delivery_warning', 200 );
 
 	function show_delivery_warning() {
-		echo "Opgelet: hier komt een boodschap indien het product niet thuisgeleverd wordt (of enkel per zes verkocht wordt, maar dat idee gaan we wellicht afvoeren).";
+		global $product;
+		if ( $product->get_shipping_class() === 'fruitsap' ) {
+			echo "Opgelet: dit product is enkel beschikbaar voor afhaling in de winkel! Omwille van het grote gewicht en de breekbaarheid wordt het dus niet thuisgeleverd. Tip: onze tetrabrikken worden worden wel verzonden.";
+		}
 	}
 
 	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan
