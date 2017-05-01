@@ -136,7 +136,20 @@ tr.shipping .woocommerce-Price-amount {
 	float: right;
 }
 
-/* Plaats de belastingen op een nieuwe regel bij het afrekenoverzicht */
+/* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het winkelmandje */
+.shop-table tr.order-total > th,
+.shop-table tr.order-total > td {
+	width: 50%;
+}
+.shop-table tr.order-total small.includes_tax {
+	display: block;
+}
+
+/* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het afrekenoverzicht */
+.shop-table tr.order-total > th,
+.shop-table tr.order-total > td {
+	width: 50%;
+}
 .woocommerce-checkout-review-order small.includes_tax {
 	display: block;
 }
@@ -162,10 +175,4 @@ tr.shipping .woocommerce-Price-amount {
 .wc-pickup-location-note {
 	width: 300px;
 	float: right;
-}
-
-/* Geef meer ruimte aan totaalprijzen */
-table.shop-table tr.order-total > th,
-table.shop-table tr.order-total > td {
-	width: 50%;
 }
