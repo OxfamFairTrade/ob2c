@@ -956,32 +956,55 @@
 	function hide_shipping_methods( $rates, $package ) {
 		global $woocommerce;
 		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
-		
+
 		// Verberg alle betalende methodes indien er een gratis levering beschikbaar is (= per definitie geen afhaling want Local Plus creëert geen methodes)
-	  	if ( isset($rates['free_shipping:2']) or isset($rates['free_shipping:4']) or isset($rates['free_shipping:6']) ) {
-	  		unset( $rates['flat_rate:1'] );
-	  		unset( $rates['flat_rate:3'] );
-	  		unset( $rates['flat_rate:5'] );
-	  		unset( $rates['service_point_shipping_method:7'] );
-	  	} else {
-	  		unset( $rates['free_shipping:2'] );
-	  		unset( $rates['free_shipping:4'] );
-	  		unset( $rates['free_shipping:6'] );
-	  		unset( $rates['service_point_shipping_method:8'] );
-	  	}
+		if ( isset($rates['free_shipping:2']) or isset($rates['free_shipping:4']) or isset($rates['free_shipping:6']) ) {
+			unset( $rates['flat_rate:1'] );
+			unset( $rates['flat_rate:3'] );
+			unset( $rates['flat_rate:5'] );
+			unset( $rates['service_point_shipping_method:7'] );
+		} else {
+			unset( $rates['free_shipping:2'] );
+			unset( $rates['free_shipping:4'] );
+			unset( $rates['free_shipping:6'] );
+			unset( $rates['service_point_shipping_method:8'] );
+		}
 
 		// Verhinder externe levermethodes indien totale brutogewicht > 30 kg
 		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
-	  		unset( $rates['flat_rate:1'] );
-	  		unset( $rates['flat_rate:3'] );
-	  		unset( $rates['flat_rate:5'] );
-	  		unset( $rates['free_shipping:2'] );
-	  		unset( $rates['free_shipping:4'] );
-	  		unset( $rates['free_shipping:6'] );
-	  		unset( $rates['service_point_shipping_method:7'] );
-	  		unset( $rates['service_point_shipping_method:8'] );
-	  		wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'wc-oxfam' ), 'error' );
-	  	}
+			unset( $rates['flat_rate:1'] );
+			unset( $rates['flat_rate:3'] );
+			unset( $rates['flat_rate:5'] );
+			unset( $rates['free_shipping:2'] );
+			unset( $rates['free_shipping:4'] );
+			unset( $rates['free_shipping:6'] );
+			unset( $rates['service_point_shipping_method:7'] );
+			unset( $rates['service_point_shipping_method:8'] );
+			wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'wc-oxfam' ), 'error' );
+		}
+
+		write_log($rates);
+		$ship_classes = $woocommerce->cart->get_cart_item_tax_classes();
+		write_log($ship_classes);
+
+		// Slug voor standaard is lege string ...
+		$standard = '';
+		if ( in_array( $standard, $ship_classes ) ) {
+			// Geen idee waarom dit niet gewoon 5.7438 moet zijn ...
+			$cost = 5.57;
+			if ( isset( $rates['flat_rate:1'] ) ) {
+				$rates['flat_rate:1']->cost = $cost;
+			}
+			if ( isset( $rates['flat_rate:3'] ) ) {
+				$rates['flat_rate:3']->cost = $cost;
+			}
+			if ( isset( $rates['flat_rate:5'] ) ) {
+				$rates['flat_rate:5']->cost = $cost;
+			}
+			if ( isset( $rates['service_point_shipping_method:7'] ) ) {
+				$rates['service_point_shipping_method:7']->cost = $cost;
+			}
+		}
 
 	  	return $rates;
 	}
@@ -1284,7 +1307,7 @@
 	function show_delivery_warning() {
 		global $product;
 		if ( $product->get_shipping_class() === 'fruitsap' ) {
-			echo "Opgelet: dit product is enkel beschikbaar voor afhaling in de winkel! Omwille van het grote gewicht en de breekbaarheid wordt het dus niet thuisgeleverd. Tip: onze tetrabrikken worden worden wel verzonden.";
+			echo "Opgelet: dit product is enkel beschikbaar voor afhaling in de winkel! Omwille van het grote gewicht en de breekbaarheid wordt het dus niet thuisgeleverd. Tip: kleine flesjes en tetrabrikken worden wel verzonden.";
 		}
 	}
 
