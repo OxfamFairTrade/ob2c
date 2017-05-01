@@ -104,31 +104,14 @@ div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product
 	z-index: 50;
 	
 	transform: rotate(45deg);
-	background-color: orange;
+	background-color: #f16e22;
+	background-color: #e70052;
 	right: -114px;
-	content: "SHOP";
+	content: "AFHALING";
 }
 li.product.product_shipping_class-fruitsap:hover::after {
 	background-color: black;
 	transition: background-color 1s ease-out 0s;
-}
-
-/* Toon een icoontje bij de goederen die per zes besteld moeten worden */
-li.product.product_shipping_class-wijnDISABLE::after {
-	font-family: FontAwesome;
-	font-size: 130%;
-	color: #61a534;
-	position: absolute;
-	right: 0;
-	top: 25px;
-	width: 100%;
-	z-index: 1000;
-	content: "\f247";
-}
-li.product.product_shipping_class-wijnDISABLE:hover::after {
-	font-size: 90%;
-	top: 32px;
-	content: "Enkel thuisgeleverd per zes";
 }
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
@@ -137,20 +120,20 @@ tr.shipping .woocommerce-Price-amount {
 }
 
 /* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het winkelmandje */
-.shop-table tr.order-total > th,
-.shop-table tr.order-total > td {
+.cart-collaterals .shop_table .order-total > th,
+.cart-collaterals .shop_table .order-total > td {
 	width: 50%;
 }
-.shop-table tr.order-total small.includes_tax {
+.cart-collaterals .shop_table .order-total small.includes_tax {
 	display: block;
 }
 
 /* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het afrekenoverzicht */
-.shop-table tr.order-total > th,
-.shop-table tr.order-total > td {
+.woocommerce-checkout-review-order .shop-table .order-total > th,
+.woocommerce-checkout-review-order .shop-table .order-total > td {
 	width: 50%;
 }
-.woocommerce-checkout-review-order small.includes_tax {
+.woocommerce-checkout-review-order .shop-table small.includes_tax {
 	display: block;
 }
 

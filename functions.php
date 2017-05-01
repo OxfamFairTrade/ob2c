@@ -1153,8 +1153,9 @@
 
 	function custom_oxfam_options() {
 		add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
-		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'local_manager', 'oxfam-products', 'oxfam_products_callback', 'dashicons-admin-settings', '56' );
-		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'local_manager', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '57' );
+		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'local_manager', 'oxfam-products-photos', 'oxfam_products_photos_callback', 'dashicons-admin-settings', '56' );
+		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'administrator', 'oxfam-product-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '57' );
+		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'local_manager', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 	}
 
 	function oxfam_photos_callback() {
@@ -1165,8 +1166,12 @@
 		include get_stylesheet_directory().'/update-options.php';
 	}
 
-	function oxfam_products_callback() {
+	function oxfam_products_photos_callback() {
 		include get_stylesheet_directory().'/update-stock-photos.php';
+	}
+
+	function oxfam_products_list_callback() {
+		include get_stylesheet_directory().'/update-stock-list.php';
 	}
 	
 	// Registreer de AJAX-acties
