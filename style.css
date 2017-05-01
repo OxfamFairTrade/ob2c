@@ -64,10 +64,12 @@
 }
 
 /* Toon een flapje bij bioproducten (opgelet: wordt overschreven door latere ::before's op deze li.product!)  */
-li.product.pa_bio-ja {
+li.product.pa_bio-ja,
+div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__image {
 	overflow: hidden;
 }
-li.product.pa_bio-ja::before {
+li.product.pa_bio-ja::before,
+div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__image::before {
 	color: white;
 	width: 250px;
 	position: absolute;
@@ -87,10 +89,12 @@ li.product.pa_bio-ja:hover::before {
 }
 
 /* Toon een flapje bij producten die niet beschikbaar zijn voor thuislevering */
-li.product.product_shipping_class-fruitsap {
+li.product.product_shipping_class-fruitsap,
+div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__image {
 	overflow: hidden;
 }
-li.product.product_shipping_class-fruitsap::after {
+li.product.product_shipping_class-fruitsap::after,
+div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__image::after {
 	color: white;
 	width: 250px;
 	position: absolute;
