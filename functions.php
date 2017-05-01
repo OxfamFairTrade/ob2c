@@ -692,9 +692,9 @@
 	}
 
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
-	add_filter( 'woocommerce_cart_shipping_method_full_label', 'printEstimatedDelivery', 10, 2 );
+	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
 	
-	function printEstimatedDelivery( $label, $method ) {
+	function print_estimated_delivery( $label, $method ) {
 		$descr = '<small>';
 		$timestamp = estimate_delivery_date( $method->id );
 		
@@ -754,32 +754,6 @@
 		$hours[7] = $hours[0];
 		unset($hours[0]);
 		return $hours;
-	}
-
-	// Print de openingsuren in een logische array
-	function print_office_hours( $atts = [] ) {
-		// Normaliseer de attributen
-		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
-		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
-		
-		$output = '';
-		$node = $atts['node'];
-		$days = get_office_hours( $node );
-		foreach ( $days as $day_index => $hours ) {
-			// Check of er voor deze dag wel openingsuren bestaan
-			if ( $hours ) {
-				foreach ( $hours as $part => $part_hours ) {
-					if ( ! isset( $$day_index ) ) {
-						$output .= "<br>".ucwords( strftime( '%A', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
-						$$day_index = true;
-					} else {
-						$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
-					}
-				}
-			}
-		}
-		return $output;
 	}
 
 	// Bereken de eerst mogelijke leverdatum voor de opgegeven verzendmethode (retourneert een timestamp) 
@@ -2091,15 +2065,17 @@
 	}
 
 
-	####################
-	# HELPER FUNCTIONS #
-	####################
+	##############
+	# SHORTCODES #
+	##############
 
 	// Personaliseer de begroeting op de startpagina
 	add_shortcode ( 'topbar', 'print_welcome' );
 	add_shortcode ( 'bezoeker', 'print_customer' );
 	add_shortcode ( 'copyright', 'print_copyright' );
 	add_shortcode ( 'openingsuren', 'print_office_hours' );
+	add_shortcode ( 'telefoon', 'print_telephone' );
+	add_shortcode ( 'gemeente', 'print_city' );
 	add_shortcode ( 'toon_inleiding', 'print_summary' );
 	add_shortcode ( 'toon_shops', 'print_shop_selection' );
 	add_shortcode ( 'toon_kaart', 'print_map' );
@@ -2109,6 +2085,151 @@
 	add_shortcode ( 'company_name', 'get_company_name' );
 	add_shortcode ( 'contact_address', 'get_company_contact' );
 	add_shortcode ( 'map_address', 'get_company_address' );
+
+	function print_widget_usp() {
+		$msg = "Mooie Marcom-uitdaging: vat onze <i>unique selling points</i> samen in één catchy zin.";
+		return $msg;
+	}
+
+	function print_widget_delivery() {
+		if ( does_home_delivery() ) {
+			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, wordt ten laatste drie werkdagen later bij je thuis geleverd. Afhalen in de winkel kan natuurlijk ook!";
+		} else {
+			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, kan je de volgende dag 's middags afhalen in de winkel.";
+		}
+		return $msg;
+	}
+
+	function print_welcome() {
+		return "Dag ".print_customer()."! Ben je klaar om de wereld een klein beetje te veranderen?";
+	}
+
+	function print_customer() {
+		global $current_user;
+		return ( is_user_logged_in() and strlen($current_user->user_firstname) > 1 ) ? $current_user->user_firstname : "bezoeker";
+	}
+
+	function print_copyright() {
+		if ( get_option('oxfam_shop_node') ) {
+			$node = 'node/'.get_option('oxfam_shop_node');
+		} else {
+			$node = 'nl';
+		}
+		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".get_company_name()." &copy; 2016-".date('Y')."</a>";
+	}
+
+	function print_office_hours( $atts = [] ) {
+		// Normaliseer de attributen
+		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
+		// Overschrijf defaults met expliciete data van de gebruiker
+		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
+		
+		$output = '';
+		$node = $atts['node'];
+		$days = get_office_hours( $node );
+		foreach ( $days as $day_index => $hours ) {
+			// Check of er voor deze dag wel openingsuren bestaan
+			if ( $hours ) {
+				foreach ( $hours as $part => $part_hours ) {
+					if ( ! isset( $$day_index ) ) {
+						$output .= "<br>".ucwords( strftime( '%A', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
+						$$day_index = true;
+					} else {
+						$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
+					}
+				}
+			}
+		}
+		return $output;
+	}
+
+	function print_telephone( $atts = [] ) {
+		// Normaliseer de attributen
+		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
+		// Overschrijf defaults met expliciete data van de gebruiker
+		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
+		$node = $atts['node'];
+		$output = get_oxfam_shop_data( 'telephone', $node );
+		return $output;
+	}
+
+	function print_summary() {
+		$sites = get_sites( array( 'archived' => 0, 'count' => true ) );
+		// Hoofdblog (en templates) ervan aftrekken
+		$msg = "<h1>Shop online in één van onze ".($sites-1)." webshops en haal je bestelling na één werkdag af in de winkel (indien geopend).</h1>";
+		return $msg;
+	}
+
+	function print_shop_selection() {
+		$global_zips = get_shops();
+ 		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
+ 		$msg = '<h1>Liever thuislevering? Vul één van de '.count($all_zips).' Vlaamse postcodes in en we sturen je door naar de winkel die jouw bestelling levert.</h1>';
+		$msg .= '<p style="text-align: center;"><input type="tel" name="zip" maxlength="4"></p>';
+		$set = 'Reeds ingevuld:<br><select>';
+		foreach ( $all_zips as $zip ) {
+			if ( isset( $global_zips[$zip] ) ) {
+				$set .= '<option value="'.$global_zips[$zip].'">'.$zip.'</option>';
+			}
+		}
+		$set .= '</select>';
+		return $msg.'<br>'.$set;
+	}
+
+	function print_map() {
+		// Open de file
+		$myfile = fopen("newoutput.kml", "w");
+		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
+		
+		// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet)
+		$str .= "<Style id='1'><IconStyle><scale>1.21875</scale><w>39</w><h>51</h><Icon><href>https://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
+		
+		// Haal alle shopdata op (en sluit gearchiveerde webshops uit!)
+		$sites = get_sites( array( 'archived' => 0 ) );
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site->blog_id );
+			// Sla de hoofdsite over
+			if ( ! is_main_site() ) {
+				$local_zips = get_option( 'oxfam_zip_codes' );
+				if ( count($local_zips) >= 1 ) {
+					$i = 0;
+					$thuislevering = "Doet thuislevering in ";
+					foreach ( $local_zips as $zip ) {
+						$i++;
+						$thuislevering .= $zip;
+						if ( $i < count($local_zips) ) $thuislevering .= ", ";
+					}
+					$str .= "<Placemark><name><![CDATA[".get_company_name()."]]></name><styleUrl>#1</styleUrl><description><![CDATA[".get_company_address()."<br>".$thuislevering.".<br><a href=".get_site_url().">Naar deze webshop »</a>]]></description><Point><coordinates>".get_oxfam_shop_data( 'll' )."</coordinates></Point></Placemark>";
+				}
+			}
+			restore_current_blog();
+		}
+
+		// Sluit document af
+		$str .= "</Document></kml>";
+		fwrite($myfile, $str);
+		fclose($myfile);
+		
+		return do_shortcode("[flexiblemap src='".site_url()."/newoutput.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true' maptype='light_monochrome']");
+	}
+
+
+	####################
+	# HELPER FUNCTIONS #
+	####################
+
+	function set_flemish_zip_codes() {
+		$zips = array( 1000, 1020, 1030, 1040, 1050, 1060, 1070, 1080, 1081, 1082, 1083, 1090, 1120, 1130, 1140, 1150, 1160, 1170, 1180, 1190, 1200, 1210, 1500, 1501, 1502, 1540, 1541, 1547, 1560, 1570, 1600, 1601, 1602, 1620, 1630, 1640, 1650, 1651, 1652, 1653, 1654, 1670, 1671, 1673, 1674, 1700, 1701, 1702, 1703, 1730, 1731, 1740, 1741, 1742, 1745, 1750, 1755, 1760, 1761, 1770, 1780, 1785, 1790, 1800, 1820, 1830, 1831, 1840, 1850, 1851, 1852, 1853, 1860, 1861, 1880, 1910, 1930, 1932, 1933, 1950, 1970, 1980, 1981, 1982, 2000, 2018, 2020, 2030, 2040, 2050, 2060, 2070, 2100, 2110, 2140, 2150, 2160, 2170, 2180, 2200, 2220, 2221, 2222, 2223, 2230, 2235, 2240, 2242, 2243, 2250, 2260, 2270, 2275, 2280, 2288, 2290, 2300, 2310, 2320, 2321, 2322, 2323, 2328, 2330, 2340, 2350, 2360, 2370, 2380, 2381, 2382, 2387, 2390, 2400, 2430, 2431, 2440, 2450, 2460, 2470, 2480, 2490, 2491, 2500, 2520, 2530, 2531, 2540, 2547, 2550, 2560, 2570, 2580, 2590, 2600, 2610, 2620, 2627, 2630, 2640, 2650, 2660, 2800, 2801, 2811, 2812, 2820, 2830, 2840, 2845, 2850, 2860, 2861, 2870, 2880, 2890, 2900, 2910, 2920, 2930, 2940, 2950, 2960, 2970, 2980, 2990, 3000, 3001, 3010, 3012, 3018, 3020, 3040, 3050, 3051, 3052, 3053, 3054, 3060, 3061, 3070, 3071, 3078, 3080, 3090, 3110, 3111, 3118, 3120, 3128, 3130, 3140, 3150, 3190, 3191, 3200, 3201, 3202, 3210, 3211, 3212, 3220, 3221, 3270, 3271, 3272, 3290, 3293, 3294, 3300, 3320, 3321, 3350, 3360, 3370, 3380, 3381, 3384, 3390, 3391, 3400, 3401, 3404, 3440, 3450, 3454, 3460, 3461, 3470, 3471, 3472, 3473, 3500, 3501, 3510, 3511, 3512, 3520, 3530, 3540, 3545, 3550, 3560, 3570, 3580, 3581, 3582, 3583, 3590, 3600, 3620, 3621, 3630, 3631, 3640, 3650, 3660, 3665, 3668, 3670, 3680, 3690, 3700, 3717, 3720, 3721, 3722, 3723, 3724, 3730, 3732, 3740, 3742, 3746, 3770, 3790, 3791, 3792, 3793, 3798, 3800, 3803, 3806, 3830, 3831, 3832, 3840, 3850, 3870, 3890, 3891, 3900, 3910, 3920, 3930, 3940, 3941, 3945, 3950, 3960, 3970, 3971, 3980, 3990, 8000, 8020, 8200, 8210, 8211, 8300, 8301, 8310, 8340, 8370, 8377, 8380, 8400, 8420, 8421, 8430, 8431, 8432, 8433, 8434, 8450, 8460, 8470, 8480, 8490, 8500, 8501, 8510, 8511, 8520, 8530, 8531, 8540, 8550, 8551, 8552, 8553, 8554, 8560, 8570, 8572, 8573, 8580, 8581, 8582, 8583, 8587, 8600, 8610, 8620, 8630, 8640, 8647, 8650, 8660, 8670, 8680, 8690, 8691, 8700, 8710, 8720, 8730, 8740, 8750, 8755, 8760, 8770, 8780, 8790, 8791, 8792, 8793, 8800, 8810, 8820, 8830, 8840, 8850, 8851, 8860, 8870, 8880, 8890, 8900, 8902, 8904, 8906, 8908, 8920, 8930, 8940, 8950, 8951, 8952, 8953, 8954, 8956, 8957, 8958, 8970, 8972, 8978, 8980, 9000, 9030, 9031, 9032, 9040, 9041, 9042, 9050, 9051, 9052, 9060, 9070, 9080, 9090, 9100, 9111, 9112, 9120, 9130, 9140, 9150, 9160, 9170, 9180, 9185, 9190, 9200, 9220, 9230, 9240, 9250, 9255, 9260, 9270, 9280, 9290, 9300, 9308, 9310, 9320, 9340, 9400, 9401, 9402, 9403, 9404, 9406, 9420, 9450, 9451, 9470, 9472, 9473, 9500, 9506, 9520, 9521, 9550, 9551, 9552, 9570, 9571, 9572, 9600, 9620, 9630, 9636, 9660, 9661, 9667, 9680, 9681, 9688, 9690, 9700, 9750, 9770, 9771, 9772, 9790, 9800, 9810, 9820, 9830, 9831, 9840, 9850, 9860, 9870, 9880, 9881, 9890, 9900, 9910, 9920, 9921, 9930, 9931, 9932, 9940, 9950, 9960, 9961, 9968, 9970, 9971, 9980, 9981, 9982, 9988, 9990, 9991, 9992 );
+		update_site_option( 'oxfam_flemish_zip_codes', $zips );	
+	}
+
+	function does_home_delivery() {
+		return get_option( 'oxfam_zip_codes' );
+	}
+
+	// Voorlopig nog identiek aan vorige functie, maar dat kan nog veranderen!
+	function does_sendcloud_delivery() {
+		return get_option( 'oxfam_zip_codes' );
+	}
 
 	function get_oxfam_shop_data( $key ) {
 		global $wpdb;
@@ -2187,52 +2308,6 @@
 		return get_company_name()."<br>".get_company_address()."<br>".get_company_contact();
 	}
 
-	function print_widget_usp() {
-		$msg = "Mooie Marcom-uitdaging: vat onze <i>unique selling points</i> samen in één catchy zin.";
-		return $msg;
-	}
-
-	function print_widget_delivery() {
-		if ( does_home_delivery() ) {
-			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, wordt ten laatste drie werkdagen later bij je thuis geleverd. Afhalen in de winkel kan natuurlijk ook!";
-		} else {
-			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, kan je de volgende dag 's middags afhalen in de winkel.";
-		}
-		return $msg;
-	}
-
-	function print_welcome() {
-		return "Dag ".print_customer()."! Ben je klaar om de wereld een klein beetje te veranderen?";
-	}
-
-	function print_customer() {
-		global $current_user;
-		return ( is_user_logged_in() and strlen($current_user->user_firstname) > 1 ) ? $current_user->user_firstname : "bezoeker";
-	}
-
-	function print_copyright() {
-		if ( get_option('oxfam_shop_node') ) {
-			$node = 'node/'.get_option('oxfam_shop_node');
-		} else {
-			$node = 'nl';
-		}
-		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".get_company_name()." &copy; 2016-".date('Y')."</a>";
-	}
-
-	function set_flemish_zip_codes() {
-		$zips = array( 1000, 1020, 1030, 1040, 1050, 1060, 1070, 1080, 1081, 1082, 1083, 1090, 1120, 1130, 1140, 1150, 1160, 1170, 1180, 1190, 1200, 1210, 1500, 1501, 1502, 1540, 1541, 1547, 1560, 1570, 1600, 1601, 1602, 1620, 1630, 1640, 1650, 1651, 1652, 1653, 1654, 1670, 1671, 1673, 1674, 1700, 1701, 1702, 1703, 1730, 1731, 1740, 1741, 1742, 1745, 1750, 1755, 1760, 1761, 1770, 1780, 1785, 1790, 1800, 1820, 1830, 1831, 1840, 1850, 1851, 1852, 1853, 1860, 1861, 1880, 1910, 1930, 1932, 1933, 1950, 1970, 1980, 1981, 1982, 2000, 2018, 2020, 2030, 2040, 2050, 2060, 2070, 2100, 2110, 2140, 2150, 2160, 2170, 2180, 2200, 2220, 2221, 2222, 2223, 2230, 2235, 2240, 2242, 2243, 2250, 2260, 2270, 2275, 2280, 2288, 2290, 2300, 2310, 2320, 2321, 2322, 2323, 2328, 2330, 2340, 2350, 2360, 2370, 2380, 2381, 2382, 2387, 2390, 2400, 2430, 2431, 2440, 2450, 2460, 2470, 2480, 2490, 2491, 2500, 2520, 2530, 2531, 2540, 2547, 2550, 2560, 2570, 2580, 2590, 2600, 2610, 2620, 2627, 2630, 2640, 2650, 2660, 2800, 2801, 2811, 2812, 2820, 2830, 2840, 2845, 2850, 2860, 2861, 2870, 2880, 2890, 2900, 2910, 2920, 2930, 2940, 2950, 2960, 2970, 2980, 2990, 3000, 3001, 3010, 3012, 3018, 3020, 3040, 3050, 3051, 3052, 3053, 3054, 3060, 3061, 3070, 3071, 3078, 3080, 3090, 3110, 3111, 3118, 3120, 3128, 3130, 3140, 3150, 3190, 3191, 3200, 3201, 3202, 3210, 3211, 3212, 3220, 3221, 3270, 3271, 3272, 3290, 3293, 3294, 3300, 3320, 3321, 3350, 3360, 3370, 3380, 3381, 3384, 3390, 3391, 3400, 3401, 3404, 3440, 3450, 3454, 3460, 3461, 3470, 3471, 3472, 3473, 3500, 3501, 3510, 3511, 3512, 3520, 3530, 3540, 3545, 3550, 3560, 3570, 3580, 3581, 3582, 3583, 3590, 3600, 3620, 3621, 3630, 3631, 3640, 3650, 3660, 3665, 3668, 3670, 3680, 3690, 3700, 3717, 3720, 3721, 3722, 3723, 3724, 3730, 3732, 3740, 3742, 3746, 3770, 3790, 3791, 3792, 3793, 3798, 3800, 3803, 3806, 3830, 3831, 3832, 3840, 3850, 3870, 3890, 3891, 3900, 3910, 3920, 3930, 3940, 3941, 3945, 3950, 3960, 3970, 3971, 3980, 3990, 8000, 8020, 8200, 8210, 8211, 8300, 8301, 8310, 8340, 8370, 8377, 8380, 8400, 8420, 8421, 8430, 8431, 8432, 8433, 8434, 8450, 8460, 8470, 8480, 8490, 8500, 8501, 8510, 8511, 8520, 8530, 8531, 8540, 8550, 8551, 8552, 8553, 8554, 8560, 8570, 8572, 8573, 8580, 8581, 8582, 8583, 8587, 8600, 8610, 8620, 8630, 8640, 8647, 8650, 8660, 8670, 8680, 8690, 8691, 8700, 8710, 8720, 8730, 8740, 8750, 8755, 8760, 8770, 8780, 8790, 8791, 8792, 8793, 8800, 8810, 8820, 8830, 8840, 8850, 8851, 8860, 8870, 8880, 8890, 8900, 8902, 8904, 8906, 8908, 8920, 8930, 8940, 8950, 8951, 8952, 8953, 8954, 8956, 8957, 8958, 8970, 8972, 8978, 8980, 9000, 9030, 9031, 9032, 9040, 9041, 9042, 9050, 9051, 9052, 9060, 9070, 9080, 9090, 9100, 9111, 9112, 9120, 9130, 9140, 9150, 9160, 9170, 9180, 9185, 9190, 9200, 9220, 9230, 9240, 9250, 9255, 9260, 9270, 9280, 9290, 9300, 9308, 9310, 9320, 9340, 9400, 9401, 9402, 9403, 9404, 9406, 9420, 9450, 9451, 9470, 9472, 9473, 9500, 9506, 9520, 9521, 9550, 9551, 9552, 9570, 9571, 9572, 9600, 9620, 9630, 9636, 9660, 9661, 9667, 9680, 9681, 9688, 9690, 9700, 9750, 9770, 9771, 9772, 9790, 9800, 9810, 9820, 9830, 9831, 9840, 9850, 9860, 9870, 9880, 9881, 9890, 9900, 9910, 9920, 9921, 9930, 9931, 9932, 9940, 9950, 9960, 9961, 9968, 9970, 9971, 9980, 9981, 9982, 9988, 9990, 9991, 9992 );
-		update_site_option( 'oxfam_flemish_zip_codes', $zips );	
-	}
-
-	function does_home_delivery() {
-		return get_option( 'oxfam_zip_codes' );
-	}
-
-	// Voorlopig nog identiek aan vorige functie, maar dat kan nog veranderen!
-	function does_sendcloud_delivery() {
-		return get_option( 'oxfam_zip_codes' );
-	}
-
 	function get_shops() {
 		$global_zips = array();
 		$sites = get_sites( array( 'archived' => 0 ) );
@@ -2249,65 +2324,6 @@
 		}
 		ksort($global_zips);
 		return $global_zips;
-	}
-
-	function print_summary() {
-		$sites = get_sites( array( 'archived' => 0, 'count' => true ) );
-		// Hoofdblog (en templates) ervan aftrekken
-		$msg = "<h1>Shop online in één van onze ".($sites-1)." webshops en haal je bestelling na één werkdag af in de winkel (indien geopend).</h1>";
-		return $msg;
-	}
-
-	function print_shop_selection() {
-		$global_zips = get_shops();
- 		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
- 		$msg = '<h1>Liever thuislevering? Vul één van de '.count($all_zips).' Vlaamse postcodes in en we sturen je door naar de winkel die jouw bestelling levert.</h1>';
-		$msg .= '<p style="text-align: center;"><input type="tel" name="zip" maxlength="4"></p>';
-		$set = 'Reeds ingevuld:<br><select>';
-		foreach ( $all_zips as $zip ) {
-			if ( isset( $global_zips[$zip] ) ) {
-				$set .= '<option value="'.$global_zips[$zip].'">'.$zip.'</option>';
-			}
-		}
-		$set .= '</select>';
-		return $msg.'<br>'.$set;
-	}
-
-	function print_map() {
-		// Open de file
-		$myfile = fopen("newoutput.kml", "w");
-		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
-		
-		// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet)
-		$str .= "<Style id='1'><IconStyle><scale>1.21875</scale><w>39</w><h>51</h><Icon><href>https://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
-		
-		// Haal alle shopdata op (en sluit gearchiveerde webshops uit!)
-		$sites = get_sites( array( 'archived' => 0 ) );
-		foreach ( $sites as $site ) {
-			switch_to_blog( $site->blog_id );
-			// Sla de hoofdsite over
-			if ( ! is_main_site() ) {
-				$local_zips = get_option( 'oxfam_zip_codes' );
-				if ( count($local_zips) >= 1 ) {
-					$i = 0;
-					$thuislevering = "Doet thuislevering in ";
-					foreach ( $local_zips as $zip ) {
-						$i++;
-						$thuislevering .= $zip;
-						if ( $i < count($local_zips) ) $thuislevering .= ", ";
-					}
-					$str .= "<Placemark><name><![CDATA[".get_company_name()."]]></name><styleUrl>#1</styleUrl><description><![CDATA[".get_company_address()."<br>".$thuislevering.".<br><a href=".get_site_url().">Naar deze webshop »</a>]]></description><Point><coordinates>".get_oxfam_shop_data( 'll' )."</coordinates></Point></Placemark>";
-				}
-			}
-			restore_current_blog();
-		}
-
-		// Sluit document af
-		$str .= "</Document></kml>";
-		fwrite($myfile, $str);
-		fclose($myfile);
-		
-		return do_shortcode("[flexiblemap src='".site_url()."/newoutput.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true' maptype='light_monochrome']");
 	}
 
 	add_filter( 'flexmap_custom_map_types', function($mapTypes, $attrs) {
