@@ -66,7 +66,9 @@
 									echo '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 								echo '</select></p>';
 								echo '<p class="output">&nbsp;</p>';
-								echo '<p>Bestel dit product op <a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">bestelweb.be</a></p>';
+								// if ( ! $main_product->is_in_stock() ) {
+									echo '<p>Bestel dit product op <a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">bestelweb.be</a></p>';
+								// }
 							echo '</div>';
 							
 							// Rechterdeel

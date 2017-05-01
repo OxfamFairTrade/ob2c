@@ -703,7 +703,7 @@
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
 			case stristr( $method->id, 'local_pickup' ):
 				$descr .= 'Beschikbaar op '.strftime('%A %d/%m/%Y vanaf %ku%M', $timestamp);
-				$label .= wc_price(0.0);
+				$label .= ':'.wc_price(0);
 				break;
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
@@ -716,6 +716,7 @@
 			// Alle instances van gratis thuislevering
 			case stristr( $method->id, 'free_shipping' ):
 				$descr .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
+				$label .= ':'.wc_price(0);
 				break;
 			default:
 				$descr .= __( 'Geen schatting beschikbaar', 'wc-oxfam' );
