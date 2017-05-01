@@ -163,3 +163,9 @@ tr.shipping .woocommerce-Price-amount {
 	width: 300px;
 	float: right;
 }
+
+/* Geef meer ruimte aan totaalprijzen */
+table.shop-table tr.order-total > th,
+table.shop-table tr.order-total > td {
+	width: 50%;
+}

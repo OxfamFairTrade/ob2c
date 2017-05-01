@@ -794,7 +794,8 @@
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 		}
-		
+
+		write_log(date('d/m/Y H:i', $timestamp));		
 		return $timestamp;
 	}
 
@@ -945,7 +946,9 @@
 		}
 
 		// Verhinder externe levermethodes indien totale brutogewicht > 30 kg
-		if ( $woocommerce->cart->cart_contents_weight > 29000 ) {
+		// MANDJE VOLGT DE GEWICHTSINSTELLING VAN WOOCOMMERCE
+		$cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
+		if ( $cart_weight > 29 ) {
 			unset( $rates['flat_rate:1'] );
 			unset( $rates['flat_rate:3'] );
 			unset( $rates['flat_rate:5'] );
@@ -954,31 +957,46 @@
 			unset( $rates['free_shipping:6'] );
 			unset( $rates['service_point_shipping_method:7'] );
 			unset( $rates['service_point_shipping_method:8'] );
-			wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering.', 'wc-oxfam' ), 'error' );
+			wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering ('.number_format( $cart_weight, 1, ',', '.' ).' kg). Gelieve ze te komen afhalen in de winkel.', 'wc-oxfam' ), 'error' );
 		}
 
+		write_log("BEFORE");
 		write_log($rates);
-		$ship_classes = $woocommerce->cart->get_cart_item_tax_classes();
+		$shipping_classes = $woocommerce->cart->get_cart_item_tax_classes();
 		write_log($ship_classes);
 
-		// Slug voor standaard is lege string ...
+		// Slug voor de standard rate is een lege string!
 		$standard = '';
-		if ( in_array( $standard, $ship_classes ) ) {
-			// Geen idee waarom dit niet gewoon 5.7438 moet zijn ...
-			$cost = 5.57;
+		if ( in_array( $standard, $shipping_classes ) ) {
+			// Ook belastingen moeten expliciet herberekend worden!
+			// Voeding = ID 1 = 6%
+			// Standard = ID 2 = 21%
+			$cost = 5.7438;
+			$taxes = $cost*0.21;
 			if ( isset( $rates['flat_rate:1'] ) ) {
 				$rates['flat_rate:1']->cost = $cost;
+				$rates['flat_rate:1']->taxes[2] = $taxes;
+				$rates['flat_rate:1']->taxes[1] = 0.0;
 			}
 			if ( isset( $rates['flat_rate:3'] ) ) {
 				$rates['flat_rate:3']->cost = $cost;
+				$rates['flat_rate:3']->taxes[2] = $taxes;
+				$rates['flat_rate:3']->taxes[1] = 0.0;
 			}
 			if ( isset( $rates['flat_rate:5'] ) ) {
 				$rates['flat_rate:5']->cost = $cost;
+				$rates['flat_rate:5']->taxes[2] = $taxes;
+				$rates['flat_rate:5']->taxes[1] = 0.0;
 			}
 			if ( isset( $rates['service_point_shipping_method:7'] ) ) {
 				$rates['service_point_shipping_method:7']->cost = $cost;
+				$rates['service_point_shipping_method:7']->taxes[2] = $taxes;
+				$rates['service_point_shipping_method:7']->taxes[1] = 0.0;
 			}
 		}
+
+		write_log("AFTER");
+		write_log($rates);
 
 	  	return $rates;
 	}
@@ -2121,14 +2139,11 @@
 	}
 
 	function print_office_hours( $atts = [] ) {
-		// Normaliseer de attributen
-		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
 		// Overschrijf defaults met expliciete data van de gebruiker
 		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
 		
 		$output = '';
-		$node = $atts['node'];
-		$days = get_office_hours( $node );
+		$days = get_office_hours( $atts['node'] );
 		foreach ( $days as $day_index => $hours ) {
 			// Check of er voor deze dag wel openingsuren bestaan
 			if ( $hours ) {
@@ -2145,44 +2160,26 @@
 		return $output;
 	}
 
-	function print_place( $atts = [] ) {
-		// Normaliseer de attributen
-		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
-		// Overschrijf defaults met expliciete data van de gebruiker
+	function print_oxfam_shop_data( $key, $atts ) {
+		// Overschrijf defaults door opgegeven attributen
 		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
-		$node = $atts['node'];
-		$output = get_oxfam_shop_data( 'place', $node );
-		return $output;
+		return get_oxfam_shop_data( $key, $atts['node'] );
+	}
+
+	function print_place( $atts = [] ) {
+		return print_oxfam_shop_data( 'place', $atts );
 	}
 
 	function print_zipcode( $atts = [] ) {
-		// Normaliseer de attributen
-		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
-		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
-		$node = $atts['node'];
-		$output = get_oxfam_shop_data( 'zipcode', $node );
-		return $output;
+		return print_oxfam_shop_data( 'zipcode', $atts );
 	}
 
 	function print_city( $atts = [] ) {
-		// Normaliseer de attributen
-		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
-		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
-		$node = $atts['node'];
-		$output = get_oxfam_shop_data( 'city', $node );
-		return $output;
+		return print_oxfam_shop_data( 'city', $atts );
 	}
 
 	function print_telephone( $atts = [] ) {
-		// Normaliseer de attributen
-		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
-		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
-		$node = $atts['node'];
-		$output = get_oxfam_shop_data( 'telephone', $node );
-		return $output;
+		return print_oxfam_shop_data( 'telephone', $atts );
 	}
 
 	function print_summary() {
@@ -2266,6 +2263,7 @@
 	function get_oxfam_shop_data( $key, $node = 0 ) {
 		global $wpdb;
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
+		write_log($node);
 		if ( ! is_main_site() ) {
 			if ( $key === 'tax' or $key === 'account' ) {
 				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop', $node ) );
@@ -2275,7 +2273,7 @@
 					return "UNKNOWN";
 				}
 			} else {
-				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.$node );
+				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.intval($node) );
 				if ( $row ) {
 					switch ($key) {
 						case 'shop':
