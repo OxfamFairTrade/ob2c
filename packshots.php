@@ -40,7 +40,7 @@
 					echo '</div>';
 					// Parameter 'per_page' mag niet te groot zijn, anders error!
 					// Laat de 4 leeggoeditems weg uit de telling
-					$prod_parameters = array( 'category' => $category['id'], 'status' => 'publish', 'exclude' => array( 2378, 2380, 2608, 2610 ), 'orderby' => 'title', 'order' => 'asc', 'per_page' => 125, );
+					$prod_parameters = array( 'category' => $category['id'], 'status' => 'publish', 'exclude' => array( 2378, 2380, 2608, 2610 ), 'orderby' => 'title', 'order' => 'asc', 'per_page' => 100, );
 					$products = $woocommerce->get( 'products', $prod_parameters );
 
 					// Stop alle producten in een array met als key hun artikelnummer

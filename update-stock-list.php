@@ -30,6 +30,7 @@
 				$i = 0;
 				$instock_cnt = 0;
 				$featured_cnt = 0;
+				echo '<div style="display: table;">';
 				while ( $products->have_posts() ) {
 					$products->the_post();
 					$product = wc_get_product( get_the_ID() );
@@ -46,33 +47,32 @@
 						}
 						echo '<div id="'.get_the_ID().'" class="compact';
 						if ( get_the_date('U') > strtotime('-2 months') ) echo ' new';
-							// CHECK STOCK VAN MOEDER PRODUCT, NIET VAN DEZE!
-							// $main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
-							// switch_to_blog(1);
-							// $main_product = wc_get_product( $main_product_id );
-							// restore_current_blog();
-							// if ( ! $main_product->is_in_stock() ) echo ' old';
+						// CHECK STOCK VAN MOEDER PRODUCT, NIET VAN DEZE!
+						// $main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
+						// switch_to_blog(1);
+						// $main_product = wc_get_product( $main_product_id );
+						// restore_current_blog();
+						// if ( ! $main_product->is_in_stock() ) echo ' old';
 						echo '">';
 							// echo '<a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'shop_thumbnail', null, false ).'</a>';
-							echo '<span class="title">'.$product->get_sku().': '.$product->get_title().'</span> ';
-							echo '<input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
-							echo ' <label for="'.get_the_ID().'-featured">In de kijker?</label>';
-							echo '<select id="'.get_the_ID().'-stockstatus">';
+							echo '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().'</span></div>';
+							echo '<div class="cell"><input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
+							echo ' <label for="'.get_the_ID().'-featured">In de kijker?</label></div>';
+							echo '<div class="cell"><select id="'.get_the_ID().'-stockstatus">';
 								echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
 								echo '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
-							echo '</select>';
+							echo '</select></div>';
 							// if ( ! $main_product->is_in_stock() ) {
-								echo ' <a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">Bestel product</a>';
+								echo ' <div class="cell"><a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">Bestel product &raquo;</a></div>';
 							// }
-							echo '<span class="output">&nbsp;</span>';
+						echo '<div class="compact output" style="display: block;"></div>';
 						echo '</div>';
 						$i++;
 					}
 				}
-				wp_reset_postdata();
-				echo '<div style="display: table-row; width: 100%;">';
-					echo '<p style="text-align: right;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
 				echo '</div>';
+				wp_reset_postdata();
+				echo '<p style="text-align: right; width: 100%;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
 			}
 
 			add_action('admin_footer', 'oxfam_action_javascript');
@@ -81,32 +81,15 @@
 				<script type="text/javascript">
 					jQuery(document).ready(function() {
 						jQuery("#oxfam-products input[type=checkbox], #oxfam-products select").on( 'change', function() {
-							var name = jQuery(this).parents('div').first().children(".title").first().html();
 							var parts = jQuery(this).attr('id').split("-");
 							var id = parts[0];
 							var meta = parts[1];
-							var go = confirm("Ben je zeker dat je de "+meta+" wil bijwerken van "+name+"?");
-							if ( go == true ) {
-								if ( meta == 'featured' ) {
-									ajaxCall(id, meta, jQuery(this).is(":checked"));
-								}
-								if ( meta == 'stockstatus' ) {
-									var value = jQuery(this).find(":selected").val();
-									ajaxCall( id, meta, value );
-								}
-							} else {
-								if ( meta == 'featured' ) {
-									jQuery(this).prop("checked", !jQuery(this).is(":checked") );
-								}
-								if ( meta == 'stockstatus' ) {
-									if ( value == 'outofstock' ) {
-										var fallback = 'instock';
-									} else {
-										var fallback = 'outofstock';
-									}
-									jQuery(this).val(fallback);
-								}
-								alert("Geannuleerd, er wordt niets gewijzigd!");
+							if ( meta == 'featured' ) {
+								ajaxCall(id, meta, jQuery(this).is(":checked"));
+							}
+							if ( meta == 'stockstatus' ) {
+								var value = jQuery(this).find(":selected").val();
+								ajaxCall( id, meta, value );
 							}
 						});
 

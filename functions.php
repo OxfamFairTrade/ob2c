@@ -1153,10 +1153,10 @@
 
 	function custom_oxfam_options() {
 		add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
-		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'local_manager', 'oxfam-products-photos', 'oxfam_products_photos_callback', 'dashicons-admin-settings', '56' );
-		add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'local_manager', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
-		add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'administrator', 'oxfam-product-list', 'oxfam_products_list_callback' );
-		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'local_manager', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
+		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_woocommerce', 'oxfam-products-photos', 'oxfam_products_photos_callback', 'dashicons-admin-settings', '56' );
+		add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'manage_woocommerce', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
+		add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'create_sites', 'oxfam-product-list', 'oxfam_products_list_callback' );
+		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_woocommerce', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 	}
 
 	function oxfam_photos_callback() {
@@ -2582,14 +2582,21 @@
 				vertical-align: middle;
 				min-height: 204px;
 				width: 20%;
-				border-left: 5px solid black;
 			}
 
 			#oxfam-products .compact {
-				display: block;
+				display: table-row;
 				box-sizing: border-box;
 				width: 100%;
-				height: 2em;
+				height: 1em;
+				line-height: 1em;
+			}
+
+			#oxfam-products .cell {
+				display: table-cell;
+				text-align: right;
+				width: 20%;
+				padding: 0.5em;
 			}
 
 			#oxfam-products .title {
@@ -2609,11 +2616,11 @@
 			}
 
 			#oxfam-products .border-color-green {
-				border-color: #61a534;
+				border-left: 4px solid #61a534;;
 			}
 
 			#oxfam-products .border-color-red {
-				border-color: #e70052;
+				border-left: 4px solid #e70052;
 			}
 
 			#oxfam-options .left {
