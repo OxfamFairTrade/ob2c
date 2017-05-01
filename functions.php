@@ -2077,33 +2077,52 @@
 
 	function get_oxfam_shop_data( $key ) {
 		global $wpdb;
-		if ( $key === 'tax' or $key === 'account' ) {
-			$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop' ) );
-			if ( $row ) {
-				return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
-			} else {
-				return "UNKNOWN";
-			}
-		} else {
-			$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
-			if ( $row ) {
-				switch ($key) {
-					case 'shop':
-						return $row->field_sellpoint_shop_nid;
-						break;
-					case 'll':
-						// Voor KML-file moet longitude voor latitude komen!
-						return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
-						break;
-					case 'telephone':
-						// Geef alternatieve delimiter mee
-						return call_user_func( 'format_telephone', $row->field_sellpoint_telephone_value, '.' );
-						break;
-					default:
-						return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
+		if ( ! is_main_site() ) {
+			if ( $key === 'tax' or $key === 'account' ) {
+				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop' ) );
+				if ( $row ) {
+					return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
+				} else {
+					return "UNKNOWN";
 				}
 			} else {
-				return "UNKNOWN";
+				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.get_option( 'oxfam_shop_node' ) );
+				if ( $row ) {
+					switch ($key) {
+						case 'shop':
+							return $row->field_sellpoint_shop_nid;
+							break;
+						case 'll':
+							// Voor KML-file moet longitude voor latitude komen!
+							return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
+							break;
+						case 'telephone':
+							// Geef alternatieve delimiter mee
+							return call_user_func( 'format_telephone', $row->field_sellpoint_telephone_value, '.' );
+							break;
+						default:
+							return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
+					}
+				} else {
+					return "(niet gevonden)";
+				}
+			}		
+		} else {
+			switch ($key) {
+				case 'place':
+					return call_user_func( 'format_place', 'Ververijstraat 15', '.' );
+					break;
+				case 'zipcode':
+					return call_user_func( 'format_zipcode', '9000', '.' );
+					break;
+				case 'city':
+					return call_user_func( 'format_city', 'Gent', '.' );
+					break;
+				case 'telephone':
+					return call_user_func( 'format_telephone', '092188899', '.' );
+					break;
+				default:
+					return "(gegevens cvba)";
 			}
 		}
 	}
@@ -2199,7 +2218,8 @@
 
 	function print_summary() {
 		$sites = get_sites( array( 'archived' => 0, 'count' => true ) );
-		$msg = "<h1>Shop online in één van onze ".$sites." webshops en haal je bestelling na één werkdag af in de winkel (indien geopend).</h1>";
+		// Hoofdblog (en templates) ervan aftrekken
+		$msg = "<h1>Shop online in één van onze ".($sites-1)." webshops en haal je bestelling na één werkdag af in de winkel (indien geopend).</h1>";
 		return $msg;
 	}
 
@@ -2207,8 +2227,8 @@
 		$global_zips = get_shops();
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
  		$msg = '<h1>Liever thuislevering? Vul één van de '.count($all_zips).' Vlaamse postcodes in en we sturen je door naar de winkel die jouw bestelling levert.</h1>';
-		$msg .= '<p style="text-align: center;"><input type="number" name="zip" min="1000" max="9992" maxlength="4"></p>';
-		$set = '<select>';
+		$msg .= '<p style="text-align: center;"><input type="tel" name="zip" maxlength="4"></p>';
+		$set = 'Reeds ingevuld:<br><select>';
 		foreach ( $all_zips as $zip ) {
 			if ( isset( $global_zips[$zip] ) ) {
 				$set .= '<option value="'.$global_zips[$zip].'">'.$zip.'</option>';
