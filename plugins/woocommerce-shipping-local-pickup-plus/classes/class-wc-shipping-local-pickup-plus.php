@@ -1227,7 +1227,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 					echo '<li style="margin-left:0;">';
 					// GEWIJZIGD: Voeg Savoy-klasses toe zodat styling identiek is
 					echo '<input type="radio" name="pickup_location[' . $package_index . ']" id="pickup_location_' . $package_index . '_' . $location['id'] . '" value="' . esc_attr( $location['id'] ) . '" class="nm-custom-radio pickup_location" ' . checked( $location['id'], $chosen_pickup_location_id, false ) . ' />';
-					echo '<label class="nm-custom-radio-label" for="pickup_location_' . $package_index . '_' . $location['id'] . '">' . $this->get_formatted_address_helper( $location, true, true ) . '</label>';
+					// GEWIJZIGD: Zorg ervoor dat shortcodes in het adres uitgeschreven worden
+					echo '<label class="nm-custom-radio-label" for="pickup_location_' . $package_index . '_' . $location['id'] . '">' . do_shortcode( $this->get_formatted_address_helper( $location, true, true ) ) . '</label>';
 					echo '</li>';
 				}
 				echo '</ul>';

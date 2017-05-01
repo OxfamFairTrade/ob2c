@@ -2075,6 +2075,7 @@
 	add_shortcode ( 'copyright', 'print_copyright' );
 	add_shortcode ( 'openingsuren', 'print_office_hours' );
 	add_shortcode ( 'telefoon', 'print_telephone' );
+	add_shortcode ( 'postcode', 'print_zipcode' );
 	add_shortcode ( 'gemeente', 'print_city' );
 	add_shortcode ( 'toon_inleiding', 'print_summary' );
 	add_shortcode ( 'toon_shops', 'print_shop_selection' );
@@ -2140,6 +2141,26 @@
 				}
 			}
 		}
+		return $output;
+	}
+
+	function print_city( $atts = [] ) {
+		// Normaliseer de attributen
+		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
+		// Overschrijf defaults met expliciete data van de gebruiker
+		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
+		$node = $atts['node'];
+		$output = get_oxfam_shop_data( 'city', $node );
+		return $output;
+	}
+
+	function print_zipcode( $atts = [] ) {
+		// Normaliseer de attributen
+		$atts = array_change_key_case( (array)$atts, CASE_LOWER );
+		// Overschrijf defaults met expliciete data van de gebruiker
+		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
+		$node = $atts['node'];
+		$output = get_oxfam_shop_data( 'zipcode', $node );
 		return $output;
 	}
 
