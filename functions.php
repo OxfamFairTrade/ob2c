@@ -1153,9 +1153,9 @@
 
 	function custom_oxfam_options() {
 		add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
-		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'local_manager', 'oxfam-products', 'oxfam_products_photos_callback', 'dashicons-admin-settings', '56' );
-		add_submenu_page( 'oxfam-products', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'local_manager', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
-		add_submenu_page( 'oxfam-products', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'administrator', 'oxfam-product-list', 'oxfam_products_list_callback' );
+		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'local_manager', 'oxfam-products-photos', 'oxfam_products_photos_callback', 'dashicons-admin-settings', '56' );
+		add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'local_manager', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
+		add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'administrator', 'oxfam-product-list', 'oxfam_products_list_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'local_manager', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 	}
 
@@ -2583,6 +2583,13 @@
 				min-height: 204px;
 				width: 20%;
 				border-left: 5px solid black;
+			}
+
+			#oxfam-products .compact {
+				display: block;
+				box-sizing: border-box;
+				width: 100%;
+				height: 2em;
 			}
 
 			#oxfam-products .title {

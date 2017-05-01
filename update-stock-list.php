@@ -44,7 +44,7 @@
 						if ( $product->is_featured() ) {
 							$featured_cnt++;
 						}
-						echo '<div id="'.get_the_ID().'" class="block compact';
+						echo '<div id="'.get_the_ID().'" class="compact';
 						if ( get_the_date('U') > strtotime('-2 months') ) echo ' new';
 							// CHECK STOCK VAN MOEDER PRODUCT, NIET VAN DEZE!
 							// $main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
@@ -54,15 +54,15 @@
 							// if ( ! $main_product->is_in_stock() ) echo ' old';
 						echo '">';
 							// echo '<a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'shop_thumbnail', null, false ).'</a>';
-							echo '<span class="title">'.$product->get_sku().': '.$product->get_title().'</span>';
+							echo '<span class="title">'.$product->get_sku().': '.$product->get_title().'</span> ';
 							echo '<input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
-							echo '<label for="'.get_the_ID().'-featured" style="margin-left: 5px;">In de kijker?</label>';
+							echo ' <label for="'.get_the_ID().'-featured">In de kijker?</label>';
 							echo '<select id="'.get_the_ID().'-stockstatus">';
 								echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
 								echo '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 							echo '</select>';
 							// if ( ! $main_product->is_in_stock() ) {
-								echo '<a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">Bestel product</a>';
+								echo ' <a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">Bestel product</a>';
 							// }
 							echo '<span class="output">&nbsp;</span>';
 						echo '</div>';
