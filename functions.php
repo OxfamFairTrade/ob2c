@@ -2065,6 +2065,7 @@
 	add_shortcode ( 'bezoeker', 'print_customer' );
 	add_shortcode ( 'copyright', 'print_copyright' );
 	add_shortcode ( 'openingsuren', 'print_office_hours' );
+	add_shortcode ( 'toon_inleiding', 'print_summary' );
 	add_shortcode ( 'toon_shops', 'print_shop_selection' );
 	add_shortcode ( 'toon_kaart', 'print_map' );
 	add_shortcode ( 'widget_usp', 'print_widget_usp' );
@@ -2196,19 +2197,25 @@
 		return $global_zips;
 	}
 
+	function print_summary() {
+		$sites = get_sites( array( 'archived' => 0, 'count' => true ) );
+		$msg = "<h1>Shop online in één van onze ".$sites." webshops en haal je bestelling na één werkdag af in de winkel (indien geopend).</h1>";
+		return $msg;
+	}
+
 	function print_shop_selection() {
-		$msg = '<p style="text-align: center;"><select>';
- 		$global_zips = get_shops();
+		$global_zips = get_shops();
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
- 		foreach ( $all_zips as $zip ) {
+ 		$msg = '<h1>Liever thuislevering? Vul één van de '.count($all_zips).' Vlaamse postcodes in en we sturen je door naar de winkel die jouw bestelling levert.</h1>';
+		$msg .= '<p style="text-align: center;"><input type="number" name="zip" min="1000" max="9992" maxlength="4"></p>';
+		$set = '<select>';
+		foreach ( $all_zips as $zip ) {
 			if ( isset( $global_zips[$zip] ) ) {
-				$msg .= '<option value="'.$global_zips[$zip].'">'.$zip.'</option>';
-			} else {
-				$msg .= '<option value="">'.$zip.'</option>';
+				$set .= '<option value="'.$global_zips[$zip].'">'.$zip.'</option>';
 			}
 		}
-		$msg .= '</select></p>';
-		return $msg;
+		$set .= '</select>';
+		return $msg.'<br>'.$set;
 	}
 
 	function print_map() {

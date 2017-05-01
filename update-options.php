@@ -10,6 +10,7 @@
 			<?php
 				global $default_holidays;
 
+				settings_errors();
 				// Strikter onderscheid maken tussen opties die nationaal of lokaal beheerd worden (want anders toch bereikbaar door HTML te manipuleren)
 				settings_fields( 'oxfam-options-local' );
 				if ( current_user_can( 'create_sites' ) ) {
