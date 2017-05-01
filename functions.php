@@ -25,6 +25,15 @@
 	# SECURITY #
 	############
 
+	// Zorg ervoor dat lokale beheerders toch al hun gearchiveerde site kunnen bekijken
+	add_filter( 'ms_site_check', 'allow_local_manager_on_archived' );
+
+	function allow_local_manager_on_archived() {
+		if ( current_user_can( 'manage_woocommerce' ) ) {
+			return true;
+		}
+	}
+
 	add_action( 'woocommerce_order_status_processing_to_claimed', 'register_transition_author' );
 
 	function register_transition_author( $order_id ) {
@@ -2551,8 +2560,8 @@
 				max-width: 400px;
 			}
 
-			/* Dirty fix om 'Exporteren als CSV' te verbergen */
-			#adminmenu #menu-posts-feedback {
+			/* Dirty fix om 'Bestelling toevoegen' te verbergen */
+			body.post-type-shop_order div.wrap > a.page-title-action {
 				display: none;
 			}
 
