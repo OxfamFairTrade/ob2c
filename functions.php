@@ -964,39 +964,39 @@
 			wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering ('.number_format( $cart_weight, 1, ',', '.' ).' kg). Gelieve ze te komen afhalen in de winkel.', 'wc-oxfam' ), 'error' );
 		}
 
-		$shipping_classes = $woocommerce->cart->get_cart_item_tax_classes();
+		$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
 		
 		// Slug voor de standard rate is een lege string!
-		$standard = '';
-		if ( in_array( $standard, $shipping_classes ) ) {
-			// Ook belastingen moeten expliciet herberekend worden!
-			// Voeding = ID 1 = 6%
-			// Standard = ID 2 = 21%
+		$low_vat = 'voeding';
+		if ( ! in_array( $low_vat, $tax_classes ) ) {
 			$cost = 5.7438;
+			// Ook belastingen moeten expliciet herberekend worden!
 			$taxes = $cost*0.21;
 			if ( isset( $rates['flat_rate:1'] ) ) {
 				$rates['flat_rate:1']->cost = $cost;
-				$rates['flat_rate:1']->taxes[2] = $taxes;
+				// Voeding = ID 1 = 6% op nul zetten
 				$rates['flat_rate:1']->taxes[1] = 0.0;
+				// Standard = ID 2 = 21% instellen
+				$rates['flat_rate:1']->taxes[2] = $taxes;
 			}
 			if ( isset( $rates['flat_rate:3'] ) ) {
 				$rates['flat_rate:3']->cost = $cost;
-				$rates['flat_rate:3']->taxes[2] = $taxes;
 				$rates['flat_rate:3']->taxes[1] = 0.0;
+				$rates['flat_rate:3']->taxes[2] = $taxes;
 			}
 			if ( isset( $rates['flat_rate:5'] ) ) {
 				$rates['flat_rate:5']->cost = $cost;
-				$rates['flat_rate:5']->taxes[2] = $taxes;
 				$rates['flat_rate:5']->taxes[1] = 0.0;
+				$rates['flat_rate:5']->taxes[2] = $taxes;
 			}
 			if ( isset( $rates['service_point_shipping_method:7'] ) ) {
 				$rates['service_point_shipping_method:7']->cost = $cost;
-				$rates['service_point_shipping_method:7']->taxes[2] = $taxes;
 				$rates['service_point_shipping_method:7']->taxes[1] = 0.0;
+				$rates['service_point_shipping_method:7']->taxes[2] = $taxes;
 			}
 		}
 
-		write_log($ship_classes);
+		write_log($tax_classes);
 		write_log($rates);
 
 	  	return $rates;
