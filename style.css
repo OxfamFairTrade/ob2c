@@ -137,11 +137,11 @@ tr.shipping .woocommerce-Price-amount {
 }
 
 /* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het afrekenoverzicht */
-.woocommerce-checkout-review-order .shop-table .order-total > th,
-.woocommerce-checkout-review-order .shop-table .order-total > td {
+.woocommerce-checkout-review-order .shop_table .order-total > th,
+.woocommerce-checkout-review-order .shop_table .order-total > td {
 	width: 50%;
 }
-.woocommerce-checkout-review-order .shop-table small.includes_tax {
+.woocommerce-checkout-review-order .shop_table .order-total small.includes_tax {
 	display: block;
 }
 
@@ -149,7 +149,6 @@ tr.shipping .woocommerce-Price-amount {
 .nm-coupon-wrap,
 .nm-single-product-menu,
 .shop_table input[name=update_cart],
-.nm-checkout-login-coupon,
 #calc_shipping_country_field,
 #customer_details #billing_country_field,
 #customer_details #shipping_country_field,
@@ -161,14 +160,19 @@ tr.shipping .woocommerce-Price-amount {
 
 /* Verberg lelijk opgemaakte 'Verzendkosten bijgewerkt' */
 .nm-shop-notice .woocommerce-info {
-	display: none !important;
-} 
+	display: none;
+}
+
+/* Gevaarlijke manier om kortingsbonboodschap te verbergen (= gaat ervan uit dat het altijd als 2de verschijnt) */
+.nm-checkout-login-coupon > li:nth-child(2) {
+	// display: none;
+}
 
 /* Geef titeltje 'Bestelnotities' zelfde lay-out als factuur- en verzendgegevens (of ook h3 van maken in template?) */
 p#order_comments_field.form-row.notes label {
 	font-size: 24px;
 	padding-bottom: 27px;
-	padding-top: 36px !important;
+	padding-top: 36px;
 }
 
 /* Zorg ervoor dat de openingsuren de volledige breedte kunnen innemen */

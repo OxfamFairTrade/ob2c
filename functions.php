@@ -1035,11 +1035,11 @@
 	  	}
 	}
 
-	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen WERKT NIET DUS VIA CSS GEDAAN
-	// add_filter( 'woocommerce_coupon_message', 'remove_msg_filter', 10, 3 );
+	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
+	add_filter( 'woocommerce_checkout_coupon_message', 'remove_msg_filter' );
 
-	function remove_msg_filter( $msg, $msg_code, $this ) {
-		write_log("COUPON: ".$msg_code);
+	function remove_msg_filter( $msg ) {
+		write_log("COUPON: ".$msg);
 		if ( is_checkout() ) {
 		    return "";
 		}
