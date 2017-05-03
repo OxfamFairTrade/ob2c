@@ -2164,7 +2164,7 @@
 			if ( $hours ) {
 				foreach ( $hours as $part => $part_hours ) {
 					if ( ! isset( $$day_index ) ) {
-						$output .= "<br>".ucwords( strftime( '%A', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
+						$output .= ucwords( strftime( '%A', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end']."<br>";
 						$$day_index = true;
 					} else {
 						$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
