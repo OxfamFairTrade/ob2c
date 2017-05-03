@@ -25,6 +25,7 @@
 			);
 
 			$products = new WP_Query( $args );
+			$content ="";
 
 			if ( $products->have_posts() ) {
 				$i = 0;
@@ -35,7 +36,7 @@
 					$product = wc_get_product( get_the_ID() );
 					// Verhinder dat leeggoed ook opduikt
 					if ( is_numeric( $product->get_sku() ) ) {
-						if ( $i % 2 === 0 ) echo '<div style="display: table-row;">';
+						if ( $i % 2 === 0 ) $content .= '<div style="display: table-row;">';
 						if ( $product->is_in_stock() ) {
 							$class = 'border-color-green';
 							$instock_cnt++;
@@ -45,46 +46,50 @@
 						if ( $product->is_featured() ) {
 							$featured_cnt++;
 						}
-						echo '<div class="block">';
+						$content .= '<div class="block">';
 							// Linkerdeel
-							echo '<div id="'.get_the_ID().'" class="pane-left';
-							if ( get_the_date('U') > strtotime('-2 months') ) echo ' new';
+							$content .= '<div id="'.get_the_ID().'" class="pane-left';
+							if ( get_the_date('U') > strtotime('-2 months') ) $content .= ' new';
 							// CHECK STOCK VAN MOEDER PRODUCT, NIET VAN DEZE!
 							// $main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
 							// switch_to_blog(1);
 							// $main_product = wc_get_product( $main_product_id );
 							// restore_current_blog();
-							// if ( ! $main_product->is_in_stock() ) echo ' old';
-							echo '">';
-								echo '<p class="title">'.$product->get_sku().': '.$product->get_title().'</p>';
-								echo '<p>';
-									echo '<input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
-									echo '<label for="'.get_the_ID().'-featured" style="margin-left: 5px;">In de kijker?</label>';
-								echo '</p>';
-								echo '<p><select id="'.get_the_ID().'-stockstatus">';
-									echo '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
-									echo '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
-								echo '</select></p>';
-								echo '<p class="output">&nbsp;</p>';
+							// if ( ! $main_product->is_in_stock() ) $content .= ' old';
+							$content .= '">';
+								$content .= '<p class="title">'.$product->get_sku().': '.$product->get_title().'</p>';
+								$content .= '<p>';
+									$content .= '<input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
+									$content .= '<label for="'.get_the_ID().'-featured" style="margin-left: 5px;">In de kijker?</label>';
+								$content .= '</p>';
+								$content .= '<p><select id="'.get_the_ID().'-stockstatus">';
+									$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
+									$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
+								$content .= '</select></p>';
+								$content .= '<p class="output">&nbsp;</p>';
 								// if ( ! $main_product->is_in_stock() ) {
-									echo '<p>Bestel dit product op <a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">bestelweb.be</a></p>';
+									$content .= '<p>Bestel dit product op <a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">bestelweb.be</a></p>';
 								// }
-							echo '</div>';
+							$content .= '</div>';
 							
 							// Rechterdeel
-							echo '<div class="pane-right '.$class.'">';
+							$content .= '<div class="pane-right '.$class.'">';
 								// Verhinder dat de (grote) placeholder uitgespuwd wordt indien een product per ongeluk geen foto heeft
-								echo '<a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'thumbnail', null, false ).'</a>';
-							echo '</div>';
-						echo '</div>';
+								$content .= '<a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'thumbnail', null, false ).'</a>';
+							$content .= '</div>';
+						$content .= '</div>';
 
-						if ( $i % 2 === 1 ) echo '</div>';
+						if ( $i % 2 === 1 ) $content .= '</div>';
 						$i++;
 					}
 				}
 				wp_reset_postdata();
 				// Extra afsluitende </div> nodig indien oneven aantal producten!
-				if ( $i % 2 === 1 ) echo '</div>';
+				if ( $i % 2 === 1 ) $content .= '</div>';
+				echo '<div style="display: table-row; width: 100%;">';
+					echo '<p style="text-align: right;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
+				echo '</div>';
+				echo $content;
 				echo '<div style="display: table-row; width: 100%;">';
 					echo '<p style="text-align: right;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
 				echo '</div>';

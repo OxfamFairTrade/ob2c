@@ -5,7 +5,7 @@
 	if ( ! defined('ABSPATH') ) exit;
 
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
-	$default_holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-02' );
+	$default_holidays = array( '2017-05-25', '2017-06-04', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02' );
 	
 	// Indien sluitingsdag: toon een banner dat we vandaag uitzonderlijk gesloten zijn
 	// Wordt bij elke paginaweergave uitgevoerd, dus niet echt efficiënt
@@ -1153,14 +1153,13 @@
 
 	function comma_string_to_array( $values ) {
 		$values = preg_replace( "/\s/", "", $values );
-		$array = preg_split( "/(,|;|&)/", $values );
+		$values = preg_replace( "/\//", "-", $values );
+		$array = preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
+
 		foreach ( $array as $key => $value ) {
-			// DATUMS UIT HET VERLEDEN VERWIJDEREN
-			// CONFLICTEERT WELLICHT MET POSTCODES -> OPSPLITSEN
-			if ( strlen( $value ) === 0 or $array[$key] < date( 'Y-m-d' ) ) {
+			// Verwijder datums uit het verleden (na check of het wel om een datum gaat en geen postcode!)
+			if ( strpos( $array[$key], '-' ) !== false and $array[$key] < date( 'Y-m-d' ) ) {
 				unset($array[$key]);
-			} else {
-				$array[$key] = preg_replace( "/\//", "-", $value );
 			}
 		}
 		sort($array);

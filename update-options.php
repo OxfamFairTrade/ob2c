@@ -14,6 +14,7 @@
 				// Strikter onderscheid maken tussen opties die nationaal of lokaal beheerd worden (want anders toch bereikbaar door HTML te manipuleren)
 				settings_fields( 'oxfam-options-local' );
 				if ( current_user_can( 'create_sites' ) ) {
+					// Mogelijk om vakantiedagen als admin op te slaan of slechts één groep mogelijk?
 					settings_fields( 'oxfam-options-global' );
 				}
 				
