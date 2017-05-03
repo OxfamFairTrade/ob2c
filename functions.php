@@ -964,11 +964,8 @@
 			wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering ('.number_format( $cart_weight, 1, ',', '.' ).' kg). Gelieve ze te komen afhalen in de winkel.', 'wc-oxfam' ), 'error' );
 		}
 
-		write_log("BEFORE");
-		write_log($rates);
 		$shipping_classes = $woocommerce->cart->get_cart_item_tax_classes();
-		write_log($ship_classes);
-
+		
 		// Slug voor de standard rate is een lege string!
 		$standard = '';
 		if ( in_array( $standard, $shipping_classes ) ) {
@@ -999,7 +996,7 @@
 			}
 		}
 
-		write_log("AFTER");
+		write_log($ship_classes);
 		write_log($rates);
 
 	  	return $rates;
@@ -2130,7 +2127,16 @@
 	}
 
 	function print_welcome() {
-		return "Dag ".print_customer()."! Ben je klaar om de wereld een klein beetje te veranderen?";
+		if ( date('G') < 6 ) {
+			$greet = "Goeiemorgen";
+		} elseif ( date('G') < 12 ) {
+			$greet = "Goeiemorgen";
+		} elseif ( date('G') < 20 ) {
+			$greet = "Goeiemiddag";
+		} else {
+			$greet = "Goeieavond";
+		}
+		return $greet." ".print_customer()."! Welkom op de webshop van ".get_company_name().".";
 	}
 
 	function print_customer() {
