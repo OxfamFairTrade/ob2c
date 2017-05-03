@@ -4,19 +4,6 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 
-	// Beheer alle wettelijke feestdagen uit de testperiode centraal
-	$default_holidays = array( '2017-05-25', '2017-06-04', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02' );
-	
-	// Indien sluitingsdag: toon een banner dat we vandaag uitzonderlijk gesloten zijn
-	// Wordt bij elke paginaweergave uitgevoerd, dus niet echt efficiënt
-	// Boodschap personaliseren? Eerste werkdag zoeken na vakantie?
-	update_option('woocommerce_demo_store_notice', 'We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening.');
-	if ( in_array( date('Y-m-d'), get_option('oxfam_holidays', $default_holidays) ) ) {
-		update_option('woocommerce_demo_store', 'yes');
-	} else {
-		update_option('woocommerce_demo_store', 'no');
-	}
-	
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
 	$content_width = 2000;
 
@@ -30,6 +17,9 @@
 	    wp_enqueue_style( 'parent-style', get_template_directory_uri().'/style.css' );
 	    wp_enqueue_style( 'child-style', get_stylesheet_uri(), array( 'parent-style' ) );
 	}
+	
+	// Beheer alle wettelijke feestdagen uit de testperiode centraal
+	$default_holidays = array( '2017-05-25', '2017-06-04', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02' );
 	
 	############
 	# SECURITY #
@@ -305,7 +295,7 @@
 	function cart_update_qty_script() {
 		if ( is_cart() ) :
 			global $woocommerce;
-			validate_zip_code_for_shipping( intval( $woocommerce->customer->get_shipping_postcode() ) );
+			// validate_zip_code_for_shipping( intval( $woocommerce->customer->get_shipping_postcode() ) );
 		?>
 			<script>
 				var wto;
@@ -920,8 +910,6 @@
 	
 	function skip_shipping_address_on_local_pickup( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
-		write_log("CHECK OF WE HET VERZENDADRES MOETEN OPSLAAN TIJDENS HET AFREKENEN");
-		write_log($chosen_methods);
 		if ( strpos( $chosen_methods[0], 'local_pickup' ) !== false ) {
 			$needs_shipping_address = false;
 		}
@@ -932,10 +920,15 @@
 		if ( does_home_delivery() and $zip !== 0 ) {
 			if ( ! in_array( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
 				wc_add_notice( __( 'Dit is geen geldige Vlaamse postcode!', 'wc-oxfam' ), 'error' );
+			} elseif ( ! in_array( $zip, get_option( 'oxfam_zip_codes' ) ) ) {
+				$str = date('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
+				file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
+				wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode! Kies voor afhaling of keer terug naar het portaal om de webshop te vinden die voor jouw postcode thuislevering organiseert.', 'wc-oxfam' ), 'error' );
 			}
 		}
 	}
 
+	// OUDE VERSIE, NIET MEER GEBRUIKEN?
 	function validate_zip_code_for_shipping( $zip ) {
 		if ( does_home_delivery() and $zip !== 0 ) {
 			if ( ! in_array( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
@@ -1055,7 +1048,6 @@
 	add_filter( 'woocommerce_checkout_coupon_message', 'remove_msg_filter' );
 
 	function remove_msg_filter( $msg ) {
-		write_log("COUPON: ".$msg);
 		if ( is_checkout() ) {
 		    return "";
 		}
@@ -1093,7 +1085,7 @@
 				return floor( intval($product_item['quantity']) / 6 );
 			case 'WLBS24M':
 				return floor( intval($product_item['quantity']) / 24 );
-			// PROBLEEM: winkelmandje is forced sell 'vergeten' wanneer hij wél 6/24 flessen
+			// PROBLEEM: BAK WORDT ENKEL TOEGEVOEGD BIJ 6/24 IDENTIEKE FLESSEN
 			case 'WLFSG':
 				if ( intval($product_item['quantity']) === 6 ) {
 					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
@@ -1154,7 +1146,7 @@
 	function comma_string_to_array( $values ) {
 		$values = preg_replace( "/\s/", "", $values );
 		$values = preg_replace( "/\//", "-", $values );
-		$array = preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
+		$array = (array)preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
 
 		foreach ( $array as $key => $value ) {
 			// Verwijder datums uit het verleden (na check of het wel om een datum gaat en geen postcode!)
@@ -1364,6 +1356,18 @@
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
+
+		// Indien sluitingsdag: toon een banner dat we vandaag uitzonderlijk gesloten zijn
+		global $default_holidays;
+		// Wordt bij elke paginaweergave uitgevoerd, dus niet echt efficiënt
+		// Boodschap personaliseren? Eerste werkdag zoeken na vakantie?
+		update_option('woocommerce_demo_store_notice', 'We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening.');
+		// Wijkt 2 dagen af, maar kom
+		if ( in_array( date('Y-m-d'), get_option('oxfam_holidays', $default_holidays) ) ) {
+			update_option('woocommerce_demo_store', 'yes');
+		} else {
+			update_option('woocommerce_demo_store', 'no');
+		}
 	}
 
 	// Creëer drie custom hiërarchische taxonomieën op producten om wijninfo in op te slaan
@@ -1855,7 +1859,6 @@
 			// De waarden zelf zitten allemaal als termen opgeslagen, maar om te verschijnen bij het product moeten ze wel 'aangekondigd' worden
 			$product = wc_get_product( $post_id );
 			$attributes = $product->get_attributes();
-			// write_log($attributes);
 			
 			$price = floatval($product->get_price());
 			$parts = explode( ' ', $product->get_attribute( 'pa_inhoud' ) );
@@ -2000,10 +2003,11 @@
 		if ( $pagenow === 'index.php' ) {
 			echo '<div class="notice notice-info">';
 			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
-				echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust bestellingen te plaatsen en te beheren.</p>';
+				// echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust bestellingen te plaatsen en te beheren.</p>';
 			} else {
-				echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
+				// echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
 			}
+			echo '<p>De bestelmails naar webshopbeheerders en klanten worden weer vestuurd! Weer iets bijgeleerd: nooit een vakje zomaar leegmaken :).</p>';
 			echo '</div>';
 			echo '<div class="notice notice-info">';
 			echo '<p>Download <a href="http://demo.oxfamwereldwinkels.be/wp-content/uploads/verzendtarieven-B2C-pakketten.pdf" target="_blank">de nota met tarieven en voorwaarden</a> bij externe verzending via Bpost of Bubble Post. Kun je met een lokale duurzame speler samenwerken? Des te beter! Bezorg ons vóór de 2de opleidingssessie een ruwe schatting van de kostprijs zodat we kunnen bekijken hoe we dit in de voorgestelde vergoeding van 5,74 euro excl. BTW voor thuislevering kunnen inpassen.</p>';
@@ -2298,7 +2302,6 @@
 	function get_oxfam_shop_data( $key, $node = 0 ) {
 		global $wpdb;
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
-		write_log($node);
 		if ( ! is_main_site() ) {
 			if ( $key === 'tax' or $key === 'account' ) {
 				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop', $node ) );
