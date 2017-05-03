@@ -2,14 +2,17 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-04-21 15:45:13+0000\n"
+"PO-Revision-Date: 2017-05-03 09:57+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: GlotPress/2.4.0-alpha\n"
+"X-Generator: Poedit 2.0.1\n"
 "Language: nl\n"
 "Project-Id-Version: Plugins - WooCommerce - Stable (latest release)\n"
+"POT-Creation-Date: \n"
+"Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
+"Language-Team: \n"
 
 #: includes/admin/meta-boxes/views/html-order-items.php:203
 msgid "Recalculate"
@@ -202,7 +205,7 @@ msgstr[1] "%1$s voor %2$s items"
 
 #: templates/myaccount/dashboard.php:37
 msgid "From your account dashboard you can view your <a href=\"%1$s\">recent orders</a>, manage your <a href=\"%2$s\">shipping and billing addresses</a> and <a href=\"%3$s\">edit your password and account details</a>."
-msgstr "Vanaf je account dashboard kun je <a href=\"%1$s\">je recente bestellingen bekijken</a>, <a href=\"%2$s\">je verzend- en factuuradressen beheren</a> en <a href=\"%3$s\">je wachtwoord en account details bewerken</a>."
+msgstr "Vanaf je account dashboard kun je <a href=\"%1$s\">je recente bestellingen bekijken</a>, <a href=\"%2$s\">je adressen beheren</a>, <a href=\"%3$s\">je wachtwoord en account bewerken</a> en je abonnement op ons Digizine beheren."
 
 #. translators: 1: user display name 2: logout url
 #: templates/myaccount/dashboard.php:29
@@ -1900,7 +1903,7 @@ msgstr "Notitietype"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:367
 msgid "Copy billing address"
-msgstr "Kopieer factuuradres"
+msgstr "Kopieer klantadres"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:284
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:286
@@ -4767,7 +4770,7 @@ msgstr "Landcode in ISO 3166-1 alpha-2 formaat."
 #: includes/api/class-wc-rest-orders-controller.php:937
 #: includes/api/v1/class-wc-rest-orders-controller.php:1016
 msgid "Billing address."
-msgstr "Factuuradres."
+msgstr "Klantadres."
 
 #: includes/api/class-wc-rest-orders-controller.php:902
 #: includes/api/v1/class-wc-rest-orders-controller.php:1010
@@ -7324,7 +7327,7 @@ msgstr "E-mailadres die je hebt gebruikt tijdens het afrekenen."
 
 #: templates/order/form-tracking.php:32
 msgid "Billing email"
-msgstr "Factuur e-mailadres"
+msgstr "E-mailadres klant"
 
 #: templates/order/form-tracking.php:31
 msgid "Found in your order confirmation email."
@@ -7493,7 +7496,7 @@ msgstr "Verzendadres"
 #: templates/myaccount/my-address.php:27 templates/myaccount/my-address.php:32
 #: templates/order/order-details-customer.php:63
 msgid "Billing address"
-msgstr "Factuuradres"
+msgstr "Klantadres"
 
 #: templates/emails/customer-reset-password.php:33
 msgid "Click here to reset your password"
@@ -11956,7 +11959,7 @@ msgstr "Belastingklasse voor verzendkosten"
 #: includes/admin/class-wc-admin-profile.php:41
 #: includes/admin/settings/views/settings-tax.php:32
 msgid "Customer billing address"
-msgstr "Klant factuuradres"
+msgstr "Klantadres"
 
 #: includes/admin/class-wc-admin-profile.php:94
 #: includes/admin/settings/views/settings-tax.php:31
@@ -14365,7 +14368,7 @@ msgstr "Niet beschikbaar"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:286
 msgid "No billing address set."
-msgstr "Geen factuuradres ingesteld."
+msgstr "Geen klantadres ingesteld."
 
 #: includes/class-wc-countries.php:580
 msgid "Address"
@@ -14373,12 +14376,12 @@ msgstr "Adres"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:276
 msgid "Load billing address"
-msgstr "Factuuradres laden"
+msgstr "Klantadres laden"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:273
 #: templates/checkout/form-billing.php:33
 msgid "Billing details"
-msgstr "Factuurgegevens"
+msgstr "Klantgegevens"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:237
 msgid "Customer:"
@@ -17172,7 +17175,6 @@ msgstr "Artikel %1$s voorraad verhoogd van %2$s naar %3$s."
 msgid "Order status changed from %1$s to %2$s."
 msgstr "Bestellingsstatus gewijzigd van %1$s naar %2$s."
 
-#. #-#-#-#-#  tmp-woocommerce.pot (WooCommerce 3.0.4)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: includes/admin/class-wc-admin-assets.php:91
 #: includes/admin/class-wc-admin-menus.php:60
