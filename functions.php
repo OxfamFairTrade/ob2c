@@ -7,6 +7,16 @@
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
 	$default_holidays = array( '2017-05-01', '2017-05-25', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-02' );
 	
+	// Indien sluitingsdag: toon een banner dat we vandaag uitzonderlijk gesloten zijn
+	// Wordt bij elke paginaweergave uitgevoerd, dus niet echt efficiënt
+	// Boodschap personaliseren? Eerste werkdag zoeken na vakantie?
+	update_option('woocommerce_demo_store_notice', 'We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening.');
+	if ( in_array( date('Y-m-d'), get_option('oxfam_holidays', $default_holidays) ) ) {
+		update_option('woocommerce_demo_store', 'yes');
+	} else {
+		update_option('woocommerce_demo_store', 'no');
+	}
+	
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
 	$content_width = 2000;
 
@@ -185,6 +195,15 @@
 		}
 		// Zet de normale postmeta-functie verder
 		update_post_meta( $meta_id, $post_id, $meta_key, $new_meta_value );
+	}
+
+	// Verberg alle koopknoppen op het hoofddomein (ook reeds geblokkeerd via .htaccess but better be safe than sorry)
+	add_filter( 'woocommerce_get_price_html' , 'no_orders_on_main', 10, 2 );
+	
+	function no_orders_on_main( $price, $product ) {
+		if ( is_main_site() ) {
+			return "<i>Geen verkoop door Oxfam Fair Trade cvba aan consumenten</i><br>";
+		}
 	}
 	
 	###############
