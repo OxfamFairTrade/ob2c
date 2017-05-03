@@ -2172,6 +2172,8 @@
 				}
 			}
 		}
+		// Knip de eerste <br> er weer af
+		$output = substr( $output, 4 );
 		return $output;
 	}
 
