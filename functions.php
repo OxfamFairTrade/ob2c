@@ -165,18 +165,21 @@
 			// Vergelijk nieuwe waarde met de actuele
 			$old_meta_value = get_post_meta( $post_id, $meta_key, true );
 			
-			// Check welk type variabele het is
-			if ( is_array( $new_meta_value ) ) {
-				if ( count( array_diff( $new_meta_value, $old_meta_value ) ) > 0 ) {
-					// Schrijf weg in log per weeknummer (zonder leading zero's) 
-					$str = date( 'd/m/Y H:i:s' ) . "\t" . serialize($new_meta_value) . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
-				    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
-				}
-			} else {
-				if ( strcmp( $new_meta_value, $old_meta_value ) !== 0 ) {
-					// Schrijf weg in log per weeknummer (zonder leading zero's) 
-					$str = date( 'd/m/Y H:i:s' ) . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
-				    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+			// Check of er wel al een oude waarde bestond
+			if ( ! $old_meta_value ) {
+				// Check welk type variabele het is
+				if ( is_array( $new_meta_value ) ) {
+					if ( count( array_diff( $new_meta_value, $old_meta_value ) ) > 0 ) {
+						// Schrijf weg in log per weeknummer (zonder leading zero's) 
+						$str = date( 'd/m/Y H:i:s' ) . "\t" . serialize($new_meta_value) . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+					}
+				} else {
+					if ( strcmp( $new_meta_value, $old_meta_value ) !== 0 ) {
+						// Schrijf weg in log per weeknummer (zonder leading zero's) 
+						$str = date( 'd/m/Y H:i:s' ) . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+					}
 				}
 			}
 		}
@@ -1496,11 +1499,10 @@
 			'priority' 	=> 100,
 			'callback' 	=> 'allergen_tab_content',
 		);
-		$parts = explode( ' ', $product->get_attribute( 'pa_inhoud' ) );
-		if ( $parts[1] === 'cl' ) {
-			// Ofwel op basis van categorie: Wijn (hoofdcategorie) of +/- Spirits, Fruitsap, Sauzen en Olie & azijn (subcategorie)
+		$eh = $product->get_attribute( 'pa_eenheid' );
+		if ( $eg === 'L' ) {
 			$suffix = 'ml';
-		} else {
+		} elseif ( $eg === 'KG' ) {
 			$suffix = 'g';
 		}
 		$tabs['food_info'] = array(
@@ -1805,7 +1807,7 @@
 
 	// AANGEZIEN WE PROBLEMEN HEBBEN OM BROADCASTING PROGRAMMATORISCH UIT TE LOKKEN BLIJVEN WE VOORLOPIG VIA BULKBEWERKING DE PUBLISH NAAR CHILDS TRIGGEREN
 	// Stel de attributen in die berekend moeten worden uit andere waarden
-	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
+	// add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
 
 	function set_product_source( $post_id ) {
 		if ( get_post_type( $post_id ) === 'product' ) {

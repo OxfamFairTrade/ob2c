@@ -159,6 +159,18 @@ tr.shipping .woocommerce-Price-amount {
 	display: none !important;
 }
 
+/* Verberg lelijk opgemaakte 'Verzendkosten bijgewerkt' */
+.nm-shop-notice .woocommerce-info {
+	display: none !important;
+} 
+
+/* Geef titeltje 'Bestelnotities' zelfde lay-out als factuur- en verzendgegevens (of ook h3 van maken in template?) */
+p#order_comments_field.form-row.notes label {
+	font-size: 24px;
+	padding-bottom: 27px;
+	padding-top: 36px !important;
+}
+
 /* Zorg ervoor dat de openingsuren de volledige breedte kunnen innemen */
 .pickup_location > th {
 	width: 100px;
