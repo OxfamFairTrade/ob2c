@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-05-03 09:57+0200\n"
+"PO-Revision-Date: 2017-05-03 10:56+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -634,7 +634,7 @@ msgstr "Bestellingsstatus gewijzigd naar %s."
 #: includes/class-wc-order-item-fee.php:48
 #: includes/class-wc-order-item-product.php:61
 msgid "Invalid tax class"
-msgstr "Ongeldige btw-klasse"
+msgstr "Ongeldige BTW-klasse"
 
 #: includes/class-wc-logger.php:122
 msgid "WC_Logger::log was called with an invalid level \"%s\"."
@@ -1951,7 +1951,7 @@ msgstr "Onbeperkt gebruik"
 #. translators: %s: tax rates count
 #: includes/admin/importers/class-wc-tax-rate-importer.php:169
 msgid "Import complete - imported %s tax rates."
-msgstr "Import afgerond - %s btw tarieven geïmporteerd."
+msgstr "Import afgerond - %s BTW-tarieven geïmporteerd."
 
 #. translators: %s: five stars
 #: includes/admin/class-wc-admin.php:223
@@ -2247,7 +2247,7 @@ msgstr "Er is een ongeldige instellingswaarde doorgevoerd."
 
 #: includes/abstracts/abstract-wc-product.php:878
 msgid "Invalid product tax status."
-msgstr "Ongeldige product btw-status."
+msgstr "Ongeldige product BTW-status."
 
 #: includes/abstracts/abstract-wc-product.php:794
 msgid "Invalid or duplicated SKU."
@@ -4998,7 +4998,7 @@ msgstr "Metadata van besteld item."
 #: includes/api/v1/class-wc-rest-orders-controller.php:1285
 #: includes/api/v1/class-wc-rest-orders-controller.php:1498
 msgid "Tax subtotal."
-msgstr "Btw subtotaal."
+msgstr "BTW-subtotaal."
 
 #: includes/api/class-wc-rest-order-refunds-controller.php:474
 #: includes/api/class-wc-rest-orders-controller.php:1196
@@ -5009,7 +5009,7 @@ msgstr "Btw subtotaal."
 #: includes/api/v1/class-wc-rest-orders-controller.php:1427
 #: includes/api/v1/class-wc-rest-orders-controller.php:1492
 msgid "Tax total."
-msgstr "Btw totaal."
+msgstr "BTW-totaal."
 
 #: includes/api/class-wc-rest-order-refunds-controller.php:461
 #: includes/api/class-wc-rest-orders-controller.php:1183
@@ -5031,7 +5031,7 @@ msgstr "Regel-belastingen."
 #: includes/api/v1/class-wc-rest-orders-controller.php:1407
 #: includes/api/v1/class-wc-rest-orders-controller.php:1473
 msgid "Line total tax (after discounts)."
-msgstr "Regel totaal btw (na kortingen)."
+msgstr "Regel totaal BTW (na kortingen)."
 
 #: includes/api/class-wc-rest-order-refunds-controller.php:450
 #: includes/api/class-wc-rest-orders-controller.php:1172
@@ -5049,7 +5049,7 @@ msgstr "Regel totaal (na kortingen)."
 #: includes/api/v1/class-wc-rest-order-refunds-controller.php:425
 #: includes/api/v1/class-wc-rest-orders-controller.php:1250
 msgid "Line subtotal tax (before discounts)."
-msgstr "Regel subtotaal btw (voor kortingen)."
+msgstr "Regel subtotaal BTW (voor kortingen)."
 
 #: includes/api/class-wc-rest-order-refunds-controller.php:439
 #: includes/api/class-wc-rest-orders-controller.php:1161
@@ -5070,7 +5070,7 @@ msgstr "Product prijs."
 #: includes/api/v1/class-wc-rest-order-refunds-controller.php:408
 #: includes/api/v1/class-wc-rest-orders-controller.php:1233
 msgid "Tax class of product."
-msgstr "Btw-klasse van product."
+msgstr "BTW-klasse van product."
 
 #: includes/api/class-wc-rest-order-refunds-controller.php:429
 #: includes/api/class-wc-rest-orders-controller.php:1151
@@ -6112,7 +6112,7 @@ msgstr "Voorraadhoeveelheid "
 #: includes/shipping/legacy-flat-rate/includes/settings-flat-rate.php:48
 #: includes/shipping/local-pickup/class-wc-shipping-local-pickup.php:77
 msgid "Tax status"
-msgstr "Btw status"
+msgstr "BTW-status"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:636
 msgid "A simple offline gateway that lets you accept cash on delivery."
@@ -6147,7 +6147,7 @@ msgstr "Mogelijk moet je tarieven toevoegen/bewerken gebaseerd op jouw producten
 
 #: includes/admin/class-wc-admin-setup-wizard.php:437
 msgid "If you will be charging sales tax, or shipping physical goods to customers, you can enable these below. This is optional and can be changed later."
-msgstr "Als je btw gaat vragen of fysieke items gaat verzenden kan dit hier onder aangevinkt worden. Dit is optioneel en kan later altijd aangepast worden."
+msgstr "Als je BTW gaat vragen of fysieke items gaat verzenden kan dit hier onder aangevinkt worden. Dit is optioneel en kan later altijd aangepast worden."
 
 #: includes/admin/class-wc-admin-post-types.php:1932
 msgid "Ready to start selling something awesome?"
@@ -8599,7 +8599,7 @@ msgstr "Ondersteunt de volgende aanduidingen: <code>[qty]</code> = aantal artike
 #: includes/shipping/flat-rate/includes/settings-flat-rate.php:7
 #: includes/shipping/legacy-flat-rate/includes/settings-flat-rate.php:7
 msgid "Enter a cost (excl. tax) or sum, e.g. <code>10.00 * [qty]</code>."
-msgstr "Vul een bedrag (excl. btw) in of een berekening zoals <code>10.00 * [qty]</code>."
+msgstr "Vul een bedrag (excl. BTW) in of een berekening zoals <code>10.00 * [qty]</code>."
 
 #: includes/shipping/flat-rate/class-wc-shipping-flat-rate.php:25
 #: includes/shipping/flat-rate/includes/settings-flat-rate.php:17
@@ -10383,7 +10383,7 @@ msgstr "(excl. belasting)"
 
 #: includes/class-wc-countries.php:370
 msgid "(ex. VAT)"
-msgstr "(excl. btw)"
+msgstr "(excl. BTW)"
 
 #: includes/class-wc-countries.php:360
 msgid "(incl. tax)"
@@ -10391,11 +10391,11 @@ msgstr "(incl. belasting)"
 
 #: includes/class-wc-countries.php:360
 msgid "(incl. VAT)"
-msgstr "(incl. btw)"
+msgstr "(incl. BTW)"
 
 #: includes/class-wc-countries.php:350
 msgid "VAT"
-msgstr "btw"
+msgstr "BTW"
 
 #: includes/class-wc-countries.php:340
 msgid "the"
@@ -11900,7 +11900,7 @@ msgstr "Toon belastingtotalen"
 
 #: includes/admin/settings/views/settings-tax.php:97
 msgid "Define text to show after your product prices. This could be, for example, \"inc. Vat\" to explain your pricing. You can also have prices substituted here using one of the following: {price_including_tax}, {price_excluding_tax}."
-msgstr "Bepaal de tekst die getoond wordt achter de productprijzen. Kies bijvoorbeeld voor \"incl. btw\" om het prijsmodel te verduidelijken. Je kunt de prijzen ook vervangen voor een van de volgende mogelijkheden: {price_including_tax}, {price_excluding_tax}."
+msgstr "Bepaal de tekst die getoond wordt achter de productprijzen. Kies bijvoorbeeld voor \"incl. BTW\" om het prijsmodel te verduidelijken. Je kunt de prijzen ook vervangen voor een van de volgende mogelijkheden: {price_including_tax}, {price_excluding_tax}."
 
 #: includes/admin/settings/views/settings-tax.php:92
 msgid "Price display suffix"
@@ -14069,7 +14069,7 @@ msgstr "Voorraad beheren?"
 #: includes/admin/meta-boxes/views/html-product-data-general.php:146
 #: includes/admin/meta-boxes/views/html-variation-admin.php:284
 msgid "Choose a tax class for this product. Tax classes are used to apply different tax rates specific to certain types of product."
-msgstr "Kies een belastingklasse voor dit product. Belastingsklassen worden gebruikt om verschillende btw-tarieven toe te kennen aan specifieke typen producten."
+msgstr "Kies een belastingklasse voor dit product. Belastingsklassen worden gebruikt om verschillende BTW-tarieven toe te kennen aan specifieke typen producten."
 
 #: includes/admin/settings/views/html-settings-tax.php:17
 #: includes/admin/views/html-bulk-edit-product.php:95
@@ -14081,7 +14081,7 @@ msgstr "Standaard"
 
 #: includes/admin/meta-boxes/views/html-product-data-general.php:137
 msgid "Define whether or not the entire product is taxable, or just the cost of shipping it."
-msgstr "Bepaal of het gehele product belast wordt met btw, of slechts de verzendkosten."
+msgstr "Bepaal of het gehele product belast wordt met BTW, of slechts de verzendkosten."
 
 #: includes/admin/meta-boxes/views/html-product-data-general.php:134
 #: includes/admin/views/html-bulk-edit-product.php:78
@@ -15036,11 +15036,11 @@ msgstr "Provincie"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:457
 msgid "I will enter prices exclusive of tax"
-msgstr "Ik ga prijzen exclusief btw invoeren"
+msgstr "Ik ga prijzen exclusief BTW invoeren"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:456
 msgid "I will enter prices inclusive of tax"
-msgstr "Ik ga prijzen inclusief btw invoeren"
+msgstr "Ik ga prijzen inclusief BTW invoeren"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:454
 msgid "How will you enter product prices?"
@@ -15052,7 +15052,7 @@ msgstr "Ja, ik ga belastingen in rekening brengen"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:447
 msgid "Will you be charging sales tax?"
-msgstr "Ga je btw in rekening brengen?"
+msgstr "Ga je BTW in rekening brengen?"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:443
 msgid "Yes, I will be shipping physical goods to customers"
@@ -20970,7 +20970,7 @@ msgstr "Ciudad Aut&oacute;noma de Buenos Aires"
 
 #: i18n/locale-info.php:371
 msgid "Consumption tax"
-msgstr "Belasting (bv btw)"
+msgstr "Belasting (bv BTW)"
 
 #: i18n/countries.php:266
 msgid "Zimbabwe"

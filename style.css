@@ -163,11 +163,6 @@ tr.shipping .woocommerce-Price-amount {
 	display: none;
 }
 
-/* Gevaarlijke manier om kortingsbonboodschap te verbergen (= gaat ervan uit dat het altijd als 2de verschijnt) */
-.nm-checkout-login-coupon > li:nth-child(2) {
-	// display: none;
-}
-
 /* Geef titeltje 'Bestelnotities' zelfde lay-out als factuur- en verzendgegevens (of ook h3 van maken in template?) */
 p#order_comments_field.form-row.notes label {
 	font-size: 24px;
