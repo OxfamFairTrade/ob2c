@@ -1714,14 +1714,17 @@
 						if ( count( $partners ) > 0 ) {
 							foreach ( $partners as $partner ) {
 								$i++;
+								unset($quote);
 								// Let op: de naam is een string, dus er moeten quotes rond!
 								$row = $wpdb->get_row( 'SELECT * FROM partners WHERE part_naam = "'.$partner->name.'"' );
 								
-								if ( $row ) {
+								if ( $row and strlen($row->part_website) > 5 ) {
 									$url = 'https://www.oxfamwereldwinkels.be/'.trim($row->part_website);
+									$quote = $wpdb->get_row( 'SELECT field_manufacturer_quote_value FROM field_data_field_manufacturer_quote WHERE entity_id = '.intval( substr( $row->part_website, 5 ) ) );
 								} else {
 									// Val terug op de termbeschrijving die misschien toegevoegd is
 									$url = explode('href="', $partner->description);
+									write_log($url);
 									$parts = explode('"', $url[1]);
 									$url = $parts[0];
 								}
@@ -1735,6 +1738,9 @@
 									$msg = $text;
 								} else {
 									$msg .= '<br>'.$text;
+									if ( strlen( trim($quote->field_manufacturer_quote_value) ) > 10 ) {
+										$msg .= '<br><i>'.trim($quote->field_manufacturer_quote_value).'</i>';
+									}
 								}
 							}
 						}
@@ -1746,6 +1752,12 @@
 			<?php
 			echo ob_get_clean();
 		echo '</div>';
+	}
+
+	add_filter( 'woocommerce_email_footer_text', 'execute_shortcodes' );
+
+	function execute_shortcodes( $text ) {
+		return do_shortcode($text);
 	}
 
 	// Formatteer de gewichten in de attributen
@@ -2129,23 +2141,28 @@
 	##############
 
 	// Personaliseer de begroeting op de startpagina
-	add_shortcode ( 'topbar', 'print_welcome' );
-	add_shortcode ( 'bezoeker', 'print_customer' );
-	add_shortcode ( 'copyright', 'print_copyright' );
-	add_shortcode ( 'straat', 'print_place' );
-	add_shortcode ( 'postcode', 'print_zipcode' );
-	add_shortcode ( 'gemeente', 'print_city' );
-	add_shortcode ( 'telefoon', 'print_telephone' );
-	add_shortcode ( 'openingsuren', 'print_office_hours' );
-	add_shortcode ( 'toon_inleiding', 'print_summary' );
-	add_shortcode ( 'toon_shops', 'print_shop_selection' );
-	add_shortcode ( 'toon_kaart', 'print_map' );
-	add_shortcode ( 'widget_usp', 'print_widget_usp' );
-	add_shortcode ( 'widget_delivery', 'print_widget_delivery' );
-	add_shortcode ( 'widget_contact', 'get_full_company' );
-	add_shortcode ( 'company_name', 'get_company_name' );
-	add_shortcode ( 'contact_address', 'get_company_contact' );
-	add_shortcode ( 'map_address', 'get_company_address' );
+	add_shortcode( 'topbar', 'print_welcome' );
+	add_shortcode( 'bezoeker', 'print_customer' );
+	add_shortcode( 'copyright', 'print_copyright' );
+	add_shortcode( 'straat', 'print_place' );
+	add_shortcode( 'postcode', 'print_zipcode' );
+	add_shortcode( 'gemeente', 'print_city' );
+	add_shortcode( 'telefoon', 'print_telephone' );
+	add_shortcode( 'openingsuren', 'print_office_hours' );
+	add_shortcode( 'toon_inleiding', 'print_summary' );
+	add_shortcode( 'toon_shops', 'print_shop_selection' );
+	add_shortcode( 'toon_kaart', 'print_map' );
+	add_shortcode( 'widget_usp', 'print_widget_usp' );
+	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
+	add_shortcode( 'widget_contact', 'get_full_company' );
+	add_shortcode( 'company_name', 'get_company_name' );
+	add_shortcode( 'contact_address', 'get_company_contact' );
+	add_shortcode( 'map_address', 'get_company_address' );
+	add_shortcode( 'email_footer', 'get_company_and_year' );
+
+	function get_company_and_year() {
+		return '<span style="color: #60646c">'.get_company_name().' &copy; 2016-'.date('Y').'</span>';
+	}
 
 	function print_widget_usp() {
 		$msg = "Mooie Marcom-uitdaging: vat onze <i>unique selling points</i> samen in één catchy zin.";
