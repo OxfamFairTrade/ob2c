@@ -92,6 +92,7 @@ li.product.pa_bio-ja:hover::before {
 li.product.product_shipping_class-fruitsap,
 div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__image {
 	overflow: hidden;
+	white-space: pre-wrap;
 }
 li.product.product_shipping_class-fruitsap::after,
 div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__image::after {
@@ -107,7 +108,9 @@ div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product
 	background-color: #f16e22;
 	background-color: #e70052;
 	right: -114px;
-	content: "AFHALING";
+	font-size: 0.75em;
+
+	content: "Enkel\Aafhaling";
 }
 li.product.product_shipping_class-fruitsap:hover::after {
 	background-color: black;

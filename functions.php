@@ -866,21 +866,31 @@
 		$i = date('N', $from);
 		if ( $hours[$i] ) {
 			$day_part = $hours[$i][0];
-			$start = intval( substr($day_part['start'], 0, 2) );
-			$end = intval( substr($day_part['end'], 0, 2) );
+			$start = intval( substr( $day_part['start'], 0, -2 ) );
+			$end = intval( substr( $day_part['end'], 0, -2 ) );
 			if ( $afternoon ) {
 				if ( $end > 12 ) {
-					// Neem het openingsuur van het eerste deel
-					$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+					if ( intval( substr( $day_part['start'], 0, -2 ) ) >= 12 ) {
+						// Neem het openingsuur van het eerste deel
+						$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+					} else {
+						// Toon pas mogelijk vanaf 12u
+						$timestamp = strtotime( date('Y-m-d', $from)." 12:00" );
+					}
 				} else {
 					unset($day_part);
 					// Ga naar het tweede dagdeel (we gaan er van uit dat er nooit drie zijn!)
 					$day_part = $hours[$i][1];
-					$start = intval( substr($day_part['start'], 0, 2) );
-					$end = intval( substr($day_part['end'], 0, 2) );
+					$start = intval( substr( $day_part['start'], 0, -2 ) );
+					$end = intval( substr( $day_part['end'], 0, -2 ) );
 					if ( $end > 12 ) {
-						// Neem het openingsuur van dit deel
-						$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+						if ( intval( substr( $day_part['start'], 0, -2 ) ) >= 12 ) {
+							// Neem het openingsuur van dit deel
+							$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+						} else {
+							// Toon pas mogelijk vanaf 12u
+							$timestamp = strtotime( date('Y-m-d', $from)." 12:00" );
+						}
 					} else {
 						// Het mag ook een dag in het weekend zijn, de wachttijd is vervuld!
 						$timestamp = find_first_opening_hour( $hours, strtotime('tomorrow midnight'), false );
@@ -2153,7 +2163,7 @@
 
 	function print_welcome() {
 		if ( date('G') < 6 ) {
-			$greet = "Goeiemorgen";
+			$greet = "Goeienacht";
 		} elseif ( date('G') < 12 ) {
 			$greet = "Goeiemorgen";
 		} elseif ( date('G') < 20 ) {
