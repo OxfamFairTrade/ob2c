@@ -11,11 +11,17 @@
 	setlocale( LC_ALL, array('Dutch_Netherlands', 'Dutch', 'nl_NL', 'nl', 'nl_NL.ISO8859-1') );
 
 	// Laad het child theme
-	add_action( 'wp_enqueue_scripts', 'theme_enqueue_styles' );
+	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
-	function theme_enqueue_styles() {
-	    wp_enqueue_style( 'parent-style', get_template_directory_uri().'/style.css' );
-	    wp_enqueue_style( 'child-style', get_stylesheet_uri(), array( 'parent-style' ) );
+	function load_child_theme() {
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ) );
+	}
+
+	// Voeg custom styling toe aan de adminomgeving (voor Relevanssi en Voorraadbeheer)
+	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
+
+	function load_admin_css() {
+		wp_enqueue_style( 'oxfam-admin', get_template_directory_uri().'/admin.css' );
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
@@ -2594,147 +2600,6 @@
 			}
 		}
 		return $newArray;
-	}
-
-	// Voeg CSS toe aan adminomgeving voor Relevanssi en Voorraadbeheer
-	add_action( 'admin_head', 'custom_admin_css' );
-
-	function custom_admin_css() {
-		?>
-		<style>
-			.dashboard_page_relevanssi-premium-relevanssi .postbox-container {
-				width: 100%;
-			}
-
-			.dashboard_page_relevanssi-premium-relevanssi .postbox-container .widefat {
-				margin-bottom: 4em;
-			}
-
-			.dashboard_page_relevanssi-premium-relevanssi .postbox-container th,
-			.dashboard_page_relevanssi-premium-relevanssi .postbox-container tr {
-				text-align: center;
-			}
-
-			#oxfam-products {
-				display: table;
-				width: 100%;
-				border-collapse: separate;
-				border-spacing: 0px 25px;
-			}
-
-			#oxfam-products .block {
-				display: inline-block;
-				box-sizing: border-box;
-				width: 50%;
-			}
-
-			#oxfam-products .pane-left {
-				display: table-cell;
-				box-sizing: border-box;
-				text-align: center;
-				padding: 0px 25px;
-				width: 30%;
-			}
-
-			#oxfam-products .pane-right {
-				display: table-cell;
-				box-sizing: border-box;
-				text-align: center;
-				vertical-align: middle;
-				min-height: 204px;
-				width: 20%;
-			}
-
-			#oxfam-products .compact {
-				display: table-row;
-				box-sizing: border-box;
-				width: 100%;
-				height: 1em;
-				line-height: 1em;
-			}
-
-			#oxfam-products .cell {
-				display: table-cell;
-				text-align: right;
-				width: 20%;
-				padding: 0.5em;
-			}
-
-			#oxfam-products .title {
-				font-weight: bold;
-			}
-
-			#oxfam-products .output {
-				color: #f16e22;
-			}
-
-			#oxfam-products .new {
-				background-color: #0b9cda;
-			}
-
-			#oxfam-products .old {
-				background-color: #fbc43a;
-			}
-
-			#oxfam-products .border-color-green {
-				border-left: 4px solid #61a534;;
-			}
-
-			#oxfam-products .border-color-red {
-				border-left: 4px solid #e70052;
-			}
-
-			#oxfam-options .left {
-				width: 40%;
-				min-width: 300px;
-			}
-
-			#oxfam-options .right {
-				width: 60%;
-				min-width: 300px;
-			}
-
-			#oxfam-options .text-input {
-				width: 50%;
-				min-width: 100px;
-			}
-
-			#oxfam-options .left {
-				width: 30%;
-				min-width: 400px;
-				text-align: right;
-			}
-
-			#oxfam-options .right {
-				width: 70%;
-				min-width: 300px;
-			}
-
-			#oxfam-options .text-input {
-				width: 70%;
-				max-width: 400px;
-			}
-
-			/* Dirty fix om 'Bestelling toevoegen' te verbergen */
-			body.post-type-shop_order div.wrap > a.page-title-action {
-				display: none;
-			}
-
-			@media (max-width: 1024px) {
-				#oxfam-products .block {
-					display: block;
-					width: 100%;
-				}
-
-				#oxfam-options .left,
-				#oxfam-options .right {
-					display: block;
-					text-align: left;
-					width: 100%;
-				}
-			}
-		</style>
-		<?php
 	}
 	
 ?>
