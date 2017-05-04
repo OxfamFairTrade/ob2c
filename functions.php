@@ -192,8 +192,11 @@
 	
 	function no_orders_on_main( $price, $product ) {
 		if ( is_main_site() ) {
-			return "<i>Geen verkoop door Oxfam Fair Trade cvba aan consumenten</i><br>";
+			remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
+			remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
+		return $price;
 	}
 	
 	###############
