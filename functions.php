@@ -21,7 +21,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oxfam-admin', get_template_directory_uri().'/admin.css' );
+		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/admin.css' );
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
