@@ -204,6 +204,17 @@
 		}
 		return $price;
 	}
+
+	// Zorg ervoor dat winkelbeheerders na het opslaan van feestdagen niet naar het dashboard geleid worden
+	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
+
+	function ure_allow_args_for_oxfam_options( $args ) {
+		$args['admin.php']['oxfam-options'] = array(
+			'page',
+			'settings-updated'
+		);
+		return $args;
+	}
 	
 	###############
 	# WOOCOMMERCE #

@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-05-03 10:56+0200\n"
+"PO-Revision-Date: 2017-05-05 09:18+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -7283,7 +7283,7 @@ msgstr[1] "Categorieën:"
 #: includes/admin/meta-boxes/views/html-order-item.php:24
 #: templates/single-product/meta.php:31
 msgid "SKU:"
-msgstr "SKU:"
+msgstr "Artikelnummer:"
 
 #: templates/single-product/add-to-cart/variable.php:32
 msgid "This product is currently out of stock and unavailable."
@@ -15816,7 +15816,7 @@ msgstr "Voorraad"
 #: includes/admin/meta-boxes/views/html-variation-admin.php:64
 #: includes/admin/views/html-quick-edit-product.php:22
 msgid "SKU"
-msgstr "SKU"
+msgstr "Artikelnummer"
 
 #: includes/admin/class-wc-admin-post-types.php:253
 #: includes/admin/class-wc-admin-taxonomies.php:319
