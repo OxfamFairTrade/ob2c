@@ -1842,7 +1842,7 @@
 			}
 			// Toon een random quote
 			if ( count( $partners_with_quote ) > 0 ) {
-				$i = random_int( 0, count($partners_with_quote) );
+				$i = random_int( 0, count($partners_with_quote) - 1 );
 				echo '<p>&laquo; '.$partners_with_quote[$i]['quote'].' &raquo;</p>';
 				echo '<p style="font-style: italic; text-align: right;">('.$partners_with_quote[$i]['quote_by'].')</p>';
 			}
