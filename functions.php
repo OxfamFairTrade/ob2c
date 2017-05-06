@@ -224,9 +224,8 @@
 	// Voeg een check toe of het winkelmandje geleegd moet worden
 	add_action( 'init', 'woocommerce_clear_cart_url' );
 	function woocommerce_clear_cart_url() {
-		global $product;
 		if ( isset($_GET['emptyCart']) ) WC()->cart->empty_cart();
-		if ( isset($_GET['downloadSheet']) ) create_product_pdf( wc_get_product( get_the_ID() ) );
+		if ( isset($_GET['downloadSheet']) ) create_product_pdf( wc_get_product( 4621 ) );
 	}
 
 	// Verhoog het aantal producten per winkelpagina
