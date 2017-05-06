@@ -63,10 +63,20 @@
 	color: #61a534 !important;
 }
 
-/* Toon een flapje bij bioproducten (opgelet: wordt overschreven door latere ::before's op deze li.product!)  */
-li.product.pa_bio-ja {
+div.nm-shop-products li.product,
+div.nm-single-product div.woocommerce-product-gallery  {
 	overflow: hidden;
 }
+
+/* Probeer productfoto te centreren */
+.thumbnails-vertical .woocommerce-product-gallery__wrapper {
+	padding-left: 0 !important;
+}
+figure.woocommerce-product-gallery__image {
+	margin-left: 0 !important;
+}
+
+/* Toon een flapje bij bioproducten (opgelet: wordt overschreven door latere ::before's op deze li.product!)  */
 li.product.pa_bio-ja::before,
 div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::before {
 	color: white;
@@ -88,9 +98,6 @@ li.product.pa_bio-ja:hover::before {
 }
 
 /* Toon een flapje bij producten die niet beschikbaar zijn voor thuislevering */
-li.product.product_shipping_class-fruitsap {
-	overflow: hidden;
-}
 li.product.product_shipping_class-fruitsap::after,
 div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__wrapper::after {
 	color: white;
