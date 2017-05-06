@@ -117,6 +117,11 @@ li.product.product_shipping_class-fruitsap:hover::after {
 	transition: background-color 1s ease-out 0s;
 }
 
+/* Zet een limiet op de breedte van de add-to-cart knoppen */
+div.nm-single-product form.cart {
+	max-width: 300px;
+}
+
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
 tr.shipping .woocommerce-Price-amount {
 	float: right;

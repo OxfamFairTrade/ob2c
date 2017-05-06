@@ -197,7 +197,7 @@
 	add_filter( 'woocommerce_get_price_html' , 'no_orders_on_main', 10, 2 );
 	
 	function no_orders_on_main( $price, $product ) {
-		if ( is_main_site() ) {
+		if ( is_main_site() and ! is_admin() ) {
 			remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
 			remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 			return "<i>Geen verkoop vanuit nationaal</i>";
@@ -1347,7 +1347,7 @@
 
 	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
 	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-fruitsap
-	add_action( 'woocommerce_single_product_summary', 'show_delivery_warning', 200 );
+	add_action( 'woocommerce_single_product_summary', 'show_delivery_warning', 45 );
 
 	function show_delivery_warning() {
 		global $product;
@@ -1681,28 +1681,6 @@
 		echo '</div>';
 	}
 
-	// Retourneert een array met de termobjecten van de partners die bijdragen aan het product
-	function get_partner_terms_by_product( $product ) {
-		// Vraag alle partnertermen op die gelinkt zijn aan dit product (helaas geen filterargumenten beschikbaar)
-		// Producten worden door de import enkel aan de laagste hiërarchische term gelinkt, dus dit zijn per definitie landen of partners!
-		$terms = get_the_terms( $product->get_id(), 'product_partner' );
-		
-		// Vraag de term-ID's van de continenten in deze site op
-		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
-		$continents = get_terms( $args );
-		
-		foreach ( $terms as $term ) {
-			if ( ! in_array( $term->parent, $continents, true ) ) {
-				// De bovenliggende term is geen continent, dus het is een partner!
-				$partners[$term->term_id] = $term->name;
-			}
-		}
-
-		// Sorteer alfabetisch op value (= partnernaam) maar bewaar de index (= term-ID)
-		asort($partners);
-		return $partners;
-	}
-
 	// Retourneert een array met strings van landen waaruit dit product afkomstig is
 	function get_countries_by_product( $product ) {
 		$terms = get_the_terms( $product->get_id(), 'product_partner' );
@@ -1727,10 +1705,33 @@
 		return $countries;
 	}
 
+	// Retourneert een array term_id => name van de partners die bijdragen aan het product
+	function get_partner_terms_by_product( $product ) {
+		// Vraag alle partnertermen op die gelinkt zijn aan dit product (helaas geen filterargumenten beschikbaar)
+		// Producten worden door de import enkel aan de laagste hiërarchische term gelinkt, dus dit zijn per definitie landen of partners!
+		$terms = get_the_terms( $product->get_id(), 'product_partner' );
+		
+		// Vraag de term-ID's van de continenten in deze site op
+		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
+		$continents = get_terms( $args );
+		
+		foreach ( $terms as $term ) {
+			if ( ! in_array( $term->parent, $continents, true ) ) {
+				// De bovenliggende term is geen continent, dus het is een partner!
+				$partners[$term->term_id] = $term->name;
+			}
+		}
+
+		// Sorteer alfabetisch op value (= partnernaam) maar bewaar de index (= term-ID)
+		asort($partners);
+		return $partners;
+	}
+
+	// Retourneert zo veel mogelijk beschikbare info bij een partner (enkel naam en land steeds ingesteld!)
 	function get_info_by_partner( $partner ) {
 		global $wpdb;
 		$partner_info['name'] = $partner->name;
-		$partner_info['country'] = $partner->parent->name;
+		$partner_info['country'] = get_term_by( 'id', $partner->parent, 'product_partner' )->name;
 		
 		// Let op: de naam is een string, dus er moeten quotes rond!
 		// NOGAL ONZEKERE MANIER OM DE JUISTE MATCH TE VINDEN, LIEVER VIA NODE IN TERMBESCHRIJVING
@@ -1744,6 +1745,10 @@
 			$quote = $wpdb->get_row( 'SELECT field_manufacturer_quote_value FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
 			if ( strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
 				$partner_info['quote'] = trim($quote->field_manufacturer_quote_value);
+				$quote_by = $wpdb->get_row( 'SELECT field_manufacturer_quote_value FROM field_data_field_manufacturer_hero_name WHERE entity_id = '.$partner_info['node'] );
+				if ( strlen( $quote_by->field_manufacturer_hero_name_value ) > 5 ) {
+					$partner_info['quote_by'] = trim($quote_by->field_manufacturer_hero_name_value);
+				}
 			}
 		} else {
 			// Val terug op de termbeschrijving die misschien toegevoegd is
@@ -1751,6 +1756,7 @@
 			// $parts = explode('"', $url[1]);
 			// $partner_info['url'] = $parts[0];
 		}
+
 		return $partner_info;
 	}
 
@@ -1788,13 +1794,13 @@
 					<td><?php
 						$i = 1;
 						$msg = '<i>(aankoop via andere fairtradeorganisatie)</i>';
+
 						$partners = get_partner_terms_by_product( $product );
 						if ( count( $partners ) > 0 ) {
-							foreach ( $partners as $partner ) {
-								$partner_info = get_info_by_partner( $partner );
-								write_log($partner_info);
-
-								if ( strlen($partner_info['url']) > 10 ) {
+							foreach ( $partners as $term_id => $partner_name ) {
+								$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
+								
+								if ( isset( $partner_info['url'] ) and strlen( $partner_info['url'] ) > 10 ) {
 									$text = '<a href="'.$partner_info['url'].'" target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner_info['name'].'</a>';
 								} else {
 									$text = $partner_info['name'];
@@ -1817,6 +1823,28 @@
 			<?php
 			echo ob_get_clean();
 		echo '</div>';
+	}
+
+	add_action( 'woocommerce_single_product_summary', 'show_random_partner_quote', 25 );
+
+	function show_random_partner_quote() {
+		global $product;
+		$partners = get_partner_terms_by_product( $product );
+		if ( count( $partners ) > 0 ) {
+			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
+			foreach ( $partners as $term_id => $partner_name ) {
+				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
+				if ( isset( $partner_info['quote'] ) and isset( $partner_info['quote_by'] ) ) {
+					$partners_with_quote[] = $partner_info;
+				}
+			}
+			// Toon een random quote
+			if ( count( $partners_with_quote ) > 0 ) {
+				$i = random_int( 0, count($partners_with_quote) );
+				echo '<p>&laquo; '.$partners_with_quote[$i]['quote'].' &raquo;</p>';
+				echo '<p style="font-style: italic; text-align: right;">('.$partners_with_quote[$i]['quote_by'].')</p>';
+			}
+		}
 	}
 
 	add_filter( 'woocommerce_email_footer_text', 'execute_shortcodes' );
