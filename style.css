@@ -64,12 +64,11 @@
 }
 
 /* Toon een flapje bij bioproducten (opgelet: wordt overschreven door latere ::before's op deze li.product!)  */
-li.product.pa_bio-ja,
-div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__image {
+li.product.pa_bio-ja {
 	overflow: hidden;
 }
 li.product.pa_bio-ja::before,
-div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__image::before {
+div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::before {
 	color: white;
 	width: 250px;
 	position: absolute;
@@ -89,18 +88,17 @@ li.product.pa_bio-ja:hover::before {
 }
 
 /* Toon een flapje bij producten die niet beschikbaar zijn voor thuislevering */
-li.product.product_shipping_class-fruitsap,
-div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__image {
+li.product.product_shipping_class-fruitsap {
 	overflow: hidden;
-	white-space: pre-wrap;
 }
 li.product.product_shipping_class-fruitsap::after,
-div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__image::after {
+div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__wrapper::after {
 	color: white;
 	width: 250px;
 	position: absolute;
 	text-align: center;
 	padding-top: 18px;
+	font-family: FontAwesome;
 	top: -11px;
 	z-index: 50;
 	
@@ -109,8 +107,7 @@ div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product
 	background-color: #e70052;
 	right: -114px;
 	font-size: 0.75em;
-
-	content: "Enkel\Aafhaling";
+	content: "f071";
 }
 li.product.product_shipping_class-fruitsap:hover::after {
 	background-color: black;

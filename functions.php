@@ -225,6 +225,7 @@
 	add_action( 'init', 'woocommerce_clear_cart_url' );
 	function woocommerce_clear_cart_url() {
 		if ( isset($_GET['emptyCart']) ) WC()->cart->empty_cart();
+		create_product_pdf( wc_get_product(4621) );
 	}
 
 	// Verhoog het aantal producten per winkelpagina
@@ -1848,8 +1849,6 @@
 		}
 	}
 
-	// create_product_pdf( wc_get_product(4621) );
-
 	function create_product_pdf( $product ) {
 		require_once WP_CONTENT_DIR."/plugins/html2pdf/html2pdf.class.php";
 		
@@ -1866,7 +1865,7 @@
 		$pdffile->pdf->SetAuthor("Oxfam Fair Trade cvba");
 		$pdffile->pdf->SetTitle("Productfiche ".$sku);
 		$pdffile->WriteHTML($templatecontent);
-		$pdffile->Output($directory.$sku.".pdf", "F");
+		$pdffile->Output(WP_CONTENT_DIR."/".$sku.".pdf", "F");
 	}
 
 	// Formatteer de gewichten in de attributen
