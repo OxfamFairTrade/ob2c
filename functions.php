@@ -224,8 +224,9 @@
 	// Voeg een check toe of het winkelmandje geleegd moet worden
 	add_action( 'init', 'woocommerce_clear_cart_url' );
 	function woocommerce_clear_cart_url() {
+		global $product;
 		if ( isset($_GET['emptyCart']) ) WC()->cart->empty_cart();
-		// create_product_pdf( wc_get_product(4621) );
+		if ( isset($_GET['downloadSheet']) ) create_product_pdf( wc_get_product( get_the_ID() ) );
 	}
 
 	// Verhoog het aantal producten per winkelpagina
@@ -1858,7 +1859,7 @@
 		
 		$sku = $product->get_sku();
 		$templatecontent = str_replace("#artikel", $sku, $templatecontent);
-		$templatecontent = str_replace("#prijs", $product->get_price(), $templatecontent);
+		$templatecontent = str_replace("#prijs", wc_price( $product->get_price() ), $templatecontent);
 		$templatecontent = str_replace("#merk", $product->get_attribute('pa_merk'), $templatecontent);
 		
 		$pdffile = new HTML2PDF("P", "A4", "nl");
