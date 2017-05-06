@@ -220,6 +220,12 @@
 	# WOOCOMMERCE #
 	###############
 
+	// Voeg een check toe of het winkelmandje geleegd moet worden
+	add_action( 'init', 'woocommerce_clear_cart_url' );
+	function woocommerce_clear_cart_url() {
+		if ( isset($_GET['emptyCart']) ) WC()->cart->empty_cart();
+	}
+
 	// Verhoog het aantal producten per winkelpagina
 	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 20;' ), 20 );
 
@@ -1675,31 +1681,84 @@
 		echo '</div>';
 	}
 
+	// Retourneert een array met de termobjecten van de partners die bijdragen aan het product
+	function get_partner_terms_by_product( $product ) {
+		// Vraag alle partnertermen op die gelinkt zijn aan dit product (helaas geen filterargumenten beschikbaar)
+		// Producten worden door de import enkel aan de laagste hiërarchische term gelinkt, dus dit zijn per definitie landen of partners!
+		$terms = get_the_terms( $product->get_id(), 'product_partner' );
+		
+		// Vraag de term-ID's van de continenten in deze site op
+		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
+		$continents = get_terms( $args );
+		
+		foreach ( $terms as $term ) {
+			if ( ! in_array( $term->parent, $continents, true ) ) {
+				// De bovenliggende term is geen continent, dus het is een partner!
+				$partners[$term->term_id] = $term->name;
+			}
+		}
+
+		// Sorteer alfabetisch op value (= partnernaam) maar bewaar de index (= term-ID)
+		asort($partners);
+		return $partners;
+	}
+
+	// Retourneert een array met strings van landen waaruit dit product afkomstig is
+	function get_countries_by_product( $product ) {
+		$terms = get_the_terms( $product->get_id(), 'product_partner' );
+		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
+		$continents = get_terms( $args );
+		
+		foreach ( $terms as $term ) {
+			if ( ! in_array( $term->parent, $continents, true ) ) {
+				// De bovenliggende term is geen continent, dus het is een partner!
+				$parent_term = get_term_by( 'id', $term->parent, 'product_partner' );
+				// Voeg de naam van de bovenliggende term (= land) toe aan het lijstje
+				$countries[] = $parent_term->name;
+			} else {
+				// In dit geval is het zeker een land (en zeker geen continent zijn want checkboxes uitgeschakeld + enkel gelinkt aan laagste term)
+				$countries[] = $term->name;
+			}
+		}
+
+		// Ontdubbel de landen en sorteer values alfabetisch
+		$countries = array_unique( $countries );
+		sort($countries);
+		return $countries;
+	}
+
+	function get_info_by_partner( $partner ) {
+		global $wpdb;
+		$partner_info['name'] = $partner->name;
+		$partner_info['country'] = $partner->parent->name;
+		
+		// Let op: de naam is een string, dus er moeten quotes rond!
+		// NOGAL ONZEKERE MANIER OM DE JUISTE MATCH TE VINDEN, LIEVER VIA NODE IN TERMBESCHRIJVING
+		$row = $wpdb->get_row( 'SELECT * FROM partners WHERE part_naam = "'.$partner_info['name'].'"' );
+		
+		if ( $row and strlen( $row->part_website ) > 5 ) {
+			// Knip het woord 'node/' er af
+			$partner_info['node'] = intval( substr( $row->part_website, 5 ) );
+			$partner_info['url'] = 'https://www.oxfamwereldwinkels.be/node/'.$partner_info['node'];
+			
+			$quote = $wpdb->get_row( 'SELECT field_manufacturer_quote_value FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
+			if ( strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
+				$partner_info['quote'] = trim($quote->field_manufacturer_quote_value);
+			}
+		} else {
+			// Val terug op de termbeschrijving die misschien toegevoegd is
+			// $url = explode('href="', $partner->description);
+			// $parts = explode('"', $url[1]);
+			// $partner_info['url'] = $parts[0];
+		}
+		return $partner_info;
+	}
+
 	// Output de info over de partners
 	function partner_tab_content() {
-		global $product, $wpdb;
+		global $product;
 		echo '<div class="nm-additional-information-inner">';
 			$alt = 1;
-			$terms = get_the_terms( $product->get_id(), 'product_partner' );
-
-			// ID's van de continenten (integers!)
-			$continents = array( 828, 829, 830, 831 );
-			foreach ( $terms as $term ) {
-				// Check op een strikte manier of we niet met een land bezig zijn
-				if ( ! in_array( $term->parent, $continents, true ) ) {
-					$partners[] = $term;
-					// Voeg het land van deze partner toe aan de landen
-					$parent_term = get_term_by( 'id', $term->parent, 'product_partner' );
-					// Opgelet, dit moet nog ontdubbeld en geordend worden!
-					$countries[] = $parent_term->name;
-				} else {
-					// Kan geen continent zijn want die selectie wordt niet toegestaan en enkel de laagste taxonomie wordt toegekend
-					$countries[] = $term->name;
-				}
-			}
-
-			$countries = array_unique( $countries );
-			asort($countries);
 			ob_start();
 			?>
 			<table class="shop_attributes">
@@ -1707,16 +1766,17 @@
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 					<th>Herkomstlanden</th>
 					<td><?php
-						$i = 0;
+						$i = 1;
 						$str = '/';
+						$countries = get_countries_by_product( $product );
 						if ( count( $countries ) > 0 ) {
 							foreach ( $countries as $country ) {
-								$i++;
 								if ( $i === 1 ) {
 									$str = $country;
 								} else {
 									$str .= '<br>'.$country;
 								}
+								$i++;
 							}
 						}
 						echo $str;
@@ -1726,39 +1786,27 @@
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 					<th>Onze partners</th>
 					<td><?php
-						$i = 0;
+						$i = 1;
 						$msg = '<i>(aankoop via andere fairtradeorganisatie)</i>';
+						$partners = get_partner_terms_by_product( $product );
 						if ( count( $partners ) > 0 ) {
 							foreach ( $partners as $partner ) {
-								$i++;
-								unset($quote);
-								// Let op: de naam is een string, dus er moeten quotes rond!
-								$row = $wpdb->get_row( 'SELECT * FROM partners WHERE part_naam = "'.$partner->name.'"' );
-								
-								if ( $row and strlen($row->part_website) > 5 ) {
-									$url = 'https://www.oxfamwereldwinkels.be/'.trim($row->part_website);
-									$quote = $wpdb->get_row( 'SELECT field_manufacturer_quote_value FROM field_data_field_manufacturer_quote WHERE entity_id = '.intval( substr( $row->part_website, 5 ) ) );
+								$partner_info = get_info_by_partner( $partner );
+								write_log($partner_info);
+
+								if ( strlen($partner_info['url']) > 10 ) {
+									$text = '<a href="'.$partner_info['url'].'" target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner_info['name'].'</a>';
 								} else {
-									// Val terug op de termbeschrijving die misschien toegevoegd is
-									$url = explode('href="', $partner->description);
-									write_log($url);
-									$parts = explode('"', $url[1]);
-									$url = $parts[0];
+									$text = $partner_info['name'];
 								}
 								
-								if ( strlen($url) > 10 ) {
-									$text = '<a href="'.$url.'" target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner->name.'</a>';
-								} else {
-									$text = $partner->name;
-								}
 								if ( $i === 1 ) {
 									$msg = $text;
 								} else {
 									$msg .= '<br>'.$text;
-									if ( strlen( trim($quote->field_manufacturer_quote_value) ) > 10 ) {
-										$msg .= '<br><i>'.trim($quote->field_manufacturer_quote_value).'</i>';
-									}
 								}
+
+								$i++;
 							}
 						}
 						echo $msg;

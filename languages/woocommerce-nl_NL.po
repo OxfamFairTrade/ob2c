@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-05-05 09:18+0200\n"
+"PO-Revision-Date: 2017-05-06 16:21+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -7579,7 +7579,7 @@ msgstr "Bedankt. Je bestelling is ontvangen."
 
 #: templates/checkout/terms.php:17
 msgid "I&rsquo;ve read and accept the <a href=\"%s\" target=\"_blank\">terms &amp; conditions</a>"
-msgstr "Ik heb de <a href=\"%s\" target=\"_blank\">algemene voorwaarden</a> gelezen en ik ga hiermee akkoord"
+msgstr "Ik heb <a href=\"%s\" target=\"_blank\">de algemene voorwaarden</a> gelezen en ga hiermee akkoord. Ik begrijp dat dit een bestelling met betalingsverplichting is."
 
 #: templates/cart/shipping-calculator.php:96 templates/checkout/payment.php:43
 msgid "Update totals"
