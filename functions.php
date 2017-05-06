@@ -1836,7 +1836,7 @@
 			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
 			foreach ( $partners as $term_id => $partner_name ) {
 				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-				if ( isset( $partner_info['quote'] ) and isset( $partner_info['quote_by'] ) ) {
+				if ( isset( $partner_info['quote'] ) or isset( $partner_info['quote_by'] ) ) {
 					$partners_with_quote[] = $partner_info;
 				}
 			}
