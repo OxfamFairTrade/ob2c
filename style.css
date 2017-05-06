@@ -66,6 +66,7 @@
 div.nm-shop-products li.product,
 div.nm-single-product div.woocommerce-product-gallery  {
 	overflow: hidden;
+	padding-right: 0px;
 }
 
 /* Probeer productfoto te centreren */
@@ -114,7 +115,7 @@ div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product
 	background-color: #e70052;
 	right: -114px;
 	font-size: 0.75em;
-	content: "f071";
+	content: "\f071";
 }
 li.product.product_shipping_class-fruitsap:hover::after {
 	background-color: black;

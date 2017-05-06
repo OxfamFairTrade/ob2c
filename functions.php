@@ -225,7 +225,7 @@
 	add_action( 'init', 'woocommerce_clear_cart_url' );
 	function woocommerce_clear_cart_url() {
 		if ( isset($_GET['emptyCart']) ) WC()->cart->empty_cart();
-		create_product_pdf( wc_get_product(4621) );
+		// create_product_pdf( wc_get_product(4621) );
 	}
 
 	// Verhoog het aantal producten per winkelpagina
