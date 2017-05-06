@@ -1744,10 +1744,10 @@
 			$partner_info['node'] = intval( substr( $row->part_website, 5 ) );
 			$partner_info['url'] = 'https://www.oxfamwereldwinkels.be/node/'.$partner_info['node'];
 			
-			$quote = $wpdb->get_row( 'SELECT field_manufacturer_quote_value FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
+			$quote = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
 			if ( strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
 				$partner_info['quote'] = trim($quote->field_manufacturer_quote_value);
-				$quote_by = $wpdb->get_row( 'SELECT field_manufacturer_quote_value FROM field_data_field_manufacturer_hero_name WHERE entity_id = '.$partner_info['node'] );
+				$quote_by = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_hero_name WHERE entity_id = '.$partner_info['node'] );
 				if ( strlen( $quote_by->field_manufacturer_hero_name_value ) > 5 ) {
 					$partner_info['quote_by'] = trim($quote_by->field_manufacturer_hero_name_value);
 				}
@@ -1836,7 +1836,7 @@
 			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
 			foreach ( $partners as $term_id => $partner_name ) {
 				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-				if ( isset( $partner_info['quote'] ) or isset( $partner_info['quote_by'] ) ) {
+				if ( isset( $partner_info['quote'] ) and isset( $partner_info['quote_by'] ) ) {
 					$partners_with_quote[] = $partner_info;
 				}
 			}
