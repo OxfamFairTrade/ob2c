@@ -95,10 +95,11 @@
 		}
 	}
 
-	// Voer shortcodes ook uit in widgets en titels
+	// Voer shortcodes ook uit in widgets, titels en e-mailfooters
 	add_filter( 'widget_text', 'do_shortcode' );
 	add_filter( 'the_title', 'do_shortcode' );
-	
+	add_filter( 'woocommerce_email_footer_text', 'do_shortcode' );
+
 	// Verstop enkele hardnekkige adminlinks voor de lokale shopmanagers
 	// Let wel: toegangrechten voor WP All Export versoepeld door rol aan te passen in wp-all-export-pro.php!
 	// VOORLOPIG ALLEMAAL VIA USER ROLE EDITOR
@@ -1847,10 +1848,25 @@
 		}
 	}
 
-	add_filter( 'woocommerce_email_footer_text', 'execute_shortcodes' );
+	// create_product_pdf( wc_get_product(4621) );
 
-	function execute_shortcodes( $text ) {
-		return do_shortcode($text);
+	function create_product_pdf( $product ) {
+		require_once WP_CONTENT_DIR."/plugins/html2pdf/html2pdf.class.php";
+		
+		$templatelocatie = WP_CONTENT_DIR."/themes/savoy-child/productfiche.html";
+		$templatefile = fopen($templatelocatie, "r");
+		$templatecontent = fread($templatefile, filesize($templatelocatie));
+		
+		$sku = $product->get_sku();
+		$templatecontent = str_replace("#artikel", $sku, $templatecontent);
+		$templatecontent = str_replace("#prijs", $product->get_price(), $templatecontent);
+		$templatecontent = str_replace("#merk", $product->get_attribute('pa_merk'), $templatecontent);
+		
+		$pdffile = new HTML2PDF("P", "A4", "nl");
+		$pdffile->pdf->SetAuthor("Oxfam Fair Trade cvba");
+		$pdffile->pdf->SetTitle("Productfiche ".$sku);
+		$pdffile->WriteHTML($templatecontent);
+		$pdffile->Output($directory.$sku.".pdf", "F");
 	}
 
 	// Formatteer de gewichten in de attributen
