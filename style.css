@@ -117,7 +117,7 @@ li.product.pa_bio-ja::before {
 	top: 0;
 	left: 0.25em;
 	padding: 0 0.5em;
-	font-size: 90%;
+	font-size: 85%;
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: #61a534;
@@ -130,7 +130,8 @@ div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::bef
 	position: absolute;
 	top: 0;
 	left: 0.25em;
-	padding: 0.5em;
+	padding: 0 0.5em;
+	font-size: 95%;
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: #61a534;
@@ -144,7 +145,7 @@ li.product.product_shipping_class-fruitsap::after {
 	top: 2.5em;
 	left: 0.25em;
 	padding: 0 0.5em;
-	font-size: 90%;
+	font-size: 85%;
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: #e70052;
@@ -157,7 +158,8 @@ div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product
 	position: absolute;
 	top: 2.5em;
 	left: 0.25em;
-	padding: 0.5em;
+	padding: 0 0.5em;
+	font-size: 95%;
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: #e70052;
