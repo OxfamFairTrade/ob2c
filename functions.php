@@ -332,6 +332,7 @@
 		$args['admin.php']['pmxe-admin-manage'] = array(
 			'id',
 			'action',
+			'pmxe_nt',
 		);
 		$args['profile.php'][''] = array(
 			'updated',

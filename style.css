@@ -29,7 +29,7 @@ h1.product_title.entry-title {
 /* Zet een limiet op de breedte van de add-to-cart knoppen */
 div.nm-quantity-wrap,
 button.nm-simple-add-to-cart-button {
-	max-width: 250px;
+	max-width: 300px;
 }
 
 /* Geef leeggoedboodschap wat marge boven en onder */
@@ -115,58 +115,52 @@ li.product.pa_bio-ja::before {
 	color: white;
 	width: 250px;
 	position: absolute;
-	text-align: center;
-	padding-top: 18px;
-	top: -11px;
+	top: 0;
+	left: 0.25em;
+	padding: 0.5em;
 	z-index: 50;
 	
-	transform: rotate(-45deg);
+	transform: skewX(-3deg);
 	background-color: #61a534;
-	left: -114px;
-	content: "BIO"; 
+	
+	content: "Biologisch"; 
 }
 
 /* Toon een bannertje op detailpagina's */
 div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::before {
 	color: white;
 	position: absolute;
-	top: 3em;
+	top: 2.5em;
 	left: 0.25em;
 	padding: 0.5em;
-	line-height: 1em;
+	font-size: 90%;
 	z-index: 50;
-	
 	transform: skewX(-3deg);
 	background-color: #61a534;
-	content: "Biogecertificeerd";
+	content: "Biologisch gecertificeerd product";
 }
 
 /* Toon een flapje bij producten die niet beschikbaar zijn voor thuislevering */
 li.product.product_shipping_class-fruitsap::after {
 	color: white;
-	width: 250px;
 	position: absolute;
-	text-align: center;
-	padding-top: 18px;
-	top: -11px;
+	top: 2.5em;
+	padding: 0.5em;
 	z-index: 50;
-	
-	transform: rotate(45deg);
+	transform: skewX(-3deg);
 	background-color: #e70052;
-	right: -114px;
-	content: "SHOP";
+	content: "Afhaling";
 }
 
 /* Toon een bannertje op detailpagina's */
 div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__wrapper::after {
 	color: white;
 	position: absolute;
-	top: 0;
+	top: 2.5em;
 	left: 0.25em;
 	padding: 0.5em;
-	line-height: 1em;
+	font-size: 90%;
 	z-index: 50;
-	
 	transform: skewX(-3deg);
 	background-color: #e70052;
 	content: "Enkel afhaling in de winkel";
