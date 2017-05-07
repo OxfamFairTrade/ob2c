@@ -87,6 +87,14 @@
 
 			<tr valign="top">
 				<th class="left">
+					<label for="blog_id">Blog-ID:</label>
+				</th>
+		  		<td class="right">
+		  			<input type="text" name="blog_id" class="text-input" value="<?php echo get_current_blog_id(); ?>" readonly>
+		  		</td>
+			</tr>
+			<tr valign="top">
+				<th class="left">
 					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Nodenummer OWW-site:</label>
 				</th>
 		  		<td class="right">
@@ -101,6 +109,18 @@
 		  			<input type="text" name="oxfam_mollie_partner_id" class="text-input" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
 		  		</td>
 			</tr>
+			<?php
+				if ( is_regional_webshop() ) {
+					echo "<tr valign='top'>";
+						echo "<th class='left'><label for='oxfam_member_shops' title=''>Regiosamenwerking</label></th>";
+						echo "<td class='right'>";
+							echo "<input type='text' name='oxfam_member_shops' class='text-input' value='".esc_attr( get_option('oxfam_member_shops') )."'";
+							if ( ! current_user_can( 'create_sites' ) ) echo " readonly";
+							echo ">";
+						echo "</td>";
+					echo "</tr>";
+				}
+			?>
 			<tr valign="top">
 				<th class="left">
 					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering:<br><small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden.</small></label>

@@ -40,27 +40,30 @@
 		}
 	}
 
-	// Voeg een profielveld toe in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
-	// add_filter( 'user_contactmethods', 'add_regiosamenwerking', 10, 1 );
+	if ( is_regional_webshop() ) {
+		// Filters en acties laden die enkel nodig zijn bij regiosamenwerking
+	}
 
-	function add_regiosamenwerking( $contactmethods ) {
-		$contactmethods['member_of_shop'] = 'member_of_shop';
+	// Definieer een profielveld in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is (later met jQuery verbergen en vervangen door dropdown)
+	add_filter( 'user_contactmethods', 'add_member_of_shop_field', 10, 1 );
+	add_action( 'personal_options_update', 'save_extra_user_field' );
+	add_action( 'edit_user_profile_update', 'save_extra_user_field' );
+	add_action( 'show_user_profile', 'add_extra_user_field' );
+	add_action( 'edit_user_profile', 'add_extra_user_field' );
+
+	function add_member_of_shop_field( $contactmethods ) {
+		$contactmethods['blog_'.get_current_blog_id().'_member_of_shop'] = 'Ik claim orders voor ...';
 		return $contactmethods;
 	}
 	
-	add_action( 'personal_options_update', 'save_user_fields' );
-	add_action( 'edit_user_profile_update', 'save_user_fields' );
-
-	function save_user_fields( $user_id ) {
+	function save_extra_user_field( $user_id ) {
 		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
-		// Usermeta is sitewide, dus ID van blog toevoegen aan key!
-		update_usermeta( $user_id, 'blog_'.get_current_blog_id().'_member_of_shop', $_POST['member_of_shop'] );
+		// Usermeta is sitewide, dus ID van blog toevoegen aan de key!
+		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
+		update_usermeta( $user_id, $key, $_POST[$key] );
 	}
 
-	add_action( 'show_user_profile', 'add_user_fields' );
-	add_action( 'edit_user_profile', 'add_user_fields' );
-
-	function add_user_fields( $user ) {
+	function add_extra_user_field( $user ) {
 		?>
 		<h3>Regiosamenwerking</h3>
 		<table class="form-table">
@@ -72,9 +75,10 @@
 						echo '<select name="'.$key.'" id="'.$key.'">';
 							$member_of = get_the_author_meta( $key, $user->ID );
 							$shops = array( 'leuven', 'heverlee', 'kessel-lo', 'wijgmaal', 'wilsele' );
+							// $shops = get_option( 'oxfam_member_shops' );
 							foreach ( $shops as $shop ) {
 								$selected = ( $shop === $member_of ) ? ' selected' : '';
-								echo '<option value="'.$shop.'"'.$selected.'>'.ucwords($shop).'</option>';
+								echo '<option value="'.$shop.'"'.$selected.'>'.implode( '-', array_map( 'ucfirst', explode('-', $shop) ) ).'</option>';
 							}
 						echo '</select>';
 					?>
@@ -101,27 +105,27 @@
 	}
 
 	// Creëer bovenaan de orderlijst een dropdown met de deelnemende winkels uit de regio
-	add_action( 'restrict_manage_posts', 'add_meta_value_to_orders' );
+	add_action( 'restrict_manage_posts', 'add_owner_of_order_filtering' );
 
-	function add_meta_value_to_orders() {
+	function add_owner_of_order_filtering() {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' ) {
 			$shops = array( 'leuven', 'heverlee', 'kessel-lo', 'wijgmaal', 'wilsele' );
+			// $shops = get_option( 'oxfam_member_shops' );
 			echo '<select name="owner_of_order" id="owner_of_order">';
 				$all = ( ! empty($_GET['owner_of_order']) and sanitize_text_field($_GET['owner_of_order']) === 'all' ) ? ' selected' : '';
 				echo '<option value="all" '.$all.'>Alle winkels</option>';
 
 				foreach ( $shops as $shop ) {
 					$selected = ( ! empty($_GET['owner_of_order']) and sanitize_text_field($_GET['owner_of_order']) === $shop ) ? ' selected' : '';
-					echo '<option value="'.$shop.'" '.$selected.'>Enkel '.ucwords($shop).'</option>';
+					echo '<option value="'.$shop.'" '.$selected.'>Enkel '.implode( '-', array_map( 'ucfirst', explode('-', $shop) ) ).'</option>';
 				}
 
 			echo '</select>';
 		}
 	}
 
-	// Activeer automatisch de metadata-filter tijdens het opzoeken van orders in de lijst
-	// VERSTOORT OM GOD WEET WELKE REDEN DE CUSTOM ORDER STATUS?
+	// Activeer AUTOMATISCH de filter op eigen winkel tijdens het opzoeken van orders in de lijst
 	// add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
 
 	function filter_orders_per_meta_value( $query ) {
@@ -223,11 +227,13 @@
 			'page',
 			'settings-updated',
 		);
-		write_log($args);
-		$args['edit.php']['shop_order'] = array(
-			'page',
-			'owner_of_order',
+		$args['profile.php'][''] = array(
+			'updated',
 		);
+		$current_array = $args['edit.php'][''];
+		$current_array[] = 'owner_of_order';
+		$args['edit.php'][''] = $current_array;
+		write_log($args);
 		return $args;
 	}
 	
@@ -655,6 +661,7 @@
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
 				jQuery("tr.user-nickname-wrap").hide();
 				jQuery("tr.user-url-wrap").hide();
+				jQuery("tr[class$='member_of_shop-wrap']").hide();
 				jQuery("h2:contains('Over jezelf')").next('.form-table').hide();
 				jQuery("h2:contains('Over jezelf')").hide();
 				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
@@ -1185,6 +1192,7 @@
 		register_setting( 'oxfam-options-global', 'oxfam_shop_node', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', 'comma_string_to_array' );
+		register_setting( 'oxfam-options-global', 'oxfam_member_shops', 'comma_string_to_array' );
 		register_setting( 'oxfam-options-local', 'oxfam_holidays', 'comma_string_to_array' );
 	}
 
@@ -1201,6 +1209,7 @@
 		$array = (array)preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
 
 		foreach ( $array as $key => $value ) {
+			$array[$key] = mb_strtolower($value);
 			// Verwijder datums uit het verleden (na check of het wel om een datum gaat en geen postcode!)
 			if ( strpos( $array[$key], '-' ) !== false and $array[$key] < date( 'Y-m-d' ) ) {
 				unset($array[$key]);
@@ -2444,6 +2453,10 @@
 
 	function does_home_delivery() {
 		return get_option( 'oxfam_zip_codes' );
+	}
+
+	function is_regional_webshop() {
+		return get_option( 'oxfam_member_shops' );
 	}
 
 	// Voorlopig nog identiek aan vorige functie, maar dat kan nog veranderen!
