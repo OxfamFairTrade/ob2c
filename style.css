@@ -21,6 +21,25 @@
 	margin-bottom: 1em;
 }
 
+/* Prijs wat dichter bij de titel laten komen */
+h1.product_title.entry-title {
+	margin-bottom: 0;
+}
+
+/* Zet een limiet op de breedte van de add-to-cart knoppen */
+div.nm-quantity-wrap,
+button.nm-simple-add-to-cart-button {
+	max-width: 250px;
+}
+
+/* Geef leeggoedboodschap wat marge boven en onder */
+div.wc-force-sells {
+	margin: 1em 0;
+}
+div.wc-force-sells > ul {
+	margin-left: 30px;
+}
+
 /* Maak de testimonial iets subtieler */
 div.nm-testimonial-description {
 	font-size: 100%;
@@ -157,12 +176,6 @@ li.product.pa_bio-ja:hover::before,
 li.product.product_shipping_class-fruitsap:hover::after {
 	background-color: black;
 	transition: background-color 1s ease-out 0s;
-}
-
-/* Zet een limiet op de breedte van de add-to-cart knoppen */
-div.nm-quantity-wrap,
-button.nm-simple-add-to-cart-button {
-	max-width: 300px;
 }
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 

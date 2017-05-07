@@ -298,16 +298,14 @@ if ( ! class_exists( 'WC_Force_Sells' ) ) :
 				$product_ids = array_values( array_unique( $product_ids ) );
 
 				echo '<div class="clear"></div>';
-				// GEWIJZIGD: Entertje boven toevoegen, onderaan verwijderen
-				echo '<div class="wc-force-sells"><br>';
+				echo '<div class="wc-force-sells">';
 				echo __( 'This will also add the following products to your cart:', 'woocommerce-force-sells' );
-				echo '<ul style="margin-left: 20px;">';
-
-				foreach ( $product_ids as $product_id ) {
-					$product = wc_get_product( $product_id );
-					echo '<li>' . $product->get_title() . '(' . wc_price( $product->get_price() ) . ')</li>';
-				}
-
+				echo '<ul>';
+					foreach ( $product_ids as $product_id ) {
+						// GEWIJZIGD: Prijs toevoegen
+						$product = wc_get_product( $product_id );
+						echo '<li>' . $product->get_title() . ' (' . wc_price( $product->get_price() ) . ')</li>';
+					}
 				echo '</ul></div>';
 			}
 		}
