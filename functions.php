@@ -165,6 +165,8 @@
 
 	function add_claimed_by_column( $columns ) {
 		$columns['claimed_by'] = 'Behandeld door';
+		// Eventueel bepaalde kolommen uitschakelen?
+		// unset($columns['order_notes']);
 		return $columns;
 	}
 
@@ -316,6 +318,10 @@
 	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
 
 	function ure_allow_args_for_oxfam_options( $args ) {
+		$args['edit.php'][''][] = 'claimed_by';
+		$args['admin.php']['wc-reports'] = array(
+			'claimed_by',
+		);
 		$args['admin.php']['oxfam-options'] = array(
 			'page',
 			'settings-updated',
@@ -323,12 +329,6 @@
 		$args['profile.php'][''] = array(
 			'updated',
 		);
-		$args['admin.php'][''] = array(
-			'claimed_by',
-		);
-		$current_array = $args['edit.php'][''];
-		$current_array[] = 'claimed_by';
-		$args['edit.php'][''] = $current_array;
 		return $args;
 	}
 	
