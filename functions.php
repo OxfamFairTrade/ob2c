@@ -51,22 +51,25 @@
 		add_action( 'edit_user_profile', 'add_extra_user_field' );
 		
 		// Voeg de claimende winkel toe aan ordermetadate van zodra iemand op het winkeltje klikt
-		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_transition_author' );
+		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop' );
 		
 		// Maak zoeken op claimende winkel mogelijk?
-		add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_total' );
+		add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_fields' );
 
 		// Creëer bovenaan de orderlijst een dropdown met de deelnemende winkels uit de regio
-		add_action( 'restrict_manage_posts', 'add_owner_of_order_filtering' );
+		add_action( 'restrict_manage_posts', 'add_claimed_by_filtering' );
 		
-		// Activeer AUTOMATISCH de filter op eigen winkel tijdens het opzoeken van orders in de lijst
-		// add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
+		// Voer de filtering uit tijdens het bekijken van orders in de admin (eventueel AUTOMATISCH op eigen winkel?)
+		add_action( 'pre_get_posts', 'filter_orders_by_owner' );
 
 		// Voeg ook een kolom toe aan het besteloverzicht in de back-end
 		add_filter( 'manage_edit-shop_order_columns', 'add_claimed_by_column', 11 );
 
 		// Toon de data van elk order in de kolom
 		add_action( 'manage_shop_order_posts_custom_column' , 'get_claimed_by_value', 10, 2 );
+
+		// Maak de boodschap om te filteren op winkel beschikbaar bij de rapporten
+		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
 	}
 
 	function add_member_of_shop_field( $contactmethods ) {
@@ -93,6 +96,8 @@
 						echo '<select name="'.$key.'" id="'.$key.'">';
 							$member_of = get_the_author_meta( $key, $user->ID );
 							$shops = get_option( 'oxfam_member_shops' );
+							$selected = empty( $member_of ) ? ' selected' : '';
+							echo '<option value=""'.$selected.'>(selecteer)</option>';
 							foreach ( $shops as $shop ) {
 								$selected = ( $shop === $member_of ) ? ' selected' : '';
 								echo '<option value="'.$shop.'"'.$selected.'>'.trim_and_uppercase( $shop ).'</option>';
@@ -106,42 +111,54 @@
 		<?php 
 	}
 
-	function register_transition_author( $order_id ) {
-		add_post_meta( $order_id, 'owner_of_order', get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() ), true );
+	function register_claiming_member_shop( $order_id ) {
+		$blog_id = get_current_blog_id();
+		$owner = get_the_author_meta( 'blog_'.$blog_id.'_member_of_shop', get_current_user_id() );
+		if ( ! $owner ) {
+			// Val terug op de belangrijkste winkel indien de gebruiker nog niet aan een winkel gelinkt was
+			if ( $blog_id === 9 ) {
+				$owner = 'leuven';
+			} else {
+				$owner = 'antwerpen';
+			}
+		}
+		add_post_meta( $order_id, 'claimed_by', $owner, true );
 	}
 
-	function woocommerce_shop_order_search_order_total( $search_fields ) {
-		$search_fields[] = 'owner_of_order';
+	function woocommerce_shop_order_search_order_fields( $search_fields ) {
+		$search_fields[] = 'claimed_by';
 		return $search_fields;
 	}
 
-	function add_owner_of_order_filtering() {
+	function add_claimed_by_filtering() {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' ) {
 			$shops = get_option( 'oxfam_member_shops' );
-			echo '<select name="owner_of_order" id="owner_of_order">';
-				$all = ( ! empty($_GET['owner_of_order']) and sanitize_text_field($_GET['owner_of_order']) === 'all' ) ? ' selected' : '';
+			echo '<select name="claimed_by" id="claimed_by">';
+				$all = ( ! empty($_GET['claimed_by']) and sanitize_text_field($_GET['claimed_by']) === 'all' ) ? ' selected' : '';
 				echo '<option value="all" '.$all.'>Alle regiowinkels</option>';
-
 				foreach ( $shops as $shop ) {
-					$selected = ( ! empty($_GET['owner_of_order']) and sanitize_text_field($_GET['owner_of_order']) === $shop ) ? ' selected' : '';
+					$selected = ( ! empty($_GET['claimed_by']) and sanitize_text_field($_GET['claimed_by']) === $shop ) ? ' selected' : '';
 					echo '<option value="'.$shop.'" '.$selected.'>Enkel '.trim_and_uppercase( $shop ).'</option>';
 				}
-
 			echo '</select>';
 		}
 	}
 
-	function filter_orders_per_meta_value( $query ) {
+	function filter_orders_by_owner( $query ) {
 		global $pagenow, $post_type;
-		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty($_GET['post_status']) and $_GET['post_status'] === 'wc-claimed' ) {
+		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty( $_GET['claimed_by'] ) and $_GET['claimed_by'] !== 'all' ) {
+			// We moeten wc-claimed expliciet toevoegen aan de te doorzoeken statussen (+ wc-pending, wc-on-hold en wc-processing negeren => geen zin bij deze eigenschap)
+			$statusses = array( 'wc-claimed', 'wc-completed', 'wc-cancelled', 'wc-refunded', 'wc-failed' );
+			$query->set( 'post_status', $statusses );
 			$meta_query_args = array(
+				'relation' => 'AND',
 				array(
-					'key' => 'owner_of_order',
-					'value' => get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() ),
+					'key' => 'claimed_by',
+					'value' => $_GET['claimed_by'],
 					'compare' => '=',
-					)
-				);
+				),
+			);
 			$query->set( 'meta_query', $meta_query_args );
 		}
 	}
@@ -154,8 +171,68 @@
 	function get_claimed_by_value( $column ) {
 		global $the_order;
 		if ( $column === 'claimed_by' ) {
-			echo wc_get_order_item_meta( $the_order->get_id(), 'owner_of_order', true );
+			if ( get_post_status( $the_order->get_id() ) !== 'wc-claimed' ) {
+				echo '<i>nog niet geclaimd</i>';
+			} else {
+				if ( get_post_meta( $the_order->get_id(), 'claimed_by', true ) ) {
+					echo trim_and_uppercase( get_post_meta( $the_order->get_id(), 'claimed_by', true ) );
+				} else {
+					// Reeds geclaimd maar geen winkel? Dat zou niet mogen zijn!
+					echo '<i>ERROR</i>';
+				}
+			}
 		}
+	}
+
+	// Global om ervoor te zorgen dat de boodschap enkel in de eerste loop geëchood wordt
+	$warning_shown = false;
+
+	function limit_reports_to_member_shop( $args ) {
+		global $pagenow, $warning_shown;
+		if ( $pagenow === 'admin.php' and $_GET['page'] === 'wc-reports' ) {
+			if ( ! empty( $_GET['claimed_by'] ) ) {
+				$new_args['where_meta'] = array(
+					'relation' => 'AND',
+					array(
+						'meta_key'   => 'claimed_by',
+						'meta_value' => $_GET['claimed_by'],
+						'operator'   => '=',
+					),
+				);
+
+				// Nette manier om twee argumenten te mergen (in het bijzonder voor individuele productraportage, anders blijft enkel de laatste meta query bewaard)
+				$args['where_meta'] = array_key_exists( 'where_meta', $args ) ? wp_parse_args( $new_args['where_meta'], $args['where_meta'] ) : $new_args['where_meta'];
+				
+				if ( ! $warning_shown ) {
+					echo "<div style='background-color: red; color: white; padding: 0.25em 1em;'>";
+						echo "<p>Opgelet: momenteel bekijk je een gefilterde weergave met enkel bestellingen die verwerkt werden door ".trim_and_uppercase( $_GET['claimed_by'] ).".</p>";
+						echo "<p style='text-align: right;'>";
+							$members = get_option( 'oxfam_member_shops' );
+							foreach ( $members as $member ) {
+								if ( $member !== $_GET['claimed_by'] ) {
+									echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk ".trim_and_uppercase( $member )." »</a><br>";
+								}
+							}
+							echo "<a href='".esc_url( remove_query_arg( 'claimed_by' ) )."' style='color: black;'>Toon hele regio »</a>";
+						echo "</p>";
+					echo "</div>";
+				}
+			} else {
+				if ( ! $warning_shown ) {
+					echo "<div style='background-color: green; color: white; padding: 0.25em 1em;'>";
+						echo "<p>Momenteel bekijk je alle bestellingen uit de regio. Wil je misschien filteren op een bepaalde winkel?</p>";
+						echo "<p style='text-align: right;'>";
+							$members = get_option( 'oxfam_member_shops' );
+							foreach ( $members as $member ) {
+								echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Ja, bekijk enkel ".trim_and_uppercase( $member )." »</a><br>";
+							}
+						echo "</p>";
+					echo "</div>";
+				}
+			}
+			$warning_shown = true;
+		}
+    	return $args;
 	}
 
 	// Voer shortcodes ook uit in widgets, titels en e-mailfooters
@@ -246,10 +323,12 @@
 		$args['profile.php'][''] = array(
 			'updated',
 		);
+		$args['admin.php'][''] = array(
+			'claimed_by',
+		);
 		$current_array = $args['edit.php'][''];
-		$current_array[] = 'owner_of_order';
+		$current_array[] = 'claimed_by';
 		$args['edit.php'][''] = $current_array;
-		write_log($args);
 		return $args;
 	}
 	
