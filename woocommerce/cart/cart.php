@@ -138,12 +138,11 @@ do_action( 'woocommerce_before_cart' ); ?>
 					</div>
 				<?php } ?>
                 
-                <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
+                <!-- GEWIJZIGD: Knop voor emptyCart toegevoegd en andere knop rechts laten floaten -->
+				<a href="<?php echo WC()->cart->get_cart_url().'?emptyCart'; ?>" id="wisknop" class="button border">Winkelmandje leegmaken</a>
+
+				<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" style="float: right;" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
                 
-				<!-- GEWIJZIGD: Empty cart button toegevoegd -->
-				<a class="button" id="wisknop" style="float: left;" href="<?php
-					echo WC()->cart->get_cart_url().'?emptyCart';
-				?>">Alles wissen</a>
 				<input type="submit" class="button border" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>" />
 
 				<?php do_action( 'woocommerce_cart_actions' ); ?>
