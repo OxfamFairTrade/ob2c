@@ -95,7 +95,7 @@
 							$shops = get_option( 'oxfam_member_shops' );
 							foreach ( $shops as $shop ) {
 								$selected = ( $shop === $member_of ) ? ' selected' : '';
-								echo '<option value="'.$shop.'"'.$selected.'>'.implode( '-', array_map( 'ucfirst', explode('-', $shop) ) ).'</option>';
+								echo '<option value="'.$shop.'"'.$selected.'>'.trim_and_uppercase( $shop ).'</option>';
 							}
 						echo '</select>';
 					?>
@@ -125,7 +125,7 @@
 
 				foreach ( $shops as $shop ) {
 					$selected = ( ! empty($_GET['owner_of_order']) and sanitize_text_field($_GET['owner_of_order']) === $shop ) ? ' selected' : '';
-					echo '<option value="'.$shop.'" '.$selected.'>Enkel '.implode( '-', array_map( 'ucfirst', explode('-', $shop) ) ).'</option>';
+					echo '<option value="'.$shop.'" '.$selected.'>Enkel '.trim_and_uppercase( $shop ).'</option>';
 				}
 
 			echo '</select>';
@@ -561,7 +561,7 @@
 	add_filter( 'woocommerce_process_myaccount_field_shipping_city', 'format_city', 10, 1 );
 	
 	function trim_and_uppercase( $value ) {
-		return ucwords( trim($value) );
+		return implode( '-', array_map( 'ucwords', explode( '-', trim($value) ) ) );
 	}
 
 	function format_tax( $value ) {
