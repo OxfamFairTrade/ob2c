@@ -294,18 +294,18 @@ if ( ! class_exists( 'WC_Force_Sells' ) ) :
 
 			if ( ! empty( $product_ids ) ) {
 				// Prevent duplication when informing forced products.
-				//
 				// @see https://github.com/woocommerce/woocommerce-force-sells/issues/10
 				$product_ids = array_values( array_unique( $product_ids ) );
 
 				echo '<div class="clear"></div>';
-				echo '<div class="wc-force-sells">';
-				echo '<p>' . __( 'This will also add the following products to your cart:', 'woocommerce-force-sells' ) . '</p>';
-				echo '<ul>';
+				// GEWIJZIGD: Entertje boven toevoegen, onderaan verwijderen
+				echo '<div class="wc-force-sells"><br>';
+				echo __( 'This will also add the following products to your cart:', 'woocommerce-force-sells' );
+				echo '<ul style="margin-left: 20px;">';
 
 				foreach ( $product_ids as $product_id ) {
-					$title 	= get_the_title( $product_id );
-					echo '<li>' . $title . '</li>';
+					$product = wc_get_product( $product_id );
+					echo '<li>' . $product->get_title() . '(' . wc_price( $product->get_price() ) . ')</li>';
 				}
 
 				echo '</ul></div>';

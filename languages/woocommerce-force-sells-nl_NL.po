@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce Force Sells\n"
 "POT-Creation-Date: 2017-04-15 12:09+0200\n"
-"PO-Revision-Date: 2017-04-23 02:05+0200\n"
+"PO-Revision-Date: 2017-05-08 00:59+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -58,8 +58,7 @@ msgstr ""
 
 #: woocommerce-force-sells.php:302
 msgid "This will also add the following products to your cart:"
-msgstr ""
-"Dit leeggoed wordt automatisch toegevoegd bij aankoop van dit product:"
+msgstr "Dit leeggoed zal automatisch toegevoegd worden:"
 
 #: woocommerce-force-sells.php:359
 #, php-format
