@@ -110,19 +110,17 @@ div.nm-single-product div.woocommerce-product-gallery  {
 	overflow: hidden;
 }
 
-/* Toon een flapje bij bioproducten */
+/* Toon een blokje bij bioproducten */
 li.product.pa_bio-ja::before {
 	color: white;
-	width: 250px;
 	position: absolute;
 	top: 0;
 	left: 0.25em;
-	padding: 0.5em;
+	padding: 0 0.5em;
+	font-size: 90%;
 	z-index: 50;
-	
 	transform: skewX(-3deg);
 	background-color: #61a534;
-	
 	content: "Biologisch"; 
 }
 
@@ -130,22 +128,23 @@ li.product.pa_bio-ja::before {
 div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::before {
 	color: white;
 	position: absolute;
-	top: 2.5em;
+	top: 0;
 	left: 0.25em;
 	padding: 0.5em;
-	font-size: 90%;
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: #61a534;
 	content: "Biologisch gecertificeerd product";
 }
 
-/* Toon een flapje bij producten die niet beschikbaar zijn voor thuislevering */
+/* Toon een blokje bij producten die niet beschikbaar zijn voor thuislevering */
 li.product.product_shipping_class-fruitsap::after {
 	color: white;
 	position: absolute;
 	top: 2.5em;
-	padding: 0.5em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 90%;
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: #e70052;
@@ -159,7 +158,6 @@ div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product
 	top: 2.5em;
 	left: 0.25em;
 	padding: 0.5em;
-	font-size: 90%;
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: #e70052;
