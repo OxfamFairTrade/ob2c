@@ -40,15 +40,57 @@
 		}
 	}
 
+	// Voeg een profielveld toe in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
+	add_filter( 'user_contactmethods', 'add_regiosamenwerking', 10, 1 );
+
+	function add_regiosamenwerking( $contactmethods ) {
+		$contactmethods['member_of_shop'] = 'member_of_shop';
+		return $contactmethods;
+	}
+	
+	add_action( 'personal_options_update', 'save_user_fields' );
+	add_action( 'edit_user_profile_update', 'save_user_fields' );
+
+	function save_user_fields( $user_id ) {
+		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
+		update_usermeta( $user_id, 'member_of_shop', $_POST['member_of_shop'] );
+	}
+
+	add_action( 'show_user_profile', 'add_user_fields' );
+	add_action( 'edit_user_profile', 'add_user_fields' );
+
+	function add_user_fields( $user ) {
+		?>
+		<h3>Regiosamenwerking</h3>
+		<table class="form-table">
+			<tr>
+				<th><label for="dropdown">Ik claim orders voor ...</label></th>
+				<td>
+					<select name="member_of_shop" id="member_of_shop">
+						<?php
+							$member_of = get_the_author_meta( 'member_of_shop', $user->ID );
+							$shops = array( 'leuven', 'heverlee', 'kessel-lo', 'wijgmaal', 'wilsele' );
+							foreach ( $shops as $shop ) {
+								$selected = ( $shop === $member_of ) ? ' selected' : '';
+								echo '<option value="'.$shop.'"'.$selected.'>'.ucwords($shop).'</option>';
+							}
+						?>
+					</select>
+					<span class="description">Opgelet: deze keuze bepaalt aan welke winkel de orders die jij claimt toegekend worden!</span>
+				</td>
+			</tr>
+		</table>
+		<?php 
+	}
+
 	add_action( 'woocommerce_order_status_processing_to_claimed', 'register_transition_author' );
 
 	function register_transition_author( $order_id ) {
-		$current_user = wp_get_current_user();
-		add_post_meta( $order_id, 'owner_of_order', $current_user->user_login, true );
+		add_post_meta( $order_id, 'owner_of_order', get_the_author_meta( 'member_of_shop', get_current_user_id() ), true );
 	}
 
 	// Poging om 'geclaimd door winkel' op auteur te filteren
-	// add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_total' );
+	add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_total' );
 
 	function woocommerce_shop_order_search_order_total( $search_fields ) {
 		$search_fields[] = 'owner_of_order';
@@ -60,16 +102,15 @@
 
 	function add_meta_value_to_orders() {
 		global $pagenow, $post_type;
-		if( $pagenow === 'edit.php' and $post_type === 'shop_order' ) {
-			$meta_values = array( 'oostende', 'brugge' );
-
-			echo '<select name="source" id="source">';
-				$all = ( ! empty($_GET['source']) and sanitize_text_field($_GET['source']) === 'all' ) ? ' selected' : '';
+		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' ) {
+			$shops = array( 'leuven', 'heverlee', 'kessel-lo', 'wijgmaal', 'wilsele' );
+			echo '<select name="owner_of_order" id="owner_of_order">';
+				$all = ( ! empty($_GET['owner_of_order']) and sanitize_text_field($_GET['owner_of_order']) === 'all' ) ? ' selected' : '';
 				echo '<option value="all" '.$all.'>Alle winkels</option>';
 
-				foreach ( $meta_values as $meta_value ) {
-					$selected = ( ! empty($_GET['source']) and sanitize_text_field($_GET['source']) === $meta_value ) ? ' selected' : '';
-					echo '<option value="'.$meta_value.'" '.$selected.'>Enkel '.ucwords($meta_value).'</option>';
+				foreach ( $shops as $shop ) {
+					$selected = ( ! empty($_GET['owner_of_order']) and sanitize_text_field($_GET['owner_of_order']) === $shop ) ? ' selected' : '';
+					echo '<option value="'.$shop.'" '.$selected.'>Enkel '.ucwords($shop).'</option>';
 				}
 
 			echo '</select>';
@@ -77,7 +118,7 @@
 	}
 
 	// Activeer de metadata-filter tijdens het opzoeken van orders in de lijst
-	// add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
+	add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
 
 	function filter_orders_per_meta_value( $query ) {
 		global $pagenow, $post_type;
@@ -100,61 +141,27 @@
 	add_filter( 'the_title', 'do_shortcode' );
 	add_filter( 'woocommerce_email_footer_text', 'do_shortcode' );
 
-	// Verstop enkele hardnekkige adminlinks voor de lokale shopmanagers
-	// Let wel: toegangrechten voor WP All Export versoepeld door rol aan te passen in wp-all-export-pro.php!
-	// VOORLOPIG ALLEMAAL VIA USER ROLE EDITOR
-	// add_action( 'admin_menu', 'hide_menus_from_plebs', 100, 0 );
-
-	function hide_menus_from_plebs() {
-		if ( ! current_user_can( 'update_core' ) ) {
-			remove_menu_page( 'vc-welcome' );
-			remove_menu_page( 'order_delivery_date_lite' );
-			remove_submenu_page( 'woocommerce', 'wc-settings' );
-			remove_submenu_page( 'woocommerce', 'wc-status' );
-			remove_submenu_page( 'woocommerce', 'wc-addons' );
-		}
-	}
-
-	// Andere filter nodig voor hardnekkige Jetpack
+	// Adminlinks verstoppen voor lokale shopmanagers GEBEURT VIA USER ROLE EDITOR
+	// Toegangrechten voor WP All Export versoepeld door rol aan te passen in wp-all-export-pro.php!
+	// Gebruik eventueel deze speciale filter voor het hardleerse Jetpack:
 	// add_action( 'jetpack_admin_menu', 'hide_jetpack_from_others' );
 	
 	function hide_jetpack_from_others() {
-    	if ( ! current_user_can( 'update_core' ) ) {
+    	if ( ! current_user_can( 'create_sites' ) ) {
     		remove_menu_page( 'jetpack' );
     	}
 	}
 
-	// Haal de hardnekkige pagina's niet enkel uit het menu, maak ze ook effectief ontoegankelijk
-	// VOORLOPIG ALLEMAAL VIA USER ROLE EDITOR
-	// add_action( 'current_screen', 'restrict_menus' );
-
-	function restrict_menus() {
-		$screen = get_current_screen();
-		if ( ! current_user_can( 'create_sites' ) ) {
-			$forbidden_strings = array(
-				'vc-welcome',
-				'wc-settings',
-				'wc-status',
-				'wc-addons',
-			);
-			foreach ( $forbidden_strings as $forbidden ) {
-				if ( strpos( $screen->base, $forbidden ) !== false ) {
-					wp_die( 'Uit veiligheidsoverwegingen is deze geavanceerde beheerpagina niet toegankelijk voor lokale winkelbeheerders. Ben je er toch van overtuigd dat je deze functionaliteit nodig hebt? Leg je case voor extra rechten aan ons voor via <a href="mailto:'.get_option( 'admin_email' ).'">'.get_option( 'admin_email' ).'</a>!' );
-				}
-			}
-		}
-	}
-
-	// OMDATE TIJDSDUUR IN WP-CONFIG.PHP NIET GERESPECTEERD WORDT 
-	add_action('wp_print_scripts','disable_autosave');
+	// Schakel autosaves uit
+	add_action( 'wp_print_scripts', 'disable_autosave' );
 	
 	function disable_autosave() {
-		wp_deregister_script('autosave');
+		wp_deregister_script( 'autosave' );
 	}
 
 	// Zorg ervoor dat revisies ook bij producten bijgehouden worden op de hoofdsite
 	// Log de post_meta op basis van de algemene update_post_metadata-filter (of beter door WC-functies te hacken?)
-	if ( is_main_site( get_current_blog_id() ) ) {
+	if ( is_main_site() ) {
 		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		add_action( 'update_post_metadata', 'log_product_changes', 1, 4 );
 	}
