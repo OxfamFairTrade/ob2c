@@ -1313,13 +1313,13 @@
 		$array = (array)preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
 
 		foreach ( $array as $key => $value ) {
-			$array[$key] = mb_strtolower($value);
-			// Verwijder datums uit het verleden (na check of het wel om een datum gaat en geen postcode!)
-			if ( strpos( $array[$key], '-' ) !== false and $array[$key] < date( 'Y-m-d' ) ) {
+			$array[$key] = mb_strtolower( trim($value) );
+			// Verwijder datums uit het verleden (woorden van toevallig 10 tekens kunnen niet voor een datum komen!)
+			if ( strlen( $array[$key] ) === 10 and $array[$key] < date( 'Y-m-d' ) ) {
 				unset($array[$key]);
 			}
 		}
-		sort($array);
+		sort($array, SORT_STRING);
 		return $array;
 	}
 
@@ -1830,7 +1830,7 @@
 
 		// Ontdubbel de landen en sorteer values alfabetisch
 		$countries = array_unique( $countries );
-		sort($countries);
+		sort($countries, SORT_STRING);
 		return $countries;
 	}
 
@@ -1970,6 +1970,8 @@
 			// Toon een random quote
 			if ( count( $partners_with_quote ) > 0 ) {
 				$i = random_int( 0, count($partners_with_quote) - 1 );
+				// Waarom blijft description leeg?
+				// echo do_shortcode('[nm_testimonial signature="'.$partners_with_quote[$i]['quote_by'].'" description="'.$partners_with_quote[$i]['quote'].'" image_id="4811"]');
 				echo '<p>&laquo; '.$partners_with_quote[$i]['quote'].' &raquo;</p>';
 				echo '<p style="font-style: italic; text-align: right;">('.$partners_with_quote[$i]['quote_by'].')</p>';
 			}
@@ -2395,10 +2397,6 @@
 	add_shortcode( 'map_address', 'get_company_address' );
 	add_shortcode( 'email_footer', 'get_company_and_year' );
 
-	function get_company_and_year() {
-		return '<span style="color: #60646c">'.get_company_name().' &copy; 2016-'.date('Y').'</span>';
-	}
-
 	function print_widget_usp() {
 		$msg = "Mooie Marcom-uitdaging: vat onze <i>unique selling points</i> samen in één catchy zin.";
 		return $msg;
@@ -2675,6 +2673,24 @@
     	}
     	return $mapTypes;
 	}, 10, 2);
+
+	function get_company_and_year() {
+		return '<span style="color: #60646c">'.get_company_name().' &copy; 2016-'.date('Y').'</span>';
+	}
+
+	function get_oxfam_covered_zips() {
+		global $wpdb;
+		$rows = $wpdb->get_results( 'SELECT * FROM '.$wpdb->prefix.'woocommerce_shipping_zone_locations WHERE location_type = postcode' );
+		$zips = false;
+		if ( count($rows) > 0 ) {
+			foreach ( $rows as $row ) {
+				$zips[] = $row->location_code;
+			}
+			$zips = array_unique( $zips );
+			sort($zips, SORT_STRING);
+		}
+		return $zips;
+	}
 
 	
 	##########

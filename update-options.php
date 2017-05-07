@@ -114,7 +114,7 @@
 					echo "<tr valign='top'>";
 						echo "<th class='left'><label for='oxfam_member_shops' title=''>Regiosamenwerking</label></th>";
 						echo "<td class='right'>";
-							echo "<input type='text' name='oxfam_member_shops' class='text-input' value='".esc_attr( trim_and_uppercase( implode ( ', ', get_option('oxfam_member_shops') ) ) )."'";
+							echo "<input type='text' name='oxfam_member_shops' class='text-input' value='".esc_attr( trim_and_uppercase( implode( ', ', get_option('oxfam_member_shops') ) ) )."'";
 							if ( ! current_user_can( 'create_sites' ) ) echo " readonly";
 							echo ">";
 						echo "</td>";
@@ -126,21 +126,7 @@
 					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering:<br><small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="
-		  			<?php
-		  				global $wpdb;
-		  				$rows = $wpdb->get_results( 'SELECT * FROM '.$wpdb->prefix.'woocommerce_shipping_zone_locations WHERE location_type = "postcode" ORDER BY location_code ASC' );
-		  				$placeholder = get_oxfam_shop_data( 'zipcode' ); 
-		  				if ( count($rows) > 0 ) {
-							foreach ( $rows as $row ) {
-								$zips[] = $row->location_code;
-							}
-							$zips = array_unique( $zips );
-							sort($zips);
-							$placeholder = implode(', ', $zips);
-						}
-						echo $placeholder;
-		  			?>" <?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode ( ', ', get_option('oxfam_zip_codes') ) ); ?></textarea>
+		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo implode( ', ', get_oxfam_covered_zips() ); ?>" <?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option('oxfam_zip_codes') ) ); ?></textarea>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -148,7 +134,7 @@
 					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op de contactpagina een rode banner verschijnen zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:<br><small>Typ alle datums waarop de webshop 'gesloten' is in het formaat YYYY-MM-DD en scheid ze met een komma.</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="<?php echo implode ( ', ', $default_holidays ); ?>"><?php echo esc_textarea( implode ( ', ', get_option('oxfam_holidays') ) ); ?></textarea>
+		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="<?php echo implode( ', ', $default_holidays ); ?>"><?php echo esc_textarea( implode( ', ', get_option('oxfam_holidays') ) ); ?></textarea>
 		  		</td>
 			</tr>
 			<?php
