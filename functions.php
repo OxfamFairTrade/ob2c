@@ -652,6 +652,11 @@
 	add_action( 'admin_footer-user-edit.php', 'hide_others_profile_fields' );
 	
 	function hide_own_profile_fields() {
+		?>
+		<script type="text/javascript">
+			jQuery("tr[class$='member_of_shop-wrap']").remove();
+		</script>
+		<?php
 		if ( ! current_user_can( 'manage_options' ) ) {
 			?>
 			<script type="text/javascript">
@@ -661,7 +666,6 @@
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
 				jQuery("tr.user-nickname-wrap").hide();
 				jQuery("tr.user-url-wrap").hide();
-				jQuery("tr[class$='member_of_shop-wrap']").hide();
 				jQuery("h2:contains('Over jezelf')").next('.form-table').hide();
 				jQuery("h2:contains('Over jezelf')").hide();
 				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
@@ -677,7 +681,7 @@
 			?>
 			<script type="text/javascript">
 				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
-				jQuery("tr.user-email-wrap").find('input[type=email]').prop('readonly',true);
+				jQuery("tr.user-email-wrap").find('input[type=email]').prop('readonly', true);
 				jQuery("tr.user-email-wrap").find('input[type=email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox.</span>');
 			</script>
 			<?php
@@ -685,6 +689,11 @@
 	}
 
 	function hide_others_profile_fields() {
+		?>
+		<script type="text/javascript">
+			jQuery("tr[class$='member_of_shop-wrap']").remove();
+		</script>
+		<?php
 		if ( ! current_user_can( 'manage_options' ) ) {
 		?>
 			<script type="text/javascript">
