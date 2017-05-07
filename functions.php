@@ -215,7 +215,7 @@
 									echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk ".trim_and_uppercase( $member )." »</a><br>";
 								}
 							}
-							echo "<a href='".esc_url( remove_query_arg( 'claimed_by' ) )."' style='color: black;'>Terug naar volledige regio »</a>";
+							echo "<br><a href='".esc_url( remove_query_arg( 'claimed_by' ) )."' style='color: black;'>Terug naar volledige regio »</a>";
 						echo "</p>";
 					echo "</div>";
 				}
@@ -322,11 +322,16 @@
 		$args['admin.php']['wc-reports'] = array(
 			'tab',
 			'report',
+			'range',
 			'claimed_by',
 		);
 		$args['admin.php']['oxfam-options'] = array(
 			'page',
 			'settings-updated',
+		);
+		$args['admin.php']['pmxe-admin-manage'] = array(
+			'id',
+			'action',
 		);
 		$args['profile.php'][''] = array(
 			'updated',
