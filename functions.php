@@ -120,13 +120,13 @@
 		}
 	}
 
-	// Activeer de metadata-filter tijdens het opzoeken van orders in de lijst
-	add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
+	// Activeer automatisch de metadata-filter tijdens het opzoeken van orders in de lijst
+	// VERSTOORT OM GOD WEET WELKE REDEN DE CUSTOM ORDER STATUS?
+	// add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
 
 	function filter_orders_per_meta_value( $query ) {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty($_GET['post_status']) and $_GET['post_status'] === 'wc-claimed' ) {
-			// VERSTOORT DIT NOG ALTIJD OM GOD WEET WELKE REDEN DE CUSTOM ORDER STATUS?
 			$meta_query_args = array(
 				array(
 					'key' => 'owner_of_order',
@@ -221,7 +221,12 @@
 	function ure_allow_args_for_oxfam_options( $args ) {
 		$args['admin.php']['oxfam-options'] = array(
 			'page',
-			'settings-updated'
+			'settings-updated',
+		);
+		write_log($args);
+		$args['edit.php']['shop_order'] = array(
+			'page',
+			'owner_of_order',
 		);
 		return $args;
 	}
