@@ -41,12 +41,32 @@
 	}
 
 	if ( is_regional_webshop() ) {
-		// Definieer een profielveld in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is (later met jQuery verbergen en vervangen door dropdown)
+		// Definieer een profielveld in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
 		add_filter( 'user_contactmethods', 'add_member_of_shop_field', 10, 1 );
+		// Zorg ervoor dat het bewaard wordt
 		add_action( 'personal_options_update', 'save_extra_user_field' );
 		add_action( 'edit_user_profile_update', 'save_extra_user_field' );
+		// Vervang het tekstveld door een dropdown (origineel wordt met jQuery verborgen)
 		add_action( 'show_user_profile', 'add_extra_user_field' );
 		add_action( 'edit_user_profile', 'add_extra_user_field' );
+		
+		// Voeg de claimende winkel toe aan ordermetadate van zodra iemand op het winkeltje klikt
+		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_transition_author' );
+		
+		// Maak zoeken op claimende winkel mogelijk?
+		add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_total' );
+
+		// Creëer bovenaan de orderlijst een dropdown met de deelnemende winkels uit de regio
+		add_action( 'restrict_manage_posts', 'add_owner_of_order_filtering' );
+		
+		// Activeer AUTOMATISCH de filter op eigen winkel tijdens het opzoeken van orders in de lijst
+		// add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
+
+		// Voeg ook een kolom toe aan het besteloverzicht in de back-end
+		add_filter( 'manage_edit-shop_order_columns', 'add_claimed_by_column', 11 );
+
+		// Toon de data van elk order in de kolom
+		add_action( 'manage_shop_order_posts_custom_column' , 'get_claimed_by_value', 10, 2 );
 	}
 
 	function add_member_of_shop_field( $contactmethods ) {
@@ -86,23 +106,14 @@
 		<?php 
 	}
 
-	// Voeg claimende winkel toe aan het order van zodra iemand op de knop klikt
-	add_action( 'woocommerce_order_status_processing_to_claimed', 'register_transition_author' );
-
 	function register_transition_author( $order_id ) {
 		add_post_meta( $order_id, 'owner_of_order', get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() ), true );
 	}
-
-	// Poging om 'geclaimd door winkel' op auteur te filteren
-	add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_total' );
 
 	function woocommerce_shop_order_search_order_total( $search_fields ) {
 		$search_fields[] = 'owner_of_order';
 		return $search_fields;
 	}
-
-	// Creëer bovenaan de orderlijst een dropdown met de deelnemende winkels uit de regio
-	add_action( 'restrict_manage_posts', 'add_owner_of_order_filtering' );
 
 	function add_owner_of_order_filtering() {
 		global $pagenow, $post_type;
@@ -110,7 +121,7 @@
 			$shops = get_option( 'oxfam_member_shops' );
 			echo '<select name="owner_of_order" id="owner_of_order">';
 				$all = ( ! empty($_GET['owner_of_order']) and sanitize_text_field($_GET['owner_of_order']) === 'all' ) ? ' selected' : '';
-				echo '<option value="all" '.$all.'>Alle winkels</option>';
+				echo '<option value="all" '.$all.'>Alle regiowinkels</option>';
 
 				foreach ( $shops as $shop ) {
 					$selected = ( ! empty($_GET['owner_of_order']) and sanitize_text_field($_GET['owner_of_order']) === $shop ) ? ' selected' : '';
@@ -120,9 +131,6 @@
 			echo '</select>';
 		}
 	}
-
-	// Activeer AUTOMATISCH de filter op eigen winkel tijdens het opzoeken van orders in de lijst
-	// add_action( 'pre_get_posts', 'filter_orders_per_meta_value' );
 
 	function filter_orders_per_meta_value( $query ) {
 		global $pagenow, $post_type;
@@ -135,6 +143,18 @@
 					)
 				);
 			$query->set( 'meta_query', $meta_query_args );
+		}
+	}
+
+	function add_claimed_by_column( $columns ) {
+		$columns['claimed_by'] = 'Behandeld door';
+		return $columns;
+	}
+
+	function get_claimed_by_value( $column ) {
+		global $the_order;
+		if ( $column === 'claimed_by' ) {
+			echo wc_get_order_item_meta( $the_order->get_id(), 'owner_of_order', true );
 		}
 	}
 

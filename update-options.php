@@ -114,7 +114,7 @@
 					echo "<tr valign='top'>";
 						echo "<th class='left'><label for='oxfam_member_shops' title=''>Regiosamenwerking</label></th>";
 						echo "<td class='right'>";
-							echo "<input type='text' name='oxfam_member_shops' class='text-input' value='".esc_attr( ucwords(get_option('oxfam_member_shops')) )."'";
+							echo "<input type='text' name='oxfam_member_shops' class='text-input' value='".esc_attr( implode ( ', ', array_map( 'ucfirst', explode('-', get_option('oxfam_member_shops')) ) ) )."'";
 							if ( ! current_user_can( 'create_sites' ) ) echo " readonly";
 							echo ">";
 						echo "</td>";
