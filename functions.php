@@ -41,7 +41,7 @@
 	}
 
 	// Voeg een profielveld toe in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
-	add_filter( 'user_contactmethods', 'add_regiosamenwerking', 10, 1 );
+	// add_filter( 'user_contactmethods', 'add_regiosamenwerking', 10, 1 );
 
 	function add_regiosamenwerking( $contactmethods ) {
 		$contactmethods['member_of_shop'] = 'member_of_shop';
@@ -53,7 +53,8 @@
 
 	function save_user_fields( $user_id ) {
 		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
-		update_usermeta( $user_id, 'member_of_shop', $_POST['member_of_shop'] );
+		// Usermeta is sitewide, dus ID van blog toevoegen aan key!
+		update_usermeta( $user_id, 'blog_'.get_current_blog_id().'_member_of_shop', $_POST['member_of_shop'] );
 	}
 
 	add_action( 'show_user_profile', 'add_user_fields' );
@@ -66,16 +67,17 @@
 			<tr>
 				<th><label for="dropdown">Ik claim orders voor ...</label></th>
 				<td>
-					<select name="member_of_shop" id="member_of_shop">
-						<?php
-							$member_of = get_the_author_meta( 'member_of_shop', $user->ID );
+					<?php
+						$key = 'blog_'.get_current_blog_id().'_member_of_shop';
+						echo '<select name="'.$key.'" id="'.$key.'">';
+							$member_of = get_the_author_meta( $key, $user->ID );
 							$shops = array( 'leuven', 'heverlee', 'kessel-lo', 'wijgmaal', 'wilsele' );
 							foreach ( $shops as $shop ) {
 								$selected = ( $shop === $member_of ) ? ' selected' : '';
 								echo '<option value="'.$shop.'"'.$selected.'>'.ucwords($shop).'</option>';
 							}
-						?>
-					</select>
+						echo '</select>';
+					?>
 					<span class="description">Opgelet: deze keuze bepaalt aan welke winkel de orders die jij claimt toegekend worden!</span>
 				</td>
 			</tr>
@@ -83,10 +85,11 @@
 		<?php 
 	}
 
+	// Voeg claimende winkel toe aan het order van zodra iemand op de knop klikt
 	add_action( 'woocommerce_order_status_processing_to_claimed', 'register_transition_author' );
 
 	function register_transition_author( $order_id ) {
-		add_post_meta( $order_id, 'owner_of_order', get_the_author_meta( 'member_of_shop', get_current_user_id() ), true );
+		add_post_meta( $order_id, 'owner_of_order', get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() ), true );
 	}
 
 	// Poging om 'geclaimd door winkel' op auteur te filteren
@@ -98,7 +101,7 @@
 	}
 
 	// Creëer bovenaan de orderlijst een dropdown met de deelnemende winkels uit de regio
-	// add_action( 'restrict_manage_posts', 'add_meta_value_to_orders' );
+	add_action( 'restrict_manage_posts', 'add_meta_value_to_orders' );
 
 	function add_meta_value_to_orders() {
 		global $pagenow, $post_type;
@@ -122,13 +125,12 @@
 
 	function filter_orders_per_meta_value( $query ) {
 		global $pagenow, $post_type;
-		$current_user = wp_get_current_user();
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty($_GET['post_status']) and $_GET['post_status'] === 'wc-claimed' ) {
-			// VERSTOORT OM GOD WEET WELKE REDEN DE CUSTOM ORDER STATUS
+			// VERSTOORT DIT NOG ALTIJD OM GOD WEET WELKE REDEN DE CUSTOM ORDER STATUS?
 			$meta_query_args = array(
 				array(
 					'key' => 'owner_of_order',
-					'value' => $current_user->user_login,
+					'value' => get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() ),
 					'compare' => '=',
 					)
 				);
