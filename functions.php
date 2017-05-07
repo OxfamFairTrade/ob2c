@@ -136,7 +136,7 @@
 			$shops = get_option( 'oxfam_member_shops' );
 			echo '<select name="claimed_by" id="claimed_by">';
 				$all = ( ! empty($_GET['claimed_by']) and sanitize_text_field($_GET['claimed_by']) === 'all' ) ? ' selected' : '';
-				echo '<option value="all" '.$all.'>Alle regiowinkels</option>';
+				echo '<option value="all" '.$all.'>Alle winkels uit de regio</option>';
 				foreach ( $shops as $shop ) {
 					$selected = ( ! empty($_GET['claimed_by']) and sanitize_text_field($_GET['claimed_by']) === $shop ) ? ' selected' : '';
 					echo '<option value="'.$shop.'" '.$selected.'>Enkel '.trim_and_uppercase( $shop ).'</option>';
@@ -207,26 +207,26 @@
 				
 				if ( ! $warning_shown ) {
 					echo "<div style='background-color: red; color: white; padding: 0.25em 1em;'>";
-						echo "<p>Opgelet: momenteel bekijk je een gefilterde weergave met enkel bestellingen die verwerkt werden door ".trim_and_uppercase( $_GET['claimed_by'] ).".</p>";
+						echo "<p>Opgelet: momenteel bekijk je een gefilterd rapport met enkel de bestellingen die verwerkt werden door <b>OWW ".trim_and_uppercase( $_GET['claimed_by'] )."</b>.</p>";
 						echo "<p style='text-align: right;'>";
 							$members = get_option( 'oxfam_member_shops' );
 							foreach ( $members as $member ) {
 								if ( $member !== $_GET['claimed_by'] ) {
-									echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk ".trim_and_uppercase( $member )." »</a><br>";
+									echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk <b>OWW ".trim_and_uppercase( $member )."</b> »</a><br>";
 								}
 							}
-							echo "<a href='".esc_url( remove_query_arg( 'claimed_by' ) )."' style='color: black;'>Toon hele regio »</a>";
+							echo "<a href='".esc_url( remove_query_arg( 'claimed_by' ) )."' style='color: black;'>Terug naar volledige regio »</a>";
 						echo "</p>";
 					echo "</div>";
 				}
 			} else {
 				if ( ! $warning_shown ) {
 					echo "<div style='background-color: green; color: white; padding: 0.25em 1em;'>";
-						echo "<p>Momenteel bekijk je alle bestellingen uit de regio. Wil je misschien filteren op een bepaalde winkel?</p>";
+						echo "<p>Momenteel bekijk je het rapport met de bestellingen van alle winkels uit de regio. Klik hieronder om de omzet te filteren op een bepaalde winkel.</p>";
 						echo "<p style='text-align: right;'>";
 							$members = get_option( 'oxfam_member_shops' );
 							foreach ( $members as $member ) {
-								echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Ja, bekijk enkel ".trim_and_uppercase( $member )." »</a><br>";
+								echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk enkel <b>OWW ".trim_and_uppercase( $member )."</b> »</a><br>";
 							}
 						echo "</p>";
 					echo "</div>";
@@ -1954,7 +1954,7 @@
 		echo '</div>';
 	}
 
-	add_action( 'woocommerce_single_product_summary', 'show_random_partner_quote', 25 );
+	add_action( 'woocommerce_single_product_summary', 'show_random_partner_quote', 75 );
 
 	function show_random_partner_quote() {
 		global $product;
@@ -1970,10 +1970,9 @@
 			// Toon een random quote
 			if ( count( $partners_with_quote ) > 0 ) {
 				$i = random_int( 0, count($partners_with_quote) - 1 );
-				// Waarom blijft description leeg?
-				// echo do_shortcode('[nm_testimonial signature="'.$partners_with_quote[$i]['quote_by'].'" description="'.$partners_with_quote[$i]['quote'].'" image_id="4811"]');
-				echo '<p>&laquo; '.$partners_with_quote[$i]['quote'].' &raquo;</p>';
-				echo '<p style="font-style: italic; text-align: right;">('.$partners_with_quote[$i]['quote_by'].')</p>';
+				echo nm_shortcode_nm_testimonial( array( 'signature' => $partners_with_quote[$i]['quote_by'], ), '&laquo; '.$partners_with_quote[$i]['quote'].' &raquo;' );
+				// echo '<p>&laquo; '.$partners_with_quote[$i]['quote'].' &raquo;</p>';
+				// echo '<p style="font-style: italic; text-align: right;">('.$partners_with_quote[$i]['quote_by'].')</p>';
 			}
 		}
 	}
@@ -2385,6 +2384,7 @@
 	add_shortcode( 'postcode', 'print_zipcode' );
 	add_shortcode( 'gemeente', 'print_city' );
 	add_shortcode( 'telefoon', 'print_telephone' );
+	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
 	add_shortcode( 'toon_inleiding', 'print_summary' );
 	add_shortcode( 'toon_shops', 'print_shop_selection' );
@@ -2466,6 +2466,10 @@
 		// Overschrijf defaults door opgegeven attributen
 		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
 		return get_oxfam_shop_data( $key, $atts['node'] );
+	}
+
+	function print_mail() {
+		return "<a href='mailto:".get_company_email()."'>".get_company_email()."</a>";
 	}
 
 	function print_place( $atts = [] ) {

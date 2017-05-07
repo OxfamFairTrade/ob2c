@@ -8,6 +8,29 @@
 	Text Domain:  	oxfam-webshop
 */
 
+/* Breedte van alle standaardpagina's limiteren */
+.page-template-default .entry-content {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+/* Lijstjes netjes laten inspringen */
+.page-template-default .entry-content .wpb_text_column ul > li {
+	list-style-position: outside;
+	margin-left: 3em;
+	margin-bottom: 1em;
+}
+
+/* Maak de testimonial iets subtieler */
+div.nm-testimonial-description {
+	font-size: 100%;
+	font-style: italic;
+	color: #777777;
+}
+div.nm-testimonial-author {
+	text-align: right;
+}
+
 /* Maak de kolommen in de technische productinfo breder/smaller */
 #tab-additional_information .shop_attributes th,
 #tab-partner_info .shop_attributes th,
