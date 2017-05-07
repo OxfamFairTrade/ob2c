@@ -212,7 +212,7 @@
 							$members = get_option( 'oxfam_member_shops' );
 							foreach ( $members as $member ) {
 								if ( $member !== $_GET['claimed_by'] ) {
-									echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk <b>OWW ".trim_and_uppercase( $member )."</b> »</a><br>";
+									echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk ".trim_and_uppercase( $member )." »</a><br>";
 								}
 							}
 							echo "<a href='".esc_url( remove_query_arg( 'claimed_by' ) )."' style='color: black;'>Terug naar volledige regio »</a>";
@@ -226,7 +226,7 @@
 						echo "<p style='text-align: right;'>";
 							$members = get_option( 'oxfam_member_shops' );
 							foreach ( $members as $member ) {
-								echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk enkel <b>OWW ".trim_and_uppercase( $member )."</b> »</a><br>";
+								echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk enkel ".trim_and_uppercase( $member )." »</a><br>";
 							}
 						echo "</p>";
 					echo "</div>";
@@ -320,6 +320,8 @@
 	function ure_allow_args_for_oxfam_options( $args ) {
 		$args['edit.php'][''][] = 'claimed_by';
 		$args['admin.php']['wc-reports'] = array(
+			'tab',
+			'report',
 			'claimed_by',
 		);
 		$args['admin.php']['oxfam-options'] = array(
