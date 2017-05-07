@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-05-06 16:21+0200\n"
+"PO-Revision-Date: 2017-05-07 15:02+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -7644,7 +7644,7 @@ msgstr "Een account aanmaken?"
 
 #: templates/checkout/form-billing.php:29
 msgid "Billing &amp; Shipping"
-msgstr "Facturering en verzending"
+msgstr "Klant- en verzendgegevens"
 
 #: templates/checkout/cart-errors.php:31
 msgid "Return to cart"
@@ -15581,7 +15581,7 @@ msgstr "Gast"
 
 #: includes/admin/class-wc-admin-post-types.php:304
 msgid "Billing"
-msgstr "Facturering"
+msgstr "Klantadres"
 
 #. translators: %d: notes count
 #: includes/admin/class-wc-admin-post-types.php:598
@@ -15728,7 +15728,7 @@ msgstr "Klantbericht"
 
 #: includes/admin/class-wc-admin-post-types.php:305
 msgid "Ship to"
-msgstr "Bestemming"
+msgstr "Leveradres"
 
 #: includes/admin/class-wc-admin-post-types.php:303
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:165
