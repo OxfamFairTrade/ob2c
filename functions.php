@@ -89,7 +89,7 @@
 		<h3 style="color: red;">Regiosamenwerking</h3>
 		<table class="form-table" style="color: red;">
 			<tr>
-				<th><label for="dropdown" style="color: red;">Ik claim orders voor ...</label></th>
+				<th><label for="dropdown" style="color: red;">Ik bevestig orders voor ...</label></th>
 				<td>
 					<?php
 						$key = 'blog_'.get_current_blog_id().'_member_of_shop';
@@ -104,7 +104,7 @@
 							}
 						echo '</select>';
 					?>
-					<span class="description">Opgelet: deze keuze bepaalt aan welke winkel de orders die jij claimt toegekend worden!</span>
+					<span class="description">Opgelet: deze keuze bepaalt aan welke winkel de bestellingen die jij bevestigt toegekend worden!</span>
 				</td>
 			</tr>
 		</table>
