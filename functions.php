@@ -50,8 +50,9 @@
 		add_action( 'show_user_profile', 'add_extra_user_field' );
 		add_action( 'edit_user_profile', 'add_extra_user_field' );
 		
-		// Voeg de claimende winkel toe aan ordermetadate van zodra iemand op het winkeltje klikt
+		// Voeg de claimende winkel toe aan ordermetadate van zodra iemand op het winkeltje klikt (en verwijder indien we teruggaan)
 		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop' );
+		add_action( 'woocommerce_order_status_claimed_to_processing', 'delete_claiming_member_shop' );
 		
 		// Maak zoeken op claimende winkel mogelijk?
 		add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_fields' );
@@ -118,11 +119,15 @@
 			// Val terug op de belangrijkste winkel indien de gebruiker nog niet aan een winkel gelinkt was
 			if ( $blog_id === 9 ) {
 				$owner = 'leuven';
-			} else {
+			} elseif ( $blog_id === 3 ) {
 				$owner = 'antwerpen';
 			}
 		}
-		add_post_meta( $order_id, 'claimed_by', $owner, true );
+		update_post_meta( $order_id, 'claimed_by', $owner, true );
+	}
+
+	function delete_claiming_member_shop( $order_id ) {
+		delete_post_meta( $order_id, 'claimed_by' );
 	}
 
 	function woocommerce_shop_order_search_order_fields( $search_fields ) {
