@@ -89,11 +89,11 @@
 		<h3 style="color: red;">Regiosamenwerking</h3>
 		<table class="form-table" style="color: red;">
 			<tr>
-				<th><label for="dropdown">Ik claim orders voor ...</label></th>
+				<th><label for="dropdown" style="color: red;">Ik claim orders voor ...</label></th>
 				<td>
 					<?php
 						$key = 'blog_'.get_current_blog_id().'_member_of_shop';
-						echo '<select name="'.$key.'" id="'.$key.'">';
+						echo '<select name="'.$key.'" id="'.$key.'" style="color: red;">';
 							$member_of = get_the_author_meta( $key, $user->ID );
 							$shops = get_option( 'oxfam_member_shops' );
 							$selected = empty( $member_of ) ? ' selected' : '';
