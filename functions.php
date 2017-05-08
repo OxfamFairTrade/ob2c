@@ -178,13 +178,14 @@
 	function get_claimed_by_value( $column ) {
 		global $the_order;
 		if ( $column === 'claimed_by' ) {
-			if ( get_post_status( $the_order->get_id() ) !== 'wc-claimed' ) {
+			$not_claimed = array( 'wc-pending', 'wc-on-hold', 'wc-processing' ); 
+			if ( in_array( get_post_status( $the_order->get_id() ), $not_claimed ) ) {
 				echo '<i>nog niet bevestigd</i>';
 			} else {
 				if ( get_post_meta( $the_order->get_id(), 'claimed_by', true ) ) {
 					echo 'OWW '.trim_and_uppercase( get_post_meta( $the_order->get_id(), 'claimed_by', true ) );
 				} else {
-					// Reeds geclaimd maar geen winkel? Dat zou niet mogen zijn!
+					// Reeds verderop in het verwerkingsproces maar geen winkel? Dat zou niet mogen zijn!
 					echo '<i>ERROR</i>';
 				}
 			}
@@ -361,41 +362,6 @@
 
 	// Verhoog het aantal producten per winkelpagina
 	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 20;' ), 20 );
-
-	// Registreer de extra status voor WooCommerce-orders
-	// NU VIA WOOCOMMERCE ORDER STATUS PLUGIN
-	// add_action( 'init', 'register_claimed_by_member_order_status' );
-	
-	function register_claimed_by_member_order_status() {
-		register_post_status( 'wc-claimed',
-			array(
-				'label' => 'Geclaimd door winkel',
-				'public' => true,
-				'internal' => true,
-				'private' => false,
-				'exclude_from_search' => false,
-				'show_in_admin_all_list' => true,
-				'show_in_admin_status_list' => true,
-				'label_count' => _n_noop( 'Geclaimd door winkel <span class="count">(%s)</span>', 'Geclaimd door winkel <span class="count">(%s)</span>' )
-				)
-			);
-	}
-
-	// Speel met de volgorde van de statussen
-	// NU VIA WOOCOMMERCE ORDER STATUS PLUGIN
-	// add_filter( 'wc_order_statuses', 'rearrange_order_statuses' );
-
-	function rearrange_order_statuses( $order_statuses ) {
-		$new_order_statuses = array();
-		foreach ( $order_statuses as $key => $status ) {
-			$new_order_statuses[ $key ] = $status;
-			// Plaats de status net na 'processing' (= order betaald en ontvangen)
-			if ( 'wc-processing' === $key ) {    
-				$new_order_statuses['wc-claimed'] = 'Geclaimd door mijn winkel';
-			}
-		}
-		return $new_order_statuses;
-	}
 
 	// Zorg ervoor dat slechts bepaalde statussen bewerkbaar zijn
 	add_filter( 'wc_order_is_editable', 'limit_editable_orders', 20, 2 );
@@ -2296,12 +2262,13 @@
 		}
 		if ( $screen->base == 'woocommerce_page_oxfam-products' ) {
 			echo '<div class="notice notice-info">';
-			echo '<p>Wijzigingen opslaan op deze pagina is inmiddels mogelijk!</p>';
+			echo '<p>Een compactere lijstweergave is in de maak! We zullen ook verhinderen dat je niet-voorradige producten in de kijker kunt zetten.</p>';
 			echo '</div>';
 		}
 	}
 
 	// Schakel onnuttige widgets uit voor iedereen
+	// KAN OOK VIA USER ROLE EDITOR PRO
 	add_action( 'admin_init', 'remove_dashboard_meta' );
 
 	function remove_dashboard_meta() {
@@ -2319,8 +2286,8 @@
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
 	}
 
-	// Admin reports for custom order status
-	add_filter( 'woocommerce_reports_get_order_report_data_args', 'wc_reports_get_order_custom_report_data_args', 100, 1 );
+	// Beheerd via WooCommerce Order Status Manager of is dit voor het dashboard?
+	// add_filter( 'woocommerce_reports_get_order_report_data_args', 'wc_reports_get_order_custom_report_data_args', 100, 1 );
 
 	function wc_reports_get_order_custom_report_data_args( $args ) {
 		$args['order_status'] = array( 'on-hold', 'processing', 'claimed', 'completed' );
