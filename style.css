@@ -123,7 +123,7 @@ div.nm-single-product div.woocommerce-product-gallery  {
 li.product.pa_bio-ja::before {
 	color: white;
 	position: absolute;
-	top: 0;
+	top: 0em;
 	left: 0.25em;
 	padding: 0 0.5em;
 	font-size: 85%;
@@ -137,35 +137,35 @@ li.product.pa_bio-ja::before {
 div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::before {
 	color: white;
 	position: absolute;
-	top: 0;
+	top: 0em;
 	left: 0.25em;
 	padding: 0 0.5em;
 	font-size: 95%;
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: #61a534;
-	content: "Biologisch gecertificeerd product";
+	content: "Biogecertificeerd product";
 }
 
 /* Toon een blokje bij producten die niet beschikbaar zijn voor thuislevering */
 li.product.product_shipping_class-fruitsap::after {
 	color: white;
 	position: absolute;
-	top: 2.5em;
+	top: 0em;
 	left: 0.25em;
 	padding: 0 0.5em;
 	font-size: 85%;
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: #e70052;
-	content: "Afhaling";
+	content: "Enkel afhalen";
 }
 
 /* Toon een bannertje op detailpagina's */
 div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__wrapper::after {
 	color: white;
 	position: absolute;
-	top: 2.5em;
+	top: 0em;
 	left: 0.25em;
 	padding: 0 0.5em;
 	font-size: 95%;
@@ -173,6 +173,12 @@ div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product
 	transform: skewX(-3deg);
 	background-color: #e70052;
 	content: "Enkel afhaling in de winkel";
+}
+
+/* Indien beide klasses actief: plaats biobanner lager om overlap te vermijden */
+li.product.pa_bio-ja.product_shipping_class-fruitsap::before,
+div.nm-single-product.pa_bio-ja.product_shipping_class-fruitsap figure.woocommerce-product-gallery__wrapper::before {
+	top: 2.5em;
 }
 
 li.product.pa_bio-ja:hover::before,

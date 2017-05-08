@@ -1492,7 +1492,7 @@
 	function show_delivery_warning() {
 		global $product;
 		if ( $product->get_shipping_class() === 'fruitsap' ) {
-			echo "Opgelet: dit product is enkel beschikbaar voor afhaling in de winkel! Omwille van het grote gewicht en de breekbaarheid wordt het dus niet thuisgeleverd. Tip: kleine flesjes en tetrabrikken worden wel verzonden.";
+			echo "Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: kleine glazen flesjes en tetrabrikken zijn wel beschikbaar voor thuislevering.";
 		}
 	}
 

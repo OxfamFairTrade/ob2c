@@ -304,7 +304,9 @@ if ( ! class_exists( 'WC_Force_Sells' ) ) :
 					foreach ( $product_ids as $product_id ) {
 						// GEWIJZIGD: Prijs toevoegen
 						$product = wc_get_product( $product_id );
-						echo '<li>' . $product->get_title() . ' (' . wc_price( $product->get_price() ) . ')</li>';
+						if ( $product ) {
+							echo '<li>' . $product->get_title() . ' (' . wc_price( $product->get_price() ) . ')</li>';
+						}
 					}
 				echo '</ul></div>';
 			}
