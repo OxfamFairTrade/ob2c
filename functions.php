@@ -177,7 +177,7 @@
 				echo '<i>nog niet bevestigd</i>';
 			} else {
 				if ( get_post_meta( $the_order->get_id(), 'claimed_by', true ) ) {
-					echo trim_and_uppercase( get_post_meta( $the_order->get_id(), 'claimed_by', true ) );
+					echo 'OWW '.trim_and_uppercase( get_post_meta( $the_order->get_id(), 'claimed_by', true ) );
 				} else {
 					// Reeds geclaimd maar geen winkel? Dat zou niet mogen zijn!
 					echo '<i>ERROR</i>';
