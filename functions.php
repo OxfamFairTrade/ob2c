@@ -86,8 +86,8 @@
 
 	function add_extra_user_field( $user ) {
 		?>
-		<h3>Regiosamenwerking</h3>
-		<table class="form-table">
+		<h3 style="color: red;">Regiosamenwerking</h3>
+		<table class="form-table" style="color: red;">
 			<tr>
 				<th><label for="dropdown">Ik claim orders voor ...</label></th>
 				<td>
