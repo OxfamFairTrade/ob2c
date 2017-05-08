@@ -50,9 +50,12 @@
 		add_action( 'show_user_profile', 'add_extra_user_field' );
 		add_action( 'edit_user_profile', 'add_extra_user_field' );
 		
-		// Voeg de claimende winkel toe aan ordermetadate van zodra iemand op het winkeltje klikt (en verwijder indien we teruggaan)
+		// Voeg de claimende winkel toe aan de ordermetadata van zodra iemand op het winkeltje klikt (en verwijder indien we teruggaan)
 		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop' );
 		add_action( 'woocommerce_order_status_claimed_to_processing', 'delete_claiming_member_shop' );
+		// Zal in principe niet voorkomen, maar voor alle zekerheid ...
+		add_action( 'woocommerce_order_status_on-hold_to_claimed', 'register_claiming_member_shop' );
+		add_action( 'woocommerce_order_status_claimed_to_on-hold', 'delete_claiming_member_shop' );
 		
 		// Maak zoeken op claimende winkel mogelijk?
 		add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_fields' );
