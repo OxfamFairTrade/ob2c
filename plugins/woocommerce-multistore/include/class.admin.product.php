@@ -299,7 +299,7 @@
             */
             public function define_fields() 
                 {
-                    global $post, $blog_id;
+                    global $post, $blog_id,$WOO_MSTORE;
 
                     if ( $this->product_fields ) 
                         return;
@@ -395,6 +395,16 @@
                             $network_sites  =   get_sites(array('limit'  =>  999));
                             foreach($network_sites as $network_site)
                                 {
+                                    switch_to_blog( $network_site->blog_id );                                                
+                                                
+                                    if( ! $WOO_MSTORE->functions->is_plugin_active('woocommerce/woocommerce.php') )
+                                        {
+                                            restore_current_blog();
+                                            continue;   
+                                        }
+
+                                    restore_current_blog();
+                                    
                                     $blog_details   =   get_blog_details($network_site->blog_id);
                                     
                                     $value  =   get_post_meta( $post->ID, '_woonet_publish_to_' . $network_site->blog_id, true );
@@ -612,7 +622,8 @@
                                                             
                                                                 if ( isset( $field['desc_tip'] ) && false !== $field['desc_tip'] ) 
                                                                     {
-                                                                        echo '<img class="help_tip" data-tip="' . esc_attr( $field['desc_tip'] ) . '" src="' . esc_url( WC()->plugin_url() ) . '/assets/images/help.png" height="16" width="16" />';
+                                                                        $WC_url     =   plugins_url() . '/woocommerce';
+                                                                        echo '<img class="help_tip" data-tip="' . esc_attr( $field['desc_tip'] ) . '" src="' . esc_url( $WC_url ) . '/assets/images/help.png" height="16" width="16" />';
                                                                     }
                                                             
                                                             ?>
@@ -782,7 +793,7 @@
             */
             function process_product($post_ID, $post, $_use_child_settings = FALSE)
                 {
-                    global $blog_id, $wpdb;
+                    global $blog_id, $wpdb, $WOO_MSTORE;
                     
                     //check if is re-published product and check for syncronize
                     $network_parent_product_id    =   get_post_meta($post_ID, '_woonet_network_is_child_product_id', TRUE);
@@ -878,6 +889,17 @@
                     $network_sites  =   get_sites(array('limit'  =>  999));
                     foreach($network_sites as $network_site)
                         {
+                            
+                            switch_to_blog( $network_site->blog_id );                                                
+                                                
+                            if( ! $WOO_MSTORE->functions->is_plugin_active('woocommerce/woocommerce.php') )
+                                {
+                                    restore_current_blog();
+                                    continue;   
+                                }
+
+                            restore_current_blog();
+                            
                             $blog_details   =   get_blog_details($network_site->blog_id);
                             
                             $publish_to  =   get_post_meta( $post_ID, '_woonet_publish_to_'. $blog_details->blog_id, true );
@@ -1066,7 +1088,10 @@
                              
                             //Create / Update the taxonomies terms on this child product site
                             $this->save_taxonomies_to_post($product_taxonomies_data, $child_post->ID, $blog_details->blog_id);
-
+                                                               
+                            $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id);
+                            
+                            
                             // GEWIJZIGD: Laat de voorraadvelden enkel negeren indien het om de update van een product gaat dat reeds verspreid is
                             if ( $_product_just_publish ) {
                                 write_log("FIRST METADATA PUBLISH!");
@@ -1079,8 +1104,8 @@
                                 write_log($product_meta);
                                 $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id, array( '_stock', '_stock_status' ));
                             }
-                            
-                            
+
+
                             //check if this belong to a grouped
                             if($product_data->post_parent > 0)
                                 {
@@ -1390,6 +1415,7 @@
                             $product_taxonomies_data[$product_taxonomy] =   $taxonomy_terms_data;
                         }
                     
+                    
                     // GEWIJZIGD: Schakel het kopiëren van taxonomieën die de zichtbaarheid bepalen uit
                     write_log("ORIGINAL PRODUCT VISIBILITY DATA ON POST-ID ".$post_ID.":");
                     write_log($product_taxonomies_data['product_visibility']);
@@ -1415,10 +1441,10 @@
 
                     // Taxonomie 'featured' moet altijd genegeerd worden 
                     unset($product_taxonomies_data['product_visibility'][10]);
-
                     write_log("TWEAKED PRODUCT VISIBILITY DATA ON POST-ID ".$post_ID.":");
                     write_log($product_taxonomies_data['product_visibility']);
-                    
+
+
                     return $product_taxonomies_data;
                     
                 }
@@ -1617,7 +1643,7 @@
             */
             function before_delete_post($post_ID)
                 {
-                    global $blog_id;
+                    global $blog_id, $WOO_MSTORE;
                     
                     $parent_product_blog_id =   $blog_id;
                     
@@ -1636,6 +1662,17 @@
                     $network_sites  =   get_sites(array('limit'  =>  999));
                     foreach($network_sites as $network_site)
                         {
+                            
+                            switch_to_blog( $network_site->blog_id );                                                
+                                                
+                            if( ! $WOO_MSTORE->functions->is_plugin_active('woocommerce/woocommerce.php') )
+                                {
+                                    restore_current_blog();
+                                    continue;   
+                                }
+
+                            restore_current_blog();
+                            
                             $blog_details   =   get_blog_details($network_site->blog_id);
                             
                             $publish_to  =   get_post_meta( $post_ID, '_woonet_publish_to_'. $blog_details->blog_id, true );
@@ -1714,7 +1751,7 @@
             */
             function trashed_post($post_ID)
                 {
-                    global $blog_id;
+                    global $blog_id, $WOO_MSTORE;
                     
                     $parent_product_blog_id =   $blog_id;
                     
@@ -1733,6 +1770,17 @@
                     $network_sites  =   get_sites(array('limit'  =>  999));
                     foreach($network_sites as $network_site)
                         {
+                            
+                            switch_to_blog( $network_site->blog_id );                                                
+                                                
+                            if( ! $WOO_MSTORE->functions->is_plugin_active('woocommerce/woocommerce.php') )
+                                {
+                                    restore_current_blog();
+                                    continue;   
+                                }
+
+                            restore_current_blog();
+                            
                             $blog_details   =   get_blog_details($network_site->blog_id);
                             
                             $publish_to  =   get_post_meta( $post_ID, '_woonet_publish_to_'. $blog_details->blog_id, true );
@@ -1801,7 +1849,7 @@
             */
             function untrashed_post($post_ID)
                 {
-                    global $blog_id;
+                    global $blog_id, $WOO_MSTORE;
                     
                     $parent_product_blog_id =   $blog_id;
                     
@@ -1820,6 +1868,16 @@
                     $network_sites  =   get_sites(array('limit'  =>  999));
                     foreach($network_sites as $network_site)
                         {
+                            switch_to_blog( $network_site->blog_id );                                                
+                                                
+                            if( ! $WOO_MSTORE->functions->is_plugin_active('woocommerce/woocommerce.php') )
+                                {
+                                    restore_current_blog();
+                                    continue;   
+                                }
+
+                            restore_current_blog();
+                            
                             $blog_details   =   get_blog_details($network_site->blog_id);
                             
                             $publish_to  =   get_post_meta( $post_ID, '_woonet_publish_to_'. $blog_details->blog_id, true );

@@ -5,6 +5,8 @@
     class WOO_MSTORE_functions 
         {
             var $options;
+            
+            public static $instance;
                         
             /**
             * 
@@ -13,19 +15,20 @@
             */
             function __construct( ) 
                 {                    
+                    self::$instance = $this;
+                    
                     //add specific classes for list table within the admin
                     add_filter( 'post_class', array($this, 'post_class'), 10, 3);
                 }
-                
-            /**
-            * put your comment there...
-            * 
-            */
-            function __destruct()
+            
+            public static function get_instance() 
                 {
-                    
-                }
-                
+                    if (self::$instance === null) 
+                        {
+                            self::$instance = new self();
+                        }
+                    return self::$instance;
+                }    
             
             function create_tables()
                 {
@@ -262,6 +265,17 @@
                             if(in_array($network_site->blog_id, $exclude_blog))
                                 continue;
                             
+                            
+                            switch_to_blog( $network_site->blog_id );                                                
+                                                
+                            if( ! self::is_plugin_active('woocommerce/woocommerce.php') )
+                                {
+                                    restore_current_blog();
+                                    continue;   
+                                }
+
+                            restore_current_blog();
+                            
                             switch_to_blog( $parent_blog_id );
                             $publish_to  =   get_post_meta( $parent_product_id, '_woonet_publish_to_'. $network_site->blog_id, true );
                             restore_current_blog();
@@ -476,6 +490,7 @@
                     
                     return $product_meta;
                 }
+            
             
             
             
@@ -709,7 +724,7 @@
                     // GEWIJZIGD: Upload enkel de grootste thumbnail naar de dochtersites
                     $small_image_path = str_replace('.jpg', '-2000x2000.jpg', $image_path);
                     $image_path = file_exists($small_image_path) ?  $small_image_path : $image_path;
-                     
+
                     $image_content  = file_get_contents($image_path);
                     $fileSaved      = file_put_contents($uploads['path'] . "/" . $filename, $image_content);
                                       
@@ -738,17 +753,17 @@
             *     
             * @param mixed $plugin
             */
-            function is_plugin_active( $plugin ) 
+            static public function is_plugin_active( $plugin ) 
                 {
-                    return in_array( $plugin, (array) get_option( 'active_plugins', array() ) ) || $this->is_plugin_active_for_network( $plugin );
+                    return in_array( $plugin, (array) get_option( 'active_plugins', array() ) ) || self::is_plugin_active_for_network( $plugin );
                 }
 
-            function is_plugin_inactive( $plugin ) 
+            static public function is_plugin_inactive( $plugin ) 
                 {
                     return ! is_plugin_active( $plugin );
                 }
 
-            function is_plugin_active_for_network( $plugin ) 
+            static public function is_plugin_active_for_network( $plugin ) 
                 {
                     if ( !is_multisite() )
                         return false;
@@ -767,6 +782,8 @@
             */
             static public function get_options()
                 {
+                    
+                    $this_class =   self::get_instance();
                     
                     $mstore_options   =   get_site_option('mstore_options');
                     
@@ -789,6 +806,18 @@
                     $network_sites  =   get_sites(array('limit'  =>  999));
                     foreach($network_sites as $network_site)
                         {
+                            
+                            switch_to_blog( $network_site->blog_id );                                                
+                                                
+                            if( ! $this_class->is_plugin_active('woocommerce/woocommerce.php') )
+                                {
+                                    restore_current_blog();
+                                    continue;   
+                                }
+
+                            restore_current_blog();
+                            
+                            
                             if(!isset($options['child_inherit_changes_fields_control__title'][ $network_site->blog_id ]))
                                 $options['child_inherit_changes_fields_control__title'][ $network_site->blog_id ]   =   'yes';
                             if(!isset($options['child_inherit_changes_fields_control__price'][ $network_site->blog_id ]))

@@ -21,7 +21,7 @@
                 
             static function network_update_order_numbers()
                 {
-                    global $wpdb;
+                    global $wpdb, $WOO_MSTORE;
                     
                     $orders_to_process      =   200;
                     $highest_order_number   =   1;
@@ -30,6 +30,14 @@
                     foreach($network_sites as $network_site)
                         {
                             switch_to_blog( $network_site->blog_id );
+                                                
+                            if( ! $WOO_MSTORE->functions->is_plugin_active('woocommerce/woocommerce.php') )
+                                {
+                                    restore_current_blog();
+                                    continue;   
+                                }
+
+                            restore_current_blog();
    
                             do {
                                     
@@ -160,20 +168,23 @@
             static function get_order_number($order_number, $order)
                 {
                     
+                    remove_filter( 'woocommerce_order_number',                         'WOO_SON::get_order_number' , 10, 2 );
+                    $_order_nubmer  =   $order->get_order_number();
+                    add_filter( 'woocommerce_order_number',                         'WOO_SON::get_order_number' , 10, 2 );
+                    
+                    
                     //if set the order number, return
-                    if ( !empty( $_order_nubmer )) {
-                        return $_order_nubmer;
-                    }
-                    
+                    if ( !empty( $_order_nubmer )) 
+                        {
+                            return $_order_nubmer;
+                        }
+
                     // GEWIJZIGD: Voeg prefix en leading zero's toe (+ fix voor het oproepen van $order->order_number: query '_order_number' rechtstreeks)
-                    return "OWW".sprintf( '%05d', get_post_meta($order->id, '_order_number', true) );
+                    // return "OWW".sprintf( '%05d', get_post_meta($order->id, '_order_number', true) );
+                    return $order_number;
                     
-                }
-                   
+                }          
              
         }
-
-
-
 
 ?>
