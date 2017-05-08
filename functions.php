@@ -164,7 +164,7 @@
 	}
 
 	function add_claimed_by_column( $columns ) {
-		$columns['claimed_by'] = 'Behandeld door';
+		$columns['claimed_by'] = 'Behandeling door';
 		// Eventueel bepaalde kolommen uitschakelen?
 		// unset($columns['order_notes']);
 		return $columns;
@@ -174,7 +174,7 @@
 		global $the_order;
 		if ( $column === 'claimed_by' ) {
 			if ( get_post_status( $the_order->get_id() ) !== 'wc-claimed' ) {
-				echo '<i>nog niet geclaimd</i>';
+				echo '<i>nog niet bevestigd</i>';
 			} else {
 				if ( get_post_meta( $the_order->get_id(), 'claimed_by', true ) ) {
 					echo trim_and_uppercase( get_post_meta( $the_order->get_id(), 'claimed_by', true ) );
