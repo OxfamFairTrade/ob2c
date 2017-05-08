@@ -2399,24 +2399,28 @@
 	add_shortcode( 'toon_kaart', 'print_map' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
-	add_shortcode( 'widget_contact', 'get_full_company' );
+	add_shortcode( 'widget_contact', 'print_widget_contact' );
 	add_shortcode( 'company_name', 'get_company_name' );
 	add_shortcode( 'contact_address', 'get_company_contact' );
 	add_shortcode( 'map_address', 'get_company_address' );
 	add_shortcode( 'email_footer', 'get_company_and_year' );
 
 	function print_widget_usp() {
-		$msg = "Mooie Marcom-uitdaging: vat onze <i>unique selling points</i> samen in één catchy zin.";
-		return $msg;
+		$msg = "Omdat de internationale handel eerlijker moet, en kàn. Dat bewijzen we elke dag opnieuw. Met je aankoop bieden we partners in het Zuiden een waardig bestaan. Vanaf nu zelfs vanuit je luie zetel!";
+		return do_shortcode('[nm_feature icon="pe-7s-star" layout="centered" title="Fair trade. Altijd. Overal." icon_color="#282828"]'.$msg.'[/nm_feature]');
 	}
 
 	function print_widget_delivery() {
 		if ( does_home_delivery() ) {
-			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, wordt ten laatste drie werkdagen later bij je thuis geleverd. Afhalen in de winkel kan natuurlijk ook!";
+			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, wordt ten laatste drie werkdagen later door onze vrijwiligers bij je thuis geleverd. Afhalen in de winkel kan natuurlijk ook. Exotische continenten leken nog nooit zo dichtbij!";
 		} else {
-			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, kan je de volgende dag 's middags afhalen in de winkel.";
+			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, kan je de volgende werkdag al afhalen in de winkel. (Kijk naar de schatting naast je winkelmandje.) Exotische continenten leken nog nooit zo dichtbij!";
 		}
-		return $msg;
+		return do_shortcode('[nm_feature icon="pe-7s-cart" layout="centered" title="Wereldproducten. Lokaal geleverd." icon_color="#282828"]'.$msg.'[/nm_feature]');
+	}
+
+	function print_widget_contact() {
+		return do_shortcode('[nm_feature icon="pe-7s-mail" layout="centered" title="Eerlijk handelen. Ook met jou." icon_color="#282828"]Ook met onze klanten willen we fair zaken doen. We communiceren transparant en formuleren heldere beloftes. Heb je toch nog vragen? <a href="mailto:'.get_company_email().'">Stuur ons een mail</a> of bel naar '.get_oxfam_shop_data( 'telephone' ).'.[/nm_feature]');
 	}
 
 	function print_welcome() {
