@@ -156,9 +156,6 @@
 	function filter_orders_by_owner( $query ) {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty( $_GET['claimed_by'] ) and $_GET['claimed_by'] !== 'all' ) {
-			// We moeten wc-claimed expliciet toevoegen aan de te doorzoeken statussen (+ wc-pending, wc-on-hold en wc-processing negeren => geen zin bij deze eigenschap)
-			$statusses = array( 'wc-claimed', 'wc-completed', 'wc-cancelled', 'wc-refunded', 'wc-failed' );
-			$query->set( 'post_status', $statusses );
 			$meta_query_args = array(
 				'relation' => 'AND',
 				array(
