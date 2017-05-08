@@ -1695,9 +1695,9 @@
 			'callback' 	=> 'allergen_tab_content',
 		);
 		$eh = $product->get_attribute( 'pa_eenheid' );
-		if ( $eg === 'L' ) {
+		if ( $eh === 'L' ) {
 			$suffix = 'ml';
-		} elseif ( $eg === 'KG' ) {
+		} elseif ( $eh === 'KG' ) {
 			$suffix = 'g';
 		}
 		$tabs['food_info'] = array(
