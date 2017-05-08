@@ -349,6 +349,9 @@
 	function woocommerce_clear_cart_url() {
 		if ( isset($_GET['emptyCart']) ) WC()->cart->empty_cart();
 		if ( isset($_GET['downloadSheet']) ) create_product_pdf( wc_get_product( 4621 ) );
+
+		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
+		add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 100 );
 	}
 
 	// Verhoog het aantal producten per winkelpagina

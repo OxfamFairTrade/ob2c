@@ -41,6 +41,10 @@ div.wc-force-sells > ul {
 }
 
 /* Maak de testimonial iets subtieler */
+div.nm-testimonial {
+	margin: 2.5em auto 1em auto;
+}
+
 div.nm-testimonial-description {
 	font-size: 100%;
 	font-style: italic;
@@ -48,6 +52,10 @@ div.nm-testimonial-description {
 }
 div.nm-testimonial-author {
 	text-align: right;
+}
+
+div.nm-product-share-wrap {
+	padding-top: 0;	
 }
 
 /* Maak de kolommen in de technische productinfo breder/smaller */
