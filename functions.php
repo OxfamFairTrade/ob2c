@@ -2253,17 +2253,17 @@
 			} else {
 				// echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
 			}
-			echo '<p>De bestelmails naar webshopbeheerders en klanten worden weer vestuurd! Weer iets bijgeleerd: nooit een vakje zomaar leegmaken :).</p>';
+			echo '<p>De mailing geraakt vrijdag niet meer de deur uit maar komt er tegen vanavond aan! Bekijk alvast <a href="" target="_blank">de bijgewerkte postcodekaart</a>.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-info">';
-			echo '<p>Download <a href="http://demo.oxfamwereldwinkels.be/wp-content/uploads/verzendtarieven-B2C-pakketten.pdf" target="_blank">de nota met tarieven en voorwaarden</a> bij externe verzending via Bpost of Bubble Post. Kun je met een lokale duurzame speler samenwerken? Des te beter! Bezorg ons vóór de 2de opleidingssessie een ruwe schatting van de kostprijs zodat we kunnen bekijken hoe we dit in de voorgestelde vergoeding van 5,74 euro excl. BTW voor thuislevering kunnen inpassen.</p>';
+			echo '<p>Download <a href="http://demo.oxfamwereldwinkels.be/wp-content/uploads/verzendtarieven-B2C-pakketten.pdf" target="_blank">de nota met tarieven en voorwaarden</a> bij externe verzending via Bpost. Aangezien geen enkele groep aangaf interesse te hebben in verzending via Bubble Post stoppen we geen werk meer in de integratie met hun systemen.</p><p>Goed nieuws: van de BTW-lijn kregen we te horen dat we 6% BTW mogen rekenen op de thuisleveringen. Enkel indien de bestelling <u>volledig</u> uit voedingsproducten aan standaard BTW-tarief bestaat (= alcoholische dranken) moeten we ook 21% BTW rekenen op de verzending. We passen de prijs voor de consument voorlopig niet aan, dus in de praktijk zal de winkel doorgaans 6,56 i.p.v. 5,74 euro excl. BTW overhouden. Dit geeft wat meer ruimte om te investeren in fietskoeriers en/of degelijk beschermmateriaal.</p>';
 			echo '</div>';
 		} elseif ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
 			// echo '<div class="notice notice-warning">';
 			// echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
 			// echo '</div>';
 		}
-		if ( $screen->base == 'woocommerce_page_oxfam-products' ) {
+		if ( $screen->base == 'woocommerce_page_oxfam-products-photos' ) {
 			echo '<div class="notice notice-info">';
 			echo '<p>Een compactere lijstweergave is in de maak! We zullen ook verhinderen dat je niet-voorradige producten in de kijker kunt zetten.</p>';
 			echo '</div>';
