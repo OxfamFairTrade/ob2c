@@ -2161,8 +2161,13 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		if ( $one_line ) {
 
-			// GEWIJZIGD: Laat de enters in het adres gewoon staan
-			// $formatted = str_replace( array( '<br/>', '<br />', "\n" ), array( ', ', ', ', '' ), $formatted );
+			// OPTIONEEL GEWIJZIGD: Laat de enters in het adres gewoon staan
+			$formatted = str_replace( array( '<br/>', '<br />', "\n" ), array( ', ', ', ', '' ), $formatted );
+
+			// GEWIJZIGD: Gebruik het telefoonveld als naam
+			if ( ! empty( $address['phone'] ) ) {
+				$formatted = $address['phone'] . "<br/>\n" . $formatted;
+			}
 
 			if ( $show_cost ) {
 

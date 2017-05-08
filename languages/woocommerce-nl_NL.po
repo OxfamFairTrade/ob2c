@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-05-07 15:02+0200\n"
+"PO-Revision-Date: 2017-05-08 22:22+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -6661,7 +6661,7 @@ msgstr "Keniaanse Shilling"
 
 #: includes/class-wc-order.php:160 includes/wc-cart-functions.php:309
 msgid "(includes %s)"
-msgstr "(inclusief %s)"
+msgstr "(incl. %s)"
 
 #: includes/wc-cart-functions.php:307
 msgid "estimated for %s"
@@ -7579,7 +7579,7 @@ msgstr "Bedankt. Je bestelling is ontvangen."
 
 #: templates/checkout/terms.php:17
 msgid "I&rsquo;ve read and accept the <a href=\"%s\" target=\"_blank\">terms &amp; conditions</a>"
-msgstr "Ik heb <a href=\"%s\" target=\"_blank\">de algemene voorwaarden</a> gelezen en ga hiermee akkoord. Ik begrijp dat dit een bestelling met betalingsverplichting is."
+msgstr "Ik heb <a href=\"%s\" target=\"_blank\">de algemene voorwaarden</a> gelezen en ga hiermee akkoord. Dit is een bestelling met betalingsverplichting."
 
 #: templates/cart/shipping-calculator.php:96 templates/checkout/payment.php:43
 msgid "Update totals"

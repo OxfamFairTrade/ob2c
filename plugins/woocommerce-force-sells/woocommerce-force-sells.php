@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Force Sells
  * Plugin URI: https://woocommerce.com/products/force-sells/
  * Description: Allows you to select products which will be used as force-sells - items which get added to the cart along with other items.
- * Version: 1.1.12
+ * Version: 1.1.13
  * Author: WooCommerce
  * Author URI: https://woocommerce.com
  * Woo: 18678:3ebddfc491ca168a4ea4800b893302b0
@@ -138,7 +138,7 @@ if ( ! class_exists( 'WC_Force_Sells' ) ) :
 				$product_key = WC()->cart->find_product_in_cart( $cart_item['forced_by'] );
 
 				if ( ! empty( $product_key ) ) {
-					$product_name = WC()->cart->cart_contents[ $product_key ]['data']->post->post_title;
+					$product_name = WC()->cart->cart_contents[ $product_key ]['data']->get_title();
 					$data[] = array(
 						'name'    => __( 'Linked to', 'woocommerce-force-sells' ),
 						'display' => $product_name,
@@ -294,20 +294,23 @@ if ( ! class_exists( 'WC_Force_Sells' ) ) :
 
 			if ( ! empty( $product_ids ) ) {
 				// Prevent duplication when informing forced products.
+				//
 				// @see https://github.com/woocommerce/woocommerce-force-sells/issues/10
 				$product_ids = array_values( array_unique( $product_ids ) );
 
 				echo '<div class="clear"></div>';
 				echo '<div class="wc-force-sells">';
-				echo __( 'This will also add the following products to your cart:', 'woocommerce-force-sells' );
+				echo '<p>' . __( 'This will also add the following products to your cart:', 'woocommerce-force-sells' ) . '</p>';
 				echo '<ul>';
-					foreach ( $product_ids as $product_id ) {
-						// GEWIJZIGD: Prijs toevoegen
-						$product = wc_get_product( $product_id );
-						if ( $product ) {
-							echo '<li>' . $product->get_title() . ' (' . wc_price( $product->get_price() ) . ')</li>';
-						}
+
+				foreach ( $product_ids as $product_id ) {
+					// GEWIJZIGD: Prijs toevoegen
+					$product = wc_get_product( $product_id );
+					if ( $product ) {
+						echo '<li>' . $product->get_title() . ' (' . wc_price( $product->get_price() ) . ')</li>';
 					}
+				}
+
 				echo '</ul></div>';
 			}
 		}
