@@ -611,9 +611,9 @@
 			default:
 				$placeholder = "'s Middags is er altijd iemand thuis. Geef gerust een belletje wanneer jullie vertrekken.";
 		}
-		$fields['order']['order_comments']['label'] = "Algemene opmerkingen bij de bestelling";
+		// $fields['order']['order_comments']['label'] = "Opmerkingen";
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
-		$fields['order']['order_comments']['description'] = "Bel ons na het plaatsen van je bestelling eventueel op ".get_oxfam_shop_data( 'telephone' ).".";
+		// $fields['order']['order_comments']['description'] = "Bel ons na het plaatsen van je bestelling eventueel op ".get_oxfam_shop_data( 'telephone' ).".";
 		return $fields;
 	}
 
