@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-04-26 23:48+0200\n"
+"PO-Revision-Date: 2017-05-09 11:22+0200\n"
 "Language-Team: Le Couperet\n"
 "X-Generator: Poedit 2.0.1\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
@@ -31,7 +31,7 @@ msgid ""
 "order themselves at a specified pickup location."
 msgstr ""
 "Met deze eenvoudige plugin kunnen klanten zelf aangeven in welk afhaalpunt "
-"ze hun bestelling willen afhalen."
+"ze hun bestelling willen oppikken."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:184
 msgid "from"
@@ -155,14 +155,14 @@ msgid ""
 "use of coupons%2$s"
 msgstr ""
 "Om kortingen voor afhalingen in te schakelen dien je eerst %1$shet gebruik "
-"van kortingsbonnen te aciveren%2$s."
+"van kortingsbonnen te activeren%2$s."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:408
 msgid ""
 "Cost for this pickup location, enter an amount, eg. 0 or 2.50, or leave "
 "empty to use the default cost configured above."
 msgstr ""
-"Kostprijs voor deze locatie. Vul en bedrag in of laat leeg om de "
+"Kostprijs voor dit afhaalpunt. Vul een bedrag in of laat leeg om de "
 "standaardprijs toe te passen."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:413
@@ -206,7 +206,7 @@ msgstr "Jouw afhaalpunt"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1190
 msgid "Choose Pickup Location"
-msgstr "Selecteer afhaalpunt"
+msgstr "Selecteer jouw afhaalpunt"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1207
 msgid "Choose One"
@@ -221,9 +221,9 @@ msgid ""
 "Some of your cart products are not eligible for local pickup, please remove "
 "%s, or select a different shipping method to continue"
 msgstr ""
-"Enkele producten uit je winkelmandje zijn niet beschikbaar voor afhaling in "
-"de winkel. Gelieve %s te verwijderen of een andere verzendmethode te kiezen "
-"om verder te gaan."
+"Enkele producten uit je winkelmandje zijn niet beschikbaar voor afhaling. "
+"Gelieve %s te verwijderen of een andere verzendmethode te kiezen om verder "
+"te gaan."
 
 #. translators: %1$s - list of eligible products, %2$s - Local Pickup plus
 #. shipping method name
@@ -232,9 +232,8 @@ msgid ""
 "Some of your cart products are only eligible for local pickup, please remove "
 "%1$s, or change the shipping method to %2$s to continue"
 msgstr ""
-"Enkele producten uit je winkelmandje zijn enkel beschikbaar voor afhaling in "
-"de winkel. Gelieve %1$s te verwijderen of voor %s$s te kiezen om verder te "
-"gaan."
+"Enkele producten uit je winkelmandje zijn enkel beschikbaar voor afhaling. "
+"Gelieve %1$s te verwijderen of voor %s$s te kiezen om verder te gaan."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1388
 #: classes/class-wc-shipping-local-pickup-plus.php:1390
@@ -258,7 +257,7 @@ msgstr "Geen afhaalpunt ingesteld."
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1918
 msgid "Pickup location changed to %s"
-msgstr "Afhaalpunt gewijzigd in %s"
+msgstr "Afhaalpunt gewijzigd naar %s"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:2122
 msgid "Address 2"
@@ -282,9 +281,9 @@ msgid ""
 "local pickup locations, which the customer can then choose from when making "
 "a purchase."
 msgstr ""
-"A shipping plugin for WooCommerce that allows the store operator to define "
-"local pickup locations, which the customer can then choose from when making "
-"a purchase."
+"Een verzendplugin voor WooCommerce die het voor de winkelbeheerder mogelijk "
+"maakt om meerdere afhaalpunten in te stellen. Tijdens het afrekenen kan de "
+"klant uit deze locaties kiezen."
 
 #. Author of the plugin/theme
 msgid "SkyVerge"
@@ -299,4 +298,4 @@ msgstr "https://www.woocommerce.com"
 #: classes/class-wc-shipping-local-pickup-plus.php:196
 msgctxt "Discount amount"
 msgid "save %s"
-msgstr ""
+msgstr "bespaar %s"
