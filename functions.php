@@ -1051,14 +1051,15 @@
 	};
 
 	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat
-	// add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
+	add_filter( 'woocommerce_cart_needs_shipping', 'skip_shipping_on_local_pickup' ); 
 	
-	function skip_shipping_address_on_local_pickup( $needs_shipping_address ) {
+	function skip_shipping_on_local_pickup( $needs_shipping ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
+		write_log( $chosen_methods );
 		if ( strpos( $chosen_methods[0], 'local_pickup' ) !== false ) {
-			$needs_shipping_address = false;
+			$needs_shipping = false;
 		}
-		return $needs_shipping_address;
+		return $needs_shipping;
 	}
 
 	function validate_zip_code( $zip ) {
