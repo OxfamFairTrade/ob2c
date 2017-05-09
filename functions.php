@@ -25,7 +25,7 @@
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
-	$default_holidays = array( '2017-05-25', '2017-06-04', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02' );
+	$default_holidays = array( '2017-06-04', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02' );
 	
 	############
 	# SECURITY #
@@ -171,7 +171,7 @@
 	function add_claimed_by_column( $columns ) {
 		$columns['claimed_by'] = 'Behandeling door';
 		// Eventueel bepaalde kolommen uitschakelen?
-		// unset($columns['order_notes']);
+		// unset( $columns['order_notes'] );
 		return $columns;
 	}
 
@@ -401,8 +401,8 @@
 	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
 
 	function sku_sorting_orderby( $sortby ) {
-		unset($sortby['menu_order']);
-		unset($sortby['rating']);
+		unset( $sortby['menu_order'] );
+		unset( $sortby['rating'] );
 		$sortby['popularity'] = 'Best verkocht';
 		$sortby['date'] = 'Laatst toegevoegd';
 		$sortby['alpha'] = 'Van A tot Z';
@@ -725,9 +725,9 @@
 		$profile_fields['billing']['fields']['billing_city']['label'] = 'Gemeente';
 		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
 		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
-		unset($profile_fields['billing']['fields']['billing_address_2']);
-		unset($profile_fields['billing']['fields']['billing_company']);
-		unset($profile_fields['billing']['fields']['billing_state']);
+		unset( $profile_fields['billing']['fields']['billing_address_2'] );
+		unset( $profile_fields['billing']['fields']['billing_company'] );
+		unset( $profile_fields['billing']['fields']['billing_state'] );
 		
 		$profile_fields['shipping']['title'] = 'Verzendgegevens';
 		$profile_fields['shipping']['fields']['shipping_first_name']['label'] = 'Voornaam';
@@ -735,9 +735,9 @@
 		$profile_fields['shipping']['fields']['shipping_address_1']['label'] = 'Straat en huisnummer';
 		$profile_fields['shipping']['fields']['shipping_postcode']['label'] = 'Postcode';
 		$profile_fields['shipping']['fields']['shipping_city']['label'] = 'Gemeente';
-		unset($profile_fields['shipping']['fields']['shipping_address_2']);
-		unset($profile_fields['shipping']['fields']['shipping_company']);
-		unset($profile_fields['shipping']['fields']['shipping_state']);
+		unset( $profile_fields['shipping']['fields']['shipping_address_2'] );
+		unset( $profile_fields['shipping']['fields']['shipping_company'] );
+		unset( $profile_fields['shipping']['fields']['shipping_state'] );
 
 		$profile_fields['billing']['fields'] = array_swap_assoc('billing_city', 'billing_postcode', $profile_fields['billing']['fields']);
 		$profile_fields['shipping']['fields'] = array_swap_assoc('shipping_city', 'shipping_postcode', $profile_fields['shipping']['fields']);
@@ -843,7 +843,7 @@
 	}
 
 	// Toon overschrijving indien B2B-klant
-	add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
+	// add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
 
 	function b2b_restrict_to_bank_transfer( $gateways ) {
 		global $woocommerce;
@@ -853,8 +853,10 @@
 			unset( $gateways['mollie_wc_gateway_creditcard'] );
 			unset( $gateways['mollie_wc_gateway_kbc'] );
 			unset( $gateways['mollie_wc_gateway_belfius'] );
+			unset( $gateways['mollie_wc_gateway_ideal'] );
 		} else {
-			unset( $gateways['mollie_wc_gateway_banktransfer'] );	
+			unset( $gateways['cod'] );
+			unset( $gateways['mollie_wc_gateway_banktransfer'] );
 		}
 		return $gateways;
 	}
@@ -922,7 +924,7 @@
 		}
 		// Forceer 'natuurlijke' nummering
 		$hours[7] = $hours[0];
-		unset($hours[0]);
+		unset( $hours[0] );
 		return $hours;
 	}
 
@@ -1034,7 +1036,7 @@
 						$timestamp = strtotime( date('Y-m-d', $from)." 12:00" );
 					}
 				} else {
-					unset($day_part);
+					unset( $day_part );
 					// Ga naar het tweede dagdeel (we gaan er van uit dat er nooit drie zijn!)
 					$day_part = $hours[$i][1];
 					$start = intval( substr( $day_part['start'], 0, -2 ) );
@@ -1076,12 +1078,12 @@
 		return $array; 
 	};
 
-	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat
+	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat EN SERVICE POINT?
 	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
 	
 	function skip_shipping_address_on_local_pickup( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
-		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false ) {
+		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false or strpos( reset($chosen_methods), 'service_point' ) !== false ) {
 			$needs_shipping_address = false;
 		}
 		return $needs_shipping_address;
@@ -1119,34 +1121,44 @@
 		global $woocommerce;
 		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 
-		// Verberg alle betalende methodes indien er een gratis levering beschikbaar is (= per definitie geen afhaling want Local Plus creëert geen methodes)
-		if ( isset($rates['free_shipping:2']) or isset($rates['free_shipping:4']) or isset($rates['free_shipping:6']) ) {
-			unset( $rates['flat_rate:1'] );
-			unset( $rates['flat_rate:3'] );
-			unset( $rates['flat_rate:5'] );
-			unset( $rates['service_point_shipping_method:7'] );
-		} else {
-			unset( $rates['free_shipping:2'] );
-			unset( $rates['free_shipping:4'] );
-			unset( $rates['free_shipping:6'] );
-			unset( $rates['service_point_shipping_method:8'] );
+		// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
+		$free_is_available = false;
+		foreach ( $rates as $rate_key => $rate ) {
+			if ( strpos( $rate_key, 'free_shipping' ) >= 0 ) {
+				$free_is_available = true;
+				break;
+			}
 		}
 
-		// Verhinder externe levermethodes indien totale brutogewicht > 30 kg
+		if ( $free_is_available ) {
+			// Verberg alle betalende methodes indien er een gratis levering beschikbaar is
+			foreach ( $rates as $rate_key => $rate ) {
+				if ( floatval( $rate->cost ) > 0.0 ) {
+					unset( $rates[$rate_key] );
+				}
+			}
+		} else {
+			// Verberg alle gratis methodes die geen afhaling zijn
+			foreach ( $rates as $rate_key => $rate ) {
+				if ( strpos( $rate_key, 'local_pickup' ) === false and floatval( $rate->cost ) === 0.0 ) {
+					unset( $rates[$rate_key] );
+				}
+			}
+		}
+
+		// Verhinder externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
 		// OPGELET: MANDJE VOLGT DE GEWICHTSINSTELLING VAN WOOCOMMERCE
 		$cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
 		if ( $cart_weight > 29 ) {
 			foreach ( $rates as $rate_key => $rate ) {
 				// Blokkeer alle methodes behalve afhalingen
 				if ( strpos( $rate_key, 'local_pickup' ) >= 0 ) {
-					unset($rate);
+					unset( $rates[$rate_key] );
 				}
 			}
-			wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering ('.number_format( $cart_weight, 1, ',', '.' ).' kg). Gelieve ze te komen afhalen in de winkel.', 'wc-oxfam' ), 'error' );
+			wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering ('.number_format( $cart_weight, 1, ',', '.' ).' kg). Gelieve ze te komen afhalen in de winkel!', 'wc-oxfam' ), 'error' );
 		}
 
-		$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
-		
 		$low_vat_slug = 'voeding';
 		$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
 		$low_vat_rate = reset( $low_vat_rates );
@@ -1155,6 +1167,7 @@
 		$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
 		$standard_vat_rate = reset( $standard_vat_rates );
 		
+		$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
 		if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
 			$cost = 5.7438;
 			// Ook belastingen moeten expliciet herberekend worden!
@@ -1327,7 +1340,7 @@
 			$array[$key] = mb_strtolower( trim($value) );
 			// Verwijder datums uit het verleden (woorden van toevallig 10 tekens kunnen niet voor een datum komen!)
 			if ( strlen( $array[$key] ) === 10 and $array[$key] < date( 'Y-m-d' ) ) {
-				unset($array[$key]);
+				unset( $array[$key] );
 			}
 		}
 		sort($array, SORT_STRING);
@@ -2259,7 +2272,7 @@
 			$body = json_decode($response['body']);
 			
 			foreach ( array_reverse($body->campaigns) as $campaign ) {
-				$mailings .= '<li><a class="rsswidget" href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.strftime( '%e %B %G', strtotime($campaign->send_time) ).')</li>';
+				$mailings .= '<li><a class="rsswidget" href="'.$campaign->long_archive_url.'" target="_blank">'.str_replace( '*|FNAME|*: ', '', $campaign->settings->subject_line ).'</a> ('.strftime( '%e %B %G', strtotime($campaign->send_time) ).')</li>';
 			}
 		}		
 
