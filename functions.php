@@ -610,6 +610,7 @@
 				break;
 			default:
 				$placeholder = "'s Middags is er altijd iemand thuis. Geef gerust een belletje wanneer jullie vertrekken.";
+				break;
 		}
 		// $fields['order']['order_comments']['label'] = "Opmerkingen";
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
@@ -887,6 +888,7 @@
 				break;
 			default:
 				$descr .= __( 'Geen schatting beschikbaar', 'wc-oxfam' );
+				break;
 		}
 		$descr .= '</small>';
 		return $label.'<br>'.$descr;
@@ -961,6 +963,8 @@
 
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
+
+				break;
 		}
 
 		write_log(date('d/m/Y H:i', $timestamp));		
@@ -1149,27 +1153,49 @@
 			$cost = 5.7438;
 			// Ook belastingen moeten expliciet herberekend worden!
 			$taxes = $cost*0.21;
-			if ( isset( $rates['flat_rate:1'] ) ) {
-				$rates['flat_rate:1']->cost = $cost;
-				// Voeding = ID 1 = 6% op nul zetten
-				$rates['flat_rate:1']->taxes[1] = 0.0;
-				// Standard = ID 2 = 21% instellen
-				$rates['flat_rate:1']->taxes[2] = $taxes;
+			
+			foreach ( $rates as $rate_key => $rate_object ) {
+				switch ( $rate_key ) {
+					case stristr( $rate_key, 'flat_rate' ):
+						$rate->cost = $cost;
+						// Voeding = ID 1 = 6% op nul zetten
+						$rate->taxes[1] = 0.0;
+						// Standard = ID 2 = 21% instellen
+						$rate->taxes[2] = $taxes;
+						break;
+					case stristr( $rate_key, 'service_point_shipping_method' ):
+						$rate->cost = $cost;
+						$rate->taxes[1] = 0.0;
+						$rate->taxes[2] = $taxes;
+						break;
+					default:
+						// Dit zijn de gratis pick-ups, voorlopig niets mee doen
+						break;
+				}
 			}
-			if ( isset( $rates['flat_rate:3'] ) ) {
-				$rates['flat_rate:3']->cost = $cost;
-				$rates['flat_rate:3']->taxes[1] = 0.0;
-				$rates['flat_rate:3']->taxes[2] = $taxes;
-			}
-			if ( isset( $rates['flat_rate:5'] ) ) {
-				$rates['flat_rate:5']->cost = $cost;
-				$rates['flat_rate:5']->taxes[1] = 0.0;
-				$rates['flat_rate:5']->taxes[2] = $taxes;
-			}
-			if ( isset( $rates['service_point_shipping_method:7'] ) ) {
-				$rates['service_point_shipping_method:7']->cost = $cost;
-				$rates['service_point_shipping_method:7']->taxes[1] = 0.0;
-				$rates['service_point_shipping_method:7']->taxes[2] = $taxes;
+		} else {
+			$cost = 6.5566;
+			// Ook belastingen moeten expliciet herberekend worden!
+			$taxes = $cost*0.06;
+			
+			foreach ( $rates as $rate_key => $rate_object ) {
+				switch ( $rate_key ) {
+					case stristr( $rate_key, 'flat_rate' ):
+						$rate->cost = $cost;
+						// Voeding = ID 1 = 6% instellen
+						$rate->taxes[1] = $taxes;
+						// Standard = ID 2 = 21% op nul zetten
+						$rate->taxes[2] = 0.0;
+						break;
+					case stristr( $rate_key, 'service_point_shipping_method' ):
+						$rate->cost = $cost;
+						$rate->taxes[1] = $taxes;
+						$rate->taxes[2] = 0.0;
+						break;
+					default:
+						// Dit zijn de gratis pick-ups, voorlopig niets mee doen
+						break;
+				}
 			}
 		}
 
@@ -2596,15 +2622,12 @@
 					switch ($key) {
 						case 'shop':
 							return $row->field_sellpoint_shop_nid;
-							break;
 						case 'll':
 							// Voor KML-file moet longitude voor latitude komen!
 							return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
-							break;
 						case 'telephone':
 							// Geef alternatieve delimiter mee
 							return call_user_func( 'format_telephone', $row->field_sellpoint_telephone_value, '.' );
-							break;
 						default:
 							return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 					}
@@ -2616,16 +2639,12 @@
 			switch ($key) {
 				case 'place':
 					return call_user_func( 'format_place', 'Ververijstraat 15', '.' );
-					break;
 				case 'zipcode':
 					return call_user_func( 'format_zipcode', '9000', '.' );
-					break;
 				case 'city':
 					return call_user_func( 'format_city', 'Gent', '.' );
-					break;
 				case 'telephone':
 					return call_user_func( 'format_telephone', '092188899', '.' );
-					break;
 				default:
 					return "(gegevens cvba)";
 			}
