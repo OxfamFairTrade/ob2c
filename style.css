@@ -245,12 +245,14 @@ p#order_comments_field.form-row.notes label {
 }
 
 /* Zorg ervoor dat de adressen en openingsuren de volledige breedte kunnen innemen */
-.woocommerce-checkout-review-order-table tr.pickup_location td.update_totals_on_change > ul,
+.woocommerce-checkout-review-order-table tr.pickup_location td.update_totals_on_change > ul {
+	width: 350px;
+	float: right;
+	margin-top: 2em;
+}
 .woocommerce-checkout-review-order-table tr.pickup_location div.wc-pickup-location-note {
 	width: 350px;
 	float: right;
-}
-.woocommerce-checkout-review-order-table tr.pickup_location div.wc-pickup-location-note {
 	font-style: italic;
 }
 .woocommerce-checkout-review-order-table tr.pickup_location td.update_totals_on_change > ul > li {

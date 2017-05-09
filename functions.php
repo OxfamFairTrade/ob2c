@@ -542,7 +542,7 @@
         return $address_fields;
     }
 
-    // Label en layout de factuurgegevens
+    // Label en layout de verzendgegevens
 	add_filter( 'woocommerce_shipping_fields', 'format_checkout_shipping', 10, 1 );
 	
 	function format_checkout_shipping( $address_fields ) {
@@ -595,6 +595,26 @@
 		$address_fields['city']['clear'] = true;
 
 		return $address_fields;
+	}
+
+	// Vul andere placeholders in, naar gelang de gekozen verzendmethode op de winkelwagenpagina (wordt NIET geüpdatet bij verandering in checkout)
+    add_filter( 'woocommerce_checkout_fields' , 'format_checkout_notes' );
+
+    function format_checkout_notes( $fields ) {
+    	global $user_ID;
+    	$shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
+    	$shipping_id = reset($shipping_methods);
+		switch ( $shipping_id ) {
+			case stristr( $shipping_id, 'local_pickup' ):
+				$placeholder = "Ik kom de bestelling pas volgende week oppikken in de winkel.";
+				break;
+			default:
+				$placeholder = "'s Middags is er altijd iemand thuis. Geef gerust een belletje wanneer jullie vertrekken.";
+		}
+		$fields['order']['order_comments']['label'] = "Algemene opmerkingen bij de bestelling";
+		$fields['order']['order_comments']['placeholder'] = $placeholder;
+		$fields['order']['order_comments']['description'] = "Bel ons na het plaatsen van je bestelling eventueel op ".get_oxfam_shop_data( 'telephone' ).".";
+		return $fields;
 	}
 
 	// Herschrijf bepaalde klantendata naar standaardformaten tijdens afrekenen én bijwerken vanaf accountpagina
@@ -1055,7 +1075,7 @@
 	
 	function skip_shipping_address_on_local_pickup( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
-		if ( strpos( $chosen_methods[0], 'local_pickup' ) !== false ) {
+		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false ) {
 			$needs_shipping_address = false;
 		}
 		return $needs_shipping_address;

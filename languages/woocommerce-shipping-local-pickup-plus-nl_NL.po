@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-05-09 11:22+0200\n"
+"PO-Revision-Date: 2017-05-09 14:29+0200\n"
 "Language-Team: Le Couperet\n"
 "X-Generator: Poedit 2.0.1\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
@@ -206,7 +206,7 @@ msgstr "Jouw afhaalpunt"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1190
 msgid "Choose Pickup Location"
-msgstr "Selecteer jouw afhaalpunt"
+msgstr "Selecteer je afhaalpunt:"
 
 #: classes/class-wc-shipping-local-pickup-plus.php:1207
 msgid "Choose One"
