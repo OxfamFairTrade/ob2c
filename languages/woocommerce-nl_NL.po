@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-05-08 22:22+0200\n"
+"PO-Revision-Date: 2017-05-09 11:59+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -7698,7 +7698,7 @@ msgstr "Subtotaal"
 
 #: templates/cart/cart-totals.php:28
 msgid "Cart totals"
-msgstr "Winkelmand-totalen"
+msgstr "Besteloverzicht"
 
 #: templates/cart/cart-shipping.php:50
 msgid "There are no shipping methods available. Please double check your address, or contact us if you need any help."

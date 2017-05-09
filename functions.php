@@ -2690,6 +2690,12 @@
 	# SEARCH #
 	##########
 
+	// Verander capability van 'manage_options' naar 'create_sites' zodat ook lokale beheerders de logs kunnen bekijken
+	add_filter( 'relevanssi_options_capability', function($capability) { return 'create_sites'; } );
+	
+	// Verander capability van 'edit_pages' naar 'manage_woocommerce' zodat ook lokale beheerders de logs kunnen bekijken
+	add_filter( 'relevanssi_user_searches_capability', function($capability) { return 'manage_woocommerce'; } );
+		
 	// Probeert reguliere meervouden en verkleinwoorden automatisch weg te laten uit zoektermen (én index)
 	add_filter( 'relevanssi_stemmer', 'relevanssi_dutch_stemmer' );
 
