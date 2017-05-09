@@ -1111,9 +1111,9 @@
 	}
 	
 	// Disable sommige verzendmethoden onder bepaalde voorwaarden
-	add_filter( 'woocommerce_package_rates', 'hide_shipping_methods', 10, 2 );
+	add_filter( 'woocommerce_package_rates', 'hide_shipping_recalculate_taxes', 10, 2 );
 	
-	function hide_shipping_methods( $rates, $package ) {
+	function hide_shipping_recalculate_taxes( $rates, $package ) {
 		global $woocommerce;
 		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 
@@ -1131,78 +1131,59 @@
 		}
 
 		// Verhinder externe levermethodes indien totale brutogewicht > 30 kg
-		// MANDJE VOLGT DE GEWICHTSINSTELLING VAN WOOCOMMERCE
+		// OPGELET: MANDJE VOLGT DE GEWICHTSINSTELLING VAN WOOCOMMERCE
 		$cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
 		if ( $cart_weight > 29 ) {
-			unset( $rates['flat_rate:1'] );
-			unset( $rates['flat_rate:3'] );
-			unset( $rates['flat_rate:5'] );
-			unset( $rates['free_shipping:2'] );
-			unset( $rates['free_shipping:4'] );
-			unset( $rates['free_shipping:6'] );
-			unset( $rates['service_point_shipping_method:7'] );
-			unset( $rates['service_point_shipping_method:8'] );
+			foreach ( $rates as $rate_key => $rate ) {
+				// Blokkeer alle methodes behalve afhalingen
+				if ( strpos( $rate_key, 'local_pickup' ) >= 0 ) {
+					unset($rate);
+				}
+			}
 			wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering ('.number_format( $cart_weight, 1, ',', '.' ).' kg). Gelieve ze te komen afhalen in de winkel.', 'wc-oxfam' ), 'error' );
 		}
 
 		$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
 		
+		$low_vat_slug = 'voeding';
+		$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
+		$low_vat_rate = reset( $low_vat_rates );
+		
 		// Slug voor de standard rate is een lege string!
-		$low_vat = 'voeding';
-		if ( ! in_array( $low_vat, $tax_classes ) ) {
+		$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
+		$standard_vat_rate = reset( $standard_vat_rates );
+		
+		if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
 			$cost = 5.7438;
 			// Ook belastingen moeten expliciet herberekend worden!
 			$taxes = $cost*0.21;
-			
-			foreach ( $rates as $rate_key => $rate_object ) {
-				switch ( $rate_key ) {
-					case stristr( $rate_key, 'flat_rate' ):
-						$rate->cost = $cost;
-						// Voeding = ID 1 = 6% op nul zetten
-						$rate->taxes[1] = 0.0;
-						// Standard = ID 2 = 21% instellen
-						$rate->taxes[2] = $taxes;
-						break;
-					case stristr( $rate_key, 'service_point_shipping_method' ):
-						$rate->cost = $cost;
-						$rate->taxes[1] = 0.0;
-						$rate->taxes[2] = $taxes;
-						break;
-					default:
-						// Dit zijn de gratis pick-ups, voorlopig niets mee doen
-						break;
-				}
-			}
 		} else {
 			$cost = 6.5566;
-			// Ook belastingen moeten expliciet herberekend worden!
 			$taxes = $cost*0.06;
-			
-			foreach ( $rates as $rate_key => $rate_object ) {
-				switch ( $rate_key ) {
-					case stristr( $rate_key, 'flat_rate' ):
-						$rate->cost = $cost;
-						// Voeding = ID 1 = 6% instellen
-						$rate->taxes[1] = $taxes;
-						// Standard = ID 2 = 21% op nul zetten
-						$rate->taxes[2] = 0.0;
-						break;
-					case stristr( $rate_key, 'service_point_shipping_method' ):
-						$rate->cost = $cost;
-						$rate->taxes[1] = $taxes;
-						$rate->taxes[2] = 0.0;
-						break;
-					default:
-						// Dit zijn de gratis pick-ups, voorlopig niets mee doen
-						break;
-				}
+		}
+		
+		// Overschrijf alle verzendprijzen (niet enkel indien uitsluitend 21% -> te onzeker)
+		foreach ( $rates as $rate_key => $rate ) {
+			switch ( $rate_key ) {
+				case stristr( $rate_key, 'flat_rate' ):
+					$rate->cost = $cost;
+					// Voeding = ID 1 = 6% op nul zetten
+					$rate->taxes[$low_vat_rate->tax_rate_id] = 0.0;
+					// Standard = ID 2 = 21% instellen
+					$rate->taxes[$standard_vat_rate->tax_rate_id] = $taxes;
+					break;
+				case stristr( $rate_key, 'service_point_shipping_method' ):
+					$rate->cost = $cost;
+					$rate->taxes[$low_vat_rate->tax_rate_id] = 0.0;
+					$rate->taxes[$standard_vat_rate->tax_rate_id] = $taxes;
+					break;
+				default:
+					// Dit zijn de gratis pick-ups, voorlopig niets mee doen
+					break;
 			}
 		}
 
-		write_log($tax_classes);
-		write_log($rates);
-
-	  	return $rates;
+		return $rates;
 	}
 
 	// Zorg dat afhalingen in de winkel als standaard levermethode geselecteerd worden
