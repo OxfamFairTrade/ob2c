@@ -223,6 +223,7 @@ tr.shipping .woocommerce-Price-amount {
 .nm-single-product-menu,
 .shop_table input[name=update_cart],
 #calc_shipping_country_field,
+.nm-shipping-th-title,
 #customer_details #billing_country_field,
 #customer_details #shipping_country_field,
 .woocommerce-address-fields #billing_country_field,
@@ -230,6 +231,12 @@ tr.shipping .woocommerce-Price-amount {
 .checkout-subscribe-action,
 .products li.outofstock .nm-shop-loop-thumbnail > a:after {
 	display: none !important;
+}
+
+#sendcloudshipping_service_point_select,
+#sendcloudshipping_service_point_selected_label {
+	margin: 1em auto;
+	text-align: center;
 }
 
 /* Verberg lelijk opgemaakte 'Verzendkosten bijgewerkt' */

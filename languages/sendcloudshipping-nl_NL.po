@@ -1,0 +1,137 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SendCloud 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sendcloud\n"
+"POT-Creation-Date: 2017-02-09 11:01+0000\n"
+"PO-Revision-Date: 2017-05-09 22:48+0200\n"
+"Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
+"Language-Team: Le Couperet\n"
+"Language: nl_NL\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
+"__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
+"_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
+"esc_attr__:1;esc_html__:1;esc_attr_e:1;esc_html_e:1;esc_attr_x:1,2c;"
+"esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
+"X-Loco-Target-Locale: nl_NL\n"
+"X-Generator: Poedit 2.0.1\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+msgid ""
+"You need to change the permalink to \"Post name\". On Settings -> Permalinks."
+msgstr ""
+"Je dient de permalink instelling op \"Berichtnaam\" te zetten voordat je "
+"deze plugin kunt gebruiken. Ga naar Instellingen -> Permalinks."
+
+#: ../includes/api/class-sc-api-service-point.php:27
+msgid "No data specified to enable the plugin"
+msgstr "Er zijn geen gegevens opgegeven om de plugin in te schakelen"
+
+#: ../includes/api/class-sc-api-service-point.php:31
+msgid "Plugin enabled"
+msgstr "Plugin aan"
+
+#: ../includes/api/class-sc-api-service-point.php:36
+msgid "Plugin disabled"
+msgstr "Plugin uit"
+
+#: ../includes/checkout.php:33
+msgid "Please choose a service point."
+msgstr "Gelieve een postpunt te selecteren."
+
+#: ../includes/checkout.php:51 ../includes/checkout.php:70
+#: ../includes/email.php:14
+msgid "Service Point Address"
+msgstr "Adres van postpunt"
+
+#: ../includes/checkout.php:52
+msgid "Non editable"
+msgstr "Niet instelbaar"
+
+#: ../includes/checkout.php:53
+msgid "You can't change the selected Service Point"
+msgstr "Je kunt de gekozen service point niet aanpassen"
+
+#. Plugin Name of the plugin/theme
+#. Author of the plugin/theme
+#: ../includes/class-sc-settings-sendcloud.php:14
+msgid "SendCloud"
+msgstr "SendCloud"
+
+#: ../includes/shipping/class-service-point-shipping-method.php:13
+msgid "Service Point Delivery"
+msgstr "Postpunt"
+
+#: ../includes/shipping/class-service-point-shipping-method.php:14
+msgid ""
+"Service Point Delivery lets the customer select a servicepoint in the "
+"checkout."
+msgstr ""
+"Servicepunt Levering laat de klant een servicepunt selecteren in de checkout."
+
+#. Name of the plugin
+msgid "SendCloud | Smart Shipping Service"
+msgstr "SendCloud | Smart Shipping Service"
+
+#. URI of the plugin
+msgid "http://sendcloud.sc"
+msgstr "http://sendcloud.sc"
+
+#. Description of the plugin/theme
+msgid "SendCloud plugin."
+msgstr "SendCloud Integratie."
+
+#. Author of the plugin
+msgid "SendCloud B.V."
+msgstr "SendCloud B.V."
+
+#: ../sendcloud-shipping.php:94
+msgid ""
+"SendCloud | Smart Shipping Service plugin deactivated itself because "
+"WooCommerce is not available."
+msgstr ""
+"SendCloud | Smart Shipping Service plugin is gedeactiveerd omdat WooCommerce "
+"niet beschikbaar is."
+
+#: ../views/html-admin-auto-connect.php:8
+msgid "Go to SendCloud"
+msgstr "Ga naar SendCloud"
+
+#: ../views/html-admin-auto-connect.php:10
+msgid "Open the SendCloud panel and start shipping."
+msgstr "Open het SendCloud Panel en start met verzenden."
+
+#: ../views/html-admin-auto-connect.php:13
+msgid "Connect with SendCloud"
+msgstr "Verbind met SendCloud"
+
+#: ../views/html-admin-auto-connect.php:15
+msgid "Allows you to see your WooCommerce orders in the SendCloud Panel."
+msgstr ""
+"Maakt het mogelijk om je WooCommerce orders in het SendCloud Panel te "
+"bekijken."
+
+msgid "Select Service Point"
+msgstr "Kies je postpunt"
+
+msgid "Enable Free Shipping"
+msgstr "Gratis Verzenden Toevoegen"
+
+msgid "No"
+msgstr "Nee"
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "Minimum Order Amount for Free Shipping"
+msgstr "Minimale Orderwaarde voor Gratis Verzenden"
+
+msgid "If enabled, users will need to spend this amount to get free shipping."
+msgstr ""
+"Indien ingeschakeld, dienen gebruikers tenminste dit bedrag te besteden om "
+"gratis te kunnen verzenden."
