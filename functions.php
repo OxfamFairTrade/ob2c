@@ -1121,6 +1121,8 @@
 		global $woocommerce;
 		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 
+		write_log($rates);
+
 		// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
 		$free_is_available = false;
 		foreach ( $rates as $rate_key => $rate ) {
@@ -1163,7 +1165,7 @@
 		$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
 		$low_vat_rate = reset( $low_vat_rates );
 		
-		// Slug voor de standard rate is een lege string!
+		// Slug voor de 'standard rate' is een lege string!
 		$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
 		$standard_vat_rate = reset( $standard_vat_rates );
 		
@@ -1172,29 +1174,33 @@
 			$cost = 5.7438;
 			// Ook belastingen moeten expliciet herberekend worden!
 			$taxes = $cost*0.21;
+			$tax_id_free = $low_vat_rate->tax_rate_id;
+			$tax_id_cost = $standard_vat_rate->tax_rate_id;
 		} else {
 			$cost = 6.5566;
 			$taxes = $cost*0.06;
+			$tax_id_free = $standard_vat_rate->tax_rate_id;
+			$tax_id_cost = $low_vat_rate->tax_rate_id;
 		}
 		
-		// Overschrijf alle verzendprijzen (niet enkel indien uitsluitend 21% -> te onzeker)
-		foreach ( $rates as $rate_key => $rate ) {
-			switch ( $rate_key ) {
-				case stristr( $rate_key, 'flat_rate' ):
-					$rate->cost = $cost;
-					// Voeding = ID 1 = 6% op nul zetten
-					$rate->taxes[$low_vat_rate->tax_rate_id] = 0.0;
-					// Standard = ID 2 = 21% instellen
-					$rate->taxes[$standard_vat_rate->tax_rate_id] = $taxes;
-					break;
-				case stristr( $rate_key, 'service_point_shipping_method' ):
-					$rate->cost = $cost;
-					$rate->taxes[$low_vat_rate->tax_rate_id] = 0.0;
-					$rate->taxes[$standard_vat_rate->tax_rate_id] = $taxes;
-					break;
-				default:
-					// Dit zijn de gratis pick-ups, voorlopig niets mee doen
-					break;
+		// Overschrijf alle verzendprijzen (dus niet enkel in 'uitsluitend 21%'-geval -> te onzeker) indien betalende verzending
+		if ( ! $free_is_available ) {
+			foreach ( $rates as $rate_key => $rate ) {
+				switch ( $rate_key ) {
+					case stristr( $rate_key, 'flat_rate' ):
+						$rate->cost = $cost;
+						$rate->taxes[$tax_id_free] = 0.0;
+						$rate->taxes[$tax_id_cost] = $taxes;
+						break;
+					case stristr( $rate_key, 'service_point_shipping_method' ):
+						$rate->cost = $cost;
+						$rate->taxes[$tax_id_free] = 0.0;
+						$rate->taxes[$tax_id_cost] = $taxes;
+						break;
+					default:
+						// Dit zijn de gratis pick-ups en eventueel thuisleveringen, gewoon niets mee doen
+						break;
+				}
 			}
 		}
 

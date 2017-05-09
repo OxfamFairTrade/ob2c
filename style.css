@@ -235,7 +235,7 @@ tr.shipping .woocommerce-Price-amount {
 
 #sendcloudshipping_service_point_select,
 #sendcloudshipping_service_point_selected_label {
-	margin: 1em auto;
+	margin: 0.5em auto;
 	text-align: center;
 }
 
