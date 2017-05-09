@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-05-09 22:50+0200\n"
+"PO-Revision-Date: 2017-05-10 01:02+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -7584,7 +7584,7 @@ msgstr "Ik heb <a href=\"%s\" target=\"_blank\">de algemene voorwaarden</a> gele
 
 #: templates/cart/shipping-calculator.php:96 templates/checkout/payment.php:43
 msgid "Update totals"
-msgstr "Toon verzendmethodes"
+msgstr "Bereken verzendkosten"
 
 #: templates/checkout/payment.php:42
 msgid "Since your browser does not support JavaScript, or it is disabled, please ensure you click the <em>Update Totals</em> button before placing your order. You may be charged more than the amount stated above if you fail to do so."

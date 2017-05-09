@@ -420,7 +420,7 @@
 	function cart_update_qty_script() {
 		if ( is_cart() ) :
 			global $woocommerce;
-			// validate_zip_code_for_shipping( intval( $woocommerce->customer->get_shipping_postcode() ) );
+			// validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 		?>
 			<script>
 				var wto;
@@ -1070,8 +1070,6 @@
 		return $timestamp;
 	}
 
-	// Handig filtertje om verzendcalculator uit te schakelen in shops met enkel afhaling: woocommerce_cart_ready_to_calc_shipping
-
 	// Verberg het verzendadres na het bestellen ook bij een postpuntlevering in de front-end
 	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_service_point', 10, 2 ); 
 	
@@ -1097,23 +1095,47 @@
 		if ( does_home_delivery() and $zip !== 0 ) {
 			if ( ! in_array( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
 				wc_add_notice( __( 'Dit is geen geldige Vlaamse postcode!', 'wc-oxfam' ), 'error' );
-			} elseif ( ! in_array( $zip, get_option( 'oxfam_zip_codes' ) ) ) {
+			} elseif ( ! in_array( $zip, get_option( 'oxfam_zip_codes' ) ) and is_cart() ) {
+				// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat de klant niet meer radicaal wijzigt (niet afschrikken met error!)
 				$str = date('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
 				file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
+				// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices( 'error' ) retourneert te checken
 				wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode! Kies voor afhaling of keer terug naar het portaal om de webshop te vinden die voor jouw postcode thuislevering organiseert.', 'wc-oxfam' ), 'error' );
 			}
 		}
 	}
 
-	// OUDE VERSIE, NIET MEER GEBRUIKEN?
-	function validate_zip_code_for_shipping( $zip ) {
-		if ( does_home_delivery() and $zip !== 0 ) {
-			if ( ! in_array( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
-				wc_add_notice( __( 'We konden de verzendopties niet berekenen. Dit is geen geldige Vlaamse postcode!', 'wc-oxfam' ), 'error' );
-			} elseif ( ! in_array( $zip, get_option( 'oxfam_zip_codes' ) ) ) {
-				$str = date('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
-				file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
-				wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode! Keer terug naar het hoofddomein om de juiste webshop te vinden.', 'wc-oxfam' ), 'error' );
+	// Zet een maximum op het aantal items dat je kunt toevoegen CHECKT NIET OP REEDS AANWEZIGE ITEMS, NIET INTERESSANT
+	// add_action( 'woocommerce_add_to_cart_validation', 'maximum_item_quantity_validation' );
+
+	function maximum_item_quantity_validation( $passed, $product_id, $quantity, $variation_id, $variations ) {
+		if ( $quantity > 10 ) {
+			wc_add_notice( 'Je kunt maximum 10 exemplaren van een product toevoegen aan je winkelmandje.', 'error' );
+		} else {
+			return true;
+		}
+	}
+
+	// Moedig aan om naar 100 euro te gaan (gratis thuislevering)
+	add_action( 'woocommerce_before_cart', 'show_almost_free_shipping_notice' );
+
+	function show_almost_free_shipping_notice() {
+		if ( is_cart() ) {
+			$threshold = 100;
+			// Subtotaal = winkelmandje inclusief belasting, exclusief verzending
+			$current = WC()->cart->subtotal;
+			if ( $current > 80 ) {
+				if ( $current < $threshold ) {
+					// Probeer de boodschap slechts af en toe te tonen via sessiedata
+					$cnt = WC()->session->get( 'go_to_100_message_count', 0 );
+					// Opgelet: WooCoomerce moet actief zijn, we moeten in de front-end zitten én er moet al een winkelmandje aangemaakt zijn!
+					WC()->session->set( 'go_to_100_message_count', $cnt+1 );
+					if ( $cnt % 7 === 0 ) {
+						wc_print_notice( 'Tip: als je nog '.wc_price( $threshold - $current ).' toevoegt, kom je in aanmerking voor gratis thuislevering.', 'success' );
+					}
+				}
+			} else {
+				WC()->session->set( 'go_to_100_message_count', 0 );
 			}
 		}
 	}
@@ -1125,11 +1147,8 @@
 		global $woocommerce;
 		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 
-		write_log("ORIGINELE RATES");
-		write_log($rates);
-
 		// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
-		$free_is_available = false;
+		$free_home_available = false;
 		foreach ( $rates as $rate ) {
 			if ( $rate->method_id === 'free_shipping' ) {
 				$free_home_available = true;
