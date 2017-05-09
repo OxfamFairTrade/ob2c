@@ -67,7 +67,7 @@ function relevanssi_options() {
 	relevanssi_options_form();
 
 	if (apply_filters('relevanssi_display_common_words', true))
-		relevanssi_common_words();
+		relevanssi_common_words(25);
 
 	echo "<div style='clear:both'></div>";
 
@@ -86,7 +86,8 @@ function relevanssi_search_stats() {
 		check_admin_referer('relevanssi_reset_logs', '_relresnonce');
 		if (isset($_REQUEST['relevanssi_reset_code'])) {
 			if ($_REQUEST['relevanssi_reset_code'] == 'reset') {
-				relevanssi_truncate_logs();
+				$verbose = true;
+				relevanssi_truncate_logs($verbose);
 			}
 		}
 	}
@@ -117,13 +118,22 @@ function relevanssi_search_stats() {
 		relevanssi_sidebar();
 }
 
-function relevanssi_truncate_logs() {
+function relevanssi_truncate_logs($verbose = true) {
 	global $wpdb, $relevanssi_variables;
 
 	$query = "TRUNCATE " . $relevanssi_variables['log_table'];
-	$wpdb->query($query);
+	$result = $wpdb->query($query);
 
-	echo "<div id='relevanssi-warning' class='updated fade'>" . __('Logs clear!', 'relevanssi') . "</div>";
+	if ($verbose) {
+		if ($result !== false) {
+			echo "<div id='relevanssi-warning' class='updated fade'>" . __('Logs clear!', 'relevanssi') . "</div>";
+		}
+		else {
+			echo "<div id='relevanssi-warning' class='updated fade'>" . __('Clearing the logs failed.', 'relevanssi') . "</div>";
+		}
+	}
+
+	return $result;
 }
 
 function update_relevanssi_options() {
@@ -369,37 +379,48 @@ function relevanssi_remove_all_stopwords() {
 	printf(__("<div id='message' class='updated fade'><p>Stopwords removed! Remember to re-index.</p></div>", "relevanssi"), $term);
 }
 
-function relevanssi_remove_stopword($term) {
+function relevanssi_remove_stopword($term, $verbose = true) {
 	global $wpdb, $relevanssi_variables;
 
 	$q = $wpdb->prepare("DELETE FROM " . $relevanssi_variables['stopword_table'] . " WHERE stopword=%s", $term);
 	$success = $wpdb->query($q);
 
 	if ($success) {
-		echo "<div id='message' class='updated fade'><p>";
-		printf(__("Term '%s' removed from stopwords! Re-index to get it back to index.", "relevanssi"), stripslashes($term));
-		echo "</p></div>";
+		if ($verbose) {
+			echo "<div id='message' class='updated fade'><p>";
+			printf(__("Term '%s' removed from stopwords! Re-index to get it back to index.", "relevanssi"), stripslashes($term));
+			echo "</p></div>";
+		}
+		else {
+			return true;
+		}
 	}
 	else {
-		echo "<div id='message' class='updated fade'><p>";
-		printf(__("Couldn't remove term '%s' from stopwords!", "relevanssi"), stripslashes($term));
-		echo "</p></div>";
+		if ($verbose) {
+			echo "<div id='message' class='updated fade'><p>";
+			printf(__("Couldn't remove term '%s' from stopwords!", "relevanssi"), stripslashes($term));
+			echo "</p></div>";
+		}
+		else {
+			return false;
+		}
 	}
 }
 
-function relevanssi_common_words() {
+function relevanssi_common_words($limit = 25, $wp_cli = false) {
 	global $wpdb, $relevanssi_variables, $wp_version;
 
 	RELEVANSSI_PREMIUM ? $plugin = 'relevanssi-premium' : $plugin = 'relevanssi';
 
-	echo "<div style='float:left; width: 45%'>";
+	if (!is_numeric($limit)) $limit = 25;
 
-	echo "<h3>" . __("25 most common words in the index", 'relevanssi') . "</h3>";
+	$words = $wpdb->get_results("SELECT COUNT(*) as cnt, term FROM " . $relevanssi_variables['relevanssi_table'] . " GROUP BY term ORDER BY cnt DESC LIMIT $limit");
+	// Clean: $limit is numeric.
 
-	echo "<p>" . __("These words are excellent stopword material. A word that appears in most of the posts in the database is quite pointless when searching. This is also an easy way to create a completely new stopword list, if one isn't available in your language. Click the icon after the word to add the word to the stopword list. The word will also be removed from the index, so rebuilding the index is not necessary.", 'relevanssi') . "</p>";
-
-	$words = $wpdb->get_results("SELECT COUNT(DISTINCT(doc)) as cnt, term
-		FROM " . $relevanssi_variables['relevanssi_table'] . " GROUP BY term ORDER BY cnt DESC LIMIT 25");
+	if (!$wp_cli) {
+		echo "<div style='float:left; width: 45%'>";
+		echo "<h3>" . __("25 most common words in the index", 'relevanssi') . "</h3>";
+		echo "<p>" . __("These words are excellent stopword material. A word that appears in most of the posts in the database is quite pointless when searching. This is also an easy way to create a completely new stopword list, if one isn't available in your language. Click the icon after the word to add the word to the stopword list. The word will also be removed from the index, so rebuilding the index is not necessary.", 'relevanssi') . "</p>";
 
 ?>
 <form method="post">
@@ -408,26 +429,31 @@ function relevanssi_common_words() {
 <ul>
 <?php
 
-	if (function_exists("plugins_url")) {
-		if (version_compare($wp_version, '2.8dev', '>' )) {
-			$src = plugins_url('delete.png', $relevanssi_variables['file']);
+		if (function_exists("plugins_url")) {
+			if (version_compare($wp_version, '2.8dev', '>' )) {
+				$src = plugins_url('delete.png', $relevanssi_variables['file']);
+			}
+			else {
+				$src = plugins_url($plugin . '/delete.png');
+			}
 		}
 		else {
-			$src = plugins_url($plugin . '/delete.png');
+			// We can't check, so let's assume something sensible
+			$src = '/wp-content/plugins/' . $plugin . '/delete.png';
 		}
+
+		foreach ($words as $word) {
+			$stop = __('Add to stopwords', 'relevanssi');
+			printf('<li>%s (%d) <input style="padding: 0; margin: 0" type="image" src="%s" alt="%s" name="term" value="%s"/></li>', $word->term, $word->cnt, $src, $stop, $word->term);
+		}
+		echo "</ul>\n</form>";
+
+		echo "</div>";
 	}
 	else {
-		// We can't check, so let's assume something sensible
-		$src = '/wp-content/plugins/' . $plugin . '/delete.png';
+		// WP CLI gets the list of words
+		return $words;
 	}
-
-	foreach ($words as $word) {
-		$stop = __('Add to stopwords', 'relevanssi');
-		printf('<li>%s (%d) <input style="padding: 0; margin: 0" type="image" src="%s" alt="%s" name="term" value="%s"/></li>', $word->term, $word->cnt, $src, $stop, $word->term);
-	}
-	echo "</ul>\n</form>";
-
-	echo "</div>";
 }
 
 function relevanssi_query_log() {
