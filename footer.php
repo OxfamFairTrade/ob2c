@@ -58,7 +58,8 @@
                                         ) );
                                     ?>
                                     <?php if ( $display_copyright_in_menu ) : ?>
-                                    <li class="nm-footer-bar-text menu-item"><div><?php echo wp_kses_post( do_shortcode( $copyright_text ) ); // GEWIJZIGD: Voer shortcodes uit in copyrighttekst! ?></div></li>
+                                    <!-- GEWIJZIGD: Voer shortcode in copyrighttekst in -->
+                                    <li class="nm-footer-bar-text menu-item"><div><?php echo wp_kses_post( do_shortcode( $copyright_text ) ); ?></div></li>
                                     <?php endif; ?>
                                 </ul>
                             </div>
@@ -97,7 +98,7 @@
                                     <?php if ( $nm_globals['shop_search_header'] ) : ?>
                                     <li class="nm-mobile-menu-item-search menu-item">
                                         <form role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-                                            <input type="text" id="nm-mobile-menu-shop-search-input" class="nm-mobile-menu-search" autocomplete="off" value="" name="s" placeholder="<?php esc_attr_e( 'Search Products', 'woocommerce' ); ?>" />
+                                            <input type="text" id="nm-mobile-menu-shop-search-input" class="nm-mobile-menu-search" autocomplete="off" value="" name="s" placeholder="<?php esc_attr_e( 'Search products', 'woocommerce' ); ?>" />
                                             <span class="nm-font nm-font-search-alt"></span>
                                             <input type="hidden" name="post_type" value="product" />
                                         </form>

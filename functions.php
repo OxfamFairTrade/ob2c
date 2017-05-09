@@ -292,13 +292,13 @@
 				if ( is_array( $new_meta_value ) ) {
 					if ( count( array_diff( $new_meta_value, $old_meta_value ) ) > 0 ) {
 						// Schrijf weg in log per weeknummer (zonder leading zero's) 
-						$str = date( 'd/m/Y H:i:s' ) . "\t" . serialize($new_meta_value) . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+						$str = date( 'd/m/Y H:i:s' ) . "\t" . $meta_key . "\t" . serialize($new_meta_value) . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
 					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
 					}
 				} else {
 					if ( strcmp( $new_meta_value, $old_meta_value ) !== 0 ) {
 						// Schrijf weg in log per weeknummer (zonder leading zero's) 
-						$str = date( 'd/m/Y H:i:s' ) . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+						$str = date( 'd/m/Y H:i:s' ) . "\t" . $meta_key . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
 					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
 					}
 				}
@@ -1066,10 +1066,12 @@
 
 	// Handig filtertje om verzendcalculator uit te schakelen in shops met enkel afhaling: woocommerce_cart_ready_to_calc_shipping
 
-	// Verberg het verzendadres ook bij een postpuntlevering EENMAAL EEN ORDER GEPLAATST IS
+	// Verberg het verzendadres na het bestellen ook bij een postpuntlevering in de front-end
 	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_service_point', 10, 2 ); 
 	
 	function hide_shipping_address_on_service_point( $array, $instance ) {
+		// Afhalingen (local_pickup + local_pickup_plus) zitten al in de array
+		// Instances worden er afgeknipt bij de check dus laat gewoon achterwege
 		$array[] = 'service_point';
 		return $array; 
 	};
@@ -2796,13 +2798,13 @@
 	    return $query;
 	}
 
-	// Toon de bestsellers op zoekpagina's zonder resultaten 
+	// Toon de bestsellers op zoekpagina's zonder resultaten IETS MEER NAAR BOVEN VERPLAATSEN?
 	add_action( 'woocommerce_after_main_content', 'add_bestsellers' );
 
 	function add_bestsellers() {
 		global $wp_query;
 		if ( is_search() and $wp_query->found_posts == 0 ) {
-			echo "<br><h2 style='text-align: center;''><strong>Of werp een blik op onze bestsellers ...</strong></h2><hr/>".do_shortcode('[best_selling_products per_page="9" columns="3" orderby="rand"]');
+			echo do_shortcode('[vc_row css=".vc_custom_1487859300634{padding-top: 25px !important;padding-bottom: 25px !important;}"][vc_column][vc_text_separator title="<h2>Werp een blik op onze bestsellers ...</h2>" i_icon_fontawesome="fa fa-star" i_color="black" add_icon="true" css=".vc_custom_1487854440279{padding-bottom: 25px !important;}"][best_selling_products per_page="10" columns="5" orderby="rand"][/vc_column][/vc_row]');
 		}
 	}
 
