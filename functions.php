@@ -878,6 +878,10 @@
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
 				$descr .= 'Ten laatste beschikbaar vanaf '.strftime('%A %d/%m/%Y', $timestamp);
+				if ( floatval( $method->cost ) === 0.0 ) {
+					$label = str_replace( 'Afhaling', 'Gratis afhaling', $label );
+					$label .= ':'.wc_price(0);
+				}
 				break;
 			// Alle instances van thuislevering
 			case stristr( $method->id, 'flat_rate' ):
@@ -1121,19 +1125,20 @@
 		global $woocommerce;
 		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 
+		write_log("ORIGINELE RATES");
 		write_log($rates);
 
 		// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
 		$free_is_available = false;
-		foreach ( $rates as $rate_key => $rate ) {
-			if ( strpos( $rate_key, 'free_shipping' ) >= 0 ) {
-				$free_is_available = true;
+		foreach ( $rates as $rate ) {
+			if ( $rate->method_id === 'free_shipping' ) {
+				$free_home_available = true;
 				break;
 			}
 		}
 
-		if ( $free_is_available ) {
-			// Verberg alle betalende methodes indien er een gratis levering beschikbaar is
+		if ( $free_home_available ) {
+			// Verberg alle betalende methodes indien er een gratis thuislevering beschikbaar is
 			foreach ( $rates as $rate_key => $rate ) {
 				if ( floatval( $rate->cost ) > 0.0 ) {
 					unset( $rates[$rate_key] );
@@ -1141,20 +1146,20 @@
 			}
 		} else {
 			// Verberg alle gratis methodes die geen afhaling zijn
+			// IS DIT WEL NODIG?
 			foreach ( $rates as $rate_key => $rate ) {
-				if ( strpos( $rate_key, 'local_pickup' ) === false and floatval( $rate->cost ) === 0.0 ) {
+				if ( $rate->method_id !== 'local_pickup_plus' and floatval( $rate->cost ) === 0.0 ) {
 					unset( $rates[$rate_key] );
 				}
 			}
 		}
 
-		// Verhinder externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
-		// OPGELET: MANDJE VOLGT DE GEWICHTSINSTELLING VAN WOOCOMMERCE
+		// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
 		$cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
 		if ( $cart_weight > 29 ) {
 			foreach ( $rates as $rate_key => $rate ) {
 				// Blokkeer alle methodes behalve afhalingen
-				if ( strpos( $rate_key, 'local_pickup' ) >= 0 ) {
+				if ( $rate->method_id !== 'local_pickup_plus' ) {
 					unset( $rates[$rate_key] );
 				}
 			}
@@ -1171,38 +1176,38 @@
 		
 		$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
 		if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
+			// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
 			$cost = 5.7438;
-			// Ook belastingen moeten expliciet herberekend worden!
+			// Ook belastingen expliciet herberekenen!
 			$taxes = $cost*0.21;
 			$tax_id_free = $low_vat_rate->tax_rate_id;
 			$tax_id_cost = $standard_vat_rate->tax_rate_id;
 		} else {
 			$cost = 6.5566;
+			// Deze stap doen we vooral omwille van het wispelturige gedrag van deze tax
 			$taxes = $cost*0.06;
 			$tax_id_free = $standard_vat_rate->tax_rate_id;
 			$tax_id_cost = $low_vat_rate->tax_rate_id;
 		}
 		
-		// Overschrijf alle verzendprijzen (dus niet enkel in 'uitsluitend 21%'-geval -> te onzeker) indien betalende verzending
-		if ( ! $free_is_available ) {
+		// Overschrijf alle verzendprijzen (dus niet enkel in 'uitsluitend 21%'-geval -> te onzeker) indien betalende thuislevering
+		if ( ! $free_home_available ) {
 			foreach ( $rates as $rate_key => $rate ) {
 				switch ( $rate_key ) {
-					case stristr( $rate_key, 'flat_rate' ):
-						$rate->cost = $cost;
-						$rate->taxes[$tax_id_free] = 0.0;
-						$rate->taxes[$tax_id_cost] = $taxes;
-						break;
-					case stristr( $rate_key, 'service_point_shipping_method' ):
+					case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method' ) ):
 						$rate->cost = $cost;
 						$rate->taxes[$tax_id_free] = 0.0;
 						$rate->taxes[$tax_id_cost] = $taxes;
 						break;
 					default:
-						// Dit zijn de gratis pick-ups en eventueel thuisleveringen, gewoon niets mee doen
+						// Dit zijn de gratis pick-ups (+ eventueel thuisleveringen), niets mee doen
 						break;
 				}
 			}
 		}
+
+		write_log("BIJGEWERKTE RATES");
+		write_log($rates);
 
 		return $rates;
 	}

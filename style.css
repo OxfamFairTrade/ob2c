@@ -192,12 +192,12 @@ tr.shipping .woocommerce-Price-amount {
 	float: right;
 }
 
-/* Geef meer ruimte aan beschrijving promoactie */
+/* Geef meer ruimte aan beschrijving promoactie TH-BREEDTE MANIPULEREN WERKT NIET*/
 .cart-collaterals .shop_table .cart-discount > th {
-	width: 70%;
+	// width: 70%;
 }
 .cart-collaterals .shop_table .cart-discount > td {
-	width: 30%;
+	// width: 30%;
 }
 
 /* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het winkelmandje */
