@@ -1165,12 +1165,29 @@
 			}
 		} else {
 			// Verberg alle gratis methodes die geen afhaling zijn
-			// IS DIT WEL NODIG?
 			foreach ( $rates as $rate_key => $rate ) {
 				if ( $rate->method_id !== 'local_pickup_plus' and floatval( $rate->cost ) === 0.0 ) {
+					// IS DIT WEL NODIG, ZIJ WORDEN TOCH AL VERBORGEN DOOR WOOCOMMERCE?
+					// unset( $rates[$rate_key] );
+				}
+			}
+		}
+
+		// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
+		$forbidden_cnt = 0;
+		foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
+			if ( $item_value['data']->get_shipping_class() === 'fruitsap' ) {
+				$forbidden_cnt = $forbidden_cnt + $item_value['quantity'];
+			} 
+		}
+		if ( $forbidden_cnt > 0 ) {
+			foreach ( $rates as $rate_key => $rate ) {
+				// Blokkeer alle methodes behalve afhalingen
+				if ( $rate->method_id !== 'local_pickup_plus' ) {
 					unset( $rates[$rate_key] );
 				}
 			}
+			wc_add_notice( __( 'Je winkelmandje bevat '.( $forbidden_cnt - floor( $forbidden_cnt / 6 ) ).' grote flessen die te fragiel zijn om te worden verzonden. Kom je bestelling afhalen in de winkel, of verwijder dit fruitsap uit je winkelmandje zodat thuislevering weer beschikbaar wordt.', 'wc-oxfam' ), 'error' );
 		}
 
 		// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
@@ -1249,7 +1266,7 @@
 		if ( ! empty($posted['subscribe_digizine']) ) {
 			if ( $posted['subscribe_digizine'] !== 1 ) {
 				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het digizine, hoe kan dat nu?', 'woocommerce' ), 'error' );
-				wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'wc-oxfam' ), 'error' );
+				// wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'wc-oxfam' ), 'error' );
 			}
 		}
 
@@ -1276,15 +1293,17 @@
 
 	function check_plastic_empties_quantity( $empties, $product_item ) {
 		$empties_product = wc_get_product( $empties['id'] );
-		switch ( $empties_product->get_sku() ) {
-			case 'WLBS6M':
-				$empties['quantity'] = floor( intval($product_item['quantity']) / 6 );
-				break;
-			case 'WLBS24M':
-				$empties['quantity'] = floor( intval($product_item['quantity']) / 24 );
-				break;
+		// Zou niet mogen, maar toch even checken
+		if ( $empties_product !== false ) {
+			switch ( $empties_product->get_sku() ) {
+				case 'WLBS6M':
+					$empties['quantity'] = floor( intval($product_item['quantity']) / 6 );
+					break;
+				case 'WLBS24M':
+					$empties['quantity'] = floor( intval($product_item['quantity']) / 24 );
+					break;
+			}
 		}
-
 		return $empties;
 	}
 
