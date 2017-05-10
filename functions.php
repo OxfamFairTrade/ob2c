@@ -350,12 +350,23 @@
 	# WOOCOMMERCE #
 	###############
 
-	// Voeg een check toe of het winkelmandje geleegd moet worden
+	// Voeg allerlei checks toe net na het inladen van WordPress
 	add_action( 'init', 'woocommerce_clear_cart_url' );
+	
 	function woocommerce_clear_cart_url() {
-		if ( isset($_GET['emptyCart']) ) WC()->cart->empty_cart();
-		if ( isset($_GET['downloadSheet']) ) create_product_pdf( wc_get_product( 4621 ) );
-
+		if ( isset( $_GET['referralZip'] ) ) {
+			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar
+			WC()->customer->set_billing_postcode( intval( $_GET['referralZip'] ) );
+			WC()->customer->set_shipping_postcode( intval( $_GET['referralZip'] ) );
+			// Op basis van betere set_flemish_zip_codes() met alle Vlaamse $zip => $city
+			// WC()->customer->set_shipping_city( 'Oostende' );
+			// WC()->customer->save();
+			var_dump(WC()->customer);
+		}
+		
+		if ( isset( $_GET['emptyCart'] ) ) WC()->cart->empty_cart();
+		// if ( isset( $_GET['downloadSheet'] ) ) create_product_pdf( wc_get_product( 4621 ) );
+		
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
 		add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 100 );
 	}
@@ -2036,7 +2047,7 @@
 			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
 			foreach ( $partners as $term_id => $partner_name ) {
 				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-				if ( isset( $partner_info['quote'] ) and isset( $partner_info['quote_by'] ) ) {
+				if ( isset( $partner_info['quote'] ) or isset( $partner_info['quote_by'] ) ) {
 					$partners_with_quote[] = $partner_info;
 				}
 			}
