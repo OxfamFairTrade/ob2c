@@ -148,7 +148,7 @@ div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::bef
 }
 
 /* Toon een blokje bij producten die niet beschikbaar zijn voor thuislevering */
-li.product.product_shipping_class-fruitsap::after {
+li.product.product_shipping_class-glas::after {
 	color: white;
 	position: absolute;
 	top: 0em;
@@ -162,7 +162,7 @@ li.product.product_shipping_class-fruitsap::after {
 }
 
 /* Toon een bannertje op detailpagina's */
-div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product-gallery__wrapper::after {
+div.nm-single-product.product_shipping_class-glas figure.woocommerce-product-gallery__wrapper::after {
 	color: white;
 	position: absolute;
 	top: 0em;
@@ -176,13 +176,13 @@ div.nm-single-product.product_shipping_class-fruitsap figure.woocommerce-product
 }
 
 /* Indien beide klasses actief: plaats biobanner lager om overlap te vermijden */
-li.product.pa_bio-ja.product_shipping_class-fruitsap::before,
-div.nm-single-product.pa_bio-ja.product_shipping_class-fruitsap figure.woocommerce-product-gallery__wrapper::before {
+li.product.pa_bio-ja.product_shipping_class-glas::before,
+div.nm-single-product.pa_bio-ja.product_shipping_class-glas figure.woocommerce-product-gallery__wrapper::before {
 	top: 2.5em;
 }
 
 li.product.pa_bio-ja:hover::before,
-li.product.product_shipping_class-fruitsap:hover::after {
+li.product.product_shipping_class-glas:hover::after {
 	background-color: black;
 	transition: background-color 1s ease-out 0s;
 }

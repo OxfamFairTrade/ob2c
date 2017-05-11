@@ -1187,7 +1187,7 @@
 		// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
 		$forbidden_cnt = 0;
 		foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
-			if ( $item_value['data']->get_shipping_class() === 'fruitsap' ) {
+			if ( $item_value['data']->get_shipping_class() === 'glas' ) {
 				$forbidden_cnt = $forbidden_cnt + $item_value['quantity'];
 			} 
 		}
@@ -1559,12 +1559,12 @@
 	}
 
 	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
-	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-fruitsap
+	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-glas
 	add_action( 'woocommerce_single_product_summary', 'show_delivery_warning', 45 );
 
 	function show_delivery_warning() {
 		global $product;
-		if ( $product->get_shipping_class() === 'fruitsap' ) {
+		if ( $product->get_shipping_class() === 'glas' ) {
 			echo "Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: kleine glazen flesjes en tetrabrikken zijn wel beschikbaar voor thuislevering.";
 		}
 	}
@@ -1876,9 +1876,11 @@
 						<td><?php
 							$values = wc_get_product_terms( $product->get_id(), $attribute['name'], array( 'fields' => 'names' ) );
 							if ( in_array( $attribute['name'], $subattributes ) ) {
-								echo '<i>'.apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values ).'</i>';
+								echo $values;
+								// echo '<i>'.apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values ).'</i>';
 							} else {
-								echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
+								// echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
+								echo $values;
 							}
 						?></td>
 					</tr>
