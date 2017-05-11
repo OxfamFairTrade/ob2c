@@ -1856,7 +1856,7 @@
 			<table class="shop_attributes">
 
 				<?php foreach ( $attributes as $attribute ) :
-					$forbidden = array( 'pa_ompak', 'pa_ompak_ean', 'pa_pal_perlaag', 'pa_pal_lagen' );
+					$forbidden = array( 'pa_ompak', 'pa_ompak_ean', 'pa_pal_perlaag', 'pa_pal_lagen', 'pa_eenheid' );
 					// Logica omkeren: nu tonen we enkel de 'verborgen' attributen
 					if ( empty( $attribute['is_visible'] ) and ! in_array( $attribute['name'], $forbidden ) ) {
 						$has_row = true;
@@ -1876,11 +1876,11 @@
 						<td><?php
 							$values = wc_get_product_terms( $product->get_id(), $attribute['name'], array( 'fields' => 'names' ) );
 							if ( in_array( $attribute['name'], $subattributes ) ) {
-								echo $values;
-								// echo '<i>'.apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values ).'</i>';
+								// echo var_dump($values);
+								echo '<i>'.apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values ).'</i>';
 							} else {
-								// echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
-								echo $values;
+								echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
+								// echo var_dump($values);
 							}
 						?></td>
 					</tr>
@@ -2092,11 +2092,10 @@
 
 		// HOE BEPALEN WE MET WELKE PRODUCT-ID WE HIER BEZIG ZIJN? => GLOBAL WERKT
 		global $product;
-		$parts = explode( ' ', $product->get_attribute( 'pa_inhoud' ) );
-		if ( $parts[1] === 'cl' ) {
-			// Ofwel op basis van categorie: Wijn (hoofdcategorie) of +/- Spirits, Fruitsap, Sauzen en Olie & azijn (subcategorie)
+		$eh = $product->get_attribute( 'pa_eenheid' );
+		if ( $eh === 'L' ) {
 			$suffix = 'liter';
-		} else {
+		} elseif ( $eh === 'KG' ) {
 			$suffix = 'kilogram';
 		}
 

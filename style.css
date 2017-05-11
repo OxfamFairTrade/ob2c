@@ -36,6 +36,9 @@ button.nm-simple-add-to-cart-button {
 div.wc-force-sells {
 	margin: 1em 0;
 }
+div.wc-force-sells > p {
+	margin-bottom: 0;
+}
 div.wc-force-sells > ul {
 	margin-left: 30px;
 }

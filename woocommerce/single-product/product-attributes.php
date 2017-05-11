@@ -17,20 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <table class="shop_attributes">
-	<?php if ( $display_dimensions && $product->has_weight() ) : ?>
-		<tr>
-			<th><?php _e( 'Weight', 'woocommerce' ) ?></th>
-			<td class="product_weight"><?php echo esc_html( wc_format_weight( $product->get_weight() ) ); ?></td>
-		</tr>
-	<?php endif; ?>
-
-	<?php if ( $display_dimensions && $product->has_dimensions() ) : ?>
-		<tr>
-			<th><?php _e( 'Dimensions', 'woocommerce' ) ?></th>
-			<td class="product_dimensions"><?php echo esc_html( wc_format_dimensions( $product->get_dimensions( false ) ) ); ?></td>
-		</tr>
-	<?php endif; ?>
-
 	<?php foreach ( $attributes as $attribute ) : ?>
 		<tr>
 			<th><?php echo wc_attribute_label( $attribute->get_name() ); ?></th>
