@@ -1,10 +1,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce Network\n"
-"POT-Creation-Date: 2017-02-03 23:05+0200\n"
-"PO-Revision-Date: 2017-05-09 22:49+0200\n"
+"POT-Creation-Date: 2017-05-12 19:01+0200\n"
+"PO-Revision-Date: 2017-05-13 21:25+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
+"Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,602 +13,766 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: nl_NL\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../woocommerce-multistore.php:67
-msgid "WooCommerce Multistore requires WordPress MultiSite environment"
-msgstr ""
-
-#: ../woocommerce-multistore.php:73
-msgid "WooCommerce Multistore requires"
-msgstr ""
-
-#: ../woocommerce-multistore.php:73
-msgid "to be installed"
-msgstr ""
-
-#: ../include/class.admin.export.php:26
-msgid "Orders Export"
-msgstr "Exporteren"
-
-#: ../include/class.admin.export.php:148
-msgid "WooCommerce Orders Export"
-msgstr "Exporteer alle bestellingen uit het netwerk"
-
-#: ../include/class.admin.network-orders.php:34
-msgid "WooCommerce"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:35
-msgid "Orders"
-msgstr "Bestellingen"
-
-#: ../include/class.admin.network-orders.php:94
-msgid "Orders per Page"
-msgstr "Bestellingen per pagina"
-
-#: ../include/class.admin.network-orders.php:487
-#: ../include/class.admin.network-orders.php:503
-#: ../include/class.admin.network-products.php:74
-msgid "Select All"
-msgstr "Selecteer alles"
-
-#: ../include/class.admin.network-orders.php:488
-#: ../include/class.admin.network-orders.php:504
-msgid "Status"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:489
-#: ../include/class.admin.network-orders.php:505
-msgid "Blog Title"
-msgstr "Subsite"
-
-#: ../include/class.admin.network-orders.php:490
-#: ../include/class.admin.network-orders.php:506
-msgid "Order"
-msgstr "Bestelling"
-
-#: ../include/class.admin.network-orders.php:491
-#: ../include/class.admin.network-orders.php:507
-msgid "Purchased"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:492
-#: ../include/class.admin.network-orders.php:508
-msgid "Ship to"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:493
-#: ../include/class.admin.network-orders.php:509
-msgid "Customer Message"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:494
-#: ../include/class.admin.network-orders.php:510
-msgid "Order Notes"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:495
-#: ../include/class.admin.network-orders.php:511
-#: ../include/class.admin.network-products.php:103
-#: ../include/class.admin.network-products.php:138
-msgid "Date"
-msgstr "Datum"
-
-#: ../include/class.admin.network-orders.php:496
-#: ../include/class.admin.network-orders.php:512
-msgid "Total"
-msgstr "Totaal"
-
-#: ../include/class.admin.network-orders.php:497
-#: ../include/class.admin.network-orders.php:513
-msgid "Actions"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:594
-#: ../include/class.admin.network-products.php:1237
-msgid "Unpublished"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:596
-msgid "Y/m/d g:i:s A"
-msgstr "d/m/Y H:i:s"
-
-#: ../include/class.admin.network-orders.php:599
-#: ../include/class.admin.network-products.php:1249
-msgid "Y/m/d"
-msgstr "d/m/Y"
-
-#: ../include/class.admin.network-orders.php:608
-#: ../include/class.admin.network-orders.php:674
-#: ../include/class.admin.network-orders.php:678
-#: ../include/class.options.php:75 ../include/class.options.php:87
-msgid "Yes"
-msgstr "Ja"
-
-#: ../include/class.admin.network-orders.php:649
-#: ../include/class.admin.network-orders.php:690
-msgid "Via"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:698
-msgid "Billing:"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:702
-msgid "Tel:"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:727
-msgid "Guest"
-msgstr "Gast"
-
-#: ../include/class.admin.network-orders.php:731
-#, php-format
-msgid "%s by %s"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:753
-msgid "Processing"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:761
-msgid "Complete"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:768
-#: ../include/class.admin.network-products.php:1087
-#: ../include/class.admin.network-products.php:1160
-msgid "View"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:834
-#: ../include/class.admin.network-products.php:275
-msgid "Select Page"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:885
-#: ../include/class.admin.network-products.php:531
-msgid "Select bulk action"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:888
-#: ../include/class.admin.network-products.php:534
-msgid "Bulk Actions"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:894
-#: ../include/class.admin.network-products.php:541
-msgid "Restore"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:895
-#: ../include/class.admin.network-products.php:542
-msgid "Delete Permanently"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:897
-#: ../include/class.admin.network-products.php:544
-msgid "Move to Trash"
-msgstr "Verplaats naar prullenmand"
-
-#: ../include/class.admin.network-orders.php:899
-msgid "Mark processing"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:900
-msgid "Mark on-hold"
-msgstr ""
-
-#: ../include/class.admin.network-orders.php:901
-msgid "Mark complete"
-msgstr "Markeer als afgerond"
-
-#: ../include/class.admin.network-products.php:79
-#: ../include/class.admin.network-products.php:131
-#: ../include/admin/class-wc-admin-setup-wizard.php:59
-#: ../include/admin/class-wc-admin-setup-wizard.php:221
-msgid "Network Sites"
-msgstr "Subsites"
-
-#: ../include/class.admin.network-products.php:82
-#: ../include/class.admin.network-products.php:132
-msgid "Image"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:85
-msgid "Name"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:91
-#: ../include/class.admin.network-products.php:134
-msgid "Stock"
-msgstr "Voorraad"
-
-#: ../include/class.admin.network-products.php:94
-#: ../include/class.admin.network-products.php:135
-msgid "Price"
-msgstr "Prijs"
-
-#: ../include/class.admin.network-products.php:97
-#: ../include/class.admin.network-products.php:136
-msgid "Categories"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:100
-#: ../include/class.admin.network-products.php:137
-msgid "Type"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:149
-msgid "Products"
-msgstr "Producten"
-
-#: ../include/class.admin.network-products.php:213
-msgid "Products per Page"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:535
-#: ../include/class.admin.network-products.php:1076
-#: ../include/class.admin.network-products.php:1151
-msgid "Edit"
-msgstr "Bewerken"
-
-#: ../include/class.admin.network-products.php:1076
-#: ../include/class.admin.network-products.php:1151
-msgid "Edit this item"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1078
-msgid "Quick Edit"
-msgstr "Snel bewerken"
-
-#: ../include/class.admin.network-products.php:1085
-#: ../include/class.admin.network-products.php:1158
-#, php-format
-msgid "Preview &#8220;%s&#8221;"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1085
-#: ../include/class.admin.network-products.php:1158
-msgid "Preview"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1087
-#: ../include/class.admin.network-products.php:1160
-#, php-format
-msgid "View &#8220;%s&#8221;"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1185
-msgid "Grouped"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1187
-msgid "External/Affiliate"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1191
-msgid "Virtual"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1193
-msgid "Downloadable"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1195
-msgid "Simple"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1199
-msgid "Variable"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1224
-msgid "In stock"
-msgstr "Op voorraad"
-
-#: ../include/class.admin.network-products.php:1226
-msgid "Out of stock"
-msgstr "Niet op voorraad"
-
-#: ../include/class.admin.network-products.php:1240
-msgid "Y/m/d g:i:s a"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1247
-#, php-format
-msgid "%s ago"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1277
-msgid "Published"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1280
-msgid "Missed schedule"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1282
-msgid "Scheduled"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1284
-msgid "Last Modified"
-msgstr ""
-
-#: ../include/class.admin.network-products.php:1380
-msgid "Cancel"
-msgstr "Annuleer"
-
-#: ../include/class.admin.network-products.php:1384
-#: ../include/class.admin.network-products.php:1387
-#: ../include/admin/class-wc-admin-setup-wizard.php:64
-#: ../include/admin/class-wc-admin-setup-wizard.php:297
-msgid "Update"
-msgstr "Update"
-
-#: ../include/class.admin.product.php:255
-msgid "Child product, can't be re-published to other sites"
-msgstr ""
-
-#: ../include/class.admin.product.php:271
-msgid "If checked, this product will inherit any parent updates"
-msgstr ""
-
-#: ../include/class.admin.product.php:281
-#: ../include/class.admin.product.php:408
-#: ../include/admin/views/html-bulk-edit-product.php:69
-#: ../include/admin/views/html-quick-edit-product.php:69
-msgid "If checked, any stock change will syncronize across product tree."
-msgstr ""
-
-#: ../include/class.admin.product.php:297
-msgid "Toggle all Sites"
-msgstr "Zet alles aan/uit"
-
-#: ../include/class.admin.product.php:307
-msgid "Toggle all Child product inherit Parent changes"
-msgstr ""
-
-#: ../include/class.admin.product.php:321
-msgid "Publish to"
-msgstr "Publiceer naar"
-
-#: ../include/class.admin.product.php:346
-#: ../include/admin/views/html-quick-edit-product.php:54
-msgid ""
-"<b>Warning:</b> By unselecting this shop the product is unasigned, but not "
-"deleted from the shop, witch should be done manually."
-msgstr ""
-
-#: ../include/class.admin.product.php:395
-#: ../include/admin/views/html-bulk-edit-product.php:62
-#: ../include/admin/views/html-quick-edit-product.php:62
-msgid "Child product inherit Parent changes"
-msgstr ""
-
-#: ../include/class.admin.product.php:430
-msgid "MultiStore"
-msgstr ""
-
-#: ../include/class.options.php:65
-msgid "General Settings"
-msgstr ""
-
-#: ../include/class.options.php:76 ../include/class.options.php:88
-msgid "No"
-msgstr "Nee"
-
-#: ../include/class.options.php:80
-msgid "Always maintain stock synchronization for re-published products"
-msgstr ""
-
-#: ../include/class.options.php:80
-msgid ""
-"Stock updates either manually or checkout will also change other shops that "
-"have the product."
-msgstr ""
-
-#: ../include/class.options.php:92
-msgid "Use sequential Order Numbers across multisite environment"
-msgstr ""
-
-#: ../include/class.options.php:99
-msgid "Super Admin"
-msgstr ""
-
-#: ../include/class.options.php:100
-msgid "Administrator"
-msgstr ""
-
-#: ../include/class.options.php:101
-msgid "Shop Manager"
-msgstr ""
-
-#: ../include/class.options.php:105
-msgid "Minimum user role to allow MultiStore Publish"
-msgstr ""
-
-#: ../include/class.options.php:113
-msgid "Save Settings"
-msgstr ""
-
-#: ../include/class.options.php:150
-msgid "Settings Saved"
-msgstr ""
-
-#: ../include/class.options.php:214
-msgid "WooCommerce Multistore plugin is inactive, please enter your"
-msgstr ""
-
-#: ../include/class.options.php:214
-msgid "Licence Key"
-msgstr ""
-
-#: ../include/class.options.php:242 ../include/class.options.php:324
-msgid "There was a problem connecting to "
-msgstr ""
-
-#: ../include/class.options.php:280
-msgid "There was a problem deactivating the licence: "
-msgstr ""
-
-#: ../include/class.options.php:287 ../include/class.options.php:357
-msgid "There was a problem with the data block received from "
-msgstr ""
-
-#: ../include/class.options.php:308
-msgid "Licence Key can't be empty"
-msgstr ""
-
-#: ../include/class.options.php:351
-msgid "There was a problem activating the licence: "
-msgstr ""
-
-#: ../include/class.options.php:375
-msgid "WooCommerce Multistore"
-msgstr ""
-
-#: ../include/class.options.php:387 ../include/class.options.php:432
-msgid "License Key"
-msgstr "Licentie"
-
-#: ../include/class.options.php:392 ../include/class.options.php:476
-msgid ""
-"Enter the License Key you got when bought this product. If you lost the key, "
-"you can always retrieve it from"
-msgstr ""
-
-#: ../include/class.options.php:392 ../include/class.options.php:393
-#: ../include/class.options.php:476 ../include/class.options.php:477
-msgid "My Account"
-msgstr "Mijn account"
-
-#: ../include/class.options.php:393 ../include/class.options.php:477
-msgid "More keys can be generate from"
-msgstr ""
-
-#: ../include/class.options.php:402
-msgid "Save"
-msgstr "Opslaan"
-
-#: ../include/class.options.php:424 ../include/class.options.php:470
-msgid "Software License"
-msgstr ""
-
-#: ../include/class.options.php:447
-msgid "You can generate more keys from"
-msgstr ""
-
-#: ../include/class.options.php:474
-msgid "License Key Required"
-msgstr ""
-
-#: ../include/class.updater.php:72
-msgid "An error occour when try to identify the pluguin."
-msgstr ""
-
-#: ../include/class.updater.php:72 ../include/class.updater.php:78
-msgid "Try again"
-msgstr ""
-
-#: ../include/class.updater.php:78
-msgid "An Unexpected HTTP Error occurred during the API request."
-msgstr ""
-
-#: ../include/admin/class-wc-admin-setup-wizard.php:54
+#: include/admin/class-wc-admin-setup-wizard.php:54
 msgid "Introduction"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:69
+#: include/admin/class-wc-admin-setup-wizard.php:59
+#: include/admin/class-wc-admin-setup-wizard.php:225
+#: include/class.admin.network-products.php:97
+#: include/class.admin.network-products.php:150
+msgid "Network Sites"
+msgstr "Subsites"
+
+#: include/admin/class-wc-admin-setup-wizard.php:64
+#: include/admin/class-wc-admin-setup-wizard.php:301
+#: include/admin/views/html-bulk-distribution-product.php:102
+#: include/class.admin.network-products.php:1482
+#: include/class.admin.network-products.php:1485
+msgid "Update"
+msgstr "Update"
+
+#: include/admin/class-wc-admin-setup-wizard.php:69
 msgid "Ready!"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:124
+#: include/admin/class-wc-admin-setup-wizard.php:126
 msgid "WooCommerce &rsaquo; Setup Wizard"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:140
+#: include/admin/class-wc-admin-setup-wizard.php:142
 msgid "Return to the WordPress Dashboard"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:203
+#: include/admin/class-wc-admin-setup-wizard.php:207
 msgid "Welcome to WooCommerce Multistore!"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:204
+#: include/admin/class-wc-admin-setup-wizard.php:208
 msgid ""
 "Thank you for choosing WooCommerce Multistore to power your online "
 "WooCommerce store! This quick setup wizard will make sure that all of your "
 "multisite stores are ready for use with this plugin."
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:205
+#: include/admin/class-wc-admin-setup-wizard.php:209
 msgid ""
 "No time right now? If you don't want to go through the wizard, you can skip "
 "and return to the WordPress dashboard. Come back anytime if you change your "
 "mind!"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:207
+#: include/admin/class-wc-admin-setup-wizard.php:211
 msgid "Let's Go!"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:208
+#: include/admin/class-wc-admin-setup-wizard.php:212
 msgid "Not right now"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:223
+#: include/admin/class-wc-admin-setup-wizard.php:227
 msgid ""
 "The folowing Sites has been found to use WooCommerce store framework and "
 "will be updated"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:251
+#: include/admin/class-wc-admin-setup-wizard.php:255
 msgid ""
 "Once updated, the data become available to be used with WooCommerce "
 "Multistore plugin."
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:355
+#: include/admin/class-wc-admin-setup-wizard.php:258
+#: include/admin/class-wc-admin-setup-wizard.php:310
+msgid "Continue"
+msgstr ""
+
+#: include/admin/class-wc-admin-setup-wizard.php:359
 msgid "Your site is Ready for use with WooCommerce Multistore!"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:360
+#: include/admin/class-wc-admin-setup-wizard.php:364
 msgid "Next Steps"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:362
+#: include/admin/class-wc-admin-setup-wizard.php:366
 msgid "Multisite Products Dashboard!"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:366
+#: include/admin/class-wc-admin-setup-wizard.php:370
 msgid "Learn More"
 msgstr ""
 
-#: ../include/admin/class-wc-admin-setup-wizard.php:368
+#: include/admin/class-wc-admin-setup-wizard.php:372
 msgid "Read more about getting started"
 msgstr ""
 
-#: ../include/admin/views/html-bulk-edit-product.php:15
-#: ../include/admin/views/html-quick-edit-product.php:15
+#: include/admin/views/html-bulk-distribution-product.php:28
+#: include/admin/views/html-bulk-edit-product.php:15
+#: include/admin/views/html-quick-edit-product.php:15
 msgid "Multisite - Publish to"
 msgstr "Publiceer naar"
 
-#: ../include/admin/views/html-notice-update.php:12
+#: include/admin/views/html-bulk-distribution-product.php:75
+#: include/admin/views/html-bulk-edit-product.php:62
+#: include/admin/views/html-quick-edit-product.php:63
+#: include/class.admin.product.php:474
+msgid "Child product inherit Parent changes"
+msgstr ""
+
+#: include/admin/views/html-bulk-distribution-product.php:82
+#: include/admin/views/html-bulk-edit-product.php:69
+#: include/admin/views/html-quick-edit-product.php:70
+#: include/class.admin.product.php:350 include/class.admin.product.php:487
+msgid "If checked, any stock change will syncronize across product tree."
+msgstr ""
+
+#: include/admin/views/html-bulk-distribution-product.php:101
+#: include/class.admin.network-products.php:1478
+msgid "Cancel"
+msgstr "Annuleer"
+
+#: include/admin/views/html-notice-setup.php:12
 msgid ""
 "<strong>WooCommerce Multistore Data Update Required</strong> &#8211; "
 "You&lsquo;re almost ready."
 msgstr ""
 
-#: ../include/admin/views/html-notice-update.php:13
+#: include/admin/views/html-notice-setup.php:13
+#: include/admin/views/html-notice-update.php:21
 msgid "Run the updater"
 msgstr ""
 
-#: ../include/admin/views/html-notice-update.php:17
+#: include/admin/views/html-notice-setup.php:17
+#: include/admin/views/html-notice-update.php:25
 msgid ""
 "It is strongly recommended that you backup your database before proceeding. "
 "Are you sure you wish to run the updater now?"
+msgstr ""
+
+#: include/admin/views/html-notice-update.php:12
+msgid "WooCommerce Multistore Data Update"
+msgstr ""
+
+#: include/admin/views/html-notice-update.php:12
+msgid "We need to update your store's to the latest code version."
+msgstr ""
+
+#: include/admin/views/html-notice-update.php:19
+msgid ""
+"The update process didn't completed last time, this require more time. Just "
+"click again the update button and the process will resume."
+msgstr ""
+
+#: include/admin/views/html-quick-edit-product.php:55
+#: include/class.admin.product.php:425
+msgid ""
+"<b>Warning:</b> By unselecting this shop the product is unasigned, but not "
+"deleted from the shop, witch should be done manually."
+msgstr ""
+
+#: include/class.admin.export.php:26
+msgid "Orders Export"
+msgstr "Exporteren"
+
+#: include/class.admin.export.php:148
+msgid "WooCommerce Orders Export"
+msgstr "Exporteer alle bestellingen uit het netwerk"
+
+#: include/class.admin.network-orders.php:34
+msgid "WooCommerce"
+msgstr ""
+
+#: include/class.admin.network-orders.php:35
+msgid "Orders"
+msgstr "Bestellingen"
+
+#: include/class.admin.network-orders.php:96
+msgid "Orders per Page"
+msgstr "Bestellingen per pagina"
+
+#: include/class.admin.network-orders.php:285
+#: include/class.admin.network-orders.php:317
+#: include/class.admin.network-orders.php:342
+#: include/class.admin.network-orders.php:367
+#: include/class.admin.network-orders.php:392
+#: include/class.admin.network-orders.php:418
+#: include/class.admin.network-products.php:645
+#: include/class.admin.network-products.php:678
+#: include/class.admin.network-products.php:702
+#, php-format
+msgid "1 post"
+msgid_plural "%s posts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/class.admin.network-orders.php:512
+#: include/class.admin.network-orders.php:528
+#: include/class.admin.network-products.php:92
+msgid "Select All"
+msgstr "Selecteer alles"
+
+#: include/class.admin.network-orders.php:513
+#: include/class.admin.network-orders.php:529
+msgid "Status"
+msgstr ""
+
+#: include/class.admin.network-orders.php:514
+#: include/class.admin.network-orders.php:530
+msgid "Blog Title"
+msgstr "Subsite"
+
+#: include/class.admin.network-orders.php:515
+#: include/class.admin.network-orders.php:531
+msgid "Order"
+msgstr "Bestelling"
+
+#: include/class.admin.network-orders.php:516
+#: include/class.admin.network-orders.php:532
+msgid "Purchased"
+msgstr ""
+
+#: include/class.admin.network-orders.php:517
+#: include/class.admin.network-orders.php:533
+msgid "Ship to"
+msgstr ""
+
+#: include/class.admin.network-orders.php:518
+#: include/class.admin.network-orders.php:534
+msgid "Customer Message"
+msgstr ""
+
+#: include/class.admin.network-orders.php:519
+#: include/class.admin.network-orders.php:535
+msgid "Order Notes"
+msgstr ""
+
+#: include/class.admin.network-orders.php:520
+#: include/class.admin.network-orders.php:536
+#: include/class.admin.network-products.php:121
+#: include/class.admin.network-products.php:157
+msgid "Date"
+msgstr "Datum"
+
+#: include/class.admin.network-orders.php:521
+#: include/class.admin.network-orders.php:537
+msgid "Total"
+msgstr "Totaal"
+
+#: include/class.admin.network-orders.php:522
+#: include/class.admin.network-orders.php:538
+msgid "Actions"
+msgstr ""
+
+#: include/class.admin.network-orders.php:619
+#: include/class.admin.network-products.php:1335
+msgid "Unpublished"
+msgstr ""
+
+#: include/class.admin.network-orders.php:621
+msgid "Y/m/d g:i:s A"
+msgstr "d/m/Y H:i:s"
+
+#: include/class.admin.network-orders.php:624
+#: include/class.admin.network-products.php:1347
+msgid "Y/m/d"
+msgstr "d/m/Y"
+
+#: include/class.admin.network-orders.php:633
+#: include/class.admin.network-orders.php:699
+#: include/class.admin.network-orders.php:703 include/class.options.php:75
+#: include/class.options.php:87 include/class.options.php:146
+#: include/class.options.php:157
+msgid "Yes"
+msgstr "Ja"
+
+#: include/class.admin.network-orders.php:640
+#, php-format
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/class.admin.network-orders.php:674
+#: include/class.admin.network-orders.php:715
+msgid "Via"
+msgstr ""
+
+#: include/class.admin.network-orders.php:701
+#, php-format
+msgid "plus %d other note"
+msgid_plural "plus %d other notes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/class.admin.network-orders.php:701
+#, php-format
+msgid "%d note"
+msgid_plural "%d notes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/class.admin.network-orders.php:723
+msgid "Billing:"
+msgstr ""
+
+#: include/class.admin.network-orders.php:727
+msgid "Tel:"
+msgstr ""
+
+#: include/class.admin.network-orders.php:752
+msgid "Guest"
+msgstr "Gast"
+
+#: include/class.admin.network-orders.php:756
+#, php-format
+msgid "%s by %s"
+msgstr ""
+
+#: include/class.admin.network-orders.php:778
+msgid "Processing"
+msgstr ""
+
+#: include/class.admin.network-orders.php:786
+msgid "Complete"
+msgstr ""
+
+#: include/class.admin.network-orders.php:793
+#: include/class.admin.network-products.php:1170
+#: include/class.admin.network-products.php:1258
+msgid "View"
+msgstr ""
+
+#: include/class.admin.network-orders.php:817
+#: include/class.admin.network-products.php:253
+#, php-format
+msgid "1 item"
+msgid_plural "%s items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/class.admin.network-orders.php:840
+#: include/class.admin.network-products.php:276
+msgid "Go to the first page"
+msgstr ""
+
+#: include/class.admin.network-orders.php:847
+#: include/class.admin.network-products.php:283
+msgid "Go to the previous page"
+msgstr ""
+
+#: include/class.admin.network-orders.php:859
+#: include/class.admin.network-products.php:295
+msgid "Select Page"
+msgstr ""
+
+#: include/class.admin.network-orders.php:860
+#: include/class.admin.network-products.php:296
+msgid "Current page"
+msgstr ""
+
+#: include/class.admin.network-orders.php:867
+#: include/class.admin.network-products.php:303
+#, php-format
+msgctxt "paging"
+msgid "%1$s of %2$s"
+msgstr ""
+
+#: include/class.admin.network-orders.php:871
+#: include/class.admin.network-products.php:307
+msgid "Go to the next page"
+msgstr ""
+
+#: include/class.admin.network-orders.php:878
+#: include/class.admin.network-products.php:314
+msgid "Go to the last page"
+msgstr ""
+
+#: include/class.admin.network-orders.php:910
+#: include/class.admin.network-products.php:579
+msgid "Select bulk action"
+msgstr ""
+
+#: include/class.admin.network-orders.php:913
+#: include/class.admin.network-products.php:582
+msgid "Bulk Actions"
+msgstr ""
+
+#: include/class.admin.network-orders.php:919
+#: include/class.admin.network-products.php:589
+msgid "Restore"
+msgstr ""
+
+#: include/class.admin.network-orders.php:920
+#: include/class.admin.network-products.php:590
+msgid "Delete Permanently"
+msgstr ""
+
+#: include/class.admin.network-orders.php:922
+#: include/class.admin.network-products.php:592
+msgid "Move to Trash"
+msgstr "Verplaats naar prullenmand"
+
+#: include/class.admin.network-orders.php:924
+msgid "Mark processing"
+msgstr ""
+
+#: include/class.admin.network-orders.php:925
+msgid "Mark on-hold"
+msgstr ""
+
+#: include/class.admin.network-orders.php:926
+msgid "Mark complete"
+msgstr "Markeer als afgerond"
+
+#: include/class.admin.network-products.php:100
+#: include/class.admin.network-products.php:151
+msgid "Image"
+msgstr ""
+
+#: include/class.admin.network-products.php:103
+msgid "Name"
+msgstr ""
+
+#: include/class.admin.network-products.php:109
+#: include/class.admin.network-products.php:153
+msgid "Stock"
+msgstr "Voorraad"
+
+#: include/class.admin.network-products.php:112
+#: include/class.admin.network-products.php:154
+msgid "Price"
+msgstr "Prijs"
+
+#: include/class.admin.network-products.php:115
+#: include/class.admin.network-products.php:155
+msgid "Categories"
+msgstr ""
+
+#: include/class.admin.network-products.php:118
+#: include/class.admin.network-products.php:156
+msgid "Type"
+msgstr ""
+
+#: include/class.admin.network-products.php:168
+msgid "Products"
+msgstr "Producten"
+
+#: include/class.admin.network-products.php:233
+msgid "Products per Page"
+msgstr ""
+
+#: include/class.admin.network-products.php:583
+#: include/class.admin.network-products.php:1159
+#: include/class.admin.network-products.php:1249
+msgid "Edit"
+msgstr "Bewerken"
+
+#: include/class.admin.network-products.php:1159
+#: include/class.admin.network-products.php:1249
+msgid "Edit this item"
+msgstr ""
+
+#: include/class.admin.network-products.php:1161
+msgid "Quick Edit"
+msgstr "Snel bewerken"
+
+#: include/class.admin.network-products.php:1168
+#: include/class.admin.network-products.php:1256
+#, php-format
+msgid "Preview &#8220;%s&#8221;"
+msgstr ""
+
+#: include/class.admin.network-products.php:1168
+#: include/class.admin.network-products.php:1256
+msgid "Preview"
+msgstr ""
+
+#: include/class.admin.network-products.php:1170
+#: include/class.admin.network-products.php:1258
+#, php-format
+msgid "View &#8220;%s&#8221;"
+msgstr ""
+
+#: include/class.admin.network-products.php:1283
+msgid "Grouped"
+msgstr ""
+
+#: include/class.admin.network-products.php:1285
+msgid "External/Affiliate"
+msgstr ""
+
+#: include/class.admin.network-products.php:1289
+msgid "Virtual"
+msgstr ""
+
+#: include/class.admin.network-products.php:1291
+msgid "Downloadable"
+msgstr ""
+
+#: include/class.admin.network-products.php:1293
+msgid "Simple"
+msgstr ""
+
+#: include/class.admin.network-products.php:1297
+msgid "Variable"
+msgstr ""
+
+#: include/class.admin.network-products.php:1322
+msgid "In stock"
+msgstr "Op voorraad"
+
+#: include/class.admin.network-products.php:1324
+msgid "Out of stock"
+msgstr "Niet op voorraad"
+
+#: include/class.admin.network-products.php:1338
+msgid "Y/m/d g:i:s a"
+msgstr ""
+
+#: include/class.admin.network-products.php:1345
+#, php-format
+msgid "%s ago"
+msgstr ""
+
+#: include/class.admin.network-products.php:1375
+msgid "Published"
+msgstr ""
+
+#: include/class.admin.network-products.php:1378
+msgid "Missed schedule"
+msgstr ""
+
+#: include/class.admin.network-products.php:1380
+msgid "Scheduled"
+msgstr ""
+
+#: include/class.admin.network-products.php:1382
+msgid "Last Modified"
+msgstr ""
+
+#: include/class.admin.php:88
+msgid "Upgrade"
+msgstr ""
+
+#: include/class.admin.product.php:252
+msgid "Bulk Distribution"
+msgstr ""
+
+#: include/class.admin.product.php:323
+msgid "Child product, can't be re-published to other sites"
+msgstr ""
+
+#: include/class.admin.product.php:340
+msgid "If checked, this product will inherit any parent updates"
+msgstr ""
+
+#: include/class.admin.product.php:366
+msgid "Toggle all Sites"
+msgstr "Zet alles aan/uit"
+
+#: include/class.admin.product.php:376
+msgid "Toggle all Child product inherit Parent changes"
+msgstr ""
+
+#: include/class.admin.product.php:390
+msgid "Publish to"
+msgstr "Publiceer naar"
+
+#: include/class.admin.product.php:509
+msgid "MultiStore"
+msgstr ""
+
+#: include/class.ajax.php:260
+#, fuzzy
+#| msgid "Products"
+msgid "Product "
+msgstr "Producten"
+
+#: include/class.data-update.php:50
+msgid "Update successfully completed."
+msgstr ""
+
+#: include/class.functions.php:91 include/class.functions.php:108
+msgctxt "Order status"
+msgid "Reklamasjon"
+msgstr ""
+
+#: include/class.functions.php:96
+#, php-format
+msgid "Reklamasjon <span class=\"count\">(%s)</span>"
+msgid_plural "Reklamasjon <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: include/class.options.php:65
+msgid "General Settings"
+msgstr ""
+
+#: include/class.options.php:76 include/class.options.php:88
+#: include/class.options.php:147 include/class.options.php:158
+msgid "No"
+msgstr "Nee"
+
+#: include/class.options.php:80
+msgid "Always maintain stock synchronization for re-published products"
+msgstr ""
+
+#: include/class.options.php:80
+msgid ""
+"Stock updates either manually or checkout will also change other shops that "
+"have the product."
+msgstr ""
+
+#: include/class.options.php:92
+msgid "Use sequential Order Numbers across multisite environment"
+msgstr ""
+
+#: include/class.options.php:99
+msgid "Super Admin"
+msgstr ""
+
+#: include/class.options.php:100
+msgid "Administrator"
+msgstr ""
+
+#: include/class.options.php:101
+msgid "Shop Manager"
+msgstr ""
+
+#: include/class.options.php:105
+msgid "Minimum user role to allow MultiStore Publish"
+msgstr ""
+
+#: include/class.options.php:113
+msgid "Child product inherit Parent changes - Fields control"
+msgstr ""
+
+#: include/class.options.php:151
+msgid "Child product inherit title changes"
+msgstr ""
+
+#: include/class.options.php:151 include/class.options.php:162
+msgid ""
+"This works in conjunction with <b>Child product inherit Parent changes</b> "
+"being active on individual product page."
+msgstr ""
+
+#: include/class.options.php:162
+msgid "Child product inherit price changes"
+msgstr ""
+
+#: include/class.options.php:178
+msgid "Save Settings"
+msgstr ""
+
+#: include/class.options.php:220
+msgid "Settings Saved"
+msgstr ""
+
+#: include/class.options.php:284
+msgid "WooCommerce Multistore plugin is inactive, please enter your"
+msgstr ""
+
+#: include/class.options.php:284
+msgid "Licence Key"
+msgstr ""
+
+#: include/class.options.php:312 include/class.options.php:394
+msgid "There was a problem connecting to "
+msgstr ""
+
+#: include/class.options.php:350
+msgid "There was a problem deactivating the licence: "
+msgstr ""
+
+#: include/class.options.php:357 include/class.options.php:427
+msgid "There was a problem with the data block received from "
+msgstr ""
+
+#: include/class.options.php:378
+msgid "Licence Key can't be empty"
+msgstr ""
+
+#: include/class.options.php:421
+msgid "There was a problem activating the licence: "
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+#. Description of the plugin/theme
+#: include/class.options.php:445
+msgid "WooCommerce Multistore"
+msgstr ""
+
+#: include/class.options.php:457 include/class.options.php:502
+msgid "License Key"
+msgstr "Licentie"
+
+#: include/class.options.php:462 include/class.options.php:546
+msgid ""
+"Enter the License Key you got when bought this product. If you lost the key, "
+"you can always retrieve it from"
+msgstr ""
+
+#: include/class.options.php:462 include/class.options.php:463
+#: include/class.options.php:546 include/class.options.php:547
+msgid "My Account"
+msgstr "Mijn account"
+
+#: include/class.options.php:463 include/class.options.php:547
+msgid "More keys can be generate from"
+msgstr ""
+
+#: include/class.options.php:472
+msgid "Save"
+msgstr "Opslaan"
+
+#: include/class.options.php:494 include/class.options.php:540
+msgid "Software License"
+msgstr ""
+
+#: include/class.options.php:517
+msgid "You can generate more keys from"
+msgstr ""
+
+#: include/class.options.php:544
+msgid "License Key Required"
+msgstr ""
+
+#: include/class.updater.php:72
+msgid "An error occour when try to identify the pluguin."
+msgstr ""
+
+#: include/class.updater.php:72 include/class.updater.php:78
+msgid "Try again"
+msgstr ""
+
+#: include/class.updater.php:78
+msgid "An Unexpected HTTP Error occurred during the API request."
+msgstr ""
+
+#: include/updates/update-1.5.1.php:3
+msgid "Applying update 1.5.1."
+msgstr ""
+
+#: woocommerce-multistore.php:71
+msgid "WooCommerce Multistore requires WordPress MultiSite environment"
+msgstr ""
+
+#: woocommerce-multistore.php:77
+msgid "WooCommerce Multistore requires"
+msgstr ""
+
+#: woocommerce-multistore.php:77
+msgid "to be installed"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Lykke Media AS"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.lykkemedia.no"
 msgstr ""
