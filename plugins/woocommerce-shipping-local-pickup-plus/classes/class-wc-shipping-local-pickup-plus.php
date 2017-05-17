@@ -457,7 +457,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 								echo '</td>';
 							}
 							echo '<td><input type="text" name="' . $this->id . '_cost[]" value="' . ( isset( $location['cost'] ) ? $location['cost'] : '' ) . '" placeholder="' . __( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) . '" /></td>';
-							echo '<td><textarea name="' . $this->id . '_note[]" placeholder="' . __( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) . '">' . ( isset( $location['note'] ) ? $location['note'] : '' ) . '</textarea></td>';
+							// GEWIJZIGD: Zorg ervoor dat de openingsuren in de shortcode uitgeschreven worden
+							echo '<td><textarea name="' . $this->id . '_note[]" placeholder="' . __( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) . '">' . ( isset( $location['note'] ) ? do_shortcode($location['note']) : '' ) . '</textarea></td>';
 							echo '</tr>';
 						}
 						?>
@@ -1195,8 +1196,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		if ( 1 === count( $this->pickup_locations ) ) {
 
 			$chosen_pickup_location = $this->pickup_locations[0];
-			// GEWIJZIGD: Zorg ervoor dat shortcodes in het adres uitgeschreven worden
-			echo do_shortcode( $this->get_formatted_address_helper( $chosen_pickup_location, true ) );
+			echo $this->get_formatted_address_helper( $chosen_pickup_location, true );
 
 			echo '<input type="hidden" name="pickup_location[' . $package_index . ']" value="' . esc_attr( $chosen_pickup_location['id'] ) . '" />';
 		} else {
@@ -1228,8 +1228,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 					echo '<li style="margin-left:0;">';
 					// GEWIJZIGD: Voeg Savoy-klasses toe zodat styling identiek is
 					echo '<input type="radio" name="pickup_location[' . $package_index . ']" id="pickup_location_' . $package_index . '_' . $location['id'] . '" value="' . esc_attr( $location['id'] ) . '" class="nm-custom-radio pickup_location" ' . checked( $location['id'], $chosen_pickup_location_id, false ) . ' />';
-					// GEWIJZIGD: Zorg ervoor dat shortcodes in het adres uitgeschreven worden
-					echo '<label class="nm-custom-radio-label" for="pickup_location_' . $package_index . '_' . $location['id'] . '">' . do_shortcode( $this->get_formatted_address_helper( $location, true, true ) ) . '</label>';
+					echo '<label class="nm-custom-radio-label" for="pickup_location_' . $package_index . '_' . $location['id'] . '">' . $this->get_formatted_address_helper( $location, true, true ) . '</label>';
 					echo '</li>';
 				}
 				echo '</ul>';
@@ -1592,7 +1591,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 			echo '</address>';
 
 			if ( isset( $pickup_location['note'] ) && $pickup_location['note'] ) {
-				echo '<div>' . $pickup_location['note'] . '</div>';
+				// GEWIJZIGD: Zorg ervoor dat de openingsuren in de shortcode uitgeschreven worden
+				echo '<div>' . do_shortcode($pickup_location['note']) . '</div>';
 			}
 		}
 
@@ -1626,7 +1626,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 			echo '</p>';
 
 			if ( isset( $pickup_location['note'] ) && $pickup_location['note'] ) {
-				echo '<div>' . $pickup_location['note'] . '</div>';
+				// GEWIJZIGD: Zorg ervoor dat de openingsuren in de shortcode uitgeschreven worden
+				echo '<div>' . do_shortcode($pickup_location['note']) . '</div>';
 			}
 		}
 
@@ -1683,7 +1684,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 				// get the note from the global location, if it's still configured
 				$global_location  = $this->get_pickup_location_by_id( $location['id'] );
-				$location['note'] = isset( $global_location['note'] ) ? $global_location['note'] : '';
+				// GEWIJZIGD: Zorg ervoor dat de openingsuren in de shortcode uitgeschreven worden
+				$location['note'] = isset( $global_location['note'] ) ? do_shortcode($global_location['note']) : '';
 
 				$pickup_locations[] = $location;
 			}
@@ -2187,7 +2189,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 			}
 		}
 
-		return $formatted;
+		// GEWIJZIGD: Voer shortcodes ALTIJD uit in deze functie
+		return do_shortcode($formatted);
 	}
 
 
