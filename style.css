@@ -229,8 +229,7 @@ tr.shipping .woocommerce-Price-amount {
 .woocommerce-address-fields #billing_country_field,
 .woocommerce-address-fields #shipping_country_field,
 .checkout-subscribe-action,
-.products li.outofstock .nm-shop-loop-thumbnail > a:after,
-input#ure_grant_roles.button {
+.products li.outofstock .nm-shop-loop-thumbnail > a:after {
 	display: none !important;
 }
 
