@@ -1,7 +1,5 @@
 <?php
 
-	require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
-	
 	if ( ! defined('ABSPATH') ) exit;
 
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
@@ -162,6 +160,7 @@
 
 	function filter_orders_by_owner( $query ) {
 		global $pagenow, $post_type;
+		write_log($query);
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty( $_GET['claimed_by'] ) and $_GET['claimed_by'] !== 'all' ) {
 			$meta_query_args = array(
 				'relation' => 'AND',

@@ -1,5 +1,7 @@
 <?php
 	if ( ! defined('ABSPATH') ) exit;
+
+	require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
 ?>
 
 <div class="wrap">
