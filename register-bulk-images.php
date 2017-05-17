@@ -5,11 +5,11 @@
 <div class="wrap">
 	<h1>Registratie van nieuwe productfoto's</h1>
 	<?php
-		function endsWith($haystack, $needle) {
-			return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
+		function ends_with( $haystack, $needle ) {
+			return $needle === "" or ( ( $temp = strlen($haystack) - strlen($needle) ) >= 0 and strpos( $haystack, $needle, $temp ) !== false );
 		}
 
-		function sortFunction($a, $b) {
+		function sort_by_time( $a, $b ) {
 	    	return $a["timestamp"] - $b["timestamp"];
 		}
 
@@ -22,12 +22,12 @@
 			    while ( false !== ($file = readdir($handle)) ) {
 			    	$filepath = WP_CONTENT_DIR.'/uploads/'.$file;
 			    	// Beschouw enkel de JPG-foto's zonder 'x' (= geen thumbnails) die sinds de vorige bulksessie geüpload werden
-			    	if ( endsWith($file, '.jpg') and !strpos($file, 'x') and filemtime($filepath) > get_option('laatste_registratie_timestamp', '946681200') ) {
+			    	if ( ends_with( $file, '.jpg' ) and ! strpos( $file, 'x' ) and filemtime($filepath) > get_option('laatste_registratie_timestamp', '946681200') ) {
 			        	// Zet naam, timestamp, datum en pad van de upload in de array
 			        	$photos[] = array(
 			        		"name" => basename($filepath),
 						    "timestamp" => filemtime($filepath),
-						    "date" => date('d/m/Y H:i:s', filemtime($filepath)),
+						    "date" => date_i18n( 'd/m/Y H:i:s', filemtime($filepath) ),
 						    "path" => $filepath,
 						);
 			        }
@@ -37,7 +37,7 @@
 			
 			// Orden chronologisch
 			if ( count($photos) > 1 ) {
-				usort($photos, "sortFunction");
+				usort( $photos, 'sort_by_time' );
 			}
 			return $photos;
 		}
@@ -69,7 +69,7 @@
 						jQuery(".input").prepend("<pre>We vonden geen enkele nieuwe of gewijzigde foto!</pre>");
 					}
 
-					jQuery(".input").prepend("<pre>Uploadtijdstip laatst verwerkte foto: <?php echo date('d/m/Y H:i:s', get_option('laatste_registratie_timestamp', '946681200')); ?></pre>");
+					jQuery(".input").prepend("<pre>Uploadtijdstip laatst verwerkte foto: <?php echo date_i18n( 'd/m/Y H:i:s', get_option('laatste_registratie_timestamp', '946681200') ); ?></pre>");
 
 					var tries = 0;
 
@@ -131,11 +131,11 @@
 		}
 	?>
 
-	<p>Hieronder zie je een lijstje met alle originelen die sinds de laatste fotoregistratie naar de FTP-server geüpload werden. De meest recente bestanden staan onderaan. Elke middag worden om 14 uur de foto's uit <a href="file:///\\vmfile\data\Vormgeving & Publicaties\Productfoto's\">F:\Vormgeving & Publicaties\Productfoto's\</a> (mits enkele controles) naar <a href="file:///\\vmfile\data\Crafts\WebshopImport\Webshopfoto's\">F:\Crafts\WebshopImport\Webshopfoto's\</a> verplaatst en vindt er een opwaartse synchronisatie plaats van alle nieuwe of gewijzigde foto's naar de uploadmap van de webshop.</p>
+	<p>Hieronder zie je een lijstje met alle originelen die sinds de laatste fotoregistratie naar de FTP-server geüpload werden. De meest recente bestanden staan onderaan. Elke middag worden om 14 uur alle nieuwe of gewijzigde foto's in <a href="file:///\\vmfile\data\1-Vormgeving & Publicaties\Productfoto's Online\">F:/1-Vormgeving & Publicaties/Productfoto's Online/</a> opwaarts gesynchroniseerd naar de uploadmap van de webshop.</p>
 
-	<p>Om de thumbnails aan te maken en de foto's te registreren in de mediabib dient een sitebeheerder daarna nog op onderstaande knop te klikken. Foto's kunnen hierbij niet langer dubbel geüpload worden. Bijgewerkte foto's die al aan een product gelinkt waren, worden daar opnieuw aan gelinkt (op voorwaarde dat de uploadlocatie bekend was). In het andere geval is het wachten tot de volgende ERP-import.</p>
+	<p>Om de thumbnails aan te maken en de foto's te registreren in de mediabib dient een sitebeheerder daarna nog op onderstaande knop te klikken. Foto's kunnen hierbij niet langer dubbel geüpload worden. Bijgewerkte foto's die al aan een product gelinkt waren, worden daar opnieuw aan gelinkt (op voorwaarde dat de uploadlocatie bekend was). In het andere geval is het wachten tot de volgende ERP-import. VOORLOPIG IS ER NOG GEEN AUTOMATISCHE UPDATE VAN DOCHTERSITES!</p>
 
-	<p>Is er een foutje gebeurd of wil je een bepaalde foto definitief verwijderen? Dan dien je de foto zowel te verwijderen <a href="<?php echo home_url('/wp-admin/upload.php'); ?>">uit de mediabibliotheek</a> als uit <a href="file:///\\vmfile\data\Vormgeving & Publicaties\Productfoto's\">F:\Vormgeving & Publicaties\Productfoto's\</a>. Zo niet zal de foto elke dag weer als 'nieuwe' foto opduiken en geregistreerd worden in de webshop. De synchronisatie werkt immers niet in twee richtingen, maar enkel opwaarts richting webserver!</p>
+	<p>Is er een foutje gebeurd of wil je een bepaalde foto definitief verwijderen? Dan dien je de foto zowel te verwijderen <a href="<?php echo home_url('/wp-admin/upload.php'); ?>">uit de mediabibliotheek</a> als uit <a href="file:///\\vmfile\data\1-Vormgeving & Publicaties\Productfoto's Online\">F:/1-Vormgeving & Publicaties/Productfoto's Online/</a>. Zo niet zal de foto elke dag weer als 'nieuwe' foto opduiken en geregistreerd worden in de webshop. De synchronisatie werkt immers niet in twee richtingen, maar enkel opwaarts richting webserver!</p>
 
 	<div class="output"></div>
 

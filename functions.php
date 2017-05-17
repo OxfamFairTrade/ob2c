@@ -7,9 +7,6 @@
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
 	$content_width = 2000;
 
-	// Belangrijk voor correcte vertalingen in strftime()
-	setlocale( LC_ALL, array('Dutch_Netherlands', 'Dutch', 'nl_NL', 'nl', 'nl_NL.ISO8859-1') );
-
 	// Laad het child theme
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
@@ -22,6 +19,13 @@
 
 	function load_admin_css() {
 		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/admin.css' );
+	}
+
+	// Fix het conflict met WP All Export bij het connecteren van Jetpack met Wordpress.com
+	add_action( 'http_api_curl', 'custom_curl_timeout', 10, 3 );
+	
+	function custom_curl_timeout( $handle, $r, $url ) {
+		curl_setopt( $handle, CURLOPT_TIMEOUT, 30 );
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
@@ -292,14 +296,14 @@
 				if ( is_array( $new_meta_value ) ) {
 					if ( count( array_diff( $new_meta_value, $old_meta_value ) ) > 0 ) {
 						// Schrijf weg in log per weeknummer (zonder leading zero's) 
-						$str = date( 'd/m/Y H:i:s' ) . "\t" . $meta_key . "\t" . serialize($new_meta_value) . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
-					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+						$str = date_i18n('d/m/Y H:i:s') . "\t" . $meta_key . "\t" . serialize($new_meta_value) . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND);
 					}
 				} else {
 					if ( strcmp( $new_meta_value, $old_meta_value ) !== 0 ) {
 						// Schrijf weg in log per weeknummer (zonder leading zero's) 
-						$str = date( 'd/m/Y H:i:s' ) . "\t" . $meta_key . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
-					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date('W') ).".csv", $str, FILE_APPEND);
+						$str = date_i18n('d/m/Y H:i:s') . "\t" . $meta_key . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND);
 					}
 				}
 			}
@@ -883,12 +887,12 @@
 			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite!
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
 			case stristr( $method->id, 'local_pickup' ):
-				$descr .= 'Beschikbaar op '.strftime('%A %d/%m/%Y vanaf %ku%M', $timestamp);
+				$descr .= 'Beschikbaar op '.date_i18n( 'l d/m/Y vanaf Gui', $timestamp );
 				$label .= ':'.wc_price(0);
 				break;
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
-				$descr .= 'Ten laatste beschikbaar vanaf '.strftime('%A %d/%m/%Y', $timestamp);
+				$descr .= 'Ten laatste beschikbaar vanaf '.date_i18n( 'l d/m/Y', $timestamp );
 				if ( floatval( $method->cost ) === 0.0 ) {
 					$label = str_replace( 'Afhaling', 'Gratis afhaling', $label );
 					$label .= ':'.wc_price(0);
@@ -896,11 +900,11 @@
 				break;
 			// Alle instances van thuislevering
 			case stristr( $method->id, 'flat_rate' ):
-				$descr .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
+				$descr .= 'Ten laatste geleverd op '.date_i18n( 'l d/m/Y', $timestamp );
 				break;
 			// Alle instances van gratis thuislevering
 			case stristr( $method->id, 'free_shipping' ):
-				$descr .= 'Ten laatste geleverd op '.strftime('%A %d/%m/%Y', $timestamp);
+				$descr .= 'Ten laatste geleverd op '.date_i18n( 'l d/m/Y', $timestamp );
 				$label .= ':'.wc_price(0);
 				break;
 			default:
@@ -948,11 +952,11 @@
 		$deadline = get_office_hours();
 		
 		// We gebruiken het geregistreerde besteltijdstip OF het live tijdstip voor schattingen van de leverdatum
-		$from = $order_date ? strtotime($order_date) : time();
+		$from = $order_date ? strtotime($order_date) : current_time( 'timestamp' );
 		
-		write_log($shipping_id);
 		$timestamp = $from;
-		write_log(date('d/m/Y H:i', $timestamp));
+		write_log($shipping_id);
+		write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
 		
 		switch ( $shipping_id ) {
 			// Alle instances van winkelafhalingen
@@ -984,23 +988,22 @@
 				break;
 		}
 
-		write_log(date('d/m/Y H:i', $timestamp));		
+		write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );		
 		return $timestamp;
 	}
 
 	// Ontvangt een timestamp en antwoordt met eerste werkdag die er toe doet
 	function get_first_working_day( $from ) {
-		if ( date('N', $from) < 6 and date('G', $from) < 12 ) {
+		if ( date_i18n( 'N', $from ) < 6 and date_i18n( 'G', $from ) < 12 ) {
 			// Geen actie nodig
 		} else {
 			// We zitten al na de deadline van een werkdag, begin pas vanaf morgen te tellen
-			$from = strtotime("+1 weekday", $from);
+			$from = strtotime( '+1 weekday', $from );
 		}
 
 		// Bepaal de eerstvolgende werkdag
-		$timestamp = strtotime("+1 weekday", $from);
-		write_log(date('d/m/Y H:i', $timestamp));
-
+		$timestamp = strtotime( '+1 weekday', $from );
+		
 		return $timestamp;
 	}
 
@@ -1010,23 +1013,22 @@
 		global $default_holidays;
 
 		// Check of de startdag ook nog in beschouwing genomen moet worden
-		if ( date('N', $from) < 6 and date('G', $from) >= 12 ) {
-			$first = date( 'Y-m-d', strtotime("+1 weekday", $from) );
+		if ( date_i18n( 'N', $from ) < 6 and date_i18n( 'G', $from ) >= 12 ) {
+			$first = date_i18n( 'Y-m-d', strtotime( '+1 weekday', $from ) );
 		} else {
-			$first = date( 'Y-m-d', $from );
+			$first = date_i18n( 'Y-m-d', $from );
 		}
 		// In dit formaat zijn datum- en tekstsortering equivalent!
-		$last = date( 'Y-m-d', $till );
+		$last = date_i18n( 'Y-m-d', $till );
 
 		// Vang het niet bestaan van de optie op
 		$holidays = get_option( 'oxfam_holidays', $default_holidays );
 		
 		foreach ( $holidays as $holiday ) {
 			// Enkel de feestdagen die niet in het weekend moeten we in beschouwing nemen!
-			if ( date('N', strtotime($holiday)) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
-				$till = strtotime("+1 weekday", $till);
-				write_log(date('d/m/Y H:i', $till));
-				$last = date('Y-m-d', $till);
+			if ( date_i18n( 'N', strtotime($holiday) ) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
+				$till = strtotime( '+1 weekday', $till );
+				$last = date_i18n( 'Y-m-d', $till );
 			}
 		}
 
@@ -1035,8 +1037,8 @@
 
 	// Zoek het eerstvolgende openeningsuur op een dag (indien $afternoon: pas vanaf 12u)
 	function find_first_opening_hour( $hours, $from, $afternoon = true ) {
-		// date('N') want get_office_hours() werkt van 1 tot 7!
-		$i = date('N', $from);
+		// Argument 'N' want get_office_hours() werkt van 1 tot 7!
+		$i = date_i18n( 'N', $from );
 		if ( $hours[$i] ) {
 			$day_part = $hours[$i][0];
 			$start = intval( substr( $day_part['start'], 0, -2 ) );
@@ -1045,10 +1047,10 @@
 				if ( $end > 12 ) {
 					if ( intval( substr( $day_part['start'], 0, -2 ) ) >= 12 ) {
 						// Neem het openingsuur van het eerste deel
-						$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+						$timestamp = strtotime( date_i18n( 'Y-m-d', $from )." ".$day_part['start'] );
 					} else {
 						// Toon pas mogelijk vanaf 12u
-						$timestamp = strtotime( date('Y-m-d', $from)." 12:00" );
+						$timestamp = strtotime( date_i18n( 'Y-m-d', $from )." 12:00" );
 					}
 				} else {
 					unset( $day_part );
@@ -1059,10 +1061,10 @@
 					if ( $end > 12 ) {
 						if ( intval( substr( $day_part['start'], 0, -2 ) ) >= 12 ) {
 							// Neem het openingsuur van dit deel
-							$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+							$timestamp = strtotime( date_i18n( 'Y-m-d', $from )." ".$day_part['start'] );
 						} else {
 							// Toon pas mogelijk vanaf 12u
-							$timestamp = strtotime( date('Y-m-d', $from)." 12:00" );
+							$timestamp = strtotime( date_i18n( 'Y-m-d', $from )." 12:00" );
 						}
 					} else {
 						// Het mag ook een dag in het weekend zijn, de wachttijd is vervuld!
@@ -1071,7 +1073,7 @@
 				}
 			} else {
 				// Neem sowieso het openingsuur van het eerste dagdeel
-				$timestamp = strtotime( date('Y-m-d', $from)." ".$day_part['start'] );
+				$timestamp = strtotime( date_i18n( 'Y-m-d', $from )." ".$day_part['start'] );
 			}
 		} else {
 			// Vandaag zijn we gesloten, probeer het morgen opnieuw
@@ -1108,7 +1110,7 @@
 				wc_add_notice( __( 'Dit is geen geldige Vlaamse postcode!', 'wc-oxfam' ), 'error' );
 			} elseif ( ! in_array( $zip, get_option( 'oxfam_zip_codes' ) ) and is_cart() ) {
 				// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat de klant niet meer radicaal wijzigt (niet afschrikken met error!)
-				$str = date('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
+				$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
 				file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
 				// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices( 'error' ) retourneert te checken
 				wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode! Kies voor afhaling of keer terug naar het portaal om de webshop te vinden die voor jouw postcode thuislevering organiseert.', 'wc-oxfam' ), 'error' );
@@ -1399,7 +1401,7 @@
 		foreach ( $array as $key => $value ) {
 			$array[$key] = mb_strtolower( trim($value) );
 			// Verwijder datums uit het verleden (woorden van toevallig 10 tekens kunnen niet voor een datum komen!)
-			if ( strlen( $array[$key] ) === 10 and $array[$key] < date( 'Y-m-d' ) ) {
+			if ( strlen( $array[$key] ) === 10 and $array[$key] < date_i18n('Y-m-d') ) {
 				unset( $array[$key] );
 			}
 		}
@@ -1543,9 +1545,9 @@
 			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
 			if ($updated) {
 				$deleted = $deleted ? "verwijderd en opnieuw aangemaakt" : "bijgewerkt";
-				$msg .= "<i>".$filename."</i> ".$deleted." in de mediabibliotheek om ".date('H:i:s')." ...";
+				$msg .= "<i>".$filename."</i> ".$deleted." in de mediabibliotheek om ".date_i18n('H:i:s')." ...";
 			} else {
-				$msg .= "<i>".$filename."</i> aangemaakt in de mediabibliotheek om ".date('H:i:s')." ...";
+				$msg .= "<i>".$filename."</i> aangemaakt in de mediabibliotheek om ".date_i18n('H:i:s')." ...";
 			}
 			// Sla het uploadtijdstip van de laatste succesvolle registratie op (kan gebruikt worden als limiet voor nieuwe foto's!)
 			update_option('laatste_registratie_timestamp', $filestamp);
@@ -1612,7 +1614,7 @@
 		// Boodschap personaliseren? Eerste werkdag zoeken na vakantie?
 		update_option('woocommerce_demo_store_notice', 'We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening.');
 		// Wijkt 2 dagen af, maar kom
-		if ( in_array( date('Y-m-d'), get_option('oxfam_holidays', $default_holidays) ) ) {
+		if ( in_array( date_i18n('Y-m-d'), get_option('oxfam_holidays', $default_holidays) ) ) {
 			update_option('woocommerce_demo_store', 'yes');
 		} else {
 			update_option('woocommerce_demo_store', 'no');
@@ -2179,7 +2181,11 @@
 		$my_post = array();
         $my_post['ID'] = $post_id;
         $my_post['post_content'] = "FREDTEST";
-        wp_update_post( $my_post );
+        // DOET NIETS
+        // wp_update_post( $my_post );
+        // MOET INGEROEPEN WORDEN OP WOO_MSTORE_ADMIN_PRODUCT KLASSE
+        // process_product( $post_id, get_post( $post_id ), true );
+        do_action( 'woocommerce_process_product_meta', $post_id, get_post( $post_id ) );
 	}
 
 	function set_product_source( $post_id ) {
@@ -2248,11 +2254,9 @@
 	}
 
 	// Zorg ervoor dat we niet met maandfolders werken
-	// add_action( 'wpmu_new_blog', function( $blog_id ) {
-	// 	switch_to_blog( $blog_id );
-	// 	update_option('uploads_use_yearmonth_folders', false);
-	// 	restore_current_blog();
-	// });
+	// switch_to_blog( $blog_id );
+	// update_option('uploads_use_yearmonth_folders', false);
+	// restore_current_blog();
 
 	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke update
 	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
@@ -2260,6 +2264,7 @@
 	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
 		$ignored_fields[] = '_stock';
 		$ignored_fields[] = '_stock_status';
+		$ignored_fields[] = 'total_sales';
 		$ignored_fields[] = '_wc_review_count';
 		$ignored_fields[] = '_wc_rating_count';
 		$ignored_fields[] = '_wc_average_rating';
@@ -2334,14 +2339,14 @@
 			),
 		);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-9 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-9 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
 		
 		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
 			$body = json_decode($response['body']);
 			
 			foreach ( array_reverse($body->campaigns) as $campaign ) {
-				$mailings .= '<li><a class="rsswidget" href="'.$campaign->long_archive_url.'" target="_blank">'.str_replace( '*|FNAME|*: ', '', $campaign->settings->subject_line ).'</a> ('.strftime( '%e %B %G', strtotime($campaign->send_time) ).')</li>';
+				$mailings .= '<li><a class="rsswidget" href="'.$campaign->long_archive_url.'" target="_blank">'.str_replace( '*|FNAME|*: ', '', $campaign->settings->subject_line ).'</a> ('.date_i18n( 'j F Y', strtotime($campaign->send_time) ).')</li>';
 			}
 		}		
 
@@ -2356,14 +2361,14 @@
 		$screen = get_current_screen();
 		// var_dump($screen);
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
-			echo '<div class="notice notice-info">';
+			// echo '<div class="notice notice-info">';
 			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
 				// echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust bestellingen te plaatsen en te beheren.</p>';
 			} else {
 				// echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
 			}
-			echo '<p>De mailing geraakte vrijdag niet meer de deur uit maar komt er tegen vanavond aan! Bekijk alvast <a href="http://www.gemeentekaart.be/#6d86cbca-8d77-43c3-8cb5-3c3fa09a6ca6" target="_blank">de bijgewerkte postcodekaart</a>.</p>';
-			echo '</div>';
+			// echo '<p>De mailing geraakte vrijdag niet meer de deur uit maar komt er tegen vanavond aan! Bekijk alvast <a href="http://www.gemeentekaart.be/#6d86cbca-8d77-43c3-8cb5-3c3fa09a6ca6" target="_blank">de bijgewerkte postcodekaart</a>.</p>';
+			// echo '</div>';
 			echo '<div class="notice notice-info">';
 			echo '<p>Download <a href="http://demo.oxfamwereldwinkels.be/wp-content/uploads/verzendtarieven-B2C-pakketten.pdf" target="_blank">de nota met tarieven en voorwaarden</a> bij externe verzending via Bpost. Aangezien geen enkele groep aangaf interesse te hebben in verzending via Bubble Post, stoppen we geen werk meer in de integratie met hun systemen.</p><p>Goed nieuws: van de BTW-lijn kregen we te horen dat we 6% BTW mogen rekenen op thuisleveringen (bijzaak volgt hoofdzaak). Enkel indien de bestelling <u>volledig</u> uit voedingsproducten aan standaard BTW-tarief bestaat (= alcoholische dranken) moeten we ook 21% BTW rekenen op de verzending. We passen de prijs voor de consument voorlopig niet aan, dus in de praktijk zal de winkel doorgaans 6,56 i.p.v. 5,74 euro netto overhouden. Dit geeft wat meer ruimte om te investeren in fietskoeriers en/of degelijk verpakkingsmateriaal.</p>';
 			echo '</div>';
@@ -2418,7 +2423,7 @@
 			),
 		);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date( 'Y-m-d', strtotime('-6 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-6 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
 
 		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
@@ -2427,7 +2432,7 @@
 			$mailings .= "<ul style='margin-left: 20px; margin-bottom: 1em;'>";
 
 			foreach ( array_reverse($body->campaigns) as $campaign ) {
-				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.trim( strftime( '%e %B %G', strtotime($campaign->send_time) ) ).')</li>';
+				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.date_i18n( 'j F Y', strtotime($campaign->send_time) ).')</li>';
 			}
 
 			$mailings .= "</ul>";
@@ -2512,11 +2517,11 @@
 	}
 
 	function print_welcome() {
-		if ( date('G') < 6 ) {
+		if ( date_i18n('G') < 6 ) {
 			$greet = "Goeienacht";
-		} elseif ( date('G') < 12 ) {
+		} elseif ( date_i18n('G') < 12 ) {
 			$greet = "Goeiemorgen";
-		} elseif ( date('G') < 20 ) {
+		} elseif ( date_i18n('G') < 20 ) {
 			$greet = "Goeiemiddag";
 		} else {
 			$greet = "Goeieavond";
@@ -2535,7 +2540,7 @@
 		} else {
 			$node = 'nl';
 		}
-		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".get_company_name()." &copy; 2016-".date('Y')."</a>";
+		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".get_company_name()." &copy; 2016-".date_i18n('Y')."</a>";
 	}
 
 	function print_office_hours( $atts = [] ) {
@@ -2549,7 +2554,7 @@
 			if ( $hours ) {
 				foreach ( $hours as $part => $part_hours ) {
 					if ( ! isset( $$day_index ) ) {
-						$output .= "<br>".ucwords( strftime( '%A', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
+						$output .= "<br>".ucwords( date_i18n( 'l', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
 						$$day_index = true;
 					} else {
 						$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
@@ -2772,7 +2777,7 @@
 	}, 10, 2);
 
 	function get_company_and_year() {
-		return '<span style="color: #60646c">'.get_company_name().' &copy; 2016-'.date('Y').'</span>';
+		return '<span style="color: #60646c">'.get_company_name().' &copy; 2016-'.date_i18n('Y').'</span>';
 	}
 
 	function get_oxfam_covered_zips() {
