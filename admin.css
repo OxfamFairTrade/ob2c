@@ -125,6 +125,13 @@ body.post-type-shop_order div.wrap > a.page-title-action {
 	display: none;
 }
 
+/* Verberg onnodige knoppen bij terugbetalingen (wordt ook nog gefixt in core) */
+button.bulk-decrease-stock,
+button.bulk-increase-stock,
+button.do-manual-refund {
+	display: none !important;
+}
+
 @media (max-width: 1024px) {
 	#oxfam-products .block {
 		display: block;
