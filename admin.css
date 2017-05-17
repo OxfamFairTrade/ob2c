@@ -126,10 +126,10 @@ body.post-type-shop_order div.wrap > a.page-title-action {
 }
 
 /* Verberg onnodige knoppen bij terugbetalingen (wordt ook nog gefixt in core) */
-// button.bulk-delete-items,
-// button.bulk-decrease-stock,
-// button.bulk-increase-stock,
 div.wc-order-item-bulk-edit,
+/* button.bulk-delete-items,
+button.bulk-decrease-stock,
+button.bulk-increase-stock, */
 button.do-manual-refund {
 	display: none !important;
 }
