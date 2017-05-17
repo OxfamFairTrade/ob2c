@@ -35,6 +35,9 @@
 	# SECURITY #
 	############
 
+	// Toon het blokje 'Additional Capabilities' op de profielpagina nooit
+	add_filter( 'ure_show_additional_capabilities_section', '__return_false' );
+
 	// Zorg ervoor dat lokale beheerders toch al hun gearchiveerde site kunnen bekijken
 	add_filter( 'ms_site_check', 'allow_local_manager_on_archived' );
 
@@ -820,9 +823,9 @@
 				jQuery("tr.user-url-wrap").hide();
 				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
 				jQuery("h2:contains('Over de gebruiker')").hide();
-				/* Let op: als deze string plots vertaald wordt, verschijnt het blokje opnieuw! */
-				jQuery("h3:contains('Additional Capabilities')").next('.form-table').hide();
-				jQuery("h3:contains('Additional Capabilities')").hide();
+				/* Let op: als deze string plots vertaald wordt, verschijnt het blokje opnieuw! VERVANGEN DOOR FILTER */
+				// jQuery("h3:contains('Additional Capabilities')").next('.form-table').hide();
+				// jQuery("h3:contains('Additional Capabilities')").hide();
 			</script>
 		<?php
 		}
