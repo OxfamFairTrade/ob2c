@@ -495,6 +495,7 @@
 			jQuery( '.refund_line_tax.wc_input_price' ).prop( 'disabled', true );
 			/* Eventueel ook totaalbedrag onbewerkbaar maken */
 			/* jQuery( 'td.total' ).find ( '#refund_amount' ).prop( 'disabled', true ); */
+			jQuery( 'label[for=restock_refunded_items]' ).closest( 'tr' ).hide();
 		</script>
 		<?php
 	}

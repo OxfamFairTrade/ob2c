@@ -233,6 +233,13 @@ tr.shipping .woocommerce-Price-amount {
 	display: none !important;
 }
 
+/* Verberg onnodige knoppen bij terugbetalingen (wordt ook nog gefixt in core) */
+button.bulk-decrease-stock,
+button.bulk-decrease-stock,
+button.do-manual-refund {
+	display: none;
+}
+
 #sendcloudshipping_service_point_select,
 #sendcloudshipping_service_point_selected_label {
 	margin: 0.5em auto;
