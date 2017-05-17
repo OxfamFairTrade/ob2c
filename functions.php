@@ -489,6 +489,12 @@
 			/* Disable rode en witte druiven */
 			jQuery( '#in-product_grape-575' ).prop( 'disabled', true );
 			jQuery( '#in-product_grape-574' ).prop( 'disabled', true );
+
+			/* Disbable prijswijzigingen bij terugbetalingen */
+			jQuery( '.refund_line_total.wc_input_price' ).prop( 'disabled', true );
+			jQuery( '.refund_line_tax.wc_input_price' ).prop( 'disabled', true );
+			/* Eventueel ook totaalbedrag onbewerkbaar maken */
+			/* jQuery( 'td.total' ).find ( '#refund_amount' ).prop( 'disabled', true ); */
 		</script>
 		<?php
 	}
