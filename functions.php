@@ -58,9 +58,13 @@
 		// Voeg de claimende winkel toe aan de ordermetadata van zodra iemand op het winkeltje klikt (en verwijder indien we teruggaan)
 		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop' );
 		add_action( 'woocommerce_order_status_claimed_to_processing', 'delete_claiming_member_shop' );
-		// Zal in principe niet voorkomen, maar voor alle zekerheid ...
+
+		// Deze transities zullen in principe niet voorkomen, maar voor alle zekerheid ...
 		add_action( 'woocommerce_order_status_on-hold_to_claimed', 'register_claiming_member_shop' );
 		add_action( 'woocommerce_order_status_claimed_to_on-hold', 'delete_claiming_member_shop' );
+
+		// Laat afhalingen automatisch claimen door de gekozen winkel
+		add_action( 'woocommerce_thankyou', 'auto_claim_local_pickup' );
 		
 		// Maak zoeken op claimende winkel mogelijk?
 		add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_fields' );
@@ -123,17 +127,39 @@
 		<?php 
 	}
 
+	function auto_claim_local_pickup( $order_id ) {
+		if ( ! $order_id ) {
+			return;
+		}
+		$order = wc_get_order( $order_id );
+		if ( $order->has_shipping_method('local_pickup_plus') ) {
+			$order->update_status( 'claimed' );
+		}
+	}
+
 	function register_claiming_member_shop( $order_id ) {
+		$order = wc_get_order( $order_id );
 		$blog_id = get_current_blog_id();
 		$owner = get_the_author_meta( 'blog_'.$blog_id.'_member_of_shop', get_current_user_id() );
-		if ( ! $owner ) {
-			// Val terug op de belangrijkste winkel indien de gebruiker nog niet aan een winkel gelinkt was
-			if ( $blog_id === 9 ) {
-				$owner = 'leuven';
-			} elseif ( $blog_id === 3 ) {
-				$owner = 'antwerpen';
+		
+		if ( $order->has_shipping_method('local_pickup_plus') ) {
+			// Koppel automatisch aan de winkel waar de afhaling zal gebeuren
+			$methods = $order->get_shipping_methods();
+			$method = reset($methods);
+			$meta_data = $method->get_meta_data();
+			$pickup_data = reset($meta_data);
+			$city = do_shortcode($pickup_data->value['city']);
+			if ( in_array( $city, get_option( 'oxfam_member_shops' ) ) ) {
+				// Dubbelcheck of deze stad wel tussen de deelnemende winkels zit
+				$owner = $city;
 			}
 		}
+
+		if ( ! $owner ) {
+			// Koppel als laatste redmiddel aan de hoofdwinkel (op basis van het nodenummer) 
+			$owner = mb_strtolower( get_oxfam_shop_data( 'city' ) );
+		}
+
 		update_post_meta( $order_id, 'claimed_by', $owner, true );
 	}
 
@@ -2490,7 +2516,7 @@
 		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
 		$list_id = '5cce3040aa';
 		$email = $cur_user->user_email;
-		$member = md5(mb_strtolower($email));
+		$member = md5( mb_strtolower($email) );
 
 		$args = array(
 			'headers' => array(
@@ -2693,7 +2719,8 @@
 		fwrite($myfile, $str);
 		fclose($myfile);
 		
-		return do_shortcode("[flexiblemap src='".site_url()."/newoutput.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true' maptype='light_monochrome']");
+		return do_shortcode("[flexiblemap src='".site_url()."/newoutput.kml?v=".rand()."' width='100%' height='500px' zoom='9' hidemaptype='true' maptype='light_monochrome']");
+		// return do_shortcode('[osm_map_v3 zoom="9" width="100%" map_center="50.9667,4.2333" height="500" type="stamen_toner" map_border="3px solid black" file_list="'.site_url().'/newoutput.kml"]');
 	}
 
 
