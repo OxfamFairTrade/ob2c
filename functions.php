@@ -68,7 +68,7 @@
 		// Creëer bovenaan de orderlijst een dropdown met de deelnemende winkels uit de regio
 		add_action( 'restrict_manage_posts', 'add_claimed_by_filtering' );
 		
-		// Voer de filtering uit tijdens het bekijken van orders in de admin (eventueel AUTOMATISCH op eigen winkel?)
+		// Voer de filtering uit tijdens het bekijken van orders in de admin
 		add_action( 'pre_get_posts', 'filter_orders_by_owner' );
 
 		// Voeg ook een kolom toe aan het besteloverzicht in de back-end
@@ -76,6 +76,9 @@
 
 		// Toon de data van elk order in de kolom
 		add_action( 'manage_shop_order_posts_custom_column' , 'get_claimed_by_value', 10, 2 );
+
+		// Laat de custom statusfilter verschijnen volgens de normale flow van de verwerking
+		add_filter( 'views_edit-shop_order', 'put_claimed_after_processing' );
 
 		// Maak de boodschap om te filteren op winkel beschikbaar bij de rapporten
 		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
@@ -160,17 +163,32 @@
 
 	function filter_orders_by_owner( $query ) {
 		global $pagenow, $post_type;
-		write_log($query);
-		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and ! empty( $_GET['claimed_by'] ) and $_GET['claimed_by'] !== 'all' ) {
-			$meta_query_args = array(
-				'relation' => 'AND',
-				array(
-					'key' => 'claimed_by',
-					'value' => $_GET['claimed_by'],
-					'compare' => '=',
-				),
-			);
-			$query->set( 'meta_query', $meta_query_args );
+		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and $query->query['post_type'] === 'shop_order' ) {
+			if ( ! empty( $_GET['claimed_by'] ) and $_GET['claimed_by'] !== 'all' ) {
+				$meta_query_args = array(
+					'relation' => 'AND',
+					array(
+						'key' => 'claimed_by',
+						'value' => $_GET['claimed_by'],
+						'compare' => '=',
+					),
+				);
+				$query->set( 'meta_query', $meta_query_args );
+			} elseif ( 1 < 0 ) {
+				// Eventueel AUTOMATISCH filteren op eigen winkel (tenzij expliciet anders aangegeven)
+				$owner = get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() );
+				if ( ! $owner ) {
+					$meta_query_args = array(
+						'relation' => 'AND',
+						array(
+							'key' => 'claimed_by',
+							'value' => $owner,
+							'compare' => '=',
+						),
+					);
+					$query->set( 'meta_query', $meta_query_args );
+				}
+			}
 		}
 	}
 
@@ -197,6 +215,23 @@
 			}
 		}
 	}
+
+	function put_claimed_after_processing( $array ) {
+		// Check eerst of de statusknop wel aanwezig is op dit moment!
+		if ( array_key_exists( 'wc-claimed', $array ) ) {
+			$cnt = 1;
+			$stored_value = $array['wc-claimed'];
+			unset($array['wc-claimed']);
+			foreach ( $array as $key => $value ) {
+				if ( $key === 'wc-processing' ) {
+					$array = array_slice( $array, 0, $cnt ) + array( 'wc-claimed' => $stored_value ) + array_slice( $array, $cnt, count($array) - $cnt );
+					break;
+				}
+				$cnt++;
+			}
+		}
+		return $array;
+	}	
 
 	// Global om ervoor te zorgen dat de boodschap enkel in de eerste loop geëchood wordt
 	$warning_shown = false;
