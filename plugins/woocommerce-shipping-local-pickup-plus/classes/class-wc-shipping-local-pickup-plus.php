@@ -457,8 +457,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 								echo '</td>';
 							}
 							echo '<td><input type="text" name="' . $this->id . '_cost[]" value="' . ( isset( $location['cost'] ) ? $location['cost'] : '' ) . '" placeholder="' . __( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) . '" /></td>';
-							// GEWIJZIGD: Zorg ervoor dat de openingsuren in de shortcode uitgeschreven worden
-							echo '<td><textarea name="' . $this->id . '_note[]" placeholder="' . __( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) . '">' . ( isset( $location['note'] ) ? do_shortcode($location['note']) : '' ) . '</textarea></td>';
+							echo '<td><textarea name="' . $this->id . '_note[]" placeholder="' . __( '(Optional)', 'woocommerce-shipping-local-pickup-plus' ) . '">' . ( isset( $location['note'] ) ? $location['note'] : '' ) . '</textarea></td>';
 							echo '</tr>';
 						}
 						?>
