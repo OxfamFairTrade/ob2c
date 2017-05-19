@@ -229,14 +229,15 @@
 
 	function add_claimed_by_column( $columns ) {
 		$columns['claimed_by'] = 'Behandeling door';
-		// Eventueel bepaalde kolommen uitschakelen?
+		// Eventueel bepaalde kolommen altijd uitschakelen?
 		// unset( $columns['order_notes'] );
 		return $columns;
 	}
 
 	function make_claimed_by_column_sortable( $columns ) {
 		$columns['claimed_by'] = 'claimed_by';
-		$columns['order_status'] = 'order_status';
+		// Eventueel ook sorteren op status toestaan?
+		// $columns['order_status'] = 'order_status';
 		return $columns;
 	}
 
@@ -972,7 +973,7 @@
 			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite!
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
 			case stristr( $method->id, 'local_pickup' ):
-				$descr .= 'Beschikbaar op '.date_i18n( 'l d/m/Y vanaf Gui', $timestamp );
+				$descr .= 'Beschikbaar op '.date_i18n( 'l d/m/Y', $timestamp ).' vanaf '.date_i18n( 'G\ui', $timestamp );
 				$label .= ':'.wc_price(0);
 				break;
 			// Alle instances van postpuntlevering
