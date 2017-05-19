@@ -78,6 +78,9 @@
 		// Voeg ook een kolom toe aan het besteloverzicht in de back-end
 		add_filter( 'manage_edit-shop_order_columns', 'add_claimed_by_column', 11 );
 
+		// Maak sorteren op deze nieuwe kolom mogelijk
+		add_filter( 'manage_edit-shop_order_sortable_columns', 'make_claimed_by_column_sortable' );
+
 		// Toon de data van elk order in de kolom
 		add_action( 'manage_shop_order_posts_custom_column' , 'get_claimed_by_value', 10, 2 );
 
@@ -215,6 +218,12 @@
 					$query->set( 'meta_query', $meta_query_args );
 				}
 			}
+
+			// Check of we moeten sorteren op deze kolom
+			if ( $query->get( 'orderby' ) === 'claimed_by' ) {
+				$query->set( 'meta_key', 'claimed_by' );
+				$query->set( 'orderby', 'meta_value' );
+			}
 		}
 	}
 
@@ -222,6 +231,12 @@
 		$columns['claimed_by'] = 'Behandeling door';
 		// Eventueel bepaalde kolommen uitschakelen?
 		// unset( $columns['order_notes'] );
+		return $columns;
+	}
+
+	function make_claimed_by_column_sortable( $columns ) {
+		$columns['claimed_by'] = 'claimed_by';
+		$columns['order_status'] = 'order_status';
 		return $columns;
 	}
 
