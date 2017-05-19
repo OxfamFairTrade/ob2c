@@ -1357,6 +1357,13 @@
 		return $method;
 	}
 
+	// Voeg instructietekst toe boven de locaties
+	// add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' ) {
+	
+	function add_local_pickup_instructions() {
+		echo '<p>Je kunt kiezen uit deze winkels ...</p>';
+	}
+
 	// Check of de persoon moet worden ingeschreven op het digizine 
 	add_action( 'woocommerce_checkout_process', 'check_subscription_preference', 10, 1 );
 

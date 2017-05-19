@@ -147,6 +147,46 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		}
 
 		do_action( 'wc_shipping_local_pickup_plus_init', $this );
+
+		// filter whether we need to validate the customer shipping address at checkout
+		add_filter( 'woocommerce_cart_needs_shipping_address', array( $this, 'needs_shipping_address' ) );
+	}
+
+
+	/**
+	 * Filter whether we need a shipping address on checkout.
+	 *
+	 * @since 1.14.1
+	 *
+	 * @param bool $address_needed
+	 * @return bool
+	 */
+	public function needs_shipping_address( $address_needed ) {
+
+		$shipping_methods = $this->get_chosen_shipping_methods();
+
+		// we don't need a shipping address if:
+		// - admin has chosen to hide the shipping address
+		// - local pickup plus is the chosen shipping method
+		// - there are no other shipping methods chosen
+		if (    $address_needed
+		     && $this->hide_shipping_address()
+		     && in_array( $this->id, $shipping_methods, true ) ) {
+
+			$method_counts   = 0;
+			$packages_counts = count( $shipping_methods );
+
+			foreach ( $shipping_methods as $shipping_method ) {
+				if ( $this->id === $shipping_method ) {
+					$method_counts++;
+				}
+			}
+
+			$address_needed = $method_counts === $packages_counts ? false : $address_needed;
+		}
+
+		return $address_needed;
+
 	}
 
 
@@ -730,29 +770,6 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 				'amount'                     => max( 0, abs( $data['coupon_amount'] ) ),
 				'coupon_amount'              => max( 0, abs( $data['coupon_amount'] ) ),
 
-				'date_created'               => '',
-				'date_modified'              => '',
-				'date_expires'               => '',
-				'individual_use'             => false,
-				'usage_count'                => '',
-				'usage_limit'                => '',
-				'usage_limit_per_user'       => 0,
-				'limit_usage_to_x_items'     => 0,
-				'expiry_date'                => '',
-				'apply_before_tax'           => true,
-				'free_shipping'              => false,
-				'product_categories'         => array(),
-				'exclude_product_categories' => array(),
-				'exclude_sale_items'         => false,
-				'product_ids'                => array(),
-				'excluded_product_ids'       => array(),
-				'minimum_amount'             => '',
-				'maximum_amount'             => '',
-				'customer_email'             => '',
-				'email_restrictions'         => array(),
-				'used_by'                    => array(),
-				'description'                => '',
-
 			) );
 		}
 
@@ -780,7 +797,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		// shown until the subsequent page refresh
 		if (    in_array( $this->id, $chosen_shipping_methods, false )
 		     && WC()->cart->needs_shipping()
-		     && $this->is_available( WC()->cart->get_shipping_packages() ) ) {
+		     && $this->is_available( @WC()->cart->get_shipping_packages() ) ) {
 
 			if ( WC()->cart->has_discount( $this->get_discount_code() ) ) {
 
@@ -1134,12 +1151,14 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 	 */
 	public function validate_subscription_pickup_coupon( $validate, $coupon ) {
 
-		// Skip validation if it's Local Pickup Plus coupon.
-		if ( isset( $coupon->code ) && $coupon->code === $this->get_discount_code() ) {
-			return false;
+		if ( SV_WC_Plugin_Compatibility::is_wc_version_gte_3_0() ) {
+			$coupon_code = $coupon->get_code();
+		} else {
+			$coupon_code = isset( $coupon->code ) ? $coupon->code : null;
 		}
 
-		return $validate;
+		// skip validation if it's Local Pickup Plus coupon
+		return ! empty( $coupon_code ) && $coupon_code === $this->get_discount_code() ? false : $validate;
 	}
 
 
@@ -2163,7 +2182,6 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		if ( $one_line ) {
 
-			// GEWIJZIGD: Laat de enters in het adres gewoon staan
 			$formatted = str_replace( array( '<br/>', '<br />', "\n" ), array( ', ', ', ', '' ), $formatted );
 
 			// GEWIJZIGD: Gebruik het telefoonveld als naam en plaats het bovenaan
