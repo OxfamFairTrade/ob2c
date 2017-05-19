@@ -1613,7 +1613,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		if ( count( $pickup_locations ) > 0 ) {
 			echo '<div>';
-			echo '<h3>' . _n( 'Pickup Location', 'Pickup Locations', count( $pickup_locations ), 'woocommerce-shipping-local-pickup-plus' ) . '</h3>';
+			// GEWIJZIGD: Gebruik <h2> i.p.v. <h3>
+			echo '<h2>' . _n( 'Pickup Location', 'Pickup Locations', count( $pickup_locations ), 'woocommerce-shipping-local-pickup-plus' ) . '</h2>';
 		}
 
 		foreach ( $pickup_locations as $pickup_location ) {
@@ -2162,10 +2163,10 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		if ( $one_line ) {
 
-			// OPTIONEEL GEWIJZIGD: Laat de enters in het adres gewoon staan
+			// GEWIJZIGD: Laat de enters in het adres gewoon staan
 			$formatted = str_replace( array( '<br/>', '<br />', "\n" ), array( ', ', ', ', '' ), $formatted );
 
-			// GEWIJZIGD: Gebruik het telefoonveld als naam
+			// GEWIJZIGD: Gebruik het telefoonveld als naam en plaats het bovenaan
 			if ( ! empty( $address['phone'] ) ) {
 				$formatted = $address['phone'] . "<br/>\n" . $formatted;
 			}
@@ -2183,8 +2184,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		} else {
 
 			if ( ! empty( $address['phone'] ) ) {
-
-				$formatted .= "<br/>\n" . $address['phone'];
+				// GEWIJZIGD: Gebruik het telefoonveld als naam en plaats het bovenaan
+				$formatted = $address['phone'] . "<br/>\n" . $formatted;
 			}
 		}
 
