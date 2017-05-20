@@ -1180,14 +1180,23 @@
 	};
 
 	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat EN SERVICE POINT?
-	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_local_pickup' ); 
+	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_pickups' ); 
 	
-	function skip_shipping_address_on_local_pickup( $needs_shipping_address ) {
+	function skip_shipping_address_on_pickups( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
 		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false or strpos( reset($chosen_methods), 'service_point' ) !== false ) {
 			$needs_shipping_address = false;
 		}
 		return $needs_shipping_address;
+	}
+
+	// Verberg het lege verzendadres oook na het plaatsen van het order
+	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_pickups' ); 
+	
+	function hide_shipping_address_on_pickups( $hide_on_methods, $order ) {
+		// Bevat 'local_pickup' reeds via core
+		$hide_on_methods[] = 'service_point';
+		return $hide_on_methods;
 	}
 
 	function validate_zip_code( $zip ) {
