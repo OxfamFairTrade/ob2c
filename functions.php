@@ -36,6 +36,15 @@
 	// Toon het blokje 'Additional Capabilities' op de profielpagina nooit
 	add_filter( 'ure_show_additional_capabilities_section', '__return_false' );
 
+	// Schakel de sterkte-indicator voor paswoorden uit
+	add_action( 'wp_print_scripts', 'remove_password_strength', 100 );
+	
+	function remove_password_strength() {
+		if ( wp_script_is( 'wc-password-strength-meter', 'enqueued' ) ) {
+			wp_dequeue_script( 'wc-password-strength-meter' );
+		}
+	}
+
 	// Zorg ervoor dat lokale beheerders toch al hun gearchiveerde site kunnen bekijken
 	add_filter( 'ms_site_check', 'allow_local_manager_on_archived' );
 
