@@ -1169,33 +1169,25 @@
 		return $timestamp;
 	}
 
-	// Verberg het verzendadres na het bestellen ook bij een postpuntlevering in de front-end
-	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_service_point', 10, 2 ); 
-	
-	function hide_shipping_address_on_service_point( $array, $instance ) {
-		// Afhalingen (local_pickup + local_pickup_plus) zitten al in de array
-		// Instances worden er afgeknipt bij de check dus laat gewoon achterwege
-		$array[] = 'service_point';
-		return $array; 
-	};
-
 	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat EN SERVICE POINT?
 	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_pickups' ); 
 	
 	function skip_shipping_address_on_pickups( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
-		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false or strpos( reset($chosen_methods), 'service_point' ) !== false ) {
+		// Deze vergelijking zoekt naar methodes die beginnen met deze string
+		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false or strpos( reset($chosen_methods), 'service_point_shipping_method' ) !== false ) {
 			$needs_shipping_address = false;
 		}
 		return $needs_shipping_address;
 	}
 
-	// Verberg het lege verzendadres oook na het plaatsen van het order
+	// Verberg het lege verzendadres na het bestellen ook bij een postpuntlevering in de front-end
 	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_pickups' ); 
 	
 	function hide_shipping_address_on_pickups( $hide_on_methods, $order ) {
-		// Bevat 'local_pickup' reeds via core
-		$hide_on_methods[] = 'service_point';
+		// Bevat 'local_pickup' reeds via core en 'local_pickup_plus' via filter in plugin
+		// Instances worden er afgeknipt bij de check dus achterwege laten
+		$hide_on_methods[] = 'service_point_shipping_method';
 		return $hide_on_methods;
 	}
 
