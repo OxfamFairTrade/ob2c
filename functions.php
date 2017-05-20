@@ -2842,7 +2842,8 @@
 
 	function get_shops() {
 		$global_zips = array();
-		$sites = get_sites( array( 'archived' => 0 ) );
+		// Negeer main site én gearchiveerde sites
+		$sites = get_sites( array( 'site__not_in' => array( 1 ), 'archived' => 0, ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			$local_zips = get_option( 'oxfam_zip_codes' );
