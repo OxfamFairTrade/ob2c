@@ -716,15 +716,14 @@
     	$shipping_id = reset($shipping_methods);
 		switch ( $shipping_id ) {
 			case stristr( $shipping_id, 'local_pickup' ):
-				$placeholder = "Ik kom de bestelling pas volgende week oppikken in de winkel.";
+				$placeholder = "Bijvoorbeeld: \"Ik kom de bestelling pas eind volgende week oppikken in de winkel.\"";
 				break;
 			default:
-				$placeholder = "'s Middags is er altijd iemand thuis. Geef gerust een belletje wanneer jullie vertrekken.";
+				$placeholder = "Bijvoorbeeld: \"Na 15 uur is er altijd iemand thuis. Geef gerust een belletje wanneer jullie vertrekken.\"";
 				break;
 		}
-		// $fields['order']['order_comments']['label'] = "Opmerkingen";
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
-		// $fields['order']['order_comments']['description'] = "Bel ons na het plaatsen van je bestelling eventueel op ".get_oxfam_shop_data( 'telephone' ).".";
+		$fields['order']['order_comments']['description'] = "Nog vragen? Bekijk de veelgestelde-vragen of bel ons op ".get_oxfam_shop_data( 'telephone' ).".";
 		return $fields;
 	}
 
@@ -1056,16 +1055,37 @@
 		switch ( $shipping_id ) {
 			// Alle instances van winkelafhalingen
 			case stristr( $shipping_id, 'local_pickup' ):
+				// Standaard: bereken a.d.h.v. de hoofdwinkel
+				$node = get_option( 'oxfam_shop_node' );
+				
+				if ( $locations = get_option( 'woocommerce_pickup_locations' ) ) {
+					$pickup_locations = WC()->session->get('chosen_pickup_locations');
+					$pickup_id = reset($pickup_locations);
+					foreach ( $locations as $location ) {
+						if ( $location['id'] == $pickup_id ) {
+							// var_dump($location);
+							$parts = explode( 'node=', $location['note'] );
+							if ( $parts[1] !== null ) {
+								// Afwijkend punt geselecteerd: bereken a.d.h.v. het nodenummer in de openingsuren
+								$node = str_replace( ']', '', $parts[1] );
+							}
+							break;
+						}
+					}
+				}
+
 				// Zoek de eerste werkdag na de volgende middagdeadline
 				$timestamp = get_first_working_day( $from );
 
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 				
-				// + ONDERSTEUNING VOOR ALTERNATIEVE WINKELNODES TOEVOEGEN
-				
+				write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
+		
 				// Check of de winkel op deze dag effectief nog geopend is na 12u
-				$timestamp = find_first_opening_hour( get_office_hours(), $timestamp );
+				$timestamp = find_first_opening_hour( get_office_hours( $node ), $timestamp );
+
+				write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
 
 				break;
 
@@ -1092,7 +1112,7 @@
 		if ( date_i18n( 'N', $from ) < 6 and date_i18n( 'G', $from ) < 12 ) {
 			// Geen actie nodig
 		} else {
-			// We zitten al na de deadline van een werkdag, begin pas vanaf morgen te tellen
+			// We zitten al na de deadline van een werkdag, begin pas vanaf volgende werkdag te tellen
 			$from = strtotime( '+1 weekday', $from );
 		}
 
@@ -1163,7 +1183,7 @@
 						}
 					} else {
 						// Het mag ook een dag in het weekend zijn, de wachttijd is vervuld!
-						$timestamp = find_first_opening_hour( $hours, strtotime('tomorrow midnight'), false );
+						$timestamp = find_first_opening_hour( $hours, strtotime( 'tomorrow', $from ), false );
 					}
 				}
 			} else {
@@ -1173,7 +1193,7 @@
 		} else {
 			// Vandaag zijn we gesloten, probeer het morgen opnieuw
 			// Het mag ook een dag in het weekend zijn, de wachttijd is vervuld!
-			$timestamp = find_first_opening_hour( $hours, strtotime('tomorrow midnight'), false );
+			$timestamp = find_first_opening_hour( $hours, strtotime( 'tomorrow', $from ), false );
 		}
 		return $timestamp;
 	}
