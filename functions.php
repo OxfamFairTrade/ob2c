@@ -453,7 +453,7 @@
 			// Op basis van betere set_flemish_zip_codes() met alle Vlaamse $zip => $city
 			// WC()->customer->set_shipping_city( 'Oostende' );
 			// WC()->customer->save();
-			var_dump(WC()->customer);
+			// var_dump(WC()->customer);
 		}
 		
 		if ( isset( $_GET['emptyCart'] ) ) WC()->cart->empty_cart();
@@ -521,23 +521,56 @@
 	add_action( 'wp_footer', 'cart_update_qty_script' );
 	
 	function cart_update_qty_script() {
-		if ( is_cart() ) :
+		if ( is_cart() ) {
 			global $woocommerce;
 			// validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
-		?>
-			<script>
-				var wto;
-				jQuery( 'div.woocommerce' ).on( 'change', '.qty', function() {
-					clearTimeout(wto);
-					// Time-out net iets groter dan buffertijd zodat we bij ingedrukt houden van de spinner niet gewoon +1/-1 doen
-					wto = setTimeout(function() {
-						jQuery( "[name='update_cart']" ).trigger( 'click' );
-					}, 500);
+			?>
+				<script>
+					var wto;
+					jQuery( 'div.woocommerce' ).on( 'change', '.qty', function() {
+						clearTimeout(wto);
+						// Time-out net iets groter dan buffertijd zodat we bij ingedrukt houden van de spinner niet gewoon +1/-1 doen
+						wto = setTimeout(function() {
+							jQuery( "[name='update_cart']" ).trigger( 'click' );
+						}, 500);
 
-				});
-			</script>
-		<?php
-		endif;
+					});
+				</script>
+			<?php
+		} elseif ( is_main_site() and is_front_page() ) {
+			?>
+				<script>
+					var wto;
+					jQuery( '#oxfam-zip-user' ).on( 'input', function() {
+						clearTimeout(wto);
+						if ( jQuery( '#oxfam-zip-user' ).val().length === 4 ) {
+							jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false );
+							wto = setTimeout(function() {
+								jQuery( '#do_oxfam_redirect' ).trigger('click');
+							}, 500);
+						}
+					});
+					jQuery( '#do_oxfam_redirect' ).on( 'click', function() {
+						jQuery(this).val('Doorsturen ...');
+						var zip = jQuery( '#oxfam-zip-user' ).val();
+						var url = jQuery( '#'+zip+'.oxfam-zip-value' ).val();
+						if ( typeof url !== 'undefined' ) {
+							if ( url.length > 10 ) {
+								window.location.href = url+'?referralZip='+zip;
+							} else {
+								alert("Helaas, voor deze postcode voorziet Oxfam-Wereldwinkels nog geen thuislevering. Kies een winkel op de kaart voor afhaling.");
+								jQuery(this).val('Stuur mij door').prop( 'disabled', true );
+								jQuery( '#oxfam-zip-user' ).val('');
+							}
+						} else {
+							alert("Dit is geen geldige Vlaamse postcode! Probeer het eens opnieuw.");
+							jQuery(this).val('Stuur mij door').prop( 'disabled', true );
+							jQuery( '#oxfam-zip-user' ).val('');
+						}
+					});
+				</script>
+			<?php
+		}
 	}
 
 	// Verhinder bepaalde selecties in de back-end
@@ -723,7 +756,7 @@
 				break;
 		}
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
-		$fields['order']['order_comments']['description'] = "Nog vragen? Bekijk de veelgestelde-vragen of bel ons op ".get_oxfam_shop_data( 'telephone' ).".";
+		$fields['order']['order_comments']['description'] = "Nog vragen bij je bestelling? Neem een kijkje in de veelgestelde vragen of bel ons op ".get_oxfam_shop_data( 'telephone' ).".";
 		return $fields;
 	}
 
@@ -2758,25 +2791,29 @@
 	}
 
 	function print_summary() {
-		$sites = get_sites( array( 'archived' => 0, 'count' => true ) );
+		$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, 'count' => true ) );
 		// Hoofdblog (en templates) ervan aftrekken
-		$msg = "<h1>Shop online in één van onze ".($sites-1)." webshops en haal je bestelling na één werkdag af in de winkel (indien geopend).</h1>";
+		$msg = '<h2 style="text-align: center;">Shop online in één van onze '.$sites.' webshops en haal je bestelling de volgende werkdag al af in de winkel.</h2>';
 		return $msg;
 	}
 
 	function print_shop_selection() {
 		$global_zips = get_shops();
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
- 		$msg = '<h1>Liever thuislevering? Vul één van de '.count($all_zips).' Vlaamse postcodes in en we sturen je door naar de winkel die jouw bestelling levert.</h1>';
-		$msg .= '<p style="text-align: center;"><input type="tel" name="zip" maxlength="4"></p>';
-		$set = 'Reeds ingevuld:<br><select>';
+ 		$msg = '<h2 style="text-align: center;">Liever thuislevering? Vul je postcode in en we sturen je door naar de winkel die jouw bestelling verstuurt.</h2><br>';
+		$msg .= '<p style="text-align: center;">';
+		$msg .= '<input type="tel" class="" id="oxfam-zip-user" maxlength="4" style="width: 160px; height: 40px; text-align: center;"> ';
+		$msg .= '<input type="submit" class="button" id="do_oxfam_redirect" value="Stuur mij door" style="width: 160px; height: 40px; position: relative; top: -1px;" disabled>';
 		foreach ( $all_zips as $zip ) {
 			if ( isset( $global_zips[$zip] ) ) {
-				$set .= '<option value="'.$global_zips[$zip].'">'.$zip.'</option>';
+				$url = $global_zips[$zip];
+			} else {
+				$url = '';
 			}
+			$msg .= '<input type="hidden" class="oxfam-zip-value" id="'.$zip.'" value="'.$url.'">';
 		}
-		$set .= '</select>';
-		return $msg.'<br>'.$set;
+		$msg .= '</p>';
+		return $msg;
 	}
 
 	function print_map() {
@@ -2802,7 +2839,12 @@
 						$thuislevering .= $zip;
 						if ( $i < count($local_zips) ) $thuislevering .= ", ";
 					}
-					$str .= "<Placemark><name><![CDATA[".get_company_name()."]]></name><styleUrl>#1</styleUrl><description><![CDATA[".get_company_address()."<br>".$thuislevering.".<br><a href=".get_site_url().">Naar deze webshop »</a>]]></description><Point><coordinates>".get_oxfam_shop_data( 'll' )."</coordinates></Point></Placemark>";
+					$str .= "<Placemark>";
+					$str .= "<name><![CDATA[".get_company_name()."]]></name><styleUrl>#1</styleUrl>";
+					// ".$thuislevering.".<br>
+					$str .= "<description><![CDATA[<p style='text-align: center;'>".get_company_address()."<br><a href=".get_site_url().">Naar deze webshop »</a></p>]]></description>";
+					$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
+					$str .= "</Placemark>";
 				}
 			}
 			restore_current_blog();
@@ -2914,15 +2956,17 @@
 	function get_shops() {
 		$global_zips = array();
 		// Negeer main site én gearchiveerde sites
-		$sites = get_sites( array( 'site__not_in' => array( 1 ), 'archived' => 0, ) );
+		$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			$local_zips = get_option( 'oxfam_zip_codes' );
-			foreach ( $local_zips as $zip ) {
-				if ( isset($global_zips[$zip]) ) {
-					write_log("CONSISTENTIEFOUT: Postcode ".$zip." is reeds gelinkt aan ".$global_zips[$zip].'!');
+			if ( $local_zips !== false ) {
+				foreach ( $local_zips as $zip ) {
+					if ( isset($global_zips[$zip]) ) {
+						write_log("CONSISTENTIEFOUT: Postcode ".$zip." is reeds gelinkt aan ".$global_zips[$zip].'!');
+					}
+					$global_zips[$zip] = 'https://' . $site->domain . $site->path;
 				}
-				$global_zips[$zip] = $site->path;
 			}
 			restore_current_blog();
 		}
