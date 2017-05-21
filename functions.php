@@ -1924,7 +1924,7 @@
 		$tabs['partner_info'] = array(
 			'title' 	=> 'Herkomst',
 			'priority' 	=> 12,
-			'callback' 	=> 'partner_tab_content',
+			'callback' 	=> function() { output_tab_content('partner'); },
 		);
 
 		// Voeg tabje met voedingswaarde toe (indien niet leeg)
@@ -1960,7 +1960,61 @@
 		ob_start();
 		echo '<table class="shop_attributes">';
 
-		if ( $type === 'food' ) {
+		if ( $type === 'partner' ) {
+			// Herkomsttab altijd tonen!
+			$has_row = true;
+			?>
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th>Landen</th>
+				<td>
+				<?php
+					$i = 1;
+					$str = '/';
+					$countries = get_countries_by_product( $product );
+					if ( count( $countries ) > 0 ) {
+						foreach ( $countries as $country ) {
+							if ( $i === 1 ) {
+								$str = $country;
+							} else {
+								$str .= '<br>'.$country;
+							}
+							$i++;
+						}
+					}
+					echo $str;
+				?>
+				</td>
+			</tr>
+
+			<?php
+				$partners = get_partner_terms_by_product( $product );
+				if ( count( $partners ) > 0 ) {
+			?>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th>Partners</th>
+					<td>
+					<?php
+						$i = 1;
+						foreach ( $partners as $term_id => $partner_name ) {
+							$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
+							
+							if ( isset( $partner_info['url'] ) and strlen( $partner_info['url'] ) > 10 ) {
+								$text = '<a href="'.$partner_info['url'].'" target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner_info['name'].'</a>';
+							} else {
+								$text = $partner_info['name'];
+							}
+							
+							if ( $i !== 1 ) $msg .= '<br>';
+							$msg .= $text." in ".$partner_info['country'];
+							$i++;
+						}
+						echo $msg;
+					?>
+					</td>
+				</tr>
+			<?php
+				}
+		} elseif ( $type === 'food' ) {
 			$attributes = $product->get_attributes();
 
 			foreach ( $attributes as $attribute ) {
@@ -2012,7 +2066,8 @@
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php echo $label_c; ?></th>
-				<td><?php
+				<td>
+				<?php
 					$i = 0;
 					$str = '/';
 					if ( count( $contains ) > 0 ) {
@@ -2026,12 +2081,14 @@
 						}
 					}
 					echo $str;
-				?></td>
+				?>
+				</td>
 			</tr>
 
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 				<th><?php echo $label_mc; ?></th>
-				<td><?php
+				<td>
+				<?php
 					$i = 0;
 					$str = '/';
 					if ( count( $traces ) > 0 ) {
@@ -2045,7 +2102,8 @@
 						}
 					}
 					echo $str;
-				?></td>
+				?>
+				</td>
 			</tr>
 			<?php
 		}
@@ -2146,71 +2204,6 @@
 		}
 
 		return $partner_info;
-	}
-
-	// Output de info over de partners
-	function partner_tab_content() {
-		global $product;
-		echo '<div class="nm-additional-information-inner">';
-			$alt = 1;
-			ob_start();
-			?>
-			<table class="shop_attributes">
-				
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th>Herkomstlanden</th>
-					<td><?php
-						$i = 1;
-						$str = '/';
-						$countries = get_countries_by_product( $product );
-						if ( count( $countries ) > 0 ) {
-							foreach ( $countries as $country ) {
-								if ( $i === 1 ) {
-									$str = $country;
-								} else {
-									$str .= '<br>'.$country;
-								}
-								$i++;
-							}
-						}
-						echo $str;
-					?></td>
-				</tr>
-
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th>Onze partners</th>
-					<td><?php
-						$i = 1;
-						$msg = '<i>(aankoop via andere fairtradeorganisatie)</i>';
-
-						$partners = get_partner_terms_by_product( $product );
-						if ( count( $partners ) > 0 ) {
-							foreach ( $partners as $term_id => $partner_name ) {
-								$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-								
-								if ( isset( $partner_info['url'] ) and strlen( $partner_info['url'] ) > 10 ) {
-									$text = '<a href="'.$partner_info['url'].'" target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner_info['name'].'</a>';
-								} else {
-									$text = $partner_info['name'];
-								}
-								
-								if ( $i === 1 ) {
-									$msg = $text;
-								} else {
-									$msg .= '<br>'.$text;
-								}
-
-								$i++;
-							}
-						}
-						echo $msg;
-					?></td>
-				</tr>
-				
-			</table>
-			<?php
-			echo ob_get_clean();
-		echo '</div>';
 	}
 
 	add_action( 'woocommerce_single_product_summary', 'show_random_partner_quote', 75 );
