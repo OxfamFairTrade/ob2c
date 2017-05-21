@@ -1536,11 +1536,14 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
-		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_woocommerce', 'oxfam-products-photos', 'oxfam_products_photos_callback', 'dashicons-admin-settings', '56' );
-		add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'manage_woocommerce', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
-		add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'create_sites', 'oxfam-product-list', 'oxfam_products_list_callback' );
-		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_woocommerce', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
+		if ( ! is_main_site() ) {
+			add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_woocommerce', 'oxfam-products-photos', 'oxfam_products_photos_callback', 'dashicons-admin-settings', '56' );
+			add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'manage_woocommerce', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
+			add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'create_sites', 'oxfam-product-list', 'oxfam_products_list_callback' );
+			add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_woocommerce', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
+		} else {
+			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
+		}
 	}
 
 	function oxfam_photos_callback() {
@@ -1584,8 +1587,14 @@
 	}
 
 	function oxfam_photo_action_callback() {
-		echo register_photo($_POST['name'], $_POST['timestamp'], $_POST['path']);
-    	wp_die();
+		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
+		$sites = get_sites( array( 'archived' => 0 ) );
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site->blog_id );
+			echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
+			restore_current_blog();
+		}
+		wp_die();
 	}
 
 	function wp_get_attachment_id_by_post_name($post_title) {
@@ -1609,35 +1618,56 @@
         return $attachment_id;
     }
 
-    function register_photo($filename, $filestamp, $filepath) {			
+    function register_photo( $filename, $filestamp, $main_filepath ) {			
     	// Parse de fototitel
-    	$filetitle = explode('.jpg', $filename);
+    	$filetitle = explode( '.jpg', $filename );
 	    $filetitle = $filetitle[0];
+	    $product_id = 0;
+
+		if ( ! is_main_site() ) {
+		    // Bepaal het bestemmingspad in de subsite (zonder dimensies!)
+			$child_filepath = str_replace( '/uploads/', '/uploads/sites/'.get_current_blog_id().'/', $main_filepath );
+			switch_to_blog(1);
+			// Zoek het pad van de 'large' thumbnail op in de hoofdsite
+			$main_attachment_id = wp_get_attachment_id_by_post_name( $filetitle );
+			if ( $main_attachment_id ) {
+				// Kopieer een middelgrote thumbnail van de hoofdsite als 'full' naar de huidige subsite
+				copy( get_scaled_image_path( $main_attachment_id, 'medium' ), $child_filepath );
+				$current_filepath = $child_filepath;
+			}
+			restore_current_blog();
+		} else {
+			$current_filepath = $main_filepath;
+		}
     	
     	// Check of er al een vorige versie bestaat
     	$updated = false;
     	$deleted = false;
-    	$old_id= wp_get_attachment_id_by_post_name($filetitle);
+    	// GEBEURT IN DE LOKALE MEDIABIB
+    	$old_id = wp_get_attachment_id_by_post_name( $filetitle );
 		if ( $old_id ) {
 			// Bewaar de post_parent van het originele attachment
-			$product_id = wp_get_post_parent_id($old_id);
+			$product_id = wp_get_post_parent_id( $old_id );
 			// Check of de uploadlocatie op dit punt al ingegeven is!
-			if ( $product_id ) $product = wc_get_product( $product_id );
-			
-			// Stel het originele bestand veilig
-			rename($filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg');
-			// Verwijder de versie
-			if ( wp_delete_attachment($old_id, true) ) {
+			if ( $product_id ) {
+				$product = wc_get_product( $product_id );
+			}
+
+			// Stel het originele high-res bestand veilig
+			rename( $current_filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg' );
+			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
+			// GEBEURT IN DE LOKALE MEDIABIB
+    		if ( wp_delete_attachment( $old_id, true ) ) {
 				// Extra check op het succesvol verwijderen
 				$deleted = true;
 			}
 			$updated = true;
 			// Hernoem opnieuw zodat de links weer naar de juiste file wijzen 
-			rename(WP_CONTENT_DIR.'/uploads/temporary.jpg', $filepath);
+			rename( WP_CONTENT_DIR.'/uploads/temporary.jpg', $current_filepath );
 		}
 		
 		// Creëer de parameters voor de foto
-		$wp_filetype = wp_check_filetype($filename, null);
+		$wp_filetype = wp_check_filetype( $filename, null );
 		$attachment = array(
 			'post_mime_type' => $wp_filetype['type'],
 			'post_title' => $filetitle,
@@ -1647,40 +1677,47 @@
 		);
 
 		// Probeer de foto in de mediabibliotheek te stoppen
-		$msg = "";
-		$attachment_id = wp_insert_attachment( $attachment, $filepath );
-		if ( ! is_wp_error($attachment_id) ) {
+		// Laatste argument: stel de uploadlocatie van de nieuwe afbeelding in op het product van het origineel (of 0 = geen)
+		$attachment_id = wp_insert_attachment( $attachment, $current_filepath, $product_id );
+		
+		if ( ! is_wp_error( $attachment_id ) ) {
 			if ( isset($product) ) {
 				// Voeg de nieuwe attachment-ID weer toe aan het oorspronkelijke product
-				$product->set_image_id($attachment_id);
+				$product->set_image_id( $attachment_id );
 				$product->save();
-				// Stel de uploadlocatie van de nieuwe afbeelding in op die van het origineel
-				wp_update_post(
-					array(
-						'ID' => $attachment_id, 
-						'post_parent' => $product_id,
-					)
-				);
 			}
 
-			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $filepath );
-			// Registreer ook de metadata en toon een succesboodschap
+			// Registreer ook de metadata
+			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $current_filepath );
 			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
-			if ($updated) {
+			// Toon een succesboodschap
+			if ( $updated ) {
 				$deleted = $deleted ? "verwijderd en opnieuw aangemaakt" : "bijgewerkt";
-				$msg .= "<i>".$filename."</i> ".$deleted." in de mediabibliotheek om ".date_i18n('H:i:s')." ...";
+				$msg = "<i>".$filename."</i> ".$deleted." in mediabibliotheek van site-ID ".get_current_blog_id()." om ".date_i18n('H:i:s')." ...<br>";
 			} else {
-				$msg .= "<i>".$filename."</i> aangemaakt in de mediabibliotheek om ".date_i18n('H:i:s')." ...";
+				$msg = "<i>".$filename."</i> aangemaakt in mediabibliotheek van site-ID ".get_current_blog_id()." om ".date_i18n('H:i:s')." ...<br>";
 			}
-			// Sla het uploadtijdstip van de laatste succesvolle registratie op (kan gebruikt worden als limiet voor nieuwe foto's!)
-			update_option('laatste_registratie_timestamp', $filestamp);
+			// Sla het uploadtijdstip van de laatste succesvolle registratie op (indien recenter dan huidige optiewaarde)
+			if ( $filestamp > get_option( 'laatste_registratie_timestamp' ) ) {
+				update_option( 'laatste_registratie_timestamp', $filestamp );
+			}
 			$registered = true;
 		} else {
 			// Geef een waarschuwing als de aanmaak mislukte
-			$msg .= "Opgelet, er liep iets mis met <i>".$filename."</i>!";
+			$msg = "Opgelet, er liep iets mis met <i>".$filename."</i>!<br>";
 		}
 
 		return $msg;
+	}
+
+	function get_scaled_image_path( $attachment_id, $size = 'full' ) {
+		$file = get_attached_file( $attachment_id, true );
+		if ( $size === 'full' ) return realpath($file);
+		
+		$info = image_get_intermediate_size( $attachment_id, $size );
+		if ( ! is_array($info) or ! isset($info['file']) ) return false;
+		
+		return realpath( str_replace( wp_basename($file), $info['file'], $file ) );
 	}
 
 	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
@@ -1876,43 +1913,93 @@
 	}
 
 	// Registreer een extra tabje op de productdetailpagina voor de voedingswaardes
-	add_filter( 'woocommerce_product_tabs', 'add_energy_allergen_tab' );
+	add_filter( 'woocommerce_product_tabs', 'add_extra_product_tabs' );
 	
-	function add_energy_allergen_tab( $tabs ) {
+	function add_extra_product_tabs( $tabs ) {
 		global $product;
-		// Titel wijzigen van standaardtab kan, maar prioriteit niet
+		// Titel wijzigen van standaardtabs kan maar prioriteit! (description = 10, additional_information = 20)
 		$tabs['additional_information']['title'] = 'Technisch';
+		
+		// Voeg tabje met herkomstinfo toe
 		$tabs['partner_info'] = array(
 			'title' 	=> 'Herkomst',
-			'priority' 	=> 60,
+			'priority' 	=> 12,
 			'callback' 	=> 'partner_tab_content',
 		);
+
+		// Voeg tabje met voedingswaarde toe (indien niet leeg)
+		if ( get_tab_content('food') !== false ) {
+			$eh = $product->get_attribute( 'pa_eenheid' );
+			if ( $eh === 'L' ) {
+				$suffix = 'ml';
+			} elseif ( $eh === 'KG' ) {
+				$suffix = 'g';
+			}
+			$tabs['food_info'] = array(
+				'title' 	=> 'Voedingswaarde per 100 '.$suffix,
+				'priority' 	=> 14,
+				'callback' 	=> function() { output_tab_content('food'); },
+			);
+		}
+
+		// Voeg tabje met allergenen toe
 		$tabs['allergen_info'] = array(
 			'title' 	=> 'Allergenen',
-			'priority' 	=> 100,
-			'callback' 	=> 'allergen_tab_content',
+			'priority' 	=> 16,
+			'callback' 	=> function() { output_tab_content('allergen'); },
 		);
-		$eh = $product->get_attribute( 'pa_eenheid' );
-		if ( $eh === 'L' ) {
-			$suffix = 'ml';
-		} elseif ( $eh === 'KG' ) {
-			$suffix = 'g';
-		}
-		$tabs['food_info'] = array(
-			'title' 	=> 'Voedingswaarde per 100 '.$suffix,
-			'priority' 	=> 80,
-			'callback' 	=> 'food_tab_content',
-		);
+		
 		return $tabs;
 	}
 
-	// Output de info voor de allergenen
-	function allergen_tab_content() {
+	// Retourneer de gegevens voor een custom tab (antwoordt met FALSE indien geen gegevens beschikbaar)
+	function get_tab_content( $type ) {
 		global $product;
-		echo '<div class="nm-additional-information-inner">';
-			$has_row = false;
-			$alt = 1;
+		$has_row = false;
+		$alt = 1;
+		ob_start();
+		echo '<table class="shop_attributes">';
+
+		if ( $type === 'food' ) {
+			$attributes = $product->get_attributes();
+
+			foreach ( $attributes as $attribute ) {
+				$forbidden = array( 'pa_ompak', 'pa_ompak_ean', 'pa_pal_perlaag', 'pa_pal_lagen', 'pa_eenheid' );
+				// Logica omkeren: nu tonen we enkel de 'verborgen' attributen
+				if ( empty( $attribute['is_visible'] ) and ! in_array( $attribute['name'], $forbidden ) ) {
+					$has_row = true;
+				} else {
+					continue;
+				}
+				?>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php
+						$subattributes = array( 'pa_fapucis', 'pa_famscis', 'pa_fasat', 'pa_polyl', 'pa_starch', 'pa_sugar' );
+						if ( in_array( $attribute['name'], $subattributes ) ) {
+							echo '<i style="padding-left: 20px;">waarvan '.lcfirst( wc_attribute_label( $attribute['name'] ) ).'</i>';
+						} else {
+							echo wc_attribute_label( $attribute['name'] );
+						}
+					?></th>
+					<td><?php
+						$values = wc_get_product_terms( $product->get_id(), $attribute['name'], array( 'fields' => 'names' ) );
+						if ( in_array( $attribute['name'], $subattributes ) ) {
+							// echo var_dump($values);
+							echo '<i>'.apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values ).'</i>';
+						} else {
+							echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
+							// echo var_dump($values);
+						}
+					?></td>
+				</tr>
+				<?php
+			}
+
+		} elseif ( $type === 'allergen' ) {
+			// Allergenentab altijd tonen!
+			$has_row = true;
 			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+
 			$label_c = get_term_by( 'id', '615', 'product_allergen' )->name;
 			$label_mc = get_term_by( 'id', '616', 'product_allergen' )->name;
 			foreach ( $allergens as $allergen ) {
@@ -1923,102 +2010,63 @@
 				}
 			}
 			?>
-			<table class="shop_attributes">
-				
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo $label_c; ?></th>
-					<td><?php
-						$i = 0;
-						$str = '/';
-						if ( count( $contains ) > 0 ) {
-							foreach ( $contains as $substance ) {
-								$i++;
-								if ( $i === 1 ) {
-									$str = $substance->name;
-								} else {
-									$str .= ', '.$substance->name;
-								}
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo $label_c; ?></th>
+				<td><?php
+					$i = 0;
+					$str = '/';
+					if ( count( $contains ) > 0 ) {
+						foreach ( $contains as $substance ) {
+							$i++;
+							if ( $i === 1 ) {
+								$str = $substance->name;
+							} else {
+								$str .= ', '.$substance->name;
 							}
 						}
-						echo $str;
-					?></td>
-				</tr>
+					}
+					echo $str;
+				?></td>
+			</tr>
 
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo $label_mc; ?></th>
-					<td><?php
-						$i = 0;
-						$str = '/';
-						if ( count( $traces ) > 0 ) {
-							foreach ( $traces as $substance ) {
-								$i++;
-								if ( $i === 1 ) {
-									$str = $substance->name;
-								} else {
-									$str .= ', '.$substance->name;
-								}
+			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+				<th><?php echo $label_mc; ?></th>
+				<td><?php
+					$i = 0;
+					$str = '/';
+					if ( count( $traces ) > 0 ) {
+						foreach ( $traces as $substance ) {
+							$i++;
+							if ( $i === 1 ) {
+								$str = $substance->name;
+							} else {
+								$str .= ', '.$substance->name;
 							}
 						}
-						echo $str;
-					?></td>
-				</tr>
-				
-			</table>
+					}
+					echo $str;
+				?></td>
+			</tr>
 			<?php
-		echo '</div>';
+		}
+		
+		echo '</table>';
+		
+		if ( $has_row ) {
+			return ob_get_clean();
+		} else {
+			ob_end_clean();
+			return false;
+		}
 	}
 
-	// Output de info voor de voedingswaarden
-	function food_tab_content() {
-		global $product;
-		echo '<div class="nm-additional-information-inner">';
-			$has_row    = false;
-			$alt        = 1;
-			$attributes = $product->get_attributes();
-
-			ob_start();
-			?>
-			<table class="shop_attributes">
-
-				<?php foreach ( $attributes as $attribute ) :
-					$forbidden = array( 'pa_ompak', 'pa_ompak_ean', 'pa_pal_perlaag', 'pa_pal_lagen', 'pa_eenheid' );
-					// Logica omkeren: nu tonen we enkel de 'verborgen' attributen
-					if ( empty( $attribute['is_visible'] ) and ! in_array( $attribute['name'], $forbidden ) ) {
-						$has_row = true;
-					} else {
-						continue;
-					}
-					?>
-					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-						<th><?php
-							$subattributes = array( 'pa_fapucis', 'pa_famscis', 'pa_fasat', 'pa_polyl', 'pa_starch', 'pa_sugar' );
-							if ( in_array( $attribute['name'], $subattributes ) ) {
-								echo '<i style="padding-left: 20px;">waarvan '.lcfirst( wc_attribute_label( $attribute['name'] ) ).'</i>';
-							} else {
-								echo wc_attribute_label( $attribute['name'] );
-							}
-						?></th>
-						<td><?php
-							$values = wc_get_product_terms( $product->get_id(), $attribute['name'], array( 'fields' => 'names' ) );
-							if ( in_array( $attribute['name'], $subattributes ) ) {
-								// echo var_dump($values);
-								echo '<i>'.apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values ).'</i>';
-							} else {
-								echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
-								// echo var_dump($values);
-							}
-						?></td>
-					</tr>
-				<?php endforeach; ?>
-				
-			</table>
-			<?php
-			if ( $has_row ) {
-				echo ob_get_clean();
-			} else {
-				ob_end_clean();
-			}
-		echo '</div>';
+	// Print de inhoud van een tab
+	function output_tab_content( $type ) {
+		if ( get_tab_content( $type ) !== false ) {
+			echo '<div class="nm-additional-information-inner">'.get_tab_content( $type ).'</div>';
+		} else {
+			echo '<div class="nm-additional-information-inner"><i>Geen info beschikbaar.</i></div>';
+		}
 	}
 
 	// Retourneert een array met strings van landen waaruit dit product afkomstig is
