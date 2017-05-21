@@ -27,7 +27,7 @@
 			        	$photos[] = array(
 			        		"name" => basename($filepath),
 						    "timestamp" => filemtime($filepath),
-						    "date" => date_i18n( 'd/m/Y H:i:s', filemtime($filepath) ),
+						    "date" => get_date_from_gmt( date( 'Y-m-d H:i:s', filemtime($filepath) ), 'd/m/Y H:i:s' ),
 						    "path" => $filepath,
 						);
 			        }
@@ -69,7 +69,7 @@
 						jQuery(".input").prepend("<pre>We vonden geen enkele nieuwe of gewijzigde foto!</pre>");
 					}
 
-					jQuery(".input").prepend("<pre>Uploadtijdstip laatst verwerkte foto: <?php echo date_i18n( 'd/m/Y H:i:s', get_option('laatste_registratie_timestamp', '946681200') ); ?></pre>");
+					jQuery(".input").prepend("<pre>Uploadtijdstip laatst verwerkte foto: <?php echo get_date_from_gmt( date( 'Y-m-d H:i:s', get_option('laatste_registratie_timestamp', '946681200') ), 'd/m/Y H:i:s' ); ?></pre>");
 
 					var tries = 0;
 
