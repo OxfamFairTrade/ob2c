@@ -19,6 +19,13 @@
 		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/admin.css' );
 	}
 
+	// Fix het conflict met WP All Export bij het connecteren van Jetpack met Wordpress.com
+	add_action( 'http_api_curl', 'custom_curl_timeout', 10, 3 );
+	
+	function custom_curl_timeout( $handle, $r, $url ) {
+		curl_setopt( $handle, CURLOPT_TIMEOUT, 30 );
+	}
+	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
 	$default_holidays = array( '2017-06-04', '2017-06-05', '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02' );
 	
