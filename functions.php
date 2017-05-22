@@ -303,10 +303,10 @@
 		global $the_order;
 		if ( $column === 'estimated_delivery' ) {
 			if ( get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ) {
-				$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true );
-				if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) {
+				$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) );
+				if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
 					echo '<span style="color: red;">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
-				} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) == date_i18n( 'Y-m-d' ) {
+				} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) == date_i18n( 'Y-m-d' ) ) {
 					echo '<span style="color: orange;">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
 				} else {
 					echo get_date_from_gmt( $delivery, 'd-m-Y' );
