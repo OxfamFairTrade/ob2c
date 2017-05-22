@@ -289,7 +289,7 @@
 		global $the_order;
 		if ( $column === 'estimated_delivery' ) {
 			if ( get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ) {
-				echo get_date_from_gmt( date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ), 'd/m/Y' );
+				echo get_date_from_gmt( date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ), 'd-m-Y' );
 			} else {
 				echo '<i>niet opgeslagen</i>';
 			}
