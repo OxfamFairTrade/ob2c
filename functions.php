@@ -245,7 +245,6 @@
 
 	function make_claimed_by_column_sortable( $columns ) {
 		$columns['claimed_by'] = 'claimed_by';
-		// Eventueel ook sorteren op status toestaan?
 		// $columns['order_status'] = 'order_status';
 		return $columns;
 	}
@@ -263,6 +262,36 @@
 					// Reeds verderop in het verwerkingsproces maar geen winkel? Dat zou niet mogen zijn!
 					echo '<i>ERROR</i>';
 				}
+			}
+		}
+	}
+
+	// Voeg ook een kolom toe aan het besteloverzicht in de back-end
+	add_filter( 'manage_edit-shop_order_columns', 'add_estimated_delivery_column', 12 );
+
+	// Maak sorteren op deze nieuwe kolom mogelijk
+	add_filter( 'manage_edit-shop_order_sortable_columns', 'make_estimated_delivery_column_sortable' );
+
+	// Toon de data van elk order in de kolom
+	add_action( 'manage_shop_order_posts_custom_column' , 'get_estimated_delivery_value', 10, 2 );
+
+	function add_estimated_delivery_column( $columns ) {
+		$columns['estimated_delivery'] = 'Voorziene leverdatum';
+		return $columns;
+	}
+
+	function make_estimated_delivery_column_sortable( $columns ) {
+		$columns['estimated_delivery'] = 'estimated_delivery';
+		return $columns;
+	}
+
+	function get_estimated_delivery_value( $column ) {
+		global $the_order;
+		if ( $column === 'estimated_delivery' ) {
+			if ( get_post_meta( $the_order->get_id(), '_orddd_lite_timestamp', true ) ) {
+				echo get_date_from_gmt( date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'claimed_by', true ) ), 'd/m/Y H:i' );
+			} else {
+				echo '<i>niet opgeslagen</i>';
 			}
 		}
 	}

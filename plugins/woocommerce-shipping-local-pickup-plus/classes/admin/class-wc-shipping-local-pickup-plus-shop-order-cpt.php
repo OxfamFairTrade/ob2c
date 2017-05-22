@@ -96,7 +96,7 @@ class WC_Shipping_Local_Pickup_Plus_CPT {
 
 			if ( 'shipping_address' === $column_name ) {
 
-				$new_columns['pickup_locations'] = __( 'Pickup Locations', 'woocommerce-shipping-local-pickup-plus' );
+				$new_columns['pickup_locations'] = __( 'Pickup Location', 'woocommerce-shipping-local-pickup-plus' );
 			}
 		}
 
