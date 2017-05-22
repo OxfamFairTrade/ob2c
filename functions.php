@@ -605,12 +605,12 @@
 							if ( url.length > 10 ) {
 								window.location.href = url+'?referralZip='+zip;
 							} else {
-								alert(<?php __( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam_webshop' ); ?>);
+								alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam_webshop' ); ?>");
 								jQuery(this).val('Stuur mij door');
 								jQuery( '#oxfam-zip-user' ).val('');
 							}
 						} else {
-							alert(<?php __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam_webshop' ); ?>);
+							alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam_webshop' ); ?>");
 							jQuery(this).val('Stuur mij door');
 							jQuery( '#oxfam-zip-user' ).val('');
 						}
@@ -1500,10 +1500,9 @@
 
 	function check_subscription_preference( $posted ) {
 		global $user_ID, $woocommerce;
-		if ( ! empty($posted['subscribe_digizine']) ) {
+		if ( ! empty( $posted['subscribe_digizine'] ) ) {
 			if ( $posted['subscribe_digizine'] !== 1 ) {
-				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het digizine, hoe kan dat nu?', 'woocommerce' ), 'error' );
-				// wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'oxfam-webshop' ), 'error' );
+				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
 			}
 		}
 
@@ -2789,7 +2788,7 @@
 		} else {
 			$greeting = "Goeieavond";
 		}
-		return sprintf( __( 'Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s).' ), $greeting, get_customer(), get_company_name() );
+		return sprintf( __( 'Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s).', 'oxfam-webshop' ), $greeting, get_customer(), get_company_name() );
 	}
 
 	function get_customer() {
