@@ -276,7 +276,7 @@
 	add_action( 'manage_shop_order_posts_custom_column' , 'get_estimated_delivery_value', 10, 2 );
 
 	function add_estimated_delivery_column( $columns ) {
-		$columns['estimated_delivery'] = 'Voorziene leverdatum';
+		$columns['estimated_delivery'] = 'Uiterste leverdag';
 		return $columns;
 	}
 
@@ -288,8 +288,8 @@
 	function get_estimated_delivery_value( $column ) {
 		global $the_order;
 		if ( $column === 'estimated_delivery' ) {
-			if ( get_post_meta( $the_order->get_id(), '_orddd_lite_timestamp', true ) ) {
-				echo get_date_from_gmt( date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'claimed_by', true ) ), 'd/m/Y H:i' );
+			if ( get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ) {
+				echo get_date_from_gmt( date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ), 'd/m/Y' );
 			} else {
 				echo '<i>niet opgeslagen</i>';
 			}
@@ -798,7 +798,7 @@
 		$shipping = $order->get_shipping_methods();
 		$shipping = reset($shipping);
 		$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
-		update_post_meta( $order_id, '_orddd_lite_timestamp', $timestamp );
+		update_post_meta( $order_id, 'estimated_delivery', $timestamp );
 	}
 
 	// Herschrijf bepaalde klantendata naar standaardformaten tijdens afrekenen én bijwerken vanaf accountpagina
