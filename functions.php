@@ -304,13 +304,13 @@
 		if ( $column === 'estimated_delivery' ) {
 			if ( get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ) {
 				$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) );
+				$color = 'green';
 				if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
-					echo '<span style="color: red;">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
+					$color = 'red';
 				} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) == date_i18n( 'Y-m-d' ) ) {
-					echo '<span style="color: orange;">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
-				} else {
-					echo get_date_from_gmt( $delivery, 'd-m-Y' );
+					$color = 'orange';
 				}
+				echo '<span style="color: '.$color.';">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
 			} else {
 				echo '<i>niet beschikbaar</i>';
 			}
