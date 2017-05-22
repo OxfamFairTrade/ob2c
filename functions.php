@@ -10,7 +10,8 @@
 
 	function load_child_theme() {
 		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ) );
-		load_theme_textdomain( 'oxfam-webshop', get_template_directory().'/languages' );
+		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
+		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 	}
 
 	// Voeg custom styling toe aan de adminomgeving (voor Relevanssi en Voorraadbeheer)
@@ -2782,7 +2783,7 @@
 	}
 
 	function print_widget_contact() {
-		return do_shortcode('[nm_feature icon="pe-7s-mail" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.sprintf( esc_html__( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), get_oxfam_shop_data('telephone') ).'[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-mail" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), get_oxfam_shop_data('telephone') ).'[/nm_feature]');
 	}
 
 	function print_welcome() {
