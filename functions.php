@@ -101,7 +101,7 @@
 	}
 
 	function add_member_of_shop_field( $contactmethods ) {
-		$contactmethods['blog_'.get_current_blog_id().'_member_of_shop'] = 'Ik claim orders voor ...';
+		$contactmethods['blog_'.get_current_blog_id().'_member_of_shop'] = 'Ik bevestig orders voor ...';
 		return $contactmethods;
 	}
 	
@@ -113,30 +113,32 @@
 	}
 
 	function add_extra_user_field( $user ) {
-		?>
-		<h3 style="color: red;">Regiosamenwerking</h3>
-		<table class="form-table" style="color: red;">
-			<tr>
-				<th><label for="dropdown" style="color: red;">Ik bevestig orders voor ...</label></th>
-				<td>
-					<?php
-						$key = 'blog_'.get_current_blog_id().'_member_of_shop';
-						echo '<select name="'.$key.'" id="'.$key.'" style="color: red;">';
-							$member_of = get_the_author_meta( $key, $user->ID );
-							$shops = get_option( 'oxfam_member_shops' );
-							$selected = empty( $member_of ) ? ' selected' : '';
-							echo '<option value=""'.$selected.'>(selecteer)</option>';
-							foreach ( $shops as $shop ) {
-								$selected = ( $shop === $member_of ) ? ' selected' : '';
-								echo '<option value="'.$shop.'"'.$selected.'>'.trim_and_uppercase( $shop ).'</option>';
-							}
-						echo '</select>';
-					?>
-					<span class="description">Opgelet: deze keuze bepaalt aan welke winkel de bestellingen die jij bevestigt toegekend worden!</span>
-				</td>
-			</tr>
-		</table>
-		<?php 
+		if ( user_can( $user, 'manage_woocommerce' ) ) {
+			?>
+			<h3 style="color: red;">Regiosamenwerking</h3>
+			<table class="form-table" style="color: red;">
+				<tr>
+					<th><label for="dropdown" style="color: red;">Ik bevestig orders voor ...</label></th>
+					<td>
+						<?php
+							$key = 'blog_'.get_current_blog_id().'_member_of_shop';
+							echo '<select name="'.$key.'" id="'.$key.'" style="color: red;">';
+								$member_of = get_the_author_meta( $key, $user->ID );
+								$shops = get_option( 'oxfam_member_shops' );
+								$selected = empty( $member_of ) ? ' selected' : '';
+								echo '<option value=""'.$selected.'>(selecteer)</option>';
+								foreach ( $shops as $shop ) {
+									$selected = ( $shop === $member_of ) ? ' selected' : '';
+									echo '<option value="'.$shop.'"'.$selected.'>'.trim_and_uppercase( $shop ).'</option>';
+								}
+							echo '</select>';
+						?>
+						<span class="description">Opgelet: deze keuze bepaalt aan welke winkel de bestellingen die jij bevestigt toegekend worden!</span>
+					</td>
+				</tr>
+			</table>
+			<?php
+		}
 	}
 
 	function auto_claim_local_pickup( $order_id ) {
@@ -958,7 +960,7 @@
 		$current_user = wp_get_current_user();
 		$user_meta = get_userdata($current_user->ID);
 		$user_roles = $user_meta->roles;
-		if ( in_array( 'local_manager', $user_roles) ) {
+		if ( in_array( 'local_manager', $user_roles ) ) {
 			?>
 			<script type="text/javascript">
 				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
@@ -988,9 +990,6 @@
 				jQuery("tr.user-url-wrap").hide();
 				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
 				jQuery("h2:contains('Over de gebruiker')").hide();
-				/* Let op: als deze string plots vertaald wordt, verschijnt het blokje opnieuw! VERVANGEN DOOR FILTER */
-				// jQuery("h3:contains('Additional Capabilities')").next('.form-table').hide();
-				// jQuery("h3:contains('Additional Capabilities')").hide();
 			</script>
 		<?php
 		}
