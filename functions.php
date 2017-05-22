@@ -312,7 +312,7 @@
 					echo get_date_from_gmt( $delivery, 'd-m-Y' );
 				}
 			} else {
-				echo '<i>niet opgeslagen</i>';
+				echo '<i>niet beschikbaar</i>';
 			}
 		}
 	}
@@ -811,8 +811,9 @@
 		return $fields;
 	}
 
-	// Net nadat het order gecreeërd is, slaan we de geschatte leverdatum op
-	add_action( 'woocommerce_checkout_update_order_meta', 'save_estimated_delivery' );
+	// add_action( 'woocommerce_checkout_update_order_meta', 'save_estimated_delivery' );
+	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
+	add_action( 'woocommerce_order_status_pending_to_processing', 'save_estimated_delivery' );
 
 	function save_estimated_delivery( $order_id ) {
 		$order = wc_get_order($order_id);
