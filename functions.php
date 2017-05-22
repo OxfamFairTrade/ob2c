@@ -826,7 +826,7 @@
 	add_filter( 'woocommerce_process_myaccount_field_shipping_city', 'format_city', 10, 1 );
 	
 	function trim_and_uppercase( $value ) {
-		return implode( '-', array_map( 'ucwords', explode( '-', trim($value) ) ) );
+		return implode( '-', array_map( 'ucwords', explode( '-', mb_strtolower( trim($value) ) ) ) );
 	}
 
 	function format_tax( $value ) {
