@@ -82,7 +82,7 @@
 		add_action( 'restrict_manage_posts', 'add_claimed_by_filtering' );
 		
 		// Voer de filtering uit tijdens het bekijken van orders in de admin
-		add_action( 'pre_get_posts', 'filter_orders_by_owner' );
+		add_action( 'pre_get_posts', 'filter_orders_by_owner', 15 );
 
 		// Voeg ook een kolom toe aan het besteloverzicht in de back-end
 		add_filter( 'manage_edit-shop_order_columns', 'add_claimed_by_column', 11 );
@@ -229,12 +229,6 @@
 					$query->set( 'meta_query', $meta_query_args );
 				}
 			}
-
-			// Check of we moeten sorteren op deze kolom
-			if ( $query->get( 'orderby' ) === 'claimed_by' ) {
-				$query->set( 'meta_key', 'claimed_by' );
-				$query->set( 'orderby', 'meta_value' );
-			}
 		}
 	}
 
@@ -277,6 +271,24 @@
 	// Toon de data van elk order in de kolom
 	add_action( 'manage_shop_order_posts_custom_column' , 'get_estimated_delivery_value', 10, 2 );
 
+	// Voer de sortering uit tijdens het bekijken van orders in de admin (voor alle zekerheid NA filteren uitvoeren)
+	add_action( 'pre_get_posts', 'sort_orders_on_custom_column', 20 );
+	
+	function sort_orders_on_custom_column( $query ) {
+		global $pagenow, $post_type;
+		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and $query->query['post_type'] === 'shop_order' ) {
+			// Check of we moeten sorteren op één van onze custom kolommen
+			if ( $query->get( 'orderby' ) === 'estimated_delivery' ) {
+				$query->set( 'meta_key', 'estimated_delivery' );
+				$query->set( 'orderby', 'meta_value_num' );
+			}
+			if ( $query->get( 'orderby' ) === 'claimed_by' ) {
+				$query->set( 'meta_key', 'claimed_by' );
+				$query->set( 'orderby', 'meta_value' );
+			}
+		}
+	}
+
 	function add_estimated_delivery_column( $columns ) {
 		$columns['estimated_delivery'] = 'Uiterste leverdag';
 		return $columns;
@@ -291,7 +303,14 @@
 		global $the_order;
 		if ( $column === 'estimated_delivery' ) {
 			if ( get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ) {
-				echo get_date_from_gmt( date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ), 'd-m-Y' );
+				$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true );
+				if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) {
+					echo '<span style="color: red;">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
+				} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) == date_i18n( 'Y-m-d' ) {
+					echo '<span style="color: orange;">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
+				} else {
+					echo get_date_from_gmt( $delivery, 'd-m-Y' );
+				}
 			} else {
 				echo '<i>niet opgeslagen</i>';
 			}
