@@ -761,6 +761,17 @@
 		return $fields;
 	}
 
+	// Net nadat het order gecreeërd is, slaan we de geschatte leverdatum op
+	add_action( 'woocommerce_checkout_update_order_meta', 'save_estimated_delivery' );
+
+	function save_estimated_delivery( $order_id ) {
+		$order = wc_get_order($order_id);
+		$shipping = $order->get_shipping_methods();
+		$shipping = reset($shipping);
+		$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
+		update_post_meta( $order_id, '_orddd_lite_timestamp', $timestamp );
+	}
+
 	// Herschrijf bepaalde klantendata naar standaardformaten tijdens afrekenen én bijwerken vanaf accountpagina
 	add_filter( 'woocommerce_process_checkout_field_billing_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_first_name', 'trim_and_uppercase', 10, 1 );
@@ -1076,11 +1087,16 @@
 	}
 
 	// Bereken de eerst mogelijke leverdatum voor de opgegeven verzendmethode (retourneert een timestamp) 
-	function estimate_delivery_date( $shipping_id, $order_date = false ) {
+	function estimate_delivery_date( $shipping_id, $order_id = false ) {
 		$deadline = get_office_hours();
 		
 		// We gebruiken het geregistreerde besteltijdstip OF het live tijdstip voor schattingen van de leverdatum
-		$from = $order_date ? strtotime($order_date) : current_time( 'timestamp' );
+		if ( $order_id === false ) {
+			$from = current_time( 'timestamp' );
+		} else {
+			$order = wc_get_order($order_id);
+			$from = strtotime( $order->get_date_created() );
+		}
 		
 		$timestamp = $from;
 		write_log($shipping_id);
@@ -1093,8 +1109,15 @@
 				$node = get_option( 'oxfam_shop_node' );
 				
 				if ( $locations = get_option( 'woocommerce_pickup_locations' ) ) {
-					$pickup_locations = WC()->session->get('chosen_pickup_locations');
-					$pickup_id = reset($pickup_locations);
+					if ( $order_id === false ) {
+						$pickup_locations = WC()->session->get('chosen_pickup_locations');
+						$pickup_id = reset($pickup_locations);
+					} else {
+						$methods = $order->get_shipping_methods();
+						$method = reset($methods);
+						$pickup_location = $method->get_meta('pickup_location');
+						$pickup_id = $pickup_location['id'];
+					}
 					foreach ( $locations as $location ) {
 						if ( $location['id'] == $pickup_id ) {
 							// var_dump($location);

@@ -2186,7 +2186,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 			// GEWIJZIGD: Gebruik het telefoonveld als naam en plaats het bovenaan
 			if ( ! empty( $address['phone'] ) ) {
-				$formatted = $address['phone'] . "<br/>\n" . $formatted;
+				$formatted = $address['phone'] . ", " . $formatted;
 			}
 
 			if ( $show_cost ) {
