@@ -200,8 +200,9 @@ class URE_Grant_Roles {
     public function show_grant_roles_html() {
         if (!$this->lib->is_right_admin_path('users.php')) {      
             return;
-        }      
-        if (!current_user_can('edit_users')) {
+        }
+        // GEWIJZIGD: Verhoog van 'edit_users' naar 'promote_users'
+        if (!current_user_can('promote_users')) {
             return;
         }
 ?>        
