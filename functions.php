@@ -545,13 +545,14 @@
 						clearTimeout(wto);
 						if ( jQuery( '#oxfam-zip-user' ).val().length === 4 ) {
 							jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false );
-							wto = setTimeout(function() {
+							jQuery( '#do_oxfam_redirect' ).val('Doorsturen ...');
+							wto = setTimeout( function() {
 								jQuery( '#do_oxfam_redirect' ).trigger('click');
 							}, 500);
 						}
 					});
 					jQuery( '#do_oxfam_redirect' ).on( 'click', function() {
-						jQuery(this).val('Doorsturen ...');
+						jQuery(this).prop( 'disabled', true );
 						var zip = jQuery( '#oxfam-zip-user' ).val();
 						var url = jQuery( '#'+zip+'.oxfam-zip-value' ).val();
 						if ( typeof url !== 'undefined' ) {
@@ -559,12 +560,12 @@
 								window.location.href = url+'?referralZip='+zip;
 							} else {
 								alert("Helaas, voor deze postcode voorziet Oxfam-Wereldwinkels nog geen thuislevering. Kies een winkel op de kaart voor afhaling.");
-								jQuery(this).val('Stuur mij door').prop( 'disabled', true );
+								jQuery(this).val('Stuur mij door');
 								jQuery( '#oxfam-zip-user' ).val('');
 							}
 						} else {
-							alert("Dit is geen geldige Vlaamse postcode! Probeer het eens opnieuw.");
-							jQuery(this).val('Stuur mij door').prop( 'disabled', true );
+							alert("Dit is geen geldige Vlaamse postcode! Probeer het nog eens opnieuw.");
+							jQuery(this).val('Stuur mij door');
 							jQuery( '#oxfam-zip-user' ).val('');
 						}
 					});
@@ -1572,7 +1573,7 @@
 		if ( ! is_main_site() ) {
 			add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_woocommerce', 'oxfam-products-photos', 'oxfam_products_photos_callback', 'dashicons-admin-settings', '56' );
 			add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'manage_woocommerce', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
-			add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'create_sites', 'oxfam-product-list', 'oxfam_products_list_callback' );
+			add_submenu_page( 'oxfam-products-photos', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'manage_woocommerce', 'oxfam-product-list', 'oxfam_products_list_callback' );
 			add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_woocommerce', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		} else {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
@@ -2575,9 +2576,9 @@
 			// echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
 			// echo '</div>';
 		}
-		if ( $pagenow === 'admin.php' and $screen->parent_base === 'oxfam-products-photos' ) {
+		if ( $pagenow === 'admin.php' and $screen->parent_base === 'oxfam-products-photos' or $screen->parent_base === 'oxfam-products-list' ) {
 			echo '<div class="notice notice-info">';
-			echo '<p>Een compactere lijstweergave is in de maak! We zullen ook verhinderen dat je niet-voorradige producten nog langer in de kijker kunt zetten.</p>';
+			echo '<p>De compactere lijstweergave is beschikbaar! To do: verhinderen dat je niet-voorradige producten nog langer in de kijker kunt zetten.</p>';
 			echo '</div>';
 		}
 	}
@@ -2793,7 +2794,7 @@
 	function print_summary() {
 		$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, 'count' => true ) );
 		// Hoofdblog (en templates) ervan aftrekken
-		$msg = '<h2 style="text-align: center;">Shop online in één van onze '.$sites.' webshops en haal je bestelling de volgende werkdag al af in de winkel.</h2>';
+		$msg = '<h2 style="text-align: center;">Shop online in één van onze '.$sites.' webshops en haal je bestelling de volgende werkdag af in de winkel.</h2>';
 		return $msg;
 	}
 
