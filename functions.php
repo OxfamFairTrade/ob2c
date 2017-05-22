@@ -243,7 +243,6 @@
 
 	function make_claimed_by_column_sortable( $columns ) {
 		$columns['claimed_by'] = 'claimed_by';
-		// $columns['order_status'] = 'order_status';
 		return $columns;
 	}
 
@@ -392,7 +391,6 @@
 	add_filter( 'the_title', 'do_shortcode' );
 	add_filter( 'woocommerce_email_footer_text', 'do_shortcode' );
 
-	// Adminlinks verstoppen voor lokale shopmanagers GEBEURT VIA USER ROLE EDITOR
 	// Toegangrechten voor WP All Export versoepeld door rol aan te passen in wp-all-export-pro.php!
 	// Gebruik eventueel deze speciale filter voor het hardleerse Jetpack:
 	// add_action( 'jetpack_admin_menu', 'hide_jetpack_from_others' );
@@ -404,11 +402,7 @@
 	}
 
 	// Schakel autosaves uit
-	add_action( 'wp_print_scripts', 'disable_autosave' );
-	
-	function disable_autosave() {
-		wp_deregister_script( 'autosave' );
-	}
+	add_action( 'wp_print_scripts', function() { wp_deregister_script('autosave'); } );
 
 	// Zorg ervoor dat revisies ook bij producten bijgehouden worden op de hoofdsite
 	// Log de post_meta op basis van de algemene update_post_metadata-filter (of beter door WC-functies te hacken?)
@@ -611,12 +605,12 @@
 							if ( url.length > 10 ) {
 								window.location.href = url+'?referralZip='+zip;
 							} else {
-								alert("Helaas, voor deze postcode voorziet Oxfam-Wereldwinkels nog geen thuislevering. Kies een winkel op de kaart voor afhaling.");
+								alert(<?php __( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam_webshop' ); ?>);
 								jQuery(this).val('Stuur mij door');
 								jQuery( '#oxfam-zip-user' ).val('');
 							}
 						} else {
-							alert("Dit is geen geldige Vlaamse postcode! Probeer het nog eens opnieuw.");
+							alert(<?php __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam_webshop' ); ?>);
 							jQuery(this).val('Stuur mij door');
 							jQuery( '#oxfam-zip-user' ).val('');
 						}
@@ -2600,13 +2594,13 @@
 	}
 
 	function get_latest_mailings() {
-		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
+		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
 		$list_id = '53ee397c8b';
 		$folder_id = '2a64174067';
 
 		$args = array(
 			'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY),
+				'Authorization' => 'Basic '.base64_encode( 'user:'.MAILCHIMP_APIKEY ),
 			),
 		);
 
@@ -2684,13 +2678,13 @@
 	};
 
 	function get_latest_newsletters() {
-		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
+		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
 		$list_id = '5cce3040aa';
 		$folder_id = 'bbc1d65c43';
 
 		$args = array(
 			'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY),
+				'Authorization' => 'Basic '.base64_encode( 'user:'.MAILCHIMP_APIKEY ),
 			),
 		);
 
@@ -2714,14 +2708,14 @@
 
 	function get_mailchimp_status() {
 		$cur_user = wp_get_current_user();
-		$server = substr(MAILCHIMP_APIKEY, strpos(MAILCHIMP_APIKEY, '-')+1);
+		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
 		$list_id = '5cce3040aa';
 		$email = $cur_user->user_email;
 		$member = md5( mb_strtolower($email) );
 
 		$args = array(
 			'headers' => array(
-				'Authorization' => 'Basic ' .base64_encode('user:'.MAILCHIMP_APIKEY),
+				'Authorization' => 'Basic '.base64_encode( 'user:'.MAILCHIMP_APIKEY ),
 			),
 		);
 
@@ -2749,8 +2743,7 @@
 	##############
 
 	// Personaliseer de begroeting op de startpagina
-	add_shortcode( 'topbar', 'print_welcome' );
-	add_shortcode( 'bezoeker', 'print_customer' );
+	add_shortcode( 'topbar', 'print_greeting' );
 	add_shortcode( 'copyright', 'print_copyright' );
 	add_shortcode( 'straat', 'print_place' );
 	add_shortcode( 'postcode', 'print_zipcode' );
@@ -2758,9 +2751,9 @@
 	add_shortcode( 'telefoon', 'print_telephone' );
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
-	add_shortcode( 'toon_inleiding', 'print_summary' );
-	add_shortcode( 'toon_shops', 'print_shop_selection' );
-	add_shortcode( 'toon_kaart', 'print_map' );
+	add_shortcode( 'toon_inleiding', 'print_welcome' );
+	add_shortcode( 'toon_shops', 'print_store_selector' );
+	add_shortcode( 'toon_kaart', 'print_store_map' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );
@@ -2786,20 +2779,20 @@
 		return do_shortcode('[nm_feature icon="pe-7s-mail" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), get_oxfam_shop_data('telephone') ).'[/nm_feature]');
 	}
 
-	function print_welcome() {
+	function print_greeting() {
 		if ( date_i18n('G') < 6 ) {
-			$greet = "Goeienacht";
+			$greeting = "Goeienacht";
 		} elseif ( date_i18n('G') < 12 ) {
-			$greet = "Goeiemorgen";
+			$greeting = "Goeiemorgen";
 		} elseif ( date_i18n('G') < 20 ) {
-			$greet = "Goeiemiddag";
+			$greeting = "Goeiemiddag";
 		} else {
-			$greet = "Goeieavond";
+			$greeting = "Goeieavond";
 		}
-		return $greet." ".print_customer()."! Welkom op de webshop van ".get_company_name().".";
+		return sprintf( __( 'Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s).' ), $greeting, get_customer(), get_company_name() );
 	}
 
-	function print_customer() {
+	function get_customer() {
 		global $current_user;
 		return ( is_user_logged_in() and strlen($current_user->user_firstname) > 1 ) ? $current_user->user_firstname : "bezoeker";
 	}
@@ -2863,17 +2856,16 @@
 		return print_oxfam_shop_data( 'telephone', $atts );
 	}
 
-	function print_summary() {
+	function print_welcome() {
 		$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, 'count' => true ) );
 		// Hoofdblog (en templates) ervan aftrekken
-		$msg = '<h2 style="text-align: center;">Shop online in één van onze '.$sites.' webshops en haal je bestelling de volgende werkdag af in de winkel.</h2>';
-		return $msg;
+		return '<h2 style="text-align: center;">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites ).'</h2>';
 	}
 
-	function print_shop_selection() {
+	function print_store_selector() {
 		$global_zips = get_shops();
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
- 		$msg = '<h2 style="text-align: center;">Liever thuislevering? Vul je postcode in en we sturen je door naar de winkel die jouw bestelling verstuurt.</h2><br>';
+ 		$msg = '<h2 style="text-align: center;">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h2><br>';
 		$msg .= '<p style="text-align: center;">';
 		$msg .= '<input type="tel" class="" id="oxfam-zip-user" maxlength="4" style="width: 160px; height: 40px; text-align: center;"> ';
 		$msg .= '<input type="submit" class="button" id="do_oxfam_redirect" value="Stuur mij door" style="width: 160px; height: 40px; position: relative; top: -1px;" disabled>';
@@ -2889,7 +2881,7 @@
 		return $msg;
 	}
 
-	function print_map() {
+	function print_store_map() {
 		// Open de file
 		$myfile = fopen("newoutput.kml", "w");
 		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
@@ -2933,9 +2925,9 @@
 	}
 
 
-	####################
-	# HELPER FUNCTIONS #
-	####################
+	###########
+	# HELPERS #
+	###########
 
 	function set_flemish_zip_codes() {
 		$zips = array( 1000, 1020, 1030, 1040, 1050, 1060, 1070, 1080, 1081, 1082, 1083, 1090, 1120, 1130, 1140, 1150, 1160, 1170, 1180, 1190, 1200, 1210, 1500, 1501, 1502, 1540, 1541, 1547, 1560, 1570, 1600, 1601, 1602, 1620, 1630, 1640, 1650, 1651, 1652, 1653, 1654, 1670, 1671, 1673, 1674, 1700, 1701, 1702, 1703, 1730, 1731, 1740, 1741, 1742, 1745, 1750, 1755, 1760, 1761, 1770, 1780, 1785, 1790, 1800, 1820, 1830, 1831, 1840, 1850, 1851, 1852, 1853, 1860, 1861, 1880, 1910, 1930, 1932, 1933, 1950, 1970, 1980, 1981, 1982, 2000, 2018, 2020, 2030, 2040, 2050, 2060, 2070, 2100, 2110, 2140, 2150, 2160, 2170, 2180, 2200, 2220, 2221, 2222, 2223, 2230, 2235, 2240, 2242, 2243, 2250, 2260, 2270, 2275, 2280, 2288, 2290, 2300, 2310, 2320, 2321, 2322, 2323, 2328, 2330, 2340, 2350, 2360, 2370, 2380, 2381, 2382, 2387, 2390, 2400, 2430, 2431, 2440, 2450, 2460, 2470, 2480, 2490, 2491, 2500, 2520, 2530, 2531, 2540, 2547, 2550, 2560, 2570, 2580, 2590, 2600, 2610, 2620, 2627, 2630, 2640, 2650, 2660, 2800, 2801, 2811, 2812, 2820, 2830, 2840, 2845, 2850, 2860, 2861, 2870, 2880, 2890, 2900, 2910, 2920, 2930, 2940, 2950, 2960, 2970, 2980, 2990, 3000, 3001, 3010, 3012, 3018, 3020, 3040, 3050, 3051, 3052, 3053, 3054, 3060, 3061, 3070, 3071, 3078, 3080, 3090, 3110, 3111, 3118, 3120, 3128, 3130, 3140, 3150, 3190, 3191, 3200, 3201, 3202, 3210, 3211, 3212, 3220, 3221, 3270, 3271, 3272, 3290, 3293, 3294, 3300, 3320, 3321, 3350, 3360, 3370, 3380, 3381, 3384, 3390, 3391, 3400, 3401, 3404, 3440, 3450, 3454, 3460, 3461, 3470, 3471, 3472, 3473, 3500, 3501, 3510, 3511, 3512, 3520, 3530, 3540, 3545, 3550, 3560, 3570, 3580, 3581, 3582, 3583, 3590, 3600, 3620, 3621, 3630, 3631, 3640, 3650, 3660, 3665, 3668, 3670, 3680, 3690, 3700, 3717, 3720, 3721, 3722, 3723, 3724, 3730, 3732, 3740, 3742, 3746, 3770, 3790, 3791, 3792, 3793, 3798, 3800, 3803, 3806, 3830, 3831, 3832, 3840, 3850, 3870, 3890, 3891, 3900, 3910, 3920, 3930, 3940, 3941, 3945, 3950, 3960, 3970, 3971, 3980, 3990, 8000, 8020, 8200, 8210, 8211, 8300, 8301, 8310, 8340, 8370, 8377, 8380, 8400, 8420, 8421, 8430, 8431, 8432, 8433, 8434, 8450, 8460, 8470, 8480, 8490, 8500, 8501, 8510, 8511, 8520, 8530, 8531, 8540, 8550, 8551, 8552, 8553, 8554, 8560, 8570, 8572, 8573, 8580, 8581, 8582, 8583, 8587, 8600, 8610, 8620, 8630, 8640, 8647, 8650, 8660, 8670, 8680, 8690, 8691, 8700, 8710, 8720, 8730, 8740, 8750, 8755, 8760, 8770, 8780, 8790, 8791, 8792, 8793, 8800, 8810, 8820, 8830, 8840, 8850, 8851, 8860, 8870, 8880, 8890, 8900, 8902, 8904, 8906, 8908, 8920, 8930, 8940, 8950, 8951, 8952, 8953, 8954, 8956, 8957, 8958, 8970, 8972, 8978, 8980, 9000, 9030, 9031, 9032, 9040, 9041, 9042, 9050, 9051, 9052, 9060, 9070, 9080, 9090, 9100, 9111, 9112, 9120, 9130, 9140, 9150, 9160, 9170, 9180, 9185, 9190, 9200, 9220, 9230, 9240, 9250, 9255, 9260, 9270, 9280, 9290, 9300, 9308, 9310, 9320, 9340, 9400, 9401, 9402, 9403, 9404, 9406, 9420, 9450, 9451, 9470, 9472, 9473, 9500, 9506, 9520, 9521, 9550, 9551, 9552, 9570, 9571, 9572, 9600, 9620, 9630, 9636, 9660, 9661, 9667, 9680, 9681, 9688, 9690, 9700, 9750, 9770, 9771, 9772, 9790, 9800, 9810, 9820, 9830, 9831, 9840, 9850, 9860, 9870, 9880, 9881, 9890, 9900, 9910, 9920, 9921, 9930, 9931, 9932, 9940, 9950, 9960, 9961, 9968, 9970, 9971, 9980, 9981, 9982, 9988, 9990, 9991, 9992 );
@@ -3083,10 +3075,10 @@
 	##########
 
 	// Verander capability van 'manage_options' naar 'create_sites' zodat ook lokale beheerders de logs kunnen bekijken
-	add_filter( 'relevanssi_options_capability', function($capability) { return 'create_sites'; } );
+	add_filter( 'relevanssi_options_capability', function( $capability ) { return 'create_sites'; } );
 	
 	// Verander capability van 'edit_pages' naar 'manage_woocommerce' zodat ook lokale beheerders de logs kunnen bekijken
-	add_filter( 'relevanssi_user_searches_capability', function($capability) { return 'manage_woocommerce'; } );
+	add_filter( 'relevanssi_user_searches_capability', function( $capability ) { return 'manage_woocommerce'; } );
 		
 	// Probeert reguliere meervouden en verkleinwoorden automatisch weg te laten uit zoektermen (én index)
 	add_filter( 'relevanssi_stemmer', 'relevanssi_dutch_stemmer' );
@@ -3200,11 +3192,7 @@
 	}
 	
 	// Verleng de logs tot 90 dagen
-	add_filter( 'relevanssi_30days', 'prolong_relevanssi_logs' );
-
-	function prolong_relevanssi_logs() {
-		return 90;
-	}
+	add_filter( 'relevanssi_30days', function() { return 90; } );
 
 
 	#############
@@ -3229,7 +3217,7 @@
 
 	// Verwissel twee associatieve keys in een array
 	function array_swap_assoc($key1, $key2, $array) {
-		$newArray = array ();
+		$newArray = array();
 		foreach ($array as $key => $value) {
 			if ($key == $key1) {
 				$newArray[$key2] = $array[$key2];
