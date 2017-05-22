@@ -1,0 +1,142 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
+"POT-Creation-Date: 2017-05-22 19:45+0200\n"
+"PO-Revision-Date: 2017-05-22 19:48+0200\n"
+"Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
+"Language-Team: Le Couperet\n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: style.css\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: functions.php\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: functions.php:1078
+#, php-format
+msgid "Beschikbaar op %1$s vanaf %2$s"
+msgstr ""
+
+#: functions.php:1083
+#, php-format
+msgid "Ten laatste beschikbaar vanaf %s"
+msgstr ""
+
+#: functions.php:1091 functions.php:1095
+#, php-format
+msgid "Ten laatste geleverd op %s"
+msgstr ""
+
+#: functions.php:1099
+msgid "Geen schatting beschikbaar"
+msgstr ""
+
+#: functions.php:1332
+msgid "Foutmelding na het ingeven van een onbestaande Vlaamse postcode."
+msgstr "Dit is geen geldige Vlaamse postcode!"
+
+#: functions.php:1338
+msgid ""
+"Foutmelding na het ingeven van een postcode waar deze webshop geen "
+"thuislevering voor organiseert."
+msgstr ""
+"Deze winkel doet geen thuisleveringen naar deze postcode! Kies voor afhaling "
+"of keer terug naar het portaal om de webshop te vinden die voor jouw "
+"postcode thuislevering organiseert."
+
+#: functions.php:1425
+#, php-format
+msgid ""
+"Foutmelding bij aanwezigheid van %d aantal flessen die niet thuisgeleverd "
+"worden."
+msgstr ""
+"Je winkelmandje bevat %d grote flessen fruitsap die te fragiel zijn om te "
+"worden verzonden. Kom je bestelling afhalen in de winkel, of verwijder ze "
+"uit je winkelmandje zodat thuislevering weer beschikbaar wordt."
+
+#: functions.php:1437
+#, php-format
+msgid ""
+"Foutmelding bij bestellingen boven de 30 kg, inclusief het gewicht %s in "
+"kilogram."
+msgstr ""
+"Je bestelling weegt %s kg is bijgevolg te zwaar voor thuislevering. Gelieve "
+"ze te komen afhalen in de winkel."
+
+#: functions.php:1517
+msgid "Foutmelding voor te kleine bestellingen."
+msgstr "Online bestellingen van minder dan 10 euro kunnen we niet verwerken."
+
+#: functions.php:1519
+msgid "Foutmelding voor te grote bestellingen."
+msgstr ""
+"Dit is een wel erg grote bestelling. Neem contact met ons op om te bekijken "
+"of we dit wel tijdig kunnen leveren."
+
+#: functions.php:2772
+msgid "Titel van unique selling point in footer"
+msgstr "Fairtrade. Altijd. Overal."
+
+#: functions.php:2772
+msgid "Inhoud van unique selling point in footer."
+msgstr ""
+"Omdat de internationale handel eerlijker moet, en kàn. Dat bewijzen we elke "
+"dag opnieuw. Met je aankoop bieden we partners in het Zuiden een waardig "
+"bestaan. Vanaf nu zelfs vanuit je luie zetel!"
+
+#: functions.php:2777
+msgid "Inhoud van praktisch blokje in footer (indien ook thuislevering)."
+msgstr ""
+"Alles wat je vóór 12 uur ’s ochtends bestelt, wordt ten laatste drie "
+"werkdagen later door onze vrijwiligers bij je thuis geleverd. Afhalen in de "
+"winkel kan natuurlijk ook. Exotische continenten leken nog nooit zo dichtbij!"
+
+#: functions.php:2779
+msgid "Inhoud van praktisch blokje in footer (inden enkel afhaling)."
+msgstr ""
+"Alles wat je vóór 12 uur 's ochtends bestelt, kan je de volgende werkdag al "
+"afhalen in de winkel. (Kijk naar de schatting naast je winkelmandje.) "
+"Exotische continenten leken nog nooit zo dichtbij!"
+
+#: functions.php:2781
+msgid "Titel van praktisch blokje in footer"
+msgstr "Wereldproducten. Lokaal geleverd."
+
+#: functions.php:2785
+msgid "Titel van contactblokje in footer"
+msgstr "Eerlijk handelen. Ook met jou."
+
+#: functions.php:2785
+#, php-format
+msgid ""
+"Inhoud van het contactblokje in de footer. Bevat <a href=\"mailto:%1$s\">een "
+"e-mailadres</a> en een telefoonnummer (%2$s)."
+msgstr ""
+"Ook met onze klanten willen we fair zaken doen. We communiceren transparant "
+"en formuleren heldere beloftes. Heb je toch nog vragen? <a href=\"mailto:%1$s"
+"\">Stuur ons een mail</a> of bel naar %2$s."
+
+#. Theme Name of the plugin/theme
+msgid "Oxfam-Wereldwinkels Webshop"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Kleine aanpassingen aan het basisthema"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Efraim Sebrechts & Frederik Neirynck"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://www.oxfamwereldwinkels.be"
+msgstr ""

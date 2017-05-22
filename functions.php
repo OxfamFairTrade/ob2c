@@ -10,6 +10,7 @@
 
 	function load_child_theme() {
 		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ) );
+		load_theme_textdomain( 'oxfam-webshop', get_template_directory().'/languages' );
 	}
 
 	// Voeg custom styling toe aan de adminomgeving (voor Relevanssi en Voorraadbeheer)
@@ -1074,12 +1075,12 @@
 			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite!
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
 			case stristr( $method->id, 'local_pickup' ):
-				$descr .= 'Beschikbaar op '.date_i18n( 'l d/m/Y', $timestamp ).' vanaf '.date_i18n( 'G\ui', $timestamp );
+				$descr .= sprintf( __( 'Beschikbaar op %1$s vanaf %2$s', 'oxfam-webshop' ), date_i18n( 'l d/m/Y', $timestamp ), date_i18n( 'G\ui', $timestamp ) );
 				$label .= ':'.wc_price(0);
 				break;
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
-				$descr .= 'Ten laatste beschikbaar vanaf '.date_i18n( 'l d/m/Y', $timestamp );
+				$descr .= sprintf( __( 'Ten laatste beschikbaar vanaf %s', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
 				if ( floatval( $method->cost ) === 0.0 ) {
 					$label = str_replace( 'Afhaling', 'Gratis afhaling', $label );
 					$label .= ':'.wc_price(0);
@@ -1087,15 +1088,15 @@
 				break;
 			// Alle instances van thuislevering
 			case stristr( $method->id, 'flat_rate' ):
-				$descr .= 'Ten laatste geleverd op '.date_i18n( 'l d/m/Y', $timestamp );
+				$descr .= sprintf( __( 'Ten laatste geleverd op %s', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
 				break;
 			// Alle instances van gratis thuislevering
 			case stristr( $method->id, 'free_shipping' ):
-				$descr .= 'Ten laatste geleverd op '.date_i18n( 'l d/m/Y', $timestamp );
+				$descr .= sprintf( __( 'Ten laatste geleverd op %s', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
 				$label .= ':'.wc_price(0);
 				break;
 			default:
-				$descr .= __( 'Geen schatting beschikbaar', 'wc-oxfam' );
+				$descr .= __( 'Geen schatting beschikbaar', 'oxfam-webshop' );
 				break;
 		}
 		$descr .= '</small>';
@@ -1328,13 +1329,13 @@
 	function validate_zip_code( $zip ) {
 		if ( does_home_delivery() and $zip !== 0 ) {
 			if ( ! in_array( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
-				wc_add_notice( __( 'Dit is geen geldige Vlaamse postcode!', 'wc-oxfam' ), 'error' );
+				wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
 			} elseif ( ! in_array( $zip, get_option( 'oxfam_zip_codes' ) ) and is_cart() ) {
 				// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat de klant niet meer radicaal wijzigt (niet afschrikken met error!)
 				$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
 				file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
 				// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices( 'error' ) retourneert te checken
-				wc_add_notice( __( 'Deze winkel doet geen thuisleveringen naar deze postcode! Kies voor afhaling of keer terug naar het portaal om de webshop te vinden die voor jouw postcode thuislevering organiseert.', 'wc-oxfam' ), 'error' );
+				wc_add_notice( __( 'Foutmelding na het ingeven van een postcode waar deze webshop geen thuislevering voor organiseert.', 'oxfam-webshop' ), 'error' );
 			}
 		}
 	}
@@ -1421,7 +1422,7 @@
 					unset( $rates[$rate_key] );
 				}
 			}
-			wc_add_notice( __( 'Je winkelmandje bevat '.( $forbidden_cnt - floor( $forbidden_cnt / 6 ) ).' grote flessen die te fragiel zijn om te worden verzonden. Kom je bestelling afhalen in de winkel, of verwijder dit fruitsap uit je winkelmandje zodat thuislevering weer beschikbaar wordt.', 'wc-oxfam' ), 'error' );
+			wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van %d aantal flessen die niet thuisgeleverd worden.', 'oxfam-webshop' ), $forbidden_cnt - floor( $forbidden_cnt / 6 ) ), 'error' );
 		}
 
 		// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
@@ -1433,7 +1434,7 @@
 					unset( $rates[$rate_key] );
 				}
 			}
-			wc_add_notice( __( 'Je bestelling is te zwaar voor thuislevering ('.number_format( $cart_weight, 1, ',', '.' ).' kg). Gelieve ze te komen afhalen in de winkel!', 'wc-oxfam' ), 'error' );
+			wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het gewicht %s in kilogram.', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
 		}
 
 		$low_vat_slug = 'voeding';
@@ -1507,15 +1508,15 @@
 		if ( ! empty($posted['subscribe_digizine']) ) {
 			if ( $posted['subscribe_digizine'] !== 1 ) {
 				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het digizine, hoe kan dat nu?', 'woocommerce' ), 'error' );
-				// wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'wc-oxfam' ), 'error' );
+				// wc_add_notice( __( 'Ik ben een blokkerende melding die verhindert dat je nu al afrekent, '.get_user_meta( $user_ID, 'first_name', true ).'.', 'oxfam-webshop' ), 'error' );
 			}
 		}
 
 		// Eventueel bestelminimum om te kunnen afrekenen
 		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < 10 ) {
-	  		wc_add_notice( __( 'Online bestellingen van minder dan 10 euro kunnen we niet verwerken.', 'wc-oxfam' ), 'error' );
+	  		wc_add_notice( __( 'Foutmelding voor te kleine bestellingen.', 'oxfam-webshop' ), 'error' );
 	  	} elseif ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) > 500 ) {
-	  		wc_add_notice( __( 'Dit is een wel erg grote bestelling. Neem contact met ons op om te bekijken of we dit wel tijdig kunnen leveren.', 'wc-oxfam' ), 'error' );
+	  		wc_add_notice( __( 'Foutmelding voor te grote bestellingen.', 'oxfam-webshop' ), 'error' );
 	  	}
 	}
 
@@ -2768,21 +2769,20 @@
 	add_shortcode( 'email_footer', 'get_company_and_year' );
 
 	function print_widget_usp() {
-		$msg = "Omdat de internationale handel eerlijker moet, en kàn. Dat bewijzen we elke dag opnieuw. Met je aankoop bieden we partners in het Zuiden een waardig bestaan. Vanaf nu zelfs vanuit je luie zetel!";
-		return do_shortcode('[nm_feature icon="pe-7s-star" layout="centered" title="Fair trade. Altijd. Overal." icon_color="#282828"]'.$msg.'[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-star" layout="centered" title="'.__( 'Titel van unique selling point in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.__( 'Inhoud van unique selling point in footer.', 'oxfam-webshop' ).'[/nm_feature]');
 	}
 
 	function print_widget_delivery() {
 		if ( does_home_delivery() ) {
-			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, wordt ten laatste drie werkdagen later door onze vrijwiligers bij je thuis geleverd. Afhalen in de winkel kan natuurlijk ook. Exotische continenten leken nog nooit zo dichtbij!";
+			$text = __( 'Inhoud van praktisch blokje in footer (indien ook thuislevering).', 'oxfam-webshop' );
 		} else {
-			$msg = "Alles wat je vóór 12 uur 's ochtends bestelt, kan je de volgende werkdag al afhalen in de winkel. (Kijk naar de schatting naast je winkelmandje.) Exotische continenten leken nog nooit zo dichtbij!";
+			$text = __( 'Inhoud van praktisch blokje in footer (inden enkel afhaling).', 'oxfam-webshop' );
 		}
-		return do_shortcode('[nm_feature icon="pe-7s-cart" layout="centered" title="Wereldproducten. Lokaal geleverd." icon_color="#282828"]'.$msg.'[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-cart" layout="centered" title="'.__( 'Titel van praktisch blokje in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.$text.'[/nm_feature]');
 	}
 
 	function print_widget_contact() {
-		return do_shortcode('[nm_feature icon="pe-7s-mail" layout="centered" title="Eerlijk handelen. Ook met jou." icon_color="#282828"]Ook met onze klanten willen we fair zaken doen. We communiceren transparant en formuleren heldere beloftes. Heb je toch nog vragen? <a href="mailto:'.get_company_email().'">Stuur ons een mail</a> of bel naar '.get_oxfam_shop_data( 'telephone' ).'.[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-mail" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.sprintf( esc_html__( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), get_oxfam_shop_data('telephone') ).'[/nm_feature]');
 	}
 
 	function print_welcome() {
