@@ -2,8 +2,6 @@
 /**
  * Pagination - Show numbered pagination for catalog pages
  *
- * This template can be overridden by copying it to yourtheme/woocommerce/loop/pagination.php.
- *
  * @see 	    https://docs.woocommerce.com/document/template-structure/
  * @author 		WooThemes
  * @package 	WooCommerce/Templates

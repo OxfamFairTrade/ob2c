@@ -2,8 +2,6 @@
 /**
  * Cart Page
  *
- * This template can be overridden by copying it to yourtheme/woocommerce/cart/cart.php.
- *
  * @see     https://docs.woocommerce.com/document/template-structure/
  * @author  WooThemes
  * @package WooCommerce/Templates

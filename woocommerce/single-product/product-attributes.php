@@ -4,8 +4,6 @@
  *
  * Used by list_attributes() in the products class.
  *
- * This template can be overridden by copying it to yourtheme/woocommerce/single-product/product-attributes.php.
- *
  * @see 	    https://docs.woocommerce.com/document/template-structure/
  * @author 		WooThemes
  * @package 	WooCommerce/Templates
