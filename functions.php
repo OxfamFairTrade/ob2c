@@ -311,6 +311,8 @@
 						$color = 'red';
 					} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) == date_i18n( 'Y-m-d' ) ) {
 						$color = 'orange';
+					} else {
+						$color = 'green';
 					}
 				} else {
 					$color = 'black';
