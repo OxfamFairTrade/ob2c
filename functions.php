@@ -303,10 +303,12 @@
 	function get_estimated_delivery_value( $column ) {
 		global $the_order;
 		if ( $column === 'estimated_delivery' ) {
+			$processing_statusses = array( 'processing', 'claimed' );
+			$completed_statusses = array( 'completed', 'refunded' );
 			if ( get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ) {
-				$allowed_statusses = array( 'processing', 'claimed' );
 				$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) );
-				if ( in_array( $the_order->get_status(), $allowed_statusses ) ) {
+				if ( in_array( $the_order->get_status(), $processing_statusses ) ) {
+					$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) );
 					if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
 						$color = 'red';
 					} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) == date_i18n( 'Y-m-d' ) ) {
@@ -314,10 +316,14 @@
 					} else {
 						$color = 'green';
 					}
-				} else {
-					$color = 'black';
+					echo '<span style="color: '.$color.';">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
+				} elseif ( in_array( $the_order->get_status(), $completed_statusses ) ) {
+					if ( $order->get_date_completed()->date_i18n( 'Y-m-d H:i:s' ) < $delivery ) {
+						echo '<i>op tijd geleverd</i>';
+					} else {
+						echo '<i>te laat geleverd</i>';
+					}
 				}
-				echo '<span style="color: '.$color.';">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
 			} else {
 				echo '<i>niet beschikbaar</i>';
 			}
