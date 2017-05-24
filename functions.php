@@ -304,12 +304,16 @@
 		global $the_order;
 		if ( $column === 'estimated_delivery' ) {
 			if ( get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ) {
+				$allowed_statusses = array( 'processing', 'claimed' );
 				$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) );
-				$color = 'green';
-				if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
-					$color = 'red';
-				} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) == date_i18n( 'Y-m-d' ) ) {
-					$color = 'orange';
+				if ( in_array( $the_order->get_status(), $allowed_statusses ) ) {
+					if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
+						$color = 'red';
+					} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) == date_i18n( 'Y-m-d' ) ) {
+						$color = 'orange';
+					}
+				} else {
+					$color = 'black';
 				}
 				echo '<span style="color: '.$color.';">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
 			} else {
