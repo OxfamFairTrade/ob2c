@@ -311,14 +311,14 @@
 					$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) );
 					if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
 						$color = 'red';
-					} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) == date_i18n( 'Y-m-d' ) ) {
+					} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) === date_i18n( 'Y-m-d' ) ) {
 						$color = 'orange';
 					} else {
 						$color = 'green';
 					}
 					echo '<span style="color: '.$color.';">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
 				} elseif ( in_array( $the_order->get_status(), $completed_statusses ) ) {
-					if ( $order->get_date_completed()->date_i18n( 'Y-m-d H:i:s' ) < $delivery ) {
+					if ( $the_order->get_date_completed()->date_i18n( 'Y-m-d H:i:s' ) < $delivery ) {
 						echo '<i>op tijd geleverd</i>';
 					} else {
 						echo '<i>te laat geleverd</i>';
