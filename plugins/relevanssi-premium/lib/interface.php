@@ -302,7 +302,6 @@ function update_relevanssi_options() {
 	if (isset($_REQUEST['relevanssi_disable_or_fallback'])) update_option('relevanssi_disable_or_fallback', $_REQUEST['relevanssi_disable_or_fallback']);
 	if (isset($_REQUEST['relevanssi_respect_exclude'])) update_option('relevanssi_respect_exclude', $_REQUEST['relevanssi_respect_exclude']);
 	if (isset($_REQUEST['relevanssi_throttle'])) update_option('relevanssi_throttle', $_REQUEST['relevanssi_throttle']);
-	if (isset($_REQUEST['relevanssi_throttle_limit'])) update_option('relevanssi_throttle_limit', $_REQUEST['relevanssi_throttle_limit']);
 	if (isset($_REQUEST['relevanssi_wpml_only_current'])) update_option('relevanssi_wpml_only_current', $_REQUEST['relevanssi_wpml_only_current']);
 	if (isset($_REQUEST['relevanssi_word_boundaries'])) update_option('relevanssi_word_boundaries', $_REQUEST['relevanssi_word_boundaries']);
 	if (isset($_REQUEST['relevanssi_default_orderby'])) update_option('relevanssi_default_orderby', $_REQUEST['relevanssi_default_orderby']);
@@ -887,7 +886,7 @@ function relevanssi_options_form() {
     	echo '<a href="#options">' . __("Import/export options", "relevanssi") . '</a>';
     }
     else {
-		echo '<strong><a href="http://www.relevanssi.com/buy-premium/?utm_source=plugin&utm_medium=link&utm_campaign=buy">' . __('Buy Relevanssi Premium', 'relevanssi') . '</a></strong>';
+		echo '<strong><a href="https://www.relevanssi.com/buy-premium/?utm_source=plugin&utm_medium=link&utm_campaign=buy">' . __('Buy Relevanssi Premium', 'relevanssi') . '</a></strong>';
     }
 ?>
     </p>
@@ -965,13 +964,7 @@ function relevanssi_options_form() {
 
 	<label for='relevanssi_throttle'><?php _e("Limit searches:", "relevanssi"); ?>
 	<input type='checkbox' name='relevanssi_throttle' id='relevanssi_throttle' <?php echo $throttle ?> /></label><br />
-	<small><?php _e("If this option is checked, Relevanssi will limit search results to at most 500 results per term. This will improve performance, but may cause some relevant documents to go unfound. However, Relevanssi tries to prioritize the most relevant documents. <strong>This does not work well when sorting results by date.</strong> The throttle can end up cutting off recent posts to favour more relevant posts.", 'relevanssi'); ?></small>
-
-	<br /><br />
-
-	<label for='relevanssi_throttle_limit'><?php _e("Limit:", "relevanssi"); ?>
-	<input type='text' size='4' name='relevanssi_throttle_limit' id='relevanssi_throttle_limit' value='<?php echo $throttle_limit ?>' /></label><br />
-	<small><?php printf(__("For better performance, adjust the limit to a smaller number. Adjusting the limit to 100 or 200 should be safe for good results, and might bring a boost in search speed. DO NOT use this feature to limit the number of search results on search results pages, as that will lead to problems. For adjusting the number of search results displayed, see <a href='%s'>this knowledge base entry</a>.", 'relevanssi'), 'http://www.relevanssi.com/knowledge-base/posts-per-page/'); ?></small>
+	<small><?php _e("If this option is checked, Relevanssi will limit search results to at most 500 results per term (this number can be adjusted by changing the 'relevanssi_throttle_limit' option). This will improve performance, but may cause some relevant documents to go unfound. However, Relevanssi tries to prioritize the most relevant documents. <strong>This does not work when sorting results by date.</strong> The throttle can end up cutting off recent posts to favour more relevant posts.", 'relevanssi'); ?></small>
 
 	<br /><br />
 
@@ -1222,7 +1215,7 @@ function relevanssi_options_form() {
 		<tr>
 			<th><?php _e('Type', 'relevanssi'); ?></th>
 			<th><?php _e('Index', 'relevanssi'); ?></th>
-			<th><?php _e('Public?', 'relevanssi'); ?></th>
+			<th><?php _e('Excluded from search?', 'relevanssi'); ?></th>
 		</tr>
 	</thead>
 	<?php
@@ -1240,7 +1233,7 @@ function relevanssi_options_form() {
 				$checked = '';
 			}
 			$label = sprintf("%s", $type);
-			in_array($type, $public_types) ? $public = __('yes', 'relevanssi') : $public = __('no', 'relevanssi');
+			in_array($type, $public_types) ? $public = __('no', 'relevanssi') : $public = __('yes', 'relevanssi');
 
 			echo <<<EOH
 	<tr>
@@ -1270,6 +1263,7 @@ EOH;
 	</tr>
 	</table>
 
+	<p><?php printf(__('If you choose to index a post type that is excluded from the search, you may need to uncheck the "%s" option.', 'relevanssi'), __('Respect exclude_from_search for custom post types', 'relevanssi')); ?></p>
 	<br /><br />
 
 	<p><?php _e('Choose taxonomies to index:', 'relevanssi'); ?></p>
