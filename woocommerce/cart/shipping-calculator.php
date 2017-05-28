@@ -26,8 +26,8 @@ if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) or ! WC()->cart->
 	<!-- GEWIJZIGD: Tekst aanpassen -->
 	<p><a href="#" class="shipping-calculator-button">Liever thuislevering? Vul je postcode in.</a></p>
 
-	<!-- GEWIJZIGD: Standaard openklappen -->
-	<section class="shipping-calculator-form" style="display: block;">
+	<!-- GEWIJZIGD: Standaard openklappen WORDT TEGENGEWERKT DOOR WOOCOMMERCE/ASSETS/JS/FRONTEND/CART.JS! -->
+	<section class="shipping-calculator-form" style="display: none;">
 
 		<p class="form-row form-row-wide" id="calc_shipping_country_field">
 			<select name="calc_shipping_country" id="calc_shipping_country" class="country_to_state" rel="calc_shipping_state">
