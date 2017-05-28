@@ -1429,7 +1429,7 @@
 					unset( $rates[$rate_key] );
 				}
 			}
-			wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van %d aantal flessen die niet thuisgeleverd worden.', 'oxfam-webshop' ), $forbidden_cnt - floor( $forbidden_cnt / 6 ) ), 'error' );
+			wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van producten die niet thuisgeleverd worden, inclusief het aantal flessen (%d).', 'oxfam-webshop' ), $forbidden_cnt - floor( $forbidden_cnt / 6 ) ), 'error' );
 		}
 
 		// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
@@ -1441,7 +1441,7 @@
 					unset( $rates[$rate_key] );
 				}
 			}
-			wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het gewicht %s in kilogram.', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
+			wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht in kilogram (%s).', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
 		}
 
 		$low_vat_slug = 'voeding';
@@ -1519,10 +1519,12 @@
 		}
 
 		// Eventueel bestelminimum om te kunnen afrekenen
-		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < 10 ) {
-	  		wc_add_notice( __( 'Foutmelding voor te kleine bestellingen.', 'oxfam-webshop' ), 'error' );
-	  	} elseif ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) > 500 ) {
-	  		wc_add_notice( __( 'Foutmelding voor te grote bestellingen.', 'oxfam-webshop' ), 'error' );
+		$min = 10;
+		$max = 500;
+		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < $min ) {
+	  		wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
+	  	} elseif ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) > $max ) {
+	  		wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
 	  	}
 	}
 
