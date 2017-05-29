@@ -70,47 +70,12 @@
             */
             static function init()
                 {
-                    
-                    // GEWIJZIGD: Deze status hebben wij nergens voor nodig!
-                    // self::register_custom_post_status();
-                    // add_filter('wc_order_statuses', array( __CLASS__ , 'wc_order_statuses'), 10);
-                    
+                                     
                     add_filter('woocommerce_reduce_order_stock', array( __CLASS__ , 'woocommerce_reduce_order_stock'), 10);
                     
                 }
-            
-            
-            /**
-            * Register custom post status
-            *     
-            */
-            static function register_custom_post_status() 
-                {
-                    
-                    register_post_status( 'wc-backorder', array(
-                                                                'label'                     => _x( 'Reklamasjon', 'Order status', 'woonet' ),
-                                                                'public'                    => true,
-                                                                'exclude_from_search'       => false,
-                                                                'show_in_admin_all_list'    => true,
-                                                                'show_in_admin_status_list' => true,
-                                                                'label_count'               => _n_noop( 'Reklamasjon <span class="count">(%s)</span>', 'Reklamasjon <span class="count">(%s)</span>', 'woonet' )
-                                                                ) 
-                    );
-
-                }
-                
-            /**
-            * Append a new status to woocommerce
-            * 
-            */
-            static function wc_order_statuses($order_statuses)
-                {
-                    $order_statuses['wc-backorder'] =   _x( 'Reklamasjon', 'Order status', 'woonet' );
-                    
-                    return $order_statuses;   
-                }
-                
-
+      
+  
             /**
             * Reduce stock when new order, to parent (unless is already a parent product) then replicate to all network
             *     
@@ -506,7 +471,7 @@
             function save_meta_to_post($product_meta, $attachments, $post_ID, $blog_id, $ignore_meta_fields =   array())
                 {
                                         
-                    $ignore_meta_fields =   apply_filters('woo_mstore/save_meta_to_post/ignore_meta_fields', $ignore_meta_fields, $post_ID, $blog_id);
+                    $ignore_meta_fields =   apply_filters('woo_mstore/save_meta_to_post/ignore_meta_fields', $ignore_meta_fields, $blog_id);
                      
                     //retrieve any mapped images
                     /**
@@ -530,7 +495,7 @@
                                     switch($key)
                                         {
 
-                                            // GEWIJZIGD: Vertaal de nationale post-ID's in bepaalde metavelden naar de lokale post-ID's
+                                            // GEWIJZIGD: Vertaal de nationale post-ID's in deze 4 metavelden naar lokale post-ID's
                                             
                                             case '_force_sell_ids'  :
                                                                         translate_main_to_local_ids( $post_ID, $key, $product_meta_item_row );
@@ -724,7 +689,7 @@
                     // GEWIJZIGD: Upload enkel de grootste thumbnail naar de dochtersites
                     $small_image_path = str_replace('.jpg', '-2000x2000.jpg', $image_path);
                     $image_path = file_exists($small_image_path) ?  $small_image_path : $image_path;
-
+   
                     $image_content  = file_get_contents($image_path);
                     $fileSaved      = file_put_contents($uploads['path'] . "/" . $filename, $image_content);
                                       

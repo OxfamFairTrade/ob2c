@@ -395,16 +395,7 @@
                             $network_sites  =   get_sites(array('limit'  =>  999));
                             foreach($network_sites as $network_site)
                                 {
-                                    switch_to_blog( $network_site->blog_id );                                                
-                                                
-                                    if( ! $WOO_MSTORE->functions->is_plugin_active('woocommerce/woocommerce.php') )
-                                        {
-                                            restore_current_blog();
-                                            continue;   
-                                        }
-
-                                    restore_current_blog();
-                                    
+                                      
                                     $blog_details   =   get_blog_details($network_site->blog_id);
                                     
                                     $value  =   get_post_meta( $post->ID, '_woonet_publish_to_' . $network_site->blog_id, true );
@@ -412,7 +403,7 @@
                                     switch_to_blog( $blog_details->blog_id );
                                     
                                     //check if plugin active
-                                    if( !   $this->functions->is_plugin_active('woocommerce/woocommerce.php') || ! $this->functions->is_plugin_active('woocommerce-multistore/woocommerce-multistore.php'))
+                                    if( !   $this->functions->is_plugin_active('woocommerce/woocommerce.php'))
                                         {
                                             restore_current_blog();
                                             continue;
@@ -852,6 +843,8 @@
                                         );
                     $product_type = wp_get_object_terms( $post_ID, 'product_type', $args);
 
+                    $product_taxonomies_data    =   $this->get_product_taxonomies_terms_data($post_ID);
+                    
                     // GEWIJZIGD: Geef tweede parameter mee die aangeeft of het product voor het eerst verspreid wordt
                     $product_taxonomies_data    =   $this->get_product_taxonomies_terms_data($post_ID, $_product_just_publish);
                     
@@ -1091,7 +1084,6 @@
                                                                
                             $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id);
                             
-                            
                             // GEWIJZIGD: Laat de voorraadvelden enkel negeren indien het om de update van een product gaat dat reeds verspreid is
                             if ( $_product_just_publish ) {
                                 write_log("FIRST METADATA PUBLISH!");
@@ -1104,7 +1096,6 @@
                                 write_log($product_meta);
                                 $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id, array( '_stock', '_stock_status' ));
                             }
-
 
                             //check if this belong to a grouped
                             if($product_data->post_parent > 0)
@@ -1414,8 +1405,7 @@
                             
                             $product_taxonomies_data[$product_taxonomy] =   $taxonomy_terms_data;
                         }
-                    
-                    
+                        
                     // GEWIJZIGD: Schakel het kopiëren van taxonomieën die de zichtbaarheid bepalen uit
                     write_log("ORIGINAL PRODUCT VISIBILITY DATA ON POST-ID ".$post_ID.":");
                     write_log($product_taxonomies_data['product_visibility']);
@@ -1443,7 +1433,6 @@
                     unset($product_taxonomies_data['product_visibility'][10]);
                     write_log("TWEAKED PRODUCT VISIBILITY DATA ON POST-ID ".$post_ID.":");
                     write_log($product_taxonomies_data['product_visibility']);
-
 
                     return $product_taxonomies_data;
                     

@@ -168,17 +168,15 @@
             static function get_order_number($order_number, $order)
                 {
                     
-                    //if set the order number, return
-                    if ( !empty( $_order_nubmer )) 
-                        {
-                            return $_order_nubmer;
-                        }
-
                     // GEWIJZIGD: Voeg prefix en leading zero's toe (+ fix voor het oproepen van $order->order_number: query '_order_number' rechtstreeks)
-                    return "OWW".sprintf( '%05d', get_post_meta($order->id, '_order_number', true) );
+                    return "OWW".sprintf( '%05d', get_post_meta( $order->get_id(), '_order_number', true ) );
                     
-                }          
+                }
+                   
              
         }
+
+
+
 
 ?>
