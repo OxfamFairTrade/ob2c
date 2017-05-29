@@ -1326,7 +1326,7 @@
 	// Verberg het lege verzendadres na het bestellen ook bij een postpuntlevering in de front-end
 	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_pickups' ); 
 	
-	function hide_shipping_address_on_pickups( $hide_on_methods, $order ) {
+	function hide_shipping_address_on_pickups( $hide_on_methods ) {
 		// Bevat 'local_pickup' reeds via core en 'local_pickup_plus' via filter in plugin
 		// Instances worden er afgeknipt bij de check dus achterwege laten
 		$hide_on_methods[] = 'service_point_shipping_method';
