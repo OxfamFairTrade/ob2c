@@ -37,7 +37,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 		<?php echo wc_get_email_order_items( $order, array(
 			'show_sku'      => $sent_to_admin,
 			'show_image'    => !$sent_to_admin,
-			'image_size'    => array(48, 48),
+			'image_size'    => array(64, 64),
 			'plain_text'    => false,
 			'sent_to_admin' => $sent_to_admin,
 		) ); ?>
