@@ -2130,11 +2130,12 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		$pickup_fields = array();
 		
 		// GEWIJZIGD: Voeg sowieso een bedrijsnaamveld toe (weggefilterd door woocommerce_customer_meta_fields)
-		if ( ! isset( $pickup_fields['phone'] ) ) {
-			$pickup_fields['phone'] = array(
-				'label' => __( 'Phone', 'woocommerce-shipping-local-pickup-plus' ),
+		if ( ! isset( $pickup_fields['shipping_company'] ) ) {
+			$pickup_fields['shipping_company'] = array(
+				'label' => __( 'Company', 'woocommerce' ),
 			);
 		}
+
 		foreach ( $address_fields as $key => $value ) {
 			$key = substr( $key, 9 );  // strip off 'shipping_'
 			unset( $value['required'], $value['class'], $value['clear'], $value['type'], $value['label_class'] );
