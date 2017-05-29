@@ -23,8 +23,9 @@ foreach ( $items as $item_id => $item ) :
 
 				// Show title/image etc
 				if ( $show_image ) {
-					// GEWIJZIGD: Verhinder dat vertaalstring opduikt in onze PO-file
-					echo apply_filters( 'woocommerce_order_item_thumbnail', '<div style="margin-bottom: 5px"><img src="' . ( $product->get_image_id() ? current( wp_get_attachment_image_src( $product->get_image_id(), 'thumbnail' ) ) : wc_placeholder_img_src() ) . '" alt="Productafbeelding" height="' . esc_attr( $image_size[1] ) . '" width="' . esc_attr( $image_size[0] ) . '" style="vertical-align:middle; margin-' . ( is_rtl() ? 'left' : 'right' ) . ': 10px;" /></div>', $item );
+					// GEWIJZIGD: Maak productfotootjes aanklikbaar en verhinder dat vertaalstring opduikt in onze PO-file
+					$product_permalink = $product->is_visible() ? $product->get_permalink( $item ) : '';
+					echo apply_filters( 'woocommerce_order_item_thumbnail', '<div style="margin-bottom: 5px"><a href="'.$product_permalink.'"><img src="' . ( $product->get_image_id() ? current( wp_get_attachment_image_src( $product->get_image_id(), 'thumbnail' ) ) : wc_placeholder_img_src() ) . '" alt="Productafbeelding" height="' . esc_attr( $image_size[1] ) . '" width="' . esc_attr( $image_size[0] ) . '" style="vertical-align:middle; margin-' . ( is_rtl() ? 'left' : 'right' ) . ': 10px;" /></a></div>', $item );
 				}
 
 				// Product name

@@ -433,16 +433,6 @@
 		return $email_heading;
 	}
 
-	// Toegangrechten voor WP All Export versoepeld door rol aan te passen in wp-all-export-pro.php!
-	// Gebruik eventueel deze speciale filter voor het hardleerse Jetpack:
-	// add_action( 'jetpack_admin_menu', 'hide_jetpack_from_others' );
-	
-	function hide_jetpack_from_others() {
-    	if ( ! current_user_can( 'create_sites' ) ) {
-    		remove_menu_page( 'jetpack' );
-    	}
-	}
-
 	// Schakel autosaves uit
 	add_action( 'wp_print_scripts', function() { wp_deregister_script('autosave'); } );
 
