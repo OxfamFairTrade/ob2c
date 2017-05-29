@@ -404,8 +404,8 @@
 	add_filter( 'woocommerce_email_footer_text', 'do_shortcode' );
 	
 	// Pas het onderwerp van de mails aan naargelang de gekozen levermethode
-	// add_filter( 'woocommerce_email_subject_customer_processing_order', 'change_processing_order_subject', 1, 2 );
-	add_filter( 'woocommerce_email_subject_customer_completed_order', 'change_completed_order_subject', 1, 2 );
+	// add_filter( 'woocommerce_email_subject_customer_processing_order', 'change_processing_order_subject' );
+	add_filter( 'woocommerce_email_subject_customer_completed_order', 'change_completed_order_subject' );
 
 	function change_processing_order_subject( $subject, $order ) {
 		return $subject;
@@ -422,15 +422,13 @@
 	}
 
 	// Pas de header van de mails aan naargelang de gekozen levermethode
-	add_filter( 'woocommerce_email_header_text', 'change_email_heading', 10, 2 );
+	add_filter( 'woocommerce_email_heading_customer_completed_order', 'change_completed_email_heading' );
 
-	function change_email_heading( $email_heading, $order ) {
-		if ( $email_heading === 'Je bestelling is afgerond en/of verzonden' ) {
-			if ( $order->has_shipping_method('local_pickup_plus') ) {
-				$subject = 'Je bestelling staat klaar';
-			} else {
-				$subject = 'Je bestelling is verzonden';
-			}
+	function change_completed_email_heading( $email_heading, $order ) {
+		if ( $order->has_shipping_method('local_pickup_plus') ) {
+			$email_heading = 'Je bestelling staat klaar';
+		} else {
+			$email_heading = 'Je bestelling is verzonden';
 		}
 		return $email_heading;
 	}
