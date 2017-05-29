@@ -126,6 +126,11 @@ body.post-type-shop_order div.wrap > a.page-title-action {
 	display: none;
 }
 
+/* Verberg link naar het volledige Jetpack-dashboard (vereist login die beheerders toch niet hebben) */
+div.gotonewdash {
+	display: none !important;
+}
+
 /* Verberg onnodige knoppen bij terugbetalingen (wordt ook nog gefixt in core) */
 div.wc-order-item-bulk-edit,
 /* button.bulk-delete-items,
