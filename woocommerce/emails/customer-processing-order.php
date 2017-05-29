@@ -15,11 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * @hooked WC_Emails::email_header() Output the email header
  */
-do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
+do_action( 'woocommerce_email_header', $email_heading, $email );
 
-<p><?php _e( "Your order has been received and is now being processed. Your order details are shown below for your reference:", 'woocommerce' ); ?></p>
-
-<?php
+if ( $order->has_shipping_method('local_pickup_plus') ) {
+	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel).', 'wc-oxfam' ).'</p>' );
+} else {
+	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'wc-oxfam' ).'</p>' );
+}
 
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.

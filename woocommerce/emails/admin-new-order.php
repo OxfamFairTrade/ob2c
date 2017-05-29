@@ -15,19 +15,13 @@
  /**
   * @hooked WC_Emails::email_header() Output the email header
   */
- do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
+ do_action( 'woocommerce_email_header', $email_heading, $email );
 
-<p>
-<?php
-  printf( __( 'You have received an order from %s. The order is as follows:', 'woocommerce' ), $order->get_formatted_billing_full_name() );
-  $tax_classes = $order->get_items_tax_classes();
-  if ( ! in_array( 'voeding', $tax_classes ) and ! $order->has_shipping_method('local_pickup_plus') ) {
-    printf( 'Opgelet, dit is een bestelling met enkel luxeproducten aan standaard BTW-tarief! Zorg dat je bij de verwerking in ShopPlus dus de levercode van 21% inscant. Als winkel hou je voor deze thuislevering netto 5,74 i.p.v. 6,56 euro over.' );
-  }
-?>
-</p>
-
- <?php
+printf( '<p>Je hebt een bestelling ontvangen van %s.</p>', $order->get_formatted_billing_full_name() );
+$tax_classes = $order->get_items_tax_classes();
+if ( ! in_array( 'voeding', $tax_classes ) and ! $order->has_shipping_method('local_pickup_plus') ) {
+    printf( '<p style="color: red;">Opgelet, dit is een bestelling met enkel luxeproducten aan standaard BTW-tarief! Zorg dat je bij de verwerking in ShopPlus dus de levercode van 21% inscant. Als winkel hou je voor deze thuislevering netto 5,74 i.p.v. 6,56 euro over.</p>' );
+}
 
  /**
   * @hooked WC_Emails::order_details() Shows the order details table.

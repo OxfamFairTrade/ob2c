@@ -39,7 +39,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 									<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_header">
 										<tr>
 											<td id="header_wrapper">
-												<h1><?php echo $email_heading; ?></h1>
+												<!-- GEWIJZIGD: Voeg filter toe zodat we de heading makkelijk kunnnen aanpassen -->
+												<h1><?php echo apply_filters( 'woocommerce_email_header_text', $email_heading, $order ); ?></h1>
 											</td>
 										</tr>
 									</table>

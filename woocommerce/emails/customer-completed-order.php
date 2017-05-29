@@ -15,20 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * @hooked WC_Emails::email_header() Output the email header
  */
-do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
+do_action( 'woocommerce_email_header', $email_heading, $email );
 
-<p>
-<?php
-	printf( __( "Hi there. Your recent order on %s has been completed. Your order details are shown below for your reference:", 'woocommerce' ), get_option( 'blogname' ) );
-	if ( $order->has_shipping_method('local_pickup_plus') ) {
-		printf( __( 'Breng je identiteitskaart mee.', 'wc-oxfam' ) );
-	} else {
-		printf( __( 'We hebben je pakje afgeleverd bij onze logistieke partner. Je kunt het over een tweetal dagen thuis verwachten.', 'wc-oxfam' ) );
-	}
-?>
-</p>
-
-<?php
+if ( $order->has_shipping_method('local_pickup_plus') ) {
+	printf( '<p>'.__( 'Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel).', 'wc-oxfam' ).'</p>' );
+} else {
+	printf( '<p>'.__( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'wc-oxfam' ).'</p>' );
+}
 
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.

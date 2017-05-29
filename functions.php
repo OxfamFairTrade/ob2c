@@ -402,6 +402,38 @@
 	add_filter( 'widget_text', 'do_shortcode' );
 	add_filter( 'the_title', 'do_shortcode' );
 	add_filter( 'woocommerce_email_footer_text', 'do_shortcode' );
+	
+	// Pas het onderwerp van de mails aan naargelang de gekozen levermethode
+	// add_filter( 'woocommerce_email_subject_customer_processing_order', 'change_processing_order_subject', 1, 2 );
+	add_filter( 'woocommerce_email_subject_customer_completed_order', 'change_completed_order_subject', 1, 2 );
+
+	function change_processing_order_subject( $subject, $order ) {
+		return $subject;
+	}
+
+	function change_completed_order_subject( $subject, $order ) {
+		$helper = explode( 'is ', $subject );
+		if ( $order->has_shipping_method('local_pickup_plus') ) {
+			$subject = $helper[0] . 'is klaar voor afhaling!';
+		} else {
+			$subject = $helper[0] . 'wordt weldra geleverd!';
+		}
+		return $subject;
+	}
+
+	// Pas de header van de mails aan naargelang de gekozen levermethode
+	add_filter( 'woocommerce_email_header_text', 'change_email_heading', 10, 2 );
+
+	function change_email_heading( $email_heading, $order ) {
+		if ( $email_heading === 'Je bestelling is afgerond en/of verzonden' ) {
+			if ( $order->has_shipping_method('local_pickup_plus') ) {
+				$subject = 'Je bestelling staat klaar';
+			} else {
+				$subject = 'Je bestelling is verzonden';
+			}
+		}
+		return $email_heading;
+	}
 
 	// Toegangrechten voor WP All Export versoepeld door rol aan te passen in wp-all-export-pro.php!
 	// Gebruik eventueel deze speciale filter voor het hardleerse Jetpack:
