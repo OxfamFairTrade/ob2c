@@ -1214,7 +1214,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		if ( 1 === count( $this->pickup_locations ) ) {
 
 			$chosen_pickup_location = $this->pickup_locations[0];
-			echo $this->get_formatted_address_helper( $chosen_pickup_location, true );
+			// GEWIJZIGD: Zet adres op meerdere lijnen
+			echo $this->get_formatted_address_helper( $chosen_pickup_location, false );
 
 			echo '<input type="hidden" name="pickup_location[' . $package_index . ']" value="' . esc_attr( $chosen_pickup_location['id'] ) . '" />';
 		} else {
@@ -1246,7 +1247,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 					echo '<li style="margin-left:0;">';
 					// GEWIJZIGD: Voeg Savoy-klasses toe zodat styling identiek is
 					echo '<input type="radio" name="pickup_location[' . $package_index . ']" id="pickup_location_' . $package_index . '_' . $location['id'] . '" value="' . esc_attr( $location['id'] ) . '" class="nm-custom-radio pickup_location" ' . checked( $location['id'], $chosen_pickup_location_id, false ) . ' />';
-					echo '<label class="nm-custom-radio-label" for="pickup_location_' . $package_index . '_' . $location['id'] . '">' . $this->get_formatted_address_helper( $location, true, true ) . '</label>';
+					// GEWIJZIGD: Zet adres op meerdere lijnen
+					echo '<label class="nm-custom-radio-label" for="pickup_location_' . $package_index . '_' . $location['id'] . '">' . $this->get_formatted_address_helper( $location, false, true ) . '</label>';
 					echo '</li>';
 				}
 				echo '</ul>';
@@ -2126,6 +2128,13 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		unset( $address_fields['shipping_first_name'], $address_fields['shipping_last_name'], $address_fields['shipping_country'] );
 		$pickup_fields = array();
+		
+		// GEWIJZIGD: Voeg sowieso een bedrijsnaamveld toe (weggefilterd door woocommerce_customer_meta_fields)
+		if ( ! isset( $pickup_fields['phone'] ) ) {
+			$pickup_fields['phone'] = array(
+				'label' => __( 'Phone', 'woocommerce-shipping-local-pickup-plus' ),
+			);
+		}
 		foreach ( $address_fields as $key => $value ) {
 			$key = substr( $key, 9 );  // strip off 'shipping_'
 			unset( $value['required'], $value['class'], $value['clear'], $value['type'], $value['label_class'] );
@@ -2180,14 +2189,14 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 			'state'      => null
 		), $address ) );
 
+		// GEWIJZIGD: Voeg bedrijfsnaam toe en plaats het bovenaan
+		if ( ! empty( $address['shipping_company'] ) ) {
+			$formatted = $address['shipping_company'] . "<br/>\n" . $formatted;
+		}
+
 		if ( $one_line ) {
 
 			$formatted = str_replace( array( '<br/>', '<br />', "\n" ), array( ', ', ', ', '' ), $formatted );
-
-			// GEWIJZIGD: Gebruik het telefoonveld als naam en plaats het bovenaan
-			if ( ! empty( $address['phone'] ) ) {
-				$formatted = $address['phone'] . ", " . $formatted;
-			}
 
 			if ( $show_cost ) {
 
@@ -2202,8 +2211,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		} else {
 
 			if ( ! empty( $address['phone'] ) ) {
-				// GEWIJZIGD: Gebruik het telefoonveld als naam en plaats het bovenaan
-				$formatted = $address['phone'] . "<br/>\n" . $formatted;
+
+				$formatted .= "<br/>\n" . $address['phone'];
 			}
 		}
 
