@@ -1901,18 +1901,6 @@
 
 		register_taxonomy( $taxonomy_name, 'product', $args );
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
-
-		// Indien sluitingsdag: toon een banner dat we vandaag uitzonderlijk gesloten zijn
-		global $default_holidays;
-		// Wordt bij elke paginaweergave uitgevoerd, dus niet echt efficiënt
-		// Boodschap personaliseren? Eerste werkdag zoeken na vakantie?
-		update_option('woocommerce_demo_store_notice', 'We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening.');
-		// Wijkt 2 dagen af, maar kom
-		if ( in_array( date_i18n('Y-m-d'), get_option('oxfam_holidays', $default_holidays) ) ) {
-			update_option('woocommerce_demo_store', 'yes');
-		} else {
-			update_option('woocommerce_demo_store', 'no');
-		}
 	}
 
 	// Creëer drie custom hiërarchische taxonomieën op producten om wijninfo in op te slaan
