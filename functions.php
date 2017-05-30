@@ -3203,13 +3203,11 @@
 		}
 	}
 
-	// Zorg ervoor dat niet-zichtbare producten niet geïndexeerd worden (en dus niet opduiken in de zoekresultaten)
-	add_filter( 'relevanssi_do_not_index', 'rlv_wc3_hidden_filter', 10, 2 );
+	// Zorg ervoor dat verborgen producten niet geïndexeerd worden (en dus niet opduiken in de zoekresultaten, ook als we de filter 'post_type=product' weglaten)
+	add_filter( 'relevanssi_do_not_index', 'exclude_hidden_products', 10, 2 );
 	
-	function rlv_wc3_hidden_filter( $block, $post_id ) {
-		if ( has_term( 'exclude-from-catalog', 'product_visibility', $post_id ) ) $block = true;
+	function exclude_hidden_products( $block, $post_id ) {
 		if ( has_term( 'exclude-from-search', 'product_visibility', $post_id ) ) $block = true;
-		if ( has_term( 'outofstock', 'product_visibility', $post_id ) ) $block = true;
 		return $block;
 	}
 
