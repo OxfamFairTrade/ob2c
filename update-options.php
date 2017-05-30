@@ -14,10 +14,11 @@
 
 				settings_errors();
 				// Strikter onderscheid maken tussen opties die nationaal of lokaal beheerd worden (want anders toch bereikbaar door HTML te manipuleren)
-				settings_fields( 'oxfam-options-local' );
 				if ( current_user_can( 'create_sites' ) ) {
-					// Mogelijk om vakantiedagen als admin op te slaan of slechts één groep mogelijk?
 					settings_fields( 'oxfam-options-global' );
+				} else {
+					// Er lijkt slechts één groep per keer opgeslagen te kunnen worden!
+					settings_fields( 'oxfam-options-local' );
 				}
 				
 				Mollie_Autoloader::register();
@@ -136,7 +137,7 @@
 					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op de contactpagina een rode banner verschijnen zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:<br><small>Typ alle datums waarop de webshop 'gesloten' is in het formaat YYYY-MM-DD en scheid ze met een komma.</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="<?php echo implode( ', ', $default_holidays ); ?>"><?php echo esc_textarea( implode( ', ', get_option('oxfam_holidays') ) ); ?></textarea>
+		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="<?php echo implode( ', ', $default_holidays ); ?>" <?php if ( current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option('oxfam_holidays') ) ); ?></textarea>
 		  		</td>
 			</tr>
 			<?php
