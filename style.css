@@ -4,14 +4,49 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:  	Kleine aanpassingen aan het basisthema
 	Template:     	savoy
-	Version:      	1.2.0
+	Version:      	1.3.0
 	Text Domain:  	oxfam-webshop
 */
 
+td.product-thumbnail.empties {
+	padding: 20px;
+}
+
+body.home.page-id-2398 div.nm-page-wrap-inner > #nm-header-placeholder {
+	background-image: url('cover.jpg');
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: cover;
+}
+
+body.home.page-id-2398 div.nm-page-wrap-inner > #nm-header {
+	background-color: transparent;
+	height: 200px;
+}
+
+body.home.page-id-2398 div.nm-page-wrap-inner .nm-header-logo {
+	position: absolute;
+}
+
+body.home.page-id-2398 div.nm-page-wrap-inner .nm-header-inner,
+body.home.page-id-2398 div.nm-page-wrap-inner .nm-header-row,
+body.home.page-id-2398 div.nm-page-wrap-inner .nm-header-col,
+body.home.page-id-2398 div.nm-page-wrap-inner .nm-main-menu {
+	height: 100%;
+	width: 100%;
+}
+
+body.home.page-id-2398 div.nm-page-wrap-inner .nm-main-menu:before {
+	content: 'Welkom op de eerste en grootste fairtradewebshop van België!';
+	line-height: 200px;
+	color: white;
+	font-size: 2em;
+}
+
 /* Breedte van alle standaardpagina's limiteren */
 .page-template-default .entry-content {
-	// max-width: 1200px;
-	// margin: 0 auto;
+	max-width: 1200px;
+	margin: 0 auto;
 }
 
 /* Zet de titels op de homepage groter */

@@ -1670,9 +1670,21 @@
 	}
 
 	// Tel leeggoed niet mee bij aantal items in winkelmandje
-	add_filter( 'woocommerce_cart_contents_count',  'so_28359520_cart_contents_count' );
+	add_filter( 'woocommerce_cart_item_quantity', 'add_bottles_to_quantity', 10, 3 );
 	
-	function so_28359520_cart_contents_count( $count ) {
+	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
+		$productje = wc_get_product( $cart_item['product_id'] );
+		if ( $productje->is_visible() ) {
+			return $product_quantity;
+		} else {
+			return $product_quantity.' flessen';
+		}
+	}
+
+	// Tel leeggoed niet mee bij aantal items in winkelmandje
+	add_filter( 'woocommerce_cart_contents_count', 'exclude_empties_from_cart_count' );
+	
+	function exclude_empties_from_cart_count( $count ) {
 		$cart = WC()->cart->get_cart();
 		
 		$subtract = 0;

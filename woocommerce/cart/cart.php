@@ -46,8 +46,12 @@ do_action( 'woocommerce_before_cart' ); ?>
 				?>
 				<tr class="woocommerce-cart-form__cart-item <?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
 
-					<td class="product-thumbnail">
 						<?php
+							if ( $_product->is_visible() ) {
+								echo '<td class="product-thumbnail">';
+							} else {
+								echo '<td class="product-thumbnail empties">';
+							}
 							$thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
 
 							if ( ! $product_permalink ) {
@@ -75,7 +79,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 							}
 						?>
                         
-                        <?php if ( $nm_theme_options['cart_show_item_price'] ) : ?>
+                        <?php if ( $nm_theme_options['cart_show_item_price'] and $_product->is_visible() ) : ?>
                         <div class="product-price" data-title="<?php esc_attr_e( 'Price', 'woocommerce' ); ?>">
                             <?php
                                 echo apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key );
