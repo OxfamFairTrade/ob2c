@@ -40,23 +40,23 @@
 			$email = get_bloginfo('admin_email');
 			$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
 			$headquarter = get_oxfam_shop_data('headquarter');
-			var_dump($headquarter);
 			$lines = explode( ', ', $headquarter, 2 );
-			$billing_address = $lines[0];
+			$billing_address = trim($lines[0]);
 			$parts = explode( ' ', $lines[1], 2 );
-			$billing_zip = $parts[0];
-			$billing_city = $parts[1];
-			$iban = get_oxfam_shop_data('account');
+			$billing_zip = trim($parts[0]);
+			$billing_city = trim($parts[1]);
+			$iban = str_replace( ' ', '', get_oxfam_shop_data('account') );
 			$blog = get_bloginfo('name');
 			$url = get_bloginfo('url');
 		restore_current_blog();
 
 		// Parameters handmatig in te vullen
-		$login = 'owwoostende';
-		$name = 'Melissa Vandewalle';
-		$representative = 'Roland Dehoorne';
+		$login = 'owwbrugge';
+		$name = 'Wim Spanhove';
+		$representative = 'Wim Spanhove';
+		$bic = 'GEBABEBB';
 
-		// Lijken inmiddels niet meer noodzakelijk: 'bankaccount_bic' => 'GEBA BE BB', 'bankaccount_bankname' => 'BNP Paribas Fortis', 'bankaccount_location' => 'Brussel'
+		// Lijken toch niet noodzakelijk te zijn: 'bankaccount_bankname' => 'BNP Paribas Fortis', 'bankaccount_location' => 'Brussel'
 		$parameters = array( 
 			'name' => $name, 
 			'company_name' => $company, 
@@ -74,6 +74,7 @@
 			'billing_city' => $billing_city, 
 			'billing_country' => 'BE', 
 			'bankaccount_iban' => $iban,
+			'bankaccount_bic' => $bic, 
 		);
 		
 		echo '<pre>'.var_export($parameters, true).'</pre>';
@@ -81,11 +82,9 @@
 		// UITSCHAKELEN INDIEN VOOR ECHT!
 		$parameters['testmode'] = 1;
 		$simplexml = $mollie->accountCreate( $login, $parameters );
-		
+
 		unset($parameters['testmode']);
 		// $simplexml = $mollie->accountEditByPartnerId( $partner_id_customer, $parameters );
-
-		// $simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, $blog, $url, $email, $phone, 5499 );
 
 	} catch (Mollie_Exception $e) {
 		die('An error occurred: '.$e->getMessage());
@@ -93,12 +92,22 @@
 
 	if ( $simplexml->resultcode == '10' ) {
 		echo "<p>".$simplexml->resultmessage."</p>";
-		if ( isset($simplexml->profile) ) {
+		echo "<p>Account '".$simplexml->username."'succesvol aangemaakt!<p>";
+		echo "<p>Partner-ID: ".$simplexml->partner_id."</p>";
+		echo "<p>Wachtwoord: ".$simplexml->password."</p>";
+		echo "<p></p>";
+		
+		// $simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, $blog, $url, $email, $phone, 5499 );
+
+		if ( $simplexml->resultcode == '10' ) {
+			echo "<p>".$simplexml->resultmessage."</p>";
 			echo "<p>Profiel ".$simplexml->profile->website." voor ".$simplexml->profile->name." succesvol gecreëerd!<p>";
 			echo "<p>LIVE API: ".$simplexml->profile->api_keys->live."</p>";
+			echo "<p></p>";
+		} else {
+			echo '<pre>'.var_export($simplexml, true).'</pre>';
 		}
-		echo "<p></p>";
+	} else {
+		echo '<pre>'.var_export($simplexml, true).'</pre>';
 	}
-
-	echo '<pre>'.var_export($simplexml, true).'</pre>';
 ?>
