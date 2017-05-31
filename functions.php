@@ -2936,26 +2936,20 @@
 		$str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/pointer-levering.png</href></Icon></IconStyle></Style>";
 		$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/pointer-afhaling.png</href></Icon></IconStyle></Style>";
 		
-		// Haal alle shopdata op (en sluit gearchiveerde webshops uit!)
-		$sites = get_sites( array( 'archived' => 0 ) );
+		// Haal alle shopdata op (sluit portaal en gearchiveerde webshops uit)
+		$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
-			// Sla de hoofdsite over
-			if ( ! is_main_site() ) {
-				$local_zips = get_option( 'oxfam_zip_codes' );
-				if ( count($local_zips) >= 1 ) {
-					$str .= "<Placemark>";
-					$str .= "<name><![CDATA[".get_company_name()."]]></name>";
-					if ( does_home_delivery() ) {
-						$str .= "<styleUrl>#shipping</styleUrl>";
-					} else {
-						$str .= "<styleUrl>#pickup</styleUrl>";
-					}
-					$str .= "<description><![CDATA[<p style='text-align: center;'>".get_company_address()."<br><a href=".get_site_url().">Naar deze webshop »</a></p>]]></description>";
-					$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
-					$str .= "</Placemark>";
-				}
+			$str .= "<Placemark>";
+			$str .= "<name><![CDATA[".get_company_name()."]]></name>";
+			if ( does_home_delivery() ) {
+				$str .= "<styleUrl>#shipping</styleUrl>";
+			} else {
+				$str .= "<styleUrl>#pickup</styleUrl>";
 			}
+			$str .= "<description><![CDATA[<p style='text-align: center;'>".get_company_address()."<br><a href=".get_site_url().">Naar deze webshop »</a></p>]]></description>";
+			$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
+			$str .= "</Placemark>";
 			restore_current_blog();
 		}
 
