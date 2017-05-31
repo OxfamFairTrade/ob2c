@@ -92,7 +92,6 @@
 
 	if ( $simplexml->resultcode == '10' ) {
 		echo "<p>".$simplexml->resultmessage."</p>";
-		echo "<p>Account '".$simplexml->username."'succesvol aangemaakt!<p>";
 		echo "<p>Partner-ID: ".$simplexml->partner_id."</p>";
 		echo "<p>Wachtwoord: ".$simplexml->password."</p>";
 		echo "<p></p>";
@@ -101,7 +100,6 @@
 
 		if ( $simplexml->resultcode == '10' ) {
 			echo "<p>".$simplexml->resultmessage."</p>";
-			echo "<p>Profiel ".$simplexml->profile->website." voor ".$simplexml->profile->name." succesvol gecreëerd!<p>";
 			echo "<p>LIVE API: ".$simplexml->profile->api_keys->live."</p>";
 			echo "<p></p>";
 		} else {

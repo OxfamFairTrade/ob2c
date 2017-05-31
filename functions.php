@@ -599,6 +599,9 @@
 	add_action( 'wp_footer', 'cart_update_qty_script' );
 	
 	function cart_update_qty_script() {
+		$current_user = wp_get_current_user();
+		$user_meta = get_userdata($current_user->ID);
+		$user_roles = $user_meta->roles;
 		if ( is_cart() ) {
 			global $woocommerce;
 			// validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
@@ -647,6 +650,13 @@
 							jQuery( '#oxfam-zip-user' ).val('');
 						}
 					});
+				</script>
+			<?php
+		} elseif ( is_account_page() and in_array( 'local_manager', $user_roles ) ) {
+			?>
+				<script>
+					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').prop('readonly', true);
+					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
 				</script>
 			<?php
 		}
@@ -1017,7 +1027,7 @@
 			<script type="text/javascript">
 				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
 				jQuery("tr.user-email-wrap").find('input[type=email]').prop('readonly', true);
-				jQuery("tr.user-email-wrap").find('input[type=email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox.</span>');
+				jQuery("tr.user-email-wrap").find('input[type=email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
 			</script>
 			<?php
 		}
@@ -1446,6 +1456,7 @@
 				$forbidden_cnt = $forbidden_cnt + $item_value['quantity'];
 			} 
 		}
+		
 		if ( $forbidden_cnt > 0 ) {
 			foreach ( $rates as $rate_key => $rate ) {
 				// Blokkeer alle methodes behalve afhalingen
@@ -1453,9 +1464,20 @@
 					unset( $rates[$rate_key] );
 				}
 			}
-			wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van producten die niet thuisgeleverd worden, inclusief het aantal flessen (%d).', 'oxfam-webshop' ), $forbidden_cnt - floor( $forbidden_cnt / 6 ) ), 'error' );
+			// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
+			if ( does_home_delivery() ) {
+				$cnt = WC()->session->get( 'no_home_delivery', 0 );
+				WC()->session->set( 'no_home_delivery', $cnt+1 );
+				// Toon de foutmelding slechts één keer
+				if ( $cnt == 1 ) {
+					wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van producten die niet thuisgeleverd worden, inclusief het aantal flessen (%d).', 'oxfam-webshop' ), $forbidden_cnt - floor( $forbidden_cnt / 6 ) ), 'error' );
+				}
+			}
+		} else {
+			WC()->session->set( 'no_home_delivery', 0 );
+			write_log("SESSION DATA NO_HOME_DELIVERY GERESET!");
 		}
-
+		
 		// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
 		$cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
 		if ( $cart_weight > 29 ) {

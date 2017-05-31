@@ -10,8 +10,13 @@
 
 /* Breedte van alle standaardpagina's limiteren */
 .page-template-default .entry-content {
-	max-width: 1200px;
-	margin: 0 auto;
+	// max-width: 1200px;
+	// margin: 0 auto;
+}
+
+/* Zet de titels op de homepage groter */
+.titels-homepage h4 {
+	font-size: 2em !important;
 }
 
 /* Lijstjes netjes laten inspringen */
