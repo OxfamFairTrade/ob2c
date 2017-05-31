@@ -8,7 +8,7 @@
 		require( '../../../wp-blog-header.php' );
 		
 		if ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) {
-			$myfile = fopen("map.kml", "w");
+			$myfile = fopen("../../../map.kml", "w");
 			$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 			
 			// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet)
@@ -37,6 +37,8 @@
 			$str .= "</Document></kml>";
 			fwrite($myfile, $str);
 			fclose($myfile);
+
+			echo "Mapdata bijgewerkt!";
     	} else {
     		die("Helaba, dit mag niet!");
     	}
