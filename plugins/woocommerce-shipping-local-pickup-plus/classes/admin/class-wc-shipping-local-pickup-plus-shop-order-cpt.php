@@ -123,9 +123,9 @@ class WC_Shipping_Local_Pickup_Plus_CPT {
 
 				$formatted_pickup_location = WC()->countries->get_formatted_address( array_merge( array( 'first_name' => null, 'last_name' => null, 'state' => null ), $pickup_location ) );
 
-				if ( isset( $pickup_location['phone'] ) && $pickup_location['phone'] ) {
+				if ( isset( $pickup_location['company'] ) && $pickup_location['company'] ) {
 					// GEWIJZIGD: Enkel naam van afhaalpunt tonen en OWW afkorten
-					$formatted_pickup_location = do_shortcode( str_replace( 'Oxfam-Wereldwinkel', 'OWW', $pickup_location['phone'] ) );
+					$formatted_pickup_location = do_shortcode( str_replace( 'Oxfam-Wereldwinkel', 'OWW', $pickup_location['company'] ) );
 				}
 
 				echo esc_html( preg_replace( '#<br\s*/?>#i', ', ', $formatted_pickup_location ) );
