@@ -1593,6 +1593,21 @@
 		if ( $empties_product !== false ) {
 			switch ( $empties_product->get_sku() ) {
 				case 'WLBS6M':
+					$forbidden_qty = 0;
+					$glass_id = wc_get_product_id_by_sku('WLFSG');
+					$plastic_id = wc_get_product_id_by_sku('WLBS6M');
+					write_log($empties);
+					write_log($product_item);
+					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+						if ( intval($values['product_id']) === $glass_id ) {
+							$forbidden_qty += intval($values['quantity']);
+							write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
+						}
+						if ( intval($values['product_id']) === $plastic_id ) {
+							$plastic_qty = intval($values['quantity']);
+						}
+					}
+					write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
 					$empties['quantity'] = floor( intval($product_item['quantity']) / 6 );
 					break;
 				case 'WLBS24M':
@@ -1619,16 +1634,34 @@
 				return floor( intval($product_item['quantity']) / 24 );
 			// PROBLEEM: BAK WORDT ENKEL TOEGEVOEGD BIJ 6/24 IDENTIEKE FLESSEN
 			case 'WLFSG':
-				if ( intval($product_item['quantity']) === 6 ) {
+				$forbidden_qty = 0;
+				$plastic_qty = 0;
+				$glass_id = wc_get_product_id_by_sku('WLFSG');
+				$plastic_id = wc_get_product_id_by_sku('WLBS6M');
+				write_log($empties_item);
+				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+					if ( intval($values['product_id']) === $glass_id ) {
+						$forbidden_qty += intval($values['quantity']);
+						write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
+					}
+					if ( intval($values['product_id']) === $plastic_id ) {
+						$plastic_qty += intval($values['quantity']);
+						$plastic_item_key = $cart_item_key;
+					}
+				}
+				write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
+				if ( $forbidden_qty === 6 and $plastic_qty === 0 ) {
 					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
-					$args['forced_by'] = $empties_item['forced_by'];
+					// $args['forced_by'] = $empties_item['forced_by'];
 					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS6M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
+				} elseif ( $forbidden_qty % 6 === 0 and $plastic_qty !== 0 ) {
+					$result = WC()->cart->set_quantity( $plastic_item_key, floor( $forbidden_qty / 6 ), 1 );
 				}
 				return $quantity;
 			case 'WLFSK';
 				if ( intval($product_item['quantity']) === 24 ) {
 					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
-					$args['forced_by'] = $empties_item['forced_by'];
+					// $args['forced_by'] = $empties_item['forced_by'];
 					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS24M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
 				}
 			default:
