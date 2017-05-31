@@ -2944,10 +2944,12 @@
 			$str .= "<name><![CDATA[".get_company_name()."]]></name>";
 			if ( does_home_delivery() ) {
 				$str .= "<styleUrl>#shipping</styleUrl>";
+				$extra_text = 'Deze webshop voorziet afhalingen én thuisleveringen.';
 			} else {
 				$str .= "<styleUrl>#pickup</styleUrl>";
+				$extra_text = 'Deze webshop voorziet enkel afhalingen in de winkel.';
 			}
-			$str .= "<description><![CDATA[<p style='text-align: center;'>".get_company_address()."<br><a href=".get_site_url().">Naar deze webshop »</a></p>]]></description>";
+			$str .= "<description><![CDATA[<p style='text-align: center;'>".get_company_address()."<br>&nbsp;<br>".$extra_text."<br><a href=".get_site_url().">Naar deze webshop »</a></p>]]></description>";
 			$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
 			$str .= "</Placemark>";
 			restore_current_blog();
