@@ -8,7 +8,8 @@
 	Text Domain:  	oxfam-webshop
 */
 
-td.product-thumbnail.empties {
+/* Maak de leeggoedicoontjes kleiner */
+.shop_table.cart .product-thumbnail.empties {
 	padding: 20px;
 }
 
