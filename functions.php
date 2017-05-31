@@ -911,6 +911,10 @@
 	function format_city( $value ) {
 		return trim_and_uppercase( $value );
 	}
+
+	function format_headquarter( $value ) {
+		return trim_and_uppercase( $value );
+	}
 	
 	// Sta een optionele parameter toe om puntjes te zetten in plaats van spaties (maar: wordt omgezet in streepjes door wc_format_phone() dus niet gebruiken in verkoop!)
 	function format_telephone( $value, $delim = ' ' ) {

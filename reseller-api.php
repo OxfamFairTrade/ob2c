@@ -12,12 +12,12 @@
 	 *
 	 */
 
+	// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
+	require_once '../../../wp-blog-header.php';
+
 	if ( $_GET['import_key'] !== IMPORT_KEY ) {
 		die("Helaba, dit mag niet!");
 	}
-
-	// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-	require_once '../../../wp-blog-header.php';
 
 	// Register autoloader
 	require_once '../../plugins/mollie-reseller-api/autoloader.php';
@@ -38,8 +38,9 @@
 			$city = get_oxfam_shop_data('city');
 			$phone = get_oxfam_shop_data('telephone');
 			$email = get_bloginfo('admin_email');
-			$btw = str_replace( '.', '', get_oxfam_shop_data('tax') );
+			$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
 			$headquarter = get_oxfam_shop_data('headquarter');
+			var_dump($headquarter);
 			$lines = explode( ', ', $headquarter, 2 );
 			$billing_address = $lines[0];
 			$parts = explode( ' ', $lines[1], 2 );
