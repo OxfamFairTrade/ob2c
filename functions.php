@@ -2933,7 +2933,8 @@
 		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 		
 		// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet)
-		$str .= "<Style id='1'><IconStyle><scale>1.21875</scale><w>39</w><h>51</h><Icon><href>https://demo.oxfamwereldwinkels.be/wp-content/uploads/google-maps.png</href></Icon></IconStyle></Style>";
+		$str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/pointer-levering.png</href></Icon></IconStyle></Style>";
+		$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/pointer-afhaling.png</href></Icon></IconStyle></Style>";
 		
 		// Haal alle shopdata op (en sluit gearchiveerde webshops uit!)
 		$sites = get_sites( array( 'archived' => 0 ) );
@@ -2943,16 +2944,13 @@
 			if ( ! is_main_site() ) {
 				$local_zips = get_option( 'oxfam_zip_codes' );
 				if ( count($local_zips) >= 1 ) {
-					$i = 0;
-					$thuislevering = "Doet thuislevering in ";
-					foreach ( $local_zips as $zip ) {
-						$i++;
-						$thuislevering .= $zip;
-						if ( $i < count($local_zips) ) $thuislevering .= ", ";
-					}
 					$str .= "<Placemark>";
-					$str .= "<name><![CDATA[".get_company_name()."]]></name><styleUrl>#1</styleUrl>";
-					// ".$thuislevering.".<br>
+					$str .= "<name><![CDATA[".get_company_name()."]]></name>";
+					if ( does_home_delivery() ) {
+						$str .= "<styleUrl>#shipping</styleUrl>";
+					} else {
+						$str .= "<styleUrl>#pickup</styleUrl>";
+					}
 					$str .= "<description><![CDATA[<p style='text-align: center;'>".get_company_address()."<br><a href=".get_site_url().">Naar deze webshop »</a></p>]]></description>";
 					$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
 					$str .= "</Placemark>";
