@@ -26,8 +26,15 @@
     		]
 		);
 
-		$cat_parameters = array( 'orderby' => 'name', 'per_page' => 10, 'parent' => 0 );
+		$cat_parameters = array( 'orderby' => 'name', 'order' => 'asc', 'per_page' => 10, 'parent' => 0 );
 		$categories = $woocommerce->get( 'products/categories', $cat_parameters );
+
+		$empty_parameters = array( 'status' => 'publish', 'sku' => 'WLBS6M,WLBS24M,WLFSG,WLFSK', 'orderby' => 'id', 'order' => 'asc' );
+		$empty_products = $woocommerce->get( 'products', $empty_parameters );
+
+		foreach ( $empty_products as $empty ) {
+			$empties[] = $empty['id'];
+		}
 
 		$product_count = 0;
 		$photo_count = 0;
@@ -39,8 +46,8 @@
 						echo '<h2>'.$category['name'].' ('.$category['count'].' producten)</h2>';
 					echo '</div>';
 					// Parameter 'per_page' mag niet te groot zijn, anders error!
-					// Laat de 4 leeggoeditems weg uit de telling
-					$prod_parameters = array( 'category' => $category['id'], 'status' => 'publish', 'exclude' => array( 2378, 2380, 2608, 2610 ), 'orderby' => 'title', 'order' => 'asc', 'per_page' => 100, );
+					// Laat de leeggoeditems weg uit de telling
+					$prod_parameters = array( 'category' => $category['id'], 'status' => 'publish', 'exclude' => $empties, 'orderby' => 'title', 'order' => 'asc', 'per_page' => 100, );
 					$products = $woocommerce->get( 'products', $prod_parameters );
 
 					// Stop alle producten in een array met als key hun artikelnummer
@@ -75,20 +82,20 @@
 								// echo '<pre>'.var_export($product['attributes'], true).'</pre>';
 								echo '<small style="color: vampire grey; font-style: italic;">'.$merk.' '.$product['sku'].'</small><br>';
 								echo '<div style="padding: 0; height: 50px; display: flex; align-items: center;"><p style="font-weight: bold; margin: 0; text-align: center; width: 100%;">'.$product['name'].'</p></div>';
-								echo '<a href="'.$product['permalink'].'"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
+								echo '<a href="'.str_replace( 'shop.oxfamwereldwinkels.be/', 'shop.oxfamwereldwinkels.be/regiobrugge/', $product['permalink'] ).'" title="Bekijk in webshop van Brugge" target="_blank"><img style="max-width: 100%;" src="'.$shop_catalog[0].'"></a><br>';
 								echo '<u>Downloads:</u><br>';
-								echo '<a href="'.$wp_full[0].'" title="Bekijk in nationale webshop" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' pixels)<br>';
+								echo '<a href="'.$wp_full[0].'" title="Download" target="_blank">Full</a> ('.$wp_full[1].' x '.$wp_full[2].' pixels)<br>';
 								if ( $wp_full[1] !== $wp_large[1] ) {
-									echo '<a href="'.$wp_large[0].'" target="_blank">Large</a> ('.$wp_large[1].' x '.$wp_large[2].' pixels)<br>';
+									echo '<a href="'.$wp_large[0].'" title="Download" target="_blank">Large</a> ('.$wp_large[1].' x '.$wp_large[2].' pixels)<br>';
 								}
 								if ( $wp_large[1] !== $wp_medium[1] ) {
-									echo '<a href="'.$wp_medium[0].'" target="_blank">Medium</a> ('.$wp_medium[1].' x '.$wp_medium[2].' pixels)<br>';
+									echo '<a href="'.$wp_medium[0].'" title="Download" target="_blank">Medium</a> ('.$wp_medium[1].' x '.$wp_medium[2].' pixels)<br>';
 								}
 								if ( $wp_medium[1] !== $shop_single[1] ) {
-									echo '<a href="'.$shop_single[0].'" target="_blank">Detail</a> ('.$shop_single[1].' x '.$shop_single[2].' pixels)<br>';
+									echo '<a href="'.$shop_single[0].'" title="Download" target="_blank">Detail</a> ('.$shop_single[1].' x '.$shop_single[2].' pixels)<br>';
 								}
-								echo '<a href="'.$shop_catalog[0].'" target="_blank">Catalog</a> ('.$shop_catalog[1].' x '.$shop_catalog[2].' pixels)<br>';
-								echo '<a href="'.$shop_thumbnail[0].'" target="_blank">Thumbnail</a> ('.$shop_thumbnail[1].' x '.$shop_thumbnail[2].' pixels)';
+								echo '<a href="'.$shop_catalog[0].'" title="Download" target="_blank">Catalog</a> ('.$shop_catalog[1].' x '.$shop_catalog[2].' pixels)<br>';
+								echo '<a href="'.$shop_thumbnail[0].'" title="Download" target="_blank">Thumbnail</a> ('.$shop_thumbnail[1].' x '.$shop_thumbnail[2].' pixels)';
 							echo '</div>';
 						}
 					}
