@@ -51,12 +51,39 @@
 		restore_current_blog();
 
 		// Parameters handmatig in te vullen
+		$login = 'owwoostende';
 		$name = 'Melissa Vandewalle';
 		$representative = 'Roland Dehoorne';
 
-		$simplexml = $mollie->accountCreate( 'owwoostende', array( 'testmode' => 1, 'name' => $name, 'company_name' => $company, 'address' => $address, 'zipcode' => $zip, 'city' => $city, 'country' => 'BE', 'email' => $email, 'registration_number' => str_replace( 'BE', '', $btw ), 'legal_form' => 'vzw-be', 'vat_number' => $btw, 'representative' => $representative, 'billing_address' => $billing_address, 'billing_zipcode' => $billing_zip, 'billing_city' => $billing_city, 'billing_country' => 'BE', 'bankaccount_iban' => $iban, ) );
 		// Lijken inmiddels niet meer noodzakelijk: 'bankaccount_bic' => 'GEBA BE BB', 'bankaccount_bankname' => 'BNP Paribas Fortis', 'bankaccount_location' => 'Brussel'
+		$parameters = array( 
+			'name' => $name, 
+			'company_name' => $company, 
+			'address' => $address, 
+			'zipcode' => $zip, 
+			'city' => $city, 
+			'country' => 'BE', 
+			'email' => $email, 
+			'registration_number' => str_replace( 'BE', '', $btw ), 
+			'legal_form' => 'vzw-be', 
+			'vat_number' => $btw, 
+			'representative' => $representative, 
+			'billing_address' => $billing_address, 
+			'billing_zipcode' => $billing_zip, 
+			'billing_city' => $billing_city, 
+			'billing_country' => 'BE', 
+			'bankaccount_iban' => $iban,
+		);
 		
+		echo '<pre>'.var_export($parameters, true).'</pre>';
+
+		// UITSCHAKELEN INDIEN VOOR ECHT!
+		$parameters['testmode'] = 1;
+		$simplexml = $mollie->accountCreate( $login, $parameters );
+		
+		unset($parameters['testmode']);
+		// $simplexml = $mollie->accountEditByPartnerId( $partner_id_customer, $parameters );
+
 		// $simplexml = $mollie->profileCreateByPartnerId( $partner_id_customer, $blog, $url, $email, $phone, 5499 );
 
 	} catch (Mollie_Exception $e) {
