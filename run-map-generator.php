@@ -28,7 +28,7 @@
 						$str .= "<styleUrl>#pickup</styleUrl>";
 						$extra_text = 'Deze webshop voorziet enkel afhalingen in de winkel.';
 					}
-					$str .= "<description><![CDATA[<p style='text-align: center;'>".get_company_address()."<br>&nbsp;<br>".$extra_text."<br><a href=".get_site_url().">Naar deze webshop »</a></p>]]></description>";
+					$str .= "<description><![CDATA[<p>".get_company_address()."</p><a href=".get_site_url()."><p style='text-align: center;'>".$extra_text."<br>Ga naar de webshop »</p></a>]]></description>";
 					$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
 					$str .= "</Placemark>";
 				restore_current_blog();
