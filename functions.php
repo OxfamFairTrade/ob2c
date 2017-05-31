@@ -2928,40 +2928,8 @@
 	}
 
 	function print_store_map() {
-		// Open de file
-		$myfile = fopen("newoutput.kml", "w");
-		$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
-		
-		// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet)
-		$str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/pointer-levering.png</href></Icon></IconStyle></Style>";
-		$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/pointer-afhaling.png</href></Icon></IconStyle></Style>";
-		
-		// Haal alle shopdata op (sluit portaal en gearchiveerde webshops uit)
-		$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, ) );
-		foreach ( $sites as $site ) {
-			switch_to_blog( $site->blog_id );
-			$str .= "<Placemark>";
-			$str .= "<name><![CDATA[".get_company_name()."]]></name>";
-			if ( does_home_delivery() ) {
-				$str .= "<styleUrl>#shipping</styleUrl>";
-				$extra_text = 'Deze webshop voorziet afhalingen én thuisleveringen.';
-			} else {
-				$str .= "<styleUrl>#pickup</styleUrl>";
-				$extra_text = 'Deze webshop voorziet enkel afhalingen in de winkel.';
-			}
-			$str .= "<description><![CDATA[<p style='text-align: center;'>".get_company_address()."<br>&nbsp;<br>".$extra_text."<br><a href=".get_site_url().">Naar deze webshop »</a></p>]]></description>";
-			$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
-			$str .= "</Placemark>";
-			restore_current_blog();
-		}
-
-		// Sluit document af
-		$str .= "</Document></kml>";
-		fwrite($myfile, $str);
-		fclose($myfile);
-		
-		return do_shortcode("[flexiblemap src='".site_url()."/newoutput.kml?v=".rand()."' width='100%' height='500px' zoom='9' hidemaptype='true' maptype='light_monochrome']");
-		// return do_shortcode('[osm_map_v3 zoom="9" width="100%" map_center="50.9667,4.2333" height="500" type="stamen_toner" map_border="3px solid black" file_list="'.site_url().'/newoutput.kml"]');
+		// Refresh slechts één keer per uur
+		return do_shortcode("[flexiblemap src='".site_url()."/map.kml?v=".date_i18n('Ymd:H')."' width='100%' height='600px' zoom='9' hidemaptype='true' maptype='light_monochrome']");
 	}
 
 
