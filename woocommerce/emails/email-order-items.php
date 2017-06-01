@@ -34,7 +34,7 @@ foreach ( $items as $item_id => $item ) :
 				// SKU
 				// GEWIJZIGD: Verwijder hastag voor artikelnummer
 				if ( $show_sku && is_object( $product ) && $product->get_sku() ) {
-					echo ' (' . $product->get_sku() . ')';
+					echo ' (OFT' . $product->get_sku() . ')';
 				}
 
 				// allow other plugins to add additional product information here

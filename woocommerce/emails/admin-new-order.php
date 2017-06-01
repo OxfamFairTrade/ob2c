@@ -19,9 +19,8 @@
 
 printf( '<p>Je hebt een bestelling ontvangen van %s.</p>', $order->get_formatted_billing_full_name() );
 $tax_classes = $order->get_items_tax_classes();
-write_log($tax_classes);
-if ( ! in_array( 'voeding', $tax_classes ) and ! $order->has_shipping_method('local_pickup_plus') ) {
-    printf( '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel luxeproducten aan standaard BTW-tarief! Zorg dat je bij de verwerking in ShopPlus dus de levercode van 21% inscant. Als winkel hou je voor deze thuislevering netto 5,74 i.p.v. 6,56 euro over.</p>' );
+if ( in_array( 'voeding', $tax_classes ) === false and $order->get_shipping_total() > 0 ) {
+    echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel luxeproducten aan standaard BTW-tarief! Zorg dat je bij de verwerking in ShopPlus dus de levercode van 21% inscant. Als winkel hou je aan deze thuislevering dus netto 5,74 i.p.v. 6,56 euro over.</p>';
 }
 
  /**
