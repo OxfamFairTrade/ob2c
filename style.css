@@ -12,6 +12,9 @@
 .shop_table.cart .product-thumbnail.empties {
 	padding: 20px;
 }
+.nm-cart-panel-thumbnail-wrap.empties {
+	padding: 10px;
+}
 
 body.home.page-id-2398 div.nm-page-wrap-inner > #nm-header-placeholder {
 	background-image: url('cover.jpg');

@@ -83,7 +83,8 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                             ?>
                             
                             <?php echo $product_name; ?>
-                            <?php echo WC()->cart->get_item_data( $cart_item ); ?>
+                            <!-- GEWIJZIGD: Metadata zoals 'Hoort bij' niet tonen -->
+                            <?php echo // WC()->cart->get_item_data( $cart_item ); ?>
                             
                             <div class="nm-cart-panel-quantity-pricing">
                                 <?php if ( $_product->is_sold_individually() ) : ?>
