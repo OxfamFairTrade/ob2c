@@ -1598,7 +1598,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		$pickup_locations = $this->get_order_pickup_locations( $order );
 
 		if ( count( $pickup_locations ) > 0 ) {
-			echo '<div>';
+			// GEWIJZIGD: Opmaakklasse toevoegen
+			echo '<div class="addresses">';
 			echo '<header class="title"><h3>' . _n( 'Pickup Location', 'Pickup Locations', count( $pickup_locations ), 'woocommerce-shipping-local-pickup-plus' ) . '</h3></header>';
 		}
 
