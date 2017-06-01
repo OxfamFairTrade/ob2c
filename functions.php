@@ -452,7 +452,7 @@
 		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
 		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_length', '_width', '_height', '_weight', '_thumbnail_id', '_force_sell_synced_ids' );
 		// Check of er een belangwekkende wijzing was
-		foreach ( $watched_metas as $meta_key ) {
+		if ( in_array( $meta_key, $watched_metas ) ) {
 			// Vergelijk nieuwe waarde met de actuele
 			$old_meta_value = get_post_meta( $post_id, $meta_key, true );
 			
