@@ -56,7 +56,14 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                     ?>
                     <li id="nm-cart-panel-item-<?php echo esc_attr( $cart_item_key ); ?>" class="<?php echo esc_attr( apply_filters( 'woocommerce_mini_cart_item_class', 'mini_cart_item', $cart_item, $cart_item_key ) ); ?>">
                         <div class="nm-cart-panel-item-thumbnail">
-                            <div class="nm-cart-panel-thumbnail-wrap">
+                            <?php
+                            // GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed (beter expliciet op artikelnummer triggeren?)
+                            if ( $_product->is_visible() ) {
+                                echo '<div class="nm-cart-panel-thumbnail-wrap">';
+                            } else {
+                                echo '<div class="nm-cart-panel-thumbnail-wrap empties">';
+                            }
+                            ?>
                                 <?php echo $thumbnail; ?>
                                 <div class="nm-cart-panel-thumbnail-loader nm-loader"></div>
                             </div>
