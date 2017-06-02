@@ -2977,10 +2977,25 @@
 	}
 
 	function print_store_map() {
+		?>
+			<script>
+				function getLocation() {
+					if ( navigator.geolocation ) {
+						navigator.geolocation.getCurrentPosition(showPosition);
+					} else {
+						alert("Geolocation wordt niet ondersteund door deze browser.");
+					}
+				}
+
+				function showPosition(position) {
+					alert("Lengtegraad: " + position.coords.latitude + "<br>Breedtegraad: " + position.coords.longitude);
+				}
+			</script>
+		<?php
 		// Verhinderen cachen van KML-bestand
 		// Eventuele styling: maptype='light_monochrome'
 		// Eventuele caching: kmlcache='1 hours'
-		return do_shortcode("[flexiblemap src='".site_url()."/map.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true']");
+		return do_shortcode("[flexiblemap src='".site_url()."/map.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true' id='map-oxfam']");
 	}
 
 
