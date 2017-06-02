@@ -585,12 +585,12 @@
 	function sku_sorting_orderby( $sortby ) {
 		unset( $sortby['menu_order'] );
 		unset( $sortby['rating'] );
-		$sortby['popularity'] = 'Best verkocht';
-		$sortby['date'] = 'Laatst toegevoegd';
+		// $sortby['popularity'] = 'Best verkocht';
+		// $sortby['date'] = 'Laatst toegevoegd';
 		$sortby['alpha'] = 'Van A tot Z';
 		$sortby['alpha-desc'] = 'Van Z tot A';
-		$sortby['price'] = 'Stijgende prijs';
-		$sortby['price-desc'] = 'Dalende prijs';
+		// $sortby['price'] = 'Stijgende prijs';
+		// $sortby['price-desc'] = 'Dalende prijs';
 		// $sortby['sku'] = 'Stijgend artikelnummer';
 		// $sortby['reverse_sku'] = 'Dalend artikelnummer';
 		return $sortby;

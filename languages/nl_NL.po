@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Savoy Theme\n"
+"Project-Id-Version: Savoy Theme by Oxfam\n"
 "POT-Creation-Date: 2017-04-14 17:22+0200\n"
-"PO-Revision-Date: 2017-05-09 22:50+0200\n"
+"PO-Revision-Date: 2017-06-02 21:47+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.1\n"
+"X-Generator: Poedit 2.0.2\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: style.css\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -33,7 +33,7 @@ msgstr ""
 
 #: 404.php:7
 msgid "Oops, page not found."
-msgstr "Oeps, pagina niet gevonden."
+msgstr "Oeps, deze pagina vinden we even niet!"
 
 #: 404.php:8
 msgid ""
@@ -45,22 +45,22 @@ msgstr ""
 
 #: 404.php:9
 msgid "Homepage &nbsp;&nbsp;&rarr;"
-msgstr "Homepagina &nbsp;&nbsp;&rarr;"
+msgstr "Startpagina &nbsp;&nbsp;&rarr;"
 
 #: archive.php:10
 #, php-format
 msgid "Daily Archives: %s"
-msgstr "Dagelijkse archieven: %s"
+msgstr "Dagarchief: %s"
 
 #: archive.php:12
 #, php-format
 msgid "Monthly Archives: %s"
-msgstr "Maandelijkse archieven: %s"
+msgstr "Maandarchief: %s"
 
 #: archive.php:14
 #, php-format
 msgid "Yearly Archives: %s"
-msgstr "Jaarlijkse archieven: %s"
+msgstr "Jaararchief: %s"
 
 #: archive.php:16
 msgid "Archives"
@@ -85,7 +85,7 @@ msgstr "Reacties navigatie"
 
 #: comments.php:44
 msgid "&larr; Older Comments"
-msgstr "&larr; Eerdere Reacties"
+msgstr "&larr; Eerdere reacties"
 
 #: comments.php:45
 msgid "Newer Comments &rarr;"
@@ -93,7 +93,7 @@ msgstr "Nieuwere reacties &rarr;"
 
 #: comments.php:50
 msgid "Comments are closed."
-msgstr "Reacties zijn niet mogelijk."
+msgstr "Reacties zijn afgesloten."
 
 #: content-classic.php:48 content-grid.php:53 content-list.php:45 single.php:47
 msgid "Pages:"
@@ -105,12 +105,13 @@ msgstr "Laat een reactie achter"
 
 #: content-classic.php:57
 msgid "1 comment"
-msgstr "1 commentaar"
+msgstr "1 opmerking"
 
+# Komt uit comments_number() waar effectief een '%' als placeholder gebruikt wordt
 #: content-classic.php:57
 #, php-format
-msgid "%s comments"
-msgstr "%s opmerkingen"
+msgid "% comments"
+msgstr "% commentaren"
 
 #: content-grid.php:62
 msgid "More &nbsp;&rarr;"
@@ -119,7 +120,7 @@ msgstr "Meer &nbsp;&rarr;"
 #: content-none.php:6
 #, php-format
 msgid "Ready to publish your first post? %sGet started here%s."
-msgstr "Klaar om uw eerste bericht te publiceren? %sBegin hier%s."
+msgstr "Klaar om je eerste bericht te publiceren? %sBegin hier%s."
 
 #: content-none.php:10
 msgid ""
@@ -131,21 +132,21 @@ msgstr ""
 
 #: content-none.php:14
 msgid "It seems we can&rsquo;t find what you&rsquo;re looking for."
-msgstr "We kunnen blijkbaar niet vinden waar u naar op zoek bent."
+msgstr ""
+"We kunnen helaas niet meteen vinden waar je naar op zoek bent. Misschien kan "
+"een andere zoekterm soelaas bieden?"
 
 #: footer.php:100
-#, fuzzy
-#| msgid "Search Products"
 msgid "Search products"
 msgstr "Zoek producten"
 
 #: footer.php:168 includes/woocommerce/woocommerce-template-functions.php:54
 msgid "Cart"
-msgstr "Winkelmand"
+msgstr "Winkelmandje"
 
 #: footer.php:169
 msgid "Close"
-msgstr "Sluit"
+msgstr "Sluiten"
 
 #: functions.php:567
 msgid "Top Bar Menu"
@@ -169,7 +170,7 @@ msgstr "Pingback:"
 
 #: functions.php:636 functions.php:661
 msgid "Edit"
-msgstr "Bewerk"
+msgstr "Bewerken"
 
 #: functions.php:648
 #, php-format
@@ -178,7 +179,7 @@ msgstr "%1$s op %2$s"
 
 #: functions.php:653
 msgid "Your comment is awaiting moderation"
-msgstr "Uw reactie wacht op moderatie."
+msgstr "Je reactie wacht op moderatie."
 
 #: functions.php:751
 msgid "Categories"
@@ -207,19 +208,19 @@ msgstr "Visual Composer - Widgetised Sidebar"
 
 #: includes/custom-styles.php:540
 msgid "Out of stock"
-msgstr ""
+msgstr "Niet op voorraad"
 
 #: includes/custom-styles.php:570
 msgid "Required field."
-msgstr "Verplicht veld."
+msgstr "Gelieve dit veld in te vullen."
 
 #: includes/translation-strings-dummy.php:7
 msgid "Shopping Cart"
-msgstr "Winkelmand"
+msgstr "Winkelmandje"
 
 #: includes/translation-strings-dummy.php:8
 msgid "Enter coupon"
-msgstr "Voer de kortingscode in"
+msgstr "Voer je kortingscode in"
 
 #: includes/translation-strings-dummy.php:11
 msgid "Payment"
@@ -231,7 +232,7 @@ msgstr "Bijwerken van &hellip;"
 
 #: includes/translation-strings-dummy.php:17
 msgid "Load More"
-msgstr "Laad meer"
+msgstr "Laad meer producten"
 
 #: includes/translation-strings-dummy.php:18
 msgid "All products loaded."
@@ -247,7 +248,7 @@ msgstr "Maak een account aan"
 
 #: includes/translation-strings-dummy.php:25
 msgid "Order Tracking"
-msgstr "Bestelling traceren"
+msgstr "Traceer je bestelling"
 
 #: includes/translation-strings-dummy.php:28
 msgid "Details"
@@ -272,7 +273,7 @@ msgstr "Bekijk video"
 #: includes/translation-strings-dummy.php:39
 #, php-format
 msgid "press %sEnter%s to search"
-msgstr "Druk %sEnter%s om te zoeken"
+msgstr "Druk op %sEnter%s om te zoeken"
 
 #: includes/translation-strings-dummy.php:42
 msgctxt "breadcrumb"
@@ -292,12 +293,12 @@ msgstr "Zoekresultaten voor %s&ldquo;%s&rdquo;%s"
 #: includes/translation-strings-dummy.php:47
 #, php-format
 msgid "Showing %s&ldquo;%s&rdquo;%s"
-msgstr "Resultaten %s&ldquo;%s&rdquo;%s"
+msgstr "Resultaten voor %s&ldquo;%s&rdquo;%s"
 
 #: includes/translation-strings-dummy.php:48
 #, php-format
 msgid "Products tagged %s&ldquo;%s&rdquo;%s"
-msgstr "Producten getagd %s&ldquo;%s&rdquo;%s"
+msgstr "Producten getagd met %s&ldquo;%s&rdquo;%s"
 
 #: includes/translation-strings-dummy.php:51
 msgid "Filter Products"
@@ -305,7 +306,7 @@ msgstr "Filter producten"
 
 #: includes/translation-strings-dummy.php:52
 msgid "Reset Filters"
-msgstr "Wis filters"
+msgstr "Wis alle filters"
 
 #: includes/translation-strings-dummy.php:55
 msgid "Show more"
@@ -317,7 +318,7 @@ msgstr "Standaard"
 
 #: includes/translation-strings-dummy.php:64
 msgid "Popularity"
-msgstr "Populariteit"
+msgstr "Best verkocht"
 
 #: includes/translation-strings-dummy.php:65
 msgid "Average rating"
@@ -325,15 +326,15 @@ msgstr "Gemiddelde beoordeling"
 
 #: includes/translation-strings-dummy.php:66
 msgid "Newness"
-msgstr "Toevoegingsdatum"
+msgstr "Laatst toegevoegd"
 
 #: includes/translation-strings-dummy.php:67
 msgid "Price: Low to High"
-msgstr "Prijs: Laag naar Hoog"
+msgstr "Stijgende prijs"
 
 #: includes/translation-strings-dummy.php:68
 msgid "Price: High to Low"
-msgstr "Prijs: Hoog naar Laag"
+msgstr "Dalende prijs"
 
 #: includes/visual-composer/element-templates/vc_toggle.php:6
 msgid "Click to toggle"
@@ -345,7 +346,7 @@ msgstr "Over"
 
 #: includes/visual-composer/page-templates.php:51
 msgid "Contact"
-msgstr "Contacteren"
+msgstr "Contacteer ons"
 
 #: includes/visual-composer/page-templates.php:58
 msgid "FAQ"
@@ -366,11 +367,11 @@ msgstr "%s producten"
 
 #: includes/woocommerce/woocommerce-functions.php:494
 msgid "Please fill in the required fields"
-msgstr "Vul aub de verplichte velden in"
+msgstr "Vul a.u.b. de verplichte velden in"
 
 #: includes/woocommerce/woocommerce-template-functions.php:35
 msgid "My Account"
-msgstr "Mijn Account"
+msgstr "Mijn account"
 
 #: includes/woocommerce/woocommerce-template-functions.php:35
 msgid "Login"
@@ -399,7 +400,7 @@ msgstr "%s Zoekresultaten voor: %s"
 
 #: searchform.php:2
 msgid "Search .."
-msgstr "Zoeken…"
+msgstr "Zoeken …"
 
 #: single.php:38
 msgid "By"
@@ -435,7 +436,7 @@ msgstr "Ouder &nbsp;&rarr;"
 
 #: single.php:172
 msgid "Related Posts"
-msgstr "Gerelateerde Berichten"
+msgstr "Gerelateerde berichten"
 
 #: tag.php:7
 #, php-format
