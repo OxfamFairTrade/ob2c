@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2017-06-02 17:47+0200\n"
-"PO-Revision-Date: 2017-06-02 17:48+0200\n"
+"PO-Revision-Date: 2017-06-02 18:58+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -102,7 +102,7 @@ msgstr ""
 
 #: functions.php:2863
 msgid "Titel van unique selling point in footer"
-msgstr "Altijf fair, altijd open!"
+msgstr "Altijd fair, altijd open!"
 
 #: functions.php:2863
 msgid "Inhoud van unique selling point in footer."
