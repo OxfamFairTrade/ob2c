@@ -3,7 +3,7 @@
 	if ( ! defined('ABSPATH') ) exit;
 
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
-	$content_width = 2000;
+	$content_width = 1500;
 
 	// Laad het child theme
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
@@ -12,10 +12,7 @@
 		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ) );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
-		// Enkel nodig op portaalpagina 
-		if ( is_main_site() ) {
-			wp_enqueue_script( 'jquery-ui-autocomplete' );
-		}
+		wp_enqueue_script( 'jquery-ui-autocomplete' );
 	}
 
 	// Voeg custom styling toe aan de adminomgeving (voor Relevanssi en Voorraadbeheer)
@@ -660,8 +657,8 @@
 						// Autocomplete werkt enkel met strings
 						// Vertaling naar gemeente toevoegen?
 						zips = zips.map(String);
-						jQuery( "#oxfam-zip-user" ).autocomplete({
-							source: zips
+						jQuery( "#oxfam-zip-user, #billing_postcode, #shipping_postcode" ).autocomplete({
+							source: zips,
 						});
 					} );
 				</script>
