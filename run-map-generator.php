@@ -11,18 +11,16 @@
 			$myfile = fopen("../../../map.kml", "w");
 			$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 			
-			// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet)
+			// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin)
 			$str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/pointer-levering.png</href></Icon></IconStyle></Style>";
 			$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/pointer-afhaling.png</href></Icon></IconStyle></Style>";
-			$str .= "<Style id='balloon'><BalloonStyle><color>ff007db3</color></BalloonStyle></Style>";
 			
 			// Haal alle shopdata op (sluit portaal en gearchiveerde webshops uit)
 			$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, ) );
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
-					$str .= "<Placemark id='balloon'>";
+					$str .= "<Placemark>";
 					$str .= "<name><![CDATA[".get_company_name()."]]></name>";
-					$str .= "<styleUrl>#balloon</styleUrl>";
 					if ( does_home_delivery() ) {
 						$str .= "<styleUrl>#shipping</styleUrl>";
 						$extra_text = 'Deze webshop voorziet afhalingen én thuisleveringen.';

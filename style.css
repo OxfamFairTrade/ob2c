@@ -8,6 +8,14 @@
 	Text Domain:  	oxfam-webshop
 */
 
+.gm-style-iw {
+	/*background-color: white;
+	width: 350px !important;
+	top: 0 !important;
+	left: 0 !important;
+	border-radius: 10px;*/
+}
+
 /* Maak de leeggoedicoontjes kleiner */
 .shop_table.cart .product-thumbnail.empties {
 	padding: 20px;
