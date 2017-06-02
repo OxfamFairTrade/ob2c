@@ -2850,6 +2850,7 @@
 	add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_shops', 'print_store_selector' );
 	add_shortcode( 'toon_kaart', 'print_store_map' );
+	add_shortcode( 'toon_scrolltekst', 'print_scroll_text' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );
@@ -3004,6 +3005,9 @@
 		// Eventuele caching: kmlcache='1 hours'
 		return do_shortcode("[flexiblemap src='".site_url()."/map.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true' id='map-oxfam']");
 	}
+
+	function print_scroll_text() {
+		return __( 'Tekst die verschijnt bovenaan de hoofdpagina met producten.', 'oxfam-webshop' ); 
 
 
 	###########

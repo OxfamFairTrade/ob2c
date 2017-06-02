@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2017-06-02 17:20+0200\n"
-"PO-Revision-Date: 2017-06-02 17:29+0200\n"
+"POT-Creation-Date: 2017-06-02 17:47+0200\n"
+"PO-Revision-Date: 2017-06-02 17:48+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -100,25 +100,25 @@ msgstr ""
 "Dit is een erg grote bestelling van meer dan %d euro. Neem a.u.b. contact "
 "met ons op om te bekijken of we dit wel tijdig kunnen leveren."
 
-#: functions.php:2862
+#: functions.php:2863
 msgid "Titel van unique selling point in footer"
 msgstr "Altijf fair, altijd open!"
 
-#: functions.php:2862
+#: functions.php:2863
 msgid "Inhoud van unique selling point in footer."
 msgstr ""
 "Eerlijke handel geeft producenten in het Zuiden kansen op een betere "
 "toekomst. Met je aankoop laat je zien dat ook jij dat belangrijk vindt. Nu "
 "ook vanuit je luie zetel!"
 
-#: functions.php:2867
+#: functions.php:2868
 msgid "Inhoud van praktisch blokje in footer (indien ook thuislevering)."
 msgstr ""
 "Met alles wat je vóór 12 uur ’s middags bestelt, staan we maximaal 3 "
 "werkdagen later op je stoep. Afhalen in de wereldwinkel kan natuurlijk ook. "
 "Het Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:2869
+#: functions.php:2870
 msgid "Inhoud van praktisch blokje in footer (inden enkel afhaling)."
 msgstr ""
 "Alles wat je vóór 12 uur 's middags bestelt, kan je de volgende werkdag "
@@ -126,15 +126,15 @@ msgstr ""
 "de winkel open is. (Kijk naar de schatting naast je winkelmandje.) Het "
 "Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:2871
+#: functions.php:2872
 msgid "Titel van praktisch blokje in footer"
 msgstr "Wereldproducten. Lokaal geleverd."
 
-#: functions.php:2875
+#: functions.php:2876
 msgid "Titel van contactblokje in footer"
 msgstr "Eerlijk handelen. Ook met jou."
 
-#: functions.php:2875
+#: functions.php:2876
 #, php-format
 msgid ""
 "Inhoud van het contactblokje in de footer. Bevat <a href=\"mailto:%1$s\">een "
@@ -144,12 +144,12 @@ msgstr ""
 "en formuleren heldere beloftes. Heb je toch nog vragen? <a href=\"mailto:%1$s"
 "\">Mail ons </a> of bel naar %2$s."
 
-#: functions.php:2888
+#: functions.php:2889
 #, php-format
 msgid "Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s)."
 msgstr "%1$s, %2$s! Welkom in de webshop van %3$s."
 
-#: functions.php:2958
+#: functions.php:2959
 #, php-format
 msgid ""
 "Begroetingstekst met het aantal webshops (%d) en promotie voor de "
@@ -159,13 +159,19 @@ msgstr ""
 "En pik je boodschappen de volgende werkdag op in jouw wereldwinkel.\n"
 "Kies je winkel op de kaart hieronder."
 
-#: functions.php:2962
+#: functions.php:2963
 msgid "Titel in de header van de portaalpagina"
 msgstr "De grootste keuze aan eerlijke voedingsproducten"
 
-#: functions.php:2968
+#: functions.php:2969
 msgid "Blokje uitleg bij store selector op basis van postcode."
 msgstr "Levering aan huis kan ook! Vul je hier postcode in."
+
+#: functions.php:3010
+msgid "Tekst die verschijnt bovenaan de hoofdpagina met producten."
+msgstr ""
+"Maak je keuze uit de categorieën hierboven of scroll hieronder door het "
+"volledige aanbod."
 
 #: woocommerce/emails/customer-completed-order.php:21
 #, fuzzy
