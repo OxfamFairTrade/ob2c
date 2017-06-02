@@ -18,9 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 do_action( 'woocommerce_email_header', $email_heading, $email );
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
-	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel).', 'wc-oxfam' ).'</p>' );
+	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ).'</p>' );
 } else {
-	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'wc-oxfam' ).'</p>' );
+	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ).'</p>' );
 }
 
 /**

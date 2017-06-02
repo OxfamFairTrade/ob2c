@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2017-05-29 17:58+0200\n"
-"PO-Revision-Date: 2017-05-29 17:59+0200\n"
+"POT-Creation-Date: 2017-06-02 16:56+0200\n"
+"PO-Revision-Date: 2017-06-02 16:58+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -19,117 +19,122 @@ msgstr ""
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
 "_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: functions.php\n"
-"X-Poedit-SearchPath-1: woocommerce/emails\n"
+"X-Poedit-SearchPath-1: woocommerce/emails/customer-completed-order.php\n"
+"X-Poedit-SearchPath-2: woocommerce/emails/customer-processing-order.php\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
-"X-Poedit-SearchPathExcluded-1: woocommerce/emails/email-order-details.php\n"
 
-#: functions.php:640
+#: functions.php:643
 msgid ""
 "Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels "
 "nog geen thuislevering voorziet."
 msgstr ""
-"Helaas, voor deze postcode voorziet Oxfam-Wereldwinkels nog geen "
-"thuislevering. Kies een winkel op de kaart voor afhaling."
+"Sorry, in deze gemeente leveren we nog niet aan huis. Kies op de kaart in "
+"welke wereldwinkel je je boodschappen wil afhalen."
 
-#: functions.php:645 functions.php:1359
+#: functions.php:648 functions.php:1373
 msgid "Foutmelding na het ingeven van een onbestaande Vlaamse postcode."
-msgstr "Dit is geen geldige Vlaamse postcode! Probeer het eens opnieuw."
+msgstr "Dit is geen geldige Vlaamse postcode. Probeer het eens opnieuw a.u.b."
 
-#: functions.php:1105
+#: functions.php:1119
 #, php-format
-msgid "Beschikbaar op %1$s vanaf %2$s"
-msgstr ""
+msgid ""
+"Dag (%1$s) en uur (%2$s) vanaf wanneer de bestelling klaarstaat voor afhaling"
+msgstr "Beschikbaar op %1$s vanaf %2$s"
 
-#: functions.php:1110
+#: functions.php:1124
 #, php-format
-msgid "Ten laatste beschikbaar vanaf %s"
-msgstr ""
+msgid ""
+"Uiterste dag (%s) waarop het pakje beschikbaar zal zijn in postpunt / "
+"automaat"
+msgstr "Ten laatste beschikbaar vanaf %s"
 
-#: functions.php:1118 functions.php:1122
+#: functions.php:1132 functions.php:1136
 #, php-format
-msgid "Ten laatste geleverd op %s"
-msgstr ""
+msgid "Uiterste dag (%s) waarop de levering zal plaatsvinden"
+msgstr "Ten laatste geleverd op %s"
 
-#: functions.php:1126
-msgid "Geen schatting beschikbaar"
-msgstr ""
+#: functions.php:1140
+msgid "Boodschap indien schatting leverdatum niet beschikbaar"
+msgstr "Geen schatting beschikbaar"
 
-#: functions.php:1365
+#: functions.php:1379
 msgid ""
 "Foutmelding na het ingeven van een postcode waar deze webshop geen "
 "thuislevering voor organiseert."
 msgstr ""
-"Deze winkel doet geen thuisleveringen naar deze postcode! Kies voor afhaling "
-"of keer terug naar het portaal om de webshop te vinden die voor jouw "
-"postcode thuislevering organiseert."
+"Deze winkel levert niet aan huis in deze gemeente. Kies voor afhaling in de "
+"winkel of keer terug naar de portaalpagina om de wereldwinkel te vinden die "
+"voor jouw gemeente wel thuislevering organiseert."
 
-#: functions.php:1452
+#: functions.php:1473
 #, php-format
 msgid ""
 "Foutmelding bij aanwezigheid van producten die niet thuisgeleverd worden, "
 "inclusief het aantal flessen (%d)."
 msgstr ""
-"Je winkelmandje bevat %d grote flessen fruitsap die te fragiel zijn om te "
-"worden verzonden. Kom je bestelling afhalen in de winkel, of verwijder ze "
-"uit je winkelmandje zodat thuislevering weer beschikbaar wordt."
+"Je winkelmandje bevat %d grote flessen fruitsap. Deze zijn te breekbaar om "
+"op te sturen. Kom je bestelling afhalen in de winkel, of verwijder de "
+"flessen fruitsap uit je winkelmandje zodat thuislevering weer mogelijk wordt."
 
-#: functions.php:1464
+#: functions.php:1490
 #, php-format
 msgid ""
 "Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht "
 "in kilogram (%s)."
 msgstr ""
-"Je bestelling weegt %s kg is bijgevolg te zwaar voor thuislevering. Gelieve "
-"ze te komen afhalen in de winkel."
+"Je bestelling weegt %s kg is daarom te zwaar voor thuislevering. Kom a.u.b. "
+"je boodschappen afhalen in de wereldwinkel."
 
-#: functions.php:1545
+#: functions.php:1569
 #, php-format
 msgid ""
 "Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d)."
-msgstr "Bestellingen van minder dan %d euro verwerken we niet."
+msgstr ""
+"Sorry, onlinebestellingen van minder dan %d euro kunnen we niet verwerken."
 
-#: functions.php:1547
+#: functions.php:1571
 #, php-format
 msgid ""
 "Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d)."
 msgstr ""
-"Bestellingen van meer dan %d euro kunnen we niet steeds verwerken. Neem "
-"contact met ons op om te bekijken wanneer we dit kunnen leveren."
+"Dit is een erg grote bestelling van meer dan %d euro. Neem a.u.b. contact "
+"met ons op om te bekijken of we dit wel tijdig kunnen leveren."
 
-#: functions.php:2799
+#: functions.php:2862
 msgid "Titel van unique selling point in footer"
-msgstr "Fairtrade. Altijd. Overal."
+msgstr "Altijf fair, altijd open!"
 
-#: functions.php:2799
+#: functions.php:2862
 msgid "Inhoud van unique selling point in footer."
 msgstr ""
-"Omdat de internationale handel eerlijker moet, en kàn. Dat bewijzen we elke "
-"dag opnieuw. Met je aankoop bieden we partners in het Zuiden een waardig "
-"bestaan. Vanaf nu zelfs vanuit je luie zetel!"
+"Eerlijke handel geeft producenten in het Zuiden kansen op een betere "
+"toekomst. Met je aankoop laat je zien dat ook jij dat belangrijk vindt. Nu "
+"ook vanuit je luie zetel!"
 
-#: functions.php:2804
+#: functions.php:2867
 msgid "Inhoud van praktisch blokje in footer (indien ook thuislevering)."
 msgstr ""
-"Alles wat je vóór 12 uur ’s ochtends bestelt, wordt ten laatste drie "
-"werkdagen later door onze vrijwiligers bij je thuis geleverd. Afhalen in de "
-"winkel kan natuurlijk ook. Exotische continenten leken nog nooit zo dichtbij!"
+"Met alles wat je vóór 12 uur ’s middags bestelt, staan we maximaal 3 "
+"werkdagen later op je stoep. Afhalen in de wereldwinkel kan natuurlijk ook. "
+"Het Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:2806
+#: functions.php:2869
 msgid "Inhoud van praktisch blokje in footer (inden enkel afhaling)."
 msgstr ""
-"Alles wat je vóór 12 uur 's ochtends bestelt, kan je de volgende werkdag al "
-"afhalen in de winkel. (Kijk naar de schatting naast je winkelmandje.) "
-"Exotische continenten leken nog nooit zo dichtbij!"
+"Alles wat je vóór 12 uur 's middags bestelt, kan je de volgende werkdag "
+"vanaf 12 uur afhalen in je wereldwinkel. Of op het eerstvolgende moment dat "
+"de winkel open is. (Kijk naar de schatting naast je winkelmandje.) Het "
+"Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:2808
+#: functions.php:2871
 msgid "Titel van praktisch blokje in footer"
 msgstr "Wereldproducten. Lokaal geleverd."
 
-#: functions.php:2812
+#: functions.php:2875
 msgid "Titel van contactblokje in footer"
 msgstr "Eerlijk handelen. Ook met jou."
 
-#: functions.php:2812
+#: functions.php:2875
 #, php-format
 msgid ""
 "Inhoud van het contactblokje in de footer. Bevat <a href=\"mailto:%1$s\">een "
@@ -137,62 +142,78 @@ msgid ""
 msgstr ""
 "Ook met onze klanten willen we fair zaken doen. We communiceren transparant "
 "en formuleren heldere beloftes. Heb je toch nog vragen? <a href=\"mailto:%1$s"
-"\">Stuur ons een mail</a> of bel naar %2$s."
+"\">Mail ons </a> of bel naar %2$s."
 
-#: functions.php:2825
+#: functions.php:2888
 #, php-format
 msgid "Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s)."
 msgstr "%1$s, %2$s! Welkom op de webshop van %3$s."
 
-#: functions.php:2895
+#: functions.php:2958
 #, php-format
 msgid ""
 "Begroetingstekst met het aantal webshops (%d) en promotie voor de "
 "afhaalkaart."
 msgstr ""
-"Shop online in één van onze %d webshops en haal je bestelling de volgende "
-"werkdag af in de winkel."
+"Shop online in 1 van onze %d webshops. Op je gemak. Wanneer het jou past. \n"
+"En pik je boodschappen de volgende werkdag op in jouw wereldwinkel.\n"
+"Kies je winkel op de kaart hieronder."
 
-#: functions.php:2901
+#: functions.php:2962
+msgid "Begroetingstekst op de portaalpagina."
+msgstr "Welkom op de eerste en grootste fairtradewebshop van België!"
+
+#: functions.php:2968
 msgid "Blokje uitleg bij store selector op basis van postcode."
-msgstr ""
-"Liever thuislevering? Vul je postcode in en we sturen je door naar de winkel "
-"die jouw bestelling verstuurt."
+msgstr "Levering aan huis kan ook! Vul je hier postcode in."
 
 #: woocommerce/emails/customer-completed-order.php:21
 msgid ""
 "Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel)."
 msgstr ""
-"Je bestelling staat klaar om afgehaald te worden. Vergeet je bestelnummer of "
-"identiteitskaart niet mee te brengen!"
+"Hoera, je kunt je bestelling afhalen! Vergeet je naam en bestelnummer niet."
 
 #: woocommerce/emails/customer-completed-order.php:23
 msgid "Bericht bovenaan de 2de bevestigingsmail (indien thuislevering)."
 msgstr ""
-"We hebben je bestelling afgeleverd bij onze logistieke partner. Je kunt het "
-"over een tweetal dagen thuis verwachten."
+"Hoera, we hebben je bestelling klaargezet voor verzending! De fietskoerier / "
+"postbode / vrijwilliger komt er weldra mee langs."
 
 #: woocommerce/emails/customer-processing-order.php:21
 msgid ""
 "Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel)."
-msgstr ""
+msgstr "Bedankt voor je bestelling. We zetten het zo snel mogelijk klaar."
 
 #: woocommerce/emails/customer-processing-order.php:23
 msgid "Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering)."
-msgstr ""
+msgstr "Bedankt voor je bestelling. We sturen het zo snel mogelijk op."
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam-Wereldwinkels Webshop"
-msgstr ""
+msgstr "Oxfam-Wereldwinkels Webshop"
 
 #. Description of the plugin/theme
-msgid "Kleine aanpassingen aan het basisthema"
+msgid "Beschrijving van het child theme"
 msgstr ""
+"Kleine aanpassingen aan productdetailpagina’s, toevoegen van bio- en "
+"afhaalbannertjes"
 
 #. Author of the plugin/theme
 msgid "Efraim Sebrechts & Frederik Neirynck"
-msgstr ""
+msgstr "Efraim Sebrechts & Frederik Neirynck"
 
 #. Author URI of the plugin/theme
 msgid "https://www.oxfamwereldwinkels.be"
-msgstr ""
+msgstr "https://www.oxfamwereldwinkels.be"
+
+#~ msgid "Kleine aanpassingen aan het basisthema"
+#~ msgstr "Kleine aanpassingen aan het basisthema"
+
+#~ msgid "Beschikbaar op %1$s vanaf %2$s"
+#~ msgstr "Beschikbaar op %1$s vanaf %2$s"
+
+#~ msgid "Ten laatste beschikbaar vanaf %s"
+#~ msgstr "Ten laatste beschikbaar vanaf %s"
+
+#~ msgid "Ten laatste geleverd op %s"
+#~ msgstr "Ten laatste geleverd op %s"

@@ -1116,12 +1116,12 @@
 			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite!
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
 			case stristr( $method->id, 'local_pickup' ):
-				$descr .= sprintf( __( 'Beschikbaar op %1$s vanaf %2$s', 'oxfam-webshop' ), date_i18n( 'l d/m/Y', $timestamp ), date_i18n( 'G\ui', $timestamp ) );
+				$descr .= sprintf( __( 'Dag (%1$s) en uur (%2$s) vanaf wanneer de bestelling klaarstaat voor afhaling', 'oxfam-webshop' ), date_i18n( 'l d/m/Y', $timestamp ), date_i18n( 'G\ui', $timestamp ) );
 				$label .= ':'.wc_price(0);
 				break;
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
-				$descr .= sprintf( __( 'Ten laatste beschikbaar vanaf %s', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
+				$descr .= sprintf( __( 'Uiterste dag (%s) waarop het pakje beschikbaar zal zijn in postpunt / automaat', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
 				if ( floatval( $method->cost ) === 0.0 ) {
 					$label = str_replace( 'Afhaling', 'Gratis afhaling', $label );
 					$label .= ':'.wc_price(0);
@@ -1129,15 +1129,15 @@
 				break;
 			// Alle instances van thuislevering
 			case stristr( $method->id, 'flat_rate' ):
-				$descr .= sprintf( __( 'Ten laatste geleverd op %s', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
+				$descr .= sprintf( __( 'Uiterste dag (%s) waarop de levering zal plaatsvinden', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
 				break;
 			// Alle instances van gratis thuislevering
 			case stristr( $method->id, 'free_shipping' ):
-				$descr .= sprintf( __( 'Ten laatste geleverd op %s', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
+				$descr .= sprintf( __( 'Uiterste dag (%s) waarop de levering zal plaatsvinden', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
 				$label .= ':'.wc_price(0);
 				break;
 			default:
-				$descr .= __( 'Geen schatting beschikbaar', 'oxfam-webshop' );
+				$descr .= __( 'Boodschap indien schatting leverdatum niet beschikbaar', 'oxfam-webshop' );
 				break;
 		}
 		$descr .= '</small>';
@@ -2847,6 +2847,7 @@
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
 	add_shortcode( 'toon_inleiding', 'print_welcome' );
+	add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_shops', 'print_store_selector' );
 	add_shortcode( 'toon_kaart', 'print_store_map' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
@@ -2958,6 +2959,10 @@
 	}
 
 	function print_store_selector() {
+		return __( 'Begroetingstekst op de portaalpagina.', 'oxfam-webshop' );
+	}
+
+	function print_store_selector() {
 		$global_zips = get_shops();
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
  		$msg = '<h2 style="text-align: center;">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h2><br>';
@@ -2979,16 +2984,18 @@
 	function print_store_map() {
 		?>
 			<script>
+				getLocation();
+
 				function getLocation() {
 					if ( navigator.geolocation ) {
 						navigator.geolocation.getCurrentPosition(showPosition);
 					} else {
-						alert("Geolocation wordt niet ondersteund door deze browser.");
+						alert("Geolocatie wordt niet ondersteund door deze browser.");
 					}
 				}
 
 				function showPosition(position) {
-					alert("Lengtegraad: " + position.coords.latitude + "<br>Breedtegraad: " + position.coords.longitude);
+					alert("Lengtegraad: " + position.coords.latitude + " -- Breedtegraad: " + position.coords.longitude);
 				}
 			</script>
 		<?php
