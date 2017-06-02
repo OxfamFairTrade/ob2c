@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2017-06-02 16:56+0200\n"
-"PO-Revision-Date: 2017-06-02 16:58+0200\n"
+"POT-Creation-Date: 2017-06-02 17:20+0200\n"
+"PO-Revision-Date: 2017-06-02 17:29+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -147,7 +147,7 @@ msgstr ""
 #: functions.php:2888
 #, php-format
 msgid "Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s)."
-msgstr "%1$s, %2$s! Welkom op de webshop van %3$s."
+msgstr "%1$s, %2$s! Welkom in de webshop van %3$s."
 
 #: functions.php:2958
 #, php-format
@@ -160,31 +160,35 @@ msgstr ""
 "Kies je winkel op de kaart hieronder."
 
 #: functions.php:2962
-msgid "Begroetingstekst op de portaalpagina."
-msgstr "Welkom op de eerste en grootste fairtradewebshop van België!"
+msgid "Titel in de header van de portaalpagina"
+msgstr "De grootste keuze aan eerlijke voedingsproducten"
 
 #: functions.php:2968
 msgid "Blokje uitleg bij store selector op basis van postcode."
 msgstr "Levering aan huis kan ook! Vul je hier postcode in."
 
 #: woocommerce/emails/customer-completed-order.php:21
+#, fuzzy
 msgid ""
 "Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel)."
 msgstr ""
 "Hoera, je kunt je bestelling afhalen! Vergeet je naam en bestelnummer niet."
 
 #: woocommerce/emails/customer-completed-order.php:23
+#, fuzzy
 msgid "Bericht bovenaan de 2de bevestigingsmail (indien thuislevering)."
 msgstr ""
 "Hoera, we hebben je bestelling klaargezet voor verzending! De fietskoerier / "
 "postbode / vrijwilliger komt er weldra mee langs."
 
 #: woocommerce/emails/customer-processing-order.php:21
+#, fuzzy
 msgid ""
 "Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel)."
 msgstr "Bedankt voor je bestelling. We zetten het zo snel mogelijk klaar."
 
 #: woocommerce/emails/customer-processing-order.php:23
+#, fuzzy
 msgid "Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering)."
 msgstr "Bedankt voor je bestelling. We sturen het zo snel mogelijk op."
 
@@ -205,15 +209,3 @@ msgstr "Efraim Sebrechts & Frederik Neirynck"
 #. Author URI of the plugin/theme
 msgid "https://www.oxfamwereldwinkels.be"
 msgstr "https://www.oxfamwereldwinkels.be"
-
-#~ msgid "Kleine aanpassingen aan het basisthema"
-#~ msgstr "Kleine aanpassingen aan het basisthema"
-
-#~ msgid "Beschikbaar op %1$s vanaf %2$s"
-#~ msgstr "Beschikbaar op %1$s vanaf %2$s"
-
-#~ msgid "Ten laatste beschikbaar vanaf %s"
-#~ msgstr "Ten laatste beschikbaar vanaf %s"
-
-#~ msgid "Ten laatste geleverd op %s"
-#~ msgstr "Ten laatste geleverd op %s"

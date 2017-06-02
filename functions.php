@@ -2958,8 +2958,8 @@
 		return '<h2 style="text-align: center;">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites ).'</h2>';
 	}
 
-	function print_store_selector() {
-		return __( 'Begroetingstekst op de portaalpagina.', 'oxfam-webshop' );
+	function print_portal_title() {
+		return __( 'Titel in de header van de portaalpagina', 'oxfam-webshop' );
 	}
 
 	function print_store_selector() {
