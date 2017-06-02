@@ -1520,7 +1520,8 @@
 				switch ( $rate_key ) {
 					case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method' ) ):
 						$rate->cost = $cost;
-						$rate->taxes[$tax_id_free] = 0.0;
+						// Unset i.p.v. op nul te zetten
+						unset($rate->taxes[$tax_id_free]);
 						$rate->taxes[$tax_id_cost] = $taxes;
 						break;
 					default:
@@ -1529,9 +1530,6 @@
 				}
 			}
 		}
-
-		write_log("BIJGEWERKTE RATES");
-		write_log($rates);
 
 		return $rates;
 	}
