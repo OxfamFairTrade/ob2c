@@ -2978,7 +2978,8 @@
 
 	function print_store_map() {
 		// Verhinderen cachen van KML-bestand
-		return do_shortcode("[flexiblemap src='".site_url()."/map.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true' maptype='light_monochrome']");
+		// Eventuele styling: maptype='light_monochrome'
+		return do_shortcode("[flexiblemap src='".site_url()."/map.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true']");
 	}
 
 
