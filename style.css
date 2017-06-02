@@ -55,10 +55,10 @@ body.home.page-id-2398 div.nm-page-wrap-inner .nm-main-menu:before {
 	font-size: 2em;
 }
 
-/* Breedte van alle standaardpagina's en productarchiefpagina's limiteren */
-.page-template-default .entry-content,
-.post-type-archive-product .entry-content {
-	max-width: 1200px;
+/* Breedte productarchief- en productdetailpagina's limiteren */
+div#nm-shop,
+div.nm-single-product {
+	max-width: 1500px;
 	margin: 0 auto;
 }
 
