@@ -6,14 +6,14 @@
 
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Error 403 &#124; Oxfam B2C</title>
+	<title>Error 403 &#124; Webshop Oxfam-Wereldwinkels</title>
 	<link rel="stylesheet" type="text/css" href="https://www.fairtradecrafts.be/style-normal.css">
 	
 	<script type="text/javascript" src="https://www.fairtradecrafts.be/typewriter.js"></script>
 	
 	<script type="text/javascript">
 		function delayedRedirect(){
-			location.replace("https://demo.oxfamwereldwinkels.be");
+			location.replace("https://www.oxfamwereldwinkels.be/nl/winkels");
 		}	
 	</script>
 
@@ -37,8 +37,8 @@
 
 <div class="main" style="height: 100%;">
 	<div class="wrapper" style="max-width: 900px; height: 100%;">
-		<a href="https://www.oxfamwereldwinkels.be/nl">
-		<div style="height: 40%; background-image: url('http://www.lecouperet.net/hcb/images/403.png'); background-size: 100%; background-position: bottom; background-repeat: no-repeat;">
+		<a href="https://www.oxfamwereldwinkels.be/nl/winkels">
+		<div style="height: 40%; background-image: url('https://www.lecouperet.net/hcb/images/403.png'); background-size: 100%; background-position: bottom; background-repeat: no-repeat;">
 			<span class="helper"></span>
 		</div>
 		</a>
@@ -46,15 +46,15 @@
 			<div id="typewriter" class="tikken-404" style="margin: 0 auto; text-align: center;">
 				Deze webshop is <span id="rood">nog niet actief</span>
 				op dit moment. Je wordt doorgestuurd naar
-				<span id="rood">de portaalpagina</span>.
+				<span id="rood">onze hoofdsite</span>.
 			</div>
 		</div>
 	</div>
 </div>
 
 <div style="width: 100%; height: 15%; max-height: 74px; position: absolute; bottom: 5%; text-align: center;">
-	<a href="https://www.oxfamwereldwinkels.be/nl" title="Visit our main website">
-	<div style="background-image: url('http://apps.oxfamwereldwinkels.be/koffiequiz/images/oxfam-logo.png'); background-size: contain; background-position: center bottom; background-repeat: no-repeat; height: 100%; width: 100%;"></div>
+	<a href="https://www.oxfamwereldwinkels.be/nl" title="Bezoek onze hoofdsite">
+	<div style="background-image: url('https://www.fairtradecrafts.be/oxfam-logo.png'); background-size: contain; background-position: center bottom; background-repeat: no-repeat; height: 100%; width: 100%;"></div>
 	</a>
 </div>
 

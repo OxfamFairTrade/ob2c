@@ -12,6 +12,10 @@
 		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ) );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
+		// Enkel nodig op portaalpagina 
+		if ( is_main_site() ) {
+			wp_enqueue_script( 'jquery-ui-autocomplete' );
+		}
 	}
 
 	// Voeg custom styling toe aan de adminomgeving (voor Relevanssi en Voorraadbeheer)
@@ -650,6 +654,16 @@
 							jQuery( '#oxfam-zip-user' ).val('');
 						}
 					});
+
+					jQuery( function() {
+						var zips = <?php echo json_encode( get_site_option( 'oxfam_flemish_zip_codes' ) ); ?>;
+						// Autocomplete werkt enkel met strings
+						// Vertaling naar gemeente toevoegen?
+						zips = zips.map(String);
+						jQuery( "#oxfam-zip-user" ).autocomplete({
+							source: zips
+						});
+					} );
 				</script>
 			<?php
 		} elseif ( is_account_page() and in_array( 'local_manager', $user_roles ) ) {
@@ -2968,7 +2982,7 @@
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
  		$msg = '<h2 style="text-align: center;">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h2><br>';
 		$msg .= '<p style="text-align: center;">';
-		$msg .= '<input type="tel" class="" id="oxfam-zip-user" maxlength="4" style="width: 160px; height: 40px; text-align: center;"> ';
+		$msg .= '<input type="tel" class="" id="oxfam-zip-user" maxlength="4" style="width: 160px; height: 40px; text-align: center;" autocomplete="on"> ';
 		$msg .= '<input type="submit" class="button" id="do_oxfam_redirect" value="Stuur mij door" style="width: 160px; height: 40px; position: relative; top: -1px;" disabled>';
 		foreach ( $all_zips as $zip ) {
 			if ( isset( $global_zips[$zip] ) ) {
@@ -2985,8 +2999,7 @@
 	function print_store_map() {
 		?>
 			<script>
-				getLocation();
-
+				// getLocation();
 				function getLocation() {
 					if ( navigator.geolocation ) {
 						navigator.geolocation.getCurrentPosition(showPosition);
@@ -3007,7 +3020,8 @@
 	}
 
 	function print_scroll_text() {
-		return __( 'Tekst die verschijnt bovenaan de hoofdpagina met producten.', 'oxfam-webshop' ); 
+		return __( 'Tekst die verschijnt bovenaan de hoofdpagina met producten.', 'oxfam-webshop' );
+	}
 
 
 	###########
