@@ -409,27 +409,33 @@
 	add_filter( 'woocommerce_email_subject_customer_completed_order', 'change_completed_order_subject', 10, 2 );
 
 	function change_processing_order_subject( $subject, $order ) {
+		$subject = sprintf( __( 'Onderwerp van de 1ste bevestigingsmail inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
 		return $subject;
 	}
 
 	function change_completed_order_subject( $subject, $order ) {
-		$helper = explode( 'is ', $subject );
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
-			$subject = $helper[0] . 'is klaar voor afhaling!';
+			$subject = sprintf( __( 'Onderwerp van de 2de bevestigingsmail (indien afhaling) inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
 		} else {
-			$subject = $helper[0] . 'wordt weldra geleverd!';
+			$subject = sprintf( __( 'Onderwerp van de 2de bevestigingsmail (indien thuislevering) inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
 		}
 		return $subject;
 	}
 
 	// Pas de header van de mails aan naargelang de gekozen levermethode
+	add_filter( 'woocommerce_email_heading_customer_processing_order', 'change_processing_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_completed_order', 'change_completed_email_heading', 10, 2 );
+
+	function change_processing_email_heading( $email_heading, $order ) {
+		$email_heading = __( 'Heading van de 1ste bevestigingsmail', 'oxfam-webshop' );
+		return $email_heading;
+	}
 
 	function change_completed_email_heading( $email_heading, $order ) {
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
-			$email_heading = 'Je bestelling staat klaar';
+			$email_heading = __( 'Heading van de 2de bevestigingsmail (indien afhaling)', 'oxfam-webshop' );
 		} else {
-			$email_heading = 'Je bestelling is verzonden';
+			$email_heading = __( 'Heading van de 2de bevestigingsmail (indien thuislevering)', 'oxfam-webshop' );
 		}
 		return $email_heading;
 	}
@@ -2742,7 +2748,7 @@
 			echo '<p>Goed nieuws: van de BTW-lijn kregen we te horen dat we 6% BTW mogen rekenen op thuisleveringen (bijzaak volgt hoofdzaak). Enkel indien de bestelling <u>volledig</u> uit voedingsproducten aan standaard BTW-tarief bestaat (= alcoholische dranken) moeten we ook 21% BTW rekenen op de verzending. We passen de prijs voor de consument voorlopig niet aan, dus in de praktijk zal de winkel doorgaans 6,56 i.p.v. 5,74 euro netto overhouden. Dit geeft wat meer ruimte om te investeren in fietskoeriers en/of degelijk verpakkingsmateriaal.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-info">';
-			echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW te scannen verschijnt er een grote rode boodschap onderaan de bevestigingsmail in de webshopmailbox.</p>';
+			echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW te scannen (omdat de bestellingen enkel producten aan 21% BTW bevat, zie hierboven) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-success">';
 			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
@@ -2868,7 +2874,8 @@
 	add_shortcode( 'toon_inleiding', 'print_welcome' );
 	add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_shops', 'print_store_selector' );
-	add_shortcode( 'toon_kaart', 'print_store_map' );
+	add_shortcode( 'toon_kaart', 'print_store_locator_map' );
+	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
 	add_shortcode( 'toon_scrolltekst', 'print_scroll_text' );
 	add_shortcode( 'toon_dashboardtekst', 'print_dashboard_text' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
@@ -3002,7 +3009,7 @@
 		return $msg;
 	}
 
-	function print_store_map() {
+	function print_store_locator_map() {
 		?>
 			<script>
 				// getLocation();
@@ -3025,12 +3032,21 @@
 		return do_shortcode("[flexiblemap src='".site_url()."/map.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true' id='map-oxfam']");
 	}
 
+	function print_store_map() {
+		$lonlat = get_oxfam_shop_data( 'll' );
+		$parts = explode( ',', $lonlat);
+		$latlon = $parts[1].','.$parts[0];
+		$icon = get_stylesheet_directory_uri().'/pointer-afhaling.png';
+		return do_shortcode("[flexiblemap center=".$latlon." title='".get_company_name()."' icon='".$icon."' description='".get_company_address()."' showinfo='true' width='100%' height='600px' zoom='12' hidemaptype='true' id='map-oxfam']");
+	}
+
 	function print_scroll_text() {
 		return __( 'Tekst die verschijnt bovenaan de hoofdpagina met producten.', 'oxfam-webshop' );
 	}
 
 	function print_dashboard_text() {
-		return __( "Tekst die verschijnt bovenaan de dashboardpagina van 'Mijn account'.", 'oxfam-webshop' );
+		get_currentuserinfo();
+		return sprintf( __( 'Tekst die verschijnt bovenaan de dashboardpagina van \'Mijn account\' inclusief voornaam gebruiker (%s).', 'oxfam-webshop' ), $current_user->user_firstname );
 	}
 
 
