@@ -21,7 +21,15 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 echo '<p>Dag '.$order->get_billing_first_name().',</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
-	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ).'</p>' );
+	$methods = $order->get_shipping_methods();
+	$method = reset($methods);
+	$pickup_location = $method->get_meta('pickup_location');
+	
+	$delivery = get_post_meta( $order->get_id(), 'estimated_delivery', true );
+	$leverdag = date_i18n( $delivery, 'l d/m' );
+	$leveruur = date_i18n( $delivery, 'G\ui' );
+
+	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel), inclusief afhaalwinkel (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ).'</p>', $pickup_location['company'], $leverdag, $leverdag );
 } else {
 	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ).'</p>' );
 }

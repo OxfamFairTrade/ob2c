@@ -18,7 +18,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 
 <?php if ( ! $sent_to_admin ) : ?>
 	<!-- GEWIJZIGD: Geen hashtag voor bestelnummer -->	
-	<h2><?php printf( 'Bestelling %s', $order->get_order_number() ); ?></h2>
+	<h2><?php printf( 'Jouw bestelling (%s)', $order->get_order_number() ); ?></h2>
 <?php else : ?>
 	<!-- GEWIJZIGD: Geen hashtag voor bestelnummer -->	
 	<h2><a class="link" href="<?php echo esc_url( admin_url( 'post.php?post=' . $order->get_id() . '&action=edit' ) ); ?>"><?php printf( 'Bestelling %s', $order->get_order_number() ); ?></a> (<?php printf( '<time datetime="%s">%s</time>', $order->get_date_created()->format( 'c' ), wc_format_datetime( $order->get_date_created() ) ); ?>)</h2>

@@ -2877,7 +2877,6 @@
 	add_shortcode( 'toon_kaart', 'print_store_locator_map' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
 	add_shortcode( 'toon_scrolltekst', 'print_scroll_text' );
-	add_shortcode( 'toon_dashboardtekst', 'print_dashboard_text' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );
@@ -3042,11 +3041,6 @@
 
 	function print_scroll_text() {
 		return __( 'Tekst die verschijnt bovenaan de hoofdpagina met producten.', 'oxfam-webshop' );
-	}
-
-	function print_dashboard_text() {
-		$current_user = get_currentuserinfo();
-		return sprintf( __( 'Tekst die verschijnt bovenaan de dashboardpagina van \'Mijn account\' inclusief voornaam gebruiker (%s).', 'oxfam-webshop' ), $current_user->user_firstname );
 	}
 
 

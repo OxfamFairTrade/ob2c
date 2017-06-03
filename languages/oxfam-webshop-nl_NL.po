@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2017-06-03 16:49+0200\n"
-"PO-Revision-Date: 2017-06-03 16:50+0200\n"
+"POT-Creation-Date: 2017-06-03 17:21+0200\n"
+"PO-Revision-Date: 2017-06-03 17:22+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -21,6 +21,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: functions.php\n"
 "X-Poedit-SearchPath-1: woocommerce/emails/customer-completed-order.php\n"
 "X-Poedit-SearchPath-2: woocommerce/emails/customer-processing-order.php\n"
+"X-Poedit-SearchPath-3: woocommerce/myaccount/dashboard.php\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
 #: functions.php:412
@@ -207,16 +208,6 @@ msgstr ""
 "Maak je keuze uit de categorieën hierboven of scroll hieronder door het "
 "volledige aanbod."
 
-#: functions.php:3049
-#, fuzzy, php-format
-#| msgid ""
-#| "Tekst die verschijnt bovenaan de dashboardpagina van 'Mijn account' "
-#| "inclusief voornaam van gebruiker (%s)."
-msgid ""
-"Tekst die verschijnt bovenaan de dashboardpagina van 'Mijn account' "
-"inclusief voornaam gebruiker (%s)."
-msgstr "Ik ben blij dat jij in mijn team zit, %s."
-
 #: woocommerce/emails/customer-completed-order.php:24
 #, fuzzy
 msgid ""
@@ -243,6 +234,14 @@ msgstr ""
 #, fuzzy
 msgid "Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering)."
 msgstr "We hebben je bestelling goed ontvangen."
+
+#: woocommerce/myaccount/dashboard.php:25
+#, fuzzy, php-format
+msgid ""
+"Tekst die verschijnt op de dashboardpagina van 'Mijn account' inclusief "
+"voornaam gebruiker (%1$s) en URL\\s naar bestellingen (%2$s), adressen "
+"(%3$s), accountgegevens (%4$s) en nieuwsbriefvoorkeuren (%5$s)."
+msgstr "Ik ben blij dat jij in mijn team zit, %1$s."
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam-Wereldwinkels Webshop"
