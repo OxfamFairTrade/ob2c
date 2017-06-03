@@ -2926,7 +2926,7 @@
 		} else {
 			$node = 'nl';
 		}
-		return "<a href='https://www.oxfamwereldwinkels.be/".$node."' target='_blank'>".get_company_name()." &copy; 2016-".date_i18n('Y')."</a>";
+		return "<a href='".get_site_url('/contact/')."' target='_blank'>".get_company_name()." &copy; ".date_i18n('Y')."</a>";
 	}
 
 	function print_office_hours( $atts = [] ) {
