@@ -22,7 +22,7 @@ global $nm_theme_options;
 	<p><?php
         $current_user = wp_get_current_user();
         printf(
-            __( 'Tekst die verschijnt op de dashboardpagina van \'Mijn account\' inclusief voornaam gebruiker (%1$s) en URL\s naar bestellingen (%2$s), adressen (%3$s), accountgegevens (%4$s) en nieuwsbriefvoorkeuren (%5$s).', 'oxfam-webshop' ),
+            __( 'Tekst die verschijnt op de dashboardpagina van \'Mijn account\' inclusief voornaam gebruiker (%1$s) en URL\'s naar bestellingen (%2$s), adressen (%3$s), accountgegevens (%4$s) en nieuwsbriefvoorkeuren (%5$s).', 'oxfam-webshop' ),
             $current_user->user_firstname,
             esc_url( wc_get_endpoint_url( 'orders' ) ),
             esc_url( wc_get_endpoint_url( 'edit-address' ) ),

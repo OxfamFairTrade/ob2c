@@ -29,9 +29,9 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$leverdag = date_i18n( $delivery, 'l d/m' );
 	$leveruur = date_i18n( $delivery, 'G\ui' );
 
-	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel), inclusief afhaalwinkel (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ).'</p>', $pickup_location['company'], $leverdag, $leverdag );
+	echo '<p>' . printf( __( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel), inclusief afhaalwinkel (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ), $pickup_location['company'], $leverdag, $leverdag ) . '</p>';
 } else {
-	printf( '<p>'.__( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ).'</p>' );
+	echo '<p>' . __( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ) . '</p>';
 }
 
 /**

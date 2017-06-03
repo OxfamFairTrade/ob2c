@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2017-06-03 17:21+0200\n"
-"PO-Revision-Date: 2017-06-03 17:22+0200\n"
+"POT-Creation-Date: 2017-06-03 18:49+0200\n"
+"PO-Revision-Date: 2017-06-03 18:50+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -136,40 +136,40 @@ msgstr ""
 "Dit is een erg grote bestelling van meer dan %d euro. Neem a.u.b. contact "
 "met ons op om te bekijken of we dit wel tijdig kunnen leveren."
 
-#: functions.php:2890
+#: functions.php:2889
 msgid "Titel van unique selling point in footer"
 msgstr "Altijd fair, altijd open!"
 
-#: functions.php:2890
+#: functions.php:2889
 msgid "Inhoud van unique selling point in footer."
 msgstr ""
 "Eerlijke handel geeft producenten in het Zuiden kansen op een betere "
 "toekomst. Met je aankoop laat je zien dat ook jij dat belangrijk vindt. Nu "
 "ook vanuit je luie zetel!"
 
-#: functions.php:2895
+#: functions.php:2894
 msgid "Inhoud van praktisch blokje in footer (indien ook thuislevering)."
 msgstr ""
 "Met alles wat je vóór 12 uur ’s middags bestelt, staan we maximaal 3 "
 "werkdagen later op je stoep. Afhalen in de wereldwinkel kan natuurlijk ook. "
 "Het Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:2897
+#: functions.php:2896
 msgid "Inhoud van praktisch blokje in footer (inden enkel afhaling)."
 msgstr ""
 "Alles wat je vóór 12 uur 's middags bestelt, kan je de volgende werkdag "
 "vanaf 12 uur afhalen in je wereldwinkel. (Of op het eerstvolgende moment dat "
 "de winkel open is.) Het Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:2899
+#: functions.php:2898
 msgid "Titel van praktisch blokje in footer"
 msgstr "Wereldproducten. Lokaal geleverd."
 
-#: functions.php:2903
+#: functions.php:2902
 msgid "Titel van contactblokje in footer"
 msgstr "Eerlijk handelen. Ook met jou."
 
-#: functions.php:2903
+#: functions.php:2902
 #, php-format
 msgid ""
 "Inhoud van het contactblokje in de footer. Bevat <a href=\"mailto:%1$s\">een "
@@ -179,12 +179,12 @@ msgstr ""
 "en formuleren heldere beloftes. Heb je toch nog vragen? <a href=\"mailto:%1$s"
 "\">Mail ons </a> of bel naar %2$s."
 
-#: functions.php:2916
+#: functions.php:2915
 #, php-format
 msgid "Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s)."
 msgstr "%1$s, %2$s! Welkom in de webshop van %3$s."
 
-#: functions.php:2986
+#: functions.php:2985
 #, php-format
 msgid ""
 "Begroetingstekst met het aantal webshops (%d) en promotie voor de "
@@ -194,11 +194,11 @@ msgstr ""
 "<br>En pik je boodschappen de volgende werkdag op in jouw wereldwinkel."
 "<br>Kies je winkel op de kaart hieronder."
 
-#: functions.php:2990
+#: functions.php:2989
 msgid "Titel in de header van de portaalpagina"
 msgstr "De grootste keuze aan eerlijke voedingsproducten"
 
-#: functions.php:2996
+#: functions.php:2995
 msgid "Blokje uitleg bij store selector op basis van postcode."
 msgstr "Levering aan huis kan ook! Vul je hier postcode in."
 
@@ -222,15 +222,16 @@ msgstr ""
 "Hoera, we hebben je bestelling klaargezet voor verzending! De fietskoerier / "
 "postbode / vrijwilliger komt er weldra mee langs."
 
-#: woocommerce/emails/customer-processing-order.php:24
-#, fuzzy
+#: woocommerce/emails/customer-processing-order.php:32
+#, php-format
 msgid ""
-"Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel)."
+"Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel), "
+"inclusief afhaalwinkel (%1$s), -dag (%2$s) en -uur (%3$s)."
 msgstr ""
 "We hebben je bestelling goed ontvangen. Onze vrijwilligers zetten je "
-"boodschappen klaar. Je kan deze oppikken in %1$s vanaf %2$s om %3$s uur."
+"boodschappen klaar. Je kan deze oppikken in %1$s vanaf %2$s om %3$s."
 
-#: woocommerce/emails/customer-processing-order.php:26
+#: woocommerce/emails/customer-processing-order.php:34
 #, fuzzy
 msgid "Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering)."
 msgstr "We hebben je bestelling goed ontvangen."
@@ -239,7 +240,7 @@ msgstr "We hebben je bestelling goed ontvangen."
 #, fuzzy, php-format
 msgid ""
 "Tekst die verschijnt op de dashboardpagina van 'Mijn account' inclusief "
-"voornaam gebruiker (%1$s) en URL\\s naar bestellingen (%2$s), adressen "
+"voornaam gebruiker (%1$s) en URL's naar bestellingen (%2$s), adressen "
 "(%3$s), accountgegevens (%4$s) en nieuwsbriefvoorkeuren (%5$s)."
 msgstr "Ik ben blij dat jij in mijn team zit, %1$s."
 

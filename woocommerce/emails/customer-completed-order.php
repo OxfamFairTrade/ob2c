@@ -21,9 +21,9 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 echo '<p>Dag '.$order->get_billing_first_name().',</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
-	printf( '<p>'.__( 'Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ).'</p>' );
+	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ) . '</p>';
 } else {
-	printf( '<p>'.__( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ).'</p>' );
+	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ) . '</p>';
 }
 
 /**
