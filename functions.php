@@ -2103,6 +2103,14 @@
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 	}
 
+	// Maak onze custom taxonomiën beschikbaar in menu editor
+	add_filter('woocommerce_attribute_show_in_nav_menus', 'register_custom_taxonomies_for_menus', 1, 2 );
+
+	function register_custom_taxonomies_for_menus( $register, $name = '' ) {
+		$register = true;
+		return $register;
+	}
+
 	// Vermijd dat geselecteerde termen in hiërarchische taxonomieën naar boven springen
 	add_filter( 'wp_terms_checklist_args', 'do_not_jump_to_top', 10, 2 );
 
@@ -2862,6 +2870,7 @@
 	add_shortcode( 'toon_shops', 'print_store_selector' );
 	add_shortcode( 'toon_kaart', 'print_store_map' );
 	add_shortcode( 'toon_scrolltekst', 'print_scroll_text' );
+	add_shortcode( 'toon_dashboardtekst', 'print_dashboard_text' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );
@@ -3018,6 +3027,10 @@
 
 	function print_scroll_text() {
 		return __( 'Tekst die verschijnt bovenaan de hoofdpagina met producten.', 'oxfam-webshop' );
+	}
+
+	function print_dashboard_text() {
+		return __( "Tekst die verschijnt bovenaan de dashboardpagina van 'Mijn account'.", 'oxfam-webshop' );
 	}
 
 

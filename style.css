@@ -8,6 +8,7 @@
 	Text Domain:  	oxfam-webshop
 */
 
+/* Poging tot stylen van Google Maps-ballonnen */
 .gm-style-iw {
 	/*background-color: white;
 	width: 350px !important;
@@ -185,8 +186,8 @@ li.product.pa_bio-ja::before {
 	font-size: 85%;
 	z-index: 50;
 	transform: skewX(-3deg);
-	background-color: #61a534;
-	content: "Biologisch"; 
+	background-color: rgba(185, 208, 50, 0.9);
+	content: "Bio"; 
 }
 
 /* Toon een bannertje op detailpagina's */
@@ -199,8 +200,37 @@ div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::bef
 	font-size: 95%;
 	z-index: 50;
 	transform: skewX(-3deg);
-	background-color: #61a534;
+	background-color: rgba(185, 208, 50, 0.9);
 	content: "Biogecertificeerd product";
+}
+
+/* Toon een blokje bij nieuwe producten (voorlopig op basis van tag - kan ook door nieuwe datumklasse toe te voegen in template) */
+/* OVERSCHRIJFT AFHAALBLOKJE INDIEN OOK ACTIEF */
+li.product.product_tag-nieuw::before {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 85%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(255, 165, 0, 0.9);;
+	content: "Nieuw";
+}
+
+/* Toon een bannertje op detailpagina's */
+div.nm-single-product.product_tag-nieuw figure.woocommerce-product-gallery__wrapper::before {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 95%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(255, 165, 0, 0.9);
+	content: "Nieuw in ons assortiment";
 }
 
 /* Toon een blokje bij producten die niet beschikbaar zijn voor thuislevering */
@@ -213,8 +243,8 @@ li.product.product_shipping_class-glas::after {
 	font-size: 85%;
 	z-index: 50;
 	transform: skewX(-3deg);
-	background-color: #e70052;
-	content: "Enkel afhalen";
+	background-color: rgba(250, 22, 50, 0.9);
+	content: "Afhaling";
 }
 
 /* Toon een bannertje op detailpagina's */
@@ -227,20 +257,23 @@ div.nm-single-product.product_shipping_class-glas figure.woocommerce-product-gal
 	font-size: 95%;
 	z-index: 50;
 	transform: skewX(-3deg);
-	background-color: #e70052;
+	background-color: rgba(250, 22, 50, 0.9);
 	content: "Enkel afhaling in de winkel";
 }
 
-/* Indien beide klasses actief: plaats biobanner lager om overlap te vermijden */
+/* Indien 'afhalen'- of 'nieuw'-klasse actief: plaats biobanner lager om overlap te vermijden */
 li.product.pa_bio-ja.product_shipping_class-glas::before,
-div.nm-single-product.pa_bio-ja.product_shipping_class-glas figure.woocommerce-product-gallery__wrapper::before {
+li.product.pa_bio-ja.product_tag-nieuw::before,
+div.nm-single-product.pa_bio-ja.product_shipping_class-glas figure.woocommerce-product-gallery__wrapper::before,
+div.nm-single-product.pa_bio-ja.product_tag-nieuw figure.woocommerce-product-gallery__wrapper::before {
 	top: 2.5em;
 }
 
 li.product.pa_bio-ja:hover::before,
+li.product.product_tag-nieuw:hover::before,
 li.product.product_shipping_class-glas:hover::after {
-	background-color: black;
-	transition: background-color 1s ease-out 0s;
+	opacity: 0.5;
+	transition: opacity 1s ease-out 0s;
 }
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
