@@ -2921,12 +2921,7 @@
 	}
 
 	function print_copyright() {
-		if ( get_option('oxfam_shop_node') ) {
-			$node = 'node/'.get_option('oxfam_shop_node');
-		} else {
-			$node = 'nl';
-		}
-		return "<a href='".get_site_url('/contact/')."' target='_blank'>".get_company_name()." &copy; ".date_i18n('Y')."</a>";
+		return "<a href='".get_site_url( get_current_blog_id(), '/contact/' )."'>".get_company_name()." &copy; ".date_i18n('Y')."</a>";
 	}
 
 	function print_office_hours( $atts = [] ) {
