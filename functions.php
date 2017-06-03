@@ -3037,7 +3037,7 @@
 		$parts = explode( ',', $lonlat);
 		$latlon = $parts[1].','.$parts[0];
 		$icon = get_stylesheet_directory_uri().'/pointer-afhaling.png';
-		return do_shortcode("[flexiblemap center=".$latlon." title='".get_company_name()."' icon='".$icon."' description='".get_company_address()."' showinfo='true' width='100%' height='600px' zoom='12' hidemaptype='true' id='map-oxfam']");
+		return do_shortcode("[flexiblemap center='".$latlon."' title='".get_company_name()."' icon='".$icon."' description='".str_replace( '<br>', ', ', get_company_address() )."' showinfo='true' width='100%' height='600px' zoom='12' hidemaptype='true' id='map-oxfam']");
 	}
 
 	function print_scroll_text() {
@@ -3045,7 +3045,7 @@
 	}
 
 	function print_dashboard_text() {
-		get_currentuserinfo();
+		$current_user = get_currentuserinfo();
 		return sprintf( __( 'Tekst die verschijnt bovenaan de dashboardpagina van \'Mijn account\' inclusief voornaam gebruiker (%s).', 'oxfam-webshop' ), $current_user->user_firstname );
 	}
 
