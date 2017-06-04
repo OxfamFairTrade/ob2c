@@ -3022,17 +3022,11 @@
 		<?php
 		// Verhinderen cachen van KML-bestand
 		// Eventuele styling: maptype='light_monochrome'
-		// Eventuele caching: kmlcache='1 hours'
-		return do_shortcode("[flexiblemap src='".site_url()."/map.kml?v=".rand()."' width='100%' height='600px' zoom='9' hidemaptype='true' id='map-oxfam']");
+		return do_shortcode("[flexiblemap src='".network_site_url('/map.kml')."' width='100%' height='600px' zoom='9' hidemaptype='true' hidescale='false' kmlcache='1 hours' locale='nl-BE' id='map-oxfam']");
 	}
 
 	function print_store_map() {
-		// $lonlat = get_oxfam_shop_data( 'll' );
-		// $parts = explode( ',', $lonlat);
-		// $latlon = $parts[1].','.$parts[0];
-		// $icon = get_stylesheet_directory_uri().'/pointer-afhaling.png';
-		// return do_shortcode("[flexiblemap center='".$latlon."' title='".get_company_name()."' icon='".$icon."' html='".get_company_address()."<br><br><a href=https://www.oxfamwereldwinkels.be/node/".get_option('oxfam_shop_node')." target=_blank>Naar de winkelpagina &raquo;</a>' showinfo='true' width='100%' height='600px' zoom='14' hidemaptype='true' id='map-oxfam']");
-		return do_shortcode("[flexiblemap src='".site_url()."/map-".get_current_blog_id().".kml?v=".rand()."' width='100%' height='600px' zoom='14' hidemaptype='true' id='map-oxfam']");
+		return do_shortcode("[flexiblemap src='".network_site_url( '/map-'.get_current_blog_id().'.kml?v='.rand() )."' width='100%' height='600px' zoom='14' hidemaptype='true' hidescale='false' kmlcache='1 hours' locale='nl-BE' id='map-oxfam']");
 	}
 
 	function print_scroll_text() {

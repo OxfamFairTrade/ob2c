@@ -41,13 +41,17 @@
 							$parts = explode( 'node=', $location['note'] );
 							if ( isset($parts[1]) ) {
 								$node = str_replace( ']', '', $parts[1] );
+								$extra = '';
 							} else {
 								$node = get_option('oxfam_shop_node');
+								// Dit werkt niet in KML 2.2 maar misschien wel als we overschakelen op Google Maps API
+								$extra = '<gx:balloonVisibility>1</gx:balloonVisibility>';
 							}
 							$txt .= "<Placemark>";
 							$txt .= "<name><![CDATA[".get_company_name($node)."]]></name>";
 							$txt .= "<styleUrl>#pickup</styleUrl>";
 							$txt .= "<description><![CDATA[<p>".get_company_address($node)."</p><p><a href=https://www.oxfamwereldwinkels.be/node/".$node." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
+							$txt .= $extra;
 							$txt .= "<Point><coordinates>".get_oxfam_shop_data('ll', $node)."</coordinates></Point>";
 							$txt .= "</Placemark>";
 						}
