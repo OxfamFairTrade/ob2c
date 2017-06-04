@@ -3113,7 +3113,8 @@
 		return "<a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data( 'telephone' );
 	}
 
-	function get_company_address( $node = get_option('oxfam_shop_node') ) {
+	function get_company_address( $node = 0 ) {
+		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
 		return get_oxfam_shop_data( 'place', $node )."<br>".get_oxfam_shop_data( 'zipcode', $node )." ".get_oxfam_shop_data( 'city', $node );
 	}
 
