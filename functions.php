@@ -2501,6 +2501,14 @@
 	# MULTISITE #
 	#############
 
+	// ZORG DAT UPDATES OOK WERKEN VIA WP ALL IMPORT
+	// PROBLEEM: ALS WE DIT ACTIVEREN, WORDEN ALLE PRODUCTATTRIBUTEN GEWIST => DEBUGGING NODIG
+	// add_action( 'pmxi_saved_post', 'force_update_product', 10, 1 );
+
+	function force_update_product( $post_id ) {
+		do_action( 'woocommerce_process_product_meta', $post_id, get_post( $post_id ) );
+	}
+
 	// Doe leuke dingen na afloop van een WP All Import
 	add_action('pmxi_after_xml_import', 'after_xml_import', 10, 1);
 	
