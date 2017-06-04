@@ -3010,11 +3010,15 @@
 		<?php
 		// Verhinderen cachen van KML-bestand
 		// Eventuele styling: maptype='light_monochrome'
-		return do_shortcode("[flexiblemap src='".network_site_url('/map.kml')."' width='100%' height='600px' zoom='9' hidemaptype='true' hidescale='false' kmlcache='1 hours' locale='nl-BE' id='map-oxfam']");
+		return do_shortcode("[flexiblemap src='".content_url('/maps/global.kml')."' width='100%' height='600px' zoom='9' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
 	}
 
 	function print_store_map() {
-		return do_shortcode("[flexiblemap src='".network_site_url( '/map-'.get_current_blog_id().'.kml?v='.rand() )."' width='100%' height='600px' zoom='14' hidemaptype='true' hidescale='false' kmlcache='1 hours' locale='nl-BE' id='map-oxfam']");
+		if ( is_regional_webshop() ) {
+			return do_shortcode("[flexiblemap src='".content_url( '/maps/site-'.get_current_blog_id().'.kml?v='.rand() )."' width='100%' height='600px' zoom='12' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
+		} else {
+			return do_shortcode("[flexiblemap src='".content_url( '/maps/site-'.get_current_blog_id().'.kml?v='.rand() )."' width='100%' height='600px' zoom='14' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
+		}
 	}
 
 	function print_scroll_text() {
