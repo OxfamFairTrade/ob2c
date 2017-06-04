@@ -2214,8 +2214,8 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 		} else {
 
-			if ( ! empty( $address['phone'] ) ) {
-
+			// GEWIJZIGD: Telefoonnummer niet tonen bij afrekenen
+			if ( ! empty( $address['phone'] ) and ! is_checkout() ) {
 				$formatted .= "<br/>\n" . $address['phone'];
 			}
 		}
