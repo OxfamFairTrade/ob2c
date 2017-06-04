@@ -2502,11 +2502,13 @@
 	#############
 
 	// ZORG DAT UPDATES OOK WERKEN VIA WP ALL IMPORT
-	// PROBLEEM: ALS WE DIT ACTIVEREN, WORDEN ALLE PRODUCTATTRIBUTEN GEWIST => DEBUGGING NODIG
-	// add_action( 'pmxi_saved_post', 'force_update_product', 10, 1 );
+	add_action( 'pmxi_saved_post', 'force_update_product', 10, 1 );
 
 	function force_update_product( $post_id ) {
-		do_action( 'woocommerce_process_product_meta', $post_id, get_post( $post_id ) );
+		global $WOO_MSTORE;
+		$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ) );
+		// PROBLEEM: ALS WE DIT ACTIVEREN, WORDEN ALLE PRODUCTATTRIBUTEN GEWIST
+		// do_action( 'woocommerce_process_product_meta', $post_id, get_post( $post_id ) );
 	}
 
 	// Doe leuke dingen na afloop van een WP All Import
@@ -2643,6 +2645,11 @@
 		$ignored_fields[] = '_wc_review_count';
 		$ignored_fields[] = '_wc_rating_count';
 		$ignored_fields[] = '_wc_average_rating';
+		$ignored_fields[] = '_barcode';
+		$ignored_fields[] = '_excerpt_fr';
+		$ignored_fields[] = '_excerpt_en';
+		$ignored_fields[] = '_description_fr';
+		$ignored_fields[] = '_description_en';
 		return $ignored_fields;
 	}
 
