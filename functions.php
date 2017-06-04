@@ -2646,10 +2646,10 @@
 		$ignored_fields[] = '_wc_rating_count';
 		$ignored_fields[] = '_wc_average_rating';
 		$ignored_fields[] = '_barcode';
-		$ignored_fields[] = '_excerpt_fr';
-		$ignored_fields[] = '_excerpt_en';
-		$ignored_fields[] = '_description_fr';
-		$ignored_fields[] = '_description_en';
+		$ignored_fields[] = 'excerpt_fr';
+		$ignored_fields[] = 'excerpt_en';
+		$ignored_fields[] = 'description_fr';
+		$ignored_fields[] = 'description_en';
 		return $ignored_fields;
 	}
 

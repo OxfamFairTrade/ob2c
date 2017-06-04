@@ -250,9 +250,11 @@
                                     
                                     $blog_details   =   get_blog_details($network_site->blog_id);
                                     
-                                    $_woonet_publish_to                 =   isset($_REQUEST['_woonet_publish_to_' . $network_site->blog_id])   ?   $_REQUEST['_woonet_publish_to_' . $network_site->blog_id]  :   ''    ;
-                                    $_woonet_publish_to_child_inherit   =   isset($_REQUEST['_woonet_publish_to_'.  $network_site->blog_id .'_child_inheir'])   ?   $_REQUEST['_woonet_publish_to_'.  $network_site->blog_id  .'_child_inheir']  :   ''    ;
-                                    $_woonet_child_stock_synchronize    =   isset($_REQUEST['_woonet_'. $network_site->blog_id .'_child_stock_synchronize'])  ?    $_REQUEST['_woonet_'. $network_site->blog_id .'_child_stock_synchronize']    :   '';
+                                    // GEWIJZIGD: OP 'YES' ZETTEN ALS DEFAULT
+                                    $_woonet_publish_to = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] : 'yes';
+                                    // GEWIJZIGD: OP 'YES' ZETTEN ALS DEFAULT
+                                    $_woonet_publish_to_child_inherit = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] : 'yes';
+                                    $_woonet_child_stock_synchronize = isset( $_REQUEST['_woonet_'.$network_site->blog_id.'_child_stock_synchronize'] ) ? $_REQUEST['_woonet_'.$network_site->blog_id.'_child_stock_synchronize'] : '';
                                     
                                     //get previous data
                                     $previous_data =    get_post_meta($post_id, '_woonet_publish_to_' . $network_site->blog_id, TRUE);
