@@ -17,6 +17,21 @@
 	border-radius: 10px;*/
 }
 
+/* Voorbeeld van winkelnaam in CSS na logo (enkel op de Leuvense site tonen) */
+.page-id-3411 .nm-header-logo:after {
+	position: absolute;
+	color: #61a534;
+	top: 5px;
+	left: 215px;
+	padding: 0.5em;
+	font-size: 145%;
+	line-height: 100%;
+	z-index: 50;
+	border-left: 1px solid #61a534;
+	content: "Webshop\ARegio Leuven";
+	white-space: pre;
+}
+
 /* Maak de leeggoedicoontjes kleiner */
 .shop_table.cart .product-thumbnail.empties {
 	padding: 20px;

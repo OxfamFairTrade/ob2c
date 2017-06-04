@@ -2554,19 +2554,7 @@
 	// AANGEZIEN WE PROBLEMEN HEBBEN OM BROADCASTING PROGRAMMATORISCH UIT TE LOKKEN BLIJVEN WE VOORLOPIG VIA BULKBEWERKING DE PUBLISH NAAR CHILDS TRIGGEREN
 	// Stel de attributen in die berekend moeten worden uit andere waarden
 	// add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
-	add_action( 'pmxi_saved_post', 'call_wp_update_post', 10, 1 );
-
-	function call_wp_update_post( $post_id ) {
-		$my_post = array();
-        $my_post['ID'] = $post_id;
-        $my_post['post_content'] = "FREDTEST";
-        // DOET NIETS
-        // wp_update_post( $my_post );
-        // MOET INGEROEPEN WORDEN OP WOO_MSTORE_ADMIN_PRODUCT KLASSE
-        // process_product( $post_id, get_post( $post_id ), true );
-        do_action( 'woocommerce_process_product_meta', $post_id, get_post( $post_id ) );
-	}
-
+	
 	function set_product_source( $post_id ) {
 		if ( get_post_type( $post_id ) === 'product' ) {
 			// Hoofdtermen (= landen) ontdubbellen en alfabetisch ordenen!
