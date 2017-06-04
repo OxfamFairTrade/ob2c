@@ -3014,11 +3014,13 @@
 	}
 
 	function print_store_map() {
+		// Zoom kaart wat minder ver in indien regiowebshop (of beter nog: naar gelang het aantal afhaalpunten?)
 		if ( is_regional_webshop() ) {
-			return do_shortcode("[flexiblemap src='".content_url( '/maps/site-'.get_current_blog_id().'.kml?v='.rand() )."' width='100%' height='600px' zoom='12' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
+			$zoom = 13;
 		} else {
-			return do_shortcode("[flexiblemap src='".content_url( '/maps/site-'.get_current_blog_id().'.kml?v='.rand() )."' width='100%' height='600px' zoom='14' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
+			$zoom = 15;
 		}
+		return do_shortcode("[flexiblemap src='".content_url( '/maps/site-'.get_current_blog_id().'.kml?v='.rand() )."' width='100%' height='600px' zoom='".$zoom."' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
 	}
 
 	function print_scroll_text() {
