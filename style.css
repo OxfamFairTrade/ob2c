@@ -201,7 +201,7 @@ li.product.pa_bio-ja::before {
 	font-size: 85%;
 	z-index: 50;
 	transform: skewX(-3deg);
-	background-color: rgba(185, 208, 50, 0.9);
+	background-color: rgba(97, 165, 52, 0.9);
 	content: "Bioproduct"; 
 }
 
@@ -215,7 +215,7 @@ div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::bef
 	font-size: 95%;
 	z-index: 50;
 	transform: skewX(-3deg);
-	background-color: rgba(185, 208, 50, 0.9);
+	background-color: rgba(97, 165, 52, 0.9);
 	content: "Biogecertificeerd product";
 }
 

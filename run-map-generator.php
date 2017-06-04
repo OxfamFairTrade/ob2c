@@ -48,11 +48,11 @@
 								$extra = '<gx:balloonVisibility>1</gx:balloonVisibility>';
 							}
 							$txt .= "<Placemark>";
-							$txt .= "<name><![CDATA[".get_company_name($node)."]]></name>";
+							$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
 							$txt .= "<styleUrl>#pickup</styleUrl>";
 							$txt .= "<description><![CDATA[<p>".get_company_address($node)."</p><p><a href=https://www.oxfamwereldwinkels.be/node/".$node." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
 							$txt .= $extra;
-							$txt .= "<Point><coordinates>".get_oxfam_shop_data('ll', $node)."</coordinates></Point>";
+							$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $node )."</coordinates></Point>";
 							$txt .= "</Placemark>";
 						}
 
