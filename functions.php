@@ -5,6 +5,14 @@
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
 	$content_width = 1500;
 
+	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
+	add_action( 'init', 'allow_target_tag', 20 );
+
+	function allow_target_tag() { 
+	    global $allowedtags;
+	    $allowedtags['a']['target'] = 1;
+	}
+
 	// Laad het child theme
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
@@ -2200,8 +2208,8 @@
 							foreach ( $partners as $term_id => $partner_name ) {
 								$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
 								
-								if ( isset( $partner_info['url'] ) and strlen( $partner_info['url'] ) > 10 ) {
-									$text = '<a href="'.$partner_info['url'].'" target="_blank" title="Lees meer over deze partner op onze website">'.$partner_info['name'].'</a>';
+								if ( isset( $partner_info['archive'] ) and strlen( $partner_info['archive'] ) > 10 ) {
+									$text = '<a href="'.$partner_info['archive'].'" title="Bekijk alle producten van deze partner">'.$partner_info['name'].'</a>';
 								} else {
 									$text = $partner_info['name'];
 								}
@@ -2387,14 +2395,13 @@
 		global $wpdb;
 		$partner_info['name'] = $partner->name;
 		$partner_info['country'] = get_term_by( 'id', $partner->parent, 'product_partner' )->name;
+		$partner_info['archive'] = get_term_link( $partner->term_id );
 		
-		// Let op: de naam is een string, dus er moeten quotes rond!
-		// NOGAL ONZEKERE MANIER OM DE JUISTE MATCH TE VINDEN, LIEVER VIA NODE IN TERMBESCHRIJVING
-		$row = $wpdb->get_row( 'SELECT * FROM partners WHERE part_naam = "'.$partner_info['name'].'"' );
-		
-		if ( $row and strlen( $row->part_website ) > 5 ) {
-			// Knip het woord 'node/' er af
-			$partner_info['node'] = intval( substr( $row->part_website, 5 ) );
+		if ( strlen( $partner->description ) > 20 ) {
+			// Knip bij het woord 'node/'
+			$url = explode('node/', $partner->description);
+			$parts = explode('"', $url[1]);
+			$partner_info['node'] = $parts[0];
 			$partner_info['url'] = 'https://www.oxfamwereldwinkels.be/node/'.$partner_info['node'];
 			
 			$quote = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
@@ -2405,11 +2412,6 @@
 					$partner_info['quote_by'] = trim($quote_by->field_manufacturer_hero_name_value);
 				}
 			}
-		} else {
-			// Val terug op de termbeschrijving die misschien toegevoegd is
-			// $url = explode('href="', $partner->description);
-			// $parts = explode('"', $url[1]);
-			// $partner_info['url'] = $parts[0];
 		}
 
 		return $partner_info;
