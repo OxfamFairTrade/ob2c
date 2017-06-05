@@ -2132,12 +2132,9 @@
 	
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
-		// Titel wijzigen van standaardtabs kan maar prioriteit! (description = 10, additional_information = 20)
-		$tabs['additional_information']['title'] = 'Technisch';
-		
 		// Voeg tabje met herkomstinfo toe
 		$tabs['partner_info'] = array(
-			'title' 	=> 'Herkomst',
+			'title' 	=> 'Partnerinfo',
 			'priority' 	=> 12,
 			'callback' 	=> function() { output_tab_content('partner'); },
 		);
@@ -2163,6 +2160,9 @@
 			'priority' 	=> 16,
 			'callback' 	=> function() { output_tab_content('allergen'); },
 		);
+
+		// Titel wijzigen van standaardtabs kan maar prioriteit niet! (description = 10, additional_information = 20)
+		$tabs['additional_information']['title'] = 'Technische fiche';
 		
 		return $tabs;
 	}
@@ -2176,64 +2176,50 @@
 		echo '<table class="shop_attributes">';
 
 		if ( $type === 'partner' ) {
-			// Herkomsttab altijd tonen!
+			// Partnertab altijd tonen!
 			$has_row = true;
-			?>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th>Landen</th>
-				<td>
-				<?php
-					$i = 1;
-					$str = '/';
-					$countries = get_countries_by_product( $product );
-					if ( count( $countries ) > 0 ) {
-						foreach ( $countries as $country ) {
-							if ( $i === 1 ) {
-								$str = $country;
-							} else {
-								$str .= '<br>'.$country;
-							}
-							$i++;
-						}
-					}
-					echo $str;
-				?>
-				</td>
-			</tr>
+			$str = 'partners';
 
-			<?php
-				$partners = get_partner_terms_by_product( $product );
-				if ( count( $partners ) > 0 ) {
+			$partners = get_partner_terms_by_product( $product );
+			if ( count($partners) > 0 ) {
+				if ( count($partners) === 1 ) $str = 'een partner';
+				?>
+					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+						<th>Partners</th>
+						<td>
+						<?php
+							$i = 1;
+							foreach ( $partners as $term_id => $partner_name ) {
+								$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
+								
+								if ( isset( $partner_info['url'] ) and strlen( $partner_info['url'] ) > 10 ) {
+									$text = '<a href="'.$partner_info['url'].'" target="_blank" title="Lees meer over deze partner op onze website">'.$partner_info['name'].'</a>';
+								} else {
+									$text = $partner_info['name'];
+								}
+								
+								if ( $i !== 1 ) $msg .= '<br>';
+								$msg .= $text." &mdash; ".$partner_info['country'];
+								$i++;
+							}
+							echo $msg;
+						?>
+						</td>
+					</tr>
+				<?php
+			}
+			
 			?>
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th>Partners</th>
-					<td>
-					<?php
-						$i = 1;
-						foreach ( $partners as $term_id => $partner_name ) {
-							$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-							
-							if ( isset( $partner_info['url'] ) and strlen( $partner_info['url'] ) > 10 ) {
-								$text = '<a href="'.$partner_info['url'].'" target="_blank" title="Lees meer info over deze partner op de site van Oxfam-Wereldwinkels">'.$partner_info['name'].'</a>';
-							} else {
-								$text = $partner_info['name'];
-							}
-							
-							if ( $i !== 1 ) $msg .= '<br>';
-							$msg .= $text." in ".$partner_info['country'];
-							$i++;
-						}
-						echo $msg;
-					?>
-					</td>
+					<th><?php echo 'Fairtradepercentage'; ?></th>
+					<td><?php echo 'Dit product is voor '.number_format( $product->get_attribute( 'pa_fairtrade' ), 0 ).' % afkomstig van '.$str.' waarmee Oxfam-Wereldwinkels een eerlijke handelsrelatie onderhoudt. <a href="https://www.oxfamwereldwinkels.be/nl/certificering" target="_blank">Lees meer over deze certificering op onze website.</a>'; ?></td>
 				</tr>
 			<?php
-				}
 		} elseif ( $type === 'food' ) {
 			$attributes = $product->get_attributes();
 
 			foreach ( $attributes as $attribute ) {
-				$forbidden = array( 'pa_ompak', 'pa_ompak_ean', 'pa_pal_perlaag', 'pa_pal_lagen', 'pa_eenheid' );
+				$forbidden = array( 'pa_ompak', 'pa_eenheid', 'pa_fairtrade', 'pa_shopplus' );
 				// Logica omkeren: nu tonen we enkel de 'verborgen' attributen
 				if ( empty( $attribute['is_visible'] ) and ! in_array( $attribute['name'], $forbidden ) ) {
 					$has_row = true;
@@ -2280,7 +2266,7 @@
 			}
 			?>
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo $label_c; ?></th>
+				<th><?php echo 'Dit product bevat'; ?></th>
 				<td>
 				<?php
 					$i = 0;
@@ -2301,7 +2287,7 @@
 			</tr>
 
 			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo $label_mc; ?></th>
+				<th><?php echo 'Kan sporen bevatten van'; ?></th>
 				<td>
 				<?php
 					$i = 0;
@@ -2421,6 +2407,21 @@
 		return $partner_info;
 	}
 
+	// Vervroeg actie zodat ze ook in de linkerkolom belandt op tablet (blijkbaar alles t.e.m. prioriteit 15)
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
+	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 12 );
+	
+	// Herkomstlanden tonen, net boven de winkelmandknop
+	add_action( 'woocommerce_single_product_summary', 'show_herkomst', 14 );
+
+	function show_herkomst() {
+		global $product;
+		echo '<p class="herkomst">';
+		echo 'Herkomst: '.$product->get_meta( '_herkomst_nl', true );
+		echo '</p>';
+	}
+
+	// Partnerquote tonen, net onder de winkelmandknop
 	add_action( 'woocommerce_single_product_summary', 'show_random_partner_quote', 75 );
 
 	function show_random_partner_quote() {
@@ -2437,9 +2438,12 @@
 			// Toon een random quote
 			if ( count( $partners_with_quote ) > 0 ) {
 				$i = random_int( 0, count($partners_with_quote) - 1 );
-				echo nm_shortcode_nm_testimonial( array( 'signature' => $partners_with_quote[$i]['quote_by'], ), '&laquo; '.$partners_with_quote[$i]['quote'].' &raquo;' );
-				// echo '<p>&laquo; '.$partners_with_quote[$i]['quote'].' &raquo;</p>';
-				// echo '<p style="font-style: italic; text-align: right;">('.$partners_with_quote[$i]['quote_by'].')</p>';
+				if ( strlen( $partners_with_quote[$i]['quote_by'] ) > 2 ) {
+					$signature = $partners_with_quote[$i]['quote_by'];
+				} else {
+					$signature = $partners_with_quote[$i]['name'].', '.$partners_with_quote[$i]['country'];
+				}
+				echo nm_shortcode_nm_testimonial( array( 'signature' => $signature ), $partners_with_quote[$i]['quote'] );
 			}
 		}
 	}
@@ -2464,9 +2468,9 @@
 	}
 
 	// Formatteer de gewichten in de attributen
-	add_filter( 'woocommerce_attribute', 'add_weight_suffix', 10, 3 );
+	add_filter( 'woocommerce_attribute', 'add_suffixes', 10, 3 );
 
-	function add_weight_suffix( $wpautop, $attribute, $values ) {
+	function add_suffixes( $wpautop, $attribute, $values ) {
 		$weighty_attributes = array( 'pa_choavl', 'pa_famscis', 'pa_fapucis', 'pa_fasat', 'pa_fat', 'pa_fibtg', 'pa_polyl', 'pa_pro', 'pa_salteq', 'pa_starch', 'pa_sugar' );
 		$percenty_attributes = array( 'pa_alcohol', 'pa_fairtrade' );
 		$energy_attributes = array( 'pa_ener' );
@@ -2513,34 +2517,70 @@
 		$ignored_fields[] = 'excerpt_en';
 		$ignored_fields[] = 'description_fr';
 		$ignored_fields[] = 'description_en';
+		$ignored_fields[] = '_barcode';
+		$ignored_fields[] = '_in_bestelweb';
+		$ignored_fields[] = '_herkomst_fr';
+		$ignored_fields[] = '_herkomst_en';
+		$ignored_fields[] = 'pal_aantallagen';
+		$ignored_fields[] = 'pal_aantalperlaag';
+		$ignored_fields[] = 'steh_ean';
+		$ignored_fields[] = 'intrastat';
 		return $ignored_fields;
 	}
 
 	// Stel de attributen in die berekend moeten worden uit andere waarden BETER VIA ALGEMENE SAVE_POST
-	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
+	add_action( 'pmxi_saved_post', 'update_origin_on_update', 10, 1 );
 	
-	function update_calculated_attributes( $post_id ) {
+	function update_origin_on_update( $post_id, $meta_key, $meta_value ) {
+		// VEROORZAAKT RARE PROBLEMEN BIJ DE TERMENKOPPELING VAN TAXONOMIEËN
+		// $attribute = new WC_Product_Attribute();
+		// $attribute->set_id(0);
+		// $attribute->set_name('Herkomst');
+		// $attribute->set_options( array( implode( ', ', $countries ) ) );
+		// $attribute->set_position(1000);
+		// $attribute->set_visible(false);
+		// $attribute->set_variation(false);
+		// $attributes = $productje->get_attributes();
+		// // Unieke key, moet overeenkomen met de taxonomie
+		// $attributes['pa_herkomst'] = $attribute;
+		// $pos = 10;
+		// foreach( $attributes as $key => $attribute ) {
+		// 	if ( $key !== 'pa_herkomst' ) {
+		// 		$attribute->set_position($pos);
+		// 		$pos += 10;
+		// 	}
+		// }
+		// $productje->set_attributes( $attributes );
+		// $productje->save();
+		
 		$productje = wc_get_product( $post_id );
-		$countries = get_countries_by_product( $productje );
-		$attribute = new WC_Product_Attribute();
-		$attribute->set_id(0);
-		$attribute->set_name('Herkomst');
-		$attribute->set_options( array( implode( ', ', $countries ) ) );
-		$attribute->set_position(1);
-		$attribute->set_visible(false);
-		$attribute->set_variation(false);
-		$attributes = $productje->get_attributes();
-		// Unieke key, moet overeenkomen met de taxonomie
- 		$attributes['pa_herkomst'] = $attribute;
- 		$pos = 10;
- 		foreach( $attributes as $key => $attribute ) {
- 			if ( $key !== 'pa_herkomst' ) {
- 				$attribute->set_position($pos);
- 				$pos += 10;
- 			}
- 		}
- 		$productje->set_attributes( $attributes );
- 		$productje->save();
+		$countries_nl = get_countries_by_product( $productje );
+		update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
+		
+		foreach ( $countries_nl as $country ) {
+			$nl = get_site_option( 'countries_nl' );
+			$code = array_search( $country, $nl, true );
+			// We hebben een geldige landencode gevonden
+			if ( strlen($code) === 3 ) {
+				$countries_fr[] = translate_to_fr( $code );
+				$countries_en[] = translate_to_en( $code );
+			}
+		}
+
+		sort($countries_fr, SORT_STRING);
+		update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
+		sort($countries_en, SORT_STRING);
+		update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
+	}
+
+	function translate_to_fr( $code ) {
+		$fr = get_site_option( 'countries_fr' );
+		return $fr[$code];
+	}
+
+	function translate_to_en( $code ) {
+		$en = get_site_option( 'countries_en' );
+		return $en[$code];
 	}
 
 	// ZORG DAT UPDATES OOK WERKEN VIA WP ALL IMPORT
@@ -2549,6 +2589,30 @@
 	function force_update_product( $post_id ) {
 		global $WOO_MSTORE;
 		$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ) );
+	}
+
+	// Doe leuke dingen voor de start van een WP All Import
+	add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
+	
+	function before_xml_import( $import_id ) {
+		if ( $import_id == 5 ) {
+			// Zet de key '_in_bestelweb' van alle producten op nee
+			$args = array(
+				'post_type'			=> 'product',
+				'post_status'		=> array( 'publish', 'draft', 'trash' ),
+				'posts_per_page'	=> -1,
+			);
+
+			$to_remove = new WP_Query( $args );
+
+			if ( $to_remove->have_posts() ) {
+				while ( $to_remove->have_posts() ) {
+					$to_remove->the_post();
+					update_post_meta( get_the_ID(), '_in_bestelweb', 'nee' );
+				}
+				wp_reset_postdata();
+			}
+		}
 	}
 
 	// Doe leuke dingen na afloop van een WP All Import
@@ -2595,6 +2659,30 @@
 				while ( $trashed->have_posts() ) {
 					$trashed->the_post();
 					delete_post_meta( get_the_ID(), 'naar_prullenmand' );
+				}
+				wp_reset_postdata();
+			}
+		}
+
+		if ( $import_id == 5 ) {
+			// Vind alle producten waarvan de key '_in_bestelweb' onaangeroerd is (= zat niet in Odisy-import)
+			$args = array(
+				'post_type'			=> 'product',
+				'post_status'		=> array( 'publish', 'draft', 'trash' ),
+				'posts_per_page'	=> -1,
+				'meta_key'			=> '_in_bestelweb', 
+				'meta_value'		=> 'nee',
+				'meta_compare'		=> '=',
+			);
+
+			$to_outofstock = new WP_Query( $args );
+
+			if ( $to_outofstock->have_posts() ) {
+				while ( $to_outofstock->have_posts() ) {
+					$to_outofstock->the_post();
+					$productje = wc_get_product( get_the_ID() );
+					$productje->set_stock_status('outofstock');
+					$productje->save();
 				}
 				wp_reset_postdata();
 			}

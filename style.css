@@ -114,13 +114,26 @@ div.wc-force-sells > ul {
 
 /* Maak de testimonial iets subtieler */
 div.nm-testimonial {
-	margin: 2.5em auto 1em auto;
+	margin: 2em auto 1em auto;
 }
-
 div.nm-testimonial-description {
-	font-size: 100%;
+	font-size: 110%;
 	font-style: italic;
 	color: #777777;
+	position: relative;
+	padding-top: 10px;
+	padding-left: 60px;
+}
+div.nm-testimonial-description:before {
+	content: '\201C';
+	font-family: Georgia;
+	line-height: 1em;
+	font-size: 5em;
+	font-weight: bold;
+	color: #999999;
+	position: absolute;
+	left: 0;
+	top: 0;
 }
 div.nm-testimonial-author {
 	text-align: right;
@@ -129,6 +142,13 @@ div.nm-testimonial-author {
 div.nm-product-share-wrap {
 	padding-top: 0;	
 	margin-top: 1em;
+}
+
+/* Zet limiet op breedte van productbeschrijving */
+div.nm-tabs-panel-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0;
 }
 
 /* Maak de kolommen in de technische productinfo breder/smaller */
@@ -289,6 +309,21 @@ li.product.product_tag-nieuw:hover::before,
 li.product.product_shipping_class-glas:hover::after {
 	opacity: 0.7;
 	transition: opacity 1s ease-out 0s;
+}
+
+/* Fix voor zoombox die productfoto's op detailpagina rechts afknipt */
+.woocommerce-product-gallery__image {
+    margin-left: 0;
+}
+.woocommerce-product-gallery__wrapper {
+	margin-right: 0;
+}
+.summary.entry-summary.clear {
+	// padding-left: 50px;
+}
+p.herkomst {
+	margin-bottom: 1em;
+	font-weight: bold;
 }
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 

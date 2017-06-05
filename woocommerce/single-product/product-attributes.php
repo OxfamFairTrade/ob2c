@@ -48,14 +48,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php endforeach; ?>
 
 	<!-- GEWIJZIGD: Dimensies onderaan weergeven -->
-	<?php if ( $product->has_weight() ) : $has_row = true; ?>
+	<?php if ( $product->has_weight() and get_site_option('show_weight') ) : $has_row = true; ?>
 		<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 			<th>Brutogewicht</th>
 			<td class="product_weight"><?php echo number_format( $product->get_weight(), 2, ',', '.' ) . ' ' . esc_attr( get_option( 'woocommerce_weight_unit' ) ); ?></td>
 		</tr>
 	<?php endif; ?>
 
-	<?php if ( $product->has_dimensions() ) : $has_row = true; ?>
+	<?php if ( $product->has_dimensions() and get_site_option('show_dimensions') ) : $has_row = true; ?>
 		<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 			<th>Afmetingen</th>
 			<td class="product_dimensions"><?php echo $product->get_dimensions(); ?></td>
