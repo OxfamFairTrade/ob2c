@@ -2471,7 +2471,6 @@
 		$percenty_attributes = array( 'pa_alcohol', 'pa_fairtrade' );
 		$energy_attributes = array( 'pa_ener' );
 
-		// HOE BEPALEN WE MET WELKE PRODUCT-ID WE HIER BEZIG ZIJN? => GLOBAL WERKT
 		global $product;
 		$eh = $product->get_attribute( 'pa_eenheid' );
 		if ( $eh === 'L' ) {
@@ -2486,7 +2485,7 @@
 			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' %';
 		} elseif ( in_array( $attribute['name'], $energy_attributes ) ) {
 			$values[0] = number_format( $values[0], 0, ',', '.' ).' kJ';
-		} elseif ( $attribute['name'] === 'pa_eenheidsprijs' ) {
+		} elseif ( $attribute['name'] === 'pa_eprijs' ) {
 			$values[0] = '&euro; '.number_format( str_replace( ',', '.', $values[0] ), 2, ',', '.' ).' per '.$suffix;
 		} elseif ( $attribute['name'] === 'pa_ompak' ) {
 			$values[0] = $values[0].' stuks';
