@@ -19,6 +19,9 @@
 			$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, ) );
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
+					// Zorg ervoor dat we niet met maandfolders werken
+					update_option('uploads_use_yearmonth_folders', false);
+					
 					$str .= "<Placemark>";
 					$str .= "<name><![CDATA[".get_company_name()."]]></name>";
 					if ( does_home_delivery() ) {

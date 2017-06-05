@@ -457,7 +457,7 @@
 
 	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
 		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
-		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_length', '_width', '_height', '_weight', '_thumbnail_id', '_force_sell_synced_ids' );
+		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_length', '_width', '_height', '_weight', '_thumbnail_id', '_force_sell_synced_ids', '_barcode', 'excerpt_fr', 'excerpt_en', 'description_fr', 'description_en', '_product_attributes' );
 		// Check of er een belangwekkende wijzing was
 		if ( in_array( $meta_key, $watched_metas ) ) {
 			// Vergelijk nieuwe waarde met de actuele
@@ -2561,79 +2561,26 @@
 		}
 	}
 
-	// AANGEZIEN WE PROBLEMEN HEBBEN OM BROADCASTING PROGRAMMATORISCH UIT TE LOKKEN BLIJVEN WE VOORLOPIG VIA BULKBEWERKING DE PUBLISH NAAR CHILDS TRIGGEREN
-	// Stel de attributen in die berekend moeten worden uit andere waarden
-	// add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
+	// Stel de attributen in die berekend moeten worden uit andere waarden BETER VIA ALGEMENE SAVE_POST
+	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
 	
-	function set_product_source( $post_id ) {
-		if ( get_post_type( $post_id ) === 'product' ) {
-			// Hoofdtermen (= landen) ontdubbellen en alfabetisch ordenen!
-			$source = 'TEST HERKOMST';
-			$term_taxonomy_ids = wp_set_object_terms( $post_id, $source, 'pa_herkomst', true );
-			$price = '99';
-			$term_taxonomy_ids = wp_set_object_terms( $post_id, $price, 'pa_eenheidsprijs', true );
-			$thedata = array(
-				'pa_herkomst' 	=>		array(
-											'name' => 'pa_herkomst',
-											'value' => $source,
-											'is_visible' => '1',
-											'is_taxonomy' => '0',
-										),
-				'pa_eenheidsprijs'	=>	array(
-											'name' => 'pa_eenheidsprijs',
-											'value' => $price,
-											'is_visible' => '1',
-											'is_taxonomy' => '0',
-										),
-			);
-     		update_post_meta( $post_id, '_product_attributes', $thedata );
-		}
-	}
-
 	function update_calculated_attributes( $post_id ) {
 		if ( get_post_type( $post_id ) === 'product' ) {
-			// Belangrijk: zorg ervoor dat '_product_attributes' alle attributen bevat in de juiste volgorde
-			// De waarden zelf zitten allemaal als termen opgeslagen, maar om te verschijnen bij het product moeten ze wel 'aangekondigd' worden
-			$product = wc_get_product( $post_id );
-			$attributes = $product->get_attributes();
-			
-			$price = floatval($product->get_price());
-			$parts = explode( ' ', $product->get_attribute( 'pa_inhoud' ) );
-			$content = intval($parts[0]);
-			if ( $parts[1] === 'g' ) {
-				$calc = $price / $content * 1000;
-			} elseif ( $parts[1] === 'cl' ) {
-				$calc = $price / $content * 100;
-			} else {
-				$calc = 0;
-			}
-			$string = number_format( $calc, 2, ',', '.' );
-			$calc = round( $calc, 2 );
-			
-			// REPLACE ALL TERMS
-			$term_taxonomy_ids = wp_set_object_terms( $post_id, $string, 'pa_eenheidsprijs', false );
-			// WORDT AUTOMATISCH ALFABETISCHE GEORDEND EN ONTDUBBELD!
-			// $term_taxonomy_ids = wp_set_object_terms( $post_id, array('Frankrijk', 'België', 'India', 'België'), 'pa_herkomst', false );
-			// update_post_meta( $post_id, '_product_attributes', $thedata );
-
-			$attributes[] = array(
-				'pa_eenheidsprijs'	=>	array(
-											'name' => 'pa_eenheidsprijs',
-											'value' => $string,
-											'is_visible' => '1',
-											'is_taxonomy' => '1',
-										),
-			);
-     		
-     		$product->set_attributes( $attributes );
-     		$product->save();
+			$productje = wc_get_product( $post_id );
+			$countries[] = get_countries_by_product( $productje );
+			$attribute = new WC_Product_Attribute();
+			$attribute->set_id(38);
+			$attribute->set_name('Herkomst');
+			$attribute->set_options(array('België', 'Nederland'));
+			$attribute->set_position(100);
+			$attribute->set_visible(false);
+			$attribute->set_variation(false);
+			// Moet een unieke key zijn
+     		$attributes['test'] = $attribute;
+     		$productje->set_attributes( $attributes );
+     		$productje->save();
 		}
 	}
-
-	// Zorg ervoor dat we niet met maandfolders werken
-	// switch_to_blog( $blog_id );
-	// update_option('uploads_use_yearmonth_folders', false);
-	// restore_current_blog();
 
 	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke update
 	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
