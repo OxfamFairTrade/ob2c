@@ -469,7 +469,7 @@
 				if ( is_array( $new_meta_value ) ) {
 					if ( count( array_diff( $new_meta_value, $old_meta_value ) ) > 0 ) {
 						// Schrijf weg in log per weeknummer (zonder leading zero's) 
-						$str = date_i18n('d/m/Y H:i:s') . "\t" . $meta_key . "\t" . serialize($new_meta_value) . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
+						$str = date_i18n('d/m/Y H:i:s') . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . $meta_key . "\t" . serialize($new_meta_value) . "\t" . get_the_title( $post_id ) . "\n";
 					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND);
 					}
 				} else {
@@ -2505,8 +2505,6 @@
 	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
 
 	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
-		$ignored_fields[] = '_stock';
-		$ignored_fields[] = '_stock_status';
 		$ignored_fields[] = 'total_sales';
 		$ignored_fields[] = '_wc_review_count';
 		$ignored_fields[] = '_wc_rating_count';
@@ -2519,35 +2517,39 @@
 		return $ignored_fields;
 	}
 
+	// Stel de attributen in die berekend moeten worden uit andere waarden BETER VIA ALGEMENE SAVE_POST
+	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
+	
+	function update_calculated_attributes( $post_id ) {
+		$productje = wc_get_product( $post_id );
+		$countries = get_countries_by_product( $productje );
+		$attribute = new WC_Product_Attribute();
+		$attribute->set_id(0);
+		$attribute->set_name('Herkomst');
+		$attribute->set_options( array( implode( ', ', $countries ) ) );
+		$attribute->set_position(1);
+		$attribute->set_visible(false);
+		$attribute->set_variation(false);
+		$attributes = $productje->get_attributes();
+		// Unieke key, moet overeenkomen met de taxonomie
+ 		$attributes['pa_herkomst'] = $attribute;
+ 		$pos = 10;
+ 		foreach( $attributes as $key => $attribute ) {
+ 			if ( $key !== 'pa_herkomst' ) {
+ 				$attribute->set_position($pos);
+ 				$pos += 10;
+ 			}
+ 		}
+ 		$productje->set_attributes( $attributes );
+ 		$productje->save();
+	}
+
 	// ZORG DAT UPDATES OOK WERKEN VIA WP ALL IMPORT
-	add_action( 'pmxi_saved_post', 'force_update_product', 10, 1 );
+	add_action( 'pmxi_saved_post', 'force_update_product', 20, 1 );
 
 	function force_update_product( $post_id ) {
 		global $WOO_MSTORE;
 		$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ) );
-		// PROBLEEM: ALS WE DIT ACTIVEREN, WORDEN ALLE PRODUCTATTRIBUTEN GEWIST
-		// do_action( 'woocommerce_process_product_meta', $post_id, get_post( $post_id ) );
-	}
-
-	// Stel de attributen in die berekend moeten worden uit andere waarden BETER VIA ALGEMENE SAVE_POST
-	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 100, 1 );
-	
-	function update_calculated_attributes( $post_id ) {
-		if ( get_post_type( $post_id ) === 'product' ) {
-			$productje = wc_get_product( $post_id );
-			$countries[] = get_countries_by_product( $productje );
-			$attribute = new WC_Product_Attribute();
-			$attribute->set_id(38);
-			$attribute->set_name('Herkomst');
-			$attribute->set_options(array('België', 'Nederland'));
-			$attribute->set_position(100);
-			$attribute->set_visible(false);
-			$attribute->set_variation(false);
-			// Moet een unieke key zijn
-     		$attributes['test'] = $attribute;
-     		$productje->set_attributes( $attributes );
-     		$productje->save();
-		}
 	}
 
 	// Doe leuke dingen na afloop van een WP All Import
