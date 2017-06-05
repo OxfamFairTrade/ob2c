@@ -2501,6 +2501,24 @@
 	# MULTISITE #
 	#############
 
+	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke update
+	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
+
+	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
+		$ignored_fields[] = '_stock';
+		$ignored_fields[] = '_stock_status';
+		$ignored_fields[] = 'total_sales';
+		$ignored_fields[] = '_wc_review_count';
+		$ignored_fields[] = '_wc_rating_count';
+		$ignored_fields[] = '_wc_average_rating';
+		$ignored_fields[] = '_barcode';
+		$ignored_fields[] = 'excerpt_fr';
+		$ignored_fields[] = 'excerpt_en';
+		$ignored_fields[] = 'description_fr';
+		$ignored_fields[] = 'description_en';
+		return $ignored_fields;
+	}
+
 	// ZORG DAT UPDATES OOK WERKEN VIA WP ALL IMPORT
 	add_action( 'pmxi_saved_post', 'force_update_product', 10, 1 );
 
@@ -2509,6 +2527,27 @@
 		$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ) );
 		// PROBLEEM: ALS WE DIT ACTIVEREN, WORDEN ALLE PRODUCTATTRIBUTEN GEWIST
 		// do_action( 'woocommerce_process_product_meta', $post_id, get_post( $post_id ) );
+	}
+
+	// Stel de attributen in die berekend moeten worden uit andere waarden BETER VIA ALGEMENE SAVE_POST
+	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 100, 1 );
+	
+	function update_calculated_attributes( $post_id ) {
+		if ( get_post_type( $post_id ) === 'product' ) {
+			$productje = wc_get_product( $post_id );
+			$countries[] = get_countries_by_product( $productje );
+			$attribute = new WC_Product_Attribute();
+			$attribute->set_id(38);
+			$attribute->set_name('Herkomst');
+			$attribute->set_options(array('België', 'Nederland'));
+			$attribute->set_position(100);
+			$attribute->set_visible(false);
+			$attribute->set_variation(false);
+			// Moet een unieke key zijn
+     		$attributes['test'] = $attribute;
+     		$productje->set_attributes( $attributes );
+     		$productje->save();
+		}
 	}
 
 	// Doe leuke dingen na afloop van een WP All Import
@@ -2559,45 +2598,6 @@
 				wp_reset_postdata();
 			}
 		}
-	}
-
-	// Stel de attributen in die berekend moeten worden uit andere waarden BETER VIA ALGEMENE SAVE_POST
-	add_action( 'pmxi_saved_post', 'update_calculated_attributes', 10, 1 );
-	
-	function update_calculated_attributes( $post_id ) {
-		if ( get_post_type( $post_id ) === 'product' ) {
-			$productje = wc_get_product( $post_id );
-			$countries[] = get_countries_by_product( $productje );
-			$attribute = new WC_Product_Attribute();
-			$attribute->set_id(38);
-			$attribute->set_name('Herkomst');
-			$attribute->set_options(array('België', 'Nederland'));
-			$attribute->set_position(100);
-			$attribute->set_visible(false);
-			$attribute->set_variation(false);
-			// Moet een unieke key zijn
-     		$attributes['test'] = $attribute;
-     		$productje->set_attributes( $attributes );
-     		$productje->save();
-		}
-	}
-
-	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke update
-	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
-
-	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
-		$ignored_fields[] = '_stock';
-		$ignored_fields[] = '_stock_status';
-		$ignored_fields[] = 'total_sales';
-		$ignored_fields[] = '_wc_review_count';
-		$ignored_fields[] = '_wc_rating_count';
-		$ignored_fields[] = '_wc_average_rating';
-		$ignored_fields[] = '_barcode';
-		$ignored_fields[] = 'excerpt_fr';
-		$ignored_fields[] = 'excerpt_en';
-		$ignored_fields[] = 'description_fr';
-		$ignored_fields[] = 'description_en';
-		return $ignored_fields;
 	}
 
 	// Functie die post-ID's van de hoofdsite vertaalt en het metaveld opslaat in de huidige subsite (op basis van artikelnummer)
