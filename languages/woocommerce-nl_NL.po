@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2017-05-10 01:02+0200\n"
+"PO-Revision-Date: 2017-06-06 00:11+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 2.0.1\n"
+"X-Generator: Poedit 2.0.2\n"
 "Language: nl\n"
 "Project-Id-Version: Plugins - WooCommerce - Stable (latest release)\n"
 "POT-Creation-Date: \n"
@@ -671,8 +671,8 @@ msgstr "Ongeldige waarde geplaatst voor %s"
 #: includes/class-wc-form-handler.php:611
 msgid "%d item from your previous order is currently unavailable and could not be added to your cart."
 msgid_plural "%d items from your previous order are currently unavailable and could not be added to your cart."
-msgstr[0] "%d item van je eerdere bestelling is momenteel niet beschikbaar en kan niet worden toegevoegd aan je winkelmand."
-msgstr[1] "%d items van je eerdere bestelling zijn momenteel niet beschikbaar en kunnen niet worden toegevoegd aan je winkelmand."
+msgstr[0] "%d item van je eerdere bestelling is momenteel niet beschikbaar en kan niet worden toegevoegd aan je winkelmandje."
+msgstr[1] "%d items van je eerdere bestelling zijn momenteel niet beschikbaar en kunnen niet worden toegevoegd aan je winkelmandje."
 
 #. translators: 1: product name 2: items in stock
 #: includes/class-wc-emails.php:472
@@ -724,13 +724,13 @@ msgstr "Factuur %s"
 
 #: includes/class-wc-cart.php:912
 msgid "You cannot add another \"%s\" to your cart."
-msgstr "Je kunt niet nog een \"%s\" aan je winkelmand toevoegen."
+msgstr "Je kunt niet nog een \"%s\" aan je winkelmandje toevoegen."
 
 #. translators: %s: product name
 #: includes/class-wc-cart.php:912 includes/class-wc-frontend-scripts.php:523
 #: includes/wc-cart-functions.php:115 includes/wc-template-functions.php:1429
 msgid "View cart"
-msgstr "Winkelmand bekijken"
+msgstr "Winkelmandje bekijken"
 
 #: includes/class-wc-cache-helper.php:223
 msgid "In order for <strong>database caching</strong> to work with WooCommerce you must add %1$s to the \"Ignored Query Strings\" option in <a href=\"%2$s\">W3 Total Cache settings</a>."
@@ -2799,7 +2799,7 @@ msgstr "%s product"
 
 #: includes/wc-template-functions.php:32
 msgid "Checkout is not available whilst your cart is empty."
-msgstr "Afrekenen is niet beschikbaar zolang je winkelmand leeg is."
+msgstr "Afrekenen is niet beschikbaar zolang je winkelmandje leeg is."
 
 #. translators: 1: parameter 2: integer type
 #. translators: 1: parameter 2: boolean type
@@ -7649,11 +7649,11 @@ msgstr "Klant- en verzendgegevens"
 
 #: templates/checkout/cart-errors.php:31
 msgid "Return to cart"
-msgstr "Terug naar winkelmand"
+msgstr "Terug naar winkelmandje"
 
 #: templates/checkout/cart-errors.php:27
 msgid "There are some issues with the items in your cart (shown above). Please go back to the cart page and resolve these issues before checking out."
-msgstr "Er zijn enkele problemen met de artikelen in je winkelmand (hierboven getoond). Ga terug naar de winkelmandpagina en los deze problemen op voor het afrekenen."
+msgstr "Er zijn enkele problemen met de artikelen in je winkelmandje (hierboven getoond). Ga terug en los deze problemen op vooraleer af te rekenen."
 
 #: templates/cart/shipping-calculator.php:33
 msgid "Calculate shipping"
@@ -7669,7 +7669,7 @@ msgstr "Afrekenen"
 
 #: templates/cart/mini-cart.php:76
 msgid "No products in the cart."
-msgstr "Geen producten in je winkelmand."
+msgstr "Geen producten in je winkelmandje."
 
 #: templates/cart/cross-sells.php:27
 msgid "You may be interested in&hellip;"
@@ -7677,7 +7677,7 @@ msgstr "Je bent misschien ook geïnteresseerd in&hellip;"
 
 #: templates/cart/cart.php:142
 msgid "Update cart"
-msgstr "Winkelmand bijwerken"
+msgstr "Winkelmandje bijwerken"
 
 #: templates/cart/cart.php:137 templates/checkout/form-coupon.php:40
 msgid "Apply coupon"
@@ -7712,7 +7712,7 @@ msgstr "Verzendkosten %s"
 
 #: templates/cart/cart-empty.php:28
 msgid "Your cart is currently empty."
-msgstr "Je winkelmand is momenteel leeg."
+msgstr "Je winkelmandje is momenteel leeg."
 
 #: templates/auth/header.php:29
 msgid "Application authentication request"
@@ -7981,7 +7981,7 @@ msgstr "Verbergen als winkelmand leeg is"
 
 #: includes/widgets/class-wc-widget-cart.php:31
 msgid "Cart"
-msgstr "Winkelmand"
+msgstr "Winkelmandje"
 
 #: includes/widgets/class-wc-widget-cart.php:27
 msgid "WooCommerce cart"
@@ -8334,8 +8334,8 @@ msgstr "Verder winkelen"
 #: includes/wc-cart-functions.php:108
 msgid "%s has been added to your cart."
 msgid_plural "%s have been added to your cart."
-msgstr[0] "%s is toegevoegd aan je winkelmand."
-msgstr[1] "%s zijn toegevoegd aan je winkelmand."
+msgstr[0] "%s is toegevoegd aan je winkelmandje."
+msgstr[1] "%s zijn toegevoegd aan je winkelmandje."
 
 #: includes/wc-cart-functions.php:27
 msgid "This product is protected and cannot be purchased."
@@ -8614,7 +8614,7 @@ msgstr "Terugbetaling is afgewezen."
 
 #: includes/gateways/simplify-commerce/class-wc-gateway-simplify-commerce.php:647
 msgid "Cancel order &amp; restore cart"
-msgstr "Bestelling annuleren &amp; winkelmand herstellen"
+msgstr "Bestelling annuleren &amp; winkelmandje herstellen"
 
 #: includes/gateways/simplify-commerce/class-wc-gateway-simplify-commerce.php:647
 msgid "Pay now"
@@ -10009,7 +10009,7 @@ msgstr "afrekenen"
 #: includes/class-wc-install.php:324
 msgctxt "Page slug"
 msgid "cart"
-msgstr "winkelmand"
+msgstr "winkelmandje"
 
 #: includes/class-wc-install.php:319
 msgctxt "Page slug"
@@ -10075,11 +10075,11 @@ msgstr[1] "%s zijn verplichte velden"
 
 #: includes/class-wc-form-handler.php:774
 msgid "Please choose a product to add to your cart&hellip;"
-msgstr "Kies een product om aan je winkelmand toe te voegen&hellip;"
+msgstr "Kies een product om aan je winkelmandje toe te voegen &hellip;"
 
 #: includes/class-wc-form-handler.php:767
 msgid "Please choose the quantity of items you wish to add to your cart&hellip;"
-msgstr "Kies het aantal artikelen dat je toe wilt voegen aan je winkelmand&hellip;"
+msgstr "Kies het aantal artikelen dat je toe wilt voegen aan je winkelmandje &hellip;"
 
 #: includes/class-wc-form-handler.php:657
 msgid "Your order can no longer be cancelled. Please contact us if you need assistance."
@@ -10095,15 +10095,15 @@ msgstr "Bestelling geannuleerd door de klant."
 
 #: includes/class-wc-form-handler.php:622
 msgid "The cart has been filled with the items from your previous order."
-msgstr "De winkelmand is gevuld met de artikelen van je vorige bestelling."
+msgstr "Het winkelmandje is gevuld met de artikelen van een vorige bestelling."
 
 #: includes/class-wc-form-handler.php:540
 msgid "Cart updated."
-msgstr "Winkelmand bijgewerkt."
+msgstr "Winkelmandje bijgewerkt."
 
 #: includes/class-wc-form-handler.php:517
 msgid "You can only have 1 %s in your cart."
-msgstr "Je kunt slechts 1 %s in je winkelmand hebben."
+msgstr "Je kunt slechts 1 %s in je winkelmandje hebben."
 
 #: includes/class-wc-form-handler.php:378
 msgid "Payment method added."
@@ -10250,7 +10250,7 @@ msgstr "Sorry, deze kortingbon kan niet worden gebruikt met de producten: %s."
 
 #: includes/class-wc-coupon.php:1157
 msgid "Sorry, this coupon is not applicable to your cart contents."
-msgstr "Sorry, deze kortingsbon kan niet worden gebruikt in combinatie met de inhoud van je winkelmand."
+msgstr "Sorry, deze kortingsbon kan niet worden gebruikt in combinatie met de inhoud van je winkelmandje."
 
 #. translators: %s: coupon maximum amount
 #: includes/class-wc-coupon.php:1154
@@ -10480,16 +10480,16 @@ msgstr "Account gebruikersnaam"
 
 #: includes/class-wc-cart.php:940
 msgid "You cannot add that amount to the cart &mdash; we have %1$s in stock and you already have %2$s in your cart."
-msgstr "Je kunt dit aantal niet aan je winkelmand toevoegen &mdash; we hebben er %1$s op voorraad en je hebt er al %2$s in je winkelmand."
+msgstr "Je kunt dit aantal niet aan je winkelmandje toevoegen &mdash; we hebben er %1$s op voorraad en je hebt er al %2$s in je winkelmandje."
 
 #. translators: 1: product name 2: quantity in stock
 #: includes/class-wc-cart.php:928
 msgid "You cannot add that amount of &quot;%1$s&quot; to the cart because there is not enough stock (%2$s remaining)."
-msgstr "Je kunt dit aantal van &quot;%1$s&quot; niet toevoegen aan je winkelmand, omdat er niet voldoende voorraad is (%2$s resterend)."
+msgstr "Je kunt dit aantal van &quot;%1$s&quot; niet toevoegen aan je winkelmandje, omdat er niet voldoende voorraad is (%2$s resterend)."
 
 #: includes/class-wc-cart.php:923
 msgid "You cannot add &quot;%s&quot; to the cart because the product is out of stock."
-msgstr "Je kunt &quot;%s&quot; niet toevoegen aan je winkelmand, omdat het product niet op voorraad is."
+msgstr "Je kunt &quot;%s&quot; niet toevoegen aan je winkelmandje, omdat het product niet op voorraad is."
 
 #: includes/class-wc-cart.php:918
 msgid "Sorry, this product cannot be purchased."
@@ -10497,7 +10497,7 @@ msgstr "Sorry, dit product kan niet worden gekocht."
 
 #: includes/class-wc-cart.php:939
 msgid "View Cart"
-msgstr "Winkelmand bekijken"
+msgstr "Winkelmandje bekijken"
 
 #: includes/class-wc-cart.php:681
 msgid "Get cart should not be called before the wp_loaded action."
@@ -10520,12 +10520,12 @@ msgstr "Sorry, \"%s\" is niet op voorraad. Pas je bestelling aan en probeer het 
 
 #: includes/class-wc-cart.php:453
 msgid "An item which is no longer available was removed from your cart."
-msgstr "Een artikel dat niet langer beschikbaar is, is verwijderd uit je winkelmand."
+msgstr "Een artikel dat niet langer beschikbaar is, is verwijderd uit je winkelmandje."
 
 #. translators: %s: product name
 #: includes/class-wc-cart.php:240
 msgid "%s has been removed from your cart because it can no longer be purchased. Please contact us if you need assistance."
-msgstr "%s is uit je winkelmand verwijderd, omdat het niet langer beschikbaar is. Neem contact met ons op als je hulp nodig hebt."
+msgstr "%s is uit je winkelmandje verwijderd, omdat het niet langer beschikbaar is. Neem contact met ons op als je hulp nodig hebt."
 
 #: includes/class-wc-breadcrumb.php:347
 msgid "Page %d"
@@ -11560,7 +11560,7 @@ msgstr "De URL van je WooCommerce %s (samen met de Pagina-ID)."
 #: includes/api/class-wc-rest-system-status-controller.php:884
 msgctxt "Page setting"
 msgid "Cart"
-msgstr "Winkelmand"
+msgstr "Winkelmandje"
 
 #: includes/api/class-wc-rest-system-status-controller.php:880
 msgctxt "Page setting"
@@ -11947,11 +11947,11 @@ msgstr "Afronding"
 
 #: includes/admin/settings/views/settings-tax.php:45
 msgid "Shipping tax class based on cart items"
-msgstr "Belastingklasse voor verzendkosten gebaseerd op artikelen in de winkelmand"
+msgstr "Belastingklasse voor verzendkosten gebaseerd op artikelen in de winkelmandje"
 
 #: includes/admin/settings/views/settings-tax.php:39
 msgid "Optionally control which tax class shipping gets, or leave it so shipping tax is based on the cart items themselves."
-msgstr "Bepaal welke belastingklasse toegepast wordt op de verzendkosten of laat het zo, zodat de belasting op de verzendkosten wordt gebaseerd op de artikelen in de winkelmand zelf."
+msgstr "Bepaal welke belastingklasse toegepast wordt op de verzendkosten of laat het zo, zodat de belasting op de verzendkosten wordt gebaseerd op de artikelen in het winkelmandje zelf."
 
 #: includes/admin/settings/views/settings-tax.php:38
 msgid "Shipping tax class"
@@ -14453,7 +14453,7 @@ msgstr "Gebruikslimiet per klant"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-coupon-data.php:264
 msgid "The maximum number of individual items this coupon can apply to when using product discounts. Leave blank to apply to all qualifying items in cart."
-msgstr "Het maximum aantal individuele artikelen waar deze kortingsbon op toegepast kan worden. Laat dit veld leeg om de kortingsbon toe te passen op alle toegestane items in de winkelmand."
+msgstr "Het maximum aantal individuele artikelen waar deze kortingsbon op toegepast kan worden. Laat dit veld leeg om de kortingsbon toe te passen op alle toegestane items in het winkelmandje."
 
 #: includes/admin/meta-boxes/class-wc-meta-box-coupon-data.php:262
 msgid "Limit usage to X items"
@@ -14508,7 +14508,7 @@ msgstr "Productcategorieën"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-coupon-data.php:182
 msgid "Products which must not be in the cart to use this coupon or, for \"Product Discounts\", which products are not discounted."
-msgstr "Producten die niet in de winkelmand mogen zitten om deze kortingsbon te kunnen gebruiken. Als je voor 'Productkorting' koos zijn dit de producten die geen korting toegewezen krijgen."
+msgstr "Producten die niet in het winkelmandje mogen zitten om deze kortingsbon te kunnen gebruiken. Als je voor 'Productkorting' koos zijn dit de producten die geen korting toegewezen krijgen."
 
 #: includes/admin/meta-boxes/class-wc-meta-box-coupon-data.php:170
 msgid "Exclude products"
@@ -15212,7 +15212,7 @@ msgstr "Op de winkelmandpagina kunnen klanten hun winkelmand bekijken en beginne
 #: includes/class-wc-install.php:325
 msgctxt "Page title"
 msgid "Cart"
-msgstr "Winkelmand"
+msgstr "Winkelmandje"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:254
 msgid "The shop page will display your products."
@@ -17144,7 +17144,7 @@ msgstr "Verder lezen"
 #: includes/abstracts/abstract-wc-product.php:1707
 #: includes/class-wc-product-simple.php:54
 msgid "Add to cart"
-msgstr "In winkelmand"
+msgstr "In winkelmandje"
 
 #: includes/gateways/class-wc-payment-gateway-cc.php:55
 msgid "CVC"

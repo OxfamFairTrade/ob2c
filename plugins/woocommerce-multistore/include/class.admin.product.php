@@ -843,8 +843,6 @@
                                         );
                     $product_type = wp_get_object_terms( $post_ID, 'product_type', $args);
 
-                    $product_taxonomies_data    =   $this->get_product_taxonomies_terms_data($post_ID);
-                    
                     // GEWIJZIGD: Geef tweede parameter mee die aangeeft of het product voor het eerst verspreid wordt
                     $product_taxonomies_data    =   $this->get_product_taxonomies_terms_data($post_ID, $_product_just_publish);
                     
@@ -970,7 +968,11 @@
                                         }
                                         else                                                             
                                         {
-                                            $_woonet_child_inherit_updates      =   isset($_REQUEST['_woonet_publish_to_'.$blog_id.'_child_inheir'])  ?    $_REQUEST['_woonet_publish_to_'.$blog_id.'_child_inheir']    :   '';
+                                            // GEWIJZIGD: Check of het moederproduct geen concept is
+                                            $default = ( get_post_status( $post_ID ) === 'publish' ) ? 'yes' : '';
+                                            
+                                            // GEWIJZIGD: SOWIESO OP 'YES' ZETTEN INDIEN GEPUBLICEERD
+                                            $_woonet_child_inherit_updates = isset($_REQUEST['_woonet_publish_to_'.$blog_id.'_child_inheir']) ? $_REQUEST['_woonet_publish_to_'.$blog_id.'_child_inheir'] : $default;
                                             $_woonet_child_stock_synchronize    =   isset($_REQUEST['_woonet_'.$blog_id.'_child_stock_synchronize'])  ?    $_REQUEST['_woonet_'.$blog_id.'_child_stock_synchronize']    :   '';
                                         }
                                         
@@ -984,8 +986,9 @@
                                             update_post_meta($child_post->ID, '_stock', $main_product_stock);
                                             update_post_meta($child_post->ID, '_stock_status', $main_product_stock_status);
                                         }
-                                        
-                                    
+
+                                    write_log("PROCESSING WOOMULTI PRODUCT ".$child_post->ID);
+                                   
                                     if($_woonet_child_inherit_updates != 'yes')
                                         {
                                             
@@ -1041,9 +1044,7 @@
                                     //update comment status
                                     $child_post->comment_status =   $post->comment_status;
                                     
-
                                     wp_update_post( $child_post );
-
                                                      
                                 }
                                 else
@@ -1082,19 +1083,15 @@
                             //Create / Update the taxonomies terms on this child product site
                             $this->save_taxonomies_to_post($product_taxonomies_data, $child_post->ID, $blog_details->blog_id);
                                                                
-                            $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id);
-                            
                             // GEWIJZIGD: Laat de voorraadvelden enkel negeren indien het om de update van een product gaat dat reeds verspreid is
                             if ( $_product_just_publish ) {
-                                write_log("FIRST METADATA PUBLISH!");
                                 // Expliciet op outofstock zetten, zoals bij taxonomie
-                                $product_meta['_stock_status'] = array( 'outofstock' );
-                                write_log($product_meta);
+                                $product_meta['_stock_status'] = array('outofstock');
+                                write_log("PUBLISHING, SET OUTOFSTOCK METADATA");
                                 $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id);
                             } else {
-                                write_log("UPDATING PRODUCT, IGNORE STOCK METADATA!");
-                                write_log($product_meta);
-                                $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id, array( '_stock', '_stock_status' ));
+                                write_log("UPDATING, IGNORE STOCK METADATA");
+                                $this->functions->save_meta_to_post($product_meta, $attachments, $child_post->ID, $blog_details->blog_id, array('_stock', '_stock_status'));
                             }
 
                             //check if this belong to a grouped
@@ -1282,6 +1279,15 @@
                         
                             
                             wc_delete_product_transients( $child_post->ID );
+
+                            // GEWIJZIGD: Vergewis ons ervan dat de 'product_visibility'-taxonomie lokaal goed staat door helemaal op het einde de zichtbaarheid af/aan te togglen (er moet een wezenlijke verschil zijn om save() zijn werk te laten doen!) en zo de private functie update_visibility() uit te lokken
+                            $productje = wc_get_product($child_post->ID);
+                            if ( is_numeric( $productje->get_sku() ) ) {
+                                // Enkel doen indien het om normale producten met een numerieke SKU gaat!
+                                $productje->set_catalog_visibility('hidden');
+                                $productje->set_catalog_visibility('visible');
+                                $productje->save();
+                            }
                             
                             restore_current_blog();
 
@@ -1407,33 +1413,25 @@
                         }
                         
                     // GEWIJZIGD: Schakel het kopiëren van taxonomieën die de zichtbaarheid bepalen uit
-                    write_log("ORIGINAL PRODUCT VISIBILITY DATA ON POST-ID ".$post_ID.":");
-                    write_log($product_taxonomies_data['product_visibility']);
-                    
-                    // Enkel doen indien het om normale producten met een numerieke SKU gaat!
-                    $productje = wc_get_product($post_ID);
-                    if ( is_numeric( $productje->get_sku() ) ) {
-                        // Negeer alles wat door de lokale voorraadinstellingen beheerd (en dus niet overschreven) dient te worden, tenzij bij eerste publish
-                        if ( $first_publish ) {
-                            write_log("FIRST TAXONOMY PUBLISH!");
-                            // Forceer op outofstock?
-                            $product_taxonomies_data['product_visibility'][11] = array( 'term_name' => 'outofstock', 'selected' => 1, 'childs' => array() );
-                        } else {
-                            write_log("UPDATING PRODUCT, IGNORE STOCK TAXONOMY!");
-                            // Negeer 'exclude-from-catalog'
-                            unset($product_taxonomies_data['product_visibility'][8]);
-                            // Negeer 'exclude-from-search'
-                            unset($product_taxonomies_data['product_visibility'][9]);
-                            // Negeer 'outofstock'
-                            unset($product_taxonomies_data['product_visibility'][11]);
-                        }
-                    }
+                    // $productje = wc_get_product($post_ID);
+                    // if ( is_numeric( $productje->get_sku() ) ) {
+                    //     // Negeer alles wat door de lokale voorraadinstellingen beheerd (en dus niet overschreven) dient te worden, tenzij bij eerste publish
+                    //     if ( $first_publish ) {
+                    //         // Forceer 'outofstock'-zichtbaarheid
+                    //         $product_taxonomies_data['product_visibility'][11] = array( 'term_name' => 'outofstock', 'selected' => 1, 'childs' => array() );
+                    //     } else {
+                    //         // Negeer 'exclude-from-catalog'
+                    //         // unset($product_taxonomies_data['product_visibility'][8]);
+                    //         // Negeer 'exclude-from-search'
+                    //         // unset($product_taxonomies_data['product_visibility'][9]);
+                    //         // Negeer 'outofstock'
+                    //         // unset($product_taxonomies_data['product_visibility'][11]);
+                    //     }
+                    // }
 
-                    // Taxonomie 'featured' moet altijd genegeerd worden 
+                    // Taxonomie 'featured' moet altijd genegeerd worden IS DE INDEX VAN DEZE TERM ALTIJD 10???
                     unset($product_taxonomies_data['product_visibility'][10]);
-                    write_log("TWEAKED PRODUCT VISIBILITY DATA ON POST-ID ".$post_ID.":");
-                    write_log($product_taxonomies_data['product_visibility']);
-
+                    
                     return $product_taxonomies_data;
                     
                 }
@@ -1520,7 +1518,7 @@
                                     //check if the term is selected
                                     if($term_data['selected']   === TRUE) 
                                         {
-                                            wp_set_object_terms( $product_id, array((int)$term_id), $taxonomy, TRUE );   
+                                            wp_set_object_terms( $product_id, array((int)$term_id), $taxonomy, TRUE );
                                         }
                                     
                                     if (isset($term_data['childs'])   && count($term_data['childs'])    >   0)

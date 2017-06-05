@@ -1388,12 +1388,21 @@
 		if ( does_home_delivery() and $zip !== 0 ) {
 			if ( ! in_array( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
 				wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
-			} elseif ( ! in_array( $zip, get_option( 'oxfam_zip_codes' ) ) and is_cart() ) {
-				// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat de klant niet meer radicaal wijzigt (niet afschrikken met error!)
-				$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
-				file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
-				// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices( 'error' ) retourneert te checken
-				wc_add_notice( __( 'Foutmelding na het ingeven van een postcode waar deze webshop geen thuislevering voor organiseert.', 'oxfam-webshop' ), 'error' );
+			} else {
+				if ( ! in_array( $zip, get_option( 'oxfam_zip_codes' ) ) and is_cart() ) {
+					// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat de klant niet meer radicaal wijzigt (niet afschrikken met error!)
+					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
+					file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
+					$msg = WC()->session->get( 'no_zip_delivery' );
+					// Toon de foutmelding slechts één keer
+					if ( $msg !== 'SHOWN' ) {
+						// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices( 'error' ) retourneert te checken
+						wc_add_notice( __( 'Foutmelding na het ingeven van een postcode waar deze webshop geen thuislevering voor organiseert.', 'oxfam-webshop' ), 'error' );
+						WC()->session->set( 'no_zip_delivery', 'SHOWN' );
+					}
+				} else {
+					WC()->session->set( 'no_zip_delivery', 'FIRST' );
+				}
 			}
 		}
 	}
@@ -1483,16 +1492,15 @@
 			}
 			// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
 			if ( does_home_delivery() ) {
-				$cnt = WC()->session->get( 'no_home_delivery', 0 );
-				WC()->session->set( 'no_home_delivery', $cnt+1 );
+				$msg = WC()->session->get( 'no_home_delivery' );
 				// Toon de foutmelding slechts één keer
-				if ( $cnt == 1 ) {
+				if ( $msg !== 'SHOWN' ) {
 					wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van producten die niet thuisgeleverd worden, inclusief het aantal flessen (%d).', 'oxfam-webshop' ), $forbidden_cnt - floor( $forbidden_cnt / 6 ) ), 'error' );
+					WC()->session->set( 'no_home_delivery', 'SHOWN' );
 				}
 			}
 		} else {
-			WC()->session->set( 'no_home_delivery', 0 );
-			write_log("SESSION DATA NO_HOME_DELIVERY GERESET!");
+			WC()->session->set( 'no_home_delivery', 'FIRST' );
 		}
 		
 		// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
@@ -1667,7 +1675,7 @@
 				write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
 				if ( $forbidden_qty === 6 and $plastic_qty === 0 ) {
 					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
-					// $args['forced_by'] = $empties_item['forced_by'];
+					$args['forced_by'] = $empties_item['forced_by'];
 					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS6M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
 				} elseif ( $forbidden_qty % 6 === 0 and $plastic_qty !== 0 ) {
 					$result = WC()->cart->set_quantity( $plastic_item_key, floor( $forbidden_qty / 6 ), 1 );
@@ -1676,7 +1684,7 @@
 			case 'WLFSK';
 				if ( intval($product_item['quantity']) === 24 ) {
 					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
-					// $args['forced_by'] = $empties_item['forced_by'];
+					$args['forced_by'] = $empties_item['forced_by'];
 					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS24M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
 				}
 			default:
@@ -2531,7 +2539,7 @@
 	// Stel de attributen in die berekend moeten worden uit andere waarden BETER VIA ALGEMENE SAVE_POST
 	add_action( 'pmxi_saved_post', 'update_origin_on_update', 10, 1 );
 	
-	function update_origin_on_update( $post_id, $meta_key, $meta_value ) {
+	function update_origin_on_update( $post_id ) {
 		// VEROORZAAKT RARE PROBLEMEN BIJ DE TERMENKOPPELING VAN TAXONOMIEËN
 		// $attribute = new WC_Product_Attribute();
 		// $attribute->set_id(0);

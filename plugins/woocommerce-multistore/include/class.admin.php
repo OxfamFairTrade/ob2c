@@ -74,14 +74,7 @@
                         return;
 
                     if( $this->upgrade_require    ===   FALSE)
-                        {
-                            //set the latest version
-                            $options    =   $this->functions->get_options();
-                            $options['version'] =   WOO_MSTORE_VERSION;
-                            $this->functions->update_options( $options );   
-                            
-                            return;   
-                        }
+                        return;
                     
                     $current_page   =   isset($_GET['page']) ?      $_GET['page']   :   '';
                     if( $current_page   !=  'woonet-upgrade'    )
@@ -250,10 +243,13 @@
                                     
                                     $blog_details   =   get_blog_details($network_site->blog_id);
                                     
-                                    // GEWIJZIGD: OP 'YES' ZETTEN ALS DEFAULT
-                                    $_woonet_publish_to = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] : 'yes';
-                                    // GEWIJZIGD: OP 'YES' ZETTEN ALS DEFAULT
-                                    $_woonet_publish_to_child_inherit = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] : 'yes';
+                                    // GEWIJZIGD: Check of het moederproduct geen concept is
+                                    $default = ( get_post_status( $post_id ) === 'publish' ) ? 'yes' : '';
+                                    
+                                    // GEWIJZIGD: SOWIESO OP 'YES' ZETTEN INDIEN GEPUBLICEERD
+                                    $_woonet_publish_to = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] : $default;
+                                    // GEWIJZIGD: SOWIESO OP 'YES' ZETTEN INDIEN GEPUBLICEERD
+                                    $_woonet_publish_to_child_inherit = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] : $default;
                                     $_woonet_child_stock_synchronize = isset( $_REQUEST['_woonet_'.$network_site->blog_id.'_child_stock_synchronize'] ) ? $_REQUEST['_woonet_'.$network_site->blog_id.'_child_stock_synchronize'] : '';
                                     
                                     //get previous data
@@ -508,7 +504,7 @@
                                 $this->upgrade_require     =   TRUE;
                                 
                         }
-                        
+                    
                 }    
             
               
