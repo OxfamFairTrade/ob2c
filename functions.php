@@ -863,14 +863,14 @@
     	$shipping_id = reset($shipping_methods);
 		switch ( $shipping_id ) {
 			case stristr( $shipping_id, 'local_pickup' ):
-				$placeholder = "Bijvoorbeeld: \"Ik kom de bestelling pas eind volgende week oppikken in de winkel.\"";
+				$placeholder = __( 'Voorbeeldnotitie op afrekenpagina (indien afhaling).', 'oxfam-webshop' );
 				break;
 			default:
-				$placeholder = "Bijvoorbeeld: \"Na 15 uur is er altijd iemand thuis. Geef gerust een belletje wanneer jullie vertrekken.\"";
+				$placeholder = __( 'Voorbeeldnotitie op afrekenpagina (indien thuislevering).', 'oxfam-webshop' );
 				break;
 		}
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
-		$fields['order']['order_comments']['description'] = "Nog vragen bij je bestelling? Neem een kijkje in de veelgestelde vragen of bel ons op ".get_oxfam_shop_data( 'telephone' ).".";
+		$fields['order']['order_comments']['description'] = sprintf( __( 'Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer van de hoofdwinkel (%s).', 'oxfam-webshop' ), get_oxfam_shop_data( 'telephone' ) );
 		return $fields;
 	}
 

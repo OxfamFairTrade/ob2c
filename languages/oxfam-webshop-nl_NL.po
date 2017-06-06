@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2017-06-03 18:49+0200\n"
-"PO-Revision-Date: 2017-06-06 11:08+0200\n"
+"POT-Creation-Date: 2017-06-06 13:05+0200\n"
+"PO-Revision-Date: 2017-06-06 13:07+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -24,42 +24,42 @@ msgstr ""
 "X-Poedit-SearchPath-3: woocommerce/myaccount/dashboard.php\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: functions.php:412
+#: functions.php:420
 #, fuzzy, php-format
 msgid ""
 "Onderwerp van de 1ste bevestigingsmail inclusief besteldatum (%1$s) en naam "
 "webshop (%2$s)"
 msgstr "wordt weldra geleverd"
 
-#: functions.php:418
+#: functions.php:426
 #, fuzzy, php-format
 msgid ""
 "Onderwerp van de 2de bevestigingsmail (indien afhaling) inclusief "
 "besteldatum (%1$s) en naam webshop (%2$s)"
 msgstr "wordt weldra geleverd"
 
-#: functions.php:420
+#: functions.php:428
 #, fuzzy, php-format
 msgid ""
 "Onderwerp van de 2de bevestigingsmail (indien thuislevering) inclusief "
 "besteldatum (%1$s) en naam webshop (%2$s)"
 msgstr "is klaar voor afhaling"
 
-#: functions.php:430
+#: functions.php:438
 msgid "Heading van de 1ste bevestigingsmail"
 msgstr "Bedankt voor je bestelling!"
 
-#: functions.php:436
+#: functions.php:444
 #, fuzzy
 msgid "Heading van de 2de bevestigingsmail (indien afhaling)"
 msgstr "Je bestelling staat klaar!"
 
-#: functions.php:438
+#: functions.php:446
 #, fuzzy
 msgid "Heading van de 2de bevestigingsmail (indien thuislevering)"
 msgstr "Je bestelling is verzonden!"
 
-#: functions.php:650
+#: functions.php:658
 msgid ""
 "Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels "
 "nog geen thuislevering voorziet."
@@ -67,33 +67,56 @@ msgstr ""
 "Sorry, in deze gemeente leveren we nog niet aan huis. Kies op de kaart in "
 "welke wereldwinkel je je boodschappen wil afhalen."
 
-#: functions.php:655 functions.php:1390
+#: functions.php:663 functions.php:1398
 msgid "Foutmelding na het ingeven van een onbestaande Vlaamse postcode."
 msgstr "Dit is geen geldige Vlaamse postcode. Probeer het eens opnieuw a.u.b."
 
-#: functions.php:1136
+#: functions.php:866
+#, fuzzy
+msgid "Voorbeeldnotitie op afrekenpagina (indien afhaling)."
+msgstr ""
+"Bijvoorbeeld: \"Ik kom de bestelling pas eind volgende week oppikken in de "
+"winkel.\""
+
+#: functions.php:869
+#, fuzzy
+msgid "Voorbeeldnotitie op afrekenpagina (indien thuislevering)."
+msgstr ""
+"Bijvoorbeeld: \"Na 15 uur is er altijd iemand thuis. Geef gerust een "
+"belletje wanneer jullie vertrekken.\""
+
+#: functions.php:873
+#, fuzzy, php-format
+msgid ""
+"Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer "
+"van de hoofdwinkel (%s)."
+msgstr ""
+"Nog vragen bij je bestelling? Neem een kijkje in de veelgestelde vragen of "
+"bel ons op %s."
+
+#: functions.php:1144
 #, php-format
 msgid ""
 "Dag (%1$s) en uur (%2$s) vanaf wanneer de bestelling klaarstaat voor afhaling"
 msgstr "Beschikbaar op %1$s vanaf %2$s"
 
-#: functions.php:1141
+#: functions.php:1149
 #, php-format
 msgid ""
 "Uiterste dag (%s) waarop het pakje beschikbaar zal zijn in postpunt / "
 "automaat"
 msgstr "Ten laatste beschikbaar vanaf %s"
 
-#: functions.php:1149 functions.php:1153
+#: functions.php:1157 functions.php:1161
 #, php-format
 msgid "Uiterste dag (%s) waarop de levering zal plaatsvinden"
 msgstr "Ten laatste geleverd op %s"
 
-#: functions.php:1157
+#: functions.php:1165
 msgid "Boodschap indien schatting leverdatum niet beschikbaar"
 msgstr "Geen schatting beschikbaar"
 
-#: functions.php:1396
+#: functions.php:1408
 msgid ""
 "Foutmelding na het ingeven van een postcode waar deze webshop geen "
 "thuislevering voor organiseert."
@@ -102,7 +125,7 @@ msgstr ""
 "winkel of keer terug naar de portaalpagina om de wereldwinkel te vinden die "
 "voor jouw gemeente wel thuislevering organiseert."
 
-#: functions.php:1490
+#: functions.php:1506
 #, php-format
 msgid ""
 "Foutmelding bij aanwezigheid van producten die niet thuisgeleverd worden, "
@@ -112,7 +135,7 @@ msgstr ""
 "op te sturen. Kom je bestelling afhalen in de winkel, of verwijder de "
 "flessen fruitsap uit je winkelmandje zodat thuislevering weer mogelijk wordt."
 
-#: functions.php:1507
+#: functions.php:1523
 #, php-format
 msgid ""
 "Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht "
@@ -121,14 +144,14 @@ msgstr ""
 "Je bestelling weegt %s kg is daarom te zwaar voor thuislevering. Kom a.u.b. "
 "je boodschappen afhalen in de wereldwinkel."
 
-#: functions.php:1586
+#: functions.php:1602
 #, php-format
 msgid ""
 "Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d)."
 msgstr ""
 "Sorry, onlinebestellingen van minder dan %d euro kunnen we niet verwerken."
 
-#: functions.php:1588
+#: functions.php:1604
 #, php-format
 msgid ""
 "Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d)."
@@ -136,40 +159,40 @@ msgstr ""
 "Dit is een erg grote bestelling van meer dan %d euro. Neem a.u.b. contact "
 "met ons op om te bekijken of we dit wel tijdig kunnen leveren."
 
-#: functions.php:2889
+#: functions.php:2938
 msgid "Titel van unique selling point in footer"
 msgstr "Altijd fair, altijd open!"
 
-#: functions.php:2889
+#: functions.php:2938
 msgid "Inhoud van unique selling point in footer."
 msgstr ""
 "Eerlijke handel geeft producenten in het Zuiden kansen op een betere "
 "toekomst. Met je aankoop laat je zien dat ook jij dat belangrijk vindt. Nu "
 "ook vanuit je luie zetel!"
 
-#: functions.php:2894
+#: functions.php:2943
 msgid "Inhoud van praktisch blokje in footer (indien ook thuislevering)."
 msgstr ""
 "Met alles wat je vóór 12 uur ’s middags bestelt, staan we maximaal 3 "
 "werkdagen later op je stoep. Afhalen in de wereldwinkel kan natuurlijk ook. "
 "Het Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:2896
+#: functions.php:2945
 msgid "Inhoud van praktisch blokje in footer (inden enkel afhaling)."
 msgstr ""
 "Alles wat je vóór 12 uur 's middags bestelt, kan je de volgende werkdag "
 "vanaf 12 uur afhalen in je wereldwinkel. (Of op het eerstvolgende moment dat "
 "de winkel open is.) Het Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:2898
+#: functions.php:2947
 msgid "Titel van praktisch blokje in footer"
 msgstr "Wereldproducten. Lokaal geleverd."
 
-#: functions.php:2902
+#: functions.php:2951
 msgid "Titel van contactblokje in footer"
 msgstr "Eerlijk handelen. Ook met jou."
 
-#: functions.php:2902
+#: functions.php:2951
 #, php-format
 msgid ""
 "Inhoud van het contactblokje in de footer. Bevat <a href=\"mailto:%1$s\">een "
@@ -179,12 +202,12 @@ msgstr ""
 "en formuleren heldere beloftes. Heb je toch nog vragen? <a href=\"mailto:%1$s"
 "\">Mail ons </a> of bel naar %2$s."
 
-#: functions.php:2915
+#: functions.php:2964
 #, php-format
 msgid "Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s)."
 msgstr "%1$s, %2$s! Welkom in de webshop van %3$s."
 
-#: functions.php:2985
+#: functions.php:3029
 #, php-format
 msgid ""
 "Begroetingstekst met het aantal webshops (%d) en promotie voor de "
@@ -194,15 +217,15 @@ msgstr ""
 "<br>En pik je boodschappen de volgende werkdag op in jouw wereldwinkel."
 "<br>Kies je winkel op de kaart hieronder."
 
-#: functions.php:2989
+#: functions.php:3033
 msgid "Titel in de header van de portaalpagina"
 msgstr "De grootste keuze aan eerlijke voedingsproducten"
 
-#: functions.php:2995
+#: functions.php:3039
 msgid "Blokje uitleg bij store selector op basis van postcode."
 msgstr "Levering aan huis kan ook!<br>Vul hier je postcode in."
 
-#: functions.php:3044
+#: functions.php:3088
 msgid "Tekst die verschijnt bovenaan de hoofdpagina met producten."
 msgstr ""
 "Maak je keuze uit de categorieën hierboven of scroll hieronder door het "
