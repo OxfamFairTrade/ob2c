@@ -12,6 +12,19 @@
 	<p>Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen een gele achtergrond, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt. Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na 6 maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 
 	<div id="oxfam-products">
+		<div style="display: table; width: 100%;">
+			<div class="cell"></div>
+			<div class="cell"></div>
+			<div class="cell">
+				<select class="global-toggle">';
+					<option value="" selected>(bulkwijziging)</option>
+					<option value="instock">Zet alles op voorraad</option>
+					<option value="outofstock">Zet alles op uitverkocht</option>
+				</select>
+			</div>
+			<div class="cell"></div>
+			<div class="cell output"></div>
+		</div>
 		<?php
 			// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 			// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
@@ -34,8 +47,10 @@
 				while ( $products->have_posts() ) {
 					$products->the_post();
 					$product = wc_get_product( get_the_ID() );
+					
 					// Verhinder dat leeggoed ook opduikt
 					if ( is_numeric( $product->get_sku() ) ) {
+						// Kleur de randen en tel de initiële waarde voor de tellers
 						if ( $product->is_in_stock() ) {
 							$class = 'border-color-green';
 							$instock_cnt++;
@@ -45,22 +60,27 @@
 						if ( $product->is_featured() ) {
 							$featured_cnt++;
 						}
+
 						$content .= '<div id="'.get_the_ID().'" class="compact';
+
+						// Voeg klasse toe indien recent gepubliceerd
 						if ( get_the_date('U') > strtotime('-2 months') ) $content .= ' new';
-						// CHECK STOCK VAN MOEDER PRODUCT, NIET VAN DEZE!
-						// $main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
-						// switch_to_blog(1);
-						// $main_product = wc_get_product( $main_product_id );
-						// restore_current_blog();
-						// if ( ! $main_product->is_in_stock() ) echo ' old';
+						
+						// Check voorraadstatus van moederproduct, voeg klasse toe indien niet langer op stock
+						$main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
+						switch_to_blog(1);
+						$main_product = wc_get_product( $main_product_id );
+						restore_current_blog();
+						if ( ! $main_product->is_in_stock() ) echo ' old';
+						
 						$content .= '">';
 							$content .= '<div class="cell" style="padding: 0.25em; width: 3%; text-align: center;"><a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'wc_order_status_icon', null, false ).'</a></div>';
 							$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().'</span></div>';
-							$content .= '<div class="cell"><select id="'.get_the_ID().'-stockstatus">';
+							$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
 								$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
 								$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 							$content .= '</select></div>';
-							$content .= '<div class="cell"><input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
+							$content .= '<div class="cell"><input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
 							$content .= ' <label for="'.get_the_ID().'-featured">In de kijker?</label></div>';
 						$content .= '<div class="cell output"></div>';
 						$content .= '</div>';
@@ -69,8 +89,11 @@
 				}
 				$content .= '</div>';
 				wp_reset_postdata();
+
 				echo '<p style="text-align: right; width: 100%;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
+				
 				echo $content;
+				
 				echo '<p style="text-align: right; width: 100%;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
 				
 			}
@@ -80,7 +103,8 @@
 			function oxfam_action_javascript() { ?>
 				<script type="text/javascript">
 					jQuery(document).ready(function() {
-						jQuery("#oxfam-products input[type=checkbox], #oxfam-products select").on( 'change', function() {
+						// Check wijzigingen op selects (= voorraad) en checkboxes (= in de kijker)
+						jQuery("#oxfam-products").find(".toggle").on( 'change', function() {
 							var parts = jQuery(this).attr('id').split("-");
 							var id = parts[0];
 							var meta = parts[1];
@@ -93,8 +117,10 @@
 							}
 						});
 
+						// Reset teller
 						var tries = 0;
 
+						// Verwerk de individuele AJAX-call
 						function ajaxCall(id, meta, value) {
 							jQuery("#"+id).find(".output").html("Aan het opslaan ...");
 
@@ -113,11 +139,14 @@
 				    			success: function(msg) {
 							    	tries = 0;
 									
+									// Pas de gekleurde rand aan na een succesvolle voorraadwijziging
 									if ( value == 'outofstock' ) {
 										jQuery("#"+id).find('.border-color-green').addClass('border-color-red').removeClass('border-color-green');
 									} else if ( value == 'instock' ) {
 										jQuery("#"+id).find('.border-color-red').addClass('border-color-green').removeClass('border-color-red');
 									}
+
+									// Werk de tellers bij
 									jQuery("#instock-cnt").html(jQuery("#oxfam-products").find(".border-color-green").length);
 									jQuery("#featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
 							    	
@@ -132,7 +161,17 @@
 									if ( tries < 5 ) {
 										ajaxCall(id, meta, value);
 									} else {
+										// Val terug op de tegengestelde waarde
+										if ( value == 'outofstock' ) {
+											jQuery(this).val('instock');
+										} else if ( value == 'instock' ) {
+											jQuery(this).val('outofstock');
+										} else {
+											jQuery(this).prop("checked", !jQuery(this).is(":checked") );
+										}
+
 										tries = 0;
+
 										jQuery("#"+id).find(".output").html("Wijzigingen mislukt!").delay(15000).animate({
 								    		opacity: 0,
 								    	}, 1000, function(){
@@ -142,6 +181,15 @@
 								},
 							});
 						}
+
+						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
+							// Dit zou in principe al moeten volstaan voor een automatische update, maar wellicht beter faseren?
+							if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
+								jQuery("#oxfam-products").find("select.toggle").val('outofstock');
+							} else if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
+								jQuery("#oxfam-products").find("select.toggle").val('instock');
+							}
+						});
 					});
 				</script>
 			<?php }
