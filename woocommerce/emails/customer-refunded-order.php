@@ -27,8 +27,6 @@ if ( $partial_refund ) {
 
 echo '<p>&nbsp;</p>';
 
-<?php
-
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.
  * @hooked WC_Structured_Data::generate_order_data() Generates structured data.
