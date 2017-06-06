@@ -37,16 +37,6 @@
                     <div class="nm-footer-bar-inner">
                         <div class="nm-row">
                             <div class="nm-footer-bar-left col-md-8 col-xs-12">
-                                <?php 
-									if ( isset( $nm_theme_options['footer_bar_logo'] ) && strlen( $nm_theme_options['footer_bar_logo']['url'] ) > 0 ) : 
-									
-									$footer_bar_logo_src = ( is_ssl() ) ? str_replace( 'http://', 'https://', $nm_theme_options['footer_bar_logo']['url'] ) : $nm_theme_options['footer_bar_logo']['url'];
-								?>
-                                <div class="nm-footer-bar-logo">
-                                    <img src="<?php echo esc_url( $footer_bar_logo_src ); ?>" />
-                                </div>
-                                <?php endif; ?>
-                                
                                 <ul id="nm-footer-bar-menu" class="menu">
                                     <?php
                                         // Footer menu
@@ -62,6 +52,17 @@
                                     <li class="nm-footer-bar-text menu-item"><div><?php echo wp_kses_post( do_shortcode( $copyright_text ) ); ?></div></li>
                                     <?php endif; ?>
                                 </ul>
+
+                                <!-- GEWIJZIGD: Zet logo achter i.p.v. voor menu -->
+                                <?php 
+                                    if ( isset( $nm_theme_options['footer_bar_logo'] ) && strlen( $nm_theme_options['footer_bar_logo']['url'] ) > 0 ) : 
+                                    
+                                    $footer_bar_logo_src = ( is_ssl() ) ? str_replace( 'http://', 'https://', $nm_theme_options['footer_bar_logo']['url'] ) : $nm_theme_options['footer_bar_logo']['url'];
+                                ?>
+                                <div class="nm-footer-bar-logo">
+                                    <a href="https://www.mollie.com/be/consumers" target="_blank"><img src="<?php echo esc_url( $footer_bar_logo_src ); ?>" /></a>
+                                </div>
+                                <?php endif; ?>
                             </div>
                             
                             <div class="nm-footer-bar-right col-md-4 col-xs-12">

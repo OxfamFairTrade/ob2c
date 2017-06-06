@@ -120,15 +120,16 @@ class WC_Shipping_Local_Pickup_Plus_CPT {
 			$pickup_locations = $this->get_order_pickup_locations( $order );
 
 			foreach ( $pickup_locations as $pickup_location ) {
-
+				
 				$formatted_pickup_location = WC()->countries->get_formatted_address( array_merge( array( 'first_name' => null, 'last_name' => null, 'state' => null ), $pickup_location ) );
 
-				if ( isset( $pickup_location['company'] ) && $pickup_location['company'] ) {
-					// GEWIJZIGD: Enkel naam van afhaalpunt tonen en OWW afkorten
-					$formatted_pickup_location = do_shortcode( str_replace( 'Oxfam-Wereldwinkel', 'OWW', $pickup_location['company'] ) );
+				if ( isset( $pickup_location['shipping_company'] ) && $pickup_location['shipping_company'] ) {
+					// GEWIJZIGD: Enkel naam van afhaalpunt tonen en OWW afkorten => dit is een attribuut zonder shortcodes, dus tekstvervanging kan al
+					$formatted_pickup_location = str_replace( 'Oxfam-Wereldwinkel', 'OWW', $pickup_location['shipping_company'] );
 				}
 
-				echo esc_html( preg_replace( '#<br\s*/?>#i', ', ', $formatted_pickup_location ) );
+				// GEWIJZIGD: Door gebruik van get_formatted_address() i.p.v. get_formatted_address_helper() zijn de shortcodes nog niet uitgevoerd
+				echo esc_html( preg_replace( '#<br\s*/?>#i', ', ', do_shortcode($formatted_pickup_location) ) );
 			}
 		}
 	}
