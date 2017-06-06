@@ -1,11 +1,11 @@
 <?php
 /**
- * Customer completed order email
+ * Customer refunded order email
  *
- * @see 	    https://docs.woocommerce.com/document/template-structure/
- * @author 		WooThemes
- * @package 	WooCommerce/Templates/Emails
- * @version     2.5.0
+ * @see      https://docs.woocommerce.com/document/template-structure/
+ * @author   WooThemes
+ * @package  WooCommerce/Templates/Emails
+ * @version  2.5.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,16 +17,17 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 do_action( 'woocommerce_email_header', $email_heading, $email );
 
-// Is altijd ingevuld, dus geen check doen
 echo '<p>Dag '.$order->get_billing_first_name().',</p>';
 
-if ( $order->has_shipping_method('local_pickup_plus') ) {
-	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ) . '</p>';
+if ( $partial_refund ) {
+	echo '<p>' . __( 'Bericht bovenaan de mail van een gedeeltelijk terugbetaalde bestelling.', 'oxfam-webshop' ) . '</p>';
 } else {
-	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ) . '</p>';
+	echo '<p>' . __( 'Bericht bovenaan de mail van een volledig terugbetaalde bestelling.', 'oxfam-webshop' ) . '</p>';
 }
 
 echo '<p>&nbsp;</p>';
+
+<?php
 
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.

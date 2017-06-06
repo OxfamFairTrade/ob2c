@@ -74,7 +74,14 @@
                         return;
 
                     if( $this->upgrade_require    ===   FALSE)
-                        return;
+                        {
+                            //set the latest version
+                            $options    =   $this->functions->get_options();
+                            $options['version'] =   WOO_MSTORE_VERSION;
+                            $this->functions->update_options( $options );   
+                            
+                            return;   
+                        }
                     
                     $current_page   =   isset($_GET['page']) ?      $_GET['page']   :   '';
                     if( $current_page   !=  'woonet-upgrade'    )
@@ -250,7 +257,7 @@
                                     $_woonet_publish_to = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] : $default;
                                     // GEWIJZIGD: SOWIESO OP 'YES' ZETTEN INDIEN GEPUBLICEERD
                                     $_woonet_publish_to_child_inherit = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] : $default;
-                                    $_woonet_child_stock_synchronize = isset( $_REQUEST['_woonet_'.$network_site->blog_id.'_child_stock_synchronize'] ) ? $_REQUEST['_woonet_'.$network_site->blog_id.'_child_stock_synchronize'] : '';
+                                    $_woonet_child_stock_synchronize    =   isset($_REQUEST['_woonet_'. $network_site->blog_id .'_child_stock_synchronize'])  ?    $_REQUEST['_woonet_'. $network_site->blog_id .'_child_stock_synchronize']    :   '';
                                     
                                     //get previous data
                                     $previous_data =    get_post_meta($post_id, '_woonet_publish_to_' . $network_site->blog_id, TRUE);
@@ -504,7 +511,7 @@
                                 $this->upgrade_require     =   TRUE;
                                 
                         }
-                    
+                        
                 }    
             
               

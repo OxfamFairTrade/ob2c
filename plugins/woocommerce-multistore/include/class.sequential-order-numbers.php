@@ -169,7 +169,7 @@
                 {
                     
                     // GEWIJZIGD: Voeg prefix en leading zero's toe (+ fix voor het oproepen van $order->order_number: query '_order_number' rechtstreeks)
-                    return "OWW".sprintf( '%05d', get_post_meta( $order->get_id(), '_order_number', true ) );
+                    return "OWW".sprintf( '%05d', get_post_meta( $order->get_id(), '_order_number', true ) ); 
                     
                 }
                    

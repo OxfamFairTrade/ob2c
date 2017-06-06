@@ -413,8 +413,9 @@
 	add_filter( 'woocommerce_email_footer_text', 'do_shortcode' );
 	
 	// Pas het onderwerp van de mails aan naargelang de gekozen levermethode
-	// add_filter( 'woocommerce_email_subject_customer_processing_order', 'change_processing_order_subject', 10, 2 );
+	add_filter( 'woocommerce_email_subject_customer_processing_order', 'change_processing_order_subject', 10, 2 );
 	add_filter( 'woocommerce_email_subject_customer_completed_order', 'change_completed_order_subject', 10, 2 );
+	add_filter( 'woocommerce_email_subject_refunded_completed_order', 'change_refunded_order_subject', 10, 2 );
 
 	function change_processing_order_subject( $subject, $order ) {
 		$subject = sprintf( __( 'Onderwerp van de 1ste bevestigingsmail inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
@@ -430,9 +431,15 @@
 		return $subject;
 	}
 
+	function change_refunded_order_subject( $subject, $order ) {
+		$subject = sprintf( __( 'Onderwerp van de terugbetalingsmail inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
+		return $subject;
+	}
+
 	// Pas de header van de mails aan naargelang de gekozen levermethode
 	add_filter( 'woocommerce_email_heading_customer_processing_order', 'change_processing_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_completed_order', 'change_completed_email_heading', 10, 2 );
+	add_filter( 'woocommerce_email_heading_customer_refunded_order', 'change_refunded_email_heading', 10, 2 );
 
 	function change_processing_email_heading( $email_heading, $order ) {
 		$email_heading = __( 'Heading van de 1ste bevestigingsmail', 'oxfam-webshop' );
@@ -445,6 +452,11 @@
 		} else {
 			$email_heading = __( 'Heading van de 2de bevestigingsmail (indien thuislevering)', 'oxfam-webshop' );
 		}
+		return $email_heading;
+	}
+
+	function change_refunded_email_heading( $email_heading, $order ) {
+		$email_heading = __( 'Heading van de terugbetalingsmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
 

@@ -843,7 +843,7 @@
                                         );
                     $product_type = wp_get_object_terms( $post_ID, 'product_type', $args);
 
-                    // GEWIJZIGD: Geef tweede parameter mee die aangeeft of het product voor het eerst verspreid wordt
+                    // GEWIJZIGD: Geef 2de parameter mee die aangeeft of het product voor het eerst verspreid wordt
                     $product_taxonomies_data    =   $this->get_product_taxonomies_terms_data($post_ID, $_product_just_publish);
                     
                     //get stock which will be used later
@@ -986,9 +986,9 @@
                                             update_post_meta($child_post->ID, '_stock', $main_product_stock);
                                             update_post_meta($child_post->ID, '_stock_status', $main_product_stock_status);
                                         }
-
+                                        
                                     write_log("PROCESSING WOOMULTI PRODUCT ".$child_post->ID);
-                                   
+
                                     if($_woonet_child_inherit_updates != 'yes')
                                         {
                                             
@@ -1044,7 +1044,9 @@
                                     //update comment status
                                     $child_post->comment_status =   $post->comment_status;
                                     
+
                                     wp_update_post( $child_post );
+
                                                      
                                 }
                                 else
@@ -1279,7 +1281,7 @@
                         
                             
                             wc_delete_product_transients( $child_post->ID );
-
+                            
                             // GEWIJZIGD: Vergewis ons ervan dat de 'product_visibility'-taxonomie lokaal goed staat door helemaal op het einde de zichtbaarheid af/aan te togglen (er moet een wezenlijke verschil zijn om save() zijn werk te laten doen!) en zo de private functie update_visibility() uit te lokken
                             $productje = wc_get_product($child_post->ID);
                             if ( is_numeric( $productje->get_sku() ) ) {
@@ -1288,7 +1290,7 @@
                                 $productje->set_catalog_visibility('visible');
                                 $productje->save();
                             }
-                            
+
                             restore_current_blog();
 
                         }
@@ -1304,7 +1306,7 @@
             *     
             * @param mixed $post_ID
             */
-            // GEWIJZIGD: Tweede optionele parameter toegevoegd 
+            // GEWIJZIGD: 2de optionele parameter toegevoegd 
             function get_product_taxonomies_terms_data($post_ID, $first_publish = false)
                 {
                     $product_taxonomies = get_object_taxonomies( 'product' );
@@ -1429,9 +1431,9 @@
                     //     }
                     // }
 
-                    // Taxonomie 'featured' moet altijd genegeerd worden IS DE INDEX VAN DEZE TERM ALTIJD 10???
-                    unset($product_taxonomies_data['product_visibility'][10]);
-                    
+                    // Taxonomie 'featured' moet altijd genegeerd worden IS DE INDEX VAN DE FEATURED TERM ALTIJD 10?
+                    unset($product_taxonomies_data['product_visibility']);
+
                     return $product_taxonomies_data;
                     
                 }
@@ -1503,22 +1505,25 @@
                             
                             foreach($group_data as  $network_term_id =>  $term_data)
                                 {
+                                    
+                                    $term_name  =   addslashes($term_data['term_name']);
+                                    
                                     //check if the term already exists
-                                    $term_id = $this->get_term_id_by_name($taxonomy, $term_data['term_name'], $parent_term_id);
+                                    $term_id = $this->get_term_id_by_name($taxonomy, $term_name, $parent_term_id);
                                     if($term_id === FALSE)
                                         {
                                             //create the term
                                             $argv =     array(
                                                                 'parent'    =>  $parent_term_id
                                                                 );
-                                            $result_data    =   wp_insert_term( (string)$term_data['term_name'], $taxonomy, $argv );
+                                            $result_data    =   wp_insert_term( (string)$term_name, $taxonomy, $argv );
                                             $term_id        =   $result_data['term_id'];
                                         }
                                         
                                     //check if the term is selected
                                     if($term_data['selected']   === TRUE) 
                                         {
-                                            wp_set_object_terms( $product_id, array((int)$term_id), $taxonomy, TRUE );
+                                            wp_set_object_terms( $product_id, array((int)$term_id), $taxonomy, TRUE );   
                                         }
                                     
                                     if (isset($term_data['childs'])   && count($term_data['childs'])    >   0)
