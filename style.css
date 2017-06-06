@@ -8,6 +8,16 @@
 	Text Domain:  	oxfam-webshop
 */
 
+.extra-bottom-marge h3 {
+	margin-bottom: 1em;
+}
+
+.centreer-blokje-op-helft {
+	width: 50%;
+	// margin: 0 auto;
+}
+
+
 /* Poging tot stylen van Google Maps-ballonnen */
 .gm-style-iw {
 	/*background-color: white;

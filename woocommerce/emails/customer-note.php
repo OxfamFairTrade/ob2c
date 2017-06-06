@@ -22,7 +22,7 @@ echo '<p>Dag '.$order->get_billing_first_name().',</p>';
 
 echo '<p>' . __( 'Bericht bovenaan de mail die de klant ontvangt als er een opmerking toegvoegd wordt aan de bestelling.', 'oxfam-webshop' ) . '</p>';
 
-echo '<blockquote>' . wpautop( wptexturize( $customer_note ) ) . '</blockquote>';
+echo '<blockquote style="font-style: italic;">' . wpautop( wptexturize( $customer_note ) ) . '</blockquote>';
 
 echo '<p>&nbsp;</p>';
 
