@@ -34,6 +34,12 @@
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
 	}
 
+	// Stop vervelende nag van Visual Composer
+	add_action( 'admin_init', function() {
+		setcookie('vchideactivationmsg', '1', strtotime('+3 years'), '/');
+		setcookie('vchideactivationmsg_vc11', ( defined('WPB_VC_VERSION') ? WPB_VC_VERSION : '1' ), strtotime('+3 years'), '/');
+	});
+
 	// Voeg custom styling toe aan de adminomgeving (voor Relevanssi en Voorraadbeheer)
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
