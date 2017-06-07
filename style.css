@@ -37,7 +37,6 @@
 .nm-footer-bar-logo.betaalmethodes,
 .nm-footer-bar-logo.betaalmethodes img {
 	margin-right: 5px;
-	margin-top: 10px;
 }
 
 /* Extra klasses voor 'Hoe werkt het?'-pagina */
@@ -263,35 +262,6 @@ div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::bef
 	content: "Biogecertificeerd product";
 }
 
-/* Toon een blokje bij nieuwe producten (voorlopig op basis van tag - kan ook door nieuwe datumklasse toe te voegen in template) */
-/* OVERSCHRIJFT AFHAALBLOKJE INDIEN OOK ACTIEF */
-li.product.product_tag-nieuw::before {
-	color: white;
-	position: absolute;
-	top: 0em;
-	left: 0.25em;
-	padding: 0 0.5em;
-	font-size: 85%;
-	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(255, 165, 0, 0.9);;
-	content: "Nieuw";
-}
-
-/* Toon een bannertje op detailpagina's */
-div.nm-single-product.product_tag-nieuw figure.woocommerce-product-gallery__wrapper::before {
-	color: white;
-	position: absolute;
-	top: 0em;
-	left: 0.25em;
-	padding: 0 0.5em;
-	font-size: 95%;
-	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(255, 165, 0, 0.9);
-	content: "Nieuw in ons assortiment";
-}
-
 /* Toon een blokje bij producten die niet beschikbaar zijn voor thuislevering */
 li.product.product_shipping_class-glas::after {
 	color: white;
@@ -320,16 +290,45 @@ div.nm-single-product.product_shipping_class-glas figure.woocommerce-product-gal
 	content: "Enkel afhaling in de winkel";
 }
 
+/* Toon een blokje bij nieuwe producten (voorlopig op basis van tag - kan ook door nieuwe datumklasse toe te voegen in template) */
+/* OVERSCHRIJFT AFHAALBLOKJE INDIEN OOK ACTIEF */
+li.product.newbee::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 85%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(255, 165, 0, 0.9);;
+	content: "Nieuw";
+}
+
+/* Toon een bannertje op detailpagina's */
+div.nm-single-product.newbee figure.woocommerce-product-gallery__wrapper::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 95%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(255, 165, 0, 0.9);
+	content: "Nieuw in ons assortiment";
+}
+
 /* Indien 'afhalen'- of 'nieuw'-klasse actief: plaats biobanner lager om overlap te vermijden */
 li.product.pa_bio-ja.product_shipping_class-glas::before,
-li.product.pa_bio-ja.product_tag-nieuw::before,
+li.product.pa_bio-ja.newbee::after,
 div.nm-single-product.pa_bio-ja.product_shipping_class-glas figure.woocommerce-product-gallery__wrapper::before,
-div.nm-single-product.pa_bio-ja.product_tag-nieuw figure.woocommerce-product-gallery__wrapper::before {
+div.nm-single-product.pa_bio-ja.newbee figure.woocommerce-product-gallery__wrapper::after {
 	top: 2.5em;
 }
 
 li.product.pa_bio-ja:hover::before,
-li.product.product_tag-nieuw:hover::before,
+li.product.newbee:hover::before,
 li.product.product_shipping_class-glas:hover::after {
 	opacity: 0.7;
 	transition: opacity 1s ease-out 0s;
@@ -426,6 +425,10 @@ p#order_comments_field.form-row.notes label {
 	margin-bottom: 0.5em;
 }
 
+.woocommerce-checkout-review-order-table tr.pickup_location th {
+	padding-right: 0 !important;
+}
+
 div.nm-feature.layout-centered {
 	max-width: 400px;
 	margin: 0 auto;
@@ -440,7 +443,7 @@ div.nm-feature.layout-centered {
 	/* Zet een limiet op de breedte van de add-to-cart knoppen */
 	div.nm-quantity-wrap,
 	button.nm-simple-add-to-cart-button {
-		max-width: 300px;
+		max-width: 250px;
 	}
 }
 
@@ -456,6 +459,16 @@ div.nm-feature.layout-centered {
 
 	.nm-header.menu-centered .nm-main-menu {
 		left: 0;
+	}
+}
+
+@media (max-width: 1024px) {
+	.nm-footer-bar-logo.betaalmethodes {
+		margin-top: 10px;
+	}
+
+	.nm-footer-bar-logo.betaalmethodes img:last-child {
+		margin-right: 0;
 	}
 }
 

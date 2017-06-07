@@ -13,6 +13,17 @@
 	    $allowedtags['a']['target'] = 1;
 	}
 
+	// Voeg klasse toe indien recent product
+	add_filter( 'post_class', 'add_recent_product_class' );
+
+	function add_recent_product_class( $classes ) {
+		global $post;
+		if ( get_the_date( 'Y-m-d', $post->ID ) > date_i18n( 'Y-m-d', strtotime('-1 month') ) ) {
+			$classes[] = 'newbee';
+		}
+		return $classes;
+	}
+
 	// Laad het child theme
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
@@ -2959,7 +2970,7 @@
 	add_shortcode( 'email_footer', 'get_company_and_year' );
 
 	function print_widget_usp() {
-		return do_shortcode('[nm_feature icon="pe-7s-star" layout="centered" title="'.__( 'Titel van unique selling point in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.__( 'Inhoud van unique selling point in footer.', 'oxfam-webshop' ).'[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-timer" layout="centered" title="'.__( 'Titel van unique selling point in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.__( 'Inhoud van unique selling point in footer.', 'oxfam-webshop' ).'[/nm_feature]');
 	}
 
 	function print_widget_delivery() {
@@ -2968,11 +2979,11 @@
 		} else {
 			$text = __( 'Inhoud van praktisch blokje in footer (inden enkel afhaling).', 'oxfam-webshop' );
 		}
-		return do_shortcode('[nm_feature icon="pe-7s-cart" layout="centered" title="'.__( 'Titel van praktisch blokje in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.$text.'[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-global" layout="centered" title="'.__( 'Titel van praktisch blokje in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.$text.'[/nm_feature]');
 	}
 
 	function print_widget_contact() {
-		return do_shortcode('[nm_feature icon="pe-7s-mail" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), get_oxfam_shop_data('telephone') ).'[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'" icon_color="#282828"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), get_oxfam_shop_data('telephone') ).'[/nm_feature]');
 	}
 
 	function print_greeting() {
