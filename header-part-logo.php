@@ -24,9 +24,11 @@
             <?php if ( $has_alt_logo ) : ?>
             <img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
             <?php endif; ?>
-             <!-- GEWIJZIGD: Winkelnaam vermelden -->
-            <div class="winkelnaam">
-                <?php echo 'Webshop<br>' . str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ); ?>
-            </div>
+            <?php
+                // GEWIJZIGD: Vermeld de winkelnaam (enkel op lokale sites!)
+                if ( ! is_main_site() ) {
+                    echo '<div class="winkelnaam">Webshop<br>' . str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) . '</div>';
+                }
+            ?>
         </a>
     </div>
