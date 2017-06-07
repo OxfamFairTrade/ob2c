@@ -8,15 +8,39 @@
 	Text Domain:  	oxfam-webshop
 */
 
+/* Zodat we de winkelnaam verticaal kunnen centereren */
+.nm-header.menu-centered .nm-header-logo {
+	display: table;
+	width: 35%;
+}
+
+.nm-header.menu-centered .nm-main-menu {
+	position: relative;
+	left: -10%;
+}
+
+/* Zet de winkelnaam in CSS na logo */
+.nm-header.menu-centered .nm-header-logo .winkelnaam {
+	vertical-align: middle;
+    position: relative;
+    top: 5px;
+	margin-left: 1em;
+	padding: 0.25em 1em;
+	font-size: 125%;
+	line-height: 125%;
+	letter-spacing: 2px;
+	color: #707070;
+	border-left: 1px solid #707070;
+	display: inline-block;
+}
+
+/* Extra klasses voor 'Hoe werkt het?'-pagina */
 .extra-bottom-marge h3 {
 	margin-bottom: 1em;
 }
-
 .centreer-blokje-op-helft {
 	width: 50%;
-	// margin: 0 auto;
 }
-
 
 /* Poging tot stylen van Google Maps-ballonnen */
 .gm-style-iw {
@@ -25,21 +49,6 @@
 	top: 0 !important;
 	left: 0 !important;
 	border-radius: 10px;*/
-}
-
-/* Voorbeeld van winkelnaam in CSS na logo (enkel op de Leuvense site tonen) */
-.page-id-3411 .nm-header-logo:after {
-	position: absolute;
-	color: #61a534;
-	top: 5px;
-	left: 215px;
-	padding: 0.5em;
-	font-size: 145%;
-	line-height: 100%;
-	z-index: 50;
-	border-left: 1px solid #61a534;
-	content: "Webshop\ARegio Leuven";
-	white-space: pre;
 }
 
 /* Maak de leeggoedicoontjes kleiner */
@@ -420,4 +429,36 @@ div.nm-feature.layout-centered {
 
 .nm-footer-widgets a {
 	color: #61a534 !important;
+}
+
+
+
+@media (max-width: 1200px) {
+	/* Reset naar standaard mobiele weergave */
+	.nm-header.menu-centered .nm-header-logo {
+		width: 25%;
+	}
+	
+	.nm-header.menu-centered .nm-header-logo .winkelnaam {
+		display: none;
+	}
+
+	.nm-header.menu-centered .nm-main-menu {
+		left: 0;
+	}
+}
+
+@media (max-width: 880px) {
+	/* Reset naar standaard mobiele weergave */
+	.nm-header.menu-centered .nm-header-logo {
+		width: 75%;
+	}
+	
+	.nm-header.menu-centered .nm-header-logo .winkelnaam {
+		display: inline-block;
+		padding: 0.25em 1em;
+		font-size: 110%;
+		line-height: 110%;
+		top: 3px;
+	}
 }
