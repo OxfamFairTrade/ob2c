@@ -23,12 +23,12 @@
 .nm-header.menu-centered .nm-header-logo .winkelnaam {
 	vertical-align: middle;
     position: relative;
-    top: 5px;
+    top: 6px;
 	margin-left: 1em;
 	padding: 0.25em 1em;
 	font-size: 125%;
 	line-height: 125%;
-	letter-spacing: 2px;
+	letter-spacing: 3px;
 	color: #707070;
 	border-left: 1px solid #707070;
 	display: inline-block;
