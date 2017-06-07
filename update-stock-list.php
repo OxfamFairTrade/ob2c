@@ -12,7 +12,7 @@
 	<p>Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen een gele achtergrond, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt. Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na 6 maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 
 	<div id="oxfam-products">
-		<div style="display: table; width: 100%;">
+		<!-- <div style="display: table; width: 100%;">
 			<div class="cell"></div>
 			<div class="cell"></div>
 			<div class="cell">
@@ -24,7 +24,7 @@
 			</div>
 			<div class="cell"></div>
 			<div class="cell output"></div>
-		</div>
+		</div> -->
 		<?php
 			// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 			// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
@@ -67,11 +67,13 @@
 						if ( get_the_date('U') > strtotime('-2 months') ) $content .= ' new';
 						
 						// Check voorraadstatus van moederproduct, voeg klasse toe indien niet langer op stock
+						// VERTRAAGT DE BOEL ENORM
 						$main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
 						switch_to_blog(1);
-						$main_product = wc_get_product( $main_product_id );
+						// $main_product = wc_get_product( $main_product_id );
+						$bestelweb = get_post_meta( $main_product_id, '_in_bestelweb', true );
+						if ( $bestelweb === 'nee' ) $content .= ' old';
 						restore_current_blog();
-						if ( ! $main_product->is_in_stock() ) echo ' old';
 						
 						$content .= '">';
 							$content .= '<div class="cell" style="padding: 0.25em; width: 3%; text-align: center;"><a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'wc_order_status_icon', null, false ).'</a></div>';
@@ -185,6 +187,7 @@
 						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
 							// Dit zou in principe al moeten volstaan voor een automatische update, maar wellicht beter faseren?
 							if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
+								alert("Ben je zeker dat je alles op voorraad wil zetten?");
 								jQuery("#oxfam-products").find("select.toggle").val('outofstock');
 							} else if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
 								jQuery("#oxfam-products").find("select.toggle").val('instock');

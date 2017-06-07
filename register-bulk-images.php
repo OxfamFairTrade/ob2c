@@ -61,7 +61,7 @@
 						jQuery(".run").on('click', function() {
 							jQuery(".run").prop('disabled', true);
 							jQuery(".run").text('Ik ben aan het nadenken ...');
-							jQuery('#wpcontent').css('background-color', 'orange');
+							jQuery('#wpcontent').css('background-color', 'gold');
 							jQuery(".output").before("<p>&nbsp;</p>");
 							ajaxCall(0);
 						});
@@ -107,7 +107,7 @@
 								},
 							});
 				    	} else {
-				    		jQuery("#wpcontent").css("background-color", "limegreen");
+				    		jQuery("#wpcontent").css("background-color", "lightgreen");
 				    		jQuery(".output").prepend("<p>Klaar, we hebben "+i+" foto's verwerkt!</p>");
 				    		jQuery(".run").text("Registreer nieuwe / gewijzigde foto's");
 				    	}
