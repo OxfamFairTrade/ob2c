@@ -48,6 +48,11 @@
 	width: 50%;
 }
 
+/* Quotes nooit centreren! */
+.nm-testimonial-description {
+	text-align: left !important;
+}
+
 /* Poging tot stylen van Google Maps-ballonnen */
 .gm-style-iw {
 	/*background-color: white;
@@ -118,12 +123,6 @@ div.nm-single-product {
 /* Prijs wat dichter bij de titel laten komen */
 h1.product_title.entry-title {
 	margin-bottom: 0;
-}
-
-/* Zet een limiet op de breedte van de add-to-cart knoppen */
-div.nm-quantity-wrap,
-button.nm-simple-add-to-cart-button {
-	max-width: 300px;
 }
 
 /* Geef leeggoedboodschap wat marge boven en onder */
@@ -437,7 +436,15 @@ div.nm-feature.layout-centered {
 	color: #61a534 !important;
 }
 
-@media (max-width: 1200px) {
+@media (min-width: 881px) {
+	/* Zet een limiet op de breedte van de add-to-cart knoppen */
+	div.nm-quantity-wrap,
+	button.nm-simple-add-to-cart-button {
+		max-width: 300px;
+	}
+}
+
+@media (max-width: 1250px) {
 	/* Reset naar standaard mobiele weergave */
 	.nm-header.menu-centered .nm-header-logo {
 		width: 25%;
