@@ -2960,7 +2960,7 @@
 	add_shortcode( 'toon_shops', 'print_store_selector' );
 	add_shortcode( 'toon_kaart', 'print_store_locator_map' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
-	add_shortcode( 'toon_scrolltekst', 'print_scroll_text' );
+	add_shortcode( 'scrolltext', 'print_scroll_text' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );

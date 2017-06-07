@@ -319,10 +319,10 @@ div.nm-single-product.newbee figure.woocommerce-product-gallery__wrapper::after 
 	content: "Nieuw in ons assortiment";
 }
 
-/* Indien 'afhalen'- of 'nieuw'-klasse actief: plaats biobanner lager om overlap te vermijden */
-li.product.pa_bio-ja.product_shipping_class-glas::before,
+/* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'- en/of 'afhalen'-klasse lager om overlap te vermijden */
+li.product.pa_bio-ja.product_shipping_class-glas::after,
 li.product.pa_bio-ja.newbee::after,
-div.nm-single-product.pa_bio-ja.product_shipping_class-glas figure.woocommerce-product-gallery__wrapper::before,
+div.nm-single-product.pa_bio-ja.product_shipping_class-glas figure.woocommerce-product-gallery__wrapper::after,
 div.nm-single-product.pa_bio-ja.newbee figure.woocommerce-product-gallery__wrapper::after {
 	top: 2.5em;
 }
@@ -335,18 +335,17 @@ li.product.product_shipping_class-glas:hover::after {
 }
 
 /* Fix voor zoombox die productfoto's op detailpagina rechts afknipt */
-.woocommerce-product-gallery__image {
-    margin-left: 0;
+figure {
+	margin: 0 !important;
 }
-.woocommerce-product-gallery__wrapper {
-	margin-right: 0;
-}
-.summary.entry-summary.clear {
-	// padding-left: 50px;
-}
+
+/* Styleer herkomstinfo boven winkelmandknop */
 p.herkomst {
 	margin-bottom: 1em;
 	font-weight: bold;
+}
+.summary.entry-summary.clear {
+	// padding-left: 50px;
 }
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 

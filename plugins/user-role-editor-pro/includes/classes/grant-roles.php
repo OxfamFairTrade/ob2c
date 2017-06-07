@@ -97,7 +97,7 @@ class URE_Grant_Roles {
     // end of grant_other_roles_to_user()
     
     
-    public static function process_user_request() {
+    public static function grant_roles() {
 
         if (!current_user_can('edit_users')) {
             $answer = array('result'=>'error', 'message'=>esc_html__('Not enough permissions', 'user-role-editor'));
@@ -145,7 +145,38 @@ class URE_Grant_Roles {
         
         return $answer;
     }
-    // end of process_user_request()
+    // end of grant_roles()
+    
+    
+    public static function get_user_roles() {
+
+        if (!current_user_can('edit_users')) {
+            $answer = array('result'=>'error', 'message'=>esc_html__('Not enough permissions', 'user-role-editor'));
+            return $answer;
+        }
+        
+        $lib = URE_Lib::get_instance();
+        $user_id = $lib->get_request_var('user_id', 'post', 'int');
+        if (empty($user_id)) {
+            $answer = array('result'=>'error', 'message'=>esc_html__('Wrong request, valid user ID was missed', 'user-role-editor'));
+            return $answer;
+        }
+    
+        $user = get_user_by('id', $user_id);
+        if (empty($user)) {
+            $answer = array('result'=>'error', 'message'=>esc_html__('Requested user does not exist', 'user-role-editor'));
+            return $answer;
+        }
+        
+        $other_roles = array_values($user->roles);
+        $primary_role = array_shift($other_roles);
+        
+        $answer = array('result'=>'success', 'primary_role'=>$primary_role, 'other_roles'=>$other_roles);
+        
+        return $answer;
+    }
+    // end of get_user_roles()
+    
     
     
     private function select_primary_role_html() {
@@ -207,7 +238,7 @@ class URE_Grant_Roles {
         }
 ?>        
             &nbsp;&nbsp;<input type="button" name="ure_grant_roles" id="ure_grant_roles" class="button"
-                        value="<?php esc_html_e('Grant Roles', 'user-role-editor');?>" onclick="ure_show_grant_roles_dialog();">
+                        value="<?php esc_html_e('Grant Roles', 'user-role-editor');?>">
 <?php
     if (self::$counter<1) {
 ?>
