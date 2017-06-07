@@ -52,7 +52,6 @@
                                     <li class="nm-footer-bar-text menu-item"><div><?php echo wp_kses_post( do_shortcode( $copyright_text ) ); ?></div></li>
                                     <?php endif; ?>
                                 </ul>
-
                                 <!-- GEWIJZIGD: Zet logo achter i.p.v. voor menu -->
                                 <?php 
                                     if ( isset( $nm_theme_options['footer_bar_logo'] ) && strlen( $nm_theme_options['footer_bar_logo']['url'] ) > 0 ) : 
@@ -60,12 +59,22 @@
                                     $footer_bar_logo_src = ( is_ssl() ) ? str_replace( 'http://', 'https://', $nm_theme_options['footer_bar_logo']['url'] ) : $nm_theme_options['footer_bar_logo']['url'];
                                 ?>
                                 <div class="nm-footer-bar-logo">
-                                    <a href="https://www.mollie.com/be/consumers" target="_blank"><img src="<?php echo esc_url( $footer_bar_logo_src ); ?>" /></a>
+                                    <img src="<?php echo esc_url( $footer_bar_logo_src ); ?>" />
                                 </div>
                                 <?php endif; ?>
                             </div>
                             
                             <div class="nm-footer-bar-right col-md-4 col-xs-12">
+                                <!-- GEWIJZIGD: Voeg betaallogo's toe -->
+                                <div class="nm-footer-bar-logo betaalmethodes">
+                                    <a href="https://www.mollie.com/be/consumers" target="_blank">
+                                        <img src="https://demo.oxfamwereldwinkels.be/wp-content/plugins/mollie-payments-for-woocommerce/assets/images/mistercash.png">
+                                        <img src="https://demo.oxfamwereldwinkels.be/wp-content/plugins/mollie-payments-for-woocommerce/assets/images/creditcard.png">
+                                        <img src="https://demo.oxfamwereldwinkels.be/wp-content/plugins/mollie-payments-for-woocommerce/assets/images/kbc.png">
+                                        <img src="https://demo.oxfamwereldwinkels.be/wp-content/plugins/mollie-payments-for-woocommerce/assets/images/belfius.png">
+                                    </a>
+                                </div>
+
                                 <?php if ( $display_social_icons ) : ?>
 									<?php echo nm_get_social_profiles( 'nm-footer-bar-social' ); // Args: $wrapper_class ?>
                                 <?php else : ?>

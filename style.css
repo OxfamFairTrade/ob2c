@@ -34,6 +34,12 @@
 	display: inline-block;
 }
 
+.nm-footer-bar-logo.betaalmethodes,
+.nm-footer-bar-logo.betaalmethodes img {
+	margin-right: 5px;
+	margin-top: 10px;
+}
+
 /* Extra klasses voor 'Hoe werkt het?'-pagina */
 .extra-bottom-marge h3 {
 	margin-bottom: 1em;
@@ -430,8 +436,6 @@ div.nm-feature.layout-centered {
 .nm-footer-widgets a {
 	color: #61a534 !important;
 }
-
-
 
 @media (max-width: 1200px) {
 	/* Reset naar standaard mobiele weergave */
