@@ -2847,7 +2847,7 @@
 		// var_dump($screen);
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
 			echo '<div class="notice notice-error">';
-			echo '<p>De aanmaak van de lokale webshops heeft enkele dagen vertraging opgelopen, onze excuses. Ook de handleiding zijn we nog aan het uitschrijven.</p>';
+			echo '<p>De aanmaak van de lokale webshops heeft twee weken vertraging opgelopen, onze excuses. Ook de handleiding zijn we nog aan het uitschrijven. Tegen 15 juni zal iedereen zijn login ontvangen. We streven ernaar om tegen eind deze maand alle webshop publiek te zetten.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-info">';
 			// echo '<p>Download <a href="http://demo.oxfamwereldwinkels.be/wp-content/uploads/verzendtarieven-B2C-pakketten.pdf" target="_blank">de nota met tarieven en voorwaarden</a> bij externe verzending via Bpost. Aangezien geen enkele groep aangaf interesse te hebben in verzending via Bubble Post (waar mogelijk) stoppen we geen werk meer in de integratie met hun systemen.</p>';
@@ -2871,7 +2871,7 @@
 		}
 		if ( $pagenow === 'admin.php' and $screen->parent_base === 'oxfam-products-photos' or $screen->parent_base === 'oxfam-products-list' ) {
 			echo '<div class="notice notice-info">';
-			echo '<p>De compactere lijstweergave is beschikbaar! To do: verhinderen dat je niet-voorradige producten nog langer in de kijker kunt zetten.</p>';
+			echo '<p>Bovenaan de compacte lijstweergave vind je vanaf nu een knop om alle producten in of uit voorraad te zetten. Opgelet: deze bulkbewerking kan bij veel wijzigingen enkele tientallen seconden in beslag nemen.</p>';
 			echo '</div>';
 		}
 	}

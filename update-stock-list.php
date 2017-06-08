@@ -5,11 +5,11 @@
 <div class="wrap">
 	<h1>Stel de voorraad van je lokale webshop in</h1>
 
-	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Een bevestigingsvenster behoedt je voor onbedoelde wijzigingen. Tip: met Ctrl+F kun je snel zoeken naar een product. We voegen nog een compactere weergave toe (zonder foto's en pop-ups) om sneller te kunnen werken. Later wordt het misschien mogelijk om voorraadlijsten in te lezen uit bv. ShopPlus.</p>
+	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Met de knop bovenaan kun je alle producten in één keer in/uit voorraad halen. Een bevestigingsvenster behoedt je daarbij voor onbedoelde wijzigingen. Als daar veel vraag naar is, wordt het later misschien mogelijk om voorraadlijsten in te lezen uit bv. ShopPlus.</p>
 
-	<p>Nieuwe producten, die in de loop van de voorbije twee maanden beschikbaar werden op BestelWeb, zullen een blauwe achtergrond hebben. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden.</p>
+	<p>Nieuwe producten, die in de loop van de voorbije twee maanden beschikbaar werden op BestelWeb, hebben een blauwe achtergrond. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden.</p>
 
-	<p>Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen een gele achtergrond, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt. Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na 6 maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
+	<p>Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen een gele achtergrond, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt. Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 
 	<div id="oxfam-products" style="border-spacing: 0 10px;">
 		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black;">
