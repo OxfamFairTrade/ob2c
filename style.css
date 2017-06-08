@@ -387,7 +387,8 @@ tr.shipping .woocommerce-Price-amount {
 .woocommerce-address-fields #billing_country_field,
 .woocommerce-address-fields #shipping_country_field,
 .checkout-subscribe-action,
-.products li.outofstock .nm-shop-loop-thumbnail > a:after {
+.products li.outofstock .nm-shop-loop-thumbnail > a:after,
+.ui-helper-hidden-accessible {
 	display: none !important;
 }
 
