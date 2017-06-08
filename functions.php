@@ -673,16 +673,25 @@
 			?>
 				<script>
 					var wto;
-					// jQuery( '#oxfam-zip-user' ).on( 'input', function() {
-					// 	clearTimeout(wto);
-					// 	if ( jQuery( '#oxfam-zip-user' ).val().length === 4 ) {
-					// 		jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false );
-					// 		jQuery( '#do_oxfam_redirect' ).val('Doorsturen ...');
-					// 		wto = setTimeout( function() {
-					// 			jQuery( '#do_oxfam_redirect' ).trigger('click');
-					// 		}, 500);
-					// 	}
-					// });
+					jQuery( '#oxfam-zip-user' ).on( 'input change', function() {
+						clearTimeout(wto);
+						if ( jQuery( '#oxfam-zip-user' ).val().length == 4 ) {
+							jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false );
+							// jQuery( '#do_oxfam_redirect' ).val('Doorsturen ...');
+							// wto = setTimeout( function() {
+							// 	jQuery( '#do_oxfam_redirect' ).trigger('click');
+							// }, 500);
+						} else {
+							jQuery( '#do_oxfam_redirect' ).prop( 'disabled', true );
+						}
+					});
+					
+					jQuery( '#oxfam-zip-user' ).keyup( function(event) {
+						if ( event.which == 13 ) {
+							jQuery( '#do_oxfam_redirect' ).trigger('click');
+						}
+					});
+					
 					jQuery( '#do_oxfam_redirect' ).on( 'click', function() {
 						jQuery(this).prop( 'disabled', true );
 						var zip = jQuery( '#oxfam-zip-user' ).val();
@@ -3087,8 +3096,10 @@
  		$msg = '<img src="'.get_stylesheet_directory_uri().'/pointer-levering.png">';
  		$msg .= '<h3 style="text-align: center;">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
 		$msg .= '<p style="text-align: center;">';
-		$msg .= '<input type="tel" class="" id="oxfam-zip-user" maxlength="4" style="width: 160px; height: 40px; text-align: center;" autocomplete="on"> ';
+		// $msg .= '<form id="referrer" action="javascript:void(0);">';
+		$msg .= '<input type="text" class="" id="oxfam-zip-user" style="width: 160px; height: 40px; text-align: center;" autocomplete="on"> ';
 		$msg .= '<input type="submit" class="button" id="do_oxfam_redirect" value="Stuur mij door" style="width: 160px; height: 40px; position: relative; top: -1px;" disabled>';
+		// $msg .= '</form>';
 		foreach ( $all_zips as $zip => $city ) {
 			if ( isset( $global_zips[$zip] ) ) {
 				$url = $global_zips[$zip];
