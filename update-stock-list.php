@@ -96,11 +96,11 @@
 				$content .= '</div>';
 				wp_reset_postdata();
 
-				echo '<p style="text-align: right; width: 100%;"><br>Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span id="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
+				echo '<p style="text-align: right; width: 100%;"><br>Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
 				
 				echo $content;
 				
-				echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span id="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
+				echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
 				
 			}
 
@@ -153,8 +153,8 @@
 									}
 
 									// Werk de tellers bij
-									jQuery("#instock-cnt").html(jQuery("#oxfam-products").find(".border-color-green").length);
-									jQuery("#featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
+									jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border-color-green").length);
+									jQuery(".featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
 							    	
 							    	jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(5000).animate({
 							    		opacity: 0,
@@ -164,7 +164,7 @@
 								},
 								error: function(jqXHR, statusText, errorThrown) {
 									tries++;
-									if ( tries < 5 ) {
+									if ( tries < 10 ) {
 										ajaxCall(id, meta, value);
 									} else {
 										// Val terug op de tegengestelde waarde
@@ -194,18 +194,22 @@
 								var to_change = jQuery("#oxfam-products").find(".border-color-red").length; 
 								var go = confirm("Ben je zeker dat je "+to_change+" producten in voorraad wil zetten?");
 								if ( go == true ) {
+									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
 									jQuery("#oxfam-products").find(".border-color-red").parent().find("select.toggle").val('instock').trigger('change');
+									// SUCCESBOODSCHAP TONEN NA AFLOOP
 								} else {
-									alert("Begrepen, we doen niets!");
+									alert("Begrepen, we wijzigen niets!");
 									jQuery(this).val('');
 								}
 							} else if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
 								var to_change = jQuery("#oxfam-products").find(".border-color-green").length; 
 								var go = confirm("Ben je zeker dat je "+to_change+" producten op uitverkocht wil zetten?");
 								if ( go == true ) {
+									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
 									jQuery("#oxfam-products").find(".border-color-green").parent().find("select.toggle").val('outofstock').trigger('change');
+									// SUCCESBOODSCHAP TONEN NA AFLOOP
 								} else {
-									alert("Begrepen, we doen niets!");
+									alert("Begrepen, we wijzigen niets!");
 									jQuery(this).val('');
 								}
 							}
