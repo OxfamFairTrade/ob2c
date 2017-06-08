@@ -23,10 +23,10 @@
 				
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
-				$partner_id_customer = get_option( 'oxfam_mollie_partner_id' );
+				$partner_id_customer = get_option( 'oxfam_mollie_partner_id', 2485891 );
 				
 				// Check of we niet op de hoofdaccount zitten, want anders fatale API-error
-				if ( $partner_id_customer != 2485891 ) {
+				if ( $partner_id_customer != 2485891 and $partner_id_customer > 2000000 ) {
 					echo "<tr>";
 						echo "<th class='left'><a href='https://login.microsoftonline.com/' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>";
 						echo "<td class='right'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>";
@@ -79,6 +79,11 @@
 							$account_warning = "<br><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geregistreerd!</small>";
 						}
 					}
+				} else {
+					echo "<tr>";
+						echo "<th class='left' style='color: red;'>API ERROR</th>";
+						echo "<td class='right'>Gelieve een geldige Mollie-ID op te geven!</td>";
+					echo "</tr>";
 				}
 				if ( does_sendcloud_delivery() ) {
 					echo "<tr>";
