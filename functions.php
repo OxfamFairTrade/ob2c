@@ -2575,45 +2575,47 @@
 	add_action( 'pmxi_saved_post', 'update_origin_on_update', 10, 1 );
 	
 	function update_origin_on_update( $post_id ) {
-		// VEROORZAAKT RARE PROBLEMEN BIJ DE TERMENKOPPELING VAN TAXONOMIEËN
-		// $attribute = new WC_Product_Attribute();
-		// $attribute->set_id(0);
-		// $attribute->set_name('Herkomst');
-		// $attribute->set_options( array( implode( ', ', $countries ) ) );
-		// $attribute->set_position(1000);
-		// $attribute->set_visible(false);
-		// $attribute->set_variation(false);
-		// $attributes = $productje->get_attributes();
-		// // Unieke key, moet overeenkomen met de taxonomie
-		// $attributes['pa_herkomst'] = $attribute;
-		// $pos = 10;
-		// foreach( $attributes as $key => $attribute ) {
-		// 	if ( $key !== 'pa_herkomst' ) {
-		// 		$attribute->set_position($pos);
-		// 		$pos += 10;
-		// 	}
-		// }
-		// $productje->set_attributes( $attributes );
-		// $productje->save();
-		
-		$productje = wc_get_product( $post_id );
-		$countries_nl = get_countries_by_product( $productje );
-		update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
-		
-		foreach ( $countries_nl as $country ) {
-			$nl = get_site_option( 'countries_nl' );
-			$code = array_search( $country, $nl, true );
-			// We hebben een geldige landencode gevonden
-			if ( strlen($code) === 3 ) {
-				$countries_fr[] = translate_to_fr( $code );
-				$countries_en[] = translate_to_en( $code );
+		if ( get_post_status( $post_id ) === 'product' ) {
+			// VEROORZAAKT RARE PROBLEMEN BIJ DE TERMENKOPPELING VAN TAXONOMIEËN
+			// $attribute = new WC_Product_Attribute();
+			// $attribute->set_id(0);
+			// $attribute->set_name('Herkomst');
+			// $attribute->set_options( array( implode( ', ', $countries ) ) );
+			// $attribute->set_position(1000);
+			// $attribute->set_visible(false);
+			// $attribute->set_variation(false);
+			// $attributes = $productje->get_attributes();
+			// // Unieke key, moet overeenkomen met de taxonomie
+			// $attributes['pa_herkomst'] = $attribute;
+			// $pos = 10;
+			// foreach( $attributes as $key => $attribute ) {
+			// 	if ( $key !== 'pa_herkomst' ) {
+			// 		$attribute->set_position($pos);
+			// 		$pos += 10;
+			// 	}
+			// }
+			// $productje->set_attributes( $attributes );
+			// $productje->save();
+			
+			$productje = wc_get_product( $post_id );
+			$countries_nl = get_countries_by_product( $productje );
+			update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
+			
+			foreach ( $countries_nl as $country ) {
+				$nl = get_site_option( 'countries_nl' );
+				$code = array_search( $country, $nl, true );
+				// We hebben een geldige landencode gevonden
+				if ( strlen($code) === 3 ) {
+					$countries_fr[] = translate_to_fr( $code );
+					$countries_en[] = translate_to_en( $code );
+				}
 			}
-		}
 
-		sort($countries_fr, SORT_STRING);
-		update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
-		sort($countries_en, SORT_STRING);
-		update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
+			sort($countries_fr, SORT_STRING);
+			update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
+			sort($countries_en, SORT_STRING);
+			update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
+		}
 	}
 
 	function translate_to_fr( $code ) {
