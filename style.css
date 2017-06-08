@@ -125,7 +125,7 @@ body.portal.home div.nm-page-wrap-inner .nm-main-menu:before {
 }
 
 .portal.home li.widget.widget_text:last-child {
-	border-left: 1px solid rgba(133, 107, 95, 0.5);
+	// border-left: 1px solid rgba(133, 107, 95, 0.5);
 }
 
 /* Breedte productarchief- en productdetailpagina's limiteren */
