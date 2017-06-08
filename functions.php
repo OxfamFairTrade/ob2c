@@ -502,11 +502,11 @@
 	// Schakel autosaves uit
 	add_action( 'wp_print_scripts', function() { wp_deregister_script('autosave'); } );
 
-	// Zorg ervoor dat revisies ook bij producten bijgehouden worden op de hoofdsite
-	// Log de post_meta op basis van de algemene update_post_metadata-filter (of beter door WC-functies te hacken?)
 	if ( is_main_site() ) {
+		// Zorg ervoor dat productrevisies bijgehouden worden op de hoofdsite
 		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
-		add_action( 'update_post_metadata', 'log_product_changes', 1, 4 );
+		// Log wijzigingen aan metadata na het succesvol bijwerken
+		add_action( 'updated_post_metadata', 'log_product_changes', 100, 4 );
 	}
 	
 	function add_product_revisions( $args ) {
@@ -517,31 +517,13 @@
 	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
 		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
 		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_length', '_width', '_height', '_weight', '_thumbnail_id', '_force_sell_synced_ids', '_barcode', 'excerpt_fr', 'excerpt_en', 'description_fr', 'description_en', '_product_attributes' );
-		// Check of er een belangwekkende wijzing was
-		if ( in_array( $meta_key, $watched_metas ) ) {
-			// Vergelijk nieuwe waarde met de actuele
-			$old_meta_value = get_post_meta( $post_id, $meta_key, true );
-			
-			// Check of er wel al een oude waarde bestond
-			if ( ! $old_meta_value ) {
-				// Check welk type variabele het is
-				if ( is_array( $new_meta_value ) ) {
-					if ( count( array_diff( $new_meta_value, $old_meta_value ) ) > 0 ) {
-						// Schrijf weg in log per weeknummer (zonder leading zero's) 
-						$str = date_i18n('d/m/Y H:i:s') . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . $meta_key . "\t" . serialize($new_meta_value) . "\t" . get_the_title( $post_id ) . "\n";
-					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND);
-					}
-				} else {
-					if ( strcmp( $new_meta_value, $old_meta_value ) !== 0 ) {
-						// Schrijf weg in log per weeknummer (zonder leading zero's) 
-						$str = date_i18n('d/m/Y H:i:s') . "\t" . $meta_key . "\t" . $new_meta_value . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . get_the_title( $post_id ) . "\n";
-					    file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND);
-					}
-				}
-			}
+		// Deze actie vuurt bij 'single value meta keys' enkel indien er een wezenlijke wijziging was, dus check hoeft niet meer
+		if ( get_post_type( $post_id ) === 'product' and in_array( $meta_key, $watched_metas ) ) {
+			// Schrijf weg in log per weeknummer (zonder leading zero's)
+			$user = wp_get_current_user();
+			$str = date_i18n('d/m/Y H:i:s') . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . $user->user_firstname . "\t" . $meta_key . " gewijzigd in " . serialize($new_meta_value) . "\t" . get_the_title( $post_id ) . "\n";
+			file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND);
 		}
-		// Zet de normale postmeta-functie verder
-		update_post_meta( $meta_id, $post_id, $meta_key, $new_meta_value );
 	}
 
 	// Verberg alle koopknoppen op het hoofddomein (ook reeds geblokkeerd via .htaccess but better be safe than sorry)
@@ -3077,7 +3059,7 @@
 	function print_welcome() {
 		$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, 'count' => true ) );
 		// Hoofdblog (en templates) ervan aftrekken
-		return '<h2 style="text-align: center;">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites ).'</h2>';
+		return '<img src='.get_stylesheet_directory_uri().'"/pointer-afhaling.png"><h2 style="text-align: center;">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites ).'</h2>';
 	}
 
 	function print_portal_title() {
@@ -3087,7 +3069,8 @@
 	function print_store_selector() {
 		$global_zips = get_shops();
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
- 		$msg = '<h2 style="text-align: center;">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h2><br>';
+ 		$msg = '<img src='.get_stylesheet_directory_uri().'"/pointer-levering.png">';
+ 		$msg .= '<h2 style="text-align: center;">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h2><br>';
 		$msg .= '<p style="text-align: center;">';
 		$msg .= '<input type="tel" class="" id="oxfam-zip-user" maxlength="4" style="width: 160px; height: 40px; text-align: center;" autocomplete="on"> ';
 		$msg .= '<input type="submit" class="button" id="do_oxfam_redirect" value="Stuur mij door" style="width: 160px; height: 40px; position: relative; top: -1px;" disabled>';
