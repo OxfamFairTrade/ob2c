@@ -33,7 +33,7 @@
                 } else {
                     echo '<img src="'.get_stylesheet_directory_uri().'/oww-webshop-wit-70px.png" class="nm-logo">';
                     echo '<img src="'.get_stylesheet_directory_uri().'/oww-webshop-wit-50px.png" class="nm-alt-logo">';
-                    echo '<div class="winkelnaam" style="color: white;">Webshop<br>Portaal</div>';
+                    echo '<div class="winkelnaam" style="color: white;">Portaal<br>Webshop</div>';
                 }
             ?>
         </a>
