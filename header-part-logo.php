@@ -20,14 +20,18 @@
 
     <div class="nm-header-logo">
         <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-            <img src="<?php echo esc_url( $logo_href ); ?>" class="nm-logo" alt="<?php bloginfo( 'name' ); ?>">
-            <?php if ( $has_alt_logo ) : ?>
-            <img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
-            <?php endif; ?>
             <?php
-                // GEWIJZIGD: Vermeld de winkelnaam (enkel op lokale sites!)
+                // GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites
                 if ( ! is_main_site() ) {
+                ?>
+                    <img src="<?php echo esc_url( $logo_href ); ?>" class="nm-logo" alt="<?php bloginfo( 'name' ); ?>">
+                    <?php if ( $has_alt_logo ) : ?>
+                    <img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
+                    <?php endif; ?>
+                <?php
                     echo '<div class="winkelnaam">Webshop<br>' . str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) . '</div>';
+                } else {
+                    echo '<img src="'.get_stylesheet_uri().'/pointer-afhaling.png" class="nm-logo" alt="'.bloginfo( 'name' ).'">';
                 }
             ?>
         </a>

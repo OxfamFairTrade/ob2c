@@ -69,35 +69,45 @@
 	padding: 10px;
 }
 
-body.home.page-id-2398 div.nm-page-wrap-inner > #nm-header-placeholder {
+body.portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
 	background-image: url('cover.jpg');
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: cover;
 }
 
-body.home.page-id-2398 div.nm-page-wrap-inner > #nm-header {
+body.portal.home div.nm-page-wrap-inner > #nm-header {
 	background-color: transparent;
 	height: 200px;
 }
 
-body.home.page-id-2398 div.nm-page-wrap-inner .nm-header-logo {
+body.portal.home div.nm-page-wrap-inner .nm-header-logo {
 	position: absolute;
 }
 
-body.home.page-id-2398 div.nm-page-wrap-inner .nm-header-inner,
-body.home.page-id-2398 div.nm-page-wrap-inner .nm-header-row,
-body.home.page-id-2398 div.nm-page-wrap-inner .nm-header-col,
-body.home.page-id-2398 div.nm-page-wrap-inner .nm-main-menu {
+body.portal.home div.nm-page-wrap-inner .nm-header-inner,
+body.portal.home div.nm-page-wrap-inner .nm-header-row,
+body.portal.home div.nm-page-wrap-inner .nm-header-col,
+body.portal.home div.nm-page-wrap-inner .nm-main-menu {
 	height: 100%;
 	width: 100%;
 }
 
-body.home.page-id-2398 div.nm-page-wrap-inner .nm-main-menu:before {
+body.portal.home div.nm-page-wrap-inner .nm-main-menu:before {
 	content: 'De grootste keuze aan eerlijke voedingsproducten';
 	line-height: 200px;
 	color: white;
 	font-size: 2em;
+}
+
+.portal.home h3.afhaling {
+	text-align: center;
+	color: rgb(0, 175, 233);
+}
+
+.portal.home h3.thuislevering {
+	text-align: center;
+	color: rgb(255, 99, 133);
 }
 
 /* Breedte productarchief- en productdetailpagina's limiteren */
