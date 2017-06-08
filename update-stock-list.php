@@ -11,20 +11,21 @@
 
 	<p>Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen een gele achtergrond, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt. Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na 6 maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 
-	<div id="oxfam-products">
-		<!-- <div style="display: table; width: 100%;">
-			<div class="cell"></div>
-			<div class="cell"></div>
-			<div class="cell">
+	<div id="oxfam-products" style="border-spacing: 0 10px;">
+		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black;">
+			<div class="cell" style="width: 3%;"></div>
+			<div class="cell" style="width: 40%; text-align: center;">
 				<select class="global-toggle">';
 					<option value="" selected>(bulkwijziging)</option>
-					<option value="instock">Zet alles op voorraad</option>
-					<option value="outofstock">Zet alles op uitverkocht</option>
+					<option value="instock">Zet ALLE producten op voorraad</option>
+					<option value="outofstock">Zet ALLE producten op uitverkocht</option>
 				</select>
 			</div>
-			<div class="cell"></div>
-			<div class="cell output"></div>
-		</div> -->
+			<div class="cell" style="width: 40%; text-align: left;">
+				Opgelet: deze bewerking kan enkele tientallen seconden in beslag nemen! Verlaat deze pagina niet zolang de tellers lopen.
+			</div>
+			<div class="cell output" style="width: 17%;"></div>
+		</div>
 		<?php
 			// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 			// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
@@ -67,13 +68,16 @@
 						if ( get_the_date('U') > strtotime('-2 months') ) $content .= ' new';
 						
 						// Check voorraadstatus van moederproduct, voeg klasse toe indien niet langer op stock
-						// VERTRAAGT DE BOEL ENORM
+						// VERTRAAGT DE BOEL NOGAL
 						$main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
 						switch_to_blog(1);
 						// $main_product = wc_get_product( $main_product_id );
 						$bestelweb = get_post_meta( $main_product_id, '_in_bestelweb', true );
 						if ( $bestelweb === 'nee' ) $content .= ' old';
 						restore_current_blog();
+
+						// DUBBELOP
+						// $content .= $product->is_in_stock() ? ' instock' : ' outofstock';
 						
 						$content .= '">';
 							$content .= '<div class="cell" style="padding: 0.25em; width: 3%; text-align: center;"><a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'wc_order_status_icon', null, false ).'</a></div>';
@@ -92,11 +96,11 @@
 				$content .= '</div>';
 				wp_reset_postdata();
 
-				echo '<p style="text-align: right; width: 100%;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
+				echo '<p style="text-align: right; width: 100%;"><br>Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span id="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
 				
 				echo $content;
 				
-				echo '<p style="text-align: right; width: 100%;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
+				echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span id="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
 				
 			}
 
@@ -152,7 +156,7 @@
 									jQuery("#instock-cnt").html(jQuery("#oxfam-products").find(".border-color-green").length);
 									jQuery("#featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
 							    	
-							    	jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(1500).animate({
+							    	jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(5000).animate({
 							    		opacity: 0,
 							    	}, 1000, function(){
 										jQuery(this).html("&nbsp;").css('opacity', 1);
@@ -186,11 +190,24 @@
 
 						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
 							// Dit zou in principe al moeten volstaan voor een automatische update, maar wellicht beter faseren?
-							if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
-								alert("Ben je zeker dat je alles op voorraad wil zetten?");
-								jQuery("#oxfam-products").find("select.toggle").val('outofstock');
+							if ( jQuery(this).find(":selected").val() == 'instock' ) {
+								var to_change = jQuery("#oxfam-products").find(".border-color-red").length; 
+								var go = confirm("Ben je zeker dat je "+to_change+" producten in voorraad wil zetten?");
+								if ( go == true ) {
+									jQuery("#oxfam-products").find(".border-color-red").parent().find("select.toggle").val('instock').trigger('change');
+								} else {
+									alert("Begrepen, we doen niets!");
+									jQuery(this).val('');
+								}
 							} else if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
-								jQuery("#oxfam-products").find("select.toggle").val('instock');
+								var to_change = jQuery("#oxfam-products").find(".border-color-green").length; 
+								var go = confirm("Ben je zeker dat je "+to_change+" producten op uitverkocht wil zetten?");
+								if ( go == true ) {
+									jQuery("#oxfam-products").find(".border-color-green").parent().find("select.toggle").val('outofstock').trigger('change');
+								} else {
+									alert("Begrepen, we doen niets!");
+									jQuery(this).val('');
+								}
 							}
 						});
 					});
