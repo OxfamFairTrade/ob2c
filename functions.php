@@ -579,13 +579,14 @@
 		}
 
 		if ( isset( $_GET['referralCity'] ) ) {
-			WC()->customer->set_billing_city( $_GET['referralCity'] ) );
-			WC()->customer->set_shipping_city( $_GET['referralCity'] ) );
-			// var_dump(WC()->customer);
+			WC()->customer->set_billing_city( $_GET['referralCity'] );
+			WC()->customer->set_shipping_city( $_GET['referralCity'] );
 		}
 		
-		if ( isset( $_GET['emptyCart'] ) ) WC()->cart->empty_cart();
+		// var_dump(WC()->customer);
 		// if ( isset( $_GET['downloadSheet'] ) ) create_product_pdf( wc_get_product( 4621 ) );
+		
+		if ( isset( $_GET['emptyCart'] ) ) WC()->cart->empty_cart();
 		
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
 		add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 100 );
