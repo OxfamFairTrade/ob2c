@@ -9,12 +9,12 @@
 */
 
 /* Zodat we de winkelnaam verticaal kunnen centereren */
-.nm-header.menu-centered .nm-header-logo {
+body:not(.portal) .nm-header.menu-centered .nm-header-logo {
 	display: table;
 	width: 35%;
 }
 
-.nm-header.menu-centered .nm-main-menu {
+body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 	position: relative;
 	left: -10%;
 }
@@ -482,15 +482,15 @@ div.nm-feature.layout-centered {
 
 @media (max-width: 1250px) {
 	/* Reset naar standaard mobiele weergave */
-	.nm-header.menu-centered .nm-header-logo {
+	body:not(.portal) .nm-header.menu-centered .nm-header-logo {
 		width: 25%;
 	}
 	
-	.nm-header.menu-centered .nm-header-logo .winkelnaam {
+	body:not(.portal) .nm-header.menu-centered .nm-header-logo .winkelnaam {
 		display: none;
 	}
 
-	.nm-header.menu-centered .nm-main-menu {
+	body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 		left: 0;
 	}
 }
@@ -507,11 +507,11 @@ div.nm-feature.layout-centered {
 
 @media (max-width: 880px) {
 	/* Reset naar standaard mobiele weergave */
-	.nm-header.menu-centered .nm-header-logo {
+	body:not(.portal) .nm-header.menu-centered .nm-header-logo {
 		width: 75%;
 	}
 	
-	.nm-header.menu-centered .nm-header-logo .winkelnaam {
+	body:not(.portal) .nm-header.menu-centered .nm-header-logo .winkelnaam {
 		display: inline-block;
 		padding: 0.25em 1em;
 		font-size: 110%;
