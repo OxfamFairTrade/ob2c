@@ -2626,12 +2626,15 @@
 		return $en[$code];
 	}
 
-	// ZORG DAT UPDATES OOK WERKEN VIA WP ALL IMPORT
+	// Zorg dat productsynchronisatie ook werkt via WP All Import
 	add_action( 'pmxi_saved_post', 'force_update_product', 20, 1 );
 
 	function force_update_product( $post_id ) {
-		global $WOO_MSTORE;
-		$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ) );
+		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
+		if ( get_post_type() === 'product' ) {
+			global $WOO_MSTORE;
+			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ) );
+		}
 	}
 
 	// Doe leuke dingen voor de start van een WP All Import
