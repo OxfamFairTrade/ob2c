@@ -34,6 +34,11 @@
 	display: inline-block;
 }
 
+.portal.home .nm-header-logo .winkelnaam {
+	color: white;
+	border-left: 1px solid white;
+}
+
 .nm-footer-bar-logo.betaalmethodes,
 .nm-footer-bar-logo.betaalmethodes img {
 	margin-right: 5px;
