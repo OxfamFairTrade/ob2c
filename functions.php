@@ -3059,7 +3059,7 @@
 	function print_welcome() {
 		$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, 'count' => true ) );
 		// Hoofdblog (en templates) ervan aftrekken
-		return '<img src='.get_stylesheet_directory_uri().'"/pointer-afhaling.png"><h2 style="text-align: center;">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites ).'</h2>';
+		return '<img src="'.get_stylesheet_directory_uri().'/pointer-afhaling.png"><h3 style="text-align: center;">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites ).'</h3>';
 	}
 
 	function print_portal_title() {
@@ -3069,8 +3069,8 @@
 	function print_store_selector() {
 		$global_zips = get_shops();
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
- 		$msg = '<img src='.get_stylesheet_directory_uri().'"/pointer-levering.png">';
- 		$msg .= '<h2 style="text-align: center;">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h2><br>';
+ 		$msg = '<img src="'.get_stylesheet_directory_uri().'/pointer-levering.png">';
+ 		$msg .= '<h3 style="text-align: center;">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
 		$msg .= '<p style="text-align: center;">';
 		$msg .= '<input type="tel" class="" id="oxfam-zip-user" maxlength="4" style="width: 160px; height: 40px; text-align: center;" autocomplete="on"> ';
 		$msg .= '<input type="submit" class="button" id="do_oxfam_redirect" value="Stuur mij door" style="width: 160px; height: 40px; position: relative; top: -1px;" disabled>';
