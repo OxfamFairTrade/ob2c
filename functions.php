@@ -2377,27 +2377,32 @@
 		}
 	}
 
-	// Retourneert een array met strings van landen waaruit dit product afkomstig is
+	// Retourneert een array met strings van landen waaruit dit product afkomstig is (en anders false)
 	function get_countries_by_product( $product ) {
 		$terms = get_the_terms( $product->get_id(), 'product_partner' );
 		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
 		$continents = get_terms( $args );
 		
-		foreach ( $terms as $term ) {
-			if ( ! in_array( $term->parent, $continents, true ) ) {
-				// De bovenliggende term is geen continent, dus het is een partner!
-				$parent_term = get_term_by( 'id', $term->parent, 'product_partner' );
-				// Voeg de naam van de bovenliggende term (= land) toe aan het lijstje
-				$countries[] = $parent_term->name;
-			} else {
-				// In dit geval is het zeker een land (en zeker geen continent zijn want checkboxes uitgeschakeld + enkel gelinkt aan laagste term)
-				$countries[] = $term->name;
+		if ( count($terms) > 0 ) {
+			foreach ( $terms as $term ) {
+				if ( ! in_array( $term->parent, $continents, true ) ) {
+					// De bovenliggende term is geen continent, dus het is een partner!
+					$parent_term = get_term_by( 'id', $term->parent, 'product_partner' );
+					// Voeg de naam van de bovenliggende term (= land) toe aan het lijstje
+					$countries[] = $parent_term->name;
+				} else {
+					// In dit geval is het zeker een land (en zeker geen continent zijn want checkboxes uitgeschakeld + enkel gelinkt aan laagste term)
+					$countries[] = $term->name;
+				}
 			}
+			// Ontdubbel de landen en sorteer values alfabetisch
+			$countries = array_unique( $countries );
+			sort($countries, SORT_STRING);
+		} else {
+			// Fallback indien nog geen herkomstinfo bekend
+			$countries = false;
 		}
-
-		// Ontdubbel de landen en sorteer values alfabetisch
-		$countries = array_unique( $countries );
-		sort($countries, SORT_STRING);
+		
 		return $countries;
 	}
 
@@ -2599,22 +2604,26 @@
 			
 			$productje = wc_get_product( $post_id );
 			$countries_nl = get_countries_by_product( $productje );
-			update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
 			
-			foreach ( $countries_nl as $country ) {
-				$nl = get_site_option( 'countries_nl' );
-				$code = array_search( $country, $nl, true );
-				// We hebben een geldige landencode gevonden
-				if ( strlen($code) === 3 ) {
-					$countries_fr[] = translate_to_fr( $code );
-					$countries_en[] = translate_to_en( $code );
+			// Check of er al herkomstinfo beschikbaar is
+			if ( $countries_nl !== false ) {
+				update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
+			
+				foreach ( $countries_nl as $country ) {
+					$nl = get_site_option( 'countries_nl' );
+					$code = array_search( $country, $nl, true );
+					// We hebben een geldige landencode gevonden
+					if ( strlen($code) === 3 ) {
+						$countries_fr[] = translate_to_fr( $code );
+						$countries_en[] = translate_to_en( $code );
+					}
 				}
-			}
 
-			sort($countries_fr, SORT_STRING);
-			update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
-			sort($countries_en, SORT_STRING);
-			update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
+				sort($countries_fr, SORT_STRING);
+				update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
+				sort($countries_en, SORT_STRING);
+				update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
+			}
 		}
 	}
 
