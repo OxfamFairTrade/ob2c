@@ -11,7 +11,7 @@
 
 	<p>Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen een gele achtergrond, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt. Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na 6 maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 
-	<div id="oxfam-products">
+	<div id="oxfam-products" style="border-spacing: 0 10px;">
 		<?php
 			// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 			// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
@@ -50,12 +50,15 @@
 							// Linkerdeel
 							$content .= '<div id="'.get_the_ID().'" class="pane-left';
 							if ( get_the_date('U') > strtotime('-2 months') ) $content .= ' new';
-							// CHECK STOCK VAN MOEDER PRODUCT, NIET VAN DEZE!
-							// $main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
-							// switch_to_blog(1);
+							
+							// Check voorraadstatus van moederproduct, voeg klasse toe indien niet langer op stock
+							$main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
+							switch_to_blog(1);
 							// $main_product = wc_get_product( $main_product_id );
-							// restore_current_blog();
-							// if ( ! $main_product->is_in_stock() ) $content .= ' old';
+							$bestelweb = get_post_meta( $main_product_id, '_in_bestelweb', true );
+							if ( $bestelweb === 'nee' ) $content .= ' old';
+							restore_current_blog();
+							
 							$content .= '">';
 								$content .= '<p class="title">'.$product->get_sku().': '.$product->get_title().'</p>';
 								$content .= '<p>';
@@ -87,11 +90,13 @@
 				// Extra afsluitende </div> nodig indien oneven aantal producten!
 				if ( $i % 2 === 1 ) $content .= '</div>';
 				echo '<div style="display: table-row; width: 100%;">';
-					echo '<p style="text-align: right;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
+					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
 				echo '</div>';
+				
 				echo $content;
+				
 				echo '<div style="display: table-row; width: 100%;">';
-					echo '<p style="text-align: right;">Deze pagina toont '.$i.' producten, waarvan er momenteel <span id="instock-cnt">'.$instock_cnt.'</span> voorradig zijn en <span id="featured-cnt">'.$featured_cnt.'</span> in de kijker staan.</p>';
+					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
 				echo '</div>';
 			}
 
@@ -155,8 +160,8 @@
 									} else if ( value == 'instock' ) {
 										jQuery("#"+id).next('div').removeClass('border-color-red').addClass('border-color-green');
 									}
-									jQuery("#instock-cnt").html(jQuery("#oxfam-products").find(".border-color-green").length);
-									jQuery("#featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
+									jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border-color-green").length);
+									jQuery(".featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
 							    	
 							    	jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(3000).animate({
 							    		opacity: 0,
