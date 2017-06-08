@@ -110,6 +110,18 @@ body.portal.home div.nm-page-wrap-inner .nm-main-menu:before {
 	color: rgb(255, 99, 133);
 }
 
+.portal.home .textwidget {
+	color: rgb(133, 107, 95);
+}
+
+.portal.home li.widget.widget_text:first-child {
+	border-right: 1px solid rgb(133, 107, 95);
+}
+
+.portal.home li.widget.widget_text:last-child {
+	border-left: 1px solid rgb(133, 107, 95);
+}
+
 /* Breedte productarchief- en productdetailpagina's limiteren */
 div#nm-shop,
 div.nm-single-product {
