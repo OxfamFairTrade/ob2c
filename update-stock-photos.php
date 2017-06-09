@@ -90,13 +90,13 @@
 				// Extra afsluitende </div> nodig indien oneven aantal producten!
 				if ( $i % 2 === 1 ) $content .= '</div>';
 				echo '<div style="display: table-row; width: 100%;">';
-					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
+					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
 				echo '</div>';
 				
 				echo $content;
 				
 				echo '<div style="display: table-row; width: 100%;">';
-					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig zijn</b> en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
+					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
 				echo '</div>';
 			}
 

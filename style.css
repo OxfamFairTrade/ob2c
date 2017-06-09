@@ -34,71 +34,43 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 	display: inline-block;
 }
 
-.portal.home .nm-header-logo .winkelnaam {
-	color: white;
-	border-left: 1px solid white;
-}
-
-.nm-footer-bar-logo.betaalmethodes,
-.nm-footer-bar-logo.betaalmethodes img {
-	margin-right: 5px;
-}
-
-/* Extra klasses voor 'Hoe werkt het?'-pagina */
-.extra-bottom-marge h3 {
-	margin-bottom: 1em;
-}
-.centreer-blokje-op-helft {
-	width: 50%;
-}
-
-/* Quotes nooit centreren! */
-.nm-testimonial-description {
-	text-align: left !important;
-}
-
-/* Poging tot stylen van Google Maps-ballonnen */
-.gm-style-iw {
-	/*background-color: white;
-	width: 350px !important;
-	top: 0 !important;
-	left: 0 !important;
-	border-radius: 10px;*/
-}
-
-/* Maak de leeggoedicoontjes kleiner */
-.shop_table.cart .product-thumbnail.empties {
-	padding: 20px;
-}
-.nm-cart-panel-thumbnail-wrap.empties {
-	padding: 10px;
-}
-
-body.portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
+/* Voeg een achtegrondafbeelding toe */
+.portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
 	background-image: url('cover.jpg');
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: cover;
 }
-
-body.portal.home div.nm-page-wrap-inner > #nm-header {
+.portal.home div.nm-page-wrap-inner > #nm-header {
 	background-color: transparent;
-	height: 200px;
+	height: 300px;
 }
 
-body.portal.home div.nm-page-wrap-inner .nm-header-logo {
-	position: absolute;
+/* Forceer het menu NIET naar een nieuwe regel */
+.portal.home .nm-header.menu-centered .nm-header-logo {
+	// position: absolute;
 }
 
-body.portal.home div.nm-page-wrap-inner .nm-header-inner,
-body.portal.home div.nm-page-wrap-inner .nm-header-row,
-body.portal.home div.nm-page-wrap-inner .nm-header-col,
-body.portal.home div.nm-page-wrap-inner .nm-main-menu {
+/* Kleur tekst wit i.p.v. grijs */
+.portal.home .nm-header-logo .winkelnaam {
+	color: white;
+	border-left: 1px solid white;
+}
+
+.portal.home .nm-header.menu-centered .nm-main-menu {
+	line-height: 100%;
+}
+
+.portal.home div.nm-page-wrap-inner .nm-header-inner,
+.portal.home div.nm-page-wrap-inner .nm-header-row,
+.portal.home div.nm-page-wrap-inner .nm-header-col,
+.portal.home div.nm-page-wrap-inner .nm-main-menu {
 	height: 100%;
 	width: 100%;
 }
 
-body.portal.home div.nm-page-wrap-inner .nm-main-menu:before {
+/* TE VERPLAATSEN NAAR APARTE DIV IN SJABLOON */
+.portal.home div.nm-page-wrap-inner .nm-main-menu:before {
 	content: 'De grootste keuze aan eerlijke voedingsproducten';
 	line-height: 200px;
 	color: white;
@@ -119,18 +91,54 @@ body.portal.home div.nm-page-wrap-inner .nm-main-menu:before {
 	color: rgb(255, 99, 133);
 }
 
-.portal.home .textwidget i,
-.portal.home .textwidget h2,
-.portal.home .textwidget p {
+.textwidget i,
+.textwidget h2,
+.textwidget p {
 	color: rgb(133, 107, 95);
 }
 
-.portal.home li.widget.widget_text:first-child {
+li.widget.widget_text:first-child {
 	border-right: 1px solid rgba(133, 107, 95, 0.5);
 }
 
-.portal.home li.widget.widget_text:last-child {
-	// border-left: 1px solid rgba(133, 107, 95, 0.5);
+body:not(.portal) li.widget.widget_text:last-child {
+	border-left: 1px solid rgba(133, 107, 95, 0.5);
+}
+
+/* Quotes nooit centreren! */
+.nm-testimonial-description {
+	text-align: left !important;
+}
+
+/* Extra klasses voor 'Hoe werkt het?'-pagina */
+.extra-bottom-marge h3 {
+	margin-bottom: 1em;
+}
+.centreer-blokje-op-helft {
+	width: 50%;
+}
+
+/* Poging tot stylen van Google Maps-ballonnen */
+.gm-style-iw {
+	/*background-color: white;
+	width: 350px !important;
+	top: 0 !important;
+	left: 0 !important;
+	border-radius: 10px;*/
+}
+
+/* Maak de leeggoedicoontjes kleiner */
+.shop_table.cart .product-thumbnail.empties {
+	padding: 20px;
+}
+.nm-cart-panel-thumbnail-wrap.empties {
+	padding: 10px;
+}
+
+/* Verzorg spatiëring tussen betaalicoontjes */
+.nm-footer-bar-logo.betaalmethodes,
+.nm-footer-bar-logo.betaalmethodes img {
+	margin-right: 5px;
 }
 
 /* Breedte productarchief- en productdetailpagina's limiteren */
