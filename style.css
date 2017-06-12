@@ -8,6 +8,14 @@
 	Text Domain:  	oxfam-webshop
 */
 
+.nm-qty-minus.nm-font-media-play:before {
+	content: '\f068';
+}
+
+.nm-qty-plus.nm-font-media-play:before {
+	content: '\f067';
+}
+
 /* Zodat we de winkelnaam verticaal kunnen centereren */
 body:not(.portal) .nm-header.menu-centered .nm-header-logo {
 	display: table;
@@ -526,5 +534,9 @@ div.nm-feature.layout-centered {
 		font-size: 110%;
 		line-height: 110%;
 		top: 3px;
+	}
+
+	li.widget.widget_text {
+		border: none;
 	}
 }

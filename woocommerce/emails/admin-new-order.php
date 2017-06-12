@@ -17,11 +17,13 @@
   */
  do_action( 'woocommerce_email_header', $email_heading, $email );
 
-printf( '<p>Je hebt een bestelling ontvangen van %s.</p>', $order->get_formatted_billing_full_name() );
+printf( '<p>Proficiat, je hebt een bestelling ontvangen van %s.</p>', $order->get_formatted_billing_full_name() );
 $tax_classes = $order->get_items_tax_classes();
 if ( in_array( 'voeding', $tax_classes ) === false and $order->get_shipping_total() > 0 ) {
     echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan 21% BTW-tarief! Zorg dat je bij de verwerking in ShopPlus dus de levercode WEB21 inscant. Als winkel hou je aan deze thuislevering dus netto 5,74 i.p.v. 6,56 euro over.</p>';
 }
+
+echo '<p>&nbsp;</p>';
 
  /**
   * @hooked WC_Emails::order_details() Shows the order details table.
