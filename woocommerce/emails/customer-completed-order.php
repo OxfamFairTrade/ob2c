@@ -32,7 +32,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	if ( count($list) > 0 ) {
 		$comment = $list[0];
 		preg_match( '/[0-9]{24}/', $comment->comment_content, $numbers );
-		echo ' Volg de zending met behulp van deze barcode: '.$numbers[0].'.';
+		echo ' Volg de zending bij Bpost met behulp van deze barcode: <a href="http://track.bpost.be/btr/web/#/search?itemCode='.$numbers[0].'&lang=nl" target="_blank">'.$numbers[0].'</a>.';
 	}
 	add_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
 	echo '</p>';
