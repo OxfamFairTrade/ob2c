@@ -23,7 +23,19 @@ echo '<p>Dag '.$order->get_billing_first_name().',</p>';
 if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ) . '</p>';
 } else {
-	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ) . '</p>';
+	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' );
+	// Check of we een tracking number van Bpost kunnen terugvinden
+	$args = array( 'post_id' => $post_id, 'search' => 'SendCloud' );
+	// Want anders zien we de private opmerkingen niet!
+	remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
+	$list = get_comments( $args );
+	if ( count($list) > 0 ) {
+		$comment = $list[0];
+		preg_match( '/[0-9]{24}/', $comment->comment_content, $numbers );
+		echo ' Volg de zending met behulp van deze barcode: '.$numbers[0].'.';
+	}
+	add_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
+	echo '</p>';
 }
 
 echo '<p>&nbsp;</p>';
