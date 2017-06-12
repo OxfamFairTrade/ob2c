@@ -23,18 +23,14 @@ echo '<p>Dag '.$order->get_billing_first_name().',</p>';
 if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ) . '</p>';
 } else {
-	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' );
-	// Check of we een tracking number van Bpost kunnen terugvinden
-	$args = array( 'post_id' => $post_id, 'search' => 'SendCloud' );
-	// Want anders zien we de private opmerkingen niet!
-	remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
-	$list = get_comments( $args );
-	if ( count($list) > 0 ) {
-		$comment = $list[0];
-		preg_match( '/[0-9]{24}/', $comment->comment_content, $numbers );
-		echo ' Volg de zending bij Bpost met behulp van deze barcode: <a href="http://track.bpost.be/btr/web/#/search?itemCode='.$numbers[0].'&lang=nl" target="_blank">'.$numbers[0].'</a>.';
+	echo '<p>';
+	$text = __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' );
+	if ( get_tracking_number( $order->get_id() ) {
+		echo str_replace( 'Een vrijwilliger of een fietskoerier', 'De postcode', $text );
+		printf( __( 'Tracking bij Bpost, inclusief barcode (%1$s) en volglink (%2$s).', 'oxfam-webshop' ), get_tracking_number( $order->get_id() ), get_tracking_link( $order->get_id() ) );
+	} else {
+		echo $text;
 	}
-	add_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
 	echo '</p>';
 }
 

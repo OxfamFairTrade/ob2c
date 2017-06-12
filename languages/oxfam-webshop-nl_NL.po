@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2017-06-06 15:18+0200\n"
-"PO-Revision-Date: 2017-06-06 15:18+0200\n"
+"PO-Revision-Date: 2017-06-12 19:36+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -38,14 +38,14 @@ msgstr "We hebben je bestelling bij %2$s van %1$s goed ontvangen"
 msgid ""
 "Onderwerp van de 2de bevestigingsmail (indien afhaling) inclusief "
 "besteldatum (%1$s) en naam webshop (%2$s)"
-msgstr ""
+msgstr "Je bestelling bij %2$s van %1$s is afgerond"
 
 #: functions.php:430
 #, php-format
 msgid ""
 "Onderwerp van de 2de bevestigingsmail (indien thuislevering) inclusief "
 "besteldatum (%1$s) en naam webshop (%2$s)"
-msgstr ""
+msgstr "Je bestelling bij %2$s van %1$s is afgerond"
 
 #: functions.php:436
 #, php-format
@@ -66,12 +66,10 @@ msgid "Heading van de 1ste bevestigingsmail"
 msgstr "Bedankt voor je bestelling!"
 
 #: functions.php:458
-#, fuzzy
 msgid "Heading van de 2de bevestigingsmail (indien afhaling)"
 msgstr "Je bestelling staat klaar!"
 
 #: functions.php:460
-#, fuzzy
 msgid "Heading van de 2de bevestigingsmail (indien thuislevering)"
 msgstr "Je bestelling is verzonden!"
 
@@ -96,26 +94,24 @@ msgid "Foutmelding na het ingeven van een onbestaande Vlaamse postcode."
 msgstr "Dit is geen geldige Vlaamse postcode. Probeer het eens opnieuw a.u.b."
 
 #: functions.php:890
-#, fuzzy
 msgid "Voorbeeldnotitie op afrekenpagina (indien afhaling)."
 msgstr ""
-"Bijvoorbeeld: \"Ik kom de bestelling pas eind volgende week oppikken in de "
+"Bijvoorbeeld: \"Ik kom deze bestelling pas eind volgende week oppikken in de "
 "winkel.\""
 
 #: functions.php:893
-#, fuzzy
 msgid "Voorbeeldnotitie op afrekenpagina (indien thuislevering)."
 msgstr ""
-"Bijvoorbeeld: \"Na 15 uur is er altijd iemand thuis. Geef gerust een "
-"belletje wanneer jullie vertrekken.\""
+"Bijvoorbeeld: \"Na 15 uur is er altijd iemand thuis. Bel gerust even voor "
+"jullie vertrekken.\""
 
 #: functions.php:897
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer "
 "van de hoofdwinkel (%s)."
 msgstr ""
-"Nog vragen bij je bestelling? Neem een kijkje in de veelgestelde vragen of "
+"Nog vragen bij je bestelling? Neem een kijkje bij de veelgestelde vragen of "
 "bel ons op %s."
 
 #: functions.php:1168
@@ -256,19 +252,17 @@ msgstr ""
 "volledige aanbod."
 
 #: woocommerce/emails/customer-completed-order.php:24
-#, fuzzy
 msgid ""
 "Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel)."
 msgstr ""
-"Hoera, je kunt je bestelling afhalen! Vergeet je naam en bestelnummer niet."
+"Je kan je bestelling afhalen! Vergeet je bevestigingsmail niet mee te "
+"brengen, of je naam en bestelnummer te vermelden."
 
 #: woocommerce/emails/customer-completed-order.php:26
-#, fuzzy
 msgid "Bericht bovenaan de 2de bevestigingsmail (indien thuislevering)."
 msgstr ""
-"Hoera, we hebben je bestelling klaargezet voor verzending! De fietskoerier / "
-"postbode / vrijwilliger komt er weldra mee langs. (Tracking enkel "
-"beschikbaar indien verzending via Bpost.)"
+"We hebben je bestelling klaargezet voor verzending! Een vrijwilliger of een "
+"fietskoerier komt er binnenkort mee langs."
 
 #: woocommerce/emails/customer-note.php:23
 msgid ""
@@ -286,12 +280,10 @@ msgstr ""
 "boodschappen klaar. Je kan deze oppikken in %1$s vanaf %2$s om %3$s."
 
 #: woocommerce/emails/customer-processing-order.php:34
-#, fuzzy
 msgid "Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering)."
 msgstr ""
 "We hebben je bestelling goed ontvangen. Van zodra je pakje klaar staat voor "
-"verzending, sturen we je een bericht (kan zowel met vrijwilligers als "
-"externen gebeuren)."
+"verzending, sturen we je een bericht."
 
 #: woocommerce/emails/customer-refunded-order.php:23
 msgid "Bericht bovenaan de mail van een gedeeltelijk terugbetaalde bestelling."
@@ -302,14 +294,16 @@ msgid "Bericht bovenaan de mail van een volledig terugbetaalde bestelling."
 msgstr ""
 
 #: woocommerce/myaccount/dashboard.php:25
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "Tekst die verschijnt op de dashboardpagina van 'Mijn account' inclusief "
 "voornaam gebruiker (%1$s) en URL's naar bestellingen (%2$s), adressen "
 "(%3$s), accountgegevens (%4$s) en nieuwsbriefvoorkeuren (%5$s)."
 msgstr ""
-"<p>Ik ben blij dat jij in mijn team zit, %1$s.</p><a href=\"%2$s\">Bekijk je "
-"vorige bestellingen</a> of doe iets anders.<p>"
+"<p>Dag %1$s.</p><p>In het menu links kan je je <a href=\"%2$s\">vorige "
+"bestellingen bekijken</a>, je <a href=\"%3$s\">klant- of leveradres "
+"aanpassen</a>, je <a href=\"%4$s\">accountgegevens veranderen</a> of onze <a "
+"href=\"%5$s\">digitale nieuwsbrief lezen</a>.<p>"
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam-Wereldwinkels Webshop"
@@ -328,3 +322,8 @@ msgstr "Efraim Sebrechts & Frederik Neirynck"
 #. Author URI of the plugin/theme
 msgid "https://www.oxfamwereldwinkels.be"
 msgstr "https://www.oxfamwereldwinkels.be"
+
+msgid "Tracking bij Bpost, inclusief barcode (%1$s) en volglink (%2$s)."
+msgstr ""
+"Volg de zending bij Bpost met behulp van dit nummer: <a href=\"%2$s\" target="
+"\"_blank\">%1$s</a>."
