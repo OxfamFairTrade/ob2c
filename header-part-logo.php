@@ -31,8 +31,7 @@
                 <?php
                     echo '<div class="winkelnaam">Webshop<br>' . str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) . '</div>';
                 } else {
-                    echo '<img src="'.get_stylesheet_directory_uri().'/oww-webshop-wit-70px.png" class="nm-logo">';
-                    echo '<img src="'.get_stylesheet_directory_uri().'/oww-webshop-wit-50px.png" class="nm-alt-logo">';
+                    echo '<img src="'.get_stylesheet_directory_uri().'/oww-webshop-wit-60px.png" class="nm-logo">';
                     echo '<div class="winkelnaam" style="color: white;">Portaal<br>Webshop</div>';
                 }
             ?>

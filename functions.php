@@ -2838,7 +2838,7 @@
 		return $mailings;
 	}
 
-	get_tracking_number( $order_id ) {
+	function get_tracking_number( $order_id ) {
 		// Check of we een 24-cijferig tracking number dat door SendCloud geannoteerd werd kunnen terugvinden
 		$args = array( 'post_id' => $post_id, 'search' => 'SendCloud' );
 		// Want anders zien we de private opmerkingen niet!
@@ -2847,16 +2847,16 @@
 		if ( count($comments) > 0 ) {
 			$sendcloud_note = $comments[0];
 			preg_match( '/[0-9]{24}/', $sendcloud_note->comment_content, $numbers );
-			$trackin_number = $numbers[0];
+			$tracking_number = $numbers[0];
 		} else {
-			$trackin_number = false;
+			$tracking_number = false;
 		}
 		// Reactiveer filter
 		add_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
-		return $trackin_number;
+		return $tracking_number;
 	}
 
-	get_tracking_link( $order_id ) {
+	function get_tracking_link( $order_id ) {
 		return 'http://track.bpost.be/btr/web/#/search?itemCode='.get_tracking_number( $order_id ).'&lang=nl';
 	}
 	// Voeg een bericht toe bovenaan alle adminpagina's

@@ -27,6 +27,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$text = __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' );
 	if ( get_tracking_number( $order->get_id() ) ) {
 		echo str_replace( 'Een vrijwilliger of een fietskoerier', 'De postcode', $text );
+		echo ' ';
 		printf( __( 'Tracking bij Bpost, inclusief barcode (%1$s) en volglink (%2$s).', 'oxfam-webshop' ), get_tracking_number( $order->get_id() ), get_tracking_link( $order->get_id() ) );
 	} else {
 		echo $text;
