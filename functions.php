@@ -340,7 +340,7 @@
 		global $the_order;
 		if ( $column === 'estimated_delivery' ) {
 			$processing_statusses = array( 'processing', 'claimed' );
-			$completed_statusses = array( 'completed', 'refunded' );
+			$completed_statusses = array( 'completed' );
 			if ( get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ) {
 				$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) );
 				if ( in_array( $the_order->get_status(), $processing_statusses ) ) {
@@ -375,6 +375,10 @@
 			foreach ( $array as $key => $value ) {
 				if ( $key === 'wc-processing' ) {
 					$array = array_slice( $array, 0, $cnt ) + array( 'wc-claimed' => $stored_value ) + array_slice( $array, $cnt, count($array) - $cnt );
+					// Zorg ervoor dat de loop stopt!
+					break;
+				} elseif ( $key === 'wc-completed' ) {
+					$array = array_slice( $array, 0, $cnt-1 ) + array( 'wc-claimed' => $stored_value ) + array_slice( $array, $cnt-1, count($array) - ($cnt-1) );
 					break;
 				}
 				$cnt++;
@@ -765,11 +769,13 @@
 			jQuery( '#in-product_grape-575' ).prop( 'disabled', true );
 			jQuery( '#in-product_grape-574' ).prop( 'disabled', true );
 
+			/* Orderstatus vastzetten */
+			jQuery( '#order_data' ).find( '#order_status' ).prop( 'disabled', true );
+
 			/* Disbable prijswijzigingen bij terugbetalingen */
-			jQuery( '.refund_line_total.wc_input_price' ).prop( 'disabled', true );
-			jQuery( '.refund_line_tax.wc_input_price' ).prop( 'disabled', true );
-			/* Eventueel ook totaalbedrag onbewerkbaar maken */
-			/* jQuery( 'td.total' ).find ( '#refund_amount' ).prop( 'disabled', true ); */
+			jQuery( '#order_line_items' ).find( '.refund_line_total.wc_input_price' ).prop( 'disabled', true );
+			jQuery( '#order_line_items' ).find( '.refund_line_tax.wc_input_price' ).prop( 'disabled', true );
+			jQuery( '.wc-order-totals' ).find ( '#refund_amount' ).prop( 'disabled', true );
 			jQuery( 'label[for=restock_refunded_items]' ).closest( 'tr' ).hide();
 		</script>
 		<?php
