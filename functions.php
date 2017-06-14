@@ -3017,6 +3017,7 @@
 	add_shortcode( 'contact_address', 'get_company_contact' );
 	add_shortcode( 'map_address', 'get_company_address' );
 	add_shortcode( 'email_footer', 'get_company_and_year' );
+	add_shortcode( 'email_header', 'get_local_logo_url' );
 
 	function print_widget_usp() {
 		return do_shortcode('[nm_feature icon="pe-7s-timer" layout="centered" title="'.__( 'Titel van unique selling point in footer', 'oxfam-webshop' ).'"]'.__( 'Inhoud van unique selling point in footer.', 'oxfam-webshop' ).'[/nm_feature]');
@@ -3313,6 +3314,10 @@
 
 	function get_company_and_year() {
 		return '<span style="color: #60646c">'.get_company_name().' &copy; 2016-'.date_i18n('Y').'</span>';
+	}
+
+	function get_local_logo_url() {
+		return get_stylesheet_directory_uri() . '/logo/' . get_option( 'oxfam_shop_node' ) . '.png';
 	}
 
 	function get_oxfam_covered_zips() {
