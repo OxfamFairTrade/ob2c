@@ -32,9 +32,9 @@ foreach ( $items as $item_id => $item ) :
 				echo apply_filters( 'woocommerce_order_item_name', $item->get_name(), $item, false );
 
 				// SKU
-				// GEWIJZIGD: Verwijder hastag voor artikelnummer
-				if ( $show_sku && is_object( $product ) && $product->get_sku() ) {
-					echo ' (art. nr. ' . $product->get_sku() . ')';
+				// GEWIJZIGD: Verwijder hastag en vermeld ShopPlus-referentie i.p.v. ompaknummer
+				if ( $show_sku && is_object( $product ) && $product->get_attribute('shopplus') !== '' ) {
+					echo ' (' . $product->get_attribute('shopplus') . ')';
 				}
 
 				// allow other plugins to add additional product information here
