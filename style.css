@@ -51,12 +51,12 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 }
 .portal.home div.nm-page-wrap-inner > #nm-header {
 	background-color: transparent;
-	height: 300px;
+	height: 200px;
 }
 
 /* Forceer het menu NIET naar een nieuwe regel */
 .portal.home .nm-header.menu-centered .nm-header-logo {
-	// position: absolute;
+	position: absolute;
 }
 
 /* Kleur tekst wit i.p.v. grijs */
@@ -312,7 +312,7 @@ div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::bef
 }
 
 /* Toon een blokje bij producten die niet beschikbaar zijn voor thuislevering */
-li.product.product_shipping_class-glas::after {
+li.product.product_shipping_class-breekbaar::after {
 	color: white;
 	position: absolute;
 	top: 0em;
@@ -326,7 +326,7 @@ li.product.product_shipping_class-glas::after {
 }
 
 /* Toon een bannertje op detailpagina's */
-div.nm-single-product.product_shipping_class-glas figure.woocommerce-product-gallery__wrapper::after {
+div.nm-single-product.product_shipping_class-breekbaar figure.woocommerce-product-gallery__wrapper::after {
 	color: white;
 	position: absolute;
 	top: 0em;
@@ -369,16 +369,16 @@ div.nm-single-product.newbee figure.woocommerce-product-gallery__wrapper::after 
 }
 
 /* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'- en/of 'afhalen'-klasse lager om overlap te vermijden */
-li.product.pa_bio-ja.product_shipping_class-glas::after,
+li.product.pa_bio-ja.product_shipping_class-breekbaar::after,
 li.product.pa_bio-ja.newbee::after,
-div.nm-single-product.pa_bio-ja.product_shipping_class-glas figure.woocommerce-product-gallery__wrapper::after,
+div.nm-single-product.pa_bio-ja.product_shipping_class-breekbaar figure.woocommerce-product-gallery__wrapper::after,
 div.nm-single-product.pa_bio-ja.newbee figure.woocommerce-product-gallery__wrapper::after {
 	top: 2.5em;
 }
 
 li.product.pa_bio-ja:hover::before,
 li.product.newbee:hover::before,
-li.product.product_shipping_class-glas:hover::after {
+li.product.product_shipping_class-breekbaar:hover::after {
 	opacity: 0.7;
 	transition: opacity 1s ease-out 0s;
 }

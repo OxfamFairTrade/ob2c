@@ -516,14 +516,14 @@
 		add_action( 'updated_post_metadata', 'log_product_changes', 100, 4 );
 	}
 	
-	function add_product_revisions( $args ) {
-		$args['supports'][] = 'revisions';
-		return $args;
+	function add_product_revisions( $vars ) {
+		$vars['supports'][] = 'revisions';
+		return $vars;
 	}
 
 	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
 		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
-		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_length', '_width', '_height', '_weight', '_thumbnail_id', '_force_sell_synced_ids', '_barcode', 'excerpt_fr', 'excerpt_en', 'description_fr', 'description_en', '_product_attributes' );
+		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_weight', '_length', '_width', '_height', '_thumbnail_id', '_force_sell_synced_ids', '_barcode', 'title_fr', 'description_fr', 'title_en', 'description_en', '_product_attributes' );
 		// Deze actie vuurt bij 'single value meta keys' enkel indien er een wezenlijke wijziging was, dus check hoeft niet meer
 		if ( get_post_type( $post_id ) === 'product' and in_array( $meta_key, $watched_metas ) ) {
 			// Schrijf weg in log per weeknummer (zonder leading zero's)
