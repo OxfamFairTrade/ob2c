@@ -2600,7 +2600,7 @@
 	
 	function run_product_sync( $post_id ) {
 		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
-		if ( get_post_status( $post_id ) === 'product' ) {
+		if ( get_post_type( $post_id ) === 'product' ) {
 			global $WOO_MSTORE;
 			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ), true );
 		}
@@ -2611,7 +2611,8 @@
 	
 	function update_origin_on_update( $post_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
 		// Enkel uitvoeren indien de partnerinfo van een product bijgewerkt werd
-		if ( get_post_status( $post_id ) === 'product' and $taxonomy === 'product_partner' ) {
+		if ( get_post_type( $post_id ) === 'product' and $taxonomy === 'product_partner' ) {
+			write_log("HERKOMST BIJWERKEN ...");
 			$productje = wc_get_product( $post_id );
 			$countries_nl = get_countries_by_product( $productje );
 			
