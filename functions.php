@@ -2277,12 +2277,16 @@
 				<?php
 			}
 			
+			// Enkel tonen indien percentage bekend 
+			if ( intval( $product->get_attribute( 'pa_fairtrade' ) ) > 40 ) {
 			?>
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 					<th><?php echo 'Fairtradepercentage'; ?></th>
 					<td><?php echo 'Dit product is voor '.number_format( $product->get_attribute( 'pa_fairtrade' ), 0 ).' % afkomstig van '.$str.' waarmee Oxfam-Wereldwinkels een eerlijke handelsrelatie onderhoudt. <a href="https://www.oxfamwereldwinkels.be/nl/certificering" target="_blank">Lees meer over deze certificering op onze website.</a>'; ?></td>
 				</tr>
-			<?php
+			<?php	
+			}
+			
 		} elseif ( $type === 'food' ) {
 			$attributes = $product->get_attributes();
 

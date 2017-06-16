@@ -15,7 +15,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <table class="shop_attributes">
-	<?php foreach ( $attributes as $attribute ) : ?>
+	<?php
+	// Sluit bepaalde zichtbare taxonomiëen toch nog uit (flexibeler!)
+	$forbidden_attributes = array( 'pa_eenheid', 'pa_ompak', 'pa_shopplus' );
+	foreach ( $forbidden_attributes as $name ) {
+		if ( array_key_exists( $name, $attributes ) ) {
+			unset( $attributes[$name] );
+		}
+	}
+	foreach ( $attributes as $attribute ) : ?>
 		<tr>
 			<th><?php echo wc_attribute_label( $attribute->get_name() ); ?></th>
 			<td><?php
