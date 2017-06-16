@@ -197,6 +197,11 @@
 									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
 									jQuery("#oxfam-products").find(".border-color-red").parent().find("select.toggle").val('instock').trigger('change');
 									// SUCCESBOODSCHAP TONEN NA AFLOOP
+									jQuery(this).parent().parent().find(".output").delay(10000).animate({
+							    		opacity: 0,
+							    	}, 1000, function(){
+										jQuery(this).html("&nbsp;").css('opacity', 1);
+									});
 								} else {
 									alert("Begrepen, we wijzigen niets!");
 									jQuery(this).val('');
@@ -208,6 +213,11 @@
 									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
 									jQuery("#oxfam-products").find(".border-color-green").parent().find("select.toggle").val('outofstock').trigger('change');
 									// SUCCESBOODSCHAP TONEN NA AFLOOP
+									jQuery(this).parent().parent().find(".output").delay(10000).animate({
+							    		opacity: 0,
+							    	}, 1000, function(){
+										jQuery(this).html("&nbsp;").css('opacity', 1);
+									});
 								} else {
 									alert("Begrepen, we wijzigen niets!");
 									jQuery(this).val('');
