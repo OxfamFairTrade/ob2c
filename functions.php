@@ -2596,31 +2596,11 @@
 	}
 
 	// Stel de attributen in die berekend moeten worden uit andere waarden BETER VIA ALGEMENE SAVE_POST
-	add_action( 'pmxi_saved_post', 'update_origin_on_update', 10, 1 );
+	// add_action( 'pmxi_saved_post', 'update_origin_on_update', 10, 1 );
 	
 	function update_origin_on_update( $post_id ) {
+		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
 		if ( get_post_status( $post_id ) === 'product' ) {
-			// VEROORZAAKT RARE PROBLEMEN BIJ DE TERMENKOPPELING VAN TAXONOMIEËN
-			// $attribute = new WC_Product_Attribute();
-			// $attribute->set_id(0);
-			// $attribute->set_name('Herkomst');
-			// $attribute->set_options( array( implode( ', ', $countries ) ) );
-			// $attribute->set_position(1000);
-			// $attribute->set_visible(false);
-			// $attribute->set_variation(false);
-			// $attributes = $productje->get_attributes();
-			// // Unieke key, moet overeenkomen met de taxonomie
-			// $attributes['pa_herkomst'] = $attribute;
-			// $pos = 10;
-			// foreach( $attributes as $key => $attribute ) {
-			// 	if ( $key !== 'pa_herkomst' ) {
-			// 		$attribute->set_position($pos);
-			// 		$pos += 10;
-			// 	}
-			// }
-			// $productje->set_attributes( $attributes );
-			// $productje->save();
-			
 			$productje = wc_get_product( $post_id );
 			$countries_nl = get_countries_by_product( $productje );
 			
@@ -2643,6 +2623,10 @@
 				sort($countries_en, SORT_STRING);
 				update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
 			}
+
+			// Zorg dat productsynchronisatie ook werkt via WP All Import
+			global $WOO_MSTORE;
+			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ) );
 		}
 	}
 
@@ -2656,19 +2640,8 @@
 		return $en[$code];
 	}
 
-	// Zorg dat productsynchronisatie ook werkt via WP All Import
-	add_action( 'pmxi_saved_post', 'force_update_product', 20, 1 );
-
-	function force_update_product( $post_id ) {
-		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
-		if ( get_post_type() === 'product' ) {
-			global $WOO_MSTORE;
-			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ) );
-		}
-	}
-
 	// Doe leuke dingen voor de start van een WP All Import
-	add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
+	// add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
 	
 	function before_xml_import( $import_id ) {
 		if ( $import_id == 5 ) {
@@ -2692,7 +2665,7 @@
 	}
 
 	// Doe leuke dingen na afloop van een WP All Import
-	add_action('pmxi_after_xml_import', 'after_xml_import', 10, 1);
+	// add_action('pmxi_after_xml_import', 'after_xml_import', 10, 1);
 	
 	function after_xml_import($import_id) {
 		if ( $import_id == 2 ) {
