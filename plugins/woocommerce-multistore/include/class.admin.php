@@ -251,7 +251,7 @@
                                     $blog_details   =   get_blog_details($network_site->blog_id);
                                     
                                     // GEWIJZIGD: Check of het moederproduct geen concept is
-                                    $default = ( get_post_status( $post_id ) === 'publish' ) ? 'yes' : '';
+                                    $default = ( get_post_status( $post_id ) === 'publish' ) ? '' : '';
                                     
                                     // GEWIJZIGD: SOWIESO OP 'YES' ZETTEN INDIEN GEPUBLICEERD
                                     $_woonet_publish_to = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] : $default;
