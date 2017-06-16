@@ -250,14 +250,10 @@
                                     
                                     $blog_details   =   get_blog_details($network_site->blog_id);
                                     
-                                    // GEWIJZIGD: Check of we bezig zijn met een WP All Import en het product eerder eerder al gepublishd werd
-                                    $go = ( $pmxi and get_post_meta( '_woonet_network_main_product', $post_id, true ) ) ? 'yes' : '';
-                                    // GEWIJZIGD: Check of het moederproduct geen concept is
-                                    $default = ( get_post_status( $post_id ) === 'publish' ) ? $go : '';
-                                    
-                                    // GEWIJZIGD: SOWIESO OP 'YES' ZETTEN INDIEN GEPUBLICEERD
+                                    // GEWIJZIGD: Check of we bezig zijn met een WP All Import, of het moederproduct geen concept is en of het product eerder al gepublishd werd in deze webshop (zo ja: publiceren, tenzij anders ingesteld in REQUEST)
+                                    $default = ( $pmxi and get_post_status( $post_id ) === 'publish' and get_post_meta( $post_id, '_woonet_publish_to_'.$network_site->blog_id, true ) === 'yes' ) ? 'yes' : '';
                                     $_woonet_publish_to = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] : $default;
-                                    // GEWIJZIGD: SOWIESO OP 'YES' ZETTEN INDIEN GEPUBLICEERD
+                                    // GEWIJZIGD: Altijd in overeenstemming brengen met vorige parameter (tenzij anders ingesteld in REQUEST)
                                     $_woonet_publish_to_child_inherit = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id.'_child_inheir'] : $default;
                                     $_woonet_child_stock_synchronize    =   isset($_REQUEST['_woonet_'. $network_site->blog_id .'_child_stock_synchronize'])  ?    $_REQUEST['_woonet_'. $network_site->blog_id .'_child_stock_synchronize']    :   '';
                                     
