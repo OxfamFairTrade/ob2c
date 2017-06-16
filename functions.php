@@ -57,11 +57,14 @@
 		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/admin.css' );
 	}
 
-	// Fix het conflict met WP All Export bij het connecteren van Jetpack met Wordpress.com
+	// Fixes i.v.m. cURL
 	add_action( 'http_api_curl', 'custom_curl_timeout', 10, 3 );
 	
 	function custom_curl_timeout( $handle, $r, $url ) {
+		// Fix error 28 - Operation timed out after 10000 milliseconds with 0 bytes received (bij het connecteren van Jetpack met Wordpress.com)
 		curl_setopt( $handle, CURLOPT_TIMEOUT, 30 );
+		// Fix error 60 - SSL certificate problem: unable to get local issuer certificate (bij het downloaden van een CSV in WP All Import)
+		curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
