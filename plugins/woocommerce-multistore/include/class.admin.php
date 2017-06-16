@@ -231,7 +231,7 @@
              * @param integer $post_id
              * @param WC_Product $product
              */
-            public function quick_edit_save( $post_id, $post ) 
+            public function quick_edit_save( $post_id, $post, $pmxi = false ) 
                 {
                     global $blog_id;
                     
@@ -250,8 +250,10 @@
                                     
                                     $blog_details   =   get_blog_details($network_site->blog_id);
                                     
+                                    // GEWIJZIGD: Check of we bezig zijn met een WP All Import en het product eerder eerder al gepublishd werd
+                                    $go = ( $pmxi and get_post_meta( '_woonet_network_main_product', $post_id, true ) ) ? 'yes' : '';
                                     // GEWIJZIGD: Check of het moederproduct geen concept is
-                                    $default = ( get_post_status( $post_id ) === 'publish' ) ? '' : '';
+                                    $default = ( get_post_status( $post_id ) === 'publish' ) ? $go : '';
                                     
                                     // GEWIJZIGD: SOWIESO OP 'YES' ZETTEN INDIEN GEPUBLICEERD
                                     $_woonet_publish_to = isset( $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] ) ? $_REQUEST['_woonet_publish_to_'.$network_site->blog_id] : $default;

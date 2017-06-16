@@ -2626,7 +2626,7 @@
 
 			// Zorg dat productsynchronisatie ook werkt via WP All Import
 			global $WOO_MSTORE;
-			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ) );
+			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ), true );
 		}
 	}
 
