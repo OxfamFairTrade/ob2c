@@ -2595,16 +2595,27 @@
 		return $ignored_fields;
 	}
 
-	// Stel de attributen in die berekend moeten worden uit andere waarden BETER VIA ALGEMENE SAVE_POST
-	// add_action( 'pmxi_saved_post', 'update_origin_on_update', 10, 1 );
+	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import (hoge prioriteit = helemaal op het einde)
+	add_action( 'pmxi_saved_post', 'run_product_sync', 50, 1 );
 	
-	function update_origin_on_update( $post_id ) {
+	function run_product_sync( $post_id ) {
 		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
 		if ( get_post_status( $post_id ) === 'product' ) {
+			global $WOO_MSTORE;
+			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ), true );
+		}
+	}
+
+	// Stel de attributen in die berekend moeten worden uit andere waarden
+	add_action( 'set_object_terms', 'update_origin_on_update', 50, 6 );
+	
+	function update_origin_on_update( $post_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
+		// Enkel uitvoeren indien de partnerinfo van een product bijgewerkt werd
+		if ( get_post_status( $post_id ) === 'product' and $taxonomy === 'product_partner' ) {
 			$productje = wc_get_product( $post_id );
 			$countries_nl = get_countries_by_product( $productje );
 			
-			// Check of er al herkomstinfo beschikbaar is
+			// Check of er wel herkomstinfo beschikbaar is
 			if ( $countries_nl !== false ) {
 				update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
 			
@@ -2623,12 +2634,8 @@
 				sort($countries_en, SORT_STRING);
 				update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
 			}
-
-			// Zorg dat productsynchronisatie ook werkt via WP All Import
-			global $WOO_MSTORE;
-			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ), true );
 		}
-	}
+	}	
 
 	function translate_to_fr( $code ) {
 		$fr = get_site_option( 'countries_fr' );
