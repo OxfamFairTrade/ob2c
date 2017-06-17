@@ -162,7 +162,7 @@ div.nm-single-product {
 }
 
 /* Lijstjes netjes laten inspringen */
-.page-template-default .entry-content .wpb_text_column ul > li {
+.page-template-default .wpb_text_column ul > li {
 	list-style-position: outside;
 	margin-left: 3em;
 	margin-bottom: 1em;
