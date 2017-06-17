@@ -2578,18 +2578,20 @@
 
 	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
 		$ignored_fields[] = 'total_sales';
+		$ignored_fields[] = '_stock';
+		$ignored_fields[] = '_stock_status';
 		$ignored_fields[] = '_wc_review_count';
 		$ignored_fields[] = '_wc_rating_count';
 		$ignored_fields[] = '_wc_average_rating';
 		$ignored_fields[] = '_barcode';
-		$ignored_fields[] = 'excerpt_fr';
-		$ignored_fields[] = 'excerpt_en';
+		$ignored_fields[] = 'title_fr';
 		$ignored_fields[] = 'description_fr';
+		$ignored_fields[] = '_herkomst_fr';
+		$ignored_fields[] = 'title_en';
 		$ignored_fields[] = 'description_en';
+		$ignored_fields[] = '_herkomst_en';
 		$ignored_fields[] = '_barcode';
 		$ignored_fields[] = '_in_bestelweb';
-		$ignored_fields[] = '_herkomst_fr';
-		$ignored_fields[] = '_herkomst_en';
 		$ignored_fields[] = 'pal_aantallagen';
 		$ignored_fields[] = 'pal_aantalperlaag';
 		$ignored_fields[] = 'steh_ean';
@@ -2622,20 +2624,22 @@
 			if ( $countries_nl !== false ) {
 				update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
 			
-				foreach ( $countries_nl as $country ) {
-					$nl = get_site_option( 'countries_nl' );
-					$code = array_search( $country, $nl, true );
-					// We hebben een geldige landencode gevonden
-					if ( strlen($code) === 3 ) {
-						$countries_fr[] = translate_to_fr( $code );
-						$countries_en[] = translate_to_en( $code );
+				if ( is_main_site() ) {
+					foreach ( $countries_nl as $country ) {
+						$nl = get_site_option( 'countries_nl' );
+						$code = array_search( $country, $nl, true );
+						// We hebben een geldige landencode gevonden
+						if ( strlen($code) === 3 ) {
+							$countries_fr[] = translate_to_fr( $code );
+							$countries_en[] = translate_to_en( $code );
+						}
 					}
-				}
 
-				sort($countries_fr, SORT_STRING);
-				update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
-				sort($countries_en, SORT_STRING);
-				update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
+					sort($countries_fr, SORT_STRING);
+					update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
+					sort($countries_en, SORT_STRING);
+					update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
+				}
 			}
 		}
 	}	
