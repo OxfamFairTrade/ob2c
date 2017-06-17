@@ -2327,12 +2327,10 @@
 			$has_row = true;
 			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 
-			$label_c = get_term_by( 'id', '615', 'product_allergen' )->name;
-			$label_mc = get_term_by( 'id', '616', 'product_allergen' )->name;
 			foreach ( $allergens as $allergen ) {
-				if ( $allergen->parent === 615 ) {
+				if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'c' ) {
 					$contains[] = $allergen;
-				} else {
+				} elseif ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'mc' ) {
 					$traces[] = $allergen;
 				}
 			}
@@ -2652,11 +2650,11 @@
 		return $en[$code];
 	}
 
-	// Doe leuke dingen voor de start van een WP All Import
-	// add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
+	// Reset alle '_in_bestelweb' velden voor we aan de ERP-import beginnen
+	add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
 	
 	function before_xml_import( $import_id ) {
-		if ( $import_id == 5 ) {
+		if ( $import_id == 7 ) {
 			// Zet de key '_in_bestelweb' van alle producten op nee
 			$args = array(
 				'post_type'			=> 'product',
@@ -2676,56 +2674,11 @@
 		}
 	}
 
-	// Doe leuke dingen na afloop van een WP All Import
-	// add_action('pmxi_after_xml_import', 'after_xml_import', 10, 1);
+	// Zet producten die onaangeroerd bleven door de ERP-import uit voorraad
+	add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
 	
-	function after_xml_import($import_id) {
-		if ( $import_id == 2 ) {
-			// Trash de hoofdproducten die de waarde 'naar_prullenmand' meekregen tijdens de import (moet lukken in één query zolang het om een paar 100 producten gaat)
-			$args = array(
-				'post_type'			=> 'product',
-				// Want WP_Query vraagt buiten de adminomgeving (zoals een cron) normaal enkel gepubliceerde posts op!
-				'post_status'		=> array( 'publish', 'draft' ),
-				'posts_per_page'	=> -1,
-				'meta_key'			=> 'naar_prullenmand', 
-				'meta_value'		=> 'ja',
-				'meta_compare'		=> '=',
-			);
-
-			$trashers = new WP_Query( $args );
-			
-			if ( $trashers->have_posts() ) {
-				while ( $trashers->have_posts() ) {
-					$trashers->the_post();
-					// Normale producten verwijzen we eerst naar de prullenmand
-					wp_trash_post( get_the_ID() );
-					write_log( "ART. NR. ".get_post_meta( get_the_ID(), '_sku', true )." VERPLAATST NAAR PRULLENMAND" );
-				}
-				wp_reset_postdata();
-			}
-
-			// Verwijder de key 'naar_prullenmand' van producten die succesvol getrashed zijn, ook als dat al tijdens een eerdere import gebeurde!
-			$args = array(
-				'post_type'			=> 'product',
-				'post_status'		=> array( 'trash' ),
-				'posts_per_page'	=> -1,
-				'meta_key'			=> 'naar_prullenmand', 
-				'meta_value'		=> 'ja',
-				'meta_compare'		=> '=',
-			);
-
-			$trashed = new WP_Query( $args );
-
-			if ( $trashed->have_posts() ) {
-				while ( $trashed->have_posts() ) {
-					$trashed->the_post();
-					delete_post_meta( get_the_ID(), 'naar_prullenmand' );
-				}
-				wp_reset_postdata();
-			}
-		}
-
-		if ( $import_id == 5 ) {
+	function after_xml_import( $import_id ) {
+		if ( $import_id == 7 ) {
 			// Vind alle producten waarvan de key '_in_bestelweb' onaangeroerd is (= zat niet in Odisy-import)
 			$args = array(
 				'post_type'			=> 'product',
