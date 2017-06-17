@@ -1549,7 +1549,8 @@
                     $terms = get_terms($taxonomy, $argv);
                     foreach($terms  as  $term)
                         {
-                            if( strtolower(trim((string)$term_name ))   ==  strtolower(trim( (string)$term->name)) )
+                            // GEWIJZIGD: Verwijder de slashes in de nieuwe term, om goed te kunnen vergelijken met de bestaande (en miserie met Pinda's te vermijden)
+                        	if ( strtolower( wp_unslash( trim( (string)$term_name ) ) ) == strtolower( trim( (string)$term->name ) ) )
                                 return $term->term_id;
                         }
                         

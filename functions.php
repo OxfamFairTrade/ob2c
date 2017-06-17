@@ -2815,14 +2815,14 @@
 		// var_dump($screen);
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
 			echo '<div class="notice notice-error">';
-			echo '<p>De aanmaak van de lokale webshops heeft twee weken vertraging opgelopen, onze excuses. Ook de handleiding zijn we nog aan het uitschrijven. Tegen 15 juni zal iedereen zijn login ontvangen. Vanaf dan kun je als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen eind juni publiek te zetten.</p>';
+			echo '<p>Dit weekend zal iedereen zijn login ontvangen. Vanaf dan kun je als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen eind juni publiek te zetten.</p>';
 			echo '</div>';
-			echo '<div class="notice notice-info">';
+			// echo '<div class="notice notice-info">';
 			// echo '<p>Download <a href="http://demo.oxfamwereldwinkels.be/wp-content/uploads/verzendtarieven-B2C-pakketten.pdf" target="_blank">de nota met tarieven en voorwaarden</a> bij externe verzending via Bpost. Aangezien geen enkele groep aangaf interesse te hebben in verzending via Bubble Post (waar mogelijk) stoppen we geen werk meer in de integratie met hun systemen.</p>';
-			echo '<p>Goed nieuws: van de BTW-lijn kregen we te horen dat we 6% BTW mogen rekenen op thuisleveringen (bijzaak volgt hoofdzaak). Enkel indien de bestelling <u>volledig</u> uit voedingsproducten aan standaard BTW-tarief bestaat (= alcoholische dranken) moeten we ook 21% BTW rekenen op de verzending. We passen de prijs voor de consument voorlopig niet aan, dus in de praktijk zal de winkel doorgaans 6,56 i.p.v. 5,74 euro netto overhouden. Dit geeft wat meer ruimte om te investeren in fietskoeriers en/of degelijk verpakkingsmateriaal.</p>';
-			echo '</div>';
+			// echo '<p>Goed nieuws: van de BTW-lijn kregen we te horen dat we 6% BTW mogen rekenen op thuisleveringen (bijzaak volgt hoofdzaak). Enkel indien de bestelling <u>volledig</u> uit voedingsproducten aan standaard BTW-tarief bestaat (= alcoholische dranken) moeten we ook 21% BTW rekenen op de verzending. We passen de prijs voor de consument voorlopig niet aan, dus in de praktijk zal de winkel doorgaans 6,56 i.p.v. 5,74 euro netto overhouden. Dit geeft wat meer ruimte om te investeren in fietskoeriers en/of degelijk verpakkingsmateriaal.</p>';
+			// echo '</div>';
 			echo '<div class="notice notice-info">';
-			echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW te scannen (omdat de bestellingen enkel producten aan 21% BTW bevat, zie hierboven) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
+			echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-success">';
 			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
@@ -3366,13 +3366,13 @@
 	    return $query;
 	}
 
-	// Toon de bestsellers op zoekpagina's zonder resultaten IETS MEER NAAR BOVEN VERPLAATSEN?
-	add_action( 'woocommerce_after_main_content', 'add_bestsellers' );
+	// Toon de bestsellers op zoekpagina's zonder resultaten MOET MEER NAAR BOVEN + VERSCHIJNT OOK ALS ER WEL RESULTATEN ZIJN
+	// add_action( 'woocommerce_after_main_content', 'add_bestsellers' );
 
 	function add_bestsellers() {
 		global $wp_query;
 		if ( is_search() and $wp_query->found_posts == 0 ) {
-			echo do_shortcode('[vc_row css=".vc_custom_1487859300634{padding-top: 25px !important;padding-bottom: 25px !important;}"][vc_column][vc_text_separator title="<h2>Werp een blik op onze bestsellers ...</h2>" i_icon_fontawesome="fa fa-star" i_color="black" add_icon="true" css=".vc_custom_1487854440279{padding-bottom: 25px !important;}"][best_selling_products per_page="10" columns="5" orderby="rand"][/vc_column][/vc_row]');
+			echo do_shortcode('[vc_row css=".vc_custom_1487859300634{padding-top: 25px !important;padding-bottom: 25px !important;}"][vc_column][vc_text_separator title="<h2>Werp een blik op onze bestsellers ...</h2>" css=".vc_custom_1487854440279{padding-bottom: 25px !important;}"][best_selling_products per_page="10" columns="5" orderby="rand"][/vc_column][/vc_row]');
 		}
 	}
 
