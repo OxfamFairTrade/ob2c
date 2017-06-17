@@ -2328,9 +2328,9 @@
 			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 
 			foreach ( $allergens as $allergen ) {
-				if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'c' ) {
+				if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'contains' ) {
 					$contains[] = $allergen;
-				} elseif ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'mc' ) {
+				} elseif ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'may-contain' ) {
 					$traces[] = $allergen;
 				}
 			}
