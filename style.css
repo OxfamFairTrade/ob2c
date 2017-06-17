@@ -31,7 +31,7 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 .nm-header.menu-centered .nm-header-logo .winkelnaam {
 	vertical-align: middle;
     position: relative;
-    top: 6px;
+    top: 4px;
 	margin-left: 1em;
 	padding: 0.25em 1em;
 	font-size: 125%;
@@ -497,7 +497,7 @@ div.nm-feature.layout-centered {
 	}
 }
 
-@media (max-width: 1250px) {
+@media (max-width: 1024px) {
 	/* Reset naar standaard mobiele weergave */
 	body:not(.portal) .nm-header.menu-centered .nm-header-logo {
 		width: 25%;
@@ -510,9 +510,7 @@ div.nm-feature.layout-centered {
 	body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 		left: 0;
 	}
-}
 
-@media (max-width: 1024px) {
 	.nm-footer-bar-logo.betaalmethodes {
 		margin-top: 10px;
 	}
@@ -533,7 +531,6 @@ div.nm-feature.layout-centered {
 		padding: 0.25em 1em;
 		font-size: 110%;
 		line-height: 110%;
-		top: 3px;
 	}
 
 	li.widget.widget_text {

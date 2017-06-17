@@ -731,7 +731,7 @@
 			?>
 				<script>
 					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').prop('readonly', true);
-					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
+					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description"> De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
 				</script>
 			<?php
 		}
@@ -744,18 +744,18 @@
 		?>
 		<script>
 			/* Disable hoofdcategorieën */
-			jQuery( '#in-product_cat-447' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-477' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-420' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-550' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-407' ).prop( 'disabled', true );
-
+			jQuery( '#in-product_cat-200' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-204' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-210' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-213' ).prop( 'disabled', true );
+			jQuery( '#in-product_cat-224' ).prop( 'disabled', true );
+			
 			/* Disable continenten */
-			jQuery( '#in-product_partner-828' ).prop( 'disabled', true );
-			jQuery( '#in-product_partner-829' ).prop( 'disabled', true );
-			jQuery( '#in-product_partner-830' ).prop( 'disabled', true );
-			jQuery( '#in-product_partner-831' ).prop( 'disabled', true );
-
+			jQuery( '#in-product_partner-162' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-163' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-164' ).prop( 'disabled', true );
+			jQuery( '#in-product_partner-165' ).prop( 'disabled', true );
+			
 			/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
 			jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]:checked' ).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', true );
 
@@ -765,12 +765,12 @@
 			});
 
 			/* Disable allergeenklasses */
-			jQuery( '#in-product_allergen-615' ).prop( 'disabled', true );
-			jQuery( '#in-product_allergen-616' ).prop( 'disabled', true );
+			jQuery( '#in-product_allergen-170' ).prop( 'disabled', true );
+			jQuery( '#in-product_allergen-171' ).prop( 'disabled', true );
 
 			/* Disable rode en witte druiven */
-			jQuery( '#in-product_grape-575' ).prop( 'disabled', true );
-			jQuery( '#in-product_grape-574' ).prop( 'disabled', true );
+			jQuery( '#in-product_grape-1724' ).prop( 'disabled', true );
+			jQuery( '#in-product_grape-1725' ).prop( 'disabled', true );
 
 			/* Orderstatus vastzetten */
 			jQuery( '#order_data' ).find( '#order_status' ).prop( 'disabled', true );
