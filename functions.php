@@ -2953,6 +2953,7 @@
 	add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_shops', 'print_store_selector' );
 	add_shortcode( 'toon_kaart', 'print_store_locator_map' );
+	add_shortcode( 'toon_thuislevering', 'print_delivery_snippet' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
 	add_shortcode( 'scrolltext', 'print_scroll_text' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
@@ -3105,6 +3106,14 @@
 		// Verhinderen cachen van KML-bestand
 		// Eventuele styling: maptype='light_monochrome'
 		return do_shortcode("[flexiblemap src='".content_url('/maps/global.kml')."' width='100%' height='600px' zoom='9' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
+	}
+
+	function print_delivery_snippet() {
+		$msg = "";
+		if ( does_home_delivery() ) {
+			$msg = "Heb je gekozen voor levering? Dan staan we maximaal 3 werkdagen later met je pakje op je stoep.";
+		}
+		return $msg;
 	}
 
 	function print_store_map() {
