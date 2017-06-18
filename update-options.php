@@ -49,7 +49,7 @@
 
 						if ( count($lacking) > 0 ) {
 							echo "<tr>";
-								echo "<th class='left' style='color: red;'>Activeer dringend volgende verplichte betaalmethodes:</th>";
+								echo "<th class='left' style='color: red;'>Activeer volgende verplichte betaalmethodes:</th>";
 								echo "<td class='right'>";
 									foreach ( $lacking as $service ) {
 										echo strtoupper($service)."&nbsp;&nbsp;&nbsp;";
@@ -64,7 +64,7 @@
 						if ( get_company_name() != trim_and_uppercase($profiles->items->profile->name) ) {
 							$name_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
-						if ( get_oxfam_shop_data( 'telephone' ) != format_telephone( $profiles->items->profile->phone, '.' ) ) {
+						if ( get_oxfam_shop_data( 'telephone' ) != format_telephone( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
 							$phone_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
 						}
 						if ( get_company_email() != $profiles->items->profile->email ) {
@@ -76,7 +76,7 @@
 					// echo "<pre>".var_export($accounts, true)."</pre>";
 					if ( $accounts->resultcode == '10' ) {
 						if ( get_oxfam_shop_data( 'account' ) != $accounts->bankaccount->account_iban ) {
-							$account_warning = "<br><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geregistreerd!</small>";
+							$account_warning = "<br><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geverifieerd!</small>";
 						}
 					}
 				} else {

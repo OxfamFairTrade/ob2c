@@ -3162,13 +3162,22 @@
 		return get_option( 'oxfam_zip_codes' );
 	}
 
-	function is_regional_webshop() {
-		return get_option( 'oxfam_member_shops' );
+	function does_sendcloud_delivery() {
+		if ( does_home_delivery() ) {
+			$sendcloud_zone_id = 3;
+			$zone = new WC_Shipping_Zone( $sendcloud_zone_id );
+			if ( count( $zone->get_shipping_methods( true ) ) > 0 ) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
-	// Voorlopig nog identiek aan vorige functie, maar dat kan nog veranderen!
-	function does_sendcloud_delivery() {
-		return get_option( 'oxfam_zip_codes' );
+	function is_regional_webshop() {
+		return get_option( 'oxfam_member_shops' );
 	}
 
 	function get_oxfam_shop_data( $key, $node = 0 ) {
