@@ -1206,7 +1206,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 		$this->load_pickup_locations();
 
 		echo '<tr class="pickup_location">';
-		echo '<th colspan="1">' . ( 1 == count( $this->pickup_locations ) ? __( 'Your Pickup Location', 'woocommerce-shipping-local-pickup-plus'  ) : __( 'Choose Pickup Location', 'woocommerce-shipping-local-pickup-plus' ) . ' <abbr class="required" title="required" style="border:none;">*</abbr>' ) . '</th>';
+		echo '<th colspan="1">' . ( 1 == count( $this->pickup_locations ) ? __( 'Your Pickup Location', 'woocommerce-shipping-local-pickup-plus'  ).':' : __( 'Choose Pickup Location', 'woocommerce-shipping-local-pickup-plus' ) . ' <abbr class="required" title="required" style="border:none;">*</abbr>' ) . '</th>';
 		echo '<td class="update_totals_on_change">';
 
 		do_action( 'woocommerce_review_order_before_local_pickup_location', $this->pickup_locations, array(), $package_index );
