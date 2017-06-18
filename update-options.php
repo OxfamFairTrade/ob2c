@@ -28,7 +28,7 @@
 				// Check of we niet op de hoofdaccount zitten, want anders fatale API-error
 				if ( $partner_id_customer != 2485891 and $partner_id_customer > 2000000 ) {
 					echo "<tr>";
-						echo "<th class='left'><a href='https://login.microsoftonline.com/' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>";
+						echo "<th class='left'><a href='https://outlook.office.com' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>";
 						echo "<td class='right'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>";
 					echo "</tr>";
 

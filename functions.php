@@ -64,7 +64,7 @@
 		// Fix error 28 - Operation timed out after 10000 milliseconds with 0 bytes received (bij het connecteren van Jetpack met Wordpress.com)
 		curl_setopt( $handle, CURLOPT_TIMEOUT, 30 );
 		// Fix error 60 - SSL certificate problem: unable to get local issuer certificate (bij het downloaden van een CSV in WP All Import)
-		curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
+		// curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
