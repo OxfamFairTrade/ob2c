@@ -2704,6 +2704,11 @@
 				}
 				wp_reset_postdata();
 			}
+
+			// Hernoem het importbestand zodat we een snapshot krijgen dat niet overschreven wordt
+			$old = WP_CONTENT_DIR."/erp-import.csv";
+			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
+			rename( $old, $new );
 		}
 	}
 
