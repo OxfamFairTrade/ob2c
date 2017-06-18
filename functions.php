@@ -2823,9 +2823,9 @@
 		$screen = get_current_screen();
 		// var_dump($screen);
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
-			echo '<div class="notice notice-error">';
-			echo '<p>Dit weekend zal iedereen zijn login ontvangen. Vanaf dan kun je als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen eind juni publiek te zetten.</p>';
-			echo '</div>';
+			// echo '<div class="notice notice-error">';
+			// echo '<p>Alle logins zijn verstuurd naar de lokale beheerders. Op dit moment kun je enkel als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen eind juni publiek te zetten.</p>';
+			// echo '</div>';
 			// echo '<div class="notice notice-info">';
 			// echo '<p>Download <a href="http://demo.oxfamwereldwinkels.be/wp-content/uploads/verzendtarieven-B2C-pakketten.pdf" target="_blank">de nota met tarieven en voorwaarden</a> bij externe verzending via Bpost. Aangezien geen enkele groep aangaf interesse te hebben in verzending via Bubble Post (waar mogelijk) stoppen we geen werk meer in de integratie met hun systemen.</p>';
 			// echo '<p>Goed nieuws: van de BTW-lijn kregen we te horen dat we 6% BTW mogen rekenen op thuisleveringen (bijzaak volgt hoofdzaak). Enkel indien de bestelling <u>volledig</u> uit voedingsproducten aan standaard BTW-tarief bestaat (= alcoholische dranken) moeten we ook 21% BTW rekenen op de verzending. We passen de prijs voor de consument voorlopig niet aan, dus in de praktijk zal de winkel doorgaans 6,56 i.p.v. 5,74 euro netto overhouden. Dit geeft wat meer ruimte om te investeren in fietskoeriers en/of degelijk verpakkingsmateriaal.</p>';
@@ -2846,9 +2846,14 @@
 			// echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
 			// echo '</div>';
 		}
-		if ( $pagenow === 'admin.php' and $screen->parent_base === 'oxfam-products-photos' or $screen->parent_base === 'oxfam-products-list' ) {
-			echo '<div class="notice notice-info">';
-			echo '<p>Bovenaan de compacte lijstweergave vind je vanaf nu een knop om alle producten in of uit voorraad te zetten. Opgelet: deze bulkbewerking kan bij veel wijzigingen enkele tientallen seconden in beslag nemen.</p>';
+		if ( $pagenow === 'admin.php' and $screen->parent_base === 'oxfam-products-photos' ) {
+			echo '<div class="notice notice-success">';
+			echo '<p>Bovenaan de compacte lijstweergave vind je vanaf nu een knop om alle producten in of uit voorraad te zetten.</p>';
+			echo '</div>';
+		}
+		if ( $pagenow === 'admin.php' and $screen->parent_base === 'oxfam-products-list' ) {
+			echo '<div class="notice notice-error">';
+			echo '<p>Opgelet: de bulkbewerking om alle producten in voorraad te zetten kan enkele tientallen seconden in beslag nemen!</p>';
 			echo '</div>';
 		}
 	}
