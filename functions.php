@@ -1538,7 +1538,7 @@
 		// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
 		$forbidden_cnt = 0;
 		foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
-			if ( $item_value['data']->get_shipping_class() === 'glas' ) {
+			if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
 				$forbidden_cnt = $forbidden_cnt + $item_value['quantity'];
 			} 
 		}
@@ -2008,12 +2008,12 @@
 	}
 
 	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
-	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-glas
+	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-breekbaar
 	add_action( 'woocommerce_single_product_summary', 'show_delivery_warning', 45 );
 
 	function show_delivery_warning() {
 		global $product;
-		if ( $product->get_shipping_class() === 'glas' ) {
+		if ( $product->get_shipping_class() === 'breekbaar' ) {
 			echo "Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: kleine glazen flesjes en tetrabrikken zijn wel beschikbaar voor thuislevering.";
 		}
 	}
