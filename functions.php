@@ -1034,7 +1034,12 @@
 
 	function format_hour( $value ) {
 		// Is al behoorlijk clean bij XIO (ingesteld via selects)
-		return substr($value, 0, 2) . ':' . substr($value, 2, 2);
+		if ( strlen($value) === 4 ) {
+			return substr($value, 0, 2) . ':' . substr($value, 2, 2);
+		} else {
+			// Rekening houden met ochtenduren!
+			return substr($value, 0, 1) . ':' . substr($value, 1, 2);
+		}
 	}
 
 	// Verduidelijk de profiellabels in de back-end	
