@@ -3120,7 +3120,7 @@
 		<?php
 		// Verhinderen cachen van KML-bestand
 		// Eventuele styling: maptype='light_monochrome'
-		return do_shortcode("[flexiblemap src='".content_url('/maps/global.kml')."' width='100%' height='600px' zoom='9' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
+		return do_shortcode("[flexiblemap src='".content_url('/maps/global.kml')."' width='100%' height='600px' zoom='9' hidemaptype='true' hidescale='false' kmlcache='1 hours' locale='nl-BE' id='map-oxfam']");
 	}
 
 	function print_delivery_snippet() {
