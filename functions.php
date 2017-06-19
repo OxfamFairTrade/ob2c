@@ -2,6 +2,28 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
+	// Verhinder bekijken door niet-ingelogde bezoekers
+	add_action( 'init', 'v_forcelogin' );
+	
+	function v_forcelogin() {
+		if ( ! is_user_logged_in() ) {
+			$url = v_get_url();
+			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
+			if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) ) {
+				wp_safe_redirect( wp_login_url( $redirect_url ), 302 );
+				exit();
+			}
+		}
+	}
+
+	function v_get_url() {
+		$url = isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ? 'https' : 'http';
+		$url .= '://' . $_SERVER['SERVER_NAME'];
+		$url .= in_array( $_SERVER['SERVER_PORT'], array('80', '443') ) ? '' : ':' . $_SERVER['SERVER_PORT'];
+		$url .= $_SERVER['REQUEST_URI'];
+		return $url;
+	}
+	
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
 	$content_width = 1500;
 
