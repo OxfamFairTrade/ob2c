@@ -2846,12 +2846,12 @@
 			// echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
 			// echo '</div>';
 		}
-		if ( $pagenow === 'admin.php' and $screen->parent_base === 'oxfam-products-photos' ) {
+		if ( $pagenow === 'admin.php' and stristr( $screen->base, 'oxfam-products-photos' ) ) {
 			echo '<div class="notice notice-success">';
 			echo '<p>Bovenaan de compacte lijstweergave vind je vanaf nu een knop om alle producten in of uit voorraad te zetten.</p>';
 			echo '</div>';
 		}
-		if ( $pagenow === 'admin.php' and $screen->parent_base === 'oxfam-products-list' ) {
+		if ( $pagenow === 'admin.php' and stristr( $screen->base, 'oxfam-products-list' ) ) {
 			echo '<div class="notice notice-error">';
 			echo '<p>Opgelet: de bulkbewerking om alle producten in voorraad te zetten kan enkele tientallen seconden in beslag nemen!</p>';
 			echo '</div>';
