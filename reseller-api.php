@@ -26,7 +26,7 @@
 	// Instantiate Mollie class
 	$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 	
-	switch_to_blog( 10 );
+	switch_to_blog( 33 );
 
 	try {
 		// Parameters op te halen uit site
@@ -35,8 +35,8 @@
 		$address = get_oxfam_shop_data('place');
 		$zip = get_oxfam_shop_data('zipcode');
 		$city = get_oxfam_shop_data('city');
-		// $phone = '32'.substr( get_oxfam_shop_data('telephone'), 1 );
-		$phone = '3292822463';
+		$phone = '32'.substr( get_oxfam_shop_data('telephone'), 1 );
+		// $phone = '3292822463';
 		$email = get_bloginfo('admin_email');
 		$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
 		$headquarter = get_oxfam_shop_data('headquarter');
@@ -50,12 +50,15 @@
 		$url = get_bloginfo('url');
 		
 		// Parameters handmatig in te vullen
-		$login = 'owwdepinte';
-		$name = 'Jos Dekeukeleire';
-		$representative = 'Jos Dekeukeleire';
-		$bic = 'AXABBE22';
-		// $bic = 'GEBABEBB';
+		$login = 'owwtorhout';
+		$name = 'Katrien Vanneste';
+		$representative = 'Bart Ameel';
+		// $bic = 'AXABBE22';
+		$bic = 'GEBABEBB';
 		// $bic = 'GKCCBEBB';
+		// $bic = 'HBKABE22';
+		// $bic = 'KREDBEBB';
+		// $bic = 'VDSPBE91';
 
 		// Lijken toch niet noodzakelijk te zijn: 'bankaccount_bankname' => 'BNP Paribas Fortis', 'bankaccount_location' => 'Brussel'
 		$parameters = array( 
@@ -78,11 +81,13 @@
 			'bankaccount_bic' => $bic, 
 		);
 
+		echo '<pre>'.var_export($parameters, true).'</pre>';
+
 		// UITSCHAKELEN INDIEN VOOR ECHT!
-		$parameters['testmode'] = 1;
+		// $parameters['testmode'] = 1;
 		$accountxml = $mollie->accountCreate( $login, $parameters );
 
-		// $partner_id_customer = '3169994';
+		// $partner_id_customer = '3171444';
 		$edit_parameters = array( 
 			'registration_number' => str_replace( 'BE', '', $btw ),
 			'vat_number' => $btw,
@@ -98,32 +103,30 @@
 		echo "<p>Wachtwoord: ".$accountxml->password."</p>";
 		echo "<p>Telefoon: ".$phone."</p>";
 		
-		$profilexml = $mollie->profileCreateByPartnerId( $accountxml->partner_id, $blog, $url, $email, $phone, 5499 );
-		if ( update_option( 'oxfam_mollie_partner_id', $accountxml->partner_id ) ) {
-			echo "<p>Partner-ID gewijzigd in webshop!</p>";
-		}
+		// update_option( 'oxfam_mollie_partner_id', $accountxml->partner_id );
+		// echo "<p>Partner-ID gewijzigd in webshop!</p>";
 
-		$user = get_user_by( 'email', $email );
-		if ( $user ) {
-			wp_set_password( $accountxml->password, $user->ID );
-			echo "<p>Wachtwoord gekopieerd naar lokale beheerder!</p>";
-		}
+		// $user = get_user_by( 'email', $email );
+		// if ( $user ) {
+		// 	wp_set_password( $accountxml->password, $user->ID );
+		// 	echo "<p>Wachtwoord gekopieerd naar lokale beheerder!</p>";
+		// }
 
 		echo "<p></p>";
 
+		$profilexml = $mollie->profileCreateByPartnerId( $accountxml->partner_id, $blog, $url, $email, $phone, 5499 );
+		
 		if ( $profilexml->resultcode == '10' ) {
 			echo "<p>".$profilexml->resultmessage."</p>";
 			echo "<p>LIVE API: ".$profilexml->profile->api_keys->live."</p>";
 			echo "<p>TEST API: ".$profilexml->profile->api_keys->test."</p>";
-			if ( update_option( 'mollie-payments-for-woocommerce_live_api_key', $profilexml->profile->api_keys->live ) ) {
-				echo "<p>Live API-key gewijzigd in webshop!</p>";
-				if ( update_option( 'mollie-payments-for-woocommerce_test_mode_enabled', 'no' ) ) {
-					echo "<p>Testbetalingen uitgeschakeld!</p>";
-				}
-			}
-			if ( update_option( 'mollie-payments-for-woocommerce_test_api_key', $profilexml->profile->api_keys->test ) ) {
-				echo "<p>Test API-key gewijzigd in webshop!</p>";
-			}
+			
+			// update_option( 'mollie-payments-for-woocommerce_live_api_key', $profilexml->profile->api_keys->live );
+			// echo "<p>Live API-key gewijzigd in webshop!</p>";
+			// update_option( 'mollie-payments-for-woocommerce_test_mode_enabled', 'no' );
+			// echo "<p>Testbetalingen uitgeschakeld!</p>";
+			// update_option( 'mollie-payments-for-woocommerce_test_api_key', $profilexml->profile->api_keys->test );
+			// echo "<p>Test API-key gewijzigd in webshop!</p>";
 
 			echo "<p></p>";
 		} else {
