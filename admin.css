@@ -136,7 +136,8 @@ div.wc-order-item-bulk-edit,
 /* button.bulk-delete-items,
 button.bulk-decrease-stock,
 button.bulk-increase-stock, */
-button.do-manual-refund {
+button.do-manual-refund,
+[data-plugin-id="order_status_manager"] {
 	display: none !important;
 }
 

@@ -3,13 +3,14 @@
 	if ( ! defined('ABSPATH') ) exit;
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
-	// add_action( 'init', 'v_forcelogin' );
+	add_action( 'init', 'v_forcelogin' );
 	
 	function v_forcelogin() {
 		if ( ! is_user_logged_in() ) {
 			$url = v_get_url();
 			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
-			if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) ) {
+			// Niet redirecten op speciale activatiepagina's (met een expliciet PHP-extensie)
+			if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) && ! strpos( $url, '.php' ) ) {
 				wp_safe_redirect( wp_login_url( $redirect_url ), 302 );
 				exit();
 			}
