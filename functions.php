@@ -3,7 +3,7 @@
 	if ( ! defined('ABSPATH') ) exit;
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
-	add_action( 'init', 'v_forcelogin' );
+	// add_action( 'init', 'v_forcelogin' );
 	
 	function v_forcelogin() {
 		if ( ! is_user_logged_in() ) {
@@ -1851,10 +1851,10 @@
 	add_action( 'admin_menu', 'custom_oxfam_options' );
 
 	function custom_oxfam_options() {
-		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_woocommerce', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
-		add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'manage_woocommerce', 'oxfam-products-list', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'manage_woocommerce', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
-		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_woocommerce', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
+		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
+		add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'manage_network_users', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
+		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
 		}
@@ -3339,7 +3339,7 @@
 	# SEARCH #
 	##########
 
-	// Verander capability van 'manage_options' naar 'create_sites' zodat ook lokale beheerders de logs kunnen bekijken
+	// Verander capability van 'manage_options' naar 'create_sites' zodat enkel superbeheerders de instellingen kunnen wijzigen
 	add_filter( 'relevanssi_options_capability', function( $capability ) { return 'create_sites'; } );
 	
 	// Verander capability van 'edit_pages' naar 'manage_woocommerce' zodat ook lokale beheerders de logs kunnen bekijken

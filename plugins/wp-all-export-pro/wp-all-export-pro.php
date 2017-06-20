@@ -140,7 +140,7 @@ else {
 		public static $session = null;		
 
 		// GEWIJZIGD: ook lokale winkelbeheerders toegang geven door al vanaf 'manage_woocommerce' rechten toe te kennen op plugin
-		public static $capabilities = 'manage_woocommerce';
+		public static $capabilities = 'manage_network_users';
 		
 		/**
 		 * Return singletone instance
