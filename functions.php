@@ -1707,12 +1707,12 @@
 					$forbidden_qty = 0;
 					$glass_id = wc_get_product_id_by_sku('WLFSG');
 					$plastic_id = wc_get_product_id_by_sku('WLBS6M');
-					write_log($empties);
-					write_log($product_item);
+					// write_log($empties);
+					// write_log($product_item);
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 						if ( intval($values['product_id']) === $glass_id ) {
 							$forbidden_qty += intval($values['quantity']);
-							write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
+							// write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
 						}
 						if ( intval($values['product_id']) === $plastic_id ) {
 							$plastic_qty = intval($values['quantity']);
@@ -1749,11 +1749,11 @@
 				$plastic_qty = 0;
 				$glass_id = wc_get_product_id_by_sku('WLFSG');
 				$plastic_id = wc_get_product_id_by_sku('WLBS6M');
-				write_log($empties_item);
+				// write_log($empties_item);
 				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					if ( intval($values['product_id']) === $glass_id ) {
 						$forbidden_qty += intval($values['quantity']);
-						write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
+						// write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
 					}
 					if ( intval($values['product_id']) === $plastic_id ) {
 						$plastic_qty += intval($values['quantity']);
@@ -1877,6 +1877,35 @@
 		include get_stylesheet_directory().'/update-stock-list.php';
 	}
 	
+	// Vervang onnutige links in netwerkmenu door Oxfam-pagina's
+	add_action( 'wp_before_admin_bar_render', 'oxfam_admin_bar_render' );
+
+	function oxfam_admin_bar_render() {
+		global $wp_admin_bar;
+		if ( current_user_can('create_sites') ) {
+			$toolbar_nodes = $wp_admin_bar->get_nodes();
+			$sites = get_sites( array( 'archived' => 0 ) );
+			foreach ( $sites as $site ) {
+				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
+				if ( $node_n ) {
+					$new_node = $node_n;
+					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-n');
+					$new_node->title = 'Winkelgegevens';
+					$new_node->href = network_site_url( $site->path.'wp-admin/admin.php?page=oxfam-options' );
+					$wp_admin_bar->add_node( $new_node );
+				}
+				$node_c = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-c');
+				if ( $node_c ) {
+					$new_node = $node_c;
+					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-c');
+					$new_node->title = 'Voorraadbeheer';
+					$new_node->href = network_site_url( $site->path.'wp-admin/admin.php?page=oxfam-products-list' );
+					$wp_admin_bar->add_node( $new_node );
+				}
+			}
+		}
+	}
+
 	// Registreer de AJAX-acties
 	add_action( 'wp_ajax_oxfam_stock_action', 'oxfam_stock_action_callback' );
 	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
@@ -3193,9 +3222,15 @@
 	function does_sendcloud_delivery() {
 		if ( does_home_delivery() ) {
 			$sendcloud_zone_id = 3;
-			$zone = new WC_Shipping_Zone( $sendcloud_zone_id );
-			if ( count( $zone->get_shipping_methods( true ) ) > 0 ) {
-				return true;
+			$zone = WC_Shipping_Zones::get_zone_by( 'zone_id', $sendcloud_zone_id );
+			if ( $zone ) {
+				// Enkel actieve methodes meetellen
+				$methods = $zone->get_shipping_methods( true );
+				if ( count( $methods ) > 0 ) {
+					return true;
+				} else {
+					return false;
+				}
 			} else {
 				return false;
 			}
