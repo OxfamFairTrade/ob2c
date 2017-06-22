@@ -3358,7 +3358,7 @@
 
 	function get_oxfam_covered_zips() {
 		global $wpdb;
-		$rows = $wpdb->get_results( 'SELECT * FROM '.$wpdb->prefix.'woocommerce_shipping_zone_locations WHERE location_type = postcode' );
+		$rows = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."woocommerce_shipping_zone_locations WHERE location_type = 'postcode'" );
 		$zips = false;
 		if ( count($rows) > 0 ) {
 			foreach ( $rows as $row ) {
