@@ -10,7 +10,7 @@
 			$url = v_get_url();
 			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
 			// Niet redirecten op speciale activatiepagina's (met een expliciet PHP-extensie)
-			if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) && ! strpos( $url, '.php' ) ) {
+			if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) && ! strpos( $url, '.php' ) && ! strpos( $url, 'wc-api' ) ) {
 				wp_safe_redirect( wp_login_url( $redirect_url ), 302 );
 				exit();
 			}
