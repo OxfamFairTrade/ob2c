@@ -3249,7 +3249,7 @@
 		if ( ! is_main_site() ) {
 			if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
 				// Uitzondering voor Regio Leuven vzw
-				if ( $node === 857 ) {
+				if ( $node === '857' ) {
 					switch ($key) {
 						case 'tax':
 							return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
