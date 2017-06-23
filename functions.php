@@ -3248,8 +3248,8 @@
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
 		if ( ! is_main_site() ) {
 			if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
-				// Uitzondering voor Regio Leuven vzw
 				if ( $node === '857' ) {
+					// Uitzonderingen voor Regio Leuven vzw
 					switch ($key) {
 						case 'tax':
 							return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
@@ -3258,6 +3258,9 @@
 						case 'headquarter':
 							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
 					};
+				} elseif ( $node === '795' and $key === 'account' ) {
+					// Uitzondering voor Regio Antwerpen vzw
+					return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
 				} else {
 					$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop', $node ) );
 					if ( $row ) {
