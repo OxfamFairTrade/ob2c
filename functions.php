@@ -9,10 +9,14 @@
 		if ( ! is_user_logged_in() ) {
 			$url = v_get_url();
 			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
-			// Niet redirecten op speciale activatiepagina's (met een expliciet PHP-extensie)
-			if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) && ! strpos( $url, '.php' ) && ! strpos( $url, 'wc-api' ) ) {
-				wp_safe_redirect( wp_login_url( $redirect_url ), 302 );
-				exit();
+			$activated_shops = array( 3 );
+			// Niet redirecten indien webshop al gelanceerd
+			if ( ! in_array( get_current_blog_id(), $activated_shops ) ) {
+				// Niet redirecten: inlogpagina, activatiepagina en WC API-calls
+				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
+					wp_safe_redirect( wp_login_url( $redirect_url ), 302 );
+					exit();
+				}
 			}
 		}
 	}
