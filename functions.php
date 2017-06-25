@@ -315,9 +315,11 @@
 	function get_claimed_by_value( $column ) {
 		global $the_order;
 		if ( $column === 'claimed_by' ) {
-			$not_claimed = array( 'wc-pending', 'wc-on-hold', 'wc-processing' ); 
-			if ( in_array( get_post_status( $the_order->get_id() ), $not_claimed ) ) {
+			$not_claimed = array( 'pending', 'on-hold', 'processing' ); 
+			if ( in_array( $the_order->get_status(), $not_claimed ) ) {
 				echo '<i>nog niet bevestigd</i>';
+			} elseif ( $the_order->get_status() === 'cancelled' ) {
+				echo '<i>geannuleerd</i>';
 			} else {
 				if ( get_post_meta( $the_order->get_id(), 'claimed_by', true ) ) {
 					echo 'OWW '.trim_and_uppercase( get_post_meta( $the_order->get_id(), 'claimed_by', true ) );
@@ -391,7 +393,11 @@
 					}
 				}
 			} else {
-				echo '<i>niet beschikbaar</i>';
+				if ( $the_order->get_status() === 'cancelled' ) {
+					echo '<i>geannuleerd</i>';
+				} else {
+					echo '<i>niet beschikbaar</i>';
+				}
 			}
 		}
 	}
