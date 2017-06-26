@@ -35,7 +35,7 @@
 					$login_link = $mollie->getLoginLink( $partner_id_customer );
 					echo "<tr>";
 						echo "<th class='left'><a href='".$login_link->redirect_url."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
-						echo "<td class='right'>Opgelet: deze link is slechts enkele minuten geldig! Herlaad desnoods even deze pagina.</td>";
+						echo "<td class='right'>Opgelet: deze link is slechts 60 seconden geldig! Herlaad desnoods even deze pagina.</td>";
 					echo "</tr>";
 
 					$methods = $mollie->availablePaymentMethodsByPartnerId( $partner_id_customer );
