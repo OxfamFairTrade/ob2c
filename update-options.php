@@ -41,7 +41,7 @@
 					$methods = $mollie->availablePaymentMethodsByPartnerId( $partner_id_customer );
 					if ( $methods->resultcode == '10' ) {
 						$lacking = array();
-						$must_be = array( 'mistercash', 'belfius', 'kbc', 'ideal' );
+						$must_be = array( 'mistercash', 'creditcard', 'belfius', 'kbc', 'ideal' );
 						foreach ( $must_be as $service ) {
 							if ( $methods->services->{$service} == 'false' ) {
 								$lacking[] = $service;
