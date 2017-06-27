@@ -16,7 +16,7 @@
 			$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/pointer-afhaling.png</href></Icon></IconStyle></Style>";
 			
 			// Haal alle shopdata op (sluit portaal en gearchiveerde webshops uit)
-			$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, ) );
+			$sites = get_sites( array( 'site__not_in' => array( 1, 11, 25 ), 'archived' => 0, ) );
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
 					$str .= "<Placemark>";
