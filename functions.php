@@ -3328,7 +3328,7 @@
 	}
 
 	function get_company_contact() {
-		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data( 'telephone' );
+		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data( 'telephone' )."<br>".get_oxfam_shop_data( 'tax' );
 	}
 
 	function get_company_address( $node = 0 ) {
