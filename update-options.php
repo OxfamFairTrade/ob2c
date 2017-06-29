@@ -67,8 +67,13 @@
 						}
 						// Fix voor winkels met twee nummers (bv. Mariakerke)
 						$phones = explode( ' of ', get_oxfam_shop_data( 'telephone' ) );
+						$warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
 						if ( $phones[0] != format_telephone( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
-							$phone_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
+							if ( array_key_exists( 1, $phones ) and $phones[1] != format_telephone( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
+								$phone_warning = $warning;
+							} else {
+								$phone_warning = $warning;
+							}
 						}
 						if ( get_company_email() != $profiles->items->profile->email ) {
 							$mail_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactadres geregistreerd!</small>";
