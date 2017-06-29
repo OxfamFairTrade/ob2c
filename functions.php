@@ -3248,7 +3248,9 @@
 	}
 
 	function is_regional_webshop() {
-		return get_option( 'oxfam_member_shops' );
+		// Antwerpen en Leuven
+		$regions = array( 24, 28 );
+		return in_array( get_current_blog_id(), $regions );
 	}
 
 	function get_oxfam_shop_data( $key, $node = 0 ) {
