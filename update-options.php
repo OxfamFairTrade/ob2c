@@ -65,7 +65,9 @@
 						if ( get_company_name() != trim_and_uppercase($profiles->items->profile->name) ) {
 							$name_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
-						if ( get_oxfam_shop_data( 'telephone' ) != format_telephone( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
+						// Fix voor winkels met twee nummers (bv. Mariakerke)
+						$phones = explode( ' of ', get_oxfam_shop_data( 'telephone' ) );
+						if ( $phones[0] != format_telephone( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
 							$phone_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
 						}
 						if ( get_company_email() != $profiles->items->profile->email ) {
@@ -74,9 +76,8 @@
 					}
 
 					$accounts = $mollie->bankAccountsByPartnerId( $partner_id_customer );
-					// echo "<pre>".var_export($accounts, true)."</pre>";
 					if ( $accounts->resultcode == '10' ) {
-						if ( get_oxfam_shop_data( 'account' ) != $accounts->bankaccount->account_iban ) {
+						if ( get_oxfam_shop_data( 'account' ) !== format_account( $accounts->items->bankaccount->iban_number ) ) {
 							$account_warning = "<br><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geverifieerd!</small>";
 						}
 					}

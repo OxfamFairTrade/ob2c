@@ -9,7 +9,7 @@
 		if ( ! is_user_logged_in() ) {
 			$url = v_get_url();
 			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
-			$activated_shops = array( 12, 20, 32 );
+			$activated_shops = array( 12, 20, 32, 38 );
 			// Niet redirecten indien webshop al gelanceerd
 			if ( ! in_array( get_current_blog_id(), $activated_shops ) ) {
 				// Niet redirecten: inlogpagina, activatiepagina en WC API-calls
@@ -2893,7 +2893,7 @@
 			// echo '<p>Alle logins zijn verstuurd naar de lokale beheerders. Op dit moment kun je enkel als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen eind juni publiek te zetten.</p>';
 			// echo '</div>';
 			echo '<div class="notice notice-error">';
-			echo '<p>Volg <a href="https://github.com/OxfamFairTrade/ob2c/wiki/Betaling#hoe-activeer-ik-mijn-account-bij-mollie" target="_blank">de handleiding</a> om de activering van je Mollie-account te voltooien. Het duurt enkele dagen vooraleer je overschrijving verwerkt is.</p><p>De activatie van kredietkaarten als betaalmethode is voor elke webshop reeds aangevraagd maar ook dat neemt enkele werkdagen in beslag. In afwachting mag je de rode waarschuwingen op de \'Winkelgegevens\'-pagina dus negeren.</p>';
+			echo '<p>Volg <a href="https://github.com/OxfamFairTrade/ob2c/wiki/Betaling#hoe-activeer-ik-mijn-account-bij-mollie" target="_blank">de handleiding</a> om de activering van je Mollie-account te voltooien. Het duurt enkele dagen vooraleer je overschrijving met de gestructureerde mededeling verwerkt is. (Door een onaangekondigde wijziging in de datastructuur van Mollie bleef de waarschuwing over niet-geverifieerde rekeningnummers ook verschijnen indien de verificatie toch al succesvol afgerond was, maar dat is inmiddels opgelost.)</p><p>De activatie van kredietkaarten als betaalmethode is voor elke webshop reeds aangevraagd maar kan pas afgerond worden nadat de webshop gepubliceerd is. Een onderdeel van dat activatieproces is immers een controle van de op de site aangeboden producten, maar dat kan pas van zodra de loginverplichting weggehaald is. In afwachting mag je de rode waarschuwingen op de \'Winkelgegevens\'-pagina negeren.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-info">';
 			echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
