@@ -394,7 +394,7 @@ div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__w
 	z-index: 50;
 	transform: skewX(-3deg);
 	background-color: rgba(250, 22, 50, 0.9);
-	content: "Promotie";
+	content: "In promotie";
 }
 
 /* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'-, 'promo'- en/of 'afhalen'-klasse lager om overlap te vermijden */

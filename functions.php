@@ -2104,9 +2104,9 @@
 		$cat_ids = $product->get_category_ids();
 		$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
 		if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' ) {
-			echo "<p style='margin: 1em 0; color: red;'>Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
+			echo "<p style='margin: 1em 0;'>Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
 		} elseif ( get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-			echo "<p style='margin: 1em 0; color: red;'>Je dient minstens 16 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
+			echo "<p style='margin: 1em 0;'>Je dient minstens 16 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
 		}
 	}
 
