@@ -2097,6 +2097,10 @@
 			echo "<p>Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: kleine glazen flesjes en tetrabrikken zijn wel beschikbaar voor thuislevering.</p>";
 		}
 
+		if ( $product->get_sku() === '20211' and date_i18n('Y-m-d') < '2017-09-01' ) {
+			echo "<p style='margin: 1em 0; color: red;'>ZOMERPROMO: 5+1 FLESSEN!</p>";
+		}
+
 		$cat_ids = $product->get_category_ids();
 		$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
 		if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' ) {
@@ -2813,6 +2817,10 @@
                 $main_product = wc_get_product( $main_product_id );
                 restore_current_blog();
                 $local_product_ids[] = wc_get_product_id_by_sku( $main_product->get_sku() );
+            }
+            // Niet serialiseren voor coupons
+            if ( $metakey === 'product_ids' ) {
+            	$local_product_ids = implode( ',', $local_product_ids );
             }
             update_post_meta( $local_product_id, $metakey, $local_product_ids );
         } else {
