@@ -321,7 +321,7 @@ li.product.product_shipping_class-breekbaar::after {
 	font-size: 85%;
 	z-index: 50;
 	transform: skewX(-3deg);
-	background-color: rgba(250, 22, 50, 0.9);
+	background-color: rgba(11, 156, 218, 0.9);
 	content: "Afhaling";
 }
 
@@ -335,11 +335,11 @@ div.nm-single-product.product_shipping_class-breekbaar figure.woocommerce-produc
 	font-size: 95%;
 	z-index: 50;
 	transform: skewX(-3deg);
-	background-color: rgba(250, 22, 50, 0.9);
+	background-color: rgba(11, 156, 218, 0.9);
 	content: "Enkel afhaling in de winkel";
 }
 
-/* Toon een blokje bij nieuwe producten (voorlopig op basis van tag - kan ook door nieuwe datumklasse toe te voegen in template) */
+/* Toon een blokje bij nieuwe producten (door automatisch toegevoegde nieuwe datumklasse in template) */
 /* OVERSCHRIJFT AFHAALBLOKJE INDIEN OOK ACTIEF */
 li.product.newbee::after {
 	color: white;
@@ -368,17 +368,49 @@ div.nm-single-product.newbee figure.woocommerce-product-gallery__wrapper::after 
 	content: "Nieuw in ons assortiment";
 }
 
-/* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'- en/of 'afhalen'-klasse lager om overlap te vermijden */
+/* Toon een blokje bij promoties (op basis van tag) */
+/* OVERSCHRIJFT NEWBEEBLOKJE INDIEN OOK ACTIEF */
+li.product.product_tag-promo::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 85%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(250, 22, 50, 0.9);
+	content: "Promo";
+}
+
+/* Toon een bannertje op detailpagina's */
+div.nm-single-product.product_tag-promo figure.woocommerce-product-gallery__wrapper::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 95%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(250, 22, 50, 0.9);
+	content: "Promotie";
+}
+
+/* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'-, 'promo'- en/of 'afhalen'-klasse lager om overlap te vermijden */
+li.product.pa_bio-ja.product_tag-promo::after,
 li.product.pa_bio-ja.product_shipping_class-breekbaar::after,
 li.product.pa_bio-ja.newbee::after,
+div.nm-single-product.pa_bio-ja.product_tag-promo figure.woocommerce-product-gallery__wrapper::after,
 div.nm-single-product.pa_bio-ja.product_shipping_class-breekbaar figure.woocommerce-product-gallery__wrapper::after,
 div.nm-single-product.pa_bio-ja.newbee figure.woocommerce-product-gallery__wrapper::after {
 	top: 2.5em;
 }
 
 li.product.pa_bio-ja:hover::before,
-li.product.newbee:hover::before,
-li.product.product_shipping_class-breekbaar:hover::after {
+li.product.newbee:hover::after,
+li.product.product_shipping_class-breekbaar:hover::after,
+li.product.product_tag-promo:hover::after {
 	opacity: 0.7;
 	transition: opacity 1s ease-out 0s;
 }

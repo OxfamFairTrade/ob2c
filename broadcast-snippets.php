@@ -40,9 +40,9 @@
 
 	// Product-ID's in kortingsbon lokaal maken
 	$args = array(
-		'post_type'			=> 'shop_coupon',
-		'post_status'		=> array( 'publish' ),
-		'posts_per_page'	=> -1,
+		'post_type'		=> 'shop_coupon',
+		'post_status'	=> array( 'publish' ),
+		'title'		=> 'torrontes',
 	);
 
 	$all_coupons = new WP_Query( $args );

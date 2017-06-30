@@ -2098,15 +2098,15 @@
 		}
 
 		if ( $product->get_sku() === '20211' and date_i18n('Y-m-d') < '2017-09-01' ) {
-			echo "<p style='margin: 1em 0; color: red;'>ZOMERPROMO: 5+1 FLESSEN!</p>";
+			echo "<p style='margin: 1em 0; color: red;'>ZOMERPROMO: 5 + 1 FLES GRATIS</p>";
 		}
 
 		$cat_ids = $product->get_category_ids();
 		$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
 		if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' ) {
-			echo "<p style='margin: 1em 0;'>Opgelet, je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen!</p>";
+			echo "<p style='margin: 1em 0; color: red;'>Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
 		} elseif ( get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-			echo "<p style='margin: 1em 0;'>Opgelet, je dient minstens 16 jaar oud te zijn om dit alcoholische product te bestellen!</p>";
+			echo "<p style='margin: 1em 0; color: red;'>Je dient minstens 16 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
 		}
 	}
 
