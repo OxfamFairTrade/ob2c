@@ -32,15 +32,12 @@ if ( $nm_theme_options['shop_infinite_load'] !== '0' ) {
 	$infload_class = '';
 }
 
-// GEWIJZIGD: Wijzig laadmodus indien categoriepagina met enorm veel producten
+// GEWIJZIGD: Wijzig laadmodus indien het een categoriepagina met meer dan 2 pagina's is
 $mode = 'scroll';
-$full_url = explode( '?', 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
-$forbidden = array( '/producten/', '/categorie/snacks-drinks/' );
-foreach ( $forbidden as $test ) {
-	if ( substr_compare( $full_url[0], $test, -strlen($test), strlen($test) ) === 0 ) {
-		$mode = 'button';
-	}
+if ( is_archive() and intval($wp_query->max_num_pages) > 2 ) {
+	$mode = 'button';
 }
+
 ?>
 <nav class="woocommerce-pagination nm-pagination<?php echo $infload_class; ?>">
 	<?php
