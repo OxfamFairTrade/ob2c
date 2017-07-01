@@ -41,19 +41,18 @@
 							$parts = explode( 'node=', $location['note'] );
 							if ( isset($parts[1]) ) {
 								$node = str_replace( ']', '', $parts[1] );
-								$extra = '';
 							} else {
 								$node = get_option('oxfam_shop_node');
-								// Dit werkt niet in KML 2.2 maar misschien wel als we overschakelen op Google Maps API
-								$extra = '<gx:balloonVisibility>1</gx:balloonVisibility>';
 							}
-							$txt .= "<Placemark>";
-							$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
-							$txt .= "<styleUrl>#pickup</styleUrl>";
-							$txt .= "<description><![CDATA[<p>".get_company_address($node)."</p><p><a href=https://www.oxfamwereldwinkels.be/node/".$node." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
-							$txt .= $extra;
-							$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $node )."</coordinates></Point>";
-							$txt .= "</Placemark>";
+							// Want get_company_address() en get_oxfam_shop_data('ll') nog niet gedefinieerd voor niet-wereldwinkels
+							if ( is_numeric($node) ) {
+								$txt .= "<Placemark>";
+								$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
+								$txt .= "<styleUrl>#pickup</styleUrl>";
+								$txt .= "<description><![CDATA[<p>".get_company_address($node)."</p><p><a href=https://www.oxfamwereldwinkels.be/node/".$node." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
+								$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $node )."</coordinates></Point>";
+								$txt .= "</Placemark>";
+							}
 						}
 
 						$txt .= "</Document></kml>";
