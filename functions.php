@@ -3227,7 +3227,7 @@
 	}
 
 	function print_copyright() {
-		return "<a href='".get_site_url( get_current_blog_id(), '/contact/' )."'>".get_company_name()." &copy; ".date_i18n('Y')."</a>";
+		return "<a href='".get_site_url( get_current_blog_id(), '/contact/' )."'>".get_oxfam_shop_data( 'tax' )." / ".str_replace( 'Oxfam-Wereldwinkel', 'OWW', get_company_name() )." &copy; ".date_i18n('Y')."</a>";
 	}
 
 	function print_office_hours( $atts = [] ) {
@@ -3479,7 +3479,7 @@
 	}
 
 	function get_company_contact() {
-		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data( 'telephone' )."<br>".get_oxfam_shop_data( 'tax' );
+		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data( 'telephone' );
 	}
 
 	function get_company_address( $node = 0 ) {
