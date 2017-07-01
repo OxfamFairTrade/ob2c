@@ -593,7 +593,17 @@
 			'page',
 			'settings-updated',
 		);
+		$args['admin.php']['pmxe-admin-export'] = array(
+			'id',
+			'action',
+			'pmxe_nt',
+		);
 		$args['admin.php']['pmxe-admin-manage'] = array(
+			'id',
+			'action',
+			'pmxe_nt',
+		);
+		$args['admin.php']['pmxe-admin-settings'] = array(
 			'id',
 			'action',
 			'pmxe_nt',
