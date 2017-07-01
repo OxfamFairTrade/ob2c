@@ -9,7 +9,7 @@
 		if ( ! is_user_logged_in() ) {
 			$url = v_get_url();
 			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
-			$activated_shops = array( 12, 20, 32, 36, 38 );
+			$activated_shops = array( 12, 16, 20, 22, 32, 36, 37, 38 );
 			// Niet redirecten indien webshop al gelanceerd
 			if ( ! in_array( get_current_blog_id(), $activated_shops ) ) {
 				// Niet redirecten: inlogpagina, activatiepagina en WC API-calls
