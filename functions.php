@@ -1301,16 +1301,124 @@
 		return $hours;
 	}
 
-	// Stop de openingsuren in een logische array
-	// ANTWOORDT MET DAGINDEXES VAN 1 TOT 7!
+	// Stop de openingsuren in een logische array (met dagindices van 1 tot 7!)
 	function get_office_hours( $node = 0 ) {
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
-		for ( $day = 0; $day <= 6; $day++ ) {
-			$hours[$day] = get_office_hours_for_day( $day, $node );
+		
+		if ( $node === 'griffel' ) {
+			$hours = array(
+				1 => array(
+					array(
+						'start' => '7:00',
+						'end' => '12:30',
+					),
+				),
+				2 => array(
+					array(
+						'start' => '7:00',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00',
+					),
+				),
+				3 => array(
+					array(
+						'start' => '7:00',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00',
+					),
+				),
+				4 => array(
+					array(
+						'start' => '7:00',
+						'end' => '12:30'
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00'
+					),
+				),
+				5 => array(
+					array(
+						'start' => '7:00',
+						'end' => '12:30'
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00'
+					),
+				),
+				6 => array(
+					array(
+						'start' => '7:00',
+						'end' => '12:30'
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00'
+					),
+				),
+				7 => false,
+			);
+		} elseif( $node === 'martinique' ) {
+			$hours = array(
+				1 => array(
+					array(
+						'start' => '9:00',
+						'end' => '22:00',
+					),
+				),
+				2 => array(
+					array(
+						'start' => '9:00',
+						'end' => '22:00',
+					),
+				),
+				3 => array(
+					array(
+						'start' => '9:00',
+						'end' => '22:00',
+					),
+				),
+				4 => array(
+					array(
+						'start' => '9:00',
+						'end' => '22:00',
+					),
+				),
+				5 => array(
+					array(
+						'start' => '9:00',
+						'end' => '21:00',
+					),
+				),
+				6 => array(
+					array(
+						'start' => '9:00',
+						'end' => '16:00',
+					),
+				),
+				7 => array(
+					array(
+						'start' => '9:00',
+						'end' => '12:30',
+					),
+				),
+			);
+		} else {
+			for ( $day = 0; $day <= 6; $day++ ) {
+				$hours[$day] = get_office_hours_for_day( $day, $node );
+			}
+			// Forceer 'natuurlijke' nummering
+			$hours[7] = $hours[0];
+			unset( $hours[0] );
 		}
-		// Forceer 'natuurlijke' nummering
-		$hours[7] = $hours[0];
-		unset( $hours[0] );
+
 		return $hours;
 	}
 
