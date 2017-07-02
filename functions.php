@@ -603,11 +603,6 @@
 			'action',
 			'pmxe_nt',
 		);
-		$args['admin.php']['pmxe-admin-settings'] = array(
-			'id',
-			'action',
-			'pmxe_nt',
-		);
 		$args['profile.php'][''] = array(
 			'updated',
 		);
