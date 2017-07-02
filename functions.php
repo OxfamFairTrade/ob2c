@@ -779,7 +779,7 @@
 			<?php
 		}
 
-		if ( ! is_user_logged_in() ) {
+		if ( ! is_user_logged_in() or in_array( 'customer', $user_roles ) ) {
 			?>
 				<script type="text/javascript">
 				    window.smartlook||(function(d) {
