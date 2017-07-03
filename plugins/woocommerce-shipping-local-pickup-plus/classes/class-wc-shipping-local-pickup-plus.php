@@ -1215,7 +1215,7 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 
 			$chosen_pickup_location = $this->pickup_locations[0];
 			// GEWIJZIGD: Zet adres op meerdere lijnen
-			echo $this->get_formatted_address_helper( $chosen_pickup_location, false );
+			echo '<ul><li>'.$this->get_formatted_address_helper( $chosen_pickup_location, false ).'</li></ul>';
 
 			echo '<input type="hidden" name="pickup_location[' . $package_index . ']" value="' . esc_attr( $chosen_pickup_location['id'] ) . '" />';
 		} else {
