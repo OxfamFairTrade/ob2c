@@ -492,7 +492,7 @@ p#order_comments_field.form-row.notes label {
 	padding-top: 36px;
 }
 
-/* Zorg ervoor dat de adressen en openingsuren de volledige breedte kunnen innemen */
+/* Zorg ervoor dat de adressen en openingsuren de volledige breedte kunnen innemen (één of meerdere afhaalpunten) */
 .woocommerce-checkout-review-order-table tr.pickup_location td.update_totals_on_change > ul {
 	width: 350px;
 	float: right;

@@ -15,7 +15,7 @@
  /**
   * @hooked WC_Emails::email_header() Output the email header
   */
- do_action( 'woocommerce_email_header', $email_heading, $email );
+ do_action( 'woocommerce_email_header', $email_heading, $email, $sent_to_admin );
 
 printf( '<p>Proficiat, je hebt een bestelling ontvangen van %s.</p>', $order->get_formatted_billing_full_name() );
 $tax_classes = $order->get_items_tax_classes();
@@ -44,7 +44,22 @@ echo '<p>&nbsp;</p>';
   */
  do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text, $email );
 
- /**
-  * @hooked WC_Emails::email_footer() Output the email footer
-  */
- do_action( 'woocommerce_email_footer', $email );
+?>
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+                        <!-- End Content -->
+                      </td>
+                    </tr>
+                  </table>
+                  <!-- End Body -->
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
