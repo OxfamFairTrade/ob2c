@@ -26,8 +26,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<td align="center" valign="top">
 						<div id="template_header_image">
 							<?php
-								if ( $img = do_shortcode( get_option( 'woocommerce_email_header_image' ) ) ) {
-									// GEWIJZIGD: Voeg link naar homepage toe
+								// GEWIJZIGD: Toon logo enkel in klantenmails en voeg link naar homepage toe
+								if ( $img = do_shortcode( get_option( 'woocommerce_email_header_image' ) ) and ! $sent_to_admin ) {
 									echo '<p style="margin-top:0;"><a href="'.home_url().'" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
 								}
 							?>
