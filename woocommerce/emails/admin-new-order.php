@@ -15,7 +15,7 @@
  /**
   * @hooked WC_Emails::email_header() Output the email header
   */
- do_action( 'woocommerce_email_header', $email_heading, $email, $sent_to_admin );
+ do_action( 'woocommerce_email_header', $email_heading, $email );
 
 printf( '<p>Proficiat, je hebt een bestelling ontvangen van %s.</p>', $order->get_formatted_billing_full_name() );
 $tax_classes = $order->get_items_tax_classes();
