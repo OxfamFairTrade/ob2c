@@ -1995,6 +1995,9 @@
 		if ( is_main_site() ) {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
 		}
+		if ( ! current_user_can('create_sites') ) {
+			remove_meta_box( 'postcustom', 'shop_order', 'normal' );
+		}
 	}
 
 	function oxfam_photos_callback() {
