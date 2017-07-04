@@ -2,14 +2,16 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
+	$activated_shops = array( 12, 16, 20, 22, 31, 32, 35, 36, 37, 38 );
+
 	// Verhinder bekijken door niet-ingelogde bezoekers
 	add_action( 'init', 'v_forcelogin' );
 	
 	function v_forcelogin() {
 		if ( ! is_user_logged_in() ) {
+			global $activated_shops;
 			$url = v_get_url();
 			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
-			$activated_shops = array( 12, 16, 20, 22, 32, 35, 36, 37, 38 );
 			// Niet redirecten indien webshop al gelanceerd
 			if ( ! in_array( get_current_blog_id(), $activated_shops ) ) {
 				// Niet redirecten: inlogpagina, activatiepagina en WC API-calls
@@ -1995,9 +1997,6 @@
 		if ( is_main_site() ) {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
 		}
-		if ( ! current_user_can('create_sites') ) {
-			remove_meta_box( 'postcustom', 'shop_order', 'normal' );
-		}
 	}
 
 	function oxfam_photos_callback() {
@@ -3034,12 +3033,19 @@
 		$screen = get_current_screen();
 		// var_dump($screen);
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
-			// echo '<div class="notice notice-error">';
-			// echo '<p>Alle logins zijn verstuurd naar de lokale beheerders. Op dit moment kun je enkel als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen eind juni publiek te zetten.</p>';
-			// echo '</div>';
-			echo '<div class="notice notice-error">';
+			global $activated_shops;
+			if ( ! in_array( get_current_blog_id(), $activated_shops ) ) {
+				echo '<div class="notice notice-success">';
+				echo '<p>Alle logins zijn verstuurd naar de lokale beheerders. Op dit moment kun je enkel als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen begin augustus publiek te zetten, want in het FAIR-magazine zal een eerste aankondiging verschijnen.</p>';
+				echo '</div>';
+			}
+			echo '<div class="notice notice-info">';
 			echo '<p>Volg <a href="https://github.com/OxfamFairTrade/ob2c/wiki/Betaling#hoe-activeer-ik-mijn-account-bij-mollie" target="_blank">de handleiding</a> om de activering van je Mollie-account te voltooien. Het duurt enkele dagen vooraleer je overschrijving met de gestructureerde mededeling verwerkt is. Let er ook goed op dat je de overschrijving uitvoert vanaf de winkelrekening (en niet je persoonlijke rekening!) want anders zal het IBAN-nummer niet herkend worden. Indien de naam van de vzw erg lang is, kan het bovendien zijn dat Mollie je contacteert omdat het specifieke deel van de rekeningeigenaar niet zichtbaar is op de overschrijving.</p>';
-			echo '<p>De activatie van kredietkaarten als betaalmethode is voor elke webshop reeds aangevraagd maar kan pas afgerond worden nadat de webshop gepubliceerd is. Een onderdeel van dat activatieproces is immers een controle van de aangeboden producten. Bij alcoholische producten voegden we pas recent de boodschap toe dat verkoop enkel toegestaan is aan meerderjarigen. In afwachting mag je de rode waarschuwing op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina negeren.</p>';
+			echo '</div>';
+			echo '<div class="notice notice-error">';
+			echo '<p>De activatie van kredietkaarten als betaalmethode is voor elke webshop reeds aangevraagd maar kan pas afgerond worden nadat de webshop gepubliceerd is. Een onderdeel van dat activatieproces is immers een controle van de aangeboden producten. Bij alcoholische producten moeten we nog een leeftijdscontrole inbouwen, de boodschap dat verkoop enkel toegestaan is aan meerderjarigen volstaat niet. In afwachting mag je de rode waarschuwing op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina negeren. Het is mogelijk dat je hierove</p>';
+			echo '</div>';
+			echo '<div class="notice notice-error">';
 			echo '<p>Sommige winkels kregen een bericht dat hun legitimatiebewijs afgewezen werd. Dit gebeurt indien de rechtsgeldige vertegenwoordiger die we opgaven (= de persoon waarvan jullie ons de identiteitskaart bezorgden) nog niet in de <u>digitale</u> versie van het KBO geregistreerd staat. We adviseren in dat geval om de rechtsgeldige vertegenwoordiger onder de Mollie-instellingen voor \'<a href="https://www.mollie.com/dashboard/settings/organization" target="_blank">Bedrijf</a>\' aan te passen naar iemand die wel reeds vermeld staat in het KBO. (Check de link naast het BTW-nummer op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina.) <a href="mailto:e-commerce@oft.be" target="_blank">Contacteer ons</a> indien je hierbij assistentie nodig hebt.</p>';
 			echo '</div>';
 			if ( does_home_delivery() ) {
@@ -3065,29 +3071,27 @@
 			echo '<p>Bovenaan de compacte lijstweergave vind je vanaf nu een knop om alle producten in of uit voorraad te zetten.</p>';
 			echo '</div>';
 		}
-		if ( $pagenow === 'admin.php' and stristr( $screen->base, 'oxfam-products-list' ) ) {
-			echo '<div class="notice notice-error">';
-			echo '<p>Opgelet: de bulkbewerking om alle producten in voorraad te zetten kan enkele tientallen seconden in beslag nemen!</p>';
-			echo '</div>';
-		}
 	}
 
 	// Schakel onnuttige widgets uit voor iedereen
-	// KAN OOK VIA USER ROLE EDITOR PRO
 	add_action( 'admin_init', 'remove_dashboard_meta' );
 
 	function remove_dashboard_meta() {
-		remove_meta_box( 'dashboard_primary', 'dashboard-network', 'normal' );
-		remove_meta_box( 'network_dashboard_right_now', 'dashboard-network', 'normal' );
 		remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
 		remove_meta_box( 'dashboard_activity', 'dashboard', 'normal' );
 		remove_meta_box( 'woocommerce_dashboard_recent_reviews', 'dashboard', 'normal' );
-		// remove_meta_box( 'dashboard_pilot_news_widget', 'dashboard', 'normal' );
-		// remove_meta_box( 'woocommerce_dashboard_status', 'dashboard', 'normal' );
 		remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
 		remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
 		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item', 'side' );
 		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item-network', 'side' );
+		
+		if ( ! current_user_can('create_sites') ) {
+			remove_meta_box( 'dashboard_primary', 'dashboard-network', 'normal' );
+			remove_meta_box( 'network_dashboard_right_now', 'dashboard-network', 'normal' );
+			// Want lukt niet via URE Pro
+			remove_meta_box( 'postcustom', 'shop_order', 'normal' );
+		}
+
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
 	}
 
