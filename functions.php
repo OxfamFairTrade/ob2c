@@ -316,9 +316,10 @@
 
 	function get_claimed_by_value( $column ) {
 		global $the_order;
-		if ( $column === 'claimed_by' ) {
-			$not_claimed = array( 'pending', 'on-hold', 'processing' ); 
-			if ( in_array( $the_order->get_status(), $not_claimed ) ) {
+		if ( $column === 'claimed_by' ) { 
+			if ( $the_order->get_status() === 'pending' ) {
+				echo '<i>nog niet betaald</i>';
+			} elseif ( $the_order->get_status() === 'processing' ) {
 				echo '<i>nog niet bevestigd</i>';
 			} elseif ( $the_order->get_status() === 'cancelled' ) {
 				echo '<i>geannuleerd</i>';
