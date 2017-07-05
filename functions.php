@@ -95,6 +95,9 @@
 		// Fix error 60 - SSL certificate problem: unable to get local issuer certificate (bij het downloaden van een CSV in WP All Import)
 		// curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
 	}
+
+	// Jetpack-tags uitschakelen om dubbel werk te vermijden
+	add_filter( 'jetpack_enable_open_graph', '__return_false' );
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
 	$default_holidays = array( '2017-07-21', '2017-08-15', '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02' );
