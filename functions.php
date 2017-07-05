@@ -2974,8 +2974,8 @@
 	// Stel de inhoud van de widget op
 	function dashboard_pilot_news_widget_function() {
 		echo "<div class='rss-widget'>";
-		echo "<p>De <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Daarnaast kun je nog altijd <a href='https://demo.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 1ste opleidingssessie</a> raadplegen voor een overzicht van alle afspraken, en de <a href='https://demo.oxfamwereldwinkels.be/wp-content/uploads/slides-2de-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 2de opleidingssessie</a> voor meer praktische details.</p>";
-		echo "<p>Voor onderling overleg (en met ons) kun je vanaf nu ook terecht op <a href='https://oxfamfairtrade.slack.com' target='_blank'>Slack</a>. Iedere webshopvrijwilliger kreeg hiervoor op 22/05/2017 een uitnodigingsmail. Dit is optioneel, alle belangwekkende documenten blijven we op dit dashboard en op <a href='http://extranet.oxfamwereldwinkels.be/webshop target='_blank'>Extranet</a> plaatsen. Voor dringende problemen bel je vanaf 1 juli gewoon naar de Klantendienst, die een opleiding krijgt om jullie bij te staan bij het beheer. Tot die tijd kun je rechtstreeks Frederik contacteren.</p>";
+		echo "<p>De <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Daarnaast kun je nog altijd <a href='https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 1ste opleidingssessie</a> raadplegen voor een overzicht van alle afspraken, en de <a href='https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-2de-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 2de opleidingssessie</a> voor meer praktische details.</p>";
+		echo "<p>Voor onderling overleg (en met ons) kun je vanaf nu ook terecht op <a href='https://oxfamfairtrade.slack.com' target='_blank'>Slack</a>. Iedere webshopvrijwilliger kreeg hiervoor op 22/05/2017 een uitnodigingsmail. Dit is optioneel, alle belangwekkende documenten blijven we op dit dashboard en op <a href='http://extranet.oxfamwereldwinkels.be/webshop target='_blank'>Extranet</a> plaatsen. Voor dringende problemen bel je vanaf 1 juli gewoon naar de Klantendienst, die een opleiding kreeg om jullie bij te staan bij het beheer.</p>";
 		echo "</div>";
 		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
 	}
@@ -2991,7 +2991,7 @@
 			),
 		);
 
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-9 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-18 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
 		
 		$mailings = "";
 		if ( $response['response']['code'] == 200 ) {
