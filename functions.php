@@ -3342,14 +3342,13 @@
 		if ( does_home_delivery() ) {
 			$cities = get_site_option( 'oxfam_flemish_zip_codes' );
 			$zips = get_oxfam_covered_zips();
-			$len = count($zips);
 			// Knip de '9999' die altijd aanwezig is (en achteraan staat) eraf
-			unset($zips[$len-1]);
+			unset($zips[count($zips)-1]);
 			$i = 1;
 			$list = "";
 			foreach ( $zips as $zip ) {
-				if ( $i < $len ) {
-					if ( $i === $len - 1 ) {
+				if ( $i < count($zips) ) {
+					if ( $i === count($zips) - 1 ) {
 						$list .= $zip." ".$cities[$zip]." en ";
 					} else {
 						$list .= $zip." ".$cities[$zip].", ";
