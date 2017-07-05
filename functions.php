@@ -3461,8 +3461,12 @@
 							// Voor KML-file moet longitude voor latitude komen!
 							return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
 						case 'telephone':
-							// Geef alternatieve delimiter mee
-							return call_user_func( 'format_telephone', $row->field_sellpoint_telephone_value, '.' );
+							if ( $node === '857' ) {
+								return call_user_func( 'format_telephone', '0486762195', '.' );
+							} else {	
+								// Geef alternatieve delimiter mee
+								return call_user_func( 'format_telephone', $row->field_sellpoint_telephone_value, '.' );
+							}
 						default:
 							return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 					}
