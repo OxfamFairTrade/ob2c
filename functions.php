@@ -2,7 +2,7 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	$activated_shops = array( 12, 16, 20, 22, 31, 32, 35, 36, 37, 38 );
+	$activated_shops = array( 12, 15, 16, 20, 22, 24, 28, 30, 31, 32, 35, 36, 37, 38 );
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
 	add_action( 'init', 'v_forcelogin' );
@@ -3230,7 +3230,7 @@
 	}
 
 	function print_copyright() {
-		return "<a href='".get_site_url( get_current_blog_id(), '/contact/' )."'>".get_oxfam_shop_data( 'tax' )." / ".str_replace( 'Oxfam-Wereldwinkel', 'OWW', get_company_name() )." &copy; ".date_i18n('Y')."</a>";
+		return "<a href='".get_site_url( get_current_blog_id(), '/contact/' )."'>".get_company_name()." &copy; ".date_i18n('Y')."</a>";
 	}
 
 	function print_office_hours( $atts = [] ) {
@@ -3340,7 +3340,23 @@
 	function print_delivery_snippet() {
 		$msg = "";
 		if ( does_home_delivery() ) {
-			$msg = "Heb je gekozen voor levering? Dan staan we maximaal 3 werkdagen later met je pakje op je stoep.";
+			$cities = get_site_option( 'oxfam_flemish_zip_codes' );
+			$zips = get_oxfam_covered_zips();
+			$i = 1;
+			$list = "";
+			foreach ( $zips as $zip ) {
+				if ( $i < count($zips) ) {
+					if ( $i === count($zips) - 1 ) {
+						$list .= $zip." (".$cities[$zip].") en ";
+					} else {
+						$list .= $zip." (".$cities[$zip]."), ";
+					}
+				} else {
+					$list .= $zip." (".$cities[$zip].")";
+				}
+				$i++;
+			}
+			$msg = "Heb je gekozen voor levering? Dan staan we maximaal 3 werkdagen later met je pakje op je stoep. Wij leveren in ".$list.".";
 		}
 		return $msg;
 	}
@@ -3482,7 +3498,7 @@
 	}
 
 	function get_company_contact() {
-		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data( 'telephone' );
+		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data( 'telephone' )."<br>".get_oxfam_shop_data( 'tax' );
 	}
 
 	function get_company_address( $node = 0 ) {
@@ -3544,7 +3560,7 @@
 				$zips[] = $row->location_code;
 			}
 			$zips = array_unique( $zips );
-			sort($zips, SORT_STRING);
+			sort($zips, SORT_NUMERIC);
 		}
 		return $zips;
 	}
