@@ -605,11 +605,13 @@
 			'id',
 			'action',
 			'pmxe_nt',
+			'warnings',
 		);
 		$args['admin.php']['pmxe-admin-manage'] = array(
 			'id',
 			'action',
 			'pmxe_nt',
+			'warnings',
 		);
 		$args['profile.php'][''] = array(
 			'updated',
