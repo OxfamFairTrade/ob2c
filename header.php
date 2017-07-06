@@ -76,11 +76,13 @@
 		<link href="<?php echo esc_url( $favicon_url ); ?>" rel="shortcut icon">
         <?php endif; ?>
         
-        <!-- GEWIJZIGD: Handmatig toevoegen van Open Graph-tags (Jetpack uitgeschakeld) -->
-		<meta property="og:title" content="<?php echo get_bloginfo('title'); ?>">
-        <meta property="og:url" content="<?php echo get_bloginfo('url')."/"; ?>">
-        <meta property="og:description" content="Shop nu ook online in jouw wereldwinkel. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze plaatselijke vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten!">
-        <meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/facebook.png">
+        <!-- GEWIJZIGD: Handmatig toevoegen van Open Graph-tags op homepage (Jetpack uitgeschakeld) -->
+		<?php if ( is_front_page() ) : ?>
+			<meta property="og:title" content="<?php echo get_bloginfo('title'); ?>">
+        	<meta property="og:url" content="<?php echo get_bloginfo('url') . "/"; ?>">
+        	<meta property="og:description" content="Shop nu ook online in jouw wereldwinkel. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze plaatselijke vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten!">
+        	<meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/facebook.png">
+        <?php endif; ?>
         	
 		<?php wp_head(); ?>
     </head>
