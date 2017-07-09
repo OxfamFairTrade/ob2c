@@ -72,7 +72,7 @@
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/flick/jquery-ui.css' );
+		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css' );
 		wp_enqueue_style( 'jquery-ui' );  
 	}
 
@@ -802,8 +802,21 @@
 
 		?>
 			<script type="text/javascript">
-				jQuery(document).ready(function($) {
-					jQuery("#datepicker").datepicker();
+				jQuery(document).ready( function() {
+					function hidePlaceholder( dateText, inst ) {
+						jQuery(this).attr('placeholder', '');
+					}
+
+					jQuery("#datepicker").datepicker({
+						dayNamesMin: [ "Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za" ],
+						monthNamesShort: [ "Jan", "Feb", "Maa", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" ],
+						changeMonth: true,
+						changeYear: true,
+						yearRange: "c-50:c+32",
+						defaultDate: "-50y",
+						maxDate: "-18y",
+						onSelect: hidePlaceholder,
+					});
 				});
 			</script>
 		<?php
@@ -886,36 +899,33 @@
 		$address_fields['billing_first_name']['placeholder'] = "George";
 		$address_fields['billing_last_name']['label'] = "Familienaam";
 		$address_fields['billing_last_name']['placeholder'] = "Foreman";
-		$address_fields['billing_phone']['label'] = "Telefoonnummer";
-		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
+		$address_fields['billing_address_1']['class'] = array('form-row-first');
+		$address_fields['billing_address_1']['clear'] = false;
 		$address_fields['billing_email']['label'] = "E-mailadres";
 		$address_fields['billing_email']['placeholder'] = "george@foreman.com";
+		$address_fields['billing_phone']['label'] = "Telefoonnummer";
+		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
 		// $address_fields['billing_company']['label'] = "Bedrijf";
 		// $address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
-		// $address_fields['billing_address_2']['label'] = "BTW-nummer";
-		// $address_fields['billing_address_2']['placeholder'] = "BE 0453.066.016";
+		// $address_fields['billing_vat']['label'] = "BTW-nummer";
+		// $address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
+		
 		$address_fields['billing_first_name']['class'] = array('form-row-first');
 		$address_fields['billing_last_name']['class'] = array('form-row-last');
-		$address_fields['billing_phone']['class'] = array('form-row-first');
-		$address_fields['billing_phone']['clear'] = false;
-		$address_fields['billing_email']['class'] = array('form-row-last');
+		$address_fields['billing_email']['class'] = array('form-row-first');
 		$address_fields['billing_email']['clear'] = true;
 		$address_fields['billing_email']['required'] = true;
+		$address_fields['billing_phone']['class'] = array('form-row-last');
+		$address_fields['billing_phone']['clear'] = false;
 
-		$mydateoptions = array( '' => 'Selecteer dag' ); 
-
-	    $address_fields['billing_address_1']['class'] = array('form-row-first');
-		$address_fields['billing_address_1']['clear'] = false;
-		
 		$address_fields['billing_birthday'] = array(
 			'type' => 'text',
-	        'label' => 'Geboortedatum',
+	        'label' => 'Geboortedatum (DD/MM/JJJJ)',
 			'id' => 'datepicker',
 	        'placeholder' => '16/03/1988',
 			'required' => true,
 			'class' => array('form-row-last'),
 			'clear' => true,
-			'options' => $mydateoptions,
 		);
 		
 		$order = array(
@@ -927,8 +937,8 @@
         	"billing_city",
         	// NODIG VOOR SERVICE POINT!
         	"billing_country",
-        	"billing_phone",
         	"billing_email",
+        	"billing_phone",
     	);
 
     	foreach($order as $field) {
@@ -1025,6 +1035,23 @@
 		$shipping = reset($shipping);
 		$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
 		update_post_meta( $order_id, 'estimated_delivery', $timestamp );
+	}
+
+	// Valideer en formatteer het geboortedatumveld
+	add_action( 'woocommerce_checkout_process', 'verify_age' );
+
+	function verify_age() {
+		$birthday = format_date( $_POST['billing_birthday'] );
+		if ( $birthday ) {
+			// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
+			if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime( '-18 years' ) ) {
+		        wc_add_notice( __( 'Om een bestelling te kunnen plaatsen dien je minstens 18 jaar oud te zijn.' ), 'error' );
+		    } else {
+		    	$_POST['billing_birthday'] = $birthday;
+		    }
+		} else {
+			wc_add_notice( __( 'Geef een geldige geboortedatum in.' ), 'error' );	
+		}
 	}
 
 	// Herschrijf bepaalde klantendata naar standaardformaten tijdens afrekenen én bijwerken vanaf accountpagina
@@ -1128,6 +1155,15 @@
 		} else {
 			// Rekening houden met ochtenduren!
 			return substr($value, 0, 1) . ':' . substr($value, 1, 2);
+		}
+	}
+
+	function format_date( $value ) {
+		$new_value = preg_replace( '/[\s\-\.\/]/', '', $value );
+		if ( strlen($new_value) === 8 ) {
+			return substr($new_value, 0, 2) . '/' . substr($new_value, 2, 2) . '/' . substr($new_value, 4, 4);
+		} else {
+			return false;
 		}
 	}
 
