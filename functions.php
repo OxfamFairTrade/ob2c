@@ -71,6 +71,7 @@
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
+		wp_enqueue_script( 'jquery-ui-datepicker' );
 	}
 
 	// Stop vervelende nag van Visual Composer
@@ -796,6 +797,14 @@
 				</script>
 			<?php
 		}
+
+		?>
+			<script type="text/javascript">
+				jQuery(document).ready(function($) {
+					jQuery("#datepicker").datepicker();
+				});
+			</script>
+		<?php
 	}
 
 	// Verhinder bepaalde selecties in de back-end
@@ -890,11 +899,28 @@
 		$address_fields['billing_email']['class'] = array('form-row-last');
 		$address_fields['billing_email']['clear'] = true;
 		$address_fields['billing_email']['required'] = true;
+
+		$mydateoptions = array( '' => 'Selecteer dag' ); 
+
+	    $address_fields['billing_address_1']['class'] = array('form-row-first');
+		$address_fields['billing_address_1']['clear'] = false;
+		
+		$address_fields['billing_birthday'] = array(
+			'type' => 'text',
+	        'label' => 'Geboortedatum',
+			'id' => 'datepicker',
+	        'placeholder' => '16/03/1988',
+			'required' => true,
+			'class' => array('form-row-last'),
+			'clear' => true,
+			'options' => $mydateoptions,
+		);
 		
 		$order = array(
         	"billing_first_name",
         	"billing_last_name",
         	"billing_address_1",
+        	"billing_birthday",
         	"billing_postcode",
         	"billing_city",
         	// NODIG VOOR SERVICE POINT!
