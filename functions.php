@@ -5,7 +5,7 @@
 	$activated_shops = array( 12, 15, 16, 19, 20, 22, 24, 28, 30, 31, 32, 35, 36, 37, 38 );
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
-	add_action( 'init', 'v_forcelogin' );
+	// add_action( 'init', 'v_forcelogin' );
 	
 	function v_forcelogin() {
 		if ( ! is_user_logged_in() ) {
