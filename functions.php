@@ -72,8 +72,8 @@
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/flick/jquery-ui.css' );
-		wp_enqueue_style( 'jquery-ui' );  
+		wp_register_style( 'jquery-ui', get_stylesheet_directory().'/jquery-ui.theme.min.css' );
+		wp_enqueue_style( 'jquery-ui' );
 	}
 
 	// Stop vervelende nag van Visual Composer
