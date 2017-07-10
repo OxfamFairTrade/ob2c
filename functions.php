@@ -804,7 +804,9 @@
 			<script type="text/javascript">
 				jQuery(document).ready( function() {
 					function hidePlaceholder( dateText, inst ) {
-						jQuery(this).attr('placeholder', '');
+						// jQuery(this).attr('placeholder', '');
+						// Validatie uitlokken meteen na instellen!
+						jQuery(this).trigger('change');
 					}
 
 					jQuery("#datepicker").datepicker({
