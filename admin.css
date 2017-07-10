@@ -3,9 +3,15 @@
 	Author:       	Frederik Neirynck
 	Author URI:		http://www.oxfamfairtrade.be
 	Description:  	Toevoegingen aan de back-end voor custom pagina's
-	Version:      	1.0.0
+	Version:      	1.1.0
 	Text Domain:  	oxfam-admin
 */
+
+#woocommerce_dashboard_status .wc_status_list li.claimed-orders a::before {
+	font-family: 'Dashicons';
+	content: '\f513';
+	color: #e70052;
+}
 
 .dashboard_page_relevanssi-premium-relevanssi .postbox-container {
 	width: 100%;
