@@ -1663,20 +1663,19 @@
 		return $timestamp;
 	}
 
-	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat EN SERVICE POINT?
+	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat WEL BIJ SERVICE POINT, WANT NODIG VOOR IMPORT
 	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_pickups' ); 
 	
 	function skip_shipping_address_on_pickups( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
 		// Deze vergelijking zoekt naar methodes die beginnen met deze string
-		// or strpos( reset($chosen_methods), 'service_point_shipping_method' ) !== false
 		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false ) {
 			$needs_shipping_address = false;
 		}
 		return $needs_shipping_address;
 	}
 
-	// Verberg het lege verzendadres na het bestellen ook bij een postpuntlevering in de front-end
+	// Verberg het verzendadres na het bestellen ook bij een postpuntlevering in de front-end
 	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_pickups' ); 
 	
 	function hide_shipping_address_on_pickups( $hide_on_methods ) {
