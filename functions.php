@@ -229,6 +229,7 @@
 	function register_claiming_member_shop( $order_id ) {
 		$order = wc_get_order( $order_id );
 		$blog_id = get_current_blog_id();
+		// Een gewone klant heeft deze eigenschap niet en retourneert dus sowieso 'false'
 		$owner = get_the_author_meta( 'blog_'.$blog_id.'_member_of_shop', get_current_user_id() );
 		
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
@@ -237,7 +238,7 @@
 			$method = reset($methods);
 			$meta_data = $method->get_meta_data();
 			$pickup_data = reset($meta_data);
-			$city = do_shortcode($pickup_data->value['city']);
+			$city = mb_strtolower( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) );
 			if ( in_array( $city, get_option( 'oxfam_member_shops' ) ) ) {
 				// Dubbelcheck of deze stad wel tussen de deelnemende winkels zit
 				$owner = $city;
@@ -249,7 +250,7 @@
 			$owner = mb_strtolower( get_oxfam_shop_data( 'city' ) );
 		}
 
-		update_post_meta( $order_id, 'claimed_by', $owner, true );
+		update_post_meta( $order_id, 'claimed_by', $owner );
 	}
 
 	function delete_claiming_member_shop( $order_id ) {
