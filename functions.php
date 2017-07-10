@@ -804,7 +804,8 @@
 			<script type="text/javascript">
 				jQuery(document).ready( function() {
 					function hidePlaceholder( dateText, inst ) {
-						// jQuery(this).attr('placeholder', '');
+						// Placeholder onmiddellijk verwijderen
+						jQuery(this).attr('placeholder', '');
 						// Validatie uitlokken meteen na instellen!
 						jQuery(this).trigger('change');
 					}
@@ -1668,7 +1669,8 @@
 	function skip_shipping_address_on_pickups( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
 		// Deze vergelijking zoekt naar methodes die beginnen met deze string
-		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false or strpos( reset($chosen_methods), 'service_point_shipping_method' ) !== false ) {
+		// or strpos( reset($chosen_methods), 'service_point_shipping_method' ) !== false
+		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false ) {
 			$needs_shipping_address = false;
 		}
 		return $needs_shipping_address;
