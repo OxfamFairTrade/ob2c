@@ -806,13 +806,13 @@
 					function hidePlaceholder( dateText, inst ) {
 						// Placeholder onmiddellijk verwijderen
 						jQuery(this).attr('placeholder', '');
-						// Validatie uitlokken meteen na instellen!
-						jQuery(this).trigger('change');
+						// Validatie voor alle zekerheid weer activeren
+						jQuery('#datepicker_field').addClass( 'validate-required' );
 					}
 
 					jQuery("#datepicker").datepicker({
 						dayNamesMin: [ "Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za" ],
-						monthNamesShort: [ "Jan", "Feb", "Maa", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec" ],
+						monthNamesShort: [ "Jan", "Feb", "Maart", "April", "Mei", "Juni", "Juli", "Aug", "Sep", "Okt", "Nov", "Dec" ],
 						changeMonth: true,
 						changeYear: true,
 						yearRange: "c-50:c+32",
@@ -820,6 +820,9 @@
 						maxDate: "-18y",
 						onSelect: hidePlaceholder,
 					});
+
+					// Overijverige validatie uitschakelen
+					jQuery('#datepicker_field').removeClass( 'validate-required' );
 				});
 			</script>
 		<?php
