@@ -5,16 +5,16 @@
 	$activated_shops = array( 12, 15, 16, 19, 20, 22, 24, 28, 30, 31, 32, 35, 36, 37, 38 );
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
-	// add_action( 'init', 'v_forcelogin' );
+	add_action( 'init', 'v_forcelogin' );
 	
 	function v_forcelogin() {
 		if ( ! is_user_logged_in() ) {
 			global $activated_shops;
 			$url = v_get_url();
 			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
-			// Niet redirecten indien webshop al gelanceerd
-			if ( ! in_array( get_current_blog_id(), $activated_shops ) ) {
-				// Niet redirecten: inlogpagina, activatiepagina en WC API-calls
+			// Enkel redirecten op LIVE-site én indien webshop nog niet gelanceerd
+			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' and ! in_array( get_current_blog_id(), $activated_shops ) ) {
+				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
 				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					wp_safe_redirect( wp_login_url( $redirect_url ), 302 );
 					exit();
@@ -923,7 +923,7 @@
 
 		$address_fields['billing_birthday'] = array(
 			'type' => 'text',
-	        'label' => 'Geboortedatum (DD/MM/JJJJ)',
+	        'label' => 'Geboortedatum',
 			'id' => 'datepicker',
 	        'placeholder' => '16/03/1988',
 			'required' => true,
