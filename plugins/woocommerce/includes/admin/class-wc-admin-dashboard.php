@@ -127,7 +127,8 @@ class WC_Admin_Dashboard {
 		}
 
 		$this->status_widget_order_rows();
-		$this->status_widget_stock_rows();
+		// DISABLE
+		// $this->status_widget_stock_rows();
 
 		do_action( 'woocommerce_after_dashboard_status_widget', $reports );
 		echo '</ul>';
@@ -156,20 +157,28 @@ class WC_Admin_Dashboard {
 		<li class="processing-orders">
 			<a href="<?php echo admin_url( 'edit.php?post_status=wc-processing&post_type=shop_order' ); ?>">
 				<?php
-					/* translators: %s: order count */
-					printf(
-						_n( '<strong>%s order</strong> awaiting processing', '<strong>%s orders</strong> awaiting processing', $processing_count, 'woocommerce' ),
-						$processing_count
-					);
+					if ( is_regional_webshop() ) {
+						printf(
+							_n( '<strong>%s bestelling</strong> wacht op bevestiging', '<strong>%s bestellingen</strong> wachten op bevestiging', $processing_count, 'woocommerce' ),
+							$processing_count
+						);
+					}
+					// OM GOD WEET WELKE REDEN WERKT ELSE HIER NIET
+					if ( ! is_regional_webshop() ) {
+						printf(
+							_n( '<strong>%s order</strong> awaiting processing', '<strong>%s orders</strong> awaiting processing', $processing_count, 'woocommerce' ),
+							$processing_count
+						);
+					}
 				?>
 			</a>
 		</li>
 		<?php
-		if ( is_regional_webshop() ) {			
+		if ( is_regional_webshop() ) {
 			echo '<li class="claimed-orders">';
 				echo '<a href="'.admin_url( 'edit.php?post_status=wc-claimed&post_type=shop_order' ).'">';
 					printf(
-						_n( '<strong>%s bestelling</strong> bevestigd door winkel', '<strong>%s bestellingen</strong> bevestigd door winkel', $on_hold_count, 'woocommerce' ),
+						_n( '<strong>%s order</strong> awaiting processing', '<strong>%s orders</strong> awaiting processing', $on_hold_count, 'woocommerce' ),
 						$on_hold_count
 					);
 				echo '</a>';
