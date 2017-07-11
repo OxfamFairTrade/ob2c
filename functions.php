@@ -12,9 +12,9 @@
 			global $activated_shops;
 			$url = v_get_url();
 			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
-			// Niet redirecten indien webshop al gelanceerd
-			if ( ! in_array( get_current_blog_id(), $activated_shops ) ) {
-				// Niet redirecten: inlogpagina, activatiepagina en WC API-calls
+			// Enkel redirecten op LIVE-site én indien webshop nog niet gelanceerd
+			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' and ! in_array( get_current_blog_id(), $activated_shops ) ) {
+				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
 				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					wp_safe_redirect( wp_login_url( $redirect_url ), 302 );
 					exit();
@@ -71,6 +71,9 @@
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
+		wp_enqueue_script( 'jquery-ui-datepicker' );
+		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css' );
+		wp_enqueue_style( 'jquery-ui' );  
 	}
 
 	// Stop vervelende nag van Visual Composer
@@ -797,6 +800,33 @@
 				</script>
 			<?php
 		}
+
+		?>
+			<script type="text/javascript">
+				jQuery(document).ready( function() {
+					function hidePlaceholder( dateText, inst ) {
+						// Placeholder onmiddellijk verwijderen
+						jQuery(this).attr('placeholder', '');
+						// Validatie voor alle zekerheid weer activeren
+						jQuery('#datepicker_field').addClass( 'validate-required' );
+					}
+
+					jQuery("#datepicker").datepicker({
+						dayNamesMin: [ "Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za" ],
+						monthNamesShort: [ "Jan", "Feb", "Maart", "April", "Mei", "Juni", "Juli", "Aug", "Sep", "Okt", "Nov", "Dec" ],
+						changeMonth: true,
+						changeYear: true,
+						yearRange: "c-50:c+32",
+						defaultDate: "-50y",
+						maxDate: "-18y",
+						onSelect: hidePlaceholder,
+					});
+
+					// Overijverige validatie uitschakelen
+					jQuery('#datepicker_field').removeClass( 'validate-required' );
+				});
+			</script>
+		<?php
 	}
 
 	// Verhinder bepaalde selecties in de back-end
@@ -876,32 +906,46 @@
 		$address_fields['billing_first_name']['placeholder'] = "George";
 		$address_fields['billing_last_name']['label'] = "Familienaam";
 		$address_fields['billing_last_name']['placeholder'] = "Foreman";
-		$address_fields['billing_phone']['label'] = "Telefoonnummer";
-		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
+		$address_fields['billing_address_1']['class'] = array('form-row-first');
+		$address_fields['billing_address_1']['clear'] = false;
 		$address_fields['billing_email']['label'] = "E-mailadres";
 		$address_fields['billing_email']['placeholder'] = "george@foreman.com";
+		$address_fields['billing_phone']['label'] = "Telefoonnummer";
+		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
 		// $address_fields['billing_company']['label'] = "Bedrijf";
 		// $address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
-		// $address_fields['billing_address_2']['label'] = "BTW-nummer";
-		// $address_fields['billing_address_2']['placeholder'] = "BE 0453.066.016";
+		// $address_fields['billing_vat']['label'] = "BTW-nummer";
+		// $address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
+		
 		$address_fields['billing_first_name']['class'] = array('form-row-first');
 		$address_fields['billing_last_name']['class'] = array('form-row-last');
-		$address_fields['billing_phone']['class'] = array('form-row-first');
-		$address_fields['billing_phone']['clear'] = false;
-		$address_fields['billing_email']['class'] = array('form-row-last');
+		$address_fields['billing_email']['class'] = array('form-row-first');
 		$address_fields['billing_email']['clear'] = true;
 		$address_fields['billing_email']['required'] = true;
+		$address_fields['billing_phone']['class'] = array('form-row-last');
+		$address_fields['billing_phone']['clear'] = false;
+
+		$address_fields['billing_birthday'] = array(
+			'type' => 'text',
+	        'label' => 'Geboortedatum',
+			'id' => 'datepicker',
+	        'placeholder' => '16/03/1988',
+			'required' => true,
+			'class' => array('form-row-last'),
+			'clear' => true,
+		);
 		
 		$order = array(
         	"billing_first_name",
         	"billing_last_name",
         	"billing_address_1",
+        	"billing_birthday",
         	"billing_postcode",
         	"billing_city",
         	// NODIG VOOR SERVICE POINT!
         	"billing_country",
-        	"billing_phone",
         	"billing_email",
+        	"billing_phone",
     	);
 
     	foreach($order as $field) {
@@ -998,6 +1042,23 @@
 		$shipping = reset($shipping);
 		$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
 		update_post_meta( $order_id, 'estimated_delivery', $timestamp );
+	}
+
+	// Valideer en formatteer het geboortedatumveld
+	add_action( 'woocommerce_checkout_process', 'verify_age' );
+
+	function verify_age() {
+		$birthday = format_date( $_POST['billing_birthday'] );
+		if ( $birthday ) {
+			// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
+			if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime( '-18 years' ) ) {
+		        wc_add_notice( __( 'Om een bestelling te kunnen plaatsen dien je minstens 18 jaar oud te zijn.' ), 'error' );
+		    } else {
+		    	$_POST['billing_birthday'] = $birthday;
+		    }
+		} else {
+			wc_add_notice( __( 'Geef een geldige geboortedatum in.' ), 'error' );	
+		}
 	}
 
 	// Herschrijf bepaalde klantendata naar standaardformaten tijdens afrekenen én bijwerken vanaf accountpagina
@@ -1101,6 +1162,15 @@
 		} else {
 			// Rekening houden met ochtenduren!
 			return substr($value, 0, 1) . ':' . substr($value, 1, 2);
+		}
+	}
+
+	function format_date( $value ) {
+		$new_value = preg_replace( '/[\s\-\.\/]/', '', $value );
+		if ( strlen($new_value) === 8 ) {
+			return substr($new_value, 0, 2) . '/' . substr($new_value, 2, 2) . '/' . substr($new_value, 4, 4);
+		} else {
+			return false;
 		}
 	}
 
@@ -1597,19 +1667,19 @@
 		return $timestamp;
 	}
 
-	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat EN SERVICE POINT?
+	// Bewaar het verzendadres niet tijdens het afrekenen indien het om een afhaling gaat WEL BIJ SERVICE POINT, WANT NODIG VOOR IMPORT
 	add_filter( 'woocommerce_cart_needs_shipping_address', 'skip_shipping_address_on_pickups' ); 
 	
 	function skip_shipping_address_on_pickups( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
 		// Deze vergelijking zoekt naar methodes die beginnen met deze string
-		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false or strpos( reset($chosen_methods), 'service_point_shipping_method' ) !== false ) {
+		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false ) {
 			$needs_shipping_address = false;
 		}
 		return $needs_shipping_address;
 	}
 
-	// Verberg het lege verzendadres na het bestellen ook bij een postpuntlevering in de front-end
+	// Verberg het verzendadres na het bestellen ook bij een postpuntlevering in de front-end
 	add_filter( 'woocommerce_order_hide_shipping_address', 'hide_shipping_address_on_pickups' ); 
 	
 	function hide_shipping_address_on_pickups( $hide_on_methods ) {
