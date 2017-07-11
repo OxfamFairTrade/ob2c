@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2017-06-06 15:18+0200\n"
-"PO-Revision-Date: 2017-06-12 19:36+0200\n"
+"PO-Revision-Date: 2017-07-11 21:57+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -38,14 +38,14 @@ msgstr "We hebben je bestelling bij %2$s van %1$s goed ontvangen"
 msgid ""
 "Onderwerp van de 2de bevestigingsmail (indien afhaling) inclusief "
 "besteldatum (%1$s) en naam webshop (%2$s)"
-msgstr "Je bestelling bij %2$s van %1$s is afgerond"
+msgstr "Je bestelling bij %2$s van %1$s werd samengesteld"
 
 #: functions.php:430
 #, php-format
 msgid ""
 "Onderwerp van de 2de bevestigingsmail (indien thuislevering) inclusief "
 "besteldatum (%1$s) en naam webshop (%2$s)"
-msgstr "Je bestelling bij %2$s van %1$s is afgerond"
+msgstr "Je bestelling bij %2$s van %1$s werd ingepakt"
 
 #: functions.php:436
 #, php-format
@@ -71,7 +71,7 @@ msgstr "Je bestelling staat klaar!"
 
 #: functions.php:460
 msgid "Heading van de 2de bevestigingsmail (indien thuislevering)"
-msgstr "Je bestelling is verzonden!"
+msgstr "Je bestelling is onderweg!"
 
 #: functions.php:466
 msgid "Heading van de terugbetalingsmail"
@@ -261,8 +261,8 @@ msgstr ""
 #: woocommerce/emails/customer-completed-order.php:26
 msgid "Bericht bovenaan de 2de bevestigingsmail (indien thuislevering)."
 msgstr ""
-"We hebben je bestelling klaargezet voor verzending! Een vrijwilliger of een "
-"fietskoerier komt er binnenkort mee langs."
+"We hebben je bestelling klaargemaakt voor verzending! Een vrijwilliger of "
+"een fietskoerier komt er binnenkort mee langs."
 
 #: woocommerce/emails/customer-note.php:23
 msgid ""

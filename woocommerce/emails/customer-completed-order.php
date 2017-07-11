@@ -27,8 +27,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$text = __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' );
 	if ( get_tracking_number( $order->get_id() ) ) {
 		if ( $order->has_shipping_method('service_point_shipping_method') ) {
-			$sentences = explode( '. ', $text );
-			echo $sentences[0].'. Je kunt het binnenkort oppikken in het afhaalpunt dat je koos.';
+			echo str_replace( 'Een vrijwilliger of een fietskoerier komt er binnenkort mee langs.', 'Je kunt het binnenkort oppikken in het afhaalpunt dat je koos.', $text );
 		} else {
 			echo str_replace( 'Een vrijwilliger of een fietskoerier', 'De postbode', $text );
 		}
