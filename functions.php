@@ -1507,7 +1507,8 @@
 			$from = current_time( 'timestamp' );
 		} else {
 			$order = wc_get_order($order_id);
-			$from = strtotime( $order->get_date_created() );
+			// We hebben de timestamp van de besteldatum nodig in de huidige tijdzone, dus pas get_date_from_gmt() toe die het formaat 'Y-m-d H:i:s' vereist!
+			$from = strtotime( get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', strtotime( $order->get_date_created() ) ) ) );
 		}
 		
 		$timestamp = $from;
