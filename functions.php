@@ -2,7 +2,7 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	$activated_shops = array( 12, 15, 16, 19, 20, 21, 22, 24, 28, 30, 31, 32, 34, 35, 36, 37, 38 );
+	$activated_shops = array( 8, 9, 12, 15, 16, 19, 20, 21, 22, 24, 28, 30, 31, 32, 34, 35, 36, 37, 38 );
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
 	add_action( 'init', 'v_forcelogin' );
@@ -3119,16 +3119,13 @@
 				echo '<div class="notice notice-success">';
 				echo '<p>Alle logins zijn verstuurd naar de lokale beheerders. Op dit moment kun je enkel als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen begin augustus publiek te zetten, want in het FAIR-magazine zal een eerste aankondiging verschijnen.</p>';
 				echo '</div>';
+				echo '<div class="notice notice-info">';
+				echo '<p>Volg <a href="https://github.com/OxfamFairTrade/ob2c/wiki/Betaling#hoe-activeer-ik-mijn-account-bij-mollie" target="_blank">de handleiding</a> om de activering van je Mollie-account te voltooien. Het duurt enkele dagen vooraleer je overschrijving met de gestructureerde mededeling verwerkt is. Let er ook goed op dat je de overschrijving uitvoert vanaf de winkelrekening (en niet je persoonlijke rekening!) want anders zal het IBAN-nummer niet herkend worden. De activatie van kredietkaarten als betaalmethode wordt pas afgerond nadat de webshop gepubliceerd is. Een onderdeel van dat activatieproces is immers een controle van de aangeboden producten.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-error">';
+				echo '<p>Sommige winkels kregen een bericht dat hun legitimatiebewijs afgewezen werd. Dit gebeurt indien de rechtsgeldige vertegenwoordiger die we opgaven (= de persoon waarvan jullie ons de identiteitskaart bezorgden) nog niet in de <u>digitale</u> versie van het KBO geregistreerd staat. We adviseren in dat geval om de rechtsgeldige vertegenwoordiger onder de Mollie-instellingen voor \'<a href="https://www.mollie.com/dashboard/settings/organization" target="_blank">Bedrijf</a>\' aan te passen naar iemand die wel reeds vermeld staat in het KBO. (Check de link naast het BTW-nummer op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina.) <a href="mailto:e-commerce@oft.be" target="_blank">Contacteer ons</a> indien je hierbij assistentie nodig hebt.</p>';
+				echo '</div>';
 			}
-			echo '<div class="notice notice-info">';
-			echo '<p>Volg <a href="https://github.com/OxfamFairTrade/ob2c/wiki/Betaling#hoe-activeer-ik-mijn-account-bij-mollie" target="_blank">de handleiding</a> om de activering van je Mollie-account te voltooien. Het duurt enkele dagen vooraleer je overschrijving met de gestructureerde mededeling verwerkt is. Let er ook goed op dat je de overschrijving uitvoert vanaf de winkelrekening (en niet je persoonlijke rekening!) want anders zal het IBAN-nummer niet herkend worden. Indien de naam van de vzw erg lang is, kan het bovendien zijn dat Mollie je contacteert omdat het specifieke deel van de rekeningeigenaar niet zichtbaar is op de overschrijving.</p>';
-			echo '</div>';
-			echo '<div class="notice notice-error">';
-			echo '<p>De activatie van kredietkaarten als betaalmethode is voor elke webshop reeds aangevraagd maar kan pas afgerond worden nadat de webshop gepubliceerd is. Een onderdeel van dat activatieproces is immers een controle van de aangeboden producten. Bij alcoholische producten moeten we nog een leeftijdscontrole inbouwen, de boodschap dat verkoop enkel toegestaan is aan meerderjarigen volstaat niet. In afwachting daarvan mag je de rode waarschuwing op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina negeren. Je zult hierover ook een mail van Mollie ontvangen, en het is mogelijk dat je uitbetalingen hierdoor gepauzeerd worden.</p>';
-			echo '</div>';
-			echo '<div class="notice notice-error">';
-			echo '<p>Sommige winkels kregen een bericht dat hun legitimatiebewijs afgewezen werd. Dit gebeurt indien de rechtsgeldige vertegenwoordiger die we opgaven (= de persoon waarvan jullie ons de identiteitskaart bezorgden) nog niet in de <u>digitale</u> versie van het KBO geregistreerd staat. We adviseren in dat geval om de rechtsgeldige vertegenwoordiger onder de Mollie-instellingen voor \'<a href="https://www.mollie.com/dashboard/settings/organization" target="_blank">Bedrijf</a>\' aan te passen naar iemand die wel reeds vermeld staat in het KBO. (Check de link naast het BTW-nummer op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina.) <a href="mailto:e-commerce@oft.be" target="_blank">Contacteer ons</a> indien je hierbij assistentie nodig hebt.</p>';
-			echo '</div>';
 			if ( does_home_delivery() ) {
 				echo '<div class="notice notice-info">';
 				echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
