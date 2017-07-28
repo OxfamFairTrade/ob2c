@@ -127,8 +127,13 @@
 	max-width: 400px;
 }
 
-/* Dirty fix om 'Bestelling toevoegen' te verbergen */
+/* Dirty fix om 'Bestelling toevoegen' te verbergen NOG NODIG? */
 body.post-type-shop_order div.wrap > a.page-title-action {
+	display: none;
+}
+
+/* Actieknop 'In behandeling' bij onbetaalde bestellingen verbergen */
+body.post-type-shop_order td.column-order_actions a.button.tips.processing {
 	display: none;
 }
 
