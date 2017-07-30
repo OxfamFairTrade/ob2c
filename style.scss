@@ -1,0 +1,571 @@
+/*!
+	Theme Name:   	Oxfam-Wereldwinkels Webshop
+	Author:       	Efraim Sebrechts & Frederik Neirynck
+	Author URI:		https://www.oxfamwereldwinkels.be
+	Description:  	Custom portaalpagina, lokale logo's en extra banners bij producten.
+	Template:     	savoy
+	Version:      	1.4.0
+	Text Domain:  	oxfam-webshop
+*/
+
+.nm-qty-minus.nm-font-media-play:before {
+	content: '\f068';
+}
+
+.nm-qty-plus.nm-font-media-play:before {
+	content: '\f067';
+}
+
+/* Zodat we de winkelnaam verticaal kunnen centereren */
+body:not(.portal) .nm-header.menu-centered .nm-header-logo {
+	display: table;
+	width: 35%;
+}
+
+body:not(.portal) .nm-header.menu-centered .nm-main-menu {
+	position: relative;
+	left: -10%;
+}
+
+/* Zet de winkelnaam in CSS na logo */
+.nm-header.menu-centered .nm-header-logo .winkelnaam {
+	vertical-align: middle;
+    position: relative;
+    top: 4px;
+	margin-left: 1em;
+	padding: 0.25em 1em;
+	font-size: 125%;
+	line-height: 125%;
+	letter-spacing: 3px;
+	color: #707070;
+	border-left: 1px solid #707070;
+	display: inline-block;
+}
+
+/* Voeg een achtegrondafbeelding toe */
+.portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
+	background-image: url('cover.jpg');
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: cover;
+}
+.portal.home div.nm-page-wrap-inner > #nm-header {
+	background-color: transparent;
+	height: 200px;
+}
+
+/* Forceer het menu NIET naar een nieuwe regel */
+.portal.home .nm-header.menu-centered .nm-header-logo {
+	position: absolute;
+}
+
+/* Kleur tekst wit i.p.v. grijs */
+.portal.home .nm-header-logo .winkelnaam {
+	color: white;
+	border-left: 1px solid white;
+}
+
+.portal.home .nm-header.menu-centered .nm-main-menu {
+	line-height: 100%;
+}
+
+.portal.home div.nm-page-wrap-inner .nm-header-inner,
+.portal.home div.nm-page-wrap-inner .nm-header-row,
+.portal.home div.nm-page-wrap-inner .nm-header-col,
+.portal.home div.nm-page-wrap-inner .nm-main-menu {
+	height: 100%;
+	width: 100%;
+}
+
+/* TE VERPLAATSEN NAAR APARTE DIV IN SJABLOON */
+.portal.home div.nm-page-wrap-inner .nm-main-menu:before {
+	content: 'De grootste keuze aan eerlijke voedingsproducten';
+	line-height: 200px;
+	color: white;
+	font-size: 2em;
+}
+
+.portal.home h3.afhaling {
+	text-align: center;
+	color: rgb(0, 175, 233);
+}
+
+.portal.home .nm_column.scheiding {
+	border-right: 1px solid rgba(133, 107, 95, 0.5);
+}
+
+.portal.home h3.thuislevering {
+	text-align: center;
+	color: rgb(255, 99, 133);
+}
+
+.textwidget i,
+.textwidget h2,
+.textwidget p {
+	color: rgb(133, 107, 95);
+}
+
+li.widget.widget_text:first-child {
+	border-right: 1px solid rgba(133, 107, 95, 0.5);
+}
+
+body:not(.portal) li.widget.widget_text:last-child {
+	border-left: 1px solid rgba(133, 107, 95, 0.5);
+}
+
+/* Quotes nooit centreren! */
+.nm-testimonial-description {
+	text-align: left !important;
+}
+
+/* Extra klasses voor 'Hoe werkt het?'-pagina */
+.extra-bottom-marge h3 {
+	margin-bottom: 1em;
+}
+.centreer-blokje-op-helft {
+	width: 50%;
+}
+
+/* Poging tot stylen van Google Maps-ballonnen */
+.gm-style-iw {
+	/*background-color: white;
+	width: 350px !important;
+	top: 0 !important;
+	left: 0 !important;
+	border-radius: 10px;*/
+}
+
+/* Maak de leeggoedicoontjes kleiner */
+.shop_table.cart .product-thumbnail.empties {
+	padding: 20px;
+}
+.nm-cart-panel-thumbnail-wrap.empties {
+	padding: 10px;
+}
+
+/* Verzorg spatiëring tussen betaalicoontjes */
+.nm-footer-bar-logo.betaalmethodes,
+.nm-footer-bar-logo.betaalmethodes img {
+	margin-right: 5px;
+}
+
+/* Breedte productarchief- en productdetailpagina's limiteren */
+div#nm-shop,
+div.nm-single-product {
+	max-width: 1500px;
+	margin: 0 auto;
+}
+
+/* Zet de titels op de homepage groter */
+.titels-homepage h4 {
+	font-size: 2em !important;
+}
+
+/* Lijstjes netjes laten inspringen */
+.page-template-default .wpb_text_column ul > li {
+	list-style-position: outside;
+	margin-left: 3em;
+	margin-bottom: 1em;
+}
+
+/* Prijs wat dichter bij de titel laten komen */
+h1.product_title.entry-title {
+	margin-bottom: 0;
+}
+
+/* Geef leeggoedboodschap wat marge boven en onder */
+div.wc-force-sells {
+	margin: 1em 0;
+}
+div.wc-force-sells > p {
+	margin-bottom: 0;
+}
+div.wc-force-sells > ul {
+	margin-left: 30px;
+}
+
+/* Maak de testimonial iets subtieler */
+div.nm-testimonial {
+	margin: 2em auto 1em auto;
+}
+div.nm-testimonial-description {
+	font-size: 110%;
+	font-style: italic;
+	color: #777777;
+	position: relative;
+	padding-top: 10px;
+	padding-left: 60px;
+}
+div.nm-testimonial-description:before {
+	content: '\201C';
+	font-family: Georgia;
+	line-height: 1em;
+	font-size: 5em;
+	font-weight: bold;
+	color: #999999;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+div.nm-testimonial-author {
+	text-align: right;
+}
+
+div.nm-product-share-wrap {
+	padding-top: 0;	
+	margin-top: 1em;
+}
+
+/* Zet limiet op breedte van productbeschrijving */
+div.nm-tabs-panel-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Maak de kolommen in de technische productinfo breder/smaller */
+#tab-additional_information .shop_attributes th,
+#tab-partner_info .shop_attributes th,
+#tab-allergen_info .shop_attributes th {
+	width: 30%;
+}
+#tab-food_info .shop_attributes th {
+	width: 50%;
+}
+
+/* Zorg dat de beschrijvende tekst boven een categoriefoto beter leesbaar wordt */
+.nm-product-category-text {
+    width: 100%;
+    background-color: transparent;
+    background-color: rgba(255,255,255,0.5);
+}
+.nm-product-category-heading {
+    color: black;
+}
+.nm-product-category-text > .invert-color {
+    color: black;
+}
+
+/* Fix overlap foto en tekst in widget */
+.widget_recently_viewed_products .product_list_widget > li {
+	padding: 5px 0 0 80px !important;
+}
+
+/* Zet vinkje en tekst bij algemene voorwaarden op zelfde lijn */
+.woocommerce-form__label-for-checkbox > span {
+	display: inline !important;
+}
+
+/* Beperk de afmetingen van producten op de cataloguspagina's (+ centreer in kolom en maak achtergrond wit) */
+.nm-shop-loop-thumbnail > a > img {
+	max-width: 350px;
+	margin: 0 auto;
+}
+.nm-shop-loop-thumbnail > a {
+	background-color: white;	
+}
+
+/* Beperk de afmetingen van producten op de detailpagina's */
+.thumbnails-vertical .woocommerce-product-gallery__wrapper {
+	text-align: center;
+}
+.woocommerce-product-gallery__image a img {
+	max-width: 595px;
+}
+
+/* Maak de tekstboodschappen groen */
+.woocommerce-message {
+	color: #61a534 !important;
+}
+
+li.product,
+div.nm-single-product div.woocommerce-product-gallery  {
+	overflow: hidden;
+}
+
+/* Toon een blokje bij bioproducten */
+li.product.pa_bio-ja::before {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 85%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(97, 165, 52, 0.9);
+	content: "Bioproduct"; 
+}
+
+/* Toon een bannertje op detailpagina's */
+div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::before {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 95%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(97, 165, 52, 0.9);
+	content: "Biogecertificeerd product";
+}
+
+/* Toon een blokje bij producten die niet beschikbaar zijn voor thuislevering */
+li.product.product_shipping_class-breekbaar::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 85%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(11, 156, 218, 0.9);
+	content: "Afhaling";
+}
+
+/* Toon een bannertje op detailpagina's */
+div.nm-single-product.product_shipping_class-breekbaar figure.woocommerce-product-gallery__wrapper::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 95%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(11, 156, 218, 0.9);
+	content: "Enkel afhaling in de winkel";
+}
+
+/* Toon een blokje bij nieuwe producten (door automatisch toegevoegde nieuwe datumklasse in template) */
+/* OVERSCHRIJFT AFHAALBLOKJE INDIEN OOK ACTIEF */
+li.product.newbee::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 85%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(255, 165, 0, 0.9);;
+	content: "Nieuw";
+}
+
+/* Toon een bannertje op detailpagina's */
+div.nm-single-product.newbee figure.woocommerce-product-gallery__wrapper::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 95%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(255, 165, 0, 0.9);
+	content: "Nieuw in ons assortiment";
+}
+
+/* Toon een blokje bij promoties (op basis van tag) */
+/* OVERSCHRIJFT NEWBEEBLOKJE INDIEN OOK ACTIEF */
+li.product.product_tag-promotie::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 85%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(250, 22, 50, 0.9);
+	content: "Promo";
+}
+
+/* Toon een bannertje op detailpagina's */
+div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
+	color: white;
+	position: absolute;
+	top: 0em;
+	left: 0.25em;
+	padding: 0 0.5em;
+	font-size: 95%;
+	z-index: 50;
+	transform: skewX(-3deg);
+	background-color: rgba(250, 22, 50, 0.9);
+	content: "In promotie";
+}
+
+/* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'-, 'promo'- en/of 'afhalen'-klasse lager om overlap te vermijden */
+li.product.pa_bio-ja.newbee::after,
+li.product.pa_bio-ja.product_shipping_class-breekbaar::after,
+li.product.pa_bio-ja.product_tag-promotie::after,
+div.nm-single-product.pa_bio-ja.newbee figure.woocommerce-product-gallery__wrapper::after,
+div.nm-single-product.pa_bio-ja.product_shipping_class-breekbaar figure.woocommerce-product-gallery__wrapper::after,
+div.nm-single-product.pa_bio-ja.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
+	top: 2.5em;
+}
+
+li.product.pa_bio-ja:hover::before,
+li.product.newbee:hover::after,
+li.product.product_shipping_class-breekbaar:hover::after,
+li.product.product_tag-promotie:hover::after {
+	opacity: 0.7;
+	transition: opacity 1s ease-out 0s;
+}
+
+/* Fix voor zoombox die productfoto's op detailpagina rechts afknipt */
+figure {
+	margin: 0 !important;
+}
+
+/* Styleer herkomstinfo boven winkelmandknop */
+p.herkomst {
+	margin-bottom: 1em;
+	font-weight: bold;
+}
+.summary.entry-summary.clear {
+	// padding-left: 50px;
+}
+
+/* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
+tr.shipping .woocommerce-Price-amount {
+	float: right;
+}
+
+/* Geef meer ruimte aan beschrijving promoactie TH-BREEDTE MANIPULEREN IS MISERIE, ZOEK ANDERE MANIER */
+.cart-collaterals .shop_table .cart-discount > th,
+.cart-collaterals .shop_table .cart-discount > td {
+}
+
+/* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het winkelmandje */
+.cart-collaterals .shop_table .order-total > th,
+.cart-collaterals .shop_table .order-total > td {
+	width: 50%;
+}
+.cart-collaterals .shop_table .order-total small.includes_tax {
+	display: block;
+}
+
+/* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het afrekenoverzicht */
+.woocommerce-checkout-review-order .shop_table .order-total > th,
+.woocommerce-checkout-review-order .shop_table .order-total > td {
+	width: 50%;
+}
+.woocommerce-checkout-review-order .shop_table .order-total small.includes_tax {
+	display: block;
+}
+
+/* Verberg overtollige info */
+.nm-coupon-wrap,
+.nm-single-product-menu,
+.shop_table input[name=update_cart],
+#calc_shipping_country_field,
+.nm-shipping-th-title,
+#customer_details #billing_country_field,
+#customer_details #shipping_country_field,
+.woocommerce-address-fields #billing_country_field,
+.woocommerce-address-fields #shipping_country_field,
+.checkout-subscribe-action,
+.products li.outofstock .nm-shop-loop-thumbnail > a:after,
+.ui-helper-hidden-accessible,
+.widget_product_tag_cloud {
+	display: none !important;
+}
+
+#sendcloudshipping_service_point_select,
+#sendcloudshipping_service_point_selected_label {
+	margin: 0.5em auto;
+	text-align: center;
+}
+
+/* Verberg lelijk opgemaakte 'Verzendkosten bijgewerkt' */
+.nm-shop-notice .woocommerce-info {
+	display: none;
+}
+
+/* Geef titeltje 'Bestelnotities' zelfde lay-out als factuur- en verzendgegevens (of ook h3 van maken in template?) */
+p#order_comments_field.form-row.notes label {
+	font-size: 24px;
+	padding-bottom: 27px;
+	padding-top: 36px;
+}
+
+/* Zorg ervoor dat de adressen en openingsuren de volledige breedte kunnen innemen (één of meerdere afhaalpunten) */
+.woocommerce-checkout-review-order-table tr.pickup_location td.update_totals_on_change > ul {
+	width: 350px;
+	float: right;
+	margin-top: 2em;
+}
+.woocommerce-checkout-review-order-table tr.pickup_location div.wc-pickup-location-note {
+	width: 350px;
+	float: right;
+	font-style: italic;
+}
+.woocommerce-checkout-review-order-table tr.pickup_location td.update_totals_on_change > ul > li {
+	margin-bottom: 0.5em;
+}
+
+.woocommerce-checkout-review-order-table tr.pickup_location th {
+	padding-right: 0 !important;
+}
+
+div.nm-feature.layout-centered {
+	max-width: 400px;
+	margin: 0 auto;
+	padding: 0.75em;
+}
+
+.nm-footer-widgets a {
+	color: #61a534 !important;
+}
+
+@media (min-width: 881px) {
+	/* Zet een limiet op de breedte van de add-to-cart knoppen */
+	div.nm-quantity-wrap,
+	button.nm-simple-add-to-cart-button {
+		max-width: 250px;
+	}
+}
+
+@media (max-width: 1024px) {
+	/* Reset naar standaard mobiele weergave */
+	body:not(.portal) .nm-header.menu-centered .nm-header-logo {
+		width: 25%;
+	}
+	
+	body:not(.portal) .nm-header.menu-centered .nm-header-logo .winkelnaam {
+		display: none;
+	}
+
+	body:not(.portal) .nm-header.menu-centered .nm-main-menu {
+		left: 0;
+	}
+
+	.nm-footer-bar-logo.betaalmethodes {
+		margin-top: 10px;
+	}
+
+	.nm-footer-bar-logo.betaalmethodes img:last-child {
+		margin-right: 0;
+	}
+}
+
+@media (max-width: 880px) {
+	/* Reset naar standaard mobiele weergave */
+	body:not(.portal) .nm-header.menu-centered .nm-header-logo {
+		width: 75%;
+	}
+	
+	body:not(.portal) .nm-header.menu-centered .nm-header-logo .winkelnaam {
+		display: inline-block;
+		padding: 0.25em 1em;
+		font-size: 110%;
+		line-height: 110%;
+	}
+
+	li.widget.widget_text {
+		border: none;
+	}
+}
