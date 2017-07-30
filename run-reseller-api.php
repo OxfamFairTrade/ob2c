@@ -36,7 +36,6 @@
 		$zip = get_oxfam_shop_data('zipcode');
 		$city = get_oxfam_shop_data('city');
 		$phone = '32'.substr( get_oxfam_shop_data('telephone'), 1 );
-		// $phone = '3292822463';
 		$email = get_bloginfo('admin_email');
 		$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
 		$headquarter = get_oxfam_shop_data('headquarter');
@@ -50,11 +49,11 @@
 		$url = get_bloginfo('url');
 		
 		// Parameters handmatig in te vullen
-		$login = 'owwtorhout';
-		$name = 'Katrien Vanneste';
-		$representative = 'Bart Ameel';
-		// $bic = 'AXABBE22';
-		$bic = 'GEBABEBB';
+		$login = 'owwgemeente';
+		$name = '';
+		$representative = '';
+		$bic = 'AXABBE22';
+		// $bic = 'GEBABEBB';
 		// $bic = 'GKCCBEBB';
 		// $bic = 'HBKABE22';
 		// $bic = 'KREDBEBB';
@@ -84,10 +83,10 @@
 		echo '<pre>'.var_export($parameters, true).'</pre>';
 
 		// UITSCHAKELEN INDIEN VOOR ECHT!
-		// $parameters['testmode'] = 1;
+		$parameters['testmode'] = 1;
 		$accountxml = $mollie->accountCreate( $login, $parameters );
 
-		// $partner_id_customer = '3171444';
+		$partner_id_customer = '3171444';
 		$edit_parameters = array( 
 			'registration_number' => str_replace( 'BE', '', $btw ),
 			'vat_number' => $btw,
@@ -103,9 +102,9 @@
 		echo "<p>Wachtwoord: ".$accountxml->password."</p>";
 		echo "<p>Telefoon: ".$phone."</p>";
 		
+		// WERKT ALLEMAAL NIET, DOE HANDMATIG
 		// update_option( 'oxfam_mollie_partner_id', $accountxml->partner_id );
 		// echo "<p>Partner-ID gewijzigd in webshop!</p>";
-
 		// $user = get_user_by( 'email', $email );
 		// if ( $user ) {
 		// 	wp_set_password( $accountxml->password, $user->ID );
@@ -121,6 +120,7 @@
 			echo "<p>LIVE API: ".$profilexml->profile->api_keys->live."</p>";
 			echo "<p>TEST API: ".$profilexml->profile->api_keys->test."</p>";
 			
+			// WERKT ALLEMAAL NIET, DOE HANDMATIG
 			// update_option( 'mollie-payments-for-woocommerce_live_api_key', $profilexml->profile->api_keys->live );
 			// echo "<p>Live API-key gewijzigd in webshop!</p>";
 			// update_option( 'mollie-payments-for-woocommerce_test_mode_enabled', 'no' );
