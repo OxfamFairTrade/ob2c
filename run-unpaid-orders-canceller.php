@@ -32,6 +32,10 @@
 				restore_current_blog();
 			}
 			echo "Oude onbetaalde bestellingen geannuleerd!";
+
+			// DATABASE UPDATEN
+			// https://shop.oxfamwereldwinkels.be/regioleuven/wp-admin/admin.php?page=wc-settings&do_update_woocommerce=true
+			// IN DE KIJKERS CHECKEN
     	} else {
     		die("Helaba, dit mag niet!");
     	}
