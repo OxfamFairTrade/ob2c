@@ -1016,8 +1016,10 @@
     add_filter( 'woocommerce_checkout_fields' , 'format_checkout_notes' );
 
     function format_checkout_notes( $fields ) {
-    	global $user_ID;
-    	$shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
+    	$fields['account']['account_username']['label'] = "Kies een gebruikersnaam";
+		$fields['account']['account_password']['label'] = "Kies een wachtwoord";
+		
+		$shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
     	$shipping_id = reset($shipping_methods);
 		switch ( $shipping_id ) {
 			case stristr( $shipping_id, 'local_pickup' ):
@@ -1029,6 +1031,7 @@
 		}
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
 		$fields['order']['order_comments']['description'] = sprintf( __( 'Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer van de hoofdwinkel (%s).', 'oxfam-webshop' ), get_oxfam_shop_data( 'telephone' ) );
+
 		return $fields;
 	}
 
@@ -1886,7 +1889,7 @@
 	add_action( 'woocommerce_checkout_process', 'check_subscription_preference', 10, 1 );
 
 	function check_subscription_preference( $posted ) {
-		global $user_ID, $woocommerce;
+		global $woocommerce;
 		if ( ! empty( $posted['subscribe_digizine'] ) ) {
 			if ( $posted['subscribe_digizine'] !== 1 ) {
 				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
