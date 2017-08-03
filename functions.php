@@ -903,13 +903,13 @@
 	
 	function format_checkout_billing( $address_fields ) {
 		$address_fields['billing_first_name']['label'] = "Voornaam";
-		$address_fields['billing_first_name']['placeholder'] = "George";
+		$address_fields['billing_first_name']['placeholder'] = "Luc";
 		$address_fields['billing_last_name']['label'] = "Familienaam";
-		$address_fields['billing_last_name']['placeholder'] = "Foreman";
+		$address_fields['billing_last_name']['placeholder'] = "Van Haute";
 		$address_fields['billing_address_1']['class'] = array('form-row-first');
 		$address_fields['billing_address_1']['clear'] = false;
 		$address_fields['billing_email']['label'] = "E-mailadres";
-		$address_fields['billing_email']['placeholder'] = "george@foreman.com";
+		$address_fields['billing_email']['placeholder'] = "luc@gmail.com";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
 		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
 		// $address_fields['billing_company']['label'] = "Bedrijf";
@@ -962,9 +962,9 @@
 	
 	function format_checkout_shipping( $address_fields ) {
 		$address_fields['shipping_first_name']['label'] = "Voornaam";
-		$address_fields['shipping_first_name']['placeholder'] = "Muhammad";
+		$address_fields['shipping_first_name']['placeholder'] = "Luc";
 		$address_fields['shipping_last_name']['label'] = "Familienaam";
-		$address_fields['shipping_last_name']['placeholder'] = "Ali";
+		$address_fields['shipping_last_name']['placeholder'] = "Van Haute";
 		$address_fields['shipping_first_name']['class'] = array('form-row-first');
 		$address_fields['shipping_last_name']['class'] = array('form-row-last');
 		
@@ -1016,8 +1016,8 @@
     add_filter( 'woocommerce_checkout_fields' , 'format_checkout_notes' );
 
     function format_checkout_notes( $fields ) {
-    	$fields['account']['account_username']['label'] = "Kies een gebruikersnaam";
-		$fields['account']['account_password']['label'] = "Kies een wachtwoord";
+    	$fields['account']['account_username']['label'] = "Kies een gebruikersnaam:";
+		$fields['account']['account_password']['label'] = "Kies een wachtwoord:";
 		
 		$shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
     	$shipping_id = reset($shipping_methods);
@@ -3128,6 +3128,11 @@
 				echo '<div class="notice notice-error">';
 				echo '<p>Sommige winkels kregen een bericht dat hun legitimatiebewijs afgewezen werd. Dit gebeurt indien de rechtsgeldige vertegenwoordiger die we opgaven (= de persoon waarvan jullie ons de identiteitskaart bezorgden) nog niet in de <u>digitale</u> versie van het KBO geregistreerd staat. We adviseren in dat geval om de rechtsgeldige vertegenwoordiger onder de Mollie-instellingen voor \'<a href="https://www.mollie.com/dashboard/settings/organization" target="_blank">Bedrijf</a>\' aan te passen naar iemand die wel reeds vermeld staat in het KBO. (Check de link naast het BTW-nummer op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina.) <a href="mailto:e-commerce@oft.be" target="_blank">Contacteer ons</a> indien je hierbij assistentie nodig hebt.</p>';
 				echo '</div>';
+			}
+			if ( does_sendcloud_delivery() ) {
+				echo '<div class="notice notice-error">';
+				echo '<p>De domiciliëringsopdracht van de betaalprovider Ayden die eind juni geactiveerd werd, dient voor de betaling van verzendlabels die je aanmaakt via SendCloud. Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen. Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen etiketten meer aanmaken voor Bpost.</p>';
+				echo '</div>';	
 			}
 			if ( does_home_delivery() ) {
 				echo '<div class="notice notice-info">';
