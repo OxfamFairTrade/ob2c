@@ -521,6 +521,11 @@ div.nm-feature.layout-centered {
 	color: #61a534 !important;
 }
 
+/* Verberg Jetpack-notificaties rechtsboven */
+li#wp-admin-bar-notes {
+	display: none;
+}
+
 @media (min-width: 881px) {
 	/* Zet een limiet op de breedte van de add-to-cart knoppen */
 	div.nm-quantity-wrap,
