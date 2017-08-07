@@ -779,11 +779,11 @@
 					} );
 				</script>
 			<?php
-		} elseif ( is_account_page() and in_array( 'local_manager', $user_roles ) ) {
+		} elseif ( is_account_page() and in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_company_email() ) {
 			?>
 				<script>
 					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').prop('readonly', true);
-					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description"> De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
+					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
 				</script>
 			<?php
 		}
@@ -1239,12 +1239,12 @@
 		$current_user = wp_get_current_user();
 		$user_meta = get_userdata($current_user->ID);
 		$user_roles = $user_meta->roles;
-		if ( in_array( 'local_manager', $user_roles ) ) {
+		if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_company_email() ) {
 			?>
 			<script type="text/javascript">
 				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
 				jQuery("tr.user-email-wrap").find('input[type=email]').prop('readonly', true);
-				jQuery("tr.user-email-wrap").find('input[type=email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
+				jQuery("tr.user-email-wrap").find('input[type=email]').after('<span class="description">&nbsp;De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
 			</script>
 			<?php
 		}
@@ -3131,7 +3131,7 @@
 			}
 			if ( does_sendcloud_delivery() ) {
 				echo '<div class="notice notice-error">';
-				echo '<p>De domiciliëringsopdracht van de betaalprovider Ayden die eind juni geactiveerd werd, dient voor de betaling van verzendlabels die je aanmaakt via SendCloud. Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen. Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen etiketten meer aanmaken voor Bpost.</p>';
+				echo '<p>De domiciliëringsopdracht van de Nederlandse betaalprovider Ayden die eind juni geactiveerd werd op jullie winkelrekening, dient voor de betaling van verzendingen die je via SendCloud regelt. (Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen.) Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen verzendlabels meer aanmaken voor Bpost.</p>';
 				echo '</div>';	
 			}
 			if ( does_home_delivery() ) {

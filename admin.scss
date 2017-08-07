@@ -152,6 +152,11 @@ button.do-manual-refund,
 	display: none !important;
 }
 
+/* Verberg Jetpack-notificaties rechtsboven */
+li#wp-admin-bar-notes {
+	display: none;
+}
+
 @media (max-width: 1024px) {
 	#oxfam-products .block {
 		display: block;
