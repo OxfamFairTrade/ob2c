@@ -2,7 +2,7 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	$activated_shops = array( 8, 12, 14, 15, 16, 19, 20, 21, 22, 23, 24, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38 );
+	$activated_shops = array( 1, 8, 12, 14, 15, 16, 19, 20, 21, 22, 23, 24, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38 );
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
 	add_action( 'init', 'v_forcelogin' );
