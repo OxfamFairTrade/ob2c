@@ -3562,7 +3562,7 @@
 							if ( $node === '857' ) {
 								// Uitzondering voor Regio Leuven
 								return call_user_func( 'format_telephone', '0486762195', '.' );
-							} elseif ( $node === '' ) {
+							} elseif ( $node === '765' ) {
 								// Uitzondering voor Assenede
 								return call_user_func( 'format_telephone', '0472799358', '.' );
 							} else {	
