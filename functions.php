@@ -654,7 +654,20 @@
 	// Verhoog het aantal producten per winkelpagina
 	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 20;' ), 20 );
 
-	// Zorg ervoor dat slechts bepaalde statussen bewerkbaar zijn
+	// Orden items in bestellingen volgens stijgend productnummer
+	add_filter( 'woocommerce_order_get_items', 'sort_order_by_sku', 10, 2 );
+
+	function sort_order_by_sku( $items, $order ) {
+  		uasort( $items, function( $a, $b ) {
+  			// Verhinder dat we ook tax- en verzendlijnen shufflen
+  			if ( $a->get_type() === 'line_item' and $b->get_type() === 'line_item' ) {
+  				return ( intval( $a->get_product()->get_sku() ) < intval( $b->get_product()->get_sku() ) ) ? -1 : 1;
+  			}
+  		} );
+  		return $items;
+  	}
+
+  	// Zorg ervoor dat slechts bepaalde statussen bewerkbaar zijn
 	add_filter( 'wc_order_is_editable', 'limit_editable_orders', 20, 2 );
 
 	function limit_editable_orders( $editable, $order ) {
@@ -3547,7 +3560,11 @@
 							return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
 						case 'telephone':
 							if ( $node === '857' ) {
+								// Uitzondering voor Regio Leuven
 								return call_user_func( 'format_telephone', '0486762195', '.' );
+							} elseif ( $node === '' ) {
+								// Uitzondering voor Assenede
+								return call_user_func( 'format_telephone', '0472799358', '.' );
 							} else {	
 								// Geef alternatieve delimiter mee
 								return call_user_func( 'format_telephone', $row->field_sellpoint_telephone_value, '.' );
