@@ -2,18 +2,18 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	$activated_shops = array( 1, 7, 8, 12, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38 );
+	$prohibited_shops = array( 9, 10, 11, 13, 17, 25 );
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
 	add_action( 'init', 'v_forcelogin' );
 	
 	function v_forcelogin() {
 		if ( ! is_user_logged_in() ) {
-			global $activated_shops;
+			global $prohibited_shops;
 			$url = v_get_url();
 			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
 			// Enkel redirecten op LIVE-site én indien webshop nog niet gelanceerd
-			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' and ! in_array( get_current_blog_id(), $activated_shops ) ) {
+			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' and in_array( get_current_blog_id(), $prohibited_shops ) ) {
 				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
 				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					wp_safe_redirect( wp_login_url( $redirect_url ), 302 );
@@ -3117,8 +3117,8 @@
 		$screen = get_current_screen();
 		// var_dump($screen);
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
-			global $activated_shops;
-			if ( ! in_array( get_current_blog_id(), $activated_shops ) ) {
+			global $prohibited_shops;
+			if ( in_array( get_current_blog_id(), $prohibited_shops ) ) {
 				echo '<div class="notice notice-success">';
 				echo '<p>Alle logins zijn verstuurd naar de lokale beheerders. Op dit moment kun je enkel als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen begin augustus publiek te zetten, want in het FAIR-magazine zal een eerste aankondiging verschijnen.</p>';
 				echo '</div>';
