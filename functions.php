@@ -3480,8 +3480,11 @@
 	}
 
 	function print_store_map() {
-		// Zoom kaart wat minder ver in indien regiowebshop (of beter nog: naar gelang het aantal afhaalpunten?)
-		if ( is_regional_webshop() ) {
+		// Zoom kaart wat minder ver in indien grote regio
+		if ( get_current_blog_id() === 25 ) {
+			// Uitzondering voor Regio Brugge
+			$zoom = 11;
+		} elseif ( is_regional_webshop() ) {
 			$zoom = 13;
 		} else {
 			$zoom = 15;
