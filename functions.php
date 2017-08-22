@@ -670,7 +670,11 @@
   						return -1;
   					}
   				} else {
-  					return 0;
+  					if ( is_numeric( $sku_b ) ) {
+  						return 1;	
+  					} else {
+  						return -1;
+  					}
   				}
   			} else {
   				return 0;
