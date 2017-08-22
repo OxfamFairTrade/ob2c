@@ -17,7 +17,7 @@
 			
 			// Sluit niet-gepubliceerde en gearchiveerde webshops uit
 			global $prohibited_shops;
-			$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'archived' => 0, ) );
+			$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, ) );
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
 					// Sluit hoofdsite uit
