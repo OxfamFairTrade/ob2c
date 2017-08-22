@@ -664,7 +664,7 @@
   				$sku_a = $a->get_product()->get_sku();
   				$sku_b = $b->get_product()->get_sku();
   				if ( is_numeric( $sku_a ) ) {
-  					if ( is_numeric( $sku_b ) {
+  					if ( is_numeric( $sku_b ) ) {
   						return ( intval( $sku_a ) < intval( $sku_b ) ) ? -1 : 1;	
   					} else {
   						return -1;
