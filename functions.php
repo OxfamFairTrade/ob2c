@@ -2118,7 +2118,7 @@
 		global $wp_admin_bar;
 		if ( current_user_can('create_sites') ) {
 			$toolbar_nodes = $wp_admin_bar->get_nodes();
-			$sites = get_sites( array( 'archived' => 0 ) );
+			$sites = get_sites();
 			foreach ( $sites as $site ) {
 				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
 				if ( $node_n ) {
@@ -2166,7 +2166,7 @@
 
 	function oxfam_photo_action_callback() {
 		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
-		$sites = get_sites( array( 'archived' => 0 ) );
+		$sites = get_sites();
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
@@ -3382,9 +3382,11 @@
 	}
 
 	function print_welcome() {
-		$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, 'count' => true ) );
-		// Hoofdblog (en templates) ervan aftrekken
-		return '<img src="'.get_stylesheet_directory_uri().'/images/pointer-afhaling.png"><h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites ).'</h3>';
+		global $prohibited_shops;
+		// Negeer niet-gepubliceerde en gearchiveerde sites
+		$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, 'count' => true ) );
+		// Trek hoofdsite af van totaal
+		return '<img src="'.get_stylesheet_directory_uri().'/images/pointer-afhaling.png"><h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
 	}
 
 	function print_portal_title() {
@@ -3619,16 +3621,17 @@
 	}
 
 	function get_shops() {
+		global $prohibited_shops;
 		$global_zips = array();
-		// Negeer main site én gearchiveerde sites
-		$sites = get_sites( array( 'site__not_in' => array( 1, 11, 25 ), 'archived' => 0, ) );
+		// Negeer niet-gepubliceerde en gearchiveerde sites
+		$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			$local_zips = get_option( 'oxfam_zip_codes' );
 			if ( $local_zips !== false ) {
 				foreach ( $local_zips as $zip ) {
 					if ( isset($global_zips[$zip]) ) {
-						write_log("CONSISTENTIEFOUT: Postcode ".$zip." is reeds gelinkt aan ".$global_zips[$zip].'!');
+						write_log("CONSISTENTIEFOUT BLOG-ID ".$site->blog_id.": Postcode ".$zip." is reeds gelinkt aan ".$global_zips[$zip].'!');
 					}
 					$global_zips[$zip] = 'https://' . $site->domain . $site->path;
 				}
