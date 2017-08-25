@@ -935,8 +935,6 @@
 		$address_fields['billing_first_name']['placeholder'] = "Luc";
 		$address_fields['billing_last_name']['label'] = "Familienaam";
 		$address_fields['billing_last_name']['placeholder'] = "Van Haute";
-		$address_fields['billing_address_1']['class'] = array('form-row-first');
-		$address_fields['billing_address_1']['clear'] = false;
 		$address_fields['billing_email']['label'] = "E-mailadres";
 		$address_fields['billing_email']['placeholder'] = "luc@gmail.com";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
@@ -948,11 +946,14 @@
 		
 		$address_fields['billing_first_name']['class'] = array('form-row-first');
 		$address_fields['billing_last_name']['class'] = array('form-row-last');
+		$address_fields['billing_address_1']['class'] = array('form-row-first');
+		$address_fields['billing_address_1']['clear'] = false;
 		$address_fields['billing_email']['class'] = array('form-row-first');
-		$address_fields['billing_email']['clear'] = true;
+		$address_fields['billing_email']['clear'] = false;
 		$address_fields['billing_email']['required'] = true;
 		$address_fields['billing_phone']['class'] = array('form-row-last');
-		$address_fields['billing_phone']['clear'] = false;
+		$address_fields['billing_phone']['clear'] = true;
+		$address_fields['billing_phone']['required'] = true;
 
 		$address_fields['billing_birthday'] = array(
 			'type' => 'text',
@@ -2275,10 +2276,24 @@
 		$attachment_id = wp_insert_attachment( $attachment, $current_filepath, $product_id );
 		
 		if ( ! is_wp_error( $attachment_id ) ) {
-			if ( isset($product) ) {
+			// Check of de uploadlocatie ingegeven was!
+			if ( ! isset($product_id) ) {
+				// Indien het product nog niet bestaat zal de search naar een 0 opleveren
+				$product_id = wc_get_product_id_by_sku( $filetitle );
+			}
+
+			if ( $product_id > 0 ) {
 				// Voeg de nieuwe attachment-ID weer toe aan het oorspronkelijke product
 				$product->set_image_id( $attachment_id );
 				$product->save();
+
+				// Stel de uploadlocatie van de nieuwe afbeelding in
+				wp_update_post(
+					array(
+						'ID' => $attachment_id, 
+						'post_parent' => $product_id,
+					)
+				);
 			}
 
 			// Registreer ook de metadata
@@ -3583,9 +3598,6 @@
 							if ( $node === '857' ) {
 								// Uitzondering voor Regio Leuven
 								return call_user_func( 'format_telephone', '0486762195', '.' );
-							} elseif ( $node === '765' ) {
-								// Uitzondering voor Assenede
-								return call_user_func( 'format_telephone', '0472799358', '.' );
 							} else {	
 								// Geef alternatieve delimiter mee
 								return call_user_func( 'format_telephone', $row->field_sellpoint_telephone_value, '.' );
@@ -3594,7 +3606,12 @@
 							return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 					}
 				} else {
-					return "(niet gevonden)";
+					if ( $key === 'telephone' and $node === '765' ) {
+						// Uitzondering voor Assenede
+						return call_user_func( 'format_telephone', '0472799358', '.' );
+					}  else {
+						return "(niet gevonden)";
+					}
 				}
 			}		
 		} else {
