@@ -2135,7 +2135,7 @@
 		global $wp_admin_bar;
 		if ( current_user_can('create_sites') ) {
 			$toolbar_nodes = $wp_admin_bar->get_nodes();
-			$sites = get_sites();
+			$sites = get_sites( 'public' => 1 );
 			foreach ( $sites as $site ) {
 				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
 				if ( $node_n ) {
@@ -2183,7 +2183,7 @@
 
 	function oxfam_photo_action_callback() {
 		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
-		$sites = get_sites();
+		$sites = get_sites( 'public' => 1 );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );

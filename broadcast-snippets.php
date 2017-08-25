@@ -59,6 +59,13 @@
 		wp_reset_postdata();
 	}
 
+	// Een welbepaalde foto verwijderen
+	$photo_id = wp_get_attachment_id_by_post_name( '26134' );
+	if ( $photo_id ) {
+		// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
+		wp_delete_attachment( $photo_id, true );
+	}
+
 	// Tabel met stopwoorden kopiëren
 
 ?>
