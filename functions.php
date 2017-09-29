@@ -2264,12 +2264,12 @@
 
 	function oxfam_stock_action_callback() {
 		echo save_local_product_details($_POST['id'], $_POST['meta'], $_POST['value']);
-    	wp_die();
+		wp_die();
 	}
 
 	function save_local_product_details($id, $meta, $value) {			
-    	$msg = "";
-    	$product = wc_get_product($id);
+		$msg = "";
+		$product = wc_get_product($id);
 		if ( $meta === 'stockstatus' ) {
 			$product->set_stock_status($value);
 			$msg .= "Voorraadstatus opgeslagen!";
@@ -2314,14 +2314,14 @@
 		return $attachment_id;
 	}
 
-    function register_photo( $filename, $filestamp, $main_filepath ) {			
-    	// Parse de fototitel
-    	$filetitle = explode( '.jpg', $filename );
-	    $filetitle = $filetitle[0];
-	    $product_id = 0;
+	function register_photo( $filename, $filestamp, $main_filepath ) {			
+		// Parse de fototitel
+		$filetitle = explode( '.jpg', $filename );
+		$filetitle = $filetitle[0];
+		$product_id = 0;
 
 		if ( ! is_main_site() ) {
-		    // Bepaal het bestemmingspad in de subsite (zonder dimensies!)
+			// Bepaal het bestemmingspad in de subsite (zonder dimensies!)
 			$child_filepath = str_replace( '/uploads/', '/uploads/sites/'.get_current_blog_id().'/', $main_filepath );
 			switch_to_blog(1);
 			// Zoek het pad van de 'large' thumbnail op in de hoofdsite
@@ -2335,12 +2335,12 @@
 		} else {
 			$current_filepath = $main_filepath;
 		}
-    	
-    	// Check of er al een vorige versie bestaat
-    	$updated = false;
-    	$deleted = false;
-    	// GEBEURT IN DE LOKALE MEDIABIB
-    	$old_id = wp_get_attachment_id_by_post_name( $filetitle );
+
+		// Check of er al een vorige versie bestaat
+		$updated = false;
+		$deleted = false;
+		// GEBEURT IN DE LOKALE MEDIABIB
+		$old_id = wp_get_attachment_id_by_post_name( $filetitle );
 		if ( $old_id ) {
 			// Bewaar de post_parent van het originele attachment
 			$product_id = wp_get_post_parent_id( $old_id );
@@ -3258,7 +3258,9 @@
 		return 'http://track.bpost.be/btr/web/#/search?itemCode='.get_tracking_number( $order_id ).'&lang=nl';
 	}
 	// Voeg een bericht toe bovenaan alle adminpagina's
+	add_action( 'admin_notices', 'oxfam_admin_notices' );
 
+	function oxfam_admin_notices() {
 		global $pagenow, $post_type;
 		$screen = get_current_screen();
 		// var_dump($screen);
@@ -3276,9 +3278,39 @@
 				echo '</div>';
 			}
 			if ( does_home_delivery() ) {
+				// echo '<div class="notice notice-info">';
+				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
+				// echo '</div>';
 			}
 			echo '<div class="notice notice-success">';
+				// if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
+				// 	echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust bestellingen te plaatsen en te beheren.</p>';
+				// } else {
+				// 	echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
+				// }
+				// echo '<p>In de back-end van de webshop verschenen 7 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+				// $skus = array( '20154', '21515', '24531', '25296', '25722', '27819', '27820' );
+				// foreach ( $skus as $sku ) {
+				// 	$product_id = wc_get_product_id_by_sku( $sku );
+				// 	if ( $product_id ) {
+				// 		$productje = wc_get_product( $product_id );
+				// 		echo '<li><a href="'.$productje->get_permalink().'" target="_blank">'.$productje->get_title().'</a> ('.$productje->get_attribute( 'pa_shopplus' ).')</li>';
+				// 	}
+					
+				// }
+				// echo '</ul><p>';
+				// if ( current_user_can('manage_network_users') ) {
+				// 	echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// }
+				// echo 'Bij de pralines gaat het louter om een herbevoorrading: de webshop bestond nog niet toen het vorige lot verkocht werd. Opgelet: pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+				// echo '<p>Eerder werden de 21 prijsverhogingen en 2 prijsdalingen van 1 september 2017 al doorgevoerd, inclusief de niet-vermelde wijziging op BIO Cacaobeertjes Ontbijtgranen (X17011) van 3,25 naar 3,45 euro. Daarnaast kreeg RAZA Brut Torrontés Schuimwijn (W10410) een packshot van de nieuwe bolle fles en werd het ompaknummer van BIO Decaf koffiepads (W12705) gewijzigd.</p>';
+				// echo '<p>Eind september worden de sintfiguren uitgeleverd. Die 7 holfiguren zullen op 1 oktober in de webshop verschijnen.</p>';
 			echo '</div>';
+			if ( does_sendcloud_delivery() ) {
+				echo '<div class="notice notice-error">';
+				echo '<p>De domiciliëringsopdracht van de Nederlandse betaalprovider Ayden die eind juni geactiveerd werd op jullie winkelrekening, dient voor de betaling van verzendingen die je via SendCloud regelt. (Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen.) Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen verzendlabels meer aanmaken voor Bpost en dien je zelf (fors duurdere) etiketten aan te schaffen in een postpunt.</p>';
+				echo '</div>';	
+			}
 		}
 		if ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
 			// echo '<div class="notice notice-warning">';
@@ -3286,6 +3318,9 @@
 			// echo '</div>';
 		}
 		if ( $pagenow === 'admin.php' and stristr( $screen->base, 'oxfam-products-photos' ) ) {
+			// echo '<div class="notice notice-success">';
+			// echo '<p>Bovenaan de compacte lijstweergave vind je vanaf nu een knop om alle producten in of uit voorraad te zetten.</p>';
+			// echo '</div>';
 		}
 	}
 
@@ -3640,7 +3675,8 @@
 	}
 
 	function is_regional_webshop() {
-		// Antwerpen en Leuven
+		// Antwerpen, Leuven en Vilvoorde
+		$regions = array( 24, 28, 34 );
 		return in_array( get_current_blog_id(), $regions );
 	}
 
@@ -3792,6 +3828,11 @@
 				$zips[] = $row->location_code;
 			}
 			$zips = array_unique( $zips );
+			// Verwijder de default '9999'-waarde uit ongebruikte verzendmethodes
+			if ( ( $key = array_search( '9999', $zips ) ) !== false ) {
+				unset($zips[$key]);
+			}
+			sort( $zips, SORT_NUMERIC );
 		}
 		return $zips;
 	}
