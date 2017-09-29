@@ -30,7 +30,7 @@
 			$all_products->the_post();
 			$productje = wc_get_product( get_the_ID() );
 			if ( ! is_numeric( $productje->get_sku() ) ) {
-				$productje->set_stock( 'instock' );
+				$productje->set_stock_status( 'instock' );
 				$productje->set_catalog_visibility('hidden');
 				$productje->save();
 			}
@@ -60,10 +60,53 @@
 	}
 
 	// Een welbepaalde foto verwijderen
-	$photo_id = wp_get_attachment_id_by_post_name( '26134' );
+	$photo_id = wp_get_attachment_id_by_post_name( '21515-1' );
 	if ( $photo_id ) {
 		// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
 		wp_delete_attachment( $photo_id, true );
+	}
+
+	// Product weer linken juiste (geüpdatete) foto
+	$product_id = wc_get_product_id_by_sku( '21515' );
+	$new_photo_id = wp_get_attachment_id_by_post_name( '21515' );
+	if ( $product_id and $new_photo_id ) {
+		$product = wc_get_product( $product_id );
+		
+		// Update de mapping tussen globale en lokale foto
+		switch_to_blog( 1 );
+		// OPGELET: NA IMPORT BEVAT DE TITEL OP HET HOOFDNIVEAU DE OMSCHRIJVING VAN HET PRODUCT
+		$new_global_photo_id = 886;
+		restore_current_blog();
+		$new_value = array( $new_global_photo_id => $new_photo_id );
+		update_post_meta( $product_id, '_woonet_images_mapping', $new_value );
+		
+		// Koppel nieuw packshot aan product
+		$product->set_image_id( $new_photo_id );
+		$product->save();
+		
+		// Stel de uploadlocatie van de nieuwe afbeelding in
+		wp_update_post(
+			array(
+				'ID' => $new_photo_id, 
+				'post_parent' => $product_id,
+			)
+		);
+	}
+
+	// Zet een specifiek artikel uit voorraad
+	$product_id = wc_get_product_id_by_sku( '21515' );
+	if ( $product_id ) {
+		$product = wc_get_product( $product_id );
+		$product->set_stock_status( 'outofstock' );
+		$product->save();
+	}
+
+	// Werk de datum van een product bij
+	$product_id = wc_get_product_id_by_sku( '24532' );
+	if ( $product_id ) {
+		$product = wc_get_product( $product_id );
+		$product->set_date_created( '2017-09-06T00:00:00Z' );
+		$product->save();
 	}
 
 	// Tabel met stopwoorden kopiëren

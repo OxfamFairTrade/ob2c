@@ -5,27 +5,13 @@
 <div class="wrap">
 	<h1>Stel de voorraad van je lokale webshop in</h1>
 
-	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Met de knop bovenaan kun je alle producten in één keer in/uit voorraad halen. Een bevestigingsvenster behoedt je daarbij voor onbedoelde wijzigingen. Als daar veel vraag naar is, wordt het later misschien mogelijk om voorraadlijsten in te lezen uit bv. ShopPlus.</p>
+	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Met de knop onderaan de pagina kun je alle producten in één keer in/uit voorraad halen. Een bevestigingsvenster behoedt je daarbij voor onbedoelde wijzigingen. <b>Tip: met Ctrl+F kun je snel zoeken naar een product.</b></p>
 
-	<p>Nieuwe producten, die in de loop van de voorbije twee maanden beschikbaar werden op BestelWeb, hebben een blauwe achtergrond. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden.</p>
+	<p>Nieuwe producten, die in de loop van de voorbije twee maanden beschikbaar werden op BestelWeb, hebben <span style="background-color: lightskyblue;">een blauwe achtergrond</span>. Ze verschijnen aanvankelijk als 'uitverkocht' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden. Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen <span style="background-color: gold;">een gele achtergrond</span>, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt.</p>
 
-	<p>Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen een gele achtergrond, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt. Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
+	<p>Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 
 	<div id="oxfam-products" style="border-spacing: 0 10px;">
-		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black;">
-			<div class="cell" style="width: 3%;"></div>
-			<div class="cell" style="width: 40%; text-align: center;">
-				<select class="global-toggle">';
-					<option value="" selected>(bulkwijziging)</option>
-					<option value="instock">Zet ALLE producten op voorraad</option>
-					<option value="outofstock">Zet ALLE producten op uitverkocht</option>
-				</select>
-			</div>
-			<div class="cell" style="width: 40%; text-align: left;">
-				Opgelet: deze bewerking kan enkele tientallen seconden in beslag nemen! Verlaat deze pagina niet zolang de tellers lopen.
-			</div>
-			<div class="cell output" style="width: 17%;"></div>
-		</div>
 		<?php
 			// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
 			// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
@@ -76,12 +62,9 @@
 						if ( $bestelweb === 'nee' ) $content .= ' old';
 						restore_current_blog();
 
-						// DUBBELOP
-						// $content .= $product->is_in_stock() ? ' instock' : ' outofstock';
-						
 						$content .= '">';
 							$content .= '<div class="cell" style="padding: 0.25em; width: 3%; text-align: center;"><a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'wc_order_status_icon', null, false ).'</a></div>';
-							$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().'</span></div>';
+							$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().' ('.$product->get_attribute('pa_shopplus').')</span></div>';
 							$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
 								$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
 								$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
@@ -228,5 +211,19 @@
 				</script>
 			<?php }
 		?>
+		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black;">
+			<div class="cell" style="width: 3%;"></div>
+			<div class="cell" style="width: 40%; text-align: center;">
+				<select class="global-toggle">';
+					<option value="" selected>(bulkwijziging)</option>
+					<option value="instock">Zet ALLE producten op voorraad</option>
+					<option value="outofstock">Zet ALLE producten op uitverkocht</option>
+				</select>
+			</div>
+			<div class="cell" style="width: 40%; text-align: left;">
+				Opgelet: deze bewerking kan enkele tientallen seconden in beslag nemen! Verlaat deze pagina niet zolang de tellers lopen.
+			</div>
+			<div class="cell output" style="width: 17%;"></div>
+		</div>
 	</div>
 </div>

@@ -2,7 +2,7 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	$prohibited_shops = array( 9, 10, 11, 13, 17, 25 );
+	$prohibited_shops = array( 10, 11, 25 );
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
 	add_action( 'init', 'v_forcelogin' );
@@ -556,7 +556,8 @@
 
 	if ( is_main_site() ) {
 		// Zorg ervoor dat productrevisies bijgehouden worden op de hoofdsite
-		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+		// TIJDELIJK UITSCHAKELEN
+		// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		// Log wijzigingen aan metadata na het succesvol bijwerken
 		add_action( 'updated_post_metadata', 'log_product_changes', 100, 4 );
 	}
@@ -1205,6 +1206,98 @@
 		} else {
 			return false;
 		}
+	}
+
+	// Voeg de bestel-Excel toe aan de adminmail 'nieuwe bestelling'
+	// add_filter( 'woocommerce_email_attachments', 'attach_picklist_to_email', 10, 3);
+
+	function attach_picklist_to_email( $attachments, $status , $object ) {
+		$create_statuses = array( 'new_order' );
+
+		if ( isset($status) and in_array( $status, $create_statuses ) ) {
+			// Laad PHPExcel en het bestelsjabloon
+			require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
+			$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
+			
+			// Selecteer het eerste werkblad
+			$objPHPExcel->setActiveSheetIndex(0);
+
+			// Creëer het order dat bij de meegegeven order-ID hoort
+			$order_id = $object->id;
+			$order = wc_get_order($order_id);
+
+			// Bepaal enkele infovelden voor de Excel die nog overschreven kunnen worden
+		    $order_number = get_post_meta( $order_id, '_order_number_formatted', true );
+		    $billing_number_omdm = get_post_meta( $order_id, '_billing_number_omdm', true );
+		    $billing_number_oft = get_post_meta( $order_id, '_billing_number_oft', true );
+		    $shipping_number_oft = get_post_meta( $order_id, '_shipping_number_oft', true );
+
+			// Bepaal de eerstvolgende leveringsdag
+			$shipping_methods = $order->get_shipping_methods();
+			// Zet de pointer op het eerste (en normaal ook enige) object
+			$shipping_method = reset($shipping_methods);
+			$timestamp = get_post_meta( $order_id, 'estimated_delivery', true );
+
+			switch ( $shipping_method['method_id'] ) {
+				case 'local_pickup:2':
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B5', 'Afhaling in de winkel' );
+					$shipping_company = 'Oxfam Magasins du Monde Wavre';
+					$shipping_number_oft = 0;
+					break;
+				case 'flat_rate:3':
+				case 'free_shipping:4':
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B5', 'Thuislevering' );
+					$shipping_company = 'Zie opmerkingen bij bestelling';
+					$shipping_number_oft = 0;
+					break;
+				default:
+					if ( intval($billing_number_oft) === intval($shipping_number_oft) ) {
+						$shipping_number_oft = 0;
+					}
+					// We vullen het bedrijf uit het leveradres in, dat bij deze levermethode altijd beschikbaar is
+					$shipping_company = str_replace( 'Oxfam-Wereldwinkel', 'OWW', get_post_meta( $order_id, '_shipping_company', true ) );
+			}
+
+			// Sla tijdstip op en converteer naar een Excel-datum
+			$delivery = PHPExcel_Shared_Date::PHPToExcel( $timestamp );
+			$objPHPExcel->getActiveSheet()->getStyle( 'B4' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
+			
+			// Vul de informatieve headervelden in
+			$objPHPExcel->getActiveSheet()->setCellValue( 'B2', $order_number )->setCellValue( 'B3', $billing_number_omdm )->setCellValue( 'B4', $delivery )->setCellValue( 'D4', $billing_company )->setCellValue( 'B6', $billing_number_oft )->setCellValue( 'B7', $shipping_number_oft )->setCellValue( 'D7', $shipping_company );
+			
+			// Bewaar de header als een Excel 2007+ (minder resources)
+			$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
+			$objWriter->save( WP_CONTENT_DIR.'/uploads/csv/crafts-header.xlsx' );
+
+			$i = 8;
+			// Vul de artikeldata item per item in vanaf rij 8
+			foreach ( $order->get_items() as $order_item_id => $item ) {
+				$productje = $order->get_product_from_item( $item );
+				if ( ! array_key_exists( 'pa_consignatie', $item ) or $item['pa_consignatie'] === 'nee' ) {
+					$moederproduct = wc_get_product( $item['product_id'] );
+					$tax = $productje->get_tax_class() === 'reduced-rate' ? '0.06' : '0.21';
+					$cp = str_replace( ',', '.', $moederproduct->get_attribute('pa_consumentenprijs') );
+		        	$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, number_format( $cp, 2, ',', '.' ).' euro' )->setCellValue( 'B'.$i, $productje->get_sku() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $productje->get_title() )->setCellValue( 'E'.$i, $productje->get_price() )->setCellValue( 'F'.$i, $tax )->setCellValue( 'G'.$i, $item['line_total']+$item['line_tax'] );
+		        	$i++;
+		        }
+		    }
+
+		    $filename = $order_number.'.xlsx';
+		    $objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
+			$objWriter->save( WP_CONTENT_DIR.'/uploads/csv/'.$filename );
+			$attachments[] = WP_CONTENT_DIR.'/uploads/csv/'.$filename;
+			// Bewaar de file op een vaste URL zodat we ze ook in attachment kunnen stoppen bij een read_status, zonder ze volledig opnieuw te moeten genereren
+			$objWriter->save( WP_CONTENT_DIR.'/uploads/csv/bestelling.xlsx' );
+			
+			// BEWAAR DE LOCATIE VAN DE FILE BIJ HET ORDER? OF GEEF HET EEN CONSEQUENTE NAAM? BETER RANDOMIZEN?
+			if ( in_array( get_post_meta( $order_id, '_customer_ip_address', true ), explode( '|', NS_IP ) ) ) {
+				if ( $i > 10 ) {
+					$objWriter->save( WP_CONTENT_DIR.'/uploads/csv/showroom-bestelling.xlsx' );
+				}
+			}
+		}
+
+		return $attachments;
 	}
 
 	// Verduidelijk de profiellabels in de back-end	
@@ -2135,7 +2228,7 @@
 		global $wp_admin_bar;
 		if ( current_user_can('create_sites') ) {
 			$toolbar_nodes = $wp_admin_bar->get_nodes();
-			$sites = get_sites( 'public' => 1 );
+			$sites = get_sites( array( 'public' => 1 ) );
 			foreach ( $sites as $site ) {
 				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
 				if ( $node_n ) {
@@ -2183,7 +2276,7 @@
 
 	function oxfam_photo_action_callback() {
 		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
-		$sites = get_sites( 'public' => 1 );
+		$sites = get_sites( array( 'public' => 1 ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
@@ -2192,14 +2285,14 @@
 		wp_die();
 	}
 
-	function wp_get_attachment_id_by_post_name($post_title) {
+	function wp_get_attachment_id_by_post_name( $post_title ) {
         $args = array(
             // We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
             'posts_per_page'	=> 1,
             'post_type'			=> 'attachment',
             // Moet er in principe bij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
             'post_status'		=> 'inherit',
-            // De titel is steeds gelijk aan de bestandsnaam en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
+            // De titel is steeds gelijk aan de bestandsnaam (NIET NA DE IMPORT) en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
             'title'				=> trim($post_title),
         );
         $attachments = new WP_Query($args);
@@ -2294,6 +2387,9 @@
 						'post_parent' => $product_id,
 					)
 				);
+
+				// UPDATE OOK NOG DE _WOONET_IMAGES_MAPPING VAN HET PRODUCT MET DEZE SKU
+				// WANT ANDERS WORDT _THUMBNAIL_ID BIJ DE EERSTVOLGENDE ERP-IMPORT WEER OVERSCHREVEN MET DE OUDE FOTO-ID
 			}
 
 			// Registreer ook de metadata
