@@ -2,7 +2,7 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	$prohibited_shops = array( 10, 11, 25 );
+	$prohibited_shops = array( 11 );
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
 	add_action( 'init', 'v_forcelogin' );
@@ -556,8 +556,7 @@
 
 	if ( is_main_site() ) {
 		// Zorg ervoor dat productrevisies bijgehouden worden op de hoofdsite
-		// TIJDELIJK UITSCHAKELEN
-		// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		// Log wijzigingen aan metadata na het succesvol bijwerken
 		add_action( 'updated_post_metadata', 'log_product_changes', 100, 4 );
 	}
@@ -894,9 +893,6 @@
 			jQuery( '#in-product_grape-1724' ).prop( 'disabled', true );
 			jQuery( '#in-product_grape-1725' ).prop( 'disabled', true );
 
-			/* Orderstatus vastzetten */
-			jQuery( '#order_data' ).find( '#order_status' ).prop( 'disabled', true );
-
 			/* Disbable prijswijzigingen bij terugbetalingen */
 			jQuery( '#order_line_items' ).find( '.refund_line_total.wc_input_price' ).prop( 'disabled', true );
 			jQuery( '#order_line_items' ).find( '.refund_line_tax.wc_input_price' ).prop( 'disabled', true );
@@ -904,6 +900,17 @@
 			jQuery( 'label[for=restock_refunded_items]' ).closest( 'tr' ).hide();
 		</script>
 		<?php
+		$current_user = wp_get_current_user();
+		$user_meta = get_userdata($current_user->ID);
+		$user_roles = $user_meta->roles;
+		if ( ! in_array( 'administrator', $user_roles ) ) {
+			?>
+			<script>
+				/* Orderstatus vastzetten */
+				jQuery( '#order_data' ).find( '#order_status' ).prop( 'disabled', true );
+			</script>
+			<?php
+		}
 	}
 
 	add_action( 'admin_init', 'hide_wine_taxonomies' );
@@ -1821,7 +1828,8 @@
 			if ( ! array_key_exists( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
 				wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
 			} else {
-				if ( ! in_array( $zip, get_option( 'oxfam_zip_codes' ) ) and is_cart() ) {
+				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden 
+				if ( ! in_array( $zip, get_oxfam_covered_zips() ) and is_cart() ) {
 					// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat de klant niet meer radicaal wijzigt (niet afschrikken met error!)
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
 					file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
@@ -2286,25 +2294,25 @@
 	}
 
 	function wp_get_attachment_id_by_post_name( $post_title ) {
-        $args = array(
-            // We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
-            'posts_per_page'	=> 1,
-            'post_type'			=> 'attachment',
-            // Moet er in principe bij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
-            'post_status'		=> 'inherit',
-            // De titel is steeds gelijk aan de bestandsnaam (NIET NA DE IMPORT) en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
-            'title'				=> trim($post_title),
-        );
-        $attachments = new WP_Query($args);
-        if ( $attachments->have_posts() ) {
-        	$attachments->the_post();
-        	$attachment_id = get_the_ID();
-        	wp_reset_postdata();
-        } else {
-        	$attachment_id = false;
-        }
-        return $attachment_id;
-    }
+		$args = array(
+			// We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
+			'posts_per_page'	=> 1,
+			'post_type'			=> 'attachment',
+			// Moet er in principe bij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
+			'post_status'		=> 'inherit',
+			// De titel is steeds gelijk aan de bestandsnaam (NIET NA DE IMPORT) en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
+			'title'				=> trim($post_title),
+		);
+		$attachments = new WP_Query($args);
+		if ( $attachments->have_posts() ) {
+			$attachments->the_post();
+			$attachment_id = get_the_ID();
+			wp_reset_postdata();
+		} else {
+			$attachment_id = false;
+		}
+		return $attachment_id;
+	}
 
     function register_photo( $filename, $filestamp, $main_filepath ) {			
     	// Parse de fototitel
@@ -3250,9 +3258,7 @@
 		return 'http://track.bpost.be/btr/web/#/search?itemCode='.get_tracking_number( $order_id ).'&lang=nl';
 	}
 	// Voeg een bericht toe bovenaan alle adminpagina's
-	add_action( 'admin_notices', 'sample_admin_notice' );
 
-	function sample_admin_notice() {
 		global $pagenow, $post_type;
 		$screen = get_current_screen();
 		// var_dump($screen);
@@ -3269,22 +3275,9 @@
 				echo '<p>Sommige winkels kregen een bericht dat hun legitimatiebewijs afgewezen werd. Dit gebeurt indien de rechtsgeldige vertegenwoordiger die we opgaven (= de persoon waarvan jullie ons de identiteitskaart bezorgden) nog niet in de <u>digitale</u> versie van het KBO geregistreerd staat. We adviseren in dat geval om de rechtsgeldige vertegenwoordiger onder de Mollie-instellingen voor \'<a href="https://www.mollie.com/dashboard/settings/organization" target="_blank">Bedrijf</a>\' aan te passen naar iemand die wel reeds vermeld staat in het KBO. (Check de link naast het BTW-nummer op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina.) <a href="mailto:e-commerce@oft.be" target="_blank">Contacteer ons</a> indien je hierbij assistentie nodig hebt.</p>';
 				echo '</div>';
 			}
-			if ( does_sendcloud_delivery() ) {
-				echo '<div class="notice notice-error">';
-				echo '<p>De domiciliëringsopdracht van de Nederlandse betaalprovider Ayden die eind juni geactiveerd werd op jullie winkelrekening, dient voor de betaling van verzendingen die je via SendCloud regelt. (Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen.) Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen verzendlabels meer aanmaken voor Bpost.</p>';
-				echo '</div>';	
-			}
 			if ( does_home_delivery() ) {
-				echo '<div class="notice notice-info">';
-				echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
-				echo '</div>';
 			}
 			echo '<div class="notice notice-success">';
-			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
-				echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust bestellingen te plaatsen en te beheren.</p>';
-			} else {
-				echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
-			}
 			echo '</div>';
 		}
 		if ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
@@ -3293,9 +3286,6 @@
 			// echo '</div>';
 		}
 		if ( $pagenow === 'admin.php' and stristr( $screen->base, 'oxfam-products-photos' ) ) {
-			echo '<div class="notice notice-success">';
-			echo '<p>Bovenaan de compacte lijstweergave vind je vanaf nu een knop om alle producten in of uit voorraad te zetten.</p>';
-			echo '</div>';
 		}
 	}
 
@@ -3651,7 +3641,6 @@
 
 	function is_regional_webshop() {
 		// Antwerpen en Leuven
-		$regions = array( 24, 28 );
 		return in_array( get_current_blog_id(), $regions );
 	}
 
@@ -3803,7 +3792,6 @@
 				$zips[] = $row->location_code;
 			}
 			$zips = array_unique( $zips );
-			sort($zips, SORT_NUMERIC);
 		}
 		return $zips;
 	}
