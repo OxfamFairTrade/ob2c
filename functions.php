@@ -2,10 +2,10 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	$prohibited_shops = array( 11 );
+	$prohibited_shops = array();
 
 	// Verhinder bekijken door niet-ingelogde bezoekers
-	add_action( 'init', 'v_forcelogin' );
+	// add_action( 'init', 'v_forcelogin' );
 	
 	function v_forcelogin() {
 		if ( ! is_user_logged_in() ) {
@@ -1944,16 +1944,17 @@
 		}
 		
 		// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
-		$cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
-		if ( $cart_weight > 29 ) {
-			foreach ( $rates as $rate_key => $rate ) {
-				// Blokkeer alle methodes behalve afhalingen
-				if ( $rate->method_id !== 'local_pickup_plus' ) {
-					unset( $rates[$rate_key] );
-				}
-			}
-			wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht in kilogram (%s).', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
-		}
+		// UITGESCHAKELD OMWILLE VAN OWW BRUGGE
+		// $cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
+		// if ( $cart_weight > 29 ) {
+		// 	foreach ( $rates as $rate_key => $rate ) {
+		// 		// Blokkeer alle methodes behalve afhalingen
+		// 		if ( $rate->method_id !== 'local_pickup_plus' ) {
+		// 			unset( $rates[$rate_key] );
+		// 		}
+		// 	}
+		// 	wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht in kilogram (%s).', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
+		// }
 
 		$low_vat_slug = 'voeding';
 		$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
