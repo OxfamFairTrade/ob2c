@@ -1619,6 +1619,126 @@
 					),
 				),
 			);
+		} elseif( $node === 'noordkrant' ) {
+			$hours = array(
+				1 => array(
+					array(
+						'start' => '6:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00',
+					),
+				),
+				2 => array(
+					array(
+						'start' => '6:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00',
+					),
+				),
+				3 => array(
+					array(
+						'start' => '6:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00',
+					),
+				),
+				4 => array(
+					array(
+						'start' => '6:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00',
+					),
+				),
+				5 => array(
+					array(
+						'start' => '6:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:00',
+					),
+				),
+				6 => array(
+					array(
+						'start' => '7:00',
+						'end' => '14:00',
+					),
+				),
+				7 => false,
+			);
+		} elseif( $node === 'fruithoekje' ) {
+			$hours = array(
+				1 => array(
+					array(
+						'start' => '8:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:30',
+					),
+				),
+				2 => array(
+					array(
+						'start' => '8:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:30',
+					),
+				),
+				3 => array(
+					array(
+						'start' => '8:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:30',
+					),
+				),
+				4 => false,
+				5 => array(
+					array(
+						'start' => '8:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '18:30',
+					),
+				),
+				6 => array(
+					array(
+						'start' => '8:30',
+						'end' => '12:30',
+					),
+					array(
+						'start' => '13:30',
+						'end' => '17:30',
+					),
+				),
+				7 => array(
+					array(
+						'start' => '9:00',
+						'end' => '12:00',
+					),
+				),
+			);
 		} else {
 			for ( $day = 0; $day <= 6; $day++ ) {
 				$hours[$day] = get_office_hours_for_day( $day, $node );
