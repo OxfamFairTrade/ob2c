@@ -8,6 +8,11 @@
 	Text Domain:  	oxfam-webshop
 */
 
+/* Quick fix voor centreren hoofdpagina's */
+body.page-template-default div.nm-row.nm-row-boxed.nm-row-max-width.nm-row-flex.nm-row-col-middle {
+	margin: auto;
+}
+
 .nm-qty-minus.nm-font-media-play:before {
 	content: '\f068';
 }
