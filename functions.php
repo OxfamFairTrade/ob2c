@@ -642,9 +642,6 @@
 			WC()->customer->set_shipping_city( $_GET['referralCity'] );
 		}
 		
-		// var_dump(WC()->customer);
-		// if ( isset( $_GET['downloadSheet'] ) ) create_product_pdf( wc_get_product( 4621 ) );
-		
 		if ( isset( $_GET['emptyCart'] ) ) WC()->cart->empty_cart();
 		
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
@@ -1224,7 +1221,7 @@
 		if ( isset($status) and in_array( $status, $create_statuses ) ) {
 			// Laad PHPExcel en het bestelsjabloon
 			require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
-			$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
+			$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory('/picklist.xlsx') );
 			
 			// Selecteer het eerste werkblad
 			$objPHPExcel->setActiveSheetIndex(0);
@@ -3076,25 +3073,6 @@
 		}
 	}
 
-	function create_product_pdf( $product ) {
-		require_once WP_CONTENT_DIR."/plugins/html2pdf/html2pdf.class.php";
-		
-		$templatelocatie = WP_CONTENT_DIR."/themes/savoy-child/productfiche.html";
-		$templatefile = fopen($templatelocatie, "r");
-		$templatecontent = fread($templatefile, filesize($templatelocatie));
-		
-		$sku = $product->get_sku();
-		$templatecontent = str_replace("#artikel", $sku, $templatecontent);
-		$templatecontent = str_replace("#prijs", wc_price( $product->get_price() ), $templatecontent);
-		$templatecontent = str_replace("#merk", $product->get_attribute('pa_merk'), $templatecontent);
-		
-		$pdffile = new HTML2PDF("P", "A4", "nl");
-		$pdffile->pdf->SetAuthor("Oxfam Fair Trade cvba");
-		$pdffile->pdf->SetTitle("Productfiche ".$sku);
-		$pdffile->WriteHTML($templatecontent);
-		$pdffile->Output(WP_CONTENT_DIR."/".$sku.".pdf", "F");
-	}
-
 	// Formatteer de gewichten in de attributen
 	add_filter( 'woocommerce_attribute', 'add_suffixes', 10, 3 );
 
@@ -3425,7 +3403,7 @@
 				// }
 				// echo 'Bij de pralines gaat het louter om een herbevoorrading: de webshop bestond nog niet toen het vorige lot verkocht werd. Opgelet: pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
 				// echo '<p>Eerder werden de 21 prijsverhogingen en 2 prijsdalingen van 1 september 2017 al doorgevoerd, inclusief de niet-vermelde wijziging op BIO Cacaobeertjes Ontbijtgranen (X17011) van 3,25 naar 3,45 euro. Daarnaast kreeg RAZA Brut Torrontés Schuimwijn (W10410) een packshot van de nieuwe bolle fles en werd het ompaknummer van BIO Decaf koffiepads (W12705) gewijzigd.</p>';
-				// echo '<p>Eind september worden de sintfiguren uitgeleverd. Die 7 holfiguren zullen op 1 oktober in de webshop verschijnen.</p>';
+				echo '<p>Tegen eind deze week voegen we de noussines, de koffiecapsules en de sintfiguren toe aan de webshop.</p>';
 			echo '</div>';
 			if ( does_sendcloud_delivery() ) {
 				echo '<div class="notice notice-error">';
