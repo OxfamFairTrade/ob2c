@@ -24,7 +24,7 @@
                 // GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites
                 if ( ! is_main_site() ) {
                 ?>
-                    <img src="<?php echo get_stylesheet_directory_uri('/images/oww-webshop-groen-60px.png'); ?>" class="nm-logo" style="max-height: 60px;">
+                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-groen-60px.png" class="nm-logo" style="max-height: 60px;">
                     <?php if ( $has_alt_logo ) : ?>
                     <img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
                     <?php endif; ?>
