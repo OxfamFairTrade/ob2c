@@ -24,15 +24,15 @@
                 // GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites
                 if ( ! is_main_site() ) {
                 ?>
-                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-groen-60px.png" class="nm-logo">
+                    <img src="<?php echo get_stylesheet_directory_uri('/images/oww-webshop-groen-60px.png'); ?>" class="nm-logo" style="max-height: 60px;">
                     <?php if ( $has_alt_logo ) : ?>
                     <img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
                     <?php endif; ?>
                 <?php
                     echo '<div class="winkelnaam">Webshop<br>' . str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) . '</div>';
                 } else {
-                    echo '<img src="'.get_stylesheet_directory_uri().'/images/oww-webshop-wit-60px.png" class="nm-logo">';
-                    echo '<div class="winkelnaam" style="color: white;">Portaal<br>Webshop</div>';
+                    echo '<img src="'.get_stylesheet_directory_uri().'/images/oww-webshop-wit-60px.png" class="nm-logo" style="max-height: 60px;">';
+                    echo '<div class="winkelnaam" style="color: white;">Altijd fair<br>Altijd open</div>';
                 }
             ?>
         </a>
