@@ -2402,12 +2402,13 @@
 
 	function oxfam_photo_action_callback() {
 		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
-		$sites = get_sites( array( 'public' => 1 ) );
-		foreach ( $sites as $site ) {
-			switch_to_blog( $site->blog_id );
+		// UITSCHAKELEN, PUBLICATIE NAAR CHILD SITE GEBEURT VANZELF BIJ EERSTVOLGENDE SYNC (ID'S UPDATEN)
+		// $sites = get_sites( array( 'public' => 1 ) );
+		// foreach ( $sites as $site ) {
+			// switch_to_blog( $site->blog_id );
 			echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
-			restore_current_blog();
-		}
+			// restore_current_blog();
+		// }
 		wp_die();
 	}
 
@@ -2514,7 +2515,7 @@
 					)
 				);
 
-				// UPDATE OOK NOG DE _WOONET_IMAGES_MAPPING VAN HET PRODUCT MET DEZE SKU
+				// UPDATE EVENTUEEL OOK NOG DE _WOONET_IMAGES_MAPPING VAN HET PRODUCT MET DEZE SKU M.B.V. DE BROADCAST SNIPPET
 				// WANT ANDERS WORDT _THUMBNAIL_ID BIJ DE EERSTVOLGENDE ERP-IMPORT WEER OVERSCHREVEN MET DE OUDE FOTO-ID
 			}
 

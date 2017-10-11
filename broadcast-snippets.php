@@ -31,7 +31,7 @@
 			$productje = wc_get_product( get_the_ID() );
 			if ( ! is_numeric( $productje->get_sku() ) ) {
 				$productje->set_stock_status( 'instock' );
-				$productje->set_catalog_visibility('hidden');
+				$productje->set_catalog_visibility( 'hidden' );
 				$productje->save();
 			}
 		}
@@ -42,7 +42,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> array( 'publish' ),
-		'title'		=> 'torrontes',
+		'title'			=> 'torrontes',
 	);
 
 	$all_coupons = new WP_Query( $args );
@@ -60,21 +60,23 @@
 	}
 
 	// Een welbepaalde foto verwijderen
-	$photo_id = wp_get_attachment_id_by_post_name( '21515-1' );
+	$photo_id = wp_get_attachment_id_by_post_name( '21515' );
 	if ( $photo_id ) {
 		// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
 		wp_delete_attachment( $photo_id, true );
 	}
 
 	// Product weer linken juiste (geüpdatete) foto
-	$product_id = wc_get_product_id_by_sku( '21515' );
-	$new_photo_id = wp_get_attachment_id_by_post_name( '21515' );
+	$sku = '21515';
+	$product_id = wc_get_product_id_by_sku( $sku );
+	$new_photo_id = wp_get_attachment_id_by_post_name( $sku );
 	if ( $product_id and $new_photo_id ) {
 		$product = wc_get_product( $product_id );
 		
 		// Update de mapping tussen globale en lokale foto
 		switch_to_blog( 1 );
-		// OPGELET: NA IMPORT BEVAT DE TITEL OP HET HOOFDNIVEAU DE OMSCHRIJVING VAN HET PRODUCT
+		// OPGELET: NA IMPORT BEVAT DE TITEL OP HET HOOFDNIVEAU DE OMSCHRIJVING VAN HET PRODUCT DUS DIT WERKT NIET
+		// $new_global_photo_id = wp_get_attachment_id_by_post_name( $sku );
 		$new_global_photo_id = 886;
 		restore_current_blog();
 		$new_value = array( $new_global_photo_id => $new_photo_id );
@@ -110,5 +112,7 @@
 	}
 
 	// Tabel met stopwoorden kopiëren
+
+	// Sjabloon van WP All Export kopiëren
 
 ?>
