@@ -66,7 +66,7 @@
 		wp_delete_attachment( $photo_id, true );
 	}
 
-	// Product weer linken juiste (geüpdatete) foto
+	// Product weer linken aan juiste (geüpdatete) foto
 	$sku = '21515';
 	$product_id = wc_get_product_id_by_sku( $sku );
 	$new_photo_id = wp_get_attachment_id_by_post_name( $sku );

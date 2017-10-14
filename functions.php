@@ -3366,18 +3366,12 @@
 		$screen = get_current_screen();
 		// var_dump($screen);
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
-			global $prohibited_shops;
-			if ( in_array( get_current_blog_id(), $prohibited_shops ) ) {
-				echo '<div class="notice notice-success">';
-				echo '<p>Alle logins zijn verstuurd naar de lokale beheerders. Op dit moment kun je enkel als ingelogde winkelbeheerder je webshop bekijken. Pas wanneer jullie zelf aangeven er klaar voor te zijn, publiceren we de site voor gewone bezoekers. We streven ernaar om alle webshops tegen begin augustus publiek te zetten, want in het FAIR-magazine zal een eerste aankondiging verschijnen.</p>';
-				echo '</div>';
-				echo '<div class="notice notice-info">';
-				echo '<p>Volg <a href="https://github.com/OxfamFairTrade/ob2c/wiki/Betaling#hoe-activeer-ik-mijn-account-bij-mollie" target="_blank">de handleiding</a> om de activering van je Mollie-account te voltooien. Het duurt enkele dagen vooraleer je overschrijving met de gestructureerde mededeling verwerkt is. Let er ook goed op dat je de overschrijving uitvoert vanaf de winkelrekening (en niet je persoonlijke rekening!) want anders zal het IBAN-nummer niet herkend worden. De activatie van kredietkaarten als betaalmethode wordt pas afgerond nadat de webshop gepubliceerd is. Een onderdeel van dat activatieproces is immers een controle van de aangeboden producten.</p>';
-				echo '</div>';
-				echo '<div class="notice notice-error">';
-				echo '<p>Sommige winkels kregen een bericht dat hun legitimatiebewijs afgewezen werd. Dit gebeurt indien de rechtsgeldige vertegenwoordiger die we opgaven (= de persoon waarvan jullie ons de identiteitskaart bezorgden) nog niet in de <u>digitale</u> versie van het KBO geregistreerd staat. We adviseren in dat geval om de rechtsgeldige vertegenwoordiger onder de Mollie-instellingen voor \'<a href="https://www.mollie.com/dashboard/settings/organization" target="_blank">Bedrijf</a>\' aan te passen naar iemand die wel reeds vermeld staat in het KBO. (Check de link naast het BTW-nummer op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina.) <a href="mailto:e-commerce@oft.be" target="_blank">Contacteer ons</a> indien je hierbij assistentie nodig hebt.</p>';
-				echo '</div>';
-			}
+			echo '<div class="notice notice-info">';
+			echo '<p>Volg <a href="https://github.com/OxfamFairTrade/ob2c/wiki/Betaling#hoe-activeer-ik-mijn-account-bij-mollie" target="_blank">de handleiding</a> om de activering van je Mollie-account te voltooien. Het duurt enkele dagen vooraleer je overschrijving met de gestructureerde mededeling verwerkt is. Let er ook goed op dat je de overschrijving uitvoert vanaf de winkelrekening (en niet je persoonlijke rekening!) want anders zal het IBAN-nummer niet herkend worden. De activatie van kredietkaarten als betaalmethode wordt pas afgerond nadat de webshop gepubliceerd is. Een onderdeel van dat activatieproces is immers een controle van de aangeboden producten.</p>';
+			echo '</div>';
+			echo '<div class="notice notice-error">';
+			echo '<p>Sommige winkels kregen een bericht dat hun legitimatiebewijs afgewezen werd. Dit gebeurt indien de rechtsgeldige vertegenwoordiger die we opgaven (= de persoon waarvan jullie ons de identiteitskaart bezorgden) nog niet in de <u>digitale</u> versie van het KBO geregistreerd staat. We adviseren in dat geval om de rechtsgeldige vertegenwoordiger onder de Mollie-instellingen voor \'<a href="https://www.mollie.com/dashboard/settings/organization" target="_blank">Bedrijf</a>\' aan te passen naar iemand die wel reeds vermeld staat in het KBO. (Check de link naast het BTW-nummer op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina.) <a href="mailto:e-commerce@oft.be" target="_blank">Contacteer ons</a> indien je hierbij assistentie nodig hebt.</p>';
+			echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
@@ -3389,28 +3383,26 @@
 				// } else {
 				// 	echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
 				// }
-				// echo '<p>In de back-end van de webshop verschenen 7 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-				// $skus = array( '20154', '21515', '24531', '25296', '25722', '27819', '27820' );
-				// foreach ( $skus as $sku ) {
-				// 	$product_id = wc_get_product_id_by_sku( $sku );
-				// 	if ( $product_id ) {
-				// 		$productje = wc_get_product( $product_id );
-				// 		echo '<li><a href="'.$productje->get_permalink().'" target="_blank">'.$productje->get_title().'</a> ('.$productje->get_attribute( 'pa_shopplus' ).')</li>';
-				// 	}
+				echo '<p>In de back-end van de webshop verschenen 9 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+				$skus = array( '22720', '22721', '24501', '24626', '24635', '24637', '24638', '24639', '24640' );
+				foreach ( $skus as $sku ) {
+					$product_id = wc_get_product_id_by_sku( $sku );
+					if ( $product_id ) {
+						$productje = wc_get_product( $product_id );
+						echo '<li><a href="'.$productje->get_permalink().'" target="_blank">'.$productje->get_title().'</a> ('.$productje->get_attribute( 'pa_shopplus' ).')</li>';
+					}
 					
-				// }
-				// echo '</ul><p>';
-				// if ( current_user_can('manage_network_users') ) {
-				// 	echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// }
-				// echo 'Bij de pralines gaat het louter om een herbevoorrading: de webshop bestond nog niet toen het vorige lot verkocht werd. Opgelet: pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-				// echo '<p>Eerder werden de 21 prijsverhogingen en 2 prijsdalingen van 1 september 2017 al doorgevoerd, inclusief de niet-vermelde wijziging op BIO Cacaobeertjes Ontbijtgranen (X17011) van 3,25 naar 3,45 euro. Daarnaast kreeg RAZA Brut Torrontés Schuimwijn (W10410) een packshot van de nieuwe bolle fles en werd het ompaknummer van BIO Decaf koffiepads (W12705) gewijzigd.</p>';
-				echo '<p>Tegen eind deze week voegen we de noussines, de koffiecapsules en de sintfiguren toe aan de webshop.</p>';
+				}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Opgelet: pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast werden de packshots van Groot Eiland Shiraz-Pinotage (W10063), Groot Eiland Chardonnay-Chenin Blanc (W10256) en Zeevruchten (W14500) bijgewerkt. Tot slot werden de fairtradepercentages vervolledigd.</p>';
 			echo '</div>';
 			if ( does_sendcloud_delivery() ) {
-				echo '<div class="notice notice-error">';
-				echo '<p>De domiciliëringsopdracht van de Nederlandse betaalprovider Ayden die eind juni geactiveerd werd op jullie winkelrekening, dient voor de betaling van verzendingen die je via SendCloud regelt. (Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen.) Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen verzendlabels meer aanmaken voor Bpost en dien je zelf (fors duurdere) etiketten aan te schaffen in een postpunt.</p>';
-				echo '</div>';	
+				// echo '<div class="notice notice-error">';
+				// echo '<p>De domiciliëringsopdracht van de Nederlandse betaalprovider Ayden die eind juni geactiveerd werd op jullie winkelrekening, dient voor de betaling van verzendingen die je via SendCloud regelt. (Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen.) Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen verzendlabels meer aanmaken voor Bpost en dien je zelf (fors duurdere) etiketten aan te schaffen in een postpunt.</p>';
+				// echo '</div>';
 			}
 		}
 		if ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
