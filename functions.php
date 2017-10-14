@@ -761,12 +761,16 @@
 					var wto;
 					jQuery( '#oxfam-zip-user' ).on( 'input change', function() {
 						clearTimeout(wto);
-						if ( jQuery( '#oxfam-zip-user' ).val().length == 4 ) {
+						var zip = jQuery( '#oxfam-zip-user' ).val();
+						var zips = <?php echo json_encode( get_site_option( 'oxfam_flemish_zip_codes' ) ); ?>;
+						if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
 							jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false );
-							// jQuery( '#do_oxfam_redirect' ).val('Doorsturen ...');
-							// wto = setTimeout( function() {
-							// 	jQuery( '#do_oxfam_redirect' ).trigger('click');
-							// }, 500);
+							wto = setTimeout( function() {
+								// jQuery( '#do_oxfam_redirect' ).val('Doorsturen ...');
+								wto = setTimeout( function() {
+									// jQuery( '#do_oxfam_redirect' ).trigger('click');
+								}, 500);
+							}, 500);
 						} else {
 							jQuery( '#do_oxfam_redirect' ).prop( 'disabled', true );
 						}
@@ -787,12 +791,12 @@
 								// TOE TE VOEGEN: +'&referralCity='+city (maar city nog niet bepaald)
 								window.location.href = url+'?referralZip='+zip;
 							} else {
-								alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam_webshop' ); ?>");
+								alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
 								jQuery(this).val('Stuur mij door');
 								jQuery( '#oxfam-zip-user' ).val('');
 							}
 						} else {
-							alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam_webshop' ); ?>");
+							alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ); ?>");
 							jQuery(this).val('Stuur mij door');
 							jQuery( '#oxfam-zip-user' ).val('');
 						}
@@ -801,7 +805,13 @@
 					jQuery( function() {
 						var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
 						jQuery( "#oxfam-zip-user, #billing_postcode, #shipping_postcode" ).autocomplete({
-							source: zips
+							source: zips,
+							minLength: 1,
+							autoFocus: true,
+							select: function(event, ui) {
+								// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
+								jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false );
+							}
 						});
 					} );
 				</script>
