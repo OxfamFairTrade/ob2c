@@ -3383,8 +3383,8 @@
 				// } else {
 				// 	echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
 				// }
-				echo '<p>In de back-end van de webshop verschenen 9 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-				$skus = array( '22720', '22721', '24501', '24626', '24635', '24637', '24638', '24639', '24640' );
+				echo '<p>In de back-end van de webshop verschenen 10 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+				$skus = array( '22720', '22721', '24501', '24614', '24626', '24635', '24637', '24638', '24639', '24640' );
 				foreach ( $skus as $sku ) {
 					$product_id = wc_get_product_id_by_sku( $sku );
 					if ( $product_id ) {
@@ -3395,9 +3395,9 @@
 				}
 				echo '</ul><p>';
 				if ( current_user_can('manage_network_users') ) {
-					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. Opgelet: door een kleine lapsus is de status van Lautaro Cabernet Sauvignon (W10055) in alle webshops weer op \'Uit voorraad\' gezet. Pas dit aan indien je het product in je assortiment hebt.</p><p>';
 				}
-				echo 'Opgelet: pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast werden de packshots van Groot Eiland Shiraz-Pinotage (W10063), Groot Eiland Chardonnay-Chenin Blanc (W10256) en Zeevruchten (W14500) bijgewerkt. Tot slot werden de fairtradepercentages vervolledigd.</p>';
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast werden de packshots van Groot Eiland Shiraz-Pinotage (W10063), Groot Eiland Chardonnay-Chenin Blanc (W10256) en Zeevruchten (W14500) bijgewerkt. Tot slot werden de fairtradepercentages vervolledigd. Volgende week vullen we de allergenen bij de nieuwe producten nog aan.</p>";
 			echo '</div>';
 			if ( does_sendcloud_delivery() ) {
 				// echo '<div class="notice notice-error">';
