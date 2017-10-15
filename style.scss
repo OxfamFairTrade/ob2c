@@ -67,7 +67,7 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 
 .portal.home .nm-header.menu-centered .nm-header-logo {
 	position: relative;
-	top: -10px;
+	top: -5px;
 }
 
 .portal.home .nm-header.menu-centered .nm-right-menu {
@@ -83,7 +83,7 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 .portal.home .nm-header-logo .winkelnaam {
 	color: black;
 	border-left: 1px solid black;
-	line-height: 50px;
+	line-height: 40px;
 }
 
 .portal.home div.nm-page-wrap-inner .nm-header-inner,
@@ -94,12 +94,14 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 	width: 100%;
 }
 
-/* TE VERPLAATSEN NAAR APARTE DIV IN SJABLOON */
-.portal.home div.nm-page-wrap-inner .nm-main-menu:before {
-	content: 'De grootste keuze aan eerlijke voedingsproducten';
+.portal.home div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
 	color: white;
 	font-size: 2em;
 	font-weight: bold;
+	position: relative;
+	top: 5px;
+	max-width: 800px;
+	margin: 0 auto;
 }
 
 .portal.home h3.afhaling {
@@ -548,6 +550,12 @@ li#wp-admin-bar-notes {
 	div.nm-quantity-wrap,
 	button.nm-simple-add-to-cart-button {
 		max-width: 250px;
+	}
+}
+
+@media (max-width: 1400px) {
+	body.portal .nm-header.menu-centered .nm-header-logo .winkelnaam {
+		display: none;
 	}
 }
 

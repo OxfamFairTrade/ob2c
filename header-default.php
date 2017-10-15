@@ -38,6 +38,12 @@
 						<?php ubermenu( 'main', array( 'theme_location' => 'main-menu' ) ); ?>
 					<?php else : ?>               
 					<nav class="nm-main-menu">
+					<?php
+						// GEWIJZIGD: Centrale titel toevoegen op portaal
+						if ( is_main_site() ) {
+							echo '<p class="hoofdtitel">'.__( 'Centrale titel op portaalpagina', 'oxfam-webshop' ).'</p>';
+						}
+					?>
 						<ul id="nm-main-menu-ul" class="nm-menu">
 							<?php
 								wp_nav_menu( array(
