@@ -1,12 +1,14 @@
 /*!
-	Theme Name:   	Oxfam-Wereldwinkels Webshop
-	Author:       	Efraim Sebrechts & Frederik Neirynck
+	Theme Name:		Oxfam-Wereldwinkels Webshop
+	Author:			Efraim Sebrechts & Frederik Neirynck
 	Author URI:		https://www.oxfamwereldwinkels.be
-	Description:  	Custom portaalpagina, lokale logo's en extra banners bij producten.
-	Template:     	savoy
-	Version:      	1.5.0
-	Text Domain:  	oxfam-webshop
+	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
+	Template:		savoy
+	Version:		1.5.0
+	Text Domain:	oxfam-webshop
 */
+
+
 
 /****************/
 /*  DEFINITIES  */
@@ -19,21 +21,12 @@ $see-through-red: rgba(250, 22, 50, 0.9);
 $see-through-white: rgba(255, 255, 255, 0.5);
 $brown-grey: rgba(133, 107, 95, 0.5);
 $fluo-green: #57cc82;
+$oxfam-green: #61a534;
 $pickup: rgb(0, 175, 233);
 $delivery: rgb(255, 99, 133);
+$black: #2c2c2c;
 
-/* Quick fix voor centreren hoofdpagina's */
-body.page-template-default div.nm-row.nm-row-boxed.nm-row-max-width {
-	margin: auto;
-}
 
-.nm-qty-minus.nm-font-media-play:before {
-	content: '\f068';
-}
-
-.nm-qty-plus.nm-font-media-play:before {
-	content: '\f067';
-}
 
 /************/
 /*  HEADER  */
@@ -167,18 +160,17 @@ body.portal.home {
 /*  ALGEMEEN  */
 /**************/
 
-.textwidget i,
-.textwidget h2,
-.textwidget p {
-	color: rgb(133, 107, 95);
+/* Quick fix voor centreren hoofdpagina's */
+body.page-template-default div.nm-row.nm-row-boxed.nm-row-max-width {
+	margin: auto;
 }
 
-li.widget.widget_text:first-child {
-	border-right: 1px solid $brown-grey;
+/* Plusjes en minnetjes i.p.v. pijltjes als hoeveelheidsknoppen */
+.nm-qty-minus.nm-font-media-play:before {
+	content: '\f068';
 }
-
-body:not(.portal) li.widget.widget_text:last-child {
-	border-left: 1px solid $brown-grey;
+.nm-qty-plus.nm-font-media-play:before {
+	content: '\f067';
 }
 
 /* Quotes nooit centreren! */
@@ -277,9 +269,9 @@ div.nm-product-share-wrap {
 
 /* Zet limiet op breedte van productbeschrijving */
 div.nm-tabs-panel-inner {
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 0;
+	max-width: 820px;
+	margin: 0 auto;
+	padding: 0;
 }
 
 /* Maak de kolommen in de technische productinfo breder/smaller */
@@ -294,15 +286,15 @@ div.nm-tabs-panel-inner {
 
 /* Zorg dat de beschrijvende tekst boven een categoriefoto beter leesbaar wordt */
 .nm-product-category-text {
-    width: 100%;
-    background-color: transparent;
-    background-color: $see-through-white;
+	width: 100%;
+	background-color: transparent;
+	background-color: $see-through-white;
 }
 .nm-product-category-heading {
-    color: black;
+	color: black;
 }
 .nm-product-category-text > .invert-color {
-    color: black;
+	color: black;
 }
 
 /* Fix overlap foto en tekst in widget */
@@ -334,7 +326,7 @@ div.nm-tabs-panel-inner {
 
 /* Maak de tekstboodschappen groen */
 .woocommerce-message {
-	color: #61a534 !important;
+	color: $oxfam-green !important;
 }
 
 li.product,
@@ -342,12 +334,102 @@ div.nm-single-product div.woocommerce-product-gallery  {
 	overflow: hidden;
 }
 
+/* Fix voor zoombox die productfoto's op detailpagina rechts afknipt */
+figure {
+	margin: 0 !important;
+}
+
+/* Styleer herkomstinfo boven winkelmandknop */
+p.herkomst {
+	margin-bottom: 1em;
+	font-weight: bold;
+}
+.summary.entry-summary.clear {
+	// padding-left: 50px;
+}
+
+/* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
+tr.shipping .woocommerce-Price-amount {
+	float: right;
+}
+
+/* Geef meer ruimte aan beschrijving promoactie TH-BREEDTE MANIPULEREN IS MISERIE, ZOEK ANDERE MANIER */
+.cart-collaterals .shop_table .cart-discount > th,
+.cart-collaterals .shop_table .cart-discount > td {
+}
+
+/* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het winkelmandje */
+.cart-collaterals .shop_table .order-total > th,
+.cart-collaterals .shop_table .order-total > td {
+	width: 50%;
+}
+.cart-collaterals .shop_table .order-total small.includes_tax {
+	display: block;
+}
+
+/* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het afrekenoverzicht */
+.woocommerce-checkout-review-order .shop_table .order-total > th,
+.woocommerce-checkout-review-order .shop_table .order-total > td {
+	width: 50%;
+}
+.woocommerce-checkout-review-order .shop_table .order-total small.includes_tax {
+	display: block;
+}
+
+
+
+/************/
+/*  FOOTER  */
+/************/
+
+.textwidget i,
+.textwidget h2,
+.textwidget p {
+	color: $black;
+}
+
+li.widget.widget_text:first-child {
+	border-right: 1px solid $brown-grey;
+}
+
+body:not(.portal) li.widget.widget_text:last-child {
+	border-left: 1px solid $brown-grey;
+}
+
+
+.nm-footer-widgets a {
+	color: $oxfam-green !important;
+}
+
+@mixin icon( $image: 'wereld' ) {
+	/* Zorg ervoor dat het originele icoontje in ::before onzichtbaar wordt */
+	color: transparent !important;
+	font-size: 64px;
+	background-image: url('images/#{$image}.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+i.pe-7s-timer {
+	@include icon( 'klok' );
+}
+
+i.pe-7s-global {
+	@include icon( 'wereld');
+}
+
+i.pe-7s-comment {
+	@include icon( 'handen' );
+}
+
+
 
 /*************/
 /*  BANNERS  */
 /*************/
 
-@mixin banner( $color: $see-through-green, $font-size: 85%, $rotation: -3deg ) {
+@mixin banner( $color: $see-through-green, $font-size: 85% ) {
 	color: white;
 	position: absolute;
 	top: 0em;
@@ -355,17 +437,17 @@ div.nm-single-product div.woocommerce-product-gallery  {
 	padding: 0 0.5em;
 	font-size: $font-size;
 	z-index: 50;
-	transform: skewX($rotation);
+	transform: skewX(-3deg);
 	background-color: $color;
 }
 
 /* Toon een blokje bij bioproducten */
 li.product.pa_bio-ja::before {
-	@include banner();
+	@include banner( $see-through-green );
 	content: "Bioproduct"; 
 }
 div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::before {
-	@include banner( 95% );
+	@include banner( $see-through-green, 95% );
 	content: "Biogecertificeerd product";
 }
 
@@ -420,48 +502,10 @@ li.product.product_tag-promotie:hover::after {
 }
 
 
-/* Fix voor zoombox die productfoto's op detailpagina rechts afknipt */
-figure {
-	margin: 0 !important;
-}
 
-/* Styleer herkomstinfo boven winkelmandknop */
-p.herkomst {
-	margin-bottom: 1em;
-	font-weight: bold;
-}
-.summary.entry-summary.clear {
-	// padding-left: 50px;
-}
-
-/* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
-tr.shipping .woocommerce-Price-amount {
-	float: right;
-}
-
-/* Geef meer ruimte aan beschrijving promoactie TH-BREEDTE MANIPULEREN IS MISERIE, ZOEK ANDERE MANIER */
-.cart-collaterals .shop_table .cart-discount > th,
-.cart-collaterals .shop_table .cart-discount > td {
-}
-
-/* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het winkelmandje */
-.cart-collaterals .shop_table .order-total > th,
-.cart-collaterals .shop_table .order-total > td {
-	width: 50%;
-}
-.cart-collaterals .shop_table .order-total small.includes_tax {
-	display: block;
-}
-
-/* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het afrekenoverzicht */
-.woocommerce-checkout-review-order .shop_table .order-total > th,
-.woocommerce-checkout-review-order .shop_table .order-total > td {
-	width: 50%;
-}
-.woocommerce-checkout-review-order .shop_table .order-total small.includes_tax {
-	display: block;
-}
-
+/*************/
+/*  HIDDENS  */
+/*************/
 
 /* Verberg overtollige info */
 .nm-coupon-wrap,
@@ -528,9 +572,6 @@ div.nm-feature.layout-centered {
 	padding: 0.75em;
 }
 
-.nm-footer-widgets a {
-	color: #61a534 !important;
-}
 
 
 /*****************/
