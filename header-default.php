@@ -59,7 +59,7 @@
 					<nav class="nm-right-menu">
 						<!-- GEWIJZIGD: Rechterlogo toevoegen op portaal, en anders het rechtermenu -->
 						<?php if ( is_main_site() ) : ?>
-							<img src="<?php get_stylesheet_directory_uri(); ?>'/images/tekstballon.png" class="nm-logo">
+							<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/tekstballon.png" class="nm-logo">
 						<?php else : ?>
 							<ul id="nm-right-menu-ul" class="nm-menu">
 								<?php

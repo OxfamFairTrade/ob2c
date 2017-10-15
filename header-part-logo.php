@@ -26,9 +26,9 @@
 				<?php if ( $has_alt_logo ) : ?>
 					<img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
 				<?php endif; ?>
-				<div class="winkelnaam">Webshop<br><?php str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ); ?></div>
+				<div class="winkelnaam">Webshop<br><?php echo str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ); ?></div>
 			<?php else : ?>
-				<img src="<?php get_stylesheet_directory_uri(); ?>/images/oww-webshop-zwart-60px2@.png" class="nm-logo">
+				<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-zwart-60px2@.png" class="nm-logo">
 				<div class="winkelnaam">Webshop</div>;
 			<?php endif; ?>
 		</a>

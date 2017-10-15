@@ -72,14 +72,8 @@ body:not(.portal) .nm-header.menu-centered .nm-header-logo .nm-logo,
 body.portal .nm-header.menu-centered .nm-header-logo .nm-logo {
 	height: 60px;
 }
-
 body.portal .nm-header.menu-centered .nm-right-menu .nm-logo {
 	height: 110px;
-}
-
-/* Mobiel menu verbergen */
-body.portal .nm-header.menu-centered .nm-right-menu #nm-right-menu-ul {
-	display: none;
 }
 
 /* Kleur tekst zwart i.p.v. grijs */
@@ -98,7 +92,7 @@ body.portal div.nm-page-wrap-inner .nm-main-menu {
 }
 
 body.portal div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
-	color: white;
+	color: black;
 	font-size: 2em;
 	font-weight: bold;
 	position: relative;
@@ -108,7 +102,7 @@ body.portal div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
 }
 
 body.portal.home div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
-	color: black;
+	color: white;
 }
 
 body.portal h3.afhaling {
