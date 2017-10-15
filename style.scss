@@ -50,28 +50,35 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 /* Voeg een achtegrondafbeelding toe */
 .portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
 	background-color: #57cc82;
-	background-repeat: no-repeat;
-	background-position: center center;
-	background-size: cover;
+	heigh: 150px;
+
 }
 .portal.home div.nm-page-wrap-inner > #nm-header {
 	background-color: transparent;
-	height: 200px;
+	height: 150px;
 }
 
-/* Forceer het menu NIET naar een nieuwe regel */
-.portal.home .nm-header.menu-centered .nm-header-logo {
-	position: absolute;
-}
-
-/* Kleur tekst wit i.p.v. grijs */
-.portal.home .nm-header-logo .winkelnaam {
-	color: white;
-	border-left: 1px solid white;
-}
-
+/* Forceer het rechterlogo NIET naar een nieuwe regel en centreer inhoud verticaal */
+.portal.home .nm-header.menu-centered .nm-header-logo,
 .portal.home .nm-header.menu-centered .nm-main-menu {
-	line-height: 100%;
+	position: absolute;
+	line-height: 120px;
+}
+
+.portal.home .nm-header.menu-centered .nm-right-menu {
+	
+}
+
+/* Mobiel menu verbergen */
+.portal.home .nm-header.menu-centered .nm-right-menu #nm-right-menu-ul {
+	display: none;
+}
+
+/* Kleur tekst zwart i.p.v. grijs */
+.portal.home .nm-header-logo .winkelnaam {
+	color: black;
+	border-left: 1px solid black;
+	line-height: 60px;
 }
 
 .portal.home div.nm-page-wrap-inner .nm-header-inner,
@@ -85,9 +92,10 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 /* TE VERPLAATSEN NAAR APARTE DIV IN SJABLOON */
 .portal.home div.nm-page-wrap-inner .nm-main-menu:before {
 	content: 'De grootste keuze aan eerlijke voedingsproducten';
-	line-height: 200px;
+	line-height: 150px;
 	color: white;
 	font-size: 2em;
+	font-weight: bold;
 }
 
 .portal.home h3.afhaling {
