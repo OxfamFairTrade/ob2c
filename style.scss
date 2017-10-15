@@ -699,21 +699,6 @@ div.nm-feature.layout-centered {
 		}
 	}
 
-	body.portal.home {
-
-		.nm_column:not(:last-child) {
-			border-right: none;
-		}
-
-		.nm_column:not(:first-child) {
-			margin-top: 3em;
-		}
-
-		.nm-footer-widgets {
-			padding: 0 0 2em 0;
-		}
-	}
-
 	li.widget.widget_text:nth-child(2n) {
 		border-right: none;
 	}
@@ -767,6 +752,13 @@ div.nm-feature.layout-centered {
 		}
 	}
 
+	body.portal.home {
+
+		.nm_column:not(:last-child) {
+			border-right: none;
+		}
+	}
+
 	li.widget.widget_text {
 		border: none;
 	}
@@ -781,6 +773,13 @@ div.nm-feature.layout-centered {
 
 		.nm-main-menu {
 			display: none;
+		}
+	}
+
+	body.portal.home {
+
+		.nm_column:not(:first-child) {
+			margin-top: 3em;
 		}
 	}
 }
