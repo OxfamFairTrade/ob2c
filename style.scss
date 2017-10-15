@@ -4,9 +4,23 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:  	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:     	savoy
-	Version:      	1.4.0
+	Version:      	1.5.0
 	Text Domain:  	oxfam-webshop
 */
+
+/****************/
+/*  DEFINITIES  */
+/****************/
+
+$see-through-green: rgba(97, 165, 52, 0.9);
+$see-through-blue: rgba(11, 156, 218, 0.9);
+$see-through-orange: rgba(255, 165, 0, 0.9);
+$see-through-red: rgba(250, 22, 50, 0.9);
+$see-through-white: rgba(255, 255, 255, 0.5);
+$brown-grey: rgba(133, 107, 95, 0.5);
+$fluo-green: #57cc82;
+$pickup: rgb(0, 175, 233);
+$delivery: rgb(255, 99, 133);
 
 /* Quick fix voor centreren hoofdpagina's */
 body.page-template-default div.nm-row.nm-row-boxed.nm-row-max-width {
@@ -21,103 +35,137 @@ body.page-template-default div.nm-row.nm-row-boxed.nm-row-max-width {
 	content: '\f067';
 }
 
-/* Zodat we de winkelnaam verticaal kunnen centereren */
-body:not(.portal) .nm-header.menu-centered .nm-header-logo {
-	display: table;
-	width: 35%;
+/************/
+/*  HEADER  */
+/************/
+
+/* UNIVERSEEL */
+.nm-header.menu-centered {
+	
+	/* Zet de winkelnaam in CSS na logo */
+	.nm-header-logo .winkelnaam {
+		vertical-align: middle;
+		position: relative;
+		top: 5px;
+		margin-left: 1em;
+		padding: 0.25em 1em;
+		font-size: 125%;
+		line-height: 125%;
+		letter-spacing: 3px;
+		color: #707070;
+		border-left: 1px solid #707070;
+		display: inline-block;
+	}
 }
 
-body:not(.portal) .nm-header.menu-centered .nm-main-menu {
-	position: relative;
-	left: -10%;
+/* SPECIFIEK VOOR LOKALE PAGINA'S */
+body:not(.portal) .nm-header.menu-centered {
+	
+	/* Zorg ervoor dat we de winkelnaam verticaal kunnen centereren */
+	.nm-header-logo {
+		display: table;
+		width: 35%;
+	}
+
+	.nm-header-logo .nm-logo {
+		height: 60px;
+	}
+
+	.nm-main-menu {
+		position: relative;
+		left: -10%;
+	}
 }
 
-/* Zet de winkelnaam in CSS na logo */
-.nm-header.menu-centered .nm-header-logo .winkelnaam {
-	vertical-align: middle;
-    position: relative;
-    top: 4px;
-	margin-left: 1em;
-	padding: 0.25em 1em;
-	font-size: 125%;
-	line-height: 125%;
-	letter-spacing: 3px;
-	color: #707070;
-	border-left: 1px solid #707070;
-	display: inline-block;
+/* SPECIFIEK VOOR PORTAALPAGINA'S */
+body.portal .nm-header.menu-centered {
+	/* Volledige breedte laten innemen */
+	.nm-header-inner,
+	.nm-header-row,
+	.nm-header-col,
+	.nm-main-menu {
+		height: 100%;
+		width: 100%;
+	}
+
+	/* Forceer het rechterlogo NIET naar een nieuwe regel en centreer inhoud verticaal */
+	.nm-header-logo {
+		position: relative;
+		top: -5px;
+		line-height: 110px;	
+	}
+
+	.nm-header-logo .nm-logo {
+		height: 60px;
+	}
+
+	/* Kleur tekst zwart i.p.v. grijs */
+	.nm-header-logo .winkelnaam.black {
+		color: black;
+		border-left: 1px solid black;
+		line-height: 40px;
+	}
+
+	.nm-main-menu {
+		position: absolute;
+		line-height: 110px;
+	}
+
+	.nm-main-menu .hoofdtitel {
+		color: black;
+		font-size: 2em;
+		font-weight: bold;
+		position: relative;
+		top: 50%;
+		transform: translateY(-50%);
+		margin: 0 auto;
+	}
+
+	.nm-right-menu .nm-logo {
+		height: 110px;
+	}
 }
 
-/* Wijzig achtergrondkleur en hoogte (enkel op homepage!) en verstop placeholder */
-body.portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
-	background-color: #57cc82;
-	height: 160px;
-}
-body.portal.home div.nm-page-wrap-inner > #nm-header {
-	background-color: transparent;
-	border-bottom: none;
+/* Enkel voor homepage van portaal! */ 
+body.portal.home {
+	
+	/* Wijzig achtergrondkleur en hoogte */
+	div.nm-page-wrap-inner > #nm-header-placeholder {
+		background-color: $fluo-green;
+		height: 160px;
+	}
+
+	/* Verstop placeholder */
+	div.nm-page-wrap-inner > #nm-header {
+		background-color: transparent;
+		border-bottom: none;
+	}
+
+	/* Wijzig kleur centrale tekst */
+	.nm-header.menu-centered .nm-main-menu .hoofdtitel {
+		color: white;
+	}
+
+	h3.afhaling {
+		text-align: center;
+		color: $pickup;
+	}
+
+	h3.thuislevering {
+		text-align: center;
+		color: $delivery;
+	}
+
+	.nm_column.scheiding {
+		border-right: 1px solid ;
+	}
 }
 
-/* Forceer het rechterlogo NIET naar een nieuwe regel en centreer inhoud verticaal */
-body.portal .nm-header.menu-centered .nm-header-logo {
-	position: relative;
-	top: -5px;
-	line-height: 110px;	
-}
-body.portal .nm-header.menu-centered .nm-main-menu {
-	position: absolute;
-	line-height: 110px;
-}
 
-body:not(.portal) .nm-header.menu-centered .nm-header-logo .nm-logo,
-body.portal .nm-header.menu-centered .nm-header-logo .nm-logo {
-	height: 60px;
-}
-body.portal .nm-header.menu-centered .nm-right-menu .nm-logo {
-	height: 110px;
-}
 
-/* Kleur tekst zwart i.p.v. grijs */
-body.portal .nm-header.menu-centered .nm-header-logo .winkelnaam.black {
-	color: black;
-	border-left: 1px solid black;
-	line-height: 40px;
-}
-
-body.portal .nm-header.menu-centered .nm-header-inner,
-body.portal .nm-header.menu-centered .nm-header-row,
-body.portal .nm-header.menu-centered .nm-header-col,
-body.portal .nm-header.menu-centered .nm-main-menu {
-	height: 100%;
-	width: 100%;
-}
-
-body.portal .nm-header.menu-centered .nm-main-menu .hoofdtitel {
-	color: black;
-	font-size: 2em;
-	font-weight: bold;
-	position: relative;
-	top: 50%;
-	transform: translateY(-50%);
-	margin: 0 auto;
-}
-
-body.portal.home .nm-header.menu-centered .nm-main-menu .hoofdtitel {
-	color: white;
-}
-
-body.portal h3.afhaling {
-	text-align: center;
-	color: rgb(0, 175, 233);
-}
-
-body.portal .nm_column.scheiding {
-	border-right: 1px solid rgba(133, 107, 95, 0.5);
-}
-
-body.portal h3.thuislevering {
-	text-align: center;
-	color: rgb(255, 99, 133);
-}
+/**************/
+/*  ALGEMEEN  */
+/**************/
 
 .textwidget i,
 .textwidget h2,
@@ -126,11 +174,11 @@ body.portal h3.thuislevering {
 }
 
 li.widget.widget_text:first-child {
-	border-right: 1px solid rgba(133, 107, 95, 0.5);
+	border-right: 1px solid $brown-grey;
 }
 
 body:not(.portal) li.widget.widget_text:last-child {
-	border-left: 1px solid rgba(133, 107, 95, 0.5);
+	border-left: 1px solid $brown-grey;
 }
 
 /* Quotes nooit centreren! */
@@ -144,15 +192,6 @@ body:not(.portal) li.widget.widget_text:last-child {
 }
 .centreer-blokje-op-helft {
 	width: 50%;
-}
-
-/* Poging tot stylen van Google Maps-ballonnen */
-.gm-style-iw {
-	/*background-color: white;
-	width: 350px !important;
-	top: 0 !important;
-	left: 0 !important;
-	border-radius: 10px;*/
 }
 
 /* Maak de leeggoedicoontjes kleiner */
@@ -257,7 +296,7 @@ div.nm-tabs-panel-inner {
 .nm-product-category-text {
     width: 100%;
     background-color: transparent;
-    background-color: rgba(255,255,255,0.5);
+    background-color: $see-through-white;
 }
 .nm-product-category-heading {
     color: black;
@@ -303,117 +342,62 @@ div.nm-single-product div.woocommerce-product-gallery  {
 	overflow: hidden;
 }
 
-/* Toon een blokje bij bioproducten */
-li.product.pa_bio-ja::before {
+
+/*************/
+/*  BANNERS  */
+/*************/
+
+@mixin banner( $color: $see-through-green, $font-size: 85%, $rotation: -3deg ) {
 	color: white;
 	position: absolute;
 	top: 0em;
 	left: 0.25em;
 	padding: 0 0.5em;
-	font-size: 85%;
+	font-size: $font-size;
 	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(97, 165, 52, 0.9);
-	content: "Bioproduct"; 
+	transform: skewX($rotation);
+	background-color: $color;
 }
 
-/* Toon een bannertje op detailpagina's */
+/* Toon een blokje bij bioproducten */
+li.product.pa_bio-ja::before {
+	@include banner();
+	content: "Bioproduct"; 
+}
 div.nm-single-product.pa_bio-ja figure.woocommerce-product-gallery__wrapper::before {
-	color: white;
-	position: absolute;
-	top: 0em;
-	left: 0.25em;
-	padding: 0 0.5em;
-	font-size: 95%;
-	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(97, 165, 52, 0.9);
+	@include banner( 95% );
 	content: "Biogecertificeerd product";
 }
 
 /* Toon een blokje bij producten die niet beschikbaar zijn voor thuislevering */
 li.product.product_shipping_class-breekbaar::after {
-	color: white;
-	position: absolute;
-	top: 0em;
-	left: 0.25em;
-	padding: 0 0.5em;
-	font-size: 85%;
-	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(11, 156, 218, 0.9);
+	@include banner( $see-through-blue );
 	content: "Afhaling";
 }
-
-/* Toon een bannertje op detailpagina's */
 div.nm-single-product.product_shipping_class-breekbaar figure.woocommerce-product-gallery__wrapper::after {
-	color: white;
-	position: absolute;
-	top: 0em;
-	left: 0.25em;
-	padding: 0 0.5em;
-	font-size: 95%;
-	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(11, 156, 218, 0.9);
+	@include banner( $see-through-blue, 95% );
 	content: "Enkel afhaling in de winkel";
 }
 
 /* Toon een blokje bij nieuwe producten (door automatisch toegevoegde nieuwe datumklasse in template) */
 /* OVERSCHRIJFT AFHAALBLOKJE INDIEN OOK ACTIEF */
 li.product.newbee::after {
-	color: white;
-	position: absolute;
-	top: 0em;
-	left: 0.25em;
-	padding: 0 0.5em;
-	font-size: 85%;
-	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(255, 165, 0, 0.9);;
+	@include banner( $see-through-orange );
 	content: "Nieuw";
 }
-
-/* Toon een bannertje op detailpagina's */
 div.nm-single-product.newbee figure.woocommerce-product-gallery__wrapper::after {
-	color: white;
-	position: absolute;
-	top: 0em;
-	left: 0.25em;
-	padding: 0 0.5em;
-	font-size: 95%;
-	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(255, 165, 0, 0.9);
+	@include banner( $see-through-orange, 95% );
 	content: "Nieuw in ons assortiment";
 }
 
 /* Toon een blokje bij promoties (op basis van tag) */
 /* OVERSCHRIJFT NEWBEEBLOKJE INDIEN OOK ACTIEF */
 li.product.product_tag-promotie::after {
-	color: white;
-	position: absolute;
-	top: 0em;
-	left: 0.25em;
-	padding: 0 0.5em;
-	font-size: 85%;
-	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(250, 22, 50, 0.9);
+	@include banner( $see-through-red );
 	content: "Promo";
 }
-
-/* Toon een bannertje op detailpagina's */
 div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
-	color: white;
-	position: absolute;
-	top: 0em;
-	left: 0.25em;
-	padding: 0 0.5em;
-	font-size: 95%;
-	z-index: 50;
-	transform: skewX(-3deg);
-	background-color: rgba(250, 22, 50, 0.9);
+	@include banner( $see-through-red, 95% );
 	content: "In promotie";
 }
 
@@ -434,6 +418,7 @@ li.product.product_tag-promotie:hover::after {
 	opacity: 0.7;
 	transition: opacity 1s ease-out 0s;
 }
+
 
 /* Fix voor zoombox die productfoto's op detailpagina rechts afknipt */
 figure {
@@ -477,6 +462,7 @@ tr.shipping .woocommerce-Price-amount {
 	display: block;
 }
 
+
 /* Verberg overtollige info */
 .nm-coupon-wrap,
 .nm-single-product-menu,
@@ -494,15 +480,20 @@ tr.shipping .woocommerce-Price-amount {
 	display: none !important;
 }
 
-#sendcloudshipping_service_point_select,
-#sendcloudshipping_service_point_selected_label {
-	margin: 0.5em auto;
-	text-align: center;
+/* Verberg Jetpack-notificaties rechtsboven */
+li#wp-admin-bar-notes {
+	display: none;
 }
 
 /* Verberg lelijk opgemaakte 'Verzendkosten bijgewerkt' */
 .nm-shop-notice .woocommerce-info {
 	display: none;
+}
+
+#sendcloudshipping_service_point_select,
+#sendcloudshipping_service_point_selected_label {
+	margin: 0.5em auto;
+	text-align: center;
 }
 
 /* Geef titeltje 'Bestelnotities' zelfde lay-out als factuur- en verzendgegevens (of ook h3 van maken in template?) */
@@ -541,10 +532,10 @@ div.nm-feature.layout-centered {
 	color: #61a534 !important;
 }
 
-/* Verberg Jetpack-notificaties rechtsboven */
-li#wp-admin-bar-notes {
-	display: none;
-}
+
+/*****************/
+/*  BREAKPOINTS  */
+/*****************/
 
 @media (min-width: 881px) {
 	/* Zet een limiet op de breedte van de add-to-cart knoppen */
@@ -587,8 +578,11 @@ li#wp-admin-bar-notes {
 		}
 	}
 
-	body.portal .nm-header.menu-centered .nm-header-logo .winkelnaam {
-		display: none;
+	body.portal .nm-header.menu-centered {
+		
+		.nm-header-logo .winkelnaam {
+			display: none;
+		}
 	}
 
 	.nm-footer-bar-logo.betaalmethodes {
@@ -680,6 +674,7 @@ li#wp-admin-bar-notes {
 		}
 
 		.nm-header-logo .winkelnaam.black {
+			margin-left: 0;
 			border-top: 1px solid black;
 			border-left: none;
 		}
