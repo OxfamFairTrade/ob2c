@@ -71,6 +71,8 @@
 		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ) );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
+		wp_register_style( 'bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css' );
+		wp_enqueue_style( 'bootstrap' );  
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css' );
@@ -3654,10 +3656,11 @@
  		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/pointer-levering.png">';
  		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
 		$msg .= '<p style="text-align: center;">';
-		// $msg .= '<form id="referrer" action="javascript:void(0);">';
-		$msg .= '<input type="text" class="" id="oxfam-zip-user" style="width: 160px; height: 40px; text-align: center;" autocomplete="on"> ';
-		$msg .= '<input type="submit" class="button" id="do_oxfam_redirect" value="Stuur mij door" style="width: 160px; height: 40px; position: relative; top: -1px;" disabled>';
-		// $msg .= '</form>';
+		$msg .= '<div class="input-group add-on">';
+		$msg .= '<input type="text" class="form-control" placeholder="Search" id="oxfam-zip-user" style="width: 160px; height: 40px; text-align: center;" autocomplete="off"> ';
+		$msg .= '<div class="input-group-btn"><button class="btn btn-default" type="submit" id="do_oxfam_redirect" disabled><i class="glyphicon glyphicon-search"></i></button></div>';
+		// <input type="submit" class="button" id="do_oxfam_redirect" value="Stuur mij door" style="width: 160px; height: 40px; position: relative; top: -1px;" disabled>';
+		$msg .= '</div>';
 		foreach ( $all_zips as $zip => $city ) {
 			if ( isset( $global_zips[$zip] ) ) {
 				$url = $global_zips[$zip];
