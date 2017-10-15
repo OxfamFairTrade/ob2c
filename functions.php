@@ -76,7 +76,7 @@
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css' );
-		wp_enqueue_style( 'jquery-ui' );  
+		wp_enqueue_style( 'jquery-ui' );
 	}
 
 	// Stop vervelende nag van Visual Composer
@@ -764,17 +764,18 @@
 					jQuery( '#oxfam-zip-user' ).on( 'input change', function() {
 						clearTimeout(wto);
 						var zip = jQuery( '#oxfam-zip-user' ).val();
+						var button = jQuery( '#do_oxfam_redirect' );
 						var zips = <?php echo json_encode( get_site_option( 'oxfam_flemish_zip_codes' ) ); ?>;
 						if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
-							jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false );
+							button.prop( 'disabled', false ).parent().addClass('is-valid');
 							wto = setTimeout( function() {
-								// jQuery( '#do_oxfam_redirect' ).val('Doorsturen ...');
+								button.find('i').addClass('loading');
 								wto = setTimeout( function() {
-									// jQuery( '#do_oxfam_redirect' ).trigger('click');
-								}, 500);
-							}, 500);
+									button.trigger('click');
+								}, 750);
+							}, 250);
 						} else {
-							jQuery( '#do_oxfam_redirect' ).prop( 'disabled', true );
+							button.prop( 'disabled', true ).parent().removeClass('is-valid');
 						}
 					});
 					
@@ -785,7 +786,7 @@
 					});
 					
 					jQuery( '#do_oxfam_redirect' ).on( 'click', function() {
-						jQuery(this).prop( 'disabled', true );
+						jQuery(this).prop( 'disabled', true ).parent().removeClass('is-valid');
 						var zip = jQuery( '#oxfam-zip-user' ).val();
 						var url = jQuery( '#'+zip+'.oxfam-zip-value' ).val();
 						if ( typeof url !== 'undefined' ) {
@@ -808,11 +809,12 @@
 						var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
 						jQuery( "#oxfam-zip-user, #billing_postcode, #shipping_postcode" ).autocomplete({
 							source: zips,
-							minLength: 1,
+							minLength: 2,
 							autoFocus: true,
+							position: { my : "right+20 top", at: "right bottom" },
 							select: function(event, ui) {
 								// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
-								jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false );
+								jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false ).parent().addClass('is-valid');
 							}
 						});
 					} );
@@ -3643,7 +3645,13 @@
 		// Negeer niet-gepubliceerde en gearchiveerde sites
 		$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, 'count' => true ) );
 		// Trek hoofdsite af van totaal
-		return '<img src="'.get_stylesheet_directory_uri().'/images/pointer-afhaling.png"><h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
+		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/pointer-afhaling.png">';
+		$msg .= '<h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
+		// $msg .= '<div class="input-group">';
+		// $msg .= '<input type="text" class="minimal" placeholder="zoek een winkel" id="oxfam-zip-user" autocomplete="off"> ';
+		// $msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
+		// $msg .= '</div>';
+		return $msg;
 	}
 
 	function print_portal_title() {
@@ -3655,10 +3663,9 @@
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
  		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/pointer-levering.png">';
  		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
-		$msg .= '<p style="text-align: center;">';
-		$msg .= '<div class="input-group add-on">';
-		$msg .= '<input type="text" class="form-control" placeholder="zoek op postcode/gemeente" id="oxfam-zip-user" autocomplete="off"> ';
-		$msg .= '<div class="input-group-btn"><button class="btn btn-default" type="submit" id="do_oxfam_redirect" disabled><span class="vc_icon_element-icon fa fa-search"></span></button></div>';
+		$msg .= '<div class="input-group">';
+		$msg .= '<input type="text" class="minimal" placeholder="typ je postcode/gemeente" id="oxfam-zip-user" autocomplete="off"> ';
+		$msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
 		$msg .= '</div>';
 		foreach ( $all_zips as $zip => $city ) {
 			if ( isset( $global_zips[$zip] ) ) {
@@ -3668,7 +3675,6 @@
 			}
 			$msg .= '<input type="hidden" class="oxfam-zip-value" id="'.$zip.'" value="'.$url.'">';
 		}
-		$msg .= '</p>';
 		return $msg;
 	}
 

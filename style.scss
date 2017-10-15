@@ -19,6 +19,7 @@ $see-through-blue: rgba(11, 156, 218, 0.9);
 $see-through-orange: rgba(255, 165, 0, 0.9);
 $see-through-red: rgba(250, 22, 50, 0.9);
 $see-through-white: rgba(255, 255, 255, 0.5);
+$light-grey: #cccccc;
 $brown-grey: rgba(133, 107, 95, 0.5);
 $fluo-green: #57cc82;
 $oxfam-green: #61a534;
@@ -117,17 +118,80 @@ body.portal .nm-header.menu-centered {
 	.nm-right-menu .nm-logo {
 		height: 110px;
 	}
+}
 
-	.input-group.add-on {
-		max-width: 250px;
-		margin: 0 auto;
-		font-size: 150%;
+body.portal {
+
+	.input-group {
+		text-align: center;
+		font-size: 110%;
+	}
+
+	.minimal {
+		background-color: white;
+		border: 1px solid $black;
+		text-align: center;
+		display: inline-block;
+		position: relative;
+		padding: 0.5em 0.75em;
+		margin: 0;
 	}
 
 	#oxfam-zip-user {
-		border-top-left-radius: 20px;
-		border-bottom-left-radius: 20px;
-		text-align: center;
+		width: 250px;
+		border-top-left-radius: 25px;
+		border-bottom-left-radius: 25px;
+		border-right: none;
+		padding-right: 0.25em;
+		left: 5px;
+	}
+
+	#do_oxfam_redirect {
+		color: black;
+		border-top-right-radius: 25px;
+		border-bottom-right-radius: 25px;
+		border-left: none;
+		padding-left: 0.5em;
+		left: -5px;
+	}
+
+	i.pe-7s-search {
+		line-height: 100%;
+		position: relative;
+		top: 5px;
+	}
+
+	i.pe-7s-search:before {	
+		font-size: 140%;
+	}
+
+	i.pe-7s-search.loading:before {
+		content: "\e632";
+	} 
+
+	.input-group.is-valid > #do_oxfam_redirect,
+	.input-group.is-valid > #oxfam-zip-user {
+		border-color: $fluo-green;
+	}
+
+	.ui-autocomplete {
+		color: $black;
+		background: white;
+		border: 1px solid black;
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
+		border-top: none;
+		overflow: hidden;
+	}
+
+	.ui-menu-item {
+		padding: 4px 8px;
+	}
+
+	.ui-state-hover,
+	.ui-state-focus {
+		background: $fluo-green;
+		border-color: transparent;
 	}
 }
 
@@ -151,18 +215,17 @@ body.portal.home {
 		color: white;
 	}
 
-	h3.afhaling {
-		text-align: center;
-		color: $pickup;
-	}
-
+	h3.afhaling,
 	h3.thuislevering {
 		text-align: center;
-		color: $delivery;
+		font-size: 140%;
+		color: $black;
+		max-width: 400px;
+		margin: 0 auto;
 	}
 
-	.nm_column.scheiding {
-		border-right: 1px solid ;
+	.page > .nm-row > .nm_column:not(:last-child) {
+		border-right: 1px solid $light-grey;
 	}
 }
 
@@ -400,12 +463,8 @@ tr.shipping .woocommerce-Price-amount {
 	color: $black;
 }
 
-li.widget.widget_text:first-child {
-	border-right: 1px solid $brown-grey;
-}
-
-body:not(.portal) li.widget.widget_text:last-child {
-	border-left: 1px solid $brown-grey;
+li.widget.widget_text:not(:last-child) {
+	border-right: 1px solid $light-grey;
 }
 
 
@@ -644,6 +703,10 @@ div.nm-feature.layout-centered {
 
 	.nm-footer-bar-logo.betaalmethodes img:last-child {
 		margin-right: 0;
+	}
+
+	li.widget.widget_text:nth-child(2n) {
+		border-right: none;
 	}
 }
 
