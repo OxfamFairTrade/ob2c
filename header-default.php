@@ -36,83 +36,81 @@
 					
 					<?php if ( $ubermenu ) : ?>
 						<?php ubermenu( 'main', array( 'theme_location' => 'main-menu' ) ); ?>
-					<?php else : ?>               
-					<nav class="nm-main-menu">
-					<?php
-						// GEWIJZIGD: Centrale titel toevoegen op portaal
-						if ( is_main_site() ) {
-							echo '<p class="hoofdtitel">'.__( 'Centrale titel op portaalpagina', 'oxfam-webshop' ).'</p>';
-						}
-					?>
-						<ul id="nm-main-menu-ul" class="nm-menu">
-							<?php
-								wp_nav_menu( array(
-									'theme_location'	=> 'main-menu',
-									'container'       	=> false,
-									'fallback_cb'     	=> false,
-									'items_wrap'      	=> '%3$s'
-								) );
-							?>
-						</ul>
-					</nav>
+					<?php else : ?>
+						<nav class="nm-main-menu">
+							<!-- GEWIJZIGD: Centrale titel toevoegen op portaal, en anders het centrale menu -->
+							<?php if ( is_main_site() ) : ?>
+								<p class="hoofdtitel"><?php _e( 'Centrale titel op portaalpagina', 'oxfam-webshop' ); ?></p>
+							<?php else : ?>
+								<ul id="nm-main-menu-ul" class="nm-menu">
+									<?php
+										wp_nav_menu( array(
+											'theme_location'	=> 'main-menu',
+											'container'       	=> false,
+											'fallback_cb'     	=> false,
+											'items_wrap'      	=> '%3$s'
+										) );
+									?>
+								</ul>
+							<?php endif; ?>
+						</nav>
 					<?php endif; ?>
 					
 					<nav class="nm-right-menu">
-					<?php
-						// GEWIJZIGD: Rechterlogo toevoegen op portaal
-						if ( is_main_site() ) {
-							echo '<img src="'.get_stylesheet_directory_uri().'/images/tekstballon.png" class="nm-logo" style="height: 110px;">';
-						}
-					?>
-						<ul id="nm-right-menu-ul" class="nm-menu">
-							<?php
-								wp_nav_menu( array(
-									'theme_location'	=> 'right-menu',
-									'container'       	=> false,
-									'fallback_cb'     	=> false,
-									'items_wrap'      	=> '%3$s'
-								) );
-								
-								if ( nm_woocommerce_activated() && $nm_theme_options['menu_login'] ) :
-							?>
-							<li class="nm-menu-account menu-item">
-								<?php echo nm_get_myaccount_link( true ); ?>
-							</li>
-							<?php 
-								endif;
-								
-								if ( $nm_globals['cart_link'] ) :
+						<!-- GEWIJZIGD: Rechterlogo toevoegen op portaal, en anders het rechtermenu -->
+						<?php if ( is_main_site() ) : ?>
+							<img src="<?php get_stylesheet_directory_uri(); ?>'/images/tekstballon.png" class="nm-logo">
+						<?php else : ?>
+							<ul id="nm-right-menu-ul" class="nm-menu">
+								<?php
+									wp_nav_menu( array(
+										'theme_location'	=> 'right-menu',
+										'container'       	=> false,
+										'fallback_cb'     	=> false,
+										'items_wrap'      	=> '%3$s'
+									) );
 									
-									$cart_menu_class = ( $nm_theme_options['menu_cart_icon'] ) ? 'has-icon' : 'no-icon';
-									$cart_url = ( $nm_globals['cart_panel'] ) ? '#' : WC()->cart->get_cart_url();
-							?>
-							<li class="nm-menu-cart menu-item <?php echo esc_attr( $cart_menu_class ); ?>">
-								<a href="<?php echo esc_url( $cart_url ); ?>" id="nm-menu-cart-btn">
-									<?php echo nm_get_cart_title(); ?>
-									<?php echo nm_get_cart_contents_count(); ?>
-								</a>
-							</li>
-							<?php 
-								endif; 
-								
-								if ( $nm_globals['shop_search_header'] ) :
-							?>
-							<li class="nm-menu-search menu-item"><a href="#" id="nm-menu-search-btn"><i class="nm-font nm-font-search-alt flip"></i></a></li>
-							<?php endif; ?>
-							<li class="nm-menu-offscreen menu-item">
-								<?php 
-									if ( nm_woocommerce_activated() ) {
-										echo nm_get_cart_contents_count();
-									}
+									if ( nm_woocommerce_activated() && $nm_theme_options['menu_login'] ) :
 								?>
-								
-								<a href="#" id="nm-mobile-menu-button" class="clicked">
-									<div class="nm-menu-icon">
-										<span class="line-1"></span><span class="line-2"></span><span class="line-3"></span>
-									</div>
-								</a>
-							</li>
-						</ul>
+								<li class="nm-menu-account menu-item">
+									<?php echo nm_get_myaccount_link( true ); ?>
+								</li>
+								<?php 
+									endif;
+									
+									if ( $nm_globals['cart_link'] ) :
+										
+										$cart_menu_class = ( $nm_theme_options['menu_cart_icon'] ) ? 'has-icon' : 'no-icon';
+										$cart_url = ( $nm_globals['cart_panel'] ) ? '#' : WC()->cart->get_cart_url();
+								?>
+								<li class="nm-menu-cart menu-item <?php echo esc_attr( $cart_menu_class ); ?>">
+									<a href="<?php echo esc_url( $cart_url ); ?>" id="nm-menu-cart-btn">
+										<?php echo nm_get_cart_title(); ?>
+										<?php echo nm_get_cart_contents_count(); ?>
+									</a>
+								</li>
+								<?php 
+									endif; 
+									
+									if ( $nm_globals['shop_search_header'] ) :
+								?>
+								<li class="nm-menu-search menu-item"><a href="#" id="nm-menu-search-btn"><i class="nm-font nm-font-search-alt flip"></i></a></li>
+								<?php endif; ?>
+								<li class="nm-menu-offscreen menu-item">
+									<?php 
+										if ( nm_woocommerce_activated() ) {
+											echo nm_get_cart_contents_count();
+										}
+									?>
+									
+									<a href="#" id="nm-mobile-menu-button" class="clicked">
+										<div class="nm-menu-icon">
+											<span class="line-1"></span><span class="line-2"></span><span class="line-3"></span>
+										</div>
+									</a>
+								</li>
+							</ul>
+						<?php endif; ?>
 					</nav>
 					
 					<?php echo $ubermenu_wrap_close; ?>

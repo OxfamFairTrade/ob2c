@@ -20,20 +20,16 @@
 
 	<div class="nm-header-logo">
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-			<?php
-				// GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites
-				if ( ! is_main_site() ) {
-				?>
-					<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-groen-60px.png" class="nm-logo" style="max-height: 60px;">
-					<?php if ( $has_alt_logo ) : ?>
+			<!-- // GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites -->
+			<?php if ( ! is_main_site() ) : ?>
+				<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-groen-60px.png" class="nm-logo">
+				<?php if ( $has_alt_logo ) : ?>
 					<img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
-					<?php endif; ?>
-				<?php
-					echo '<div class="winkelnaam">Webshop<br>' . str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) . '</div>';
-				} else {
-					echo '<img src="'.get_stylesheet_directory_uri().'/images/oww-webshop-zwart-60px2@.png" class="nm-logo" style="height: 60px;">';
-					echo '<div class="winkelnaam">Webshop</div>';
-				}
-			?>
+				<?php endif; ?>
+				<div class="winkelnaam">Webshop<br><?php str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ); ?></div>
+			<?php else : ?>
+				<img src="<?php get_stylesheet_directory_uri(); ?>/images/oww-webshop-zwart-60px2@.png" class="nm-logo">
+				<div class="winkelnaam">Webshop</div>;
+			<?php endif; ?>
 		</a>
 	</div>

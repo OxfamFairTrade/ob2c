@@ -47,72 +47,80 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 	display: inline-block;
 }
 
-/* Wijzig achtergrondkleur en hoogte */
-.portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
+/* Wijzig achtergrondkleur (enkel op homepage!) en verstop placeholder */
+body.portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
 	background-color: #57cc82;
-	height: 160px;
-
 }
-.portal.home div.nm-page-wrap-inner > #nm-header {
+body.portal.home div.nm-page-wrap-inner > #nm-header {
 	background-color: transparent;
-	height: 160px;
+	border-bottom: none;
 }
 
 /* Forceer het rechterlogo NIET naar een nieuwe regel en centreer inhoud verticaal */
-.portal.home .nm-header.menu-centered .nm-header-logo,
-.portal.home .nm-header.menu-centered .nm-main-menu {
+body.portal .nm-header.menu-centered .nm-header-logo,
+body.portal .nm-header.menu-centered .nm-main-menu {
 	position: absolute;
 	line-height: 110px;
 }
 
-.portal.home .nm-header.menu-centered .nm-header-logo {
+body.portal .nm-header.menu-centered .nm-header-logo {
 	position: relative;
 	top: -5px;
 }
 
-.portal.home .nm-header.menu-centered .nm-right-menu {
-	
+body:not(.portal) .nm-header.menu-centered .nm-header-logo .nm-logo,
+body.portal .nm-header.menu-centered .nm-header-logo .nm-logo {
+	height: 60px;
+}
+
+body.portal .nm-header.menu-centered .nm-right-menu .nm-logo {
+	height: 110px;
 }
 
 /* Mobiel menu verbergen */
-.portal.home .nm-header.menu-centered .nm-right-menu #nm-right-menu-ul {
+body.portal .nm-header.menu-centered .nm-right-menu #nm-right-menu-ul {
 	display: none;
 }
 
 /* Kleur tekst zwart i.p.v. grijs */
-.portal.home .nm-header-logo .winkelnaam {
+body.portal .nm-header-logo .winkelnaam {
 	color: black;
 	border-left: 1px solid black;
 	line-height: 40px;
 }
 
-.portal.home div.nm-page-wrap-inner .nm-header-inner,
-.portal.home div.nm-page-wrap-inner .nm-header-row,
-.portal.home div.nm-page-wrap-inner .nm-header-col,
-.portal.home div.nm-page-wrap-inner .nm-main-menu {
+body.portal div.nm-page-wrap-inner .nm-header-inner,
+body.portal div.nm-page-wrap-inner .nm-header-row,
+body.portal div.nm-page-wrap-inner .nm-header-col,
+body.portal div.nm-page-wrap-inner .nm-main-menu {
 	height: 100%;
 	width: 100%;
 }
 
-.portal.home div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
+body.portal div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
 	color: white;
 	font-size: 2em;
 	font-weight: bold;
 	position: relative;
-	top: 5px;
+	top: 50%;
+	transform: translateY(-50%);
 	margin: 0 auto;
 }
 
-.portal.home h3.afhaling {
+body.portal.home div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
+	color: black;
+}
+
+body.portal h3.afhaling {
 	text-align: center;
 	color: rgb(0, 175, 233);
 }
 
-.portal.home .nm_column.scheiding {
+body.portal .nm_column.scheiding {
 	border-right: 1px solid rgba(133, 107, 95, 0.5);
 }
 
-.portal.home h3.thuislevering {
+body.portal h3.thuislevering {
 	text-align: center;
 	color: rgb(255, 99, 133);
 }
@@ -553,8 +561,13 @@ li#wp-admin-bar-notes {
 }
 
 @media (max-width: 1400px) {
-	body.portal .nm-header.menu-centered .nm-header-logo .winkelnaam {
-		display: none;
+	body.portal div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
+		max-width: 500px;
+		line-height: 125%;
+	}
+
+	body.portal .nm-header.menu-centered .nm-header-logo {
+		width: 75%;
 	}
 }
 
@@ -572,9 +585,8 @@ li#wp-admin-bar-notes {
 		left: 0;
 	}
 
-	body.portal .nm-header.menu-centered .nm-header-logo .hoofdtitel {
-		max-width: 500px;
-		line-height: 125%;
+	body.portal .nm-header.menu-centered .nm-header-logo .winkelnaam {
+		display: none;
 	}
 
 	.nm-footer-bar-logo.betaalmethodes {
@@ -600,7 +612,13 @@ li#wp-admin-bar-notes {
 	}
 
 	body.portal .nm-header.menu-centered .nm-main-menu {
-		display: inline-block;
+		display: block;
+		max-width: 100%;
+		font-size: 70%;
+	}
+
+	body.portal div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
+		max-width: 350px;
 	}
 
 	li.widget.widget_text {
@@ -608,12 +626,17 @@ li#wp-admin-bar-notes {
 	}
 }
 
-@media (max-width: 500px) {
-	body:not(.portal) .nm-header.menu-centered .nm-header-logo .winkelnaam {
+@media (max-width: 600px) {
+	body.portal .nm-header.menu-centered .nm-header-logo {
+		width: 100%;
+	}
+
+	body.portal .nm-header.menu-centered .nm-header-logo .winkelnaam {
 		display: inline-block;
 	}
 
-	body.portal .nm-header.menu-centered .nm-main-menu {
+	body.portal .nm-header.menu-centered .nm-main-menu,
+	body.portal .nm-header.menu-centered .nm-right-menu .nm-logo {
 		display: none;
 	}
 }
