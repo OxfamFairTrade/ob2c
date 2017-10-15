@@ -68,7 +68,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.0' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.1' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		// wp_register_style( 'bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css' );
@@ -763,7 +763,7 @@
 					var wto;
 					jQuery( '#oxfam-zip-user' ).on( 'input change', function() {
 						clearTimeout(wto);
-						var zip = jQuery( '#oxfam-zip-user' ).val();
+						var zip = jQuery(this).val();
 						var button = jQuery( '#do_oxfam_redirect' );
 						var zips = <?php echo json_encode( get_site_option( 'oxfam_flemish_zip_codes' ) ); ?>;
 						if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
@@ -786,8 +786,9 @@
 					});
 					
 					jQuery( '#do_oxfam_redirect' ).on( 'click', function() {
-						jQuery(this).prop( 'disabled', true ).parent().removeClass('is-valid');
-						var zip = jQuery( '#oxfam-zip-user' ).val();
+						jQuery(this).prop( 'disabled', true );
+						var input = jQuery( '#oxfam-zip-user' );
+						var zip = input.val();
 						var url = jQuery( '#'+zip+'.oxfam-zip-value' ).val();
 						if ( typeof url !== 'undefined' ) {
 							if ( url.length > 10 ) {
@@ -795,26 +796,26 @@
 								window.location.href = url+'?referralZip='+zip;
 							} else {
 								alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
-								jQuery(this).val('Stuur mij door');
-								jQuery( '#oxfam-zip-user' ).val('');
+								jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
+								input.val('');
 							}
 						} else {
 							alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ); ?>");
-							jQuery(this).val('Stuur mij door');
-							jQuery( '#oxfam-zip-user' ).val('');
+							jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
+							input.val('');
 						}
 					});
 
 					jQuery( function() {
 						var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
-						jQuery( "#oxfam-zip-user, #billing_postcode, #shipping_postcode" ).autocomplete({
+						jQuery( '#oxfam-zip-user' ).autocomplete({
 							source: zips,
 							minLength: 2,
 							autoFocus: true,
 							position: { my : "right+20 top", at: "right bottom" },
-							select: function(event, ui) {
+							close: function(event, ui) {
 								// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
-								jQuery( '#do_oxfam_redirect' ).prop( 'disabled', false ).parent().addClass('is-valid');
+								jQuery( '#oxfam-zip-user' ).trigger('change');
 							}
 						});
 					} );

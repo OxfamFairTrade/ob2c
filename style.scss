@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.5.0
+	Version:		1.5.1
 	Text Domain:	oxfam-webshop
 */
 
@@ -219,7 +219,7 @@ body.portal.home {
 		text-align: center;
 		font-size: 140%;
 		color: $black;
-		max-width: 400px;
+		max-width: 380px;
 		margin: 0 auto;
 	}
 
@@ -227,12 +227,8 @@ body.portal.home {
 		border-top: none;
 	}
 
-	.page > .nm-row > .nm_column:not(:last-child) {
+	.nm_column:not(:last-child) {
 		border-right: 1px solid $light-grey;
-	}
-
-	.page > .nm-row > .nm_column:not(:first-child) {
-		margin-top: 3em;
 	}
 }
 
@@ -474,7 +470,6 @@ li.widget.widget_text:not(:last-child) {
 	border-right: 1px solid $light-grey;
 }
 
-
 .nm-footer-widgets a {
 	color: $oxfam-green !important;
 }
@@ -704,16 +699,31 @@ div.nm-feature.layout-centered {
 		}
 	}
 
+	body.portal.home {
+
+		.nm_column:not(:last-child) {
+			border-right: none;
+		}
+
+		.nm_column:not(:first-child) {
+			margin-top: 3em;
+		}
+
+		.nm-footer-widgets {
+			padding: 0 0 2em 0;
+		}
+	}
+
+	li.widget.widget_text:nth-child(2n) {
+		border-right: none;
+	}
+
 	.nm-footer-bar-logo.betaalmethodes {
 		margin-top: 10px;
 	}
 
 	.nm-footer-bar-logo.betaalmethodes img:last-child {
 		margin-right: 0;
-	}
-
-	li.widget.widget_text:nth-child(2n) {
-		border-right: none;
 	}
 }
 
