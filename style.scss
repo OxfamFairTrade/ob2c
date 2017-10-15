@@ -117,6 +117,18 @@ body.portal .nm-header.menu-centered {
 	.nm-right-menu .nm-logo {
 		height: 110px;
 	}
+
+	.input-group.add-on {
+		max-width: 250px;
+		margin: 0 auto;
+		font-size: 150%;
+	}
+
+	#oxfam-zip-user {
+		border-top-left-radius: 20px;
+		border-bottom-left-radius: 20px;
+		text-align: center;
+	}
 }
 
 /* Enkel voor homepage van portaal! */ 
