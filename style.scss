@@ -65,6 +65,11 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 	line-height: 110px;
 }
 
+.portal.home .nm-header.menu-centered .nm-header-logo {
+	position: relative;
+	top: -10px;
+}
+
 .portal.home .nm-header.menu-centered .nm-right-menu {
 	
 }
@@ -78,7 +83,7 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 .portal.home .nm-header-logo .winkelnaam {
 	color: black;
 	border-left: 1px solid black;
-	line-height: 60px;
+	line-height: 50px;
 }
 
 .portal.home div.nm-page-wrap-inner .nm-header-inner,
@@ -95,8 +100,6 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 	color: white;
 	font-size: 2em;
 	font-weight: bold;
-	position: relative;
-	top: 10px;
 }
 
 .portal.home h3.afhaling {
