@@ -124,7 +124,7 @@ body.portal {
 
 	.input-group {
 		text-align: center;
-		font-size: 110%;
+		font-size: 105%;
 	}
 
 	.minimal {
@@ -138,7 +138,7 @@ body.portal {
 	}
 
 	#oxfam-zip-user {
-		width: 250px;
+		width: 225px;
 		border-top-left-radius: 25px;
 		border-bottom-left-radius: 25px;
 		border-right: none;
@@ -207,7 +207,6 @@ body.portal.home {
 	/* Verstop placeholder */
 	div.nm-page-wrap-inner > #nm-header {
 		background-color: transparent;
-		border-bottom: none;
 	}
 
 	/* Wijzig kleur centrale tekst */
@@ -224,8 +223,16 @@ body.portal.home {
 		margin: 0 auto;
 	}
 
+	.nm-footer-widgets {
+		border-top: none;
+	}
+
 	.page > .nm-row > .nm_column:not(:last-child) {
 		border-right: 1px solid $light-grey;
+	}
+
+	.page > .nm-row > .nm_column:not(:first-child) {
+		margin-top: 3em;
 	}
 }
 
@@ -727,7 +734,7 @@ div.nm-feature.layout-centered {
 
 		.nm-header-logo {
 			line-height: 90px;
-			top: 0;
+			top: -5px;
 		}
 
 		.nm-main-menu {
