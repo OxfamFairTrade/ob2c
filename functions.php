@@ -3656,8 +3656,8 @@
  		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/pointer-levering.png">';
  		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
 		$msg .= '<p style="text-align: center;">';
-		$msg .= '<div class="input-group add-on">';
-		$msg .= '<input type="text" class="form-control" placeholder="Search" id="oxfam-zip-user" style="width: 160px; height: 40px; text-align: center;" autocomplete="off"> ';
+		$msg .= '<div class="input-group add-on" style="max-width: 250px; margin: 0 auto;">';
+		$msg .= '<input type="text" class="form-control" placeholder="Zoek je gemeente" id="oxfam-zip-user" style="border-top-left-radius: 4px; border-bottom-left-radius: 4px; text-align: center;" autocomplete="off"> ';
 		$msg .= '<div class="input-group-btn"><button class="btn btn-default" type="submit" id="do_oxfam_redirect" disabled><i class="glyphicon glyphicon-search"></i></button></div>';
 		// <input type="submit" class="button" id="do_oxfam_redirect" value="Stuur mij door" style="width: 160px; height: 40px; position: relative; top: -1px;" disabled>';
 		$msg .= '</div>';
