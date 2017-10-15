@@ -29,7 +29,7 @@
 				<div class="winkelnaam">Webshop<br><?php echo str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ); ?></div>
 			<?php else : ?>
 				<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-zwart-60px2@.png" class="nm-logo">
-				<div class="winkelnaam">Webshop</div>;
+				<div class="winkelnaam black">Webshop</div>;
 			<?php endif; ?>
 		</a>
 	</div>

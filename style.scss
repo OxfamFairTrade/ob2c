@@ -63,11 +63,6 @@ body.portal .nm-header.menu-centered .nm-main-menu {
 	line-height: 110px;
 }
 
-body.portal .nm-header.menu-centered .nm-header-logo {
-	position: relative;
-	top: -5px;
-}
-
 body:not(.portal) .nm-header.menu-centered .nm-header-logo .nm-logo,
 body.portal .nm-header.menu-centered .nm-header-logo .nm-logo {
 	height: 60px;
@@ -77,21 +72,21 @@ body.portal .nm-header.menu-centered .nm-right-menu .nm-logo {
 }
 
 /* Kleur tekst zwart i.p.v. grijs */
-body.portal .nm-header-logo .winkelnaam {
+body.portal .nm-header.menu-centered .nm-header-logo .winkelnaam.black {
 	color: black;
 	border-left: 1px solid black;
 	line-height: 40px;
 }
 
-body.portal div.nm-page-wrap-inner .nm-header-inner,
-body.portal div.nm-page-wrap-inner .nm-header-row,
-body.portal div.nm-page-wrap-inner .nm-header-col,
-body.portal div.nm-page-wrap-inner .nm-main-menu {
+body.portal .nm-header.menu-centered .nm-header-inner,
+body.portal .nm-header.menu-centered .nm-header-row,
+body.portal .nm-header.menu-centered .nm-header-col,
+body.portal .nm-header.menu-centered .nm-main-menu {
 	height: 100%;
 	width: 100%;
 }
 
-body.portal div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
+body.portal .nm-header.menu-centered .nm-main-menu .hoofdtitel {
 	color: black;
 	font-size: 2em;
 	font-weight: bold;
@@ -101,7 +96,7 @@ body.portal div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
 	margin: 0 auto;
 }
 
-body.portal.home div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
+body.portal.home .nm-header.menu-centered .nm-main-menu .hoofdtitel {
 	color: white;
 }
 
@@ -555,7 +550,7 @@ li#wp-admin-bar-notes {
 }
 
 @media (max-width: 1400px) {
-	body.portal div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
+	body.portal .nm-header.menu-centered .nm-main-menu .hoofdtitel {
 		max-width: 500px;
 		line-height: 125%;
 	}
@@ -611,7 +606,7 @@ li#wp-admin-bar-notes {
 		font-size: 70%;
 	}
 
-	body.portal div.nm-page-wrap-inner .nm-main-menu .hoofdtitel {
+	body.portal .nm-header.menu-centered .nm-main-menu .hoofdtitel {
 		max-width: 350px;
 	}
 
