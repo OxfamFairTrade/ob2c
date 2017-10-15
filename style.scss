@@ -47,22 +47,22 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 	display: inline-block;
 }
 
-/* Voeg een achtegrondafbeelding toe */
+/* Wijzig achtergrondkleur en hoogte */
 .portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
 	background-color: #57cc82;
-	heigh: 150px;
+	height: 160px;
 
 }
 .portal.home div.nm-page-wrap-inner > #nm-header {
 	background-color: transparent;
-	height: 150px;
+	height: 160px;
 }
 
 /* Forceer het rechterlogo NIET naar een nieuwe regel en centreer inhoud verticaal */
 .portal.home .nm-header.menu-centered .nm-header-logo,
 .portal.home .nm-header.menu-centered .nm-main-menu {
 	position: absolute;
-	line-height: 120px;
+	line-height: 110px;
 }
 
 .portal.home .nm-header.menu-centered .nm-right-menu {
@@ -92,10 +92,11 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 /* TE VERPLAATSEN NAAR APARTE DIV IN SJABLOON */
 .portal.home div.nm-page-wrap-inner .nm-main-menu:before {
 	content: 'De grootste keuze aan eerlijke voedingsproducten';
-	line-height: 150px;
 	color: white;
 	font-size: 2em;
 	font-weight: bold;
+	position: relative;
+	top; 10px;
 }
 
 .portal.home h3.afhaling {

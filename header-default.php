@@ -55,7 +55,7 @@
 					<?php
 						// GEWIJZIGD: Rechterlogo toevoegen op portaal
 						if ( is_main_site() ) {
-							echo '<img src="'.get_stylesheet_directory_uri().'/images/tekstballon.png" class="nm-logo" style="height: 120px;">';
+							echo '<img src="'.get_stylesheet_directory_uri().'/images/tekstballon.png" class="nm-logo" style="height: 110px;">';
 						}
 					?>
 						<ul id="nm-right-menu-ul" class="nm-menu">
