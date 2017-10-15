@@ -219,7 +219,7 @@ body.portal.home {
 		text-align: center;
 		font-size: 140%;
 		color: $black;
-		max-width: 380px;
+		max-width: 390px;
 		margin: 0 auto;
 	}
 
@@ -803,12 +803,20 @@ div.nm-feature.layout-centered {
 		
 		.nm-header-logo {
 			line-height: 60px;
+			top: 5px;
 		}
 
 		.nm-header-logo .winkelnaam.black {
 			margin-left: 0;
 			border-top: 1px solid black;
 			border-left: none;
+		}
+	}
+
+	body.portal {
+		
+		#oxfam-zip-user {
+			width: 175px;
 		}
 	}
 }

@@ -3665,7 +3665,7 @@
  		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/pointer-levering.png">';
  		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
 		$msg .= '<div class="input-group">';
-		$msg .= '<input type="text" class="minimal" placeholder="typ je postcode/gemeente" id="oxfam-zip-user" autocomplete="off"> ';
+		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
 		$msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
 		$msg .= '</div>';
 		foreach ( $all_zips as $zip => $city ) {
