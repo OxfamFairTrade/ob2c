@@ -47,9 +47,10 @@ body:not(.portal) .nm-header.menu-centered .nm-main-menu {
 	display: inline-block;
 }
 
-/* Wijzig achtergrondkleur (enkel op homepage!) en verstop placeholder */
+/* Wijzig achtergrondkleur en hoogte (enkel op homepage!) en verstop placeholder */
 body.portal.home div.nm-page-wrap-inner > #nm-header-placeholder {
 	background-color: #57cc82;
+	height: 160px;
 }
 body.portal.home div.nm-page-wrap-inner > #nm-header {
 	background-color: transparent;
@@ -57,7 +58,11 @@ body.portal.home div.nm-page-wrap-inner > #nm-header {
 }
 
 /* Forceer het rechterlogo NIET naar een nieuwe regel en centreer inhoud verticaal */
-body.portal .nm-header.menu-centered .nm-header-logo,
+body.portal .nm-header.menu-centered .nm-header-logo {
+	position: relative;
+	top: -5px;
+	line-height: 110px;	
+}
 body.portal .nm-header.menu-centered .nm-main-menu {
 	position: absolute;
 	line-height: 110px;
@@ -550,28 +555,36 @@ li#wp-admin-bar-notes {
 }
 
 @media (max-width: 1400px) {
-	body.portal .nm-header.menu-centered .nm-main-menu .hoofdtitel {
-		max-width: 500px;
-		line-height: 125%;
-	}
+	body.portal .nm-header.menu-centered {
 
-	body.portal .nm-header.menu-centered .nm-header-logo {
-		width: 75%;
+		.nm-main-menu .hoofdtitel {
+			max-width: 500px;
+			line-height: 125%;
+			position: relative;
+			right: -3%;
+		}
+
+		.nm-header-logo {
+			width: 75%;
+		}
 	}
 }
 
 @media (max-width: 1024px) {
 	/* Reset naar standaard mobiele weergave */
-	body:not(.portal) .nm-header.menu-centered .nm-header-logo {
-		width: 25%;
-	}
-	
-	body:not(.portal) .nm-header.menu-centered .nm-header-logo .winkelnaam {
-		display: none;
-	}
+	body:not(.portal) .nm-header.menu-centered {
 
-	body:not(.portal) .nm-header.menu-centered .nm-main-menu {
-		left: 0;
+		.nm-header-logo {
+			width: 25%;
+		}
+	
+		.nm-header-logo .winkelnaam {
+			display: none;
+		}
+
+		.nm-main-menu {
+			left: 0;
+		}
 	}
 
 	body.portal .nm-header.menu-centered .nm-header-logo .winkelnaam {
@@ -591,23 +604,40 @@ li#wp-admin-bar-notes {
 	/* Reset naar standaard mobiele weergave */
 	body:not(.portal) .nm-header.menu-centered .nm-header-logo {
 		width: 75%;
-	}
-	
-	body:not(.portal) .nm-header.menu-centered .nm-header-logo .winkelnaam {
-		display: inline-block;
-		padding: 0.25em 1em;
-		font-size: 110%;
-		line-height: 110%;
+
+		.winkelnaam {
+			display: inline-block;
+			padding: 0.25em 1em;
+			font-size: 110%;
+			line-height: 110%;
+		}
 	}
 
-	body.portal .nm-header.menu-centered .nm-main-menu {
-		display: block;
-		max-width: 100%;
-		font-size: 70%;
-	}
+	body.portal .nm-header.menu-centered {
 
-	body.portal .nm-header.menu-centered .nm-main-menu .hoofdtitel {
-		max-width: 350px;
+		.nm-header-logo {
+			line-height: 90px;
+			top: 0;
+		}
+
+		.nm-main-menu {
+			display: block;
+			max-width: 100%;
+			font-size: 70%;
+
+			.hoofdtitel {
+				max-width: 350px;
+				top: 55%;
+			}
+		}
+
+		.nm-right-menu {
+			line-height: 90px;
+
+			.nm-logo {
+				height: 90px;
+			}
+		}
 	}
 
 	li.widget.widget_text {
@@ -616,16 +646,42 @@ li#wp-admin-bar-notes {
 }
 
 @media (max-width: 600px) {
-	body.portal .nm-header.menu-centered .nm-header-logo {
-		width: 100%;
-	}
+	body.portal .nm-header.menu-centered {
+		
+		.nm-header-logo .winkelnaam {
+			display: inline-block;
+		}
 
-	body.portal .nm-header.menu-centered .nm-header-logo .winkelnaam {
-		display: inline-block;
+		.nm-main-menu {
+			display: none;
+		}
 	}
+}
 
-	body.portal .nm-header.menu-centered .nm-main-menu,
-	body.portal .nm-header.menu-centered .nm-right-menu .nm-logo {
-		display: none;
+@media (max-width: 480px) {
+	body.portal .nm-header.menu-centered {
+
+		.nm-header-logo {
+			width: 100%;
+			text-align: center;
+		}
+
+		.nm-right-menu {
+			display: none;
+		}
+	}
+}
+
+@media (max-width: 360px) {
+	body.portal .nm-header.menu-centered {
+		
+		.nm-header-logo {
+			line-height: 60px;
+		}
+
+		.nm-header-logo .winkelnaam.black {
+			border-top: 1px solid black;
+			border-left: none;
+		}
 	}
 }
