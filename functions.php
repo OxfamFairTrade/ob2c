@@ -810,7 +810,7 @@
 						var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
 						jQuery( '#oxfam-zip-user' ).autocomplete({
 							source: zips,
-							minLength: 2,
+							minLength: 1,
 							autoFocus: true,
 							position: { my : "right+20 top", at: "right bottom" },
 							close: function(event, ui) {
@@ -1106,12 +1106,12 @@
 		if ( $birthday ) {
 			// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
 			if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime( '-18 years' ) ) {
-		        wc_add_notice( __( 'Om een bestelling te kunnen plaatsen dien je minstens 18 jaar oud te zijn.' ), 'error' );
+		        wc_add_notice( __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ), 'error' );
 		    } else {
 		    	$_POST['billing_birthday'] = $birthday;
 		    }
 		} else {
-			wc_add_notice( __( 'Geef een geldige geboortedatum in.' ), 'error' );	
+			wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );	
 		}
 	}
 

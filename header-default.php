@@ -40,7 +40,7 @@
 						<nav class="nm-main-menu">
 							<!-- GEWIJZIGD: Centrale titel toevoegen op portaal, en anders het centrale menu -->
 							<?php if ( is_main_site() ) : ?>
-								<p class="hoofdtitel"><?php _e( 'Centrale titel op portaalpagina', 'oxfam-webshop' ); ?></p>
+								<p class="hoofdtitel"><?php echo print_portal_title(); ?></p>
 							<?php else : ?>
 								<ul id="nm-main-menu-ul" class="nm-menu">
 									<?php
