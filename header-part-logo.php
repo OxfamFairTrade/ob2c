@@ -22,13 +22,13 @@
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">
 			<!-- // GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites -->
 			<?php if ( ! is_main_site() ) : ?>
-				<img src="<?php echo network_site_url( '/wp-content/themes/'.wp_get_theme()->get('TextDomain').'/images/oww-webshop-groen-60px2@.png' ); ?>" class="nm-logo">
+				<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-groen-60px2@.png" class="nm-logo">
 				<?php if ( $has_alt_logo ) : ?>
 					<img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
 				<?php endif; ?>
 				<div class="winkelnaam">Webshop<br><?php echo str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ); ?></div>
 			<?php else : ?>
-				<img src="<?php echo network_site_url( '/wp-content/themes/'.wp_get_theme()->get('TextDomain').'/images/oww-webshop-groen-60px2@.png' ); ?>" class="nm-logo">
+				<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-zwart-60px2@.png" class="nm-logo">
 				<div class="winkelnaam black">Webshop</div>
 			<?php endif; ?>
 		</a>
