@@ -12,8 +12,8 @@
 			$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 			
 			// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin)
-			$str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/pointer-levering.png</href></Icon></IconStyle></Style>";
-			$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/pointer-afhaling.png</href></Icon></IconStyle></Style>";
+			$str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-levering.png</href></Icon></IconStyle></Style>";
+			$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 			
 			// Sluit niet-gepubliceerde en gearchiveerde webshops uit
 			global $prohibited_shops;
@@ -38,7 +38,7 @@
 						if ( $locations = get_option( 'woocommerce_pickup_locations' ) ) {
 							$local_file = fopen("../../maps/site-".$site->blog_id.".kml", "w");
 							$txt = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
-							$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/pointer-afhaling.png</href></Icon></IconStyle></Style>";
+							$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 							
 							foreach ( $locations as $location ) {
 								$parts = explode( 'node=', $location['note'] );
