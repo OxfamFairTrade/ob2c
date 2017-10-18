@@ -20,6 +20,7 @@ $see-through-orange: rgba(255, 165, 0, 0.9);
 $see-through-red: rgba(250, 22, 50, 0.9);
 $see-through-white: rgba(255, 255, 255, 0.5);
 $light-grey: #cccccc;
+$shop-grey: #707070;
 $brown-grey: rgba(133, 107, 95, 0.5);
 $fluo-green: #57cc82;
 $oxfam-green: #61a534;
@@ -46,8 +47,8 @@ $black: #2c2c2c;
 		font-size: 125%;
 		line-height: 125%;
 		letter-spacing: 3px;
-		color: #707070;
-		border-left: 1px solid #707070;
+		color: $black;
+		border-left: 1px solid $black;
 		display: inline-block;
 	}
 }
@@ -230,6 +231,10 @@ body.portal.home {
 
 	.nm_column:not(:last-child) {
 		border-right: 1px solid $light-grey;
+	}
+
+	.nm-footer-widgets {
+		border-top: none;
 	}
 }
 
@@ -471,9 +476,17 @@ li.widget.widget_text:not(:last-child) {
 	border-right: 1px solid $light-grey;
 }
 
-.nm-footer-widgets {
-	border-top: none;
-	padding: 1em 0 2em 0;
+.nm-footer-widgets.has-border {
+	padding: 2em 0;
+	border-top: 1px solid $light-grey;
+}
+
+.header-border-1 .nm-header {
+	border-bottom: 1px solid $light-grey;
+}
+
+.vc_sep_line {
+	border-top: 1px solid $light-grey !important;
 }
 
 .nm-footer-widgets a {
