@@ -68,7 +68,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.2' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.3' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -3644,7 +3644,7 @@
 		// Negeer niet-gepubliceerde en gearchiveerde sites
 		$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, 'count' => true ) );
 		// Trek hoofdsite af van totaal
-		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-afhaling.png">';
+		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-afhaling.png" class="placemarker">';
 		$msg .= '<h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
 		// $msg .= '<div class="input-group">';
 		// $msg .= '<input type="text" class="minimal" placeholder="zoek een winkel" id="oxfam-zip-user" autocomplete="off"> ';
@@ -3660,7 +3660,7 @@
 	function print_store_selector() {
 		$global_zips = get_shops();
  		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
- 		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-levering.png">';
+ 		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-levering.png" class="placemarker">';
  		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
 		$msg .= '<div class="input-group">';
 		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
