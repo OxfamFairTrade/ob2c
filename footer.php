@@ -68,10 +68,11 @@
                                 <!-- GEWIJZIGD: Voeg betaallogo's toe -->
                                 <div class="nm-footer-bar-logo betaalmethodes">
                                     <a href="https://www.mollie.com/be/consumers" target="_blank">
-                                        <img src="https://demo.oxfamwereldwinkels.be/wp-content/plugins/mollie-payments-for-woocommerce/assets/images/mistercash.png">
-                                        <img src="https://demo.oxfamwereldwinkels.be/wp-content/plugins/mollie-payments-for-woocommerce/assets/images/creditcard.png">
-                                        <img src="https://demo.oxfamwereldwinkels.be/wp-content/plugins/mollie-payments-for-woocommerce/assets/images/kbc.png">
-                                        <img src="https://demo.oxfamwereldwinkels.be/wp-content/plugins/mollie-payments-for-woocommerce/assets/images/belfius.png">
+                                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/mistercash@2x.png' ); ?>">
+                                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/creditcard@2x.png' ); ?>">
+                                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/kbc@2x.png' ); ?>">
+                                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/belfius@2x.png' ); ?>">
+                                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/ideal@2x.png' ); ?>">
                                     </a>
                                 </div>
 
