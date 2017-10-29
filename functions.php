@@ -1268,39 +1268,27 @@
 			// Creëer enkel indien het de 1ste keer is (= binnen de 5 minuten na plaatsen)
 			if ( current_time('timestamp') < $order_timestamp+5*60 ) {
 				
-				// Laad PHPExcel en het bestelsjabloon
+				// Laad PHPExcel en het bestelsjabloon in, en selecteer het eerste werkblad
 				require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
 				$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
-				
-				// Selecteer het eerste werkblad
 				$objPHPExcel->setActiveSheetIndex(0);
 
+				// Sla de besteldatum op
 				$order_number = $order->get_order_number();
 				$order_timestamp = $order->get_date_created()->getTimestamp();
 
-				// Bepaal de eerstvolgende leveringsdag
+				// Sla de leverdatum op
 				$shipping_methods = $order->get_shipping_methods();
-				// Zet de pointer op het eerste (en normaal ook enige) object
 				$shipping_method = reset($shipping_methods);
 				$delivery_timestamp = $order->get_meta( 'estimated_delivery', true );
 
 				// Bestelgegevens invullen
-				$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
+				$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
 				$objPHPExcel->getActiveSheet()->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
 
 				// Factuuradres invullen
 				$objPHPExcel->getActiveSheet()->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
-				switch ( $shipping_method['method_id'] ) {
-					case stristr( $shipping_method['method_id'], 'flat_rate' ):
-					case stristr( $shipping_method['method_id'], 'free_shipping' ):
-						// Leveradres is in principe zeker ingesteld
-						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() );
-						break;
-					default:
-						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) );
-				}
-				
 				$i = 8;
 				// Vul de artikeldata item per item in vanaf rij 8
 				foreach ( $order->get_items() as $order_item_id => $item ) {
@@ -1308,6 +1296,33 @@
 					$tax = $product->get_tax_class() === 'voeding' ? '0.06' : '0.21';
 					$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
 					$i++;
+				}
+
+				switch ( $shipping_method['method_id'] ) {
+					case stristr( $shipping_method['method_id'], 'flat_rate' ):
+					case stristr( $shipping_method['method_id'], 'free_shipping' ):
+						
+						// Leveradres invullen (is in principe zeker beschikbaar!)
+						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+
+						// Verzendkosten vermelden
+						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
+							$total_tax = floatval( $shipping->get_total_tax() );
+							$total_excl_tax = floatval( $shipping->get_total() );
+							if ( $total_tax < 1.00 ) {
+								$tax = 0.06;
+							} else {
+								$tax = 0.21;
+							}
+							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
+						}
+
+						break;
+
+					default:
+						$meta_data = $shipping_method->get_meta_data();
+						$pickup_data = reset($meta_data);
+						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) )->setCellValue( 'F1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
 				}
 
 				// Selecteer het totaalbedrag
