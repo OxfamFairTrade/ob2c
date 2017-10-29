@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 do_action( 'woocommerce_email_header', $email_heading, $email );
 
-printf( '<p>Proficiat, je hebt een bestelling ontvangen van %s. In bijlage vind je een Excel met alle gegevens in printvriendelijk formaat. Bezorg dit eventueel aan een winkelier zodat hij/zij de bestelling kan klaarzetten. In de laatste kolom is ruimte om de effectief geleverde hoeveelheid te noteren.</p>', $order->get_formatted_billing_full_name() );
+printf( '<p>Proficiat, je hebt een bestelling ontvangen van %s. In bijlage vind je een Excel met alle gegevens in printvriendelijk formaat. Bezorg dit eventueel aan een winkelier zodat hij/zij de bestelling kan klaarzetten. In de laatste kolom is ruimte voorzien om de effectief geleverde aantallen te noteren.</p>', $order->get_formatted_billing_full_name() );
 $tax_classes = $order->get_items_tax_classes();
 if ( in_array( 'voeding', $tax_classes ) === false and $order->get_shipping_total() > 0 ) {
 	echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. Als winkel hou je aan deze thuislevering netto 5,74 i.p.v. 6,56 euro over.</p>';
