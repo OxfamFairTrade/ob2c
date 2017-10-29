@@ -1246,25 +1246,18 @@
 	// Voeg de bestel-Excel toe aan de adminmail 'nieuwe bestelling'
 	add_filter( 'woocommerce_email_attachments', 'attach_picklist_to_email', 10, 3 );
 
-	function attach_picklist_to_email( $attachments, $status , $object ) {
+	function attach_picklist_to_email( $attachments, $status , $order ) {
 		$create_statuses = array( 'new_order' );
 
 		if ( isset($status) and in_array( $status, $create_statuses ) ) {
 			// Laad PHPExcel en het bestelsjabloon
 			require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
-			$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory('/picklist.xlsx') );
+			$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
 			
 			// Selecteer het eerste werkblad
 			$objPHPExcel->setActiveSheetIndex(0);
 
-			// Creëer het order dat bij de meegegeven order-ID hoort
-			$order_id = $object->id;
-			write_log($object);
-			$order = wc_get_order($order_id);
-
-			// NEW METHOD
 			$order_number = $order->get_order_number();
-			$order_number_old = $order->get_meta( '_order_number_formatted', true );
 			$order_timestamp = $order->get_date_created()->getTimestamp();
 
 			// Bepaal de eerstvolgende leveringsdag
@@ -1273,11 +1266,12 @@
 			$shipping_method = reset($shipping_methods);
 			$delivery_timestamp = $order->get_meta( 'estimated_delivery', true );
 
-			// Factuuradres sowieso invullen
-			$objPHPExcel->getActiveSheet()->setCellValue( 'A2', 'Besteld '.date_i18n( 'd/m/y', $order_timestamp ) )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() )->setCellValue( 'A5', 'Vanaf '.date_i18n( 'd/m/y', $delivery ) );
+			// Bestelgegevens invullen
+			$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
+			$objPHPExcel->getActiveSheet()->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
 
-			// Ordernummer 2x invullen
-			$objPHPExcel->getActiveSheet()->setTitle( $order_number_old )->setCellValue( 'F1', $order_number )->setCellValue( 'F3', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+			// Factuuradres invullen
+			$objPHPExcel->getActiveSheet()->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
 			switch ( $shipping_method['method_id'] ) {
 				case stristr( $shipping_method['method_id'], 'flat_rate' ):
@@ -1286,7 +1280,7 @@
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() );
 					break;
 				default:
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel' );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'd/m/Y', $delivery_timestamp ) );
 			}
 			
 			$i = 8;
@@ -1306,8 +1300,9 @@
 			// Bewaar de file ook op een vaste URL zodat we ze in attachment kunnen stoppen bij een read_status, zonder opnieuw te creëren
 			$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/bestelling.xlsx' );
 			
-			// BEWAAR DE LOCATIE VAN DE FILE BIJ HET ORDER? OF GEEF HET EEN CONSEQUENTE NAAM? BETER RANDOMIZEN?
+			// Bewaar de locatie van de file (random file!) als metadata OUDE FILE TELKENS DELETEN?
 			$order->add_meta_data( 'excel_file_name', $filename, true );
+			$order->save_meta_data();
 		}
 
 		return $attachments;
