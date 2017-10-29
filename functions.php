@@ -2,31 +2,31 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
+	// Voorlopig laten staan!
 	$prohibited_shops = array();
 
-	// Verhinder bekijken door niet-ingelogde bezoekers
-	// add_action( 'init', 'v_forcelogin' );
+	// Verhinder bekijken van testsites door niet-ingelogde bezoekers
+	add_action( 'init', 'force_user_login' );
 	
-	function v_forcelogin() {
+	function force_user_login() {
 		if ( ! is_user_logged_in() ) {
-			global $prohibited_shops;
-			$url = v_get_url();
-			$redirect_url = apply_filters( 'v_forcelogin_redirect', $url );
-			// Enkel redirecten op LIVE-site én indien webshop nog niet gelanceerd
-			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' and in_array( get_current_blog_id(), $prohibited_shops ) ) {
+			$url = get_current_url();
+			// Nooit redirecten op LIVE-omgeving
+			if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
 				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
-					wp_safe_redirect( wp_login_url( $redirect_url ), 302 );
+					// Stuur gebruiker na inloggen terug naar huidige pagina
+					wp_safe_redirect( wp_login_url( $url ), 302 );
 					exit();
 				}
 			}
 		}
 	}
 
-	function v_get_url() {
-		$url = isset( $_SERVER['HTTPS'] ) && 'on' === $_SERVER['HTTPS'] ? 'https' : 'http';
+	function get_current_url() {
+		$url = isset( $_SERVER['HTTPS'] ) and 'on' === $_SERVER['HTTPS'] ? 'https' : 'http';
 		$url .= '://' . $_SERVER['SERVER_NAME'];
-		$url .= in_array( $_SERVER['SERVER_PORT'], array('80', '443') ) ? '' : ':' . $_SERVER['SERVER_PORT'];
+		$url .= in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ) ) ? '' : ':' . $_SERVER['SERVER_PORT'];
 		$url .= $_SERVER['REQUEST_URI'];
 		return $url;
 	}
@@ -38,9 +38,8 @@
 	add_action( 'init', 'allow_target_tag', 20 );
 
 	function allow_target_tag() { 
-	    global $allowedtags;
-	    $allowedtags['a']['target'] = 1;
-	     // set_flemish_zip_codes();
+		global $allowedtags;
+		$allowedtags['a']['target'] = 1;
 	}
 
 	// Voeg klasse toe indien hoofdsite
@@ -95,9 +94,9 @@
 	
 	function custom_curl_timeout( $handle, $r, $url ) {
 		// Fix error 28 - Operation timed out after 10000 milliseconds with 0 bytes received (bij het connecteren van Jetpack met Wordpress.com)
-		curl_setopt( $handle, CURLOPT_TIMEOUT, 30 );
+		curl_setopt( $handle, CURLOPT_TIMEOUT, 180 );
 		// Fix error 60 - SSL certificate problem: unable to get local issuer certificate (bij het downloaden van een CSV in WP All Import)
-		// curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
+		curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
 	}
 
 	// Jetpack-tags uitschakelen op homepages om dubbel werk te vermijden
@@ -108,6 +107,8 @@
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
 	$default_holidays = array( '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02', '2018-07-21', '2018-08-15' );
 	
+
+
 	############
 	# SECURITY #
 	############
@@ -653,6 +654,8 @@
 		);
 		return $args;
 	}
+
+
 	
 	###############
 	# WOOCOMMERCE #
@@ -1328,7 +1331,7 @@
 				// Selecteer het totaalbedrag
 				$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
 
-				$folder = generate_unsafe_random_string();
+				$folder = generate_pseudo_random_string();
 				mkdir( WP_CONTENT_DIR.'/uploads/xlsx/'.$folder, 0755 );
 				$filename = $folder.'/'.$order_number.'.xlsx';
 				$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
@@ -1555,7 +1558,7 @@
 		return $hours;
 	}
 
-	// Stop de openingsuren in een logische array (met dagindices van 1 tot 7!)
+	// Stop de openingsuren in een logische array (met dagindices van 1 tot 7!) VERHUIS NAAR DATABASE AUB
 	function get_office_hours( $node = 0 ) {
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
 		
@@ -2326,6 +2329,7 @@
 		return $count - $subtract;
 	}
 	
+
 
 	############
 	# SETTINGS #
@@ -3155,6 +3159,7 @@
 	}
 
 
+
 	#############
 	# MULTISITE #
 	#############
@@ -3322,6 +3327,7 @@
         	update_post_meta( $local_product_id, $metakey, null );
         }
     }
+
 
 
 	################
@@ -3555,6 +3561,7 @@
 	}
 
 
+
 	##############
 	# SHORTCODES #
 	##############
@@ -3760,6 +3767,7 @@
 	}
 
 
+
 	###########
 	# HELPERS #
 	###########
@@ -3962,6 +3970,7 @@
 		return $zips;
 	}
 
+
 	
 	##########
 	# SEARCH #
@@ -4096,6 +4105,7 @@
 	add_filter( 'relevanssi_30days', function() { return 90; } );
 
 
+
 	#############
 	# DEBUGGING #
 	#############
@@ -4132,7 +4142,7 @@
 	}
 
 	// Creëer een random sequentie (niet gebruiken voor echte beveiliging)
-	function generate_unsafe_random_string( $length = 10 ) {
+	function generate_pseudo_random_string( $length = 10 ) {
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$characters_length = strlen($characters);
 		$random_string = '';
