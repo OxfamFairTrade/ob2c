@@ -413,10 +413,8 @@
 				}
 			}
 		} elseif ( $column === 'excel_file_name' ) {
-			// EVENTUEEL URL CHECKEN MET CURL?
-			if ( $the_order->get_meta( 'excel_file_name', true ) ) {
-				$file = content_url( '/uploads/xlsx/'.$the_order->get_meta( 'excel_file_name', true ) );
-				// FILE BIJWERKEN BIJ REFUNDS?
+			if ( strpos( $the_order->get_meta( '_excel_file_name', true ), '.xlsx' ) > 10 ) {
+				$file = content_url( '/uploads/xlsx/'.$the_order->get_meta( '_excel_file_name', true ) );
 				echo '<a href="'.$file.'" target="_blank">Download</a>';
 			} else {
 				echo '<i>niet beschikbaar</i>';
@@ -1256,62 +1254,78 @@
 	add_filter( 'woocommerce_email_attachments', 'attach_picklist_to_email', 10, 3 );
 
 	function attach_picklist_to_email( $attachments, $status , $order ) {
+		// EXCEL OOK BIJWERKEN BIJ COMPLETED / REFUND?
 		$create_statuses = array( 'new_order' );
 
 		if ( isset($status) and in_array( $status, $create_statuses ) ) {
-			// Laad PHPExcel en het bestelsjabloon
-			require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
-			$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
 			
-			// Selecteer het eerste werkblad
-			$objPHPExcel->setActiveSheetIndex(0);
+			// Creëer enkel indien het de 1ste keer is (= binnen de 5 minuten na plaatsen)
+			if ( current_time('timestamp') < $order_timestamp+5*60 ) {
+				
+				// Laad PHPExcel en het bestelsjabloon
+				require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
+				$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
+				
+				// Selecteer het eerste werkblad
+				$objPHPExcel->setActiveSheetIndex(0);
 
-			$order_number = $order->get_order_number();
-			$order_timestamp = $order->get_date_created()->getTimestamp();
+				$order_number = $order->get_order_number();
+				$order_timestamp = $order->get_date_created()->getTimestamp();
 
-			// Bepaal de eerstvolgende leveringsdag
-			$shipping_methods = $order->get_shipping_methods();
-			// Zet de pointer op het eerste (en normaal ook enige) object
-			$shipping_method = reset($shipping_methods);
-			$delivery_timestamp = $order->get_meta( 'estimated_delivery', true );
+				// Bepaal de eerstvolgende leveringsdag
+				$shipping_methods = $order->get_shipping_methods();
+				// Zet de pointer op het eerste (en normaal ook enige) object
+				$shipping_method = reset($shipping_methods);
+				$delivery_timestamp = $order->get_meta( 'estimated_delivery', true );
 
-			// Bestelgegevens invullen
-			$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
-			$objPHPExcel->getActiveSheet()->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
+				// Bestelgegevens invullen
+				$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
+				$objPHPExcel->getActiveSheet()->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
 
-			// Factuuradres invullen
-			$objPHPExcel->getActiveSheet()->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
+				// Factuuradres invullen
+				$objPHPExcel->getActiveSheet()->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
-			switch ( $shipping_method['method_id'] ) {
-				case stristr( $shipping_method['method_id'], 'flat_rate' ):
-				case stristr( $shipping_method['method_id'], 'free_shipping' ):
-					// Leveradres is in principe zeker ingesteld
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() );
-					break;
-				default:
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'd/m/Y H:i', $delivery_timestamp ) );
+				switch ( $shipping_method['method_id'] ) {
+					case stristr( $shipping_method['method_id'], 'flat_rate' ):
+					case stristr( $shipping_method['method_id'], 'free_shipping' ):
+						// Leveradres is in principe zeker ingesteld
+						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() );
+						break;
+					default:
+						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) );
+				}
+				
+				$i = 8;
+				// Vul de artikeldata item per item in vanaf rij 8
+				foreach ( $order->get_items() as $order_item_id => $item ) {
+					$product = $order->get_product_from_item( $item );
+					$tax = $product->get_tax_class() === 'voeding' ? '0.06' : '0.21';
+					$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
+					$i++;
+				}
+
+				// Selecteer het totaalbedrag
+				$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
+
+				$folder = generate_unsafe_random_string();
+				mkdir( WP_CONTENT_DIR.'/uploads/xlsx/'.$folder, 0755 );
+				$filename = $folder.'/'.$order_number.'.xlsx';
+				$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
+				$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
+				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
+				
+				// Bewaar de file ook op een vaste URL zodat we ze in attachment kunnen stoppen bij een read_status, zonder opnieuw te creëren
+				$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/bestelling.xlsx' );
+				
+				// Bewaar de locatie van de file (random file!) als metadata
+				$order->add_meta_data( '_excel_file_name', $filename, true );
+				$order->save_meta_data();
+
+			} elseif ( strpos( $order->get_meta( '_excel_file_name', true ), '.xlsx' ) > 10 ) {
+
+				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$order->get_meta( '_excel_file_name', true );
+
 			}
-			
-			$i = 8;
-			// Vul de artikeldata item per item in vanaf rij 8
-			foreach ( $order->get_items() as $order_item_id => $item ) {
-				$product = $order->get_product_from_item( $item );
-				$tax = $product->get_tax_class() === 'voeding' ? '0.06' : '0.21';
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
-				$i++;
-			}
-
-			$filename = $order_number.'-'.generate_unsafe_random_string().'.xlsx';
-			$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
-			$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
-			$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
-			
-			// Bewaar de file ook op een vaste URL zodat we ze in attachment kunnen stoppen bij een read_status, zonder opnieuw te creëren
-			$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/bestelling.xlsx' );
-			
-			// Bewaar de locatie van de file (random file!) als metadata OUDE FILE TELKENS DELETEN?
-			$order->add_meta_data( 'excel_file_name', $filename, true );
-			$order->save_meta_data();
 		}
 
 		return $attachments;

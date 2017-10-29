@@ -9,7 +9,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit;
 }
 
 ?>
@@ -26,9 +26,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<td align="center" valign="top">
 						<div id="template_header_image">
 						<?php
-							// GEWIJZIGD: Voeg link naar homepage toe
-							if ( $img = do_shortcode( get_option( 'woocommerce_email_header_image' ) ) ) {
-								echo '<p style="margin-top:0;"><a href="'.home_url().'" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
+							// GEWIJZIGD: Toon logo enkel in klantenmails
+							if ( $email_heading !== __( 'Hoera, een nieuwe bestelling!', 'oxfam-webshop' ) ) {
+								echo '<div id="template_header_image">';
+								// GEWIJZIGD: Voeg link naar homepage toe
+								if ( $img = do_shortcode( get_option( 'woocommerce_email_header_image' ) ) ) {
+									echo '<p style="margin-top:0;"><a href="'.home_url().'" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
+								}
+								echo '</div>';
 							}
 						?>
 						</div>
