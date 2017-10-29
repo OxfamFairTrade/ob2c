@@ -491,6 +491,23 @@
 	add_filter( 'widget_text', 'do_shortcode' );
 	add_filter( 'the_title', 'do_shortcode' );
 	add_filter( 'woocommerce_email_footer_text', 'do_shortcode' );
+
+	// Zorg ervoor dat het Return-Path gelijk is aan de afzender (= webshop.gemeente@oxfamwereldwinkels.be, met correct ingesteld MX-record)
+	add_action( 'phpmailer_init', 'fix_bounce_address' );
+
+	function fix_bounce_address( $phpmailer ) {
+		$phpmailer->Sender = $phpmailer->From;
+	}
+
+	// Check tijdelijk de verstuurde bevestigingsmails door mezelf in BCC te zetten
+	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2);
+
+	function put_administrator_in_bcc( $headers, $object ) {
+		if ( $object === 'customer_processing_order' ) {
+			$headers .= 'BCC: "Frederik Neirynck" <'.get_option('admin_email').'>\r\n';
+		}
+		return $headers;
+	}
 	
 	// Pas het onderwerp van de mails aan naargelang de gekozen levermethode
 	add_filter( 'woocommerce_email_subject_customer_processing_order', 'change_processing_order_subject', 10, 2 );
@@ -1227,7 +1244,7 @@
 	}
 
 	// Voeg de bestel-Excel toe aan de adminmail 'nieuwe bestelling'
-	// add_filter( 'woocommerce_email_attachments', 'attach_picklist_to_email', 10, 3);
+	add_filter( 'woocommerce_email_attachments', 'attach_picklist_to_email', 10, 3 );
 
 	function attach_picklist_to_email( $attachments, $status , $object ) {
 		$create_statuses = array( 'new_order' );
@@ -1242,77 +1259,55 @@
 
 			// Creëer het order dat bij de meegegeven order-ID hoort
 			$order_id = $object->id;
+			write_log($object);
 			$order = wc_get_order($order_id);
 
-			// Bepaal enkele infovelden voor de Excel die nog overschreven kunnen worden
-		    $order_number = get_post_meta( $order_id, '_order_number_formatted', true );
-		    $billing_number_omdm = get_post_meta( $order_id, '_billing_number_omdm', true );
-		    $billing_number_oft = get_post_meta( $order_id, '_billing_number_oft', true );
-		    $shipping_number_oft = get_post_meta( $order_id, '_shipping_number_oft', true );
+			// NEW METHOD
+			$order_number = $order->get_order_number();
+			$order_number_old = $order->get_meta( '_order_number_formatted', true );
+			$order_timestamp = $order->get_date_created()->getTimestamp();
 
 			// Bepaal de eerstvolgende leveringsdag
 			$shipping_methods = $order->get_shipping_methods();
 			// Zet de pointer op het eerste (en normaal ook enige) object
 			$shipping_method = reset($shipping_methods);
-			$timestamp = get_post_meta( $order_id, 'estimated_delivery', true );
+			$delivery_timestamp = $order->get_meta( 'estimated_delivery', true );
+
+			// Factuuradres sowieso invullen
+			$objPHPExcel->getActiveSheet()->setCellValue( 'A2', 'Besteld '.date_i18n( 'd/m/y', $order_timestamp ) )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() )->setCellValue( 'A5', 'Vanaf '.date_i18n( 'd/m/y', $delivery ) );
+
+			// Ordernummer 2x invullen
+			$objPHPExcel->getActiveSheet()->setTitle( $order_number_old )->setCellValue( 'F1', $order_number )->setCellValue( 'F3', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 
 			switch ( $shipping_method['method_id'] ) {
-				case 'local_pickup:2':
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B5', 'Afhaling in de winkel' );
-					$shipping_company = 'Oxfam Magasins du Monde Wavre';
-					$shipping_number_oft = 0;
-					break;
-				case 'flat_rate:3':
-				case 'free_shipping:4':
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B5', 'Thuislevering' );
-					$shipping_company = 'Zie opmerkingen bij bestelling';
-					$shipping_number_oft = 0;
+				case stristr( $shipping_method['method_id'], 'flat_rate' ):
+				case stristr( $shipping_method['method_id'], 'free_shipping' ):
+					// Leveradres is in principe zeker ingesteld
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() );
 					break;
 				default:
-					if ( intval($billing_number_oft) === intval($shipping_number_oft) ) {
-						$shipping_number_oft = 0;
-					}
-					// We vullen het bedrijf uit het leveradres in, dat bij deze levermethode altijd beschikbaar is
-					$shipping_company = str_replace( 'Oxfam-Wereldwinkel', 'OWW', get_post_meta( $order_id, '_shipping_company', true ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel' );
 			}
-
-			// Sla tijdstip op en converteer naar een Excel-datum
-			$delivery = PHPExcel_Shared_Date::PHPToExcel( $timestamp );
-			$objPHPExcel->getActiveSheet()->getStyle( 'B4' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
 			
-			// Vul de informatieve headervelden in
-			$objPHPExcel->getActiveSheet()->setCellValue( 'B2', $order_number )->setCellValue( 'B3', $billing_number_omdm )->setCellValue( 'B4', $delivery )->setCellValue( 'D4', $billing_company )->setCellValue( 'B6', $billing_number_oft )->setCellValue( 'B7', $shipping_number_oft )->setCellValue( 'D7', $shipping_company );
-			
-			// Bewaar de header als een Excel 2007+ (minder resources)
-			$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
-			$objWriter->save( WP_CONTENT_DIR.'/uploads/csv/crafts-header.xlsx' );
-
 			$i = 8;
 			// Vul de artikeldata item per item in vanaf rij 8
 			foreach ( $order->get_items() as $order_item_id => $item ) {
-				$productje = $order->get_product_from_item( $item );
-				if ( ! array_key_exists( 'pa_consignatie', $item ) or $item['pa_consignatie'] === 'nee' ) {
-					$moederproduct = wc_get_product( $item['product_id'] );
-					$tax = $productje->get_tax_class() === 'reduced-rate' ? '0.06' : '0.21';
-					$cp = str_replace( ',', '.', $moederproduct->get_attribute('pa_consumentenprijs') );
-		        	$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, number_format( $cp, 2, ',', '.' ).' euro' )->setCellValue( 'B'.$i, $productje->get_sku() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $productje->get_title() )->setCellValue( 'E'.$i, $productje->get_price() )->setCellValue( 'F'.$i, $tax )->setCellValue( 'G'.$i, $item['line_total']+$item['line_tax'] );
-		        	$i++;
-		        }
-		    }
+				$product = $order->get_product_from_item( $item );
+				$tax = $product->get_tax_class() === 'voeding' ? '0.06' : '0.21';
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
+				$i++;
+			}
 
-		    $filename = $order_number.'.xlsx';
-		    $objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
-			$objWriter->save( WP_CONTENT_DIR.'/uploads/csv/'.$filename );
-			$attachments[] = WP_CONTENT_DIR.'/uploads/csv/'.$filename;
-			// Bewaar de file op een vaste URL zodat we ze ook in attachment kunnen stoppen bij een read_status, zonder ze volledig opnieuw te moeten genereren
-			$objWriter->save( WP_CONTENT_DIR.'/uploads/csv/bestelling.xlsx' );
+			$filename = $order_number.'-'.generate_unsafe_random_string().'.xlsx';
+			$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
+			$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
+			$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
+			
+			// Bewaar de file ook op een vaste URL zodat we ze in attachment kunnen stoppen bij een read_status, zonder opnieuw te creëren
+			$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/bestelling.xlsx' );
 			
 			// BEWAAR DE LOCATIE VAN DE FILE BIJ HET ORDER? OF GEEF HET EEN CONSEQUENTE NAAM? BETER RANDOMIZEN?
-			if ( in_array( get_post_meta( $order_id, '_customer_ip_address', true ), explode( '|', NS_IP ) ) ) {
-				if ( $i > 10 ) {
-					$objWriter->save( WP_CONTENT_DIR.'/uploads/csv/showroom-bestelling.xlsx' );
-				}
-			}
+			$order->add_meta_data( 'excel_file_name', $filename, true );
 		}
 
 		return $attachments;
@@ -3379,9 +3374,9 @@
 		$screen = get_current_screen();
 		// var_dump($screen);
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
-			// echo '<div class="notice notice-info">';
-			// echo '<p>Volg <a href="https://github.com/OxfamFairTrade/ob2c/wiki/Betaling#hoe-activeer-ik-mijn-account-bij-mollie" target="_blank">de handleiding</a> om de activering van je Mollie-account te voltooien. Het duurt enkele dagen vooraleer je overschrijving met de gestructureerde mededeling verwerkt is. Let er ook goed op dat je de overschrijving uitvoert vanaf de winkelrekening (en niet je persoonlijke rekening!) want anders zal het IBAN-nummer niet herkend worden. De activatie van kredietkaarten als betaalmethode wordt pas afgerond nadat de webshop gepubliceerd is. Een onderdeel van dat activatieproces is immers een controle van de aangeboden producten.</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-info">';
+			echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
+			echo '</div>';
 			// echo '<div class="notice notice-error">';
 			// echo '<p>Sommige winkels kregen een bericht dat hun legitimatiebewijs afgewezen werd. Dit gebeurt indien de rechtsgeldige vertegenwoordiger die we opgaven (= de persoon waarvan jullie ons de identiteitskaart bezorgden) nog niet in de <u>digitale</u> versie van het KBO geregistreerd staat. We adviseren in dat geval om de rechtsgeldige vertegenwoordiger onder de Mollie-instellingen voor \'<a href="https://www.mollie.com/dashboard/settings/organization" target="_blank">Bedrijf</a>\' aan te passen naar iemand die wel reeds vermeld staat in het KBO. (Check de link naast het BTW-nummer op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina.) <a href="mailto:e-commerce@oft.be" target="_blank">Contacteer ons</a> indien je hierbij assistentie nodig hebt.</p>';
 			// echo '</div>';
@@ -4083,18 +4078,29 @@
 	}
 
 	// Verwissel twee associatieve keys in een array
-	function array_swap_assoc($key1, $key2, $array) {
-		$newArray = array();
-		foreach ($array as $key => $value) {
-			if ($key == $key1) {
-				$newArray[$key2] = $array[$key2];
-			} elseif ($key == $key2) {
-				$newArray[$key1] = $array[$key1];
+	function array_swap_assoc( $key1, $key2, $array ) {
+		$new_array = array();
+		foreach ( $array as $key => $value ) {
+			if ( $key == $key1 ) {
+				$new_array[$key2] = $array[$key2];
+			} elseif ( $key == $key2 ) {
+				$new_array[$key1] = $array[$key1];
 			} else {
-				$newArray[$key] = $value;
+				$new_array[$key] = $value;
 			}
 		}
-		return $newArray;
+		return $new_array;
+	}
+
+	// Creëer een random sequentie (niet gebruiken voor echte beveiliging)
+	function generate_unsafe_random_string( $length = 5 ) {
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$characters_length = strlen($characters);
+		$random_string = '';
+		for ( $i = 0; $i < $length; $i++ ) {
+			$random_string .= $characters[rand( 0, $characters_length - 1 )];
+		}
+		return $random_string;
 	}
 	
 ?>
