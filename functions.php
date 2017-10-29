@@ -334,8 +334,8 @@
 			} elseif ( $the_order->get_status() === 'cancelled' ) {
 				echo '<i>geannuleerd</i>';
 			} else {
-				if ( get_post_meta( $the_order->get_id(), 'claimed_by', true ) ) {
-					echo 'OWW '.trim_and_uppercase( get_post_meta( $the_order->get_id(), 'claimed_by', true ) );
+				if ( $the_order->get_meta( 'claimed_by', true ) ) {
+					echo 'OWW '.trim_and_uppercase( $the_order->get_meta( 'claimed_by', true ) );
 				} else {
 					// Reeds verderop in het verwerkingsproces maar geen winkel? Dat zou niet mogen zijn!
 					echo '<i>ERROR</i>';
@@ -373,6 +373,7 @@
 
 	function add_estimated_delivery_column( $columns ) {
 		$columns['estimated_delivery'] = 'Uiterste leverdag';
+		$columns['excel_file_name'] = 'Picklijst';
 		return $columns;
 	}
 
@@ -386,10 +387,9 @@
 		if ( $column === 'estimated_delivery' ) {
 			$processing_statusses = array( 'processing', 'claimed' );
 			$completed_statusses = array( 'completed' );
-			if ( get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) ) {
-				$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) );
+			if ( $the_order->get_meta( 'estimated_delivery', true ) ) {
+				$delivery = date( 'Y-m-d H:i:s', $the_order->get_meta( 'estimated_delivery', true ) );
 				if ( in_array( $the_order->get_status(), $processing_statusses ) ) {
-					$delivery = date( 'Y-m-d H:i:s', get_post_meta( $the_order->get_id(), 'estimated_delivery', true ) );
 					if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
 						$color = 'red';
 					} elseif ( get_date_from_gmt( $delivery, 'Y-m-d' ) === date_i18n( 'Y-m-d' ) ) {
@@ -411,6 +411,15 @@
 				} else {
 					echo '<i>niet beschikbaar</i>';
 				}
+			}
+		} elseif ( $column === 'excel_file_name' ) {
+			// EVENTUEEL URL CHECKEN MET CURL?
+			if ( $the_order->get_meta( 'excel_file_name', true ) ) {
+				$file = content_url( '/uploads/xlsx/'.$the_order->get_meta( 'excel_file_name', true ) );
+				// FILE BIJWERKEN BIJ REFUNDS?
+				echo '<a href="'.$file.'" target="_blank">Download</a>';
+			} else {
+				echo '<i>niet beschikbaar</i>';
 			}
 		}
 	}
@@ -1280,7 +1289,7 @@
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() );
 					break;
 				default:
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'd/m/Y', $delivery_timestamp ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'd/m/Y H:i', $delivery_timestamp ) );
 			}
 			
 			$i = 8;
@@ -4088,7 +4097,7 @@
 	}
 
 	// Creëer een random sequentie (niet gebruiken voor echte beveiliging)
-	function generate_unsafe_random_string( $length = 5 ) {
+	function generate_unsafe_random_string( $length = 10 ) {
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$characters_length = strlen($characters);
 		$random_string = '';
