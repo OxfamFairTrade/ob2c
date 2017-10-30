@@ -16,15 +16,26 @@
 				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
 				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					// Stuur gebruiker na inloggen terug naar huidige pagina
-					wp_safe_redirect( wp_login_url( $url ), 302 );
+					wp_safe_redirect( wp_login_url($url) );
 					exit();
+				}
+			}
+		}
+
+		if ( is_main_site() and isset( $_GET['landingZip'] ) ) {
+			$zip = str_replace( ',', '', $_GET['landingZip'] );
+			$global_zips = get_shops();
+			write_log($global_zips);
+			if ( strlen( $zip ) === 4 ) {
+				if ( array_key_exists( $zip, $global_zips ) ) {
+					wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip );
 				}
 			}
 		}
 	}
 
 	function get_current_url() {
-		$url = isset( $_SERVER['HTTPS'] ) and 'on' === $_SERVER['HTTPS'] ? 'https' : 'http';
+		$url = ( isset( $_SERVER['HTTPS'] ) and 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http';
 		$url .= '://' . $_SERVER['SERVER_NAME'];
 		$url .= in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ) ) ? '' : ':' . $_SERVER['SERVER_PORT'];
 		$url .= $_SERVER['REQUEST_URI'];
@@ -511,9 +522,9 @@
 	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2);
 
 	function put_administrator_in_bcc( $headers, $object ) {
-		if ( $object === 'customer_processing_order' ) {
+		// if ( $object === 'customer_processing_order' ) {
 			$headers .= 'BCC: "Frederik Neirynck" <'.get_option('admin_email').'>\r\n';
-		}
+		// }
 		return $headers;
 	}
 	
@@ -676,7 +687,9 @@
 			WC()->customer->set_shipping_city( $_GET['referralCity'] );
 		}
 		
-		if ( isset( $_GET['emptyCart'] ) ) WC()->cart->empty_cart();
+		if ( isset( $_GET['emptyCart'] ) ) {
+			WC()->cart->empty_cart();
+		}
 		
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
 		add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 100 );
