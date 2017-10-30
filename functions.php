@@ -22,8 +22,9 @@
 			}
 		}
 
+		// Stuur Digizine-lezers meteen door op basis van postcode in hun profiel
 		if ( is_main_site() and isset( $_GET['landingZip'] ) ) {
-			$zip = str_replace( ',', '', $_GET['landingZip'] );
+			$zip = str_replace( ',', '', str_replace( '%2C', '', $_GET['landingZip'] ) );
 			$global_zips = get_shops();
 			write_log($global_zips);
 			if ( strlen( $zip ) === 4 ) {
