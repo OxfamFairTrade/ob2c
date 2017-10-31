@@ -522,9 +522,9 @@
 	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2);
 
 	function put_administrator_in_bcc( $headers, $object ) {
-		// if ( $object === 'customer_processing_order' ) {
-			$headers .= 'BCC: "Frederik Neirynck" <'.get_option('admin_email').'>\r\n';
-		// }
+		if ( $object === 'customer_processing_order' ) {
+			$headers .= 'BCC: "Frederik Neirynck" <'.get_site_option('admin_email').'>\r\n';
+		}
 		return $headers;
 	}
 	
@@ -1278,15 +1278,16 @@
 	function attach_picklist_to_email( $attachments, $status , $order ) {
 		// EXCEL OOK BIJWERKEN BIJ COMPLETED / REFUND?
 		$create_statuses = array( 'new_order' );
-
+		
 		if ( isset($status) and in_array( $status, $create_statuses ) ) {
 
 			// Sla de besteldatum op
 			$order_number = $order->get_order_number();
+			// LEVERT UTC-TIMESTAMP OP, DUS VERGELIJKEN MET GLOBALE TIME() 
 			$order_timestamp = $order->get_date_created()->getTimestamp();
 			
-			// Creëer enkel indien het de 1ste keer is (= binnen de 5 minuten na plaatsen)
-			if ( current_time('timestamp') < $order_timestamp + 5*60 ) {
+			// Creëer enkel indien het de 1ste keer is (= binnen de 10 minuten na plaatsen)
+			if ( time() < $order_timestamp + 10*60 ) {
 				
 				// Laad PHPExcel en het bestelsjabloon in, en selecteer het eerste werkblad
 				require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
