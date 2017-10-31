@@ -566,7 +566,7 @@
 	add_filter( 'woocommerce_email_heading_customer_note', 'change_note_email_heading', 10, 2 );
 
 	function change_new_order_email_heading( $email_heading, $order ) {
-		$email_heading = __( 'Hoera, een nieuwe bestelling!', 'oxfam-webshop' );
+		$email_heading = __( 'Heading van de mail aan de webshopbeheerder', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
