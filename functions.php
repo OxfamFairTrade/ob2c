@@ -26,7 +26,6 @@
 		if ( is_main_site() and isset( $_GET['landingZip'] ) ) {
 			$zip = str_replace( ',', '', str_replace( '%2C', '', $_GET['landingZip'] ) );
 			$global_zips = get_shops();
-			write_log($global_zips);
 			if ( strlen( $zip ) === 4 ) {
 				if ( array_key_exists( $zip, $global_zips ) ) {
 					wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip );
@@ -1351,9 +1350,6 @@
 				$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
 				$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
 				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
-				
-				// Bewaar de file ook op een vaste URL zodat we ze in attachment kunnen stoppen bij een read_status, zonder opnieuw te creëren
-				$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/bestelling.xlsx' );
 				
 				// Bewaar de locatie van de file (random file!) als metadata
 				$order->add_meta_data( '_excel_file_name', $filename, true );
