@@ -782,9 +782,6 @@
 	add_action( 'wp_footer', 'cart_update_qty_script' );
 	
 	function cart_update_qty_script() {
-		$current_user = wp_get_current_user();
-		$user_meta = get_userdata($current_user->ID);
-		$user_roles = $user_meta->roles;
 		if ( is_cart() ) {
 			global $woocommerce;
 			// validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
@@ -865,16 +862,23 @@
 					} );
 				</script>
 			<?php
-		} elseif ( is_account_page() and in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_company_email() ) {
-			?>
-				<script>
-					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').prop('readonly', true);
-					jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
-				</script>
-			<?php
+		} elseif ( is_account_page() ) {
+			// Gebruiker is zeker ingelogd
+			$current_user = wp_get_current_user();
+			$user_meta = get_userdata($current_user->ID);
+			$user_roles = $user_meta->roles;
+			if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_company_email() ) {
+				?>
+					<script>
+						jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').prop('readonly', true);
+						jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
+					</script>
+				<?php
+			}
 		}
 
-		if ( ! is_user_logged_in() or in_array( 'customer', $user_roles ) ) {
+		// Smartlook uitschakelen
+		if ( ! is_user_logged_in() and 1 === 0 ) {
 			?>
 				<script type="text/javascript">
 				    window.smartlook||(function(d) {
@@ -2880,6 +2884,7 @@
 						<td>
 						<?php
 							$i = 1;
+							$msg = "";
 							foreach ( $partners as $term_id => $partner_name ) {
 								$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
 								
@@ -2949,12 +2954,16 @@
 			// Allergenentab altijd tonen!
 			$has_row = true;
 			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
+			$contains = array();
+			$traces = array();
 
-			foreach ( $allergens as $allergen ) {
-				if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'contains' ) {
-					$contains[] = $allergen;
-				} elseif ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'may-contain' ) {
-					$traces[] = $allergen;
+			if ( $allergens !== false ) {
+				foreach ( $allergens as $allergen ) {
+					if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'contains' ) {
+						$contains[] = $allergen;
+					} elseif ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'may-contain' ) {
+						$traces[] = $allergen;
+					}
 				}
 			}
 			?>
@@ -3090,7 +3099,7 @@
 			if ( strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
 				$partner_info['quote'] = trim($quote->field_manufacturer_quote_value);
 				$quote_by = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_hero_name WHERE entity_id = '.$partner_info['node'] );
-				if ( strlen( $quote_by->field_manufacturer_hero_name_value ) > 5 ) {
+				if ( isset( $quote_by->field_manufacturer_hero_name_value ) ) {
 					$partner_info['quote_by'] = trim($quote_by->field_manufacturer_hero_name_value);
 				}
 			}
