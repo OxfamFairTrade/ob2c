@@ -1164,7 +1164,7 @@
 
 		$street = $_POST['shipping_address_1'];
 		if ( strlen( $street ) > 1 and preg_match( '/[0-9]+/', $street ) === 0 ) {
-			wc_add_notice( __( 'Foutmelding na het invullen van een adres zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+			wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
 		}
 	}
 
@@ -3088,6 +3088,7 @@
 		// Vraag de term-ID's van de continenten in deze site op
 		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
 		$continents = get_terms( $args );
+		$partners = array();
 		
 		foreach ( $terms as $term ) {
 			if ( ! in_array( $term->parent, $continents, true ) ) {
