@@ -1280,18 +1280,18 @@
 		$create_statuses = array( 'new_order' );
 
 		if ( isset($status) and in_array( $status, $create_statuses ) ) {
+
+			// Sla de besteldatum op
+			$order_number = $order->get_order_number();
+			$order_timestamp = $order->get_date_created()->getTimestamp();
 			
 			// Creëer enkel indien het de 1ste keer is (= binnen de 5 minuten na plaatsen)
-			if ( current_time('timestamp') < $order_timestamp+5*60 ) {
+			if ( current_time('timestamp') < $order_timestamp + 5*60 ) {
 				
 				// Laad PHPExcel en het bestelsjabloon in, en selecteer het eerste werkblad
 				require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
 				$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
 				$objPHPExcel->setActiveSheetIndex(0);
-
-				// Sla de besteldatum op
-				$order_number = $order->get_order_number();
-				$order_timestamp = $order->get_date_created()->getTimestamp();
 
 				// Sla de leverdatum op
 				$shipping_methods = $order->get_shipping_methods();
@@ -1325,12 +1325,15 @@
 						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
 							$total_tax = floatval( $shipping->get_total_tax() );
 							$total_excl_tax = floatval( $shipping->get_total() );
-							if ( $total_tax < 1.00 ) {
-								$tax = 0.06;
-							} else {
-								$tax = 0.21;
+							// Enkel printen indien nodig
+							if ( $total_tax > 0.01 ) {
+								if ( $total_tax < 1.00 ) {
+									$tax = 0.06;
+								} else {
+									$tax = 0.21;
+								}
+								$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 							}
-							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 						}
 
 						break;
