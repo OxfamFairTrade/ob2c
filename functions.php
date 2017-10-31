@@ -2360,7 +2360,7 @@
 	function register_oxfam_settings() {
 		register_setting( 'oxfam-options-global', 'oxfam_shop_node', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', 'absint' );
-		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', 'comma_string_to_array' );
+		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', 'comma_string_to_numeric_array' );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', 'comma_string_to_array' );
 		register_setting( 'oxfam-options-local', 'oxfam_holidays', 'comma_string_to_array' );
 	}
@@ -2384,7 +2384,19 @@
 				unset( $array[$key] );
 			}
 		}
-		sort($array, SORT_STRING);
+		sort( $array, SORT_STRING );
+		return $array;
+	}
+
+	function comma_string_to_numeric_array( $values ) {
+		$values = preg_replace( "/\s/", "", $values );
+		$values = preg_replace( "/\//", "-", $values );
+		$array = (array)preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
+
+		foreach ( $array as $key => $value ) {
+			$array[$key] = intval( $value );
+		}
+		sort( $array, SORT_NUMERIC );
 		return $array;
 	}
 
@@ -4173,6 +4185,14 @@
 			$random_string .= $characters[rand( 0, $characters_length - 1 )];
 		}
 		return $random_string;
+	}
+
+	// Overzichtelijkere debugfunctie definiëren
+	function var_dump_pre( $variable ) {
+		echo '<pre>';
+		var_dump($variable);
+		echo '</pre>';
+		return null;
 	}
 	
 ?>
