@@ -3132,14 +3132,14 @@
 			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
 			foreach ( $partners as $term_id => $partner_name ) {
 				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-				if ( isset( $partner_info['quote'] ) or isset( $partner_info['quote_by'] ) ) {
+				if ( isset( $partner_info['quote'] ) ) {
 					$partners_with_quote[] = $partner_info;
 				}
 			}
 			// Toon een random quote
 			if ( count( $partners_with_quote ) > 0 ) {
 				$i = random_int( 0, count($partners_with_quote) - 1 );
-				if ( strlen( $partners_with_quote[$i]['quote_by'] ) > 2 ) {
+				if ( isset( $partners_with_quote[$i]['quote_by'] ) ) {
 					$signature = $partners_with_quote[$i]['quote_by'];
 				} else {
 					$signature = $partners_with_quote[$i]['name'].', '.$partners_with_quote[$i]['country'];
