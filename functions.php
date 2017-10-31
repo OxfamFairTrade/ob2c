@@ -1831,8 +1831,8 @@
 		}
 		
 		$timestamp = $from;
-		write_log($shipping_id);
-		write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
+		// write_log($shipping_id);
+		// write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
 		
 		switch ( $shipping_id ) {
 			// Alle instances van winkelafhalingen
@@ -1843,7 +1843,11 @@
 				if ( $locations = get_option( 'woocommerce_pickup_locations' ) ) {
 					if ( $order_id === false ) {
 						$pickup_locations = WC()->session->get('chosen_pickup_locations');
-						$pickup_id = reset($pickup_locations);
+						if ( isset( $pickup_locations ) ) {
+							$pickup_id = reset($pickup_locations);
+						} else {
+							$pickup_id = 'ERROR';
+						}
 					} else {
 						$methods = $order->get_shipping_methods();
 						$method = reset($methods);
@@ -1852,7 +1856,6 @@
 					}
 					foreach ( $locations as $location ) {
 						if ( $location['id'] == $pickup_id ) {
-							// var_dump($location);
 							$parts = explode( 'node=', $location['note'] );
 							if ( isset($parts[1]) ) {
 								// Afwijkend punt geselecteerd: bereken a.d.h.v. het nodenummer in de openingsuren
@@ -1869,12 +1872,12 @@
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 				
-				write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
+				// write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
 		
 				// Check of de winkel op deze dag effectief nog geopend is na 12u
 				$timestamp = find_first_opening_hour( get_office_hours( $node ), $timestamp );
 
-				write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
+				// write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
 
 				break;
 
@@ -1892,7 +1895,7 @@
 				break;
 		}
 
-		write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );		
+		// write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );		
 		return $timestamp;
 	}
 
