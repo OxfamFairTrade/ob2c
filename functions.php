@@ -503,7 +503,7 @@
 			}
 			$warning_shown = true;
 		}
-    	return $args;
+		return $args;
 	}
 
 	// Voer shortcodes ook uit in widgets, titels en e-mailfooters
@@ -702,32 +702,32 @@
 	add_filter( 'woocommerce_order_get_items', 'sort_order_by_sku', 10, 2 );
 
 	function sort_order_by_sku( $items, $order ) {
-  		uasort( $items, function( $a, $b ) {
-  			// Verhinder dat we ook tax- en verzendlijnen shufflen
-  			if ( $a->get_type() === 'line_item' and $b->get_type() === 'line_item' ) {
-  				$sku_a = $a->get_product()->get_sku();
-  				$sku_b = $b->get_product()->get_sku();
-  				if ( is_numeric( $sku_a ) ) {
-  					if ( is_numeric( $sku_b ) ) {
-  						return ( intval( $sku_a ) < intval( $sku_b ) ) ? -1 : 1;	
-  					} else {
-  						return -1;
-  					}
-  				} else {
-  					if ( is_numeric( $sku_b ) ) {
-  						return 1;	
-  					} else {
-  						return -1;
-  					}
-  				}
-  			} else {
-  				return 0;
-  			}
-  		} );
-  		return $items;
-  	}
+		uasort( $items, function( $a, $b ) {
+			// Verhinder dat we ook tax- en verzendlijnen shufflen
+			if ( $a->get_type() === 'line_item' and $b->get_type() === 'line_item' ) {
+				$sku_a = $a->get_product()->get_sku();
+				$sku_b = $b->get_product()->get_sku();
+				if ( is_numeric( $sku_a ) ) {
+					if ( is_numeric( $sku_b ) ) {
+						return ( intval( $sku_a ) < intval( $sku_b ) ) ? -1 : 1;	
+					} else {
+						return -1;
+					}
+				} else {
+					if ( is_numeric( $sku_b ) ) {
+						return 1;	
+					} else {
+						return -1;
+					}
+				}
+			} else {
+				return 0;
+			}
+		} );
+		return $items;
+	}
 
-  	// Zorg ervoor dat slechts bepaalde statussen bewerkbaar zijn
+	// Zorg ervoor dat slechts bepaalde statussen bewerkbaar zijn
 	add_filter( 'wc_order_is_editable', 'limit_editable_orders', 20, 2 );
 
 	function limit_editable_orders( $editable, $order ) {
@@ -881,12 +881,12 @@
 		if ( ! is_user_logged_in() and 1 === 0 ) {
 			?>
 				<script type="text/javascript">
-				    window.smartlook||(function(d) {
-				    var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
-				    var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
-				    c.charset='utf-8';c.src='https://rec.smartlook.com/recorder.js';h.appendChild(c);
-				    })(document);
-				    smartlook('init', 'e6996862fe1127c697c24f1887605b3b9160a885');
+					window.smartlook||(function(d) {
+					var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
+					var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
+					c.charset='utf-8';c.src='https://rec.smartlook.com/recorder.js';h.appendChild(c);
+					})(document);
+					smartlook('init', 'e6996862fe1127c697c24f1887605b3b9160a885');
 				</script>
 			<?php
 		}
@@ -1026,37 +1026,37 @@
 
 		$address_fields['billing_birthday'] = array(
 			'type' => 'text',
-	        'label' => 'Geboortedatum',
+			'label' => 'Geboortedatum',
 			'id' => 'datepicker',
-	        'placeholder' => '16/03/1988',
+			'placeholder' => '16/03/1988',
 			'required' => true,
 			'class' => array('form-row-last'),
 			'clear' => true,
 		);
 		
 		$order = array(
-        	"billing_first_name",
-        	"billing_last_name",
-        	"billing_address_1",
-        	"billing_birthday",
-        	"billing_postcode",
-        	"billing_city",
-        	// NODIG VOOR SERVICE POINT!
-        	"billing_country",
-        	"billing_email",
-        	"billing_phone",
-    	);
+			"billing_first_name",
+			"billing_last_name",
+			"billing_address_1",
+			"billing_birthday",
+			"billing_postcode",
+			"billing_city",
+			// NODIG VOOR SERVICE POINT!
+			"billing_country",
+			"billing_email",
+			"billing_phone",
+		);
 
-    	foreach($order as $field) {
-        	$ordered_fields[$field] = $address_fields[$field];
-        }
+		foreach($order as $field) {
+			$ordered_fields[$field] = $address_fields[$field];
+		}
 
-        $address_fields = $ordered_fields;
-	    
-        return $address_fields;
-    }
+		$address_fields = $ordered_fields;
+		
+		return $address_fields;
+	}
 
-    // Label en layout de verzendgegevens
+	// Label en layout de verzendgegevens
 	add_filter( 'woocommerce_shipping_fields', 'format_checkout_shipping', 10, 1 );
 	
 	function format_checkout_shipping( $address_fields ) {
@@ -1068,25 +1068,25 @@
 		$address_fields['shipping_last_name']['class'] = array('form-row-last');
 		
 		$order = array(
-        	"shipping_first_name",
-        	"shipping_last_name",
-        	"shipping_address_1",
-        	"shipping_postcode",
-        	"shipping_city",
-        	// NODIG VOOR SERVICE POINT!
-        	"shipping_country",
-        );
+			"shipping_first_name",
+			"shipping_last_name",
+			"shipping_address_1",
+			"shipping_postcode",
+			"shipping_city",
+			// NODIG VOOR SERVICE POINT!
+			"shipping_country",
+		);
 
-    	foreach($order as $field) {
-        	$ordered_fields[$field] = $address_fields[$field];
-        }
+		foreach($order as $field) {
+			$ordered_fields[$field] = $address_fields[$field];
+		}
 
-        $address_fields = $ordered_fields;
-	    
-        return $address_fields;
-    }
+		$address_fields = $ordered_fields;
+		
+		return $address_fields;
+	}
 
-    // Verduidelijk de labels en layout
+	// Verduidelijk de labels en layout
 	add_filter( 'woocommerce_default_address_fields', 'format_addresses_frontend', 10, 1 );
 
 	function format_addresses_frontend( $address_fields ) {
@@ -1112,14 +1112,14 @@
 	}
 
 	// Vul andere placeholders in, naar gelang de gekozen verzendmethode op de winkelwagenpagina (wordt NIET geüpdatet bij verandering in checkout)
-    add_filter( 'woocommerce_checkout_fields' , 'format_checkout_notes' );
+	add_filter( 'woocommerce_checkout_fields' , 'format_checkout_notes' );
 
-    function format_checkout_notes( $fields ) {
-    	$fields['account']['account_username']['label'] = "Kies een gebruikersnaam:";
+	function format_checkout_notes( $fields ) {
+		$fields['account']['account_username']['label'] = "Kies een gebruikersnaam:";
 		$fields['account']['account_password']['label'] = "Kies een wachtwoord:";
 		
 		$shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
-    	$shipping_id = reset($shipping_methods);
+		$shipping_id = reset($shipping_methods);
 		switch ( $shipping_id ) {
 			case stristr( $shipping_id, 'local_pickup' ):
 				$placeholder = __( 'Voorbeeldnotitie op afrekenpagina (indien afhaling).', 'oxfam-webshop' );
@@ -1154,12 +1154,17 @@
 		if ( $birthday ) {
 			// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
 			if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime( '-18 years' ) ) {
-		        wc_add_notice( __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ), 'error' );
-		    } else {
-		    	$_POST['billing_birthday'] = $birthday;
-		    }
+				wc_add_notice( __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ), 'error' );
+			} else {
+				$_POST['billing_birthday'] = $birthday;
+			}
 		} else {
-			wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );	
+			wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );
+		}
+
+		$street = $_POST['shipping_address_1'];
+		if ( strlen( $street ) > 1 and preg_match( '/[0-9]+/', $street ) === 0 ) {
+			wc_add_notice( __( 'Foutmelding na het invullen van een adres zonder huisnummer.', 'oxfam-webshop' ), 'error' );
 		}
 	}
 
@@ -2221,10 +2226,10 @@
 		$min = 10;
 		$max = 500;
 		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < $min ) {
-	  		wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
-	  	} elseif ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) > $max ) {
-	  		wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
-	  	}
+			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
+		} elseif ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) > $max ) {
+			wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
+		}
 	}
 
 	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
@@ -2232,7 +2237,7 @@
 
 	function remove_msg_filter( $msg ) {
 		if ( is_checkout() ) {
-		    return "";
+			return "";
 		}
 		return $msg;
 	}
@@ -2372,8 +2377,8 @@
 	add_filter( 'option_page_capability_oxfam-options-local', 'lower_manage_options_capability' );
 	
 	function lower_manage_options_capability( $cap ) {
-    	return 'manage_woocommerce';
-    }
+		return 'manage_woocommerce';
+	}
 
 	function comma_string_to_array( $values ) {
 		$values = preg_replace( "/\s/", "", $values );
@@ -2557,7 +2562,7 @@
 			rename( $current_filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg' );
 			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
 			// GEBEURT IN DE LOKALE MEDIABIB
-    		if ( wp_delete_attachment( $old_id, true ) ) {
+			if ( wp_delete_attachment( $old_id, true ) ) {
 				// Extra check op het succesvol verwijderen
 				$deleted = true;
 			}
@@ -3343,28 +3348,28 @@
 
 	// Functie die post-ID's van de hoofdsite vertaalt en het metaveld opslaat in de huidige subsite (op basis van artikelnummer)
 	/**
-    * @param int $local_product_id
-    * @param string $metakey
-    * @param array $product_meta_item_row
-    */	
-    function translate_main_to_local_ids( $local_product_id, $metakey, $product_meta_item_row ) {
-        if ( $product_meta_item_row ) {
-            foreach ( $product_meta_item_row as $main_product_id ) {
-                switch_to_blog( 1 );
-                $main_product = wc_get_product( $main_product_id );
-                restore_current_blog();
-                $local_product_ids[] = wc_get_product_id_by_sku( $main_product->get_sku() );
-            }
-            // Niet serialiseren voor coupons
-            if ( $metakey === 'product_ids' ) {
-            	$local_product_ids = implode( ',', $local_product_ids );
-            }
-            update_post_meta( $local_product_id, $metakey, $local_product_ids );
-        } else {
-        	// Zorg ervoor dat het veld ook bij de child geleegd wordt!
-        	update_post_meta( $local_product_id, $metakey, null );
-        }
-    }
+	* @param int $local_product_id
+	* @param string $metakey
+	* @param array $product_meta_item_row
+	*/	
+	function translate_main_to_local_ids( $local_product_id, $metakey, $product_meta_item_row ) {
+		if ( $product_meta_item_row ) {
+			foreach ( $product_meta_item_row as $main_product_id ) {
+				switch_to_blog( 1 );
+				$main_product = wc_get_product( $main_product_id );
+				restore_current_blog();
+				$local_product_ids[] = wc_get_product_id_by_sku( $main_product->get_sku() );
+			}
+			// Niet serialiseren voor coupons
+			if ( $metakey === 'product_ids' ) {
+				$local_product_ids = implode( ',', $local_product_ids );
+			}
+			update_post_meta( $local_product_id, $metakey, $local_product_ids );
+		} else {
+			// Zorg ervoor dat het veld ook bij de child geleegd wordt!
+			update_post_meta( $local_product_id, $metakey, null );
+		}
+	}
 
 
 
@@ -3387,10 +3392,10 @@
 		$dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
 
 		$my_widget = array( 'dashboard_pilot_news_widget' => $dashboard['dashboard_pilot_news_widget'] );
-	 	unset( $dashboard['dashboard_pilot_news_widget'] );
+		unset( $dashboard['dashboard_pilot_news_widget'] );
 
-	 	$sorted_dashboard = array_merge( $my_widget, $dashboard );
-	 	$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
+		$sorted_dashboard = array_merge( $my_widget, $dashboard );
+		$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
 	}
 	
 	// Stel de inhoud van de widget op
@@ -3738,9 +3743,9 @@
 
 	function print_store_selector() {
 		$global_zips = get_shops();
- 		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
- 		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-levering.png" class="placemarker">';
- 		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
+		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
+		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-levering.png" class="placemarker">';
+		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
 		$msg .= '<div class="input-group">';
 		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
 		$msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
@@ -3971,15 +3976,15 @@
 	}
 
 	add_filter( 'flexmap_custom_map_types', function($mapTypes, $attrs) {
-	    if ( empty($attrs['maptype']) ) {
-        	return $mapTypes;
-    	}
+		if ( empty($attrs['maptype']) ) {
+			return $mapTypes;
+		}
 
 		if ( $attrs['maptype'] === 'light_monochrome' and empty( $mapTypes['light_monochrome'] ) ) {
 			$custom_type = '{ "styles" : [{"stylers":[{"hue":"#ffffff"},{"invert_lightness":false},{"saturation":-100}]}], "options" : { "name" : "Light Monochrome" } }';
-	        $mapTypes['light_monochrome'] = json_decode($custom_type);
-    	}
-    	return $mapTypes;
+			$mapTypes['light_monochrome'] = json_decode($custom_type);
+		}
+		return $mapTypes;
 	}, 10, 2);
 
 	function get_company_and_year() {
@@ -4096,8 +4101,8 @@
 	add_filter('relevanssi_get_words_query', 'limit_suggestions');
 	
 	function limit_suggestions( $query ) {
-	    $query = $query." HAVING COUNT(term) > 1";
-	    return $query;
+		$query = $query." HAVING COUNT(term) > 1";
+		return $query;
 	}
 
 	// Toon de bestsellers op zoekpagina's zonder resultaten MOET MEER NAAR BOVEN + VERSCHIJNT OOK ALS ER WEL RESULTATEN ZIJN
