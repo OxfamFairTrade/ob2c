@@ -386,6 +386,8 @@
 	function add_estimated_delivery_column( $columns ) {
 		$columns['estimated_delivery'] = 'Uiterste leverdag';
 		$columns['excel_file_name'] = 'Picklijst';
+		unset($columns['billing_address']);
+		unset($columns['order_notes']);
 		return $columns;
 	}
 
@@ -535,26 +537,26 @@
 	add_filter( 'woocommerce_email_subject_customer_note', 'change_note_subject', 10, 2 );
 
 	function change_processing_order_subject( $subject, $order ) {
-		$subject = sprintf( __( 'Onderwerp van de 1ste bevestigingsmail inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
+		$subject = sprintf( __( 'Onderwerp van de 1ste bevestigingsmail inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
 		return $subject;
 	}
 
 	function change_completed_order_subject( $subject, $order ) {
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
-			$subject = sprintf( __( 'Onderwerp van de 2de bevestigingsmail (indien afhaling) inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
+			$subject = sprintf( __( 'Onderwerp van de 2de bevestigingsmail (indien afhaling) inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
 		} else {
-			$subject = sprintf( __( 'Onderwerp van de 2de bevestigingsmail (indien thuislevering) inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
+			$subject = sprintf( __( 'Onderwerp van de 2de bevestigingsmail (indien thuislevering) inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
 		}
 		return $subject;
 	}
 
 	function change_refunded_order_subject( $subject, $order ) {
-		$subject = sprintf( __( 'Onderwerp van de terugbetalingsmail inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
+		$subject = sprintf( __( 'Onderwerp van de terugbetalingsmail inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
 		return $subject;
 	}
 
 	function change_note_subject( $subject, $order ) {
-		$subject = sprintf( __( 'Onderwerp van de opmerkingenmail inclusief besteldatum (%1$s) en naam webshop (%2$s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y'), get_company_name() );
+		$subject = sprintf( __( 'Onderwerp van de opmerkingenmail inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
 		return $subject;
 	}
 
