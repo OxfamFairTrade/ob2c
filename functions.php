@@ -3626,6 +3626,7 @@
 	add_shortcode( 'toon_shops', 'print_store_selector' );
 	add_shortcode( 'toon_kaart', 'print_store_locator_map' );
 	add_shortcode( 'toon_thuislevering', 'print_delivery_snippet' );
+	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
 	add_shortcode( 'scrolltext', 'print_scroll_text' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
@@ -3772,6 +3773,14 @@
 	function print_delivery_snippet() {
 		$msg = "";
 		if ( does_home_delivery() ) {
+			$msg = "Heb je gekozen voor levering? Dan staan we maximaal 3 werkdagen later met je pakje op je stoep. Onderaan vind je de lijst van gemeentes die wij aandoen.";
+		}
+		return $msg;
+	}
+
+	function print_delivery_zips() {
+		$msg = "";
+		if ( does_home_delivery() ) {
 			$cities = get_site_option( 'oxfam_flemish_zip_codes' );
 			$zips = get_oxfam_covered_zips();
 			// Knip de '9999' die altijd aanwezig is (en achteraan staat) eraf
@@ -3790,7 +3799,7 @@
 				}
 				$i++;
 			}
-			$msg = "Heb je gekozen voor levering? Dan staan we maximaal 3 werkdagen later met je pakje op je stoep. Wij leveren in ".$list.".";
+			$msg = "Deze webshop levert aan huis in ".$list.". Staat je postcode niet in deze lijst? <a href='/'>Keer terug naar de portaalpagina en vul daar je postcode in.</a>";
 		}
 		return $msg;
 	}
