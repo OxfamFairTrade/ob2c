@@ -3773,7 +3773,7 @@
 	function print_delivery_snippet() {
 		$msg = "";
 		if ( does_home_delivery() ) {
-			$msg = "Heb je gekozen voor levering? Dan staan we maximaal 3 werkdagen later met je pakje op je stoep. Onderaan vind je de lijst van gemeentes die wij aandoen.";
+			$msg = "Heb je gekozen voor levering? Dan staan we maximaal 3 werkdagen later met je pakje op je stoep (*).";
 		}
 		return $msg;
 	}
@@ -3783,23 +3783,22 @@
 		if ( does_home_delivery() ) {
 			$cities = get_site_option( 'oxfam_flemish_zip_codes' );
 			$zips = get_oxfam_covered_zips();
-			// Knip de '9999' die altijd aanwezig is (en achteraan staat) eraf
-			unset($zips[count($zips)-1]);
 			$i = 1;
 			$list = "";
 			foreach ( $zips as $zip ) {
+				$zip_city = explode( '/', $cities[$zip] );
 				if ( $i < count($zips) ) {
 					if ( $i === count($zips) - 1 ) {
-						$list .= $zip." ".$cities[$zip]." en ";
+						$list .= $zip." ".trim($zip_city[0])." en ";
 					} else {
-						$list .= $zip." ".$cities[$zip].", ";
+						$list .= $zip." ".trim($zip_city[0]).", ";
 					}
 				} else {
-					$list .= $zip." ".$cities[$zip];
+					$list .= $zip." ".trim($zip_city[0]);
 				}
 				$i++;
 			}
-			$msg = "Deze webshop levert aan huis in ".$list.". Staat je postcode niet in deze lijst? <a href='/'>Keer terug naar de portaalpagina en vul daar je postcode in.</a>";
+			$msg = "<small>(*) Oxfam-Wereldwinkels kiest bewust voor lokale verwerking. Deze webshop levert aan huis in ".$list.".<br><br>Staat je postcode niet in deze lijst? <a href='/'>Keer dan terug naar de portaalpagina</a> en vul daar je postcode in.</small>";
 		}
 		return $msg;
 	}
