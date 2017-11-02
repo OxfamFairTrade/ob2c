@@ -521,12 +521,12 @@
 	}
 
 	// Check tijdelijk de verstuurde bevestigingsmails door mezelf in BCC te zetten
-	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2);
+	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
 
 	function put_administrator_in_bcc( $headers, $object ) {
-		if ( $object === 'customer_processing_order' ) {
+		// if ( $object === 'customer_processing_order' ) {
 			$headers .= 'BCC: "Frederik Neirynck" <'.get_site_option('admin_email').'>\r\n';
-		}
+		// }
 		return $headers;
 	}
 	
@@ -1145,7 +1145,8 @@
 		$shipping = $order->get_shipping_methods();
 		$shipping = reset($shipping);
 		$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
-		update_post_meta( $order_id, 'estimated_delivery', $timestamp );
+		$order->add_meta_data( 'estimated_delivery', $timestamp, true );
+		$order->save_meta_data();
 	}
 
 	// Valideer en formatteer het geboortedatumveld
@@ -1297,8 +1298,8 @@
 			// LEVERT UTC-TIMESTAMP OP, DUS VERGELIJKEN MET GLOBALE TIME() 
 			$order_timestamp = $order->get_date_created()->getTimestamp();
 			
-			// Creëer enkel indien het de 1ste keer is (= binnen de 10 minuten na plaatsen)
-			if ( time() < $order_timestamp + 10*60 ) {
+			// Creëer enkel indien het de 1ste keer is (= binnen de 5 minuten na plaatsen)
+			if ( time() < $order_timestamp + 5000000*60 ) {
 				
 				// Laad PHPExcel en het bestelsjabloon in, en selecteer het eerste werkblad
 				require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
@@ -1308,7 +1309,9 @@
 				// Sla de leverdatum op
 				$shipping_methods = $order->get_shipping_methods();
 				$shipping_method = reset($shipping_methods);
-				$delivery_timestamp = $order->get_meta( 'estimated_delivery', true );
+				// NOG NIET BESCHIKBAAR OP DIT MOMENT?
+				$delivery_timestamp = $order->get_meta('estimated_delivery');
+				// $delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 
 				// Bestelgegevens invullen
 				$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
@@ -1328,7 +1331,6 @@
 
 				switch ( $shipping_method['method_id'] ) {
 					case stristr( $shipping_method['method_id'], 'flat_rate' ):
-					case stristr( $shipping_method['method_id'], 'free_shipping' ):
 						
 						// Leveradres invullen (is in principe zeker beschikbaar!)
 						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
@@ -1350,6 +1352,34 @@
 
 						break;
 
+					case stristr( $shipping_method['method_id'], 'free_shipping' ):
+
+						// Leveradres invullen (is in principe zeker beschikbaar!)
+						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+
+					case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
+
+						// VERWIJZEN NAAR POSTPUNT
+						$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
+						$service_point_info = explode ( '|', $service_point['extra'] );
+						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'In postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket aanmaken enkel mogelijk via SendCloud!' )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+
+						// Verzendkosten vermelden
+						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
+							$total_tax = floatval( $shipping->get_total_tax() );
+							$total_excl_tax = floatval( $shipping->get_total() );
+							// Enkel printen indien nodig
+							if ( $total_tax > 0.01 ) {
+								if ( $total_tax < 1.00 ) {
+									$tax = 0.06;
+								} else {
+									$tax = 0.21;
+								}
+								$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
+							}
+						}
+					
+
 					default:
 						$meta_data = $shipping_method->get_meta_data();
 						$pickup_data = reset($meta_data);
@@ -1370,9 +1400,9 @@
 				$order->add_meta_data( '_excel_file_name', $filename, true );
 				$order->save_meta_data();
 
-			} elseif ( strpos( $order->get_meta( '_excel_file_name', true ), '.xlsx' ) > 10 ) {
+			} elseif ( strpos( $order->get_meta( '_excel_file_name' ), '.xlsx' ) > 10 ) {
 
-				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$order->get_meta( '_excel_file_name', true );
+				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$order->get_meta( '_excel_file_name' );
 
 			}
 		}
