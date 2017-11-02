@@ -1165,8 +1165,7 @@
 			wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );
 		}
 
-		$street = $_POST['shipping_address_1'];
-		if ( strlen( $street ) > 1 and preg_match( '/[0-9]+/', $street ) === 0 ) {
+		if ( isset($_POST['shipping_address_1']) and preg_match( '/[0-9]+/', $_POST['shipping_address_1'] ) === 0 ) {
 			wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
 		}
 	}
@@ -1309,10 +1308,10 @@
 				// Sla de leverdatum op
 				$shipping_methods = $order->get_shipping_methods();
 				$shipping_method = reset($shipping_methods);
-				// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING!
-				// $delivery_timestamp = $order->get_meta('estimated_delivery');
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
-
+				// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING!
+				// $delivery_timestamp_1 = $order->get_meta('estimated_delivery');
+				
 				// Bestelgegevens invullen
 				$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
 				$objPHPExcel->getActiveSheet()->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
@@ -1357,13 +1356,15 @@
 						// Leveradres invullen (is in principe zeker beschikbaar!)
 						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 
+						break;
+
 					case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
 
 						// VERWIJZEN NAAR POSTPUNT
 						$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
 						write_log($service_point);
 						$service_point_info = explode ( '|', $service_point['extra'] );
-						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'In postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket aanmaken enkel mogelijk via SendCloud!' )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 
 						// Verzendkosten vermelden
 						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -1379,7 +1380,8 @@
 								$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 							}
 						}
-					
+						
+						break;
 
 					default:
 						$meta_data = $shipping_method->get_meta_data();
@@ -3123,10 +3125,12 @@
 		$continents = get_terms( $args );
 		$partners = array();
 		
-		foreach ( $terms as $term ) {
-			if ( ! in_array( $term->parent, $continents, true ) ) {
-				// De bovenliggende term is geen continent, dus het is een partner!
-				$partners[$term->term_id] = $term->name;
+		if ( count($terms) > 0 ) {
+			foreach ( $terms as $term ) {
+				if ( ! in_array( $term->parent, $continents, true ) ) {
+					// De bovenliggende term is geen continent, dus het is een partner!
+					$partners[$term->term_id] = $term->name;
+				}
 			}
 		}
 
