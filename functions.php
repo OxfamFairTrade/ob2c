@@ -1309,9 +1309,9 @@
 				// Sla de leverdatum op
 				$shipping_methods = $order->get_shipping_methods();
 				$shipping_method = reset($shipping_methods);
-				// NOG NIET BESCHIKBAAR OP DIT MOMENT?
-				$delivery_timestamp = $order->get_meta('estimated_delivery');
-				// $delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
+				// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING!
+				// $delivery_timestamp = $order->get_meta('estimated_delivery');
+				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 
 				// Bestelgegevens invullen
 				$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
@@ -1361,6 +1361,7 @@
 
 						// VERWIJZEN NAAR POSTPUNT
 						$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
+						write_log($service_point);
 						$service_point_info = explode ( '|', $service_point['extra'] );
 						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'In postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket aanmaken enkel mogelijk via SendCloud!' )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 
