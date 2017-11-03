@@ -1287,8 +1287,8 @@
 	add_filter( 'woocommerce_email_attachments', 'attach_picklist_to_email', 10, 3 );
 
 	function attach_picklist_to_email( $attachments, $status , $order ) {
-		// EXCEL OOK BIJWERKEN BIJ COMPLETED / REFUND?
-		$create_statuses = array( 'new_order' );
+		// EXCEL OOK BIJWERKEN BIJ REFUND?
+		$create_statuses = array( 'new_order', 'customer_refunded_order' );
 		
 		if ( isset($status) and in_array( $status, $create_statuses ) ) {
 
@@ -1297,117 +1297,109 @@
 			// LEVERT UTC-TIMESTAMP OP, DUS VERGELIJKEN MET GLOBALE TIME() 
 			$order_timestamp = $order->get_date_created()->getTimestamp();
 			
-			// Creëer enkel indien het de 1ste keer is (= binnen de 5 minuten na plaatsen)
-			if ( time() < $order_timestamp + 5000000*60 ) {
-				
-				// Laad PHPExcel en het bestelsjabloon in, en selecteer het eerste werkblad
-				require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
-				$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
-				$objPHPExcel->setActiveSheetIndex(0);
+			// Laad PHPExcel en het bestelsjabloon in, en selecteer het eerste werkblad
+			require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
+			$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
+			$objPHPExcel->setActiveSheetIndex(0);
 
-				// Sla de leverdatum op
-				$shipping_methods = $order->get_shipping_methods();
-				$shipping_method = reset($shipping_methods);
-				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
-				// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING!
-				// $delivery_timestamp_1 = $order->get_meta('estimated_delivery');
-				
-				// Bestelgegevens invullen
-				$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
-				$objPHPExcel->getActiveSheet()->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
+			// Sla de leverdatum op
+			$shipping_methods = $order->get_shipping_methods();
+			$shipping_method = reset($shipping_methods);
+			$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
+			// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING!
+			// $delivery_timestamp_1 = $order->get_meta('estimated_delivery');
+			
+			// Bestelgegevens invullen
+			$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
+			$objPHPExcel->getActiveSheet()->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
 
-				// Factuuradres invullen
-				$objPHPExcel->getActiveSheet()->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
+			// Factuuradres invullen
+			$objPHPExcel->getActiveSheet()->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
-				$i = 8;
-				// Vul de artikeldata item per item in vanaf rij 8
-				foreach ( $order->get_items() as $order_item_id => $item ) {
-					$product = $order->get_product_from_item( $item );
-					$tax = $product->get_tax_class() === 'voeding' ? '0.06' : '0.21';
-					$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
-					$i++;
-				}
-
-				switch ( $shipping_method['method_id'] ) {
-					case stristr( $shipping_method['method_id'], 'flat_rate' ):
-						
-						// Leveradres invullen (is in principe zeker beschikbaar!)
-						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
-
-						// Verzendkosten vermelden
-						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
-							$total_tax = floatval( $shipping->get_total_tax() );
-							$total_excl_tax = floatval( $shipping->get_total() );
-							// Enkel printen indien nodig
-							if ( $total_tax > 0.01 ) {
-								if ( $total_tax < 1.00 ) {
-									$tax = 0.06;
-								} else {
-									$tax = 0.21;
-								}
-								$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
-							}
-						}
-
-						break;
-
-					case stristr( $shipping_method['method_id'], 'free_shipping' ):
-
-						// Leveradres invullen (is in principe zeker beschikbaar!)
-						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
-
-						break;
-
-					case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
-
-						// VERWIJZEN NAAR POSTPUNT
-						$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
-						write_log($service_point);
-						$service_point_info = explode ( '|', $service_point['extra'] );
-						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
-
-						// Verzendkosten vermelden
-						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
-							$total_tax = floatval( $shipping->get_total_tax() );
-							$total_excl_tax = floatval( $shipping->get_total() );
-							// Enkel printen indien nodig
-							if ( $total_tax > 0.01 ) {
-								if ( $total_tax < 1.00 ) {
-									$tax = 0.06;
-								} else {
-									$tax = 0.21;
-								}
-								$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
-							}
-						}
-						
-						break;
-
-					default:
-						$meta_data = $shipping_method->get_meta_data();
-						$pickup_data = reset($meta_data);
-						$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) )->setCellValue( 'F1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
-				}
-
-				// Selecteer het totaalbedrag
-				$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
-
-				$folder = generate_pseudo_random_string();
-				mkdir( WP_CONTENT_DIR.'/uploads/xlsx/'.$folder, 0755 );
-				$filename = $folder.'/'.$order_number.'.xlsx';
-				$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
-				$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
-				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
-				
-				// Bewaar de locatie van de file (random file!) als metadata
-				$order->add_meta_data( '_excel_file_name', $filename, true );
-				$order->save_meta_data();
-
-			} elseif ( strpos( $order->get_meta( '_excel_file_name' ), '.xlsx' ) > 10 ) {
-
-				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$order->get_meta( '_excel_file_name' );
-
+			$i = 8;
+			// Vul de artikeldata item per item in vanaf rij 8
+			foreach ( $order->get_items() as $order_item_id => $item ) {
+				$product = $order->get_product_from_item( $item );
+				$tax = $product->get_tax_class() === 'voeding' ? '0.06' : '0.21';
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
+				$i++;
 			}
+
+			switch ( $shipping_method['method_id'] ) {
+				case stristr( $shipping_method['method_id'], 'flat_rate' ):
+					
+					// Leveradres invullen (is in principe zeker beschikbaar!)
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+
+					// Verzendkosten vermelden
+					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
+						$total_tax = floatval( $shipping->get_total_tax() );
+						$total_excl_tax = floatval( $shipping->get_total() );
+						// Enkel printen indien nodig
+						if ( $total_tax > 0.01 ) {
+							if ( $total_tax < 1.00 ) {
+								$tax = 0.06;
+							} else {
+								$tax = 0.21;
+							}
+							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
+						}
+					}
+
+					break;
+
+				case stristr( $shipping_method['method_id'], 'free_shipping' ):
+
+					// Leveradres invullen (is in principe zeker beschikbaar!)
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+
+					break;
+
+				case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
+
+					// VERWIJZEN NAAR POSTPUNT
+					$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
+					write_log($service_point);
+					$service_point_info = explode ( '|', $service_point['extra'] );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+
+					// Verzendkosten vermelden
+					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
+						$total_tax = floatval( $shipping->get_total_tax() );
+						$total_excl_tax = floatval( $shipping->get_total() );
+						// Enkel printen indien nodig
+						if ( $total_tax > 0.01 ) {
+							if ( $total_tax < 1.00 ) {
+								$tax = 0.06;
+							} else {
+								$tax = 0.21;
+							}
+							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
+						}
+					}
+					
+					break;
+
+				default:
+					$meta_data = $shipping_method->get_meta_data();
+					$pickup_data = reset($meta_data);
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) )->setCellValue( 'F1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
+			}
+
+			// Selecteer het totaalbedrag
+			$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
+
+			$folder = generate_pseudo_random_string();
+			mkdir( WP_CONTENT_DIR.'/uploads/xlsx/'.$folder, 0755 );
+			$filename = $folder.'/'.$order_number.'.xlsx';
+			$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
+			$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
+			$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
+			
+			// Bewaar de locatie van de file (random file!) als metadata
+			$order->add_meta_data( '_excel_file_name', $filename, true );
+			$order->save_meta_data();
+
 		}
 
 		return $attachments;
