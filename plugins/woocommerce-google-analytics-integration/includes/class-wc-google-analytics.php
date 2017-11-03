@@ -76,6 +76,7 @@ class WC_Google_Analytics extends WC_Integration {
 			'ga_support_enhanced_link_attribution',
 			'ga_use_universal_analytics',
 			'ga_anonymize_enabled',
+			'ga_404_tracking_enabled',
 			'ga_ecommerce_tracking_enabled',
 			'ga_enhanced_ecommerce_tracking_enabled',
 			'ga_enhanced_remove_from_cart_enabled',
@@ -144,6 +145,13 @@ class WC_Google_Analytics extends WC_Integration {
 			'ga_anonymize_enabled' => array(
 				'label'         => __( 'Anonymize IP addresses.', 'woocommerce-google-analytics-integration' ),
 				'description'   => sprintf( __( 'Enabling this option is mandatory in certain countries due to national privacy laws. %sRead more about IP Anonymization%s.', 'woocommerce-google-analytics-integration' ), '<a href="https://support.google.com/analytics/answer/2763052" target="_blank">', '</a>' ),
+				'type'          => 'checkbox',
+				'checkboxgroup' => '',
+				'default'       => 'yes'
+			),
+			'ga_404_tracking_enabled' => array(
+				'label'         => __( 'Track 404 (Not found) Errors.', 'woocommerce-google-analytics-integration' ),
+				'description'   => sprintf( __( 'Enable this to find broken or dead links. An "Event" with category "Error" and action "404 Not Found" will be created in Google Analytics for each incoming pageview to a non-existing page. By setting up a "Custom Goal" for these events within Google Analytics you can find out where broken links originated from (the referrer). %sRead how to set up a goal%s.', 'woocommerce-google-analytics-integration' ), '<a href="https://support.google.com/analytics/answer/1032415" target="_blank">', '</a>' ),
 				'type'          => 'checkbox',
 				'checkboxgroup' => '',
 				'default'       => 'yes'
@@ -238,6 +246,7 @@ class WC_Google_Analytics extends WC_Integration {
 			'support_enhanced_link_attribution' => $this->ga_support_enhanced_link_attribution,
 			'use_universal_analytics'     		=> $this->ga_use_universal_analytics,
 			'anonymize_enabled'           		=> $this->ga_anonymize_enabled,
+			'ga_404_tracking_enabled'           => $this->ga_404_tracking_enabled,
 			'ecommerce_tracking_enabled'  		=> $this->ga_ecommerce_tracking_enabled,
 			'event_tracking_enabled'      		=> $this->ga_event_tracking_enabled
 		);
@@ -367,6 +376,11 @@ class WC_Google_Analytics extends WC_Integration {
 			$code = "" . WC_Google_Analytics_JS::get_instance()->tracker_var() . "( 'ec:addProduct', {";
 			$code .= "'id': '" . esc_js( $product->get_sku() ? $product->get_sku() : ( '#' . $product->get_id() ) ) . "',";
 			$code .= "'name': '" . esc_js( $product->get_title() ) . "',";
+			$ids = $product->get_category_ids();
+			foreach ( $ids as $id ) {
+				$term = get_term_by( 'id', $id, 'product_cat' );
+			}
+			$code .= "'category': '" . esc_js( $term->name ) . "',";
 			$code .= "'quantity': $( 'input.qty' ).val() ? $( 'input.qty' ).val() : '1'";
 			$code .= "} );";
 			$parameters['enhanced'] = $code;
