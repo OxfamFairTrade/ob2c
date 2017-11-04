@@ -1287,7 +1287,7 @@
 	add_filter( 'woocommerce_email_attachments', 'attach_picklist_to_email', 10, 3 );
 
 	function attach_picklist_to_email( $attachments, $status , $order ) {
-		// EXCEL OOK BIJWERKEN BIJ REFUND?
+		// EXCEL ALTIJD BIJWERKEN, OOK BIJ REFUND
 		$create_statuses = array( 'new_order', 'customer_refunded_order' );
 		
 		if ( isset($status) and in_array( $status, $create_statuses ) ) {
@@ -1307,7 +1307,7 @@
 			$shipping_method = reset($shipping_methods);
 			$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 			// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING!
-			// $delivery_timestamp_1 = $order->get_meta('estimated_delivery');
+			// $delivery_timestamp = $order->get_meta('estimated_delivery');
 			
 			// Bestelgegevens invullen
 			$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
@@ -1320,7 +1320,16 @@
 			// Vul de artikeldata item per item in vanaf rij 8
 			foreach ( $order->get_items() as $order_item_id => $item ) {
 				$product = $order->get_product_from_item( $item );
-				$tax = $product->get_tax_class() === 'voeding' ? '0.06' : '0.21';
+				switch ( $product->get_tax_class() ) {
+					case 'voeding':
+						$tax = '0.06';
+						break;
+					case 'vrijgesteld':
+						$tax = '0.00';
+						break;
+					default:
+						$tax = '0.21';
+				}
 				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
 				$i++;
 			}
@@ -1394,7 +1403,11 @@
 			$filename = $folder.'/'.$order_number.'.xlsx';
 			$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
 			$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
-			$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
+			
+			if ( $status === 'new_order' ) {
+				// Niet meesturen in terugbetaalmail aan klant
+				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
+			}
 			
 			// Bewaar de locatie van de file (random file!) als metadata
 			$order->add_meta_data( '_excel_file_name', $filename, true );
