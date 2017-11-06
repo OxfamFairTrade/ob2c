@@ -1911,14 +1911,24 @@
 					}
 				}
 
-				// Zoek de eerste werkdag na de volgende middagdeadline
-				$timestamp = get_first_working_day( $from );
+				if ( $node === 'fruithoekje' ) {
+					if ( date_i18n( 'N', $from ) < 5 and date_i18n( 'G', $from ) < 12 ) {
+						// Geen actie nodig
+					} else {
+						// We zitten al na de deadline van donderdag 12u, begin pas vanaf volgende werkdag te tellen
+						$from = strtotime( '+1 weekday', $from );
+					}
+
+					// Zoek de eerste vrijdag na de volgende middagdeadline
+					$timestamp = strtotime( 'next Friday', $from );
+				} else {
+					// Zoek de eerste werkdag na de volgende middagdeadline
+					$timestamp = get_first_working_day( $from );
+				}
 
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
-				
-				// write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
-		
+
 				// Check of de winkel op deze dag effectief nog geopend is na 12u
 				$timestamp = find_first_opening_hour( get_office_hours( $node ), $timestamp );
 
@@ -1971,7 +1981,8 @@
 			$first = date_i18n( 'Y-m-d', $from );
 		}
 		// In dit formaat zijn datum- en tekstsortering equivalent!
-		$last = date_i18n( 'Y-m-d', $till );
+		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
+		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 
 		// Vang het niet bestaan van de optie op
 		$holidays = get_option( 'oxfam_holidays', $default_holidays );
@@ -1980,7 +1991,7 @@
 			// Enkel de feestdagen die niet in het weekend moeten we in beschouwing nemen!
 			if ( date_i18n( 'N', strtotime($holiday) ) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				$till = strtotime( '+1 weekday', $till );
-				$last = date_i18n( 'Y-m-d', $till );
+				$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 			}
 		}
 
