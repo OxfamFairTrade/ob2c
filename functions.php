@@ -1922,8 +1922,12 @@
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
 				} else {
-					// Zoek de eerste werkdag na de volgende middagdeadline
 					$timestamp = get_first_working_day( $from );
+
+					// Geef nog twee extra werkdagen voor afhaling in niet-OWW-punten
+					if ( ! is_numeric( $node ) ) {
+						$timestamp = strtotime( '+2 weekdays', $timestamp );
+					}
 				}
 
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
@@ -1942,7 +1946,7 @@
 				$timestamp = get_first_working_day( $from );
 
 				// Geef nog twee extra werkdagen voor de thuislevering
-				$timestamp = strtotime("+2 weekdays", $timestamp);
+				$timestamp = strtotime( '+2 weekdays', $timestamp );
 
 				// Tel feestdagen die in de verwerkingsperiode vallen erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
