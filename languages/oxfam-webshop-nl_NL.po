@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2017-11-01 01:03+0100\n"
-"PO-Revision-Date: 2017-11-06 16:39+0100\n"
+"PO-Revision-Date: 2017-11-06 17:38+0100\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -136,7 +136,7 @@ msgstr "Het lijkt erop dat je je huisnummer vergeten bent!"
 #, php-format
 msgid ""
 "Dag (%1$s) en uur (%2$s) vanaf wanneer de bestelling klaarstaat voor afhaling"
-msgstr "Beschikbaar op %1$s vanaf %2$s"
+msgstr "Ten laatste beschikbaar op %1$s vanaf %2$s"
 
 #: functions.php:1544
 #, php-format
