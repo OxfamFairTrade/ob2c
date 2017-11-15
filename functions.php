@@ -3161,17 +3161,20 @@
 	}
 
 	function get_tracking_number( $order_id ) {
-		// Check of we een 24-cijferig tracking number dat door SendCloud geannoteerd werd kunnen terugvinden
-		$args = array( 'post_id' => $post_id, 'search' => 'SendCloud' );
+		$tracking_number = false;
+		// Query alle order comments waarin het over Bpost gaat en zet de oudste bovenaan
+		$args = array( 'post_id' => $order_id, 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'ASC', 'search' => 'bpost' );
 		// Want anders zien we de private opmerkingen niet!
 		remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
 		$comments = get_comments( $args );
 		if ( count($comments) > 0 ) {
-			$sendcloud_note = $comments[0];
-			preg_match( '/[0-9]{24}/', $sendcloud_note->comment_content, $numbers );
-			$tracking_number = $numbers[0];
-		} else {
-			$tracking_number = false;
+			foreach ( $comments as $bpost_note ) {
+				// Check of we een 24-cijferig tracking number kunnen terugvinden
+				if ( preg_match( '/[0-9]{24}/', $bpost_note->comment_content, $numbers ) === 1 ) {
+					// Waarde in meest recente comment zal geretourneerd worden!
+					$tracking_number = $numbers[0];
+				}
+			}
 		}
 		// Reactiveer filter
 		add_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
@@ -3181,61 +3184,48 @@
 	function get_tracking_link( $order_id ) {
 		return 'http://track.bpost.be/btr/web/#/search?itemCode='.get_tracking_number( $order_id ).'&lang=nl';
 	}
+	
 	// Voeg een bericht toe bovenaan alle adminpagina's
 	add_action( 'admin_notices', 'oxfam_admin_notices' );
 
 	function oxfam_admin_notices() {
 		global $pagenow, $post_type;
 		$screen = get_current_screen();
-		// var_dump($screen);
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
+			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
+				echo '<div class="notice notice-success">';
+					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
+				echo '</div>';
+			}
 			echo '<div class="notice notice-info">';
-			echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
+				echo '<p>Sinds begin deze maand vinden jullie - zoals gevraagd - in bijlage bij elke bestelling een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden.</p>';
+				// echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
 			echo '</div>';
-			// echo '<div class="notice notice-error">';
-			// echo '<p>Sommige winkels kregen een bericht dat hun legitimatiebewijs afgewezen werd. Dit gebeurt indien de rechtsgeldige vertegenwoordiger die we opgaven (= de persoon waarvan jullie ons de identiteitskaart bezorgden) nog niet in de <u>digitale</u> versie van het KBO geregistreerd staat. We adviseren in dat geval om de rechtsgeldige vertegenwoordiger onder de Mollie-instellingen voor \'<a href="https://www.mollie.com/dashboard/settings/organization" target="_blank">Bedrijf</a>\' aan te passen naar iemand die wel reeds vermeld staat in het KBO. (Check de link naast het BTW-nummer op de \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\'-pagina.) <a href="mailto:e-commerce@oft.be" target="_blank">Contacteer ons</a> indien je hierbij assistentie nodig hebt.</p>';
-			// echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
 				// echo '</div>';
 			}
-			echo '<div class="notice notice-success">';
-				// if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
-				// 	echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust bestellingen te plaatsen en te beheren.</p>';
-				// } else {
-				// 	echo '<p>Opgelet: de betalingen op deze site zijn momenteel live! Tip: betaal je bestelling achteraf volledig terug door een refund uit te voeren via het platform.</p>';
-				// }
-				echo '<p>In de back-end van de webshop verschenen 10 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-				$skus = array( '22720', '22721', '24501', '24614', '24626', '24635', '24637', '24638', '24639', '24640' );
-				foreach ( $skus as $sku ) {
-					$product_id = wc_get_product_id_by_sku( $sku );
-					if ( $product_id ) {
-						$productje = wc_get_product( $product_id );
-						echo '<li><a href="'.$productje->get_permalink().'" target="_blank">'.$productje->get_title().'</a> ('.$productje->get_attribute( 'pa_shopplus' ).')</li>';
-					}
-					
-				}
-				echo '</ul><p>';
-				if ( current_user_can('manage_network_users') ) {
-					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. Opgelet: door een kleine lapsus is de status van Lautaro Cabernet Sauvignon (W10055) in alle webshops weer op \'Uit voorraad\' gezet. Pas dit aan indien je het product in je assortiment hebt.</p><p>';
-				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast werden de packshots van Groot Eiland Shiraz-Pinotage (W10063), Groot Eiland Chardonnay-Chenin Blanc (W10256) en Zeevruchten (W14500) bijgewerkt. Tot slot werden de fairtradepercentages vervolledigd. Volgende week vullen we de allergenen bij de nieuwe producten nog aan.</p>';
-			echo '</div>';
 			if ( does_sendcloud_delivery() ) {
 				// echo '<div class="notice notice-error">';
-				// echo '<p>De domiciliëringsopdracht van de Nederlandse betaalprovider Ayden die eind juni geactiveerd werd op jullie winkelrekening, dient voor de betaling van verzendingen die je via SendCloud regelt. (Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen.) Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen verzendlabels meer aanmaken voor Bpost en dien je zelf (fors duurdere) etiketten aan te schaffen in een postpunt.</p>';
+				// echo '<p>De domiciliëringsopdracht van de Nederlandse betaalprovider Adyen die eind juni geactiveerd werd op jullie winkelrekening, dient voor de betaling van verzendingen die je via SendCloud regelt. (Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen.) Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen verzendlabels meer aanmaken voor Bpost en dien je zelf (fors duurdere) etiketten aan te schaffen in een postpunt.</p>';
 				// echo '</div>';
 			}
-		}
-		if ( $pagenow === 'edit.php' and $post_type === 'product' and current_user_can( 'edit_products' ) ) {
-			// echo '<div class="notice notice-warning">';
-			// echo '<p>Hou er rekening mee dat alle volumes in g / ml ingegeven worden, zonder eenheid!</p>';
-			// echo '</div>';
-		}
-		if ( $pagenow === 'admin.php' and stristr( $screen->base, 'oxfam-products-photos' ) ) {
 			// echo '<div class="notice notice-success">';
-			// echo '<p>Bovenaan de compacte lijstweergave vind je vanaf nu een knop om alle producten in of uit voorraad te zetten.</p>';
+			// 	echo '<p>In de back-end van de webshop verschenen 10 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+			// 	$skus = array( '22720', '22721', '24501', '24614', '24626', '24635', '24637', '24638', '24639', '24640' );
+			// 	foreach ( $skus as $sku ) {
+			// 		$product_id = wc_get_product_id_by_sku( $sku );
+			// 		if ( $product_id ) {
+			// 			$productje = wc_get_product( $product_id );
+			// 			echo '<li><a href="'.$productje->get_permalink().'" target="_blank">'.$productje->get_title().'</a> ('.$productje->get_attribute( 'pa_shopplus' ).')</li>';
+			// 		}	
+			// 	}
+			// 	echo '</ul><p>';
+			// 	if ( current_user_can('manage_network_users') ) {
+			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. Opgelet: door een kleine lapsus is de status van Lautaro Cabernet Sauvignon (W10055) in alle webshops weer op \'Uit voorraad\' gezet. Pas dit aan indien je het product in je assortiment hebt.</p><p>';
+			// 	}
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast werden de packshots van Groot Eiland Shiraz-Pinotage (W10063), Groot Eiland Chardonnay-Chenin Blanc (W10256) en Zeevruchten (W14500) bijgewerkt. Tot slot werden de fairtradepercentages vervolledigd. Volgende week vullen we de allergenen bij de nieuwe producten nog aan.</p>';
 			// echo '</div>';
 		}
 	}
