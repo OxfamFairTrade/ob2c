@@ -59,6 +59,23 @@
 		wp_reset_postdata();
 	}
 
+	// Wijziging aan een orderstatus doorvoeren
+	$args = array(
+		'post_type'		=> 'wc_order_status',
+		'post_status'	=> array( 'publish' ),
+		'name'			=> 'on-hold',
+	);
+
+	$order_statuses = new WP_Query( $args );
+
+	if ( $order_statuses->have_posts() ) {
+		while ( $order_statuses->have_posts() ) {
+			$order_statuses->the_post();
+			update_post_meta( get_the_ID(), '_bulk_action', 'no' );
+		}
+		wp_reset_postdata();
+	}
+
 	// Een welbepaalde foto verwijderen
 	$photo_id = wp_get_attachment_id_by_post_name( '21515' );
 	if ( $photo_id ) {

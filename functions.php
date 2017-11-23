@@ -157,11 +157,13 @@
 		
 		// Voeg de claimende winkel toe aan de ordermetadata van zodra iemand op het winkeltje klikt (en verwijder indien we teruggaan)
 		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop' );
-		add_action( 'woocommerce_order_status_claimed_to_processing', 'delete_claiming_member_shop' );
+		// Veroorzaakt probleem indien volgorde niet 100% gerespecteerd wordt
+		// add_action( 'woocommerce_order_status_claimed_to_processing', 'delete_claiming_member_shop' );
 
 		// Deze transities zullen in principe niet voorkomen, maar voor alle zekerheid ...
 		add_action( 'woocommerce_order_status_on-hold_to_claimed', 'register_claiming_member_shop' );
-		add_action( 'woocommerce_order_status_claimed_to_on-hold', 'delete_claiming_member_shop' );
+		// Veroorzaakt probleem indien volgorde niet 100% gerespecteerd wordt
+		// add_action( 'woocommerce_order_status_claimed_to_on-hold', 'delete_claiming_member_shop' );
 
 		// Laat afhalingen automatisch claimen door de gekozen winkel
 		add_action( 'woocommerce_thankyou', 'auto_claim_local_pickup' );
