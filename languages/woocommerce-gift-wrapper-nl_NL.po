@@ -1,0 +1,189 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2017-08-19 14:31-0700\n"
+"PO-Revision-Date: 2017-11-03 18:09+0100\n"
+"Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
+"Language-Team: \n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.4\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: classes/class-gift-wrapper-admin.php:47
+#: classes/class-gift-wrapper-admin.php:51
+#: classes/class-gift-wrapper-admin.php:65
+#: classes/class-gift-wrapper-admin.php:75
+msgid "Gift Wrap Note"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:27
+msgid "Settings"
+msgstr "Instellingen"
+
+#: classes/class-gift-wrapper-settings.php:40
+msgid "Gift Wrapping"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:71
+msgid "Gift Wrapping Options"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:73
+#, php-format
+msgid ""
+"Start by <a href=\"%s\" target=\"_blank\">adding at least one product</a> "
+"called \"Gift Wrapping\" or something similar."
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:73
+msgid ""
+"Create a unique product category for this/these gift wrapping product(s), "
+"and add them to this category."
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:73
+msgid "Then consider the options below."
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:78
+msgid "Where to Show Gift Wrapping"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:79
+msgid ""
+"Choose where to show gift wrap options to the customer on the cart page. You "
+"may choose more than one."
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:83
+msgid "Under Coupon Field in Cart"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:84
+msgid "Before Cart"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:85
+msgid "Above Totals Field in Cart"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:86
+msgid "Before Checkout"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:93
+msgid "Gift Wrap Category"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:94
+msgid "Define the category which holds your gift wrap product(s)."
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:100
+msgid "Define a Category"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:106
+msgid "Show Gift Wrap Thumbs in Cart"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:107
+msgid "Should gift wrap product thumbnail images be visible in the cart?"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:111
+#: classes/class-gift-wrapper-settings.php:124
+#: classes/class-gift-wrapper-settings.php:137
+msgid "Yes"
+msgstr "Ja"
+
+#: classes/class-gift-wrapper-settings.php:112
+#: classes/class-gift-wrapper-settings.php:125
+#: classes/class-gift-wrapper-settings.php:138
+msgid "No"
+msgstr "Nee"
+
+#: classes/class-gift-wrapper-settings.php:119
+msgid "Allow more than one gift wrap product in cart?"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:120
+msgid ""
+"If yes, customers can buy more than one gift wrapping product in one order."
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:132
+msgid "Should Gift Wrap option open in pop-up?"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:133
+msgid ""
+"If checked, there will be a link (\"header\") in the cart, which when "
+"clicked will open a window for customers to choose gift wrapping options. It "
+"can be styled and might be a nicer option for your site. NOTE: modal does "
+"not work with the Avada theme."
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:145
+msgid "Gift Wrap Details"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:146
+msgid ""
+"Optional text to give any details or conditions of your gift wrap offering. "
+"This text is not translatable by Wordpress i18n."
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:154
+msgid "Textarea Character Limit"
+msgstr ""
+
+#: classes/class-gift-wrapper-settings.php:155
+msgid ""
+"How many characters your customer can type when creating their own note for "
+"giftwrapping. Defaults to 1000 characters; lower this number if you want "
+"more brief comments from your customers."
+msgstr ""
+
+#: woocommerce-gift-wrapper.php:354
+msgid "Add Gift Wrap Message:"
+msgstr "Opmerkingen:"
+
+#: woocommerce-gift-wrapper.php:372 woocommerce-gift-wrapper.php:431
+#: woocommerce-gift-wrapper.php:515 woocommerce-gift-wrapper.php:578
+#: woocommerce-gift-wrapper.php:650
+msgid "Add gift wrapping?"
+msgstr "Wil je graag dat we je bestelling feestelijk inpakken?"
+
+#: woocommerce-gift-wrapper.php:382
+msgid "Cancel"
+msgstr "Annuleer"
+
+#: woocommerce-gift-wrapper.php:396 woocommerce-gift-wrapper.php:447
+#: woocommerce-gift-wrapper.php:527 woocommerce-gift-wrapper.php:591
+#: woocommerce-gift-wrapper.php:662
+msgid "Add Gift Wrap to Order"
+msgstr "Ja, voeg toe"
+
+#: woocommerce-gift-wrapper.php:465 woocommerce-gift-wrapper.php:542
+#: woocommerce-gift-wrapper.php:604 woocommerce-gift-wrapper.php:677
+msgid "Are you sure you want to replace the gift wrap in your cart?"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Woocommerce Gift Wrapper"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"This plugin shows gift wrap options on the WooCommerce cart and/or checkout "
+"page, and adds gift wrapping to the order"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Little Package"
+msgstr ""

@@ -7,9 +7,9 @@
 
 	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Een bevestigingsvenster behoedt je voor onbedoelde wijzigingen. Tip: met Ctrl+F kun je snel zoeken naar een product.</p>
 
-	<p>Nieuwe producten, die in de loop van de voorbije twee maanden beschikbaar werden op BestelWeb, hebben een blauwe achtergrond. Ze verschijnen aanvankelijk als 'niet op voorraad' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden.</p>
+	<p>Nieuwe producten, die in de loop van de voorbije twee maanden beschikbaar werden op BestelWeb, hebben <span style="background-color: lightskyblue;">een blauwe achtergrond</span>. Ze verschijnen aanvankelijk als 'uitverkocht' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden. Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen <span style="background-color: gold;">een gele achtergrond</span>, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt.</p>
 
-	<p>Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen een gele achtergrond, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt. Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
+	<p>Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 
 	<div id="oxfam-products" style="border-spacing: 0 10px;">
 		<?php
@@ -70,9 +70,9 @@
 									$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 								$content .= '</select></p>';
 								$content .= '<p class="output">&nbsp;</p>';
-								// if ( ! $main_product->is_in_stock() ) {
+								if ( $bestelweb === 'ja' ) {
 									$content .= '<p>Bestel dit product op <a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">bestelweb.be</a></p>';
-								// }
+								}
 							$content .= '</div>';
 							
 							// Rechterdeel
@@ -90,13 +90,13 @@
 				// Extra afsluitende </div> nodig indien oneven aantal producten!
 				if ( $i % 2 === 1 ) $content .= '</div>';
 				echo '<div style="display: table-row; width: 100%;">';
-					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
+					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan op de homepage.</p>';
 				echo '</div>';
 				
 				echo $content;
 				
 				echo '<div style="display: table-row; width: 100%;">';
-					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan.</p>';
+					echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> voorradig</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan op de homepage.</p>';
 				echo '</div>';
 			}
 

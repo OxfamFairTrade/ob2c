@@ -43,7 +43,7 @@ class URE_Grant_Roles {
         
         return true;
     }
-    // end of validate_users()
+    // end of validate_users()            
     
     
     private static function validate_roles($roles) {
@@ -52,7 +52,8 @@ class URE_Grant_Roles {
             return false;
         }
         
-        $editable_roles = get_editable_roles();
+        $lib = URE_Lib::get_instance();
+        $editable_roles = $lib->get_all_editable_roles();
         $valid_roles = array_keys($editable_roles);
         foreach($roles as $role) {
             if (!in_array($role, $valid_roles)) {
@@ -63,7 +64,7 @@ class URE_Grant_Roles {
         return true;        
     }
     // end of validate_roles()
-    
+        
     
     private static function grant_primary_role_to_user($user_id, $role) {
                         
@@ -71,13 +72,25 @@ class URE_Grant_Roles {
         if (empty($user)) {
             return;
         }
+                
+        $user->set_role($role); 
         
-        $user->set_role($role);        
+        $lib = URE_Lib::get_instance();
+        $bbpress = $lib->get('bbpress');
+        if (empty($bbpress)) {
+            return;
+        }
+        
+        $bbp_roles = $bbpress->extract_bbp_roles($user->roles);
+        if (count($bbp_roles)>0) {  //  restore bbPress roles
+            foreach($bbp_roles as $role) {
+                $user->add_role($role);
+            }        
+        }        
         
     }
     // end of grant_primary_role_to_user()
-    
-    
+            
     
     private static function grant_other_roles_to_user($user_id, $roles) {
                         
@@ -87,8 +100,15 @@ class URE_Grant_Roles {
         }
         
         $primary_role = array_shift(array_values($user->roles));    // Get the 1st element from the roles array
+        $lib = URE_Lib::get_instance();
+        $bbpress = $lib->get('bbpress');
+        if (empty($bbpress)) {
+            $bbp_roles = array();
+        } else {
+            $bbp_roles = $bbpress->extract_bbp_roles($user->roles);
+        }
         $user->remove_all_caps();
-        $roles = array_merge(array($primary_role), $roles);
+        $roles = array_merge(array($primary_role), $bbp_roles, $roles);
         foreach($roles as $role) {
             $user->add_role($role);
         }
@@ -120,7 +140,7 @@ class URE_Grant_Roles {
         $lib = URE_Lib::get_instance();
         $select_primary_role = apply_filters('ure_users_select_primary_role', true);
         if ($select_primary_role  || $lib->is_super_admin()) {
-            foreach ($users as $user_id) {
+            foreach ($users as $user_id) {                
                 self::grant_primary_role_to_user($user_id, $primary_role);
             }
             if (empty($primary_role)) { //  users don't have primary role, so they should not have any other roles - stop processing
@@ -200,7 +220,7 @@ class URE_Grant_Roles {
 <?php        
     }
     // end of select_primary_role_html()
-    
+            
     
     private function select_other_roles_html() {
 ?>        
@@ -211,8 +231,8 @@ class URE_Grant_Roles {
 ?>        
         </span><br>
 <?php        
-        $show_admin_role = $this->lib->show_admin_role_allowed();
-        $roles = get_editable_roles();
+        $show_admin_role = $this->lib->show_admin_role_allowed();        
+        $roles = $this->lib->get_all_editable_roles();        
         foreach ($roles as $role_id => $role) {
             if (!$show_admin_role && $role_id=='administrator') {
                 continue;
@@ -236,11 +256,12 @@ class URE_Grant_Roles {
         if (!current_user_can('promote_users')) {
             return;
         }
+        $button_number =  (self::$counter>0) ? '_2': '';
 ?>        
-            &nbsp;&nbsp;<input type="button" name="ure_grant_roles" id="ure_grant_roles" class="button"
+            &nbsp;&nbsp;<input type="button" name="ure_grant_roles<?php echo $button_number;?>" id="ure_grant_roles<?php echo $button_number;?>" class="button"
                         value="<?php esc_html_e('Grant Roles', 'user-role-editor');?>">
 <?php
-    if (self::$counter<1) {
+    if (self::$counter==0) {
 ?>
             <div id="ure_grant_roles_dialog" class="ure-dialog">
                 <div id="ure_grant_roles_content">

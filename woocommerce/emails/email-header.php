@@ -2,14 +2,14 @@
 /**
  * Email Header
  *
- * @see 	https://docs.woocommerce.com/document/template-structure/
- * @author  WooThemes
- * @package WooCommerce/Templates/Emails
- * @version 2.4.0
+ * @see			https://docs.woocommerce.com/document/template-structure/
+ * @author		WooThemes
+ * @package		WooCommerce/Templates/Emails
+ * @version		2.4.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit;
 }
 
 ?>
@@ -24,41 +24,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
 				<tr>
 					<td align="center" valign="top">
+						<div id="template_header_image">
 						<?php
 							// GEWIJZIGD: Toon logo enkel in klantenmails
-							if ( $email_heading != 'Nieuwe klant bestelling' ) {
-							?>
-								<div id="template_header_image">
-								<?php
-									// GEWIJZIGD: Voeg link naar homepage toe
-									if ( $img = do_shortcode( get_option( 'woocommerce_email_header_image' ) ) ) {
-										echo '<p style="margin-top:0;"><a href="'.home_url().'" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
-									}
-								?>
-								</div>
-							<?php
+							if ( $email_heading !== __( 'Hoera, een nieuwe bestelling!', 'oxfam-webshop' ) ) {
+								echo '<div id="template_header_image">';
+								// GEWIJZIGD: Voeg link naar homepage toe
+								if ( $img = do_shortcode( get_option( 'woocommerce_email_header_image' ) ) ) {
+									echo '<p style="margin-top:0;"><a href="'.home_url().'" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
+								}
+								echo '</div>';
 							}
 						?>
+						</div>
 						<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_container">
-							<?php
-								if ( $email_heading != 'Nieuwe klant bestelling' ) {
-								?>
-									<tr>
-										<td align="center" valign="top">
-											<!-- Header -->
-											<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_header">
-												<tr>
-													<td id="header_wrapper">
-														<h1><?php echo $email_heading; ?></h1>
-													</td>
-												</tr>
-											</table>
-											<!-- End Header -->
-										</td>
-									</tr>
-								<?php
-								}
-							?>
+							<tr>
+								<td align="center" valign="top">
+									<!-- Header -->
+									<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_header">
+										<tr>
+											<td id="header_wrapper">
+												<h1><?php echo $email_heading; ?></h1>
+											</td>
+										</tr>
+									</table>
+									<!-- End Header -->
+								</td>
+							</tr>
 							<tr>
 								<td align="center" valign="top">
 									<!-- Body -->

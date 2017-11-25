@@ -7,33 +7,29 @@
 	} else {
 		$logo_href = NM_THEME_URI . '/img/logo@2x.png';
 	}
-    
-    // Alternative logo
-    $has_alt_logo = false;    
-    if ( $nm_theme_options['alt_logo_config'] != '0' ) {
-        if ( isset( $nm_theme_options['alt_logo'] ) && strlen( $nm_theme_options['alt_logo']['url'] ) > 0 ) {
-            $has_alt_logo = true;
-            $alt_logo_href = ( is_ssl() ) ? str_replace( 'http://', 'https://', $nm_theme_options['alt_logo']['url'] ) : $nm_theme_options['alt_logo']['url'];
-        }
-    }
+	
+	// Alternative logo
+	$has_alt_logo = false;    
+	if ( $nm_theme_options['alt_logo_config'] != '0' ) {
+		if ( isset( $nm_theme_options['alt_logo'] ) && strlen( $nm_theme_options['alt_logo']['url'] ) > 0 ) {
+			$has_alt_logo = true;
+			$alt_logo_href = ( is_ssl() ) ? str_replace( 'http://', 'https://', $nm_theme_options['alt_logo']['url'] ) : $nm_theme_options['alt_logo']['url'];
+		}
+	}
 ?>
 
-    <div class="nm-header-logo">
-        <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-            <?php
-                // GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites
-                if ( ! is_main_site() ) {
-                ?>
-                    <img src="<?php echo get_stylesheet_directory_uri(); ?>/oww-webshop-groen-60px.png" class="nm-logo">
-                    <?php if ( $has_alt_logo ) : ?>
-                    <img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
-                    <?php endif; ?>
-                <?php
-                    echo '<div class="winkelnaam">Webshop<br>' . str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) . '</div>';
-                } else {
-                    echo '<img src="'.get_stylesheet_directory_uri().'/oww-webshop-wit-60px.png" class="nm-logo">';
-                    echo '<div class="winkelnaam" style="color: white;">Portaal<br>Webshop</div>';
-                }
-            ?>
-        </a>
-    </div>
+	<div class="nm-header-logo">
+		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">
+			<!-- // GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites -->
+			<?php if ( ! is_main_site() ) : ?>
+				<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-groen-60px@2x.png" class="nm-logo">
+				<?php if ( $has_alt_logo ) : ?>
+					<img src="<?php echo esc_url( $alt_logo_href ); ?>" class="nm-alt-logo" alt="<?php bloginfo( 'name' ); ?>">
+				<?php endif; ?>
+				<div class="winkelnaam">Webshop<br><?php echo str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ); ?></div>
+			<?php else : ?>
+				<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-zwart-60px@2x.png" class="nm-logo">
+				<div class="winkelnaam black">Webshop</div>
+			<?php endif; ?>
+		</a>
+	</div>

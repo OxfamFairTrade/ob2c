@@ -26,7 +26,11 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>';
 	$text = __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' );
 	if ( get_tracking_number( $order->get_id() ) ) {
-		echo str_replace( 'Een vrijwilliger of een fietskoerier', 'De postcode', $text );
+		if ( $order->has_shipping_method('service_point_shipping_method') ) {
+			echo str_replace( 'Een vrijwilliger of een fietskoerier komt er binnenkort mee langs.', 'Je kunt het binnenkort oppikken in het afhaalpunt dat je koos.', $text );
+		} else {
+			echo str_replace( 'Een vrijwilliger of een fietskoerier', 'De postbode', $text );
+		}
 		echo ' ';
 		printf( __( 'Tracking bij Bpost, inclusief barcode (%1$s) en volglink (%2$s).', 'oxfam-webshop' ), get_tracking_number( $order->get_id() ), get_tracking_link( $order->get_id() ) );
 	} else {
