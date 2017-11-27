@@ -57,8 +57,8 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                     <li id="nm-cart-panel-item-<?php echo esc_attr( $cart_item_key ); ?>" class="<?php echo esc_attr( apply_filters( 'woocommerce_mini_cart_item_class', 'mini_cart_item', $cart_item, $cart_item_key ) ); ?>">
                         <div class="nm-cart-panel-item-thumbnail">
                             <?php
-                            // GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed (beter expliciet op artikelnummer triggeren?)
-                            if ( $_product->is_visible() ) {
+                            // GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed
+                            if ( $_product->is_visible() or $_product->get_sku() === 'GIFT' ) {
                                 echo '<div class="nm-cart-panel-thumbnail-wrap">';
                             } else {
                                 echo '<div class="nm-cart-panel-thumbnail-wrap empties">';
@@ -83,17 +83,18 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                             ?>
                             
                             <?php echo $product_name; ?>
-                            <!-- GEWIJZIGD: Metadata zoals 'Hoort bij' niet tonen -->
+                            <!-- GEWIJZIGD: Metadata zoals 'Hoort bij' niét tonen -->
                             <?php // echo WC()->cart->get_item_data( $cart_item ); ?>
                             
                             <div class="nm-cart-panel-quantity-pricing">
-                                <?php if ( $_product->is_sold_individually() ) : ?>
+                                <!-- GEWIJZIGD: Niet tonen bij individueel verkochte cadeauverpakking -->
+                                <?php if ( $_product->is_sold_individually() and $_product->get_sku() !== 'GIFT' ) : ?>
                                     <?php
                                         echo apply_filters( 'woocommerce_widget_cart_item_quantity', '<span class="quantity">' . esc_html__( 'Qty', 'woocommerce' ) . ': ' . $cart_item['quantity'] . '</span>', $cart_item, $cart_item_key );
                                     ?>
                                 <?php endif; ?>
                                 <?php
-                                    // GEWIJZIGD: Toon hoeveelheidsknoppen enkel indien het product zichtbaar is (= niet bij leeggoed!)
+                                    // GEWIJZIGD: Hoeveelheidsknoppen niet tonen bij onzichtbaar leeggoed
                                     if ( $_product->is_visible() ) :
                                 ?>
                                     <div class="product-quantity" data-title="<?php _e( 'Quantity', 'woocommerce' ); ?>">

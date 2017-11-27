@@ -568,18 +568,19 @@
 	add_filter( 'woocommerce_email_heading_customer_completed_order', 'change_completed_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_refunded_order', 'change_refunded_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_note', 'change_note_email_heading', 10, 2 );
+	add_filter( 'woocommerce_email_heading_customer_new_account', 'change_note_email_heading', 10, 2 );
 
-	function change_new_order_email_heading( $email_heading, $order ) {
+	function change_new_order_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de mail aan de webshopbeheerder', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
-	function change_processing_email_heading( $email_heading, $order ) {
+	function change_processing_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de 1ste bevestigingsmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
-	function change_completed_email_heading( $email_heading, $order ) {
+	function change_completed_email_heading( $email_heading, $email ) {
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
 			$email_heading = __( 'Heading van de 2de bevestigingsmail (indien afhaling)', 'oxfam-webshop' );
 		} else {
@@ -588,13 +589,18 @@
 		return $email_heading;
 	}
 
-	function change_refunded_email_heading( $email_heading, $order ) {
+	function change_refunded_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de terugbetalingsmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
-	function change_note_email_heading( $email_heading, $order ) {
+	function change_note_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de opmerkingenmail', 'oxfam-webshop' );
+		return $email_heading;
+	}
+
+	function change_note_email_heading( $email_heading, $email ) {
+		$email_heading = __( 'Heading van de welkomstmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
@@ -2135,16 +2141,47 @@
 		}
 	}
 
-	// Tel leeggoed niet mee bij aantal items in winkelmandje
+	// Toon bij onzichtbaar leeggoed het woord 'flessen' na het productaantal
 	add_filter( 'woocommerce_cart_item_quantity', 'add_bottles_to_quantity', 10, 3 );
 	
 	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
 		$productje = wc_get_product( $cart_item['product_id'] );
 		if ( $productje->is_visible() ) {
 			return $product_quantity;
+		} elseif ( $productje->get_sku() === 'GIFT' ) {
+			return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
 		} else {
-			return $product_quantity.' flessen';
+			if ( intval($product_quantity) > 1 ) {
+				return $product_quantity.' flessen';
+			} else {
+				return $product_quantity.' fles';
+			}
 		}
+	}
+
+	// Zet de cadeauverpakking helemaal onderaan
+	add_action( 'woocommerce_cart_loaded_from_session', 'reorder_cart_items' );
+
+	function reorder_cart_items( $cart ) {
+		// Niets doen bij leeg winkelmandje
+		if ( empty( $cart->cart_contents ) ) {
+			return;
+		}
+
+		$cart_sort = $cart->cart_contents;
+		foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
+			if ( $cart_item['data']->get_sku() === 'GIFT' ) {
+				// Sla het item van de cadeauverpakking op en verwijder het
+				$gift_item = $cart_item;
+				unset($cart_sort[$cart_item_key]);
+				// Voeg de cadeauverpakking opnieuw toe achteraan de array en stop de loop
+				$cart_sort[$cart_item_key] = $gift_item;
+				break;
+			}
+		}
+
+		// Vervang de itemlijst door de nieuwe array
+		$cart->cart_contents = $cart_sort;
 	}
 
 	// Tel leeggoed niet mee bij aantal items in winkelmandje

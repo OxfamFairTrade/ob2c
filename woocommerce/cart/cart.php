@@ -47,8 +47,8 @@ do_action( 'woocommerce_before_cart' ); ?>
 				<tr class="woocommerce-cart-form__cart-item <?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
 
 						<?php
-							// GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed (beter expliciet op artikelnummer triggeren?)
-							if ( $_product->is_visible() ) {
+							// GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed
+							if ( $_product->is_visible() or $_product->get_sku() === 'GIFT' ) {
 								echo '<td class="product-thumbnail">';
 							} else {
 								echo '<td class="product-thumbnail empties">';
