@@ -866,8 +866,7 @@
 					} );
 				</script>
 			<?php
-		} elseif ( is_account_page() ) {
-			// Gebruiker is zeker ingelogd
+		} elseif ( is_account_page() and is_user_logged_in() ) {
 			$current_user = wp_get_current_user();
 			$user_meta = get_userdata($current_user->ID);
 			$user_roles = $user_meta->roles;
@@ -2816,7 +2815,7 @@
 		$continents = get_terms( $args );
 		$partners = array();
 		
-		if ( count($terms) > 0 ) {
+		if ( is_array($terms) and count($terms) > 0 ) {
 			foreach ( $terms as $term ) {
 				if ( ! in_array( $term->parent, $continents, true ) ) {
 					// De bovenliggende term is geen continent, dus het is een partner!
