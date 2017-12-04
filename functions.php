@@ -2979,12 +2979,12 @@
 	function update_origin_on_update( $post_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
 		// Enkel uitvoeren indien de partnerinfo van een product bijgewerkt werd
 		if ( get_post_type( $post_id ) === 'product' and $taxonomy === 'product_partner' ) {
-			write_log("HERKOMST BIJWERKEN ...");
 			$productje = wc_get_product( $post_id );
 			$countries_nl = get_countries_by_product( $productje );
 			
 			// Check of er wel herkomstinfo beschikbaar is
 			if ( $countries_nl !== false ) {
+				write_log( "HERKOMST_NL VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_nl ) );
 				update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
 			
 				if ( is_main_site() ) {
@@ -3000,8 +3000,10 @@
 
 					sort($countries_fr, SORT_STRING);
 					update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
+					write_log( "HERKOMST_FR VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_fr ) );
 					sort($countries_en, SORT_STRING);
 					update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
+					write_log( "HERKOMST_EN VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_en ) );
 				}
 			}
 		}
@@ -3200,7 +3202,8 @@
 				echo '</div>';
 			}
 			echo '<div class="notice notice-info">';
-				echo '<p>Sinds begin deze maand vinden jullie - zoals reeds lang aangevraagd - in bijlage bij elke nieuwe bestelmail een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden. De picklijst kan ook gedownload worden via <a href="edit.php?post_type=shop_order">het WooCommerce-overzichtsscherm</a> in de back-end van de webshop.</p>';
+				echo '<p>De allergenen en voedingswaardes van alle producten werden aangevuld. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast de overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we de lijst deze week op Copain.</p>';
+				// echo '<p>Sinds begin deze maand vinden jullie - zoals reeds lang aangevraagd - in bijlage bij elke nieuwe bestelmail een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden. De picklijst kan ook gedownload worden via <a href="edit.php?post_type=shop_order">het WooCommerce-overzichtsscherm</a> in de back-end van de webshop.</p>';
 				// echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
 			echo '</div>';
 			if ( does_home_delivery() ) {
@@ -3214,20 +3217,20 @@
 				// echo '</div>';
 			}
 			// echo '<div class="notice notice-success">';
-			// 	echo '<p>In de back-end van de webshop verschenen 10 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-			// 	$skus = array( '22720', '22721', '24501', '24614', '24626', '24635', '24637', '24638', '24639', '24640' );
+			// 	echo '<p>In de back-end van de webshop verschenen 4 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+			// 	$skus = array( '20071', '20261', '26002', '26009' );
 			// 	foreach ( $skus as $sku ) {
 			// 		$product_id = wc_get_product_id_by_sku( $sku );
 			// 		if ( $product_id ) {
 			// 			$productje = wc_get_product( $product_id );
 			// 			echo '<li><a href="'.$productje->get_permalink().'" target="_blank">'.$productje->get_title().'</a> ('.$productje->get_attribute( 'pa_shopplus' ).')</li>';
-			// 		}	
+			// 		}
 			// 	}
 			// 	echo '</ul><p>';
 			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. Opgelet: door een kleine lapsus is de status van Lautaro Cabernet Sauvignon (W10055) in alle webshops weer op \'Uit voorraad\' gezet. Pas dit aan indien je het product in je assortiment hebt.</p><p>';
+			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast werden de packshots van Groot Eiland Shiraz-Pinotage (W10063), Groot Eiland Chardonnay-Chenin Blanc (W10256) en Zeevruchten (W14500) bijgewerkt. Tot slot werden de fairtradepercentages vervolledigd. Volgende week vullen we de allergenen bij de nieuwe producten nog aan.</p>';
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
 			// echo '</div>';
 		}
 	}
@@ -3860,11 +3863,17 @@
 		if ( is_array( $categories ) ) {
 			foreach ( $categories as $category ) {
 				if ( ! empty( $category->parent ) ) {
+					// Voeg de bovenliggende cateogrie toe
 					$parent = get_term( $category->parent, 'product_cat' );
-					// Voer de synoniemen ook hierop door
-					$search = array_keys($relevanssi_variables['synonyms']);
-					$replace = array_values($relevanssi_variables['synonyms']);
-					$content .= str_ireplace($search, $replace, $parent->name).' ';
+					if ( array_key_exists( 'synonyms', $relevanssi_variables ) ) {
+						// Laat de synoniemenlijst hier eerst nog op inwerken (indien gedefinieerd)
+						$search = array_keys($relevanssi_variables['synonyms']);
+						$replace = array_values($relevanssi_variables['synonyms']);
+						$content .= str_ireplace( $search, $replace, $parent->name ).' ';
+					} else {
+						// Voeg direct toe
+						$content .= $parent->name.' ';
+					}
 				}
 			}
 		}
