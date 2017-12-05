@@ -1140,7 +1140,8 @@
 			wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );
 		}
 
-		if ( isset($_POST['shipping_address_1']) and preg_match( '/[0-9]+/', $_POST['shipping_address_1'] ) === 0 ) {
+		// Ook checken op billing_address_1 want indien verzendadres niet afwijkt is dit het enige veld dat op dit ogenblik in $_POST voorkomt 
+		if ( ( isset($_POST['billing_address_1']) and preg_match( '/[0-9]+/', $_POST['billing_address_1'] ) === 0 ) or ( isset($_POST['shipping_address_1']) and preg_match( '/[0-9]+/', $_POST['shipping_address_1'] ) === 0 ) ) {
 			wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
 		}
 	}
@@ -2877,6 +2878,7 @@
 		global $product;
 		$partners = get_partner_terms_by_product( $product );
 		if ( count( $partners ) > 0 ) {
+			$partners_with_quote = array();
 			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
 			foreach ( $partners as $term_id => $partner_name ) {
 				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
@@ -2972,7 +2974,7 @@
 		}
 	}
 
-	// Stel de attributen in die berekend moeten worden uit andere waarden
+	// Stel de attributen in die berekend moeten worden uit andere waarden WORDT UITGEVOERD NA ELKE TERMTOEVOEGING, MOET EFFICIËNTER?
 	add_action( 'set_object_terms', 'update_origin_on_update', 50, 6 );
 	
 	function update_origin_on_update( $post_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
@@ -2986,7 +2988,8 @@
 				write_log( "HERKOMST_NL VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_nl ) );
 				update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
 			
-				if ( is_main_site() ) {
+				// WORDT NIET DOORLOPEN BIJ IMPORT, ALTERNATIEVE VOLDOENDE VOORWAARDE?
+				if ( is_main_site() or get_current_blog_id() === 1 ) {
 					foreach ( $countries_nl as $country ) {
 						$nl = get_site_option( 'countries_nl' );
 						$code = array_search( $country, $nl, true );
@@ -3201,7 +3204,7 @@
 				echo '</div>';
 			}
 			echo '<div class="notice notice-info">';
-				echo '<p>De allergenen en voedingswaardes van alle producten werden aangevuld. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast de overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we de lijst deze week op Copain.</p>';
+				echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
 				// echo '<p>Sinds begin deze maand vinden jullie - zoals reeds lang aangevraagd - in bijlage bij elke nieuwe bestelmail een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden. De picklijst kan ook gedownload worden via <a href="edit.php?post_type=shop_order">het WooCommerce-overzichtsscherm</a> in de back-end van de webshop.</p>';
 				// echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
 			echo '</div>';
