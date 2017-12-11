@@ -81,7 +81,7 @@
 									if ( $nm_globals['cart_link'] ) :
 										
 										$cart_menu_class = ( $nm_theme_options['menu_cart_icon'] ) ? 'has-icon' : 'no-icon';
-										$cart_url = ( $nm_globals['cart_panel'] ) ? '#' : WC()->cart->get_cart_url();
+										$cart_url = ( $nm_globals['cart_panel'] ) ? '#' : wc_get_cart_url();
 								?>
 								<li class="nm-menu-cart menu-item <?php echo esc_attr( $cart_menu_class ); ?>">
 									<a href="<?php echo esc_url( $cart_url ); ?>" id="nm-menu-cart-btn">

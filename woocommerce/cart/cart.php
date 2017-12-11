@@ -142,7 +142,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 				<?php } ?>
                 
                 <!-- GEWIJZIGD: Knop voor emptyCart toegevoegd en andere knop rechts laten floaten -->
-				<a href="<?php echo WC()->cart->get_cart_url().'?emptyCart'; ?>" id="wisknop" class="button border">Winkelmandje leegmaken</a>
+				<a href="<?php echo esc_url( wc_get_cart_url().'?emptyCart' ); ?>" id="wisknop" class="button border">Winkelmandje leegmaken</a>
 
 				<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" style="float: right;" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
                 
