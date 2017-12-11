@@ -178,7 +178,7 @@
                 'orderby'		=> $orderby, // Note: 'name' sorts by product category "menu/sort order"
                 'order'			=> $order,
                 // GEWIJZIGD: Verwijder de 'Varia'-categorie uit het menu
-                // 'exclude'       => get_option( 'giftwrap_category_id', '' ),
+                'exclude'       => get_option( 'giftwrap_category_id', '' ),
                 'hide_empty'	=> $hide_empty,
                 'hierarchical'	=> 1,
                 'taxonomy'		=> 'product_cat'
