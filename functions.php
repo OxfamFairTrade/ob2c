@@ -568,7 +568,7 @@
 	add_filter( 'woocommerce_email_heading_customer_completed_order', 'change_completed_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_refunded_order', 'change_refunded_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_note', 'change_note_email_heading', 10, 2 );
-	add_filter( 'woocommerce_email_heading_customer_new_account', 'change_note_email_heading', 10, 2 );
+	add_filter( 'woocommerce_email_heading_customer_new_account', 'change_new_account_email_heading', 10, 2 );
 
 	function change_new_order_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de mail aan de webshopbeheerder', 'oxfam-webshop' );
@@ -599,7 +599,7 @@
 		return $email_heading;
 	}
 
-	function change_note_email_heading( $email_heading, $email ) {
+	function change_new_account_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de welkomstmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
