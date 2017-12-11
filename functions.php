@@ -1311,6 +1311,7 @@
 						break;
 					default:
 						$tax = '0.21';
+						break;
 				}
 				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
 				$i++;
@@ -1336,14 +1337,12 @@
 							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 						}
 					}
-
 					break;
 
 				case stristr( $shipping_method['method_id'], 'free_shipping' ):
 
 					// Leveradres invullen (is in principe zeker beschikbaar!)
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
-
 					break;
 
 				case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
@@ -1368,13 +1367,13 @@
 							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 						}
 					}
-					
 					break;
 
 				default:
 					$meta_data = $shipping_method->get_meta_data();
 					$pickup_data = reset($meta_data);
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) )->setCellValue( 'F1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
+					break;
 			}
 
 			// Selecteer het totaalbedrag
@@ -2065,21 +2064,22 @@
 		if ( $empties_product !== false ) {
 			switch ( $empties_product->get_sku() ) {
 				case 'WLBS6M':
-					$forbidden_qty = 0;
-					$glass_id = wc_get_product_id_by_sku('WLFSG');
-					$plastic_id = wc_get_product_id_by_sku('WLBS6M');
-					// write_log($empties);
-					// write_log($product_item);
-					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-						if ( intval($values['product_id']) === $glass_id ) {
-							$forbidden_qty += intval($values['quantity']);
-							// write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
-						}
-						if ( intval($values['product_id']) === $plastic_id ) {
-							$plastic_qty = intval($values['quantity']);
-						}
-					}
-					write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
+					// PROBLEEM: BAK WORDT ENKEL TOEGEVOEGD BIJ 6/24 IDENTIEKE FLESSEN
+					// $forbidden_qty = 0;
+					// $glass_id = wc_get_product_id_by_sku('WLFSG');
+					// $plastic_id = wc_get_product_id_by_sku('WLBS6M');
+					// // write_log($empties);
+					// // write_log($product_item);
+					// foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+					// 	if ( intval($values['product_id']) === $glass_id ) {
+					// 		$forbidden_qty += intval($values['quantity']);
+					// 		// write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
+					// 	}
+					// 	if ( intval($values['product_id']) === $plastic_id ) {
+					// 		$plastic_qty = intval($values['quantity']);
+					// 	}
+					// }
+					// write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
 					$empties['quantity'] = floor( intval($product_item['quantity']) / 6 );
 					break;
 				case 'WLBS24M':
@@ -2101,45 +2101,77 @@
 		$empties_product = wc_get_product( $empties_item['product_id'] );
 		switch ( $empties_product->get_sku() ) {
 			case 'WLBS6M':
+				$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
 				return floor( intval($product_item['quantity']) / 6 );
 			case 'WLBS24M':
 				return floor( intval($product_item['quantity']) / 24 );
-			// PROBLEEM: BAK WORDT ENKEL TOEGEVOEGD BIJ 6/24 IDENTIEKE FLESSEN
 			case 'WLFSG':
-				$forbidden_qty = 0;
-				$plastic_qty = 0;
-				$glass_id = wc_get_product_id_by_sku('WLFSG');
-				$plastic_id = wc_get_product_id_by_sku('WLBS6M');
-				// write_log($empties_item);
+				// PROBLEEM: BAK WORDT ENKEL TOEGEVOEGD BIJ 6/24 IDENTIEKE FLESSEN
+				// $forbidden_qty = 0;
+				// $plastic_qty = 0;
+				// $glass_id = wc_get_product_id_by_sku('WLFSG');
+				// $plastic_id = wc_get_product_id_by_sku('WLBS6M');
+				// // write_log($empties_item);
+				// foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+				// 	if ( intval($values['product_id']) === $glass_id ) {
+				// 		$forbidden_qty += intval($values['quantity']);
+				// 		// write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
+				// 	}
+				// 	if ( intval($values['product_id']) === $plastic_id ) {
+				// 		$plastic_qty += intval($values['quantity']);
+				// 		$plastic_item_key = $cart_item_key;
+				// 	}
+				// }
+				// write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
+				// if ( $forbidden_qty === 6 and $plastic_qty === 0 ) {
+				// 	// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
+				// 	$args['forced_by'] = $empties_item['forced_by'];
+				// 	$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS6M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
+				// } elseif ( $forbidden_qty % 6 === 0 and $plastic_qty !== 0 ) {
+				// 	$result = WC()->cart->set_quantity( $plastic_item_key, floor( $forbidden_qty / 6 ), 1 );
+				// }
+				$plastic_product_id = wc_get_product_id_by_sku('WLBS6M');
+				$plastic_in_cart = false;
 				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-					if ( intval($values['product_id']) === $glass_id ) {
-						$forbidden_qty += intval($values['quantity']);
-						// write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
-					}
-					if ( intval($values['product_id']) === $plastic_id ) {
-						$plastic_qty += intval($values['quantity']);
-						$plastic_item_key = $cart_item_key;
+					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item ) {
+						write_log("We hebben een grote plastic bak gevonden die gelinkt is aan ".$product_item['product_id']."!");
+						$plastic_in_cart = true;
+						break;
 					}
 				}
-				write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
-				if ( $forbidden_qty === 6 and $plastic_qty === 0 ) {
+				if ( ! $plastic_in_cart and intval($product_item['quantity']) % 6 === 0 ) {
+					write_log("We voegen de eerste grote plastic bak(ken) handmatig toe aan ".$product_item['product_id']."!");
 					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
 					$args['forced_by'] = $empties_item['forced_by'];
-					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS6M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
-				} elseif ( $forbidden_qty % 6 === 0 and $plastic_qty !== 0 ) {
-					$result = WC()->cart->set_quantity( $plastic_item_key, floor( $forbidden_qty / 6 ), 1 );
+					$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / 6 ), $empties_item['variation_id'], $empties_item['variation'], $args );
 				}
 				return $quantity;
-			case 'WLFSK';
-				if ( intval($product_item['quantity']) === 24 ) {
+			case 'WLFSK':
+				$plastic_product_id = wc_get_product_id_by_sku('WLBS24M');
+				$plastic_in_cart = false;
+				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item ) {
+						write_log("We hebben een kleine plastic bak gevonden die gelinkt is aan ".$product_item['product_id']."!");
+						$plastic_in_cart = true;
+						break;
+					}
+				}
+				if ( ! $plastic_in_cart and intval($product_item['quantity']) % 24 === 0 ) {
+					write_log("We voegen de eerste kleine plastic bak(ken) handmatig toe aan ".$product_item['product_id']."!");
 					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
 					$args['forced_by'] = $empties_item['forced_by'];
-					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS24M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
+					$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / 24 ), $empties_item['variation_id'], $empties_item['variation'], $args );
 				}
+				return $quantity;
 			default:
 				return $quantity;
 		}
 	}
+
+	// NOG TOE TE VOEGEN
+	// - kratten tonen onder bijbehorende flessen?
+	// - alle leeggoed als één totaal tonen?
+	// - bakken universeel toevoegen bij flessen i.p.v. producten (= vergt verleggen van 'forced_by'-koppeling!)
 
 	// Toon bij onzichtbaar leeggoed het woord 'flessen' na het productaantal
 	add_filter( 'woocommerce_cart_item_quantity', 'add_bottles_to_quantity', 10, 3 );
@@ -2151,10 +2183,14 @@
 		} elseif ( $productje->get_sku() === 'GIFT' ) {
 			return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
 		} else {
-			if ( intval($product_quantity) > 1 ) {
-				return $product_quantity.' flessen';
-			} else {
-				return $product_quantity.' fles';
+			$qty = intval($product_quantity);
+			switch ( $productje->get_sku() ) {
+				case 'WLFSG':
+					return sprintf( _n( '%d fles', '%d flessen', $qty ), $qty );
+				case 'WLFSK':
+					return sprintf( _n( '%d flesje', '%d flesjes', $qty ), $qty );
+				default:
+					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty );
 			}
 		}
 	}
