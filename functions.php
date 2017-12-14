@@ -1548,7 +1548,7 @@
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
 	
 	function print_estimated_delivery( $label, $method ) {
-		$descr = '<small>';
+		$descr = '<small style="color: red">';
 		$timestamp = estimate_delivery_date( $method->id );
 		
 		switch ( $method->id ) {
@@ -1879,7 +1879,9 @@
 					$cnt = WC()->session->get( 'go_to_100_message_count', 0 );
 					// Opgelet: WooCoomerce moet actief zijn, we moeten in de front-end zitten én er moet al een winkelmandje aangemaakt zijn!
 					WC()->session->set( 'go_to_100_message_count', $cnt+1 );
-					if ( $cnt % 7 === 0 ) {
+					$msg = WC()->session->get( 'no_home_delivery' );
+					// Enkel tonen indien thuislevering effectief beschikbaar is voor het huidige winkelmandje
+					if ( $cnt % 7 === 0 and $msg !== 'SHOWN' ) {
 						wc_print_notice( 'Tip: als je nog '.wc_price( $threshold - $current ).' toevoegt, kom je in aanmerking voor gratis thuislevering.', 'success' );
 					}
 				}
@@ -1924,9 +1926,14 @@
 
 		// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
 		$forbidden_cnt = 0;
+		$plastic_cnt = 0;
 		foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
+			// ENKEL FRUITSAP 1 L EN LEEGGOED 24 FLESJES ALS BREEKBAAR MARKEREN OM TELLING TE VERGEMAKKELIJKEN
 			if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
-				$forbidden_cnt = $forbidden_cnt + $item_value['quantity'];
+				$forbidden_cnt += intval($item_value['quantity']);
+				if ( $item_value['product_id'] == wc_get_product_id_by_sku('WLBS24M') ) {
+					$plastic_cnt += intval($item_value['quantity']);
+				}
 			} 
 		}
 		
@@ -1941,10 +1948,10 @@
 			if ( does_home_delivery() ) {
 				$msg = WC()->session->get( 'no_home_delivery' );
 				// Toon de foutmelding slechts één keer
-				if ( $msg !== 'SHOWN' ) {
-					wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van producten die niet thuisgeleverd worden, inclusief het aantal flessen (%d).', 'oxfam-webshop' ), $forbidden_cnt - floor( $forbidden_cnt / 6 ) ), 'error' );
+				// if ( $msg !== 'SHOWN' ) {
+					wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $forbidden_cnt - $plastic_cnt, $plastic_cnt ), 'error' );
 					WC()->session->set( 'no_home_delivery', 'SHOWN' );
-				}
+				// }
 			}
 		} else {
 			WC()->session->set( 'no_home_delivery', 'FIRST' );
@@ -2058,18 +2065,18 @@
 	// Voeg bakken leeggoed enkel toe per 6 of 24 flessen
 	add_filter( 'wc_force_sell_add_to_cart_product', 'check_plastic_empties_quantity', 10, 2 );
 
-	function check_plastic_empties_quantity( $empties, $product_item ) {
-		$empties_product = wc_get_product( $empties['id'] );
+	function check_plastic_empties_quantity( $empties_array, $product_item ) {
+		// $empties_array bevat geen volwaardig cart_item, enkel array met de keys id / quantity / variation_id / variation!
+		$empties_product = wc_get_product( $empties_array['id'] );
 		// Zou niet mogen, maar toch even checken
 		if ( $empties_product !== false ) {
 			switch ( $empties_product->get_sku() ) {
 				case 'WLBS6M':
+				case 'WLBS24M':
 					// PROBLEEM: BAK WORDT ENKEL TOEGEVOEGD BIJ 6/24 IDENTIEKE FLESSEN
 					// $forbidden_qty = 0;
 					// $glass_id = wc_get_product_id_by_sku('WLFSG');
 					// $plastic_id = wc_get_product_id_by_sku('WLBS6M');
-					// // write_log($empties);
-					// // write_log($product_item);
 					// foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					// 	if ( intval($values['product_id']) === $glass_id ) {
 					// 		$forbidden_qty += intval($values['quantity']);
@@ -2080,14 +2087,47 @@
 					// 	}
 					// }
 					// write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
-					$empties['quantity'] = floor( intval($product_item['quantity']) / 6 );
+
+					$empties_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $empties_sku ) ) );
+					$empties_array['quantity'] = floor( intval($product_item['quantity']) / $empties_step );
 					break;
-				case 'WLBS24M':
-					$empties['quantity'] = floor( intval($product_item['quantity']) / 24 );
+				case 'WLFSG':
+				case 'WLFSK':
+					$empties_sku = $empties_product->get_sku();
+					// Definieer de koppeling tussen glas en plastic
+					if ( $empties_sku === 'WLFSG' ) {
+						$plastic_sku = 'WLBS6M';
+					} elseif ( $empties_sku === 'WLFSK' ) {
+						$plastic_sku = 'WLBS24M';
+					}
+
+					write_log($empties_array);
+					write_log($product_item);
+					write_log($plastic_sku." bij NIEUWE ".$empties_sku." checken");
+					
+					$plastic_in_cart = false;
+					$plastic_product_id = wc_get_product_id_by_sku($plastic_sku);
+					$plastic_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $plastic_sku ) ) );
+					
+					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+						write_log($values);
+						if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item['key'] ) {
+							write_log("We hebben een plastic bak ".$plastic_sku." gevonden die gelinkt is aan ".$product_item['product_id']."!");
+							$plastic_in_cart = true;
+							break;
+						}
+					}
+
+					if ( ! $plastic_in_cart and intval($product_item['quantity']) % $plastic_step === 0 ) {
+						write_log("We voegen de eerste plastic bak(ken) ".$plastic_sku." handmatig toe aan ".$product_item['product_id']."!");
+						// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
+						$args['forced_by'] = $product_item['key'];
+						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_array['variation_id'], $empties_array['variation'], $args );
+					}
 					break;
 			}
 		}
-		return $empties;
+		return $empties_array;
 	}
 
 	// Zorg ervoor dat het basisproduct toch gekocht kan worden als de bak hierboven nog niet toevoegd mag worden NIET ALS OPLOSSING GEBRUIKEN VOOR VOORRAADSTATUS LEEGGOED
@@ -2097,15 +2137,17 @@
 	add_filter( 'wc_force_sell_update_quantity', 'update_plastic_empties_quantity', 10, 2 );
 
 	function update_plastic_empties_quantity( $quantity, $empties_item ) {
+		// Filter wordt per definitie enkel doorlopen bij het updaten van leeggoed
 		$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
 		$empties_product = wc_get_product( $empties_item['product_id'] );
-		switch ( $empties_product->get_sku() ) {
+		$empties_sku = $empties_product->get_sku();
+		switch ( $empties_sku ) {
 			case 'WLBS6M':
-				$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
-				return floor( intval($product_item['quantity']) / 6 );
 			case 'WLBS24M':
-				return floor( intval($product_item['quantity']) / 24 );
+				$empties_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $empties_sku ) ) );
+				return floor( intval($product_item['quantity']) / $empties_step );
 			case 'WLFSG':
+			case 'WLFSK':
 				// PROBLEEM: BAK WORDT ENKEL TOEGEVOEGD BIJ 6/24 IDENTIEKE FLESSEN
 				// $forbidden_qty = 0;
 				// $plastic_qty = 0;
@@ -2130,37 +2172,33 @@
 				// } elseif ( $forbidden_qty % 6 === 0 and $plastic_qty !== 0 ) {
 				// 	$result = WC()->cart->set_quantity( $plastic_item_key, floor( $forbidden_qty / 6 ), 1 );
 				// }
-				$plastic_product_id = wc_get_product_id_by_sku('WLBS6M');
+				
+				// Definieer de koppeling tussen glas en plastic
+				if ( $empties_sku === 'WLFSG' ) {
+					$plastic_sku = 'WLBS6M';
+				} elseif ( $empties_sku === 'WLFSK' ) {
+					$plastic_sku = 'WLBS24M';
+				}
+
+				write_log($plastic_sku." bij ".$empties_sku." checken");
+				
 				$plastic_in_cart = false;
+				$plastic_product_id = wc_get_product_id_by_sku($plastic_sku);
+				$plastic_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $plastic_sku ) ) );
+				
 				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item ) {
-						write_log("We hebben een grote plastic bak gevonden die gelinkt is aan ".$product_item['product_id']."!");
+					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item['key'] ) {
+						write_log("We hebben een plastic bak ".$plastic_sku." gevonden die gelinkt is aan ".$product_item['product_id']."!");
 						$plastic_in_cart = true;
 						break;
 					}
 				}
-				if ( ! $plastic_in_cart and intval($product_item['quantity']) % 6 === 0 ) {
-					write_log("We voegen de eerste grote plastic bak(ken) handmatig toe aan ".$product_item['product_id']."!");
+
+				if ( ! $plastic_in_cart and intval($product_item['quantity']) % $plastic_step === 0 ) {
+					write_log("We voegen de eerste plastic bak(ken) ".$plastic_sku." handmatig toe aan ".$product_item['product_id']."!");
 					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
 					$args['forced_by'] = $empties_item['forced_by'];
-					$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / 6 ), $empties_item['variation_id'], $empties_item['variation'], $args );
-				}
-				return $quantity;
-			case 'WLFSK':
-				$plastic_product_id = wc_get_product_id_by_sku('WLBS24M');
-				$plastic_in_cart = false;
-				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item ) {
-						write_log("We hebben een kleine plastic bak gevonden die gelinkt is aan ".$product_item['product_id']."!");
-						$plastic_in_cart = true;
-						break;
-					}
-				}
-				if ( ! $plastic_in_cart and intval($product_item['quantity']) % 24 === 0 ) {
-					write_log("We voegen de eerste kleine plastic bak(ken) handmatig toe aan ".$product_item['product_id']."!");
-					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
-					$args['forced_by'] = $empties_item['forced_by'];
-					$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / 24 ), $empties_item['variation_id'], $empties_item['variation'], $args );
+					$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], $args );
 				}
 				return $quantity;
 			default:
