@@ -1543,7 +1543,7 @@
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
 	
 	function print_estimated_delivery( $label, $method ) {
-		$descr = '<small>';
+		$descr = '<small style="color: red">';
 		$timestamp = estimate_delivery_date( $method->id );
 		
 		switch ( $method->id ) {
@@ -2457,19 +2457,13 @@
 	function show_delivery_warning() {
 		global $product;
 		if ( $product->get_shipping_class() === 'breekbaar' ) {
-			echo "<p>Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: kleine glazen flesjes en tetrabrikken zijn wel beschikbaar voor thuislevering.</p>";
-		}
-
-		if ( $product->get_sku() === '20211' and date_i18n('Y-m-d') < '2017-09-01' ) {
-			echo "<p style='margin: 1em 0; color: red;'>ZOMERPROMO: 5 + 1 FLES GRATIS</p>";
+			echo "<p>Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.</p>";
 		}
 
 		$cat_ids = $product->get_category_ids();
 		$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
-		if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' ) {
+		if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
 			echo "<p style='margin: 1em 0;'>Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
-		} elseif ( get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-			echo "<p style='margin: 1em 0;'>Je dient minstens 16 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
 		}
 	}
 
