@@ -3197,6 +3197,9 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
+			echo '<div class="notice notice-error">';
+				echo '<p>Opgelet: nu de e-mailadressen 6 maanden oud zijn, zal Microsoft jullie verplichten om een nieuw wachtwoord in te stellen voor de webshopmailbox. Communiceer dit goed naar de andere webshopmedewerkers! Alle andere wachtwoorden blijven ongewijzigd.</p>';
+			echo '</div>';
 			echo '<div class="notice notice-success">';
 				echo '<p>In de back-end van de webshop verschenen 4 nieuwe artikels:</p><ul style="margin-left: 2em;">';
 				$skus = array( '20071', '20261', '26002', '26009' );
