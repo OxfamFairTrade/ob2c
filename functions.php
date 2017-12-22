@@ -3216,11 +3216,11 @@
 				}
 				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
 			echo '</div>';
-			echo '<div class="notice notice-info">';
-				echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
+			// echo '<div class="notice notice-info">';
+				// echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
 				// echo '<p>Sinds begin deze maand vinden jullie - zoals reeds lang aangevraagd - in bijlage bij elke nieuwe bestelmail een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden. De picklijst kan ook gedownload worden via <a href="edit.php?post_type=shop_order">het WooCommerce-overzichtsscherm</a> in de back-end van de webshop.</p>';
 				// echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
-			echo '</div>';
+			// echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
