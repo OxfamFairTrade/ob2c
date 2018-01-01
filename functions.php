@@ -1151,24 +1151,25 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'format_place', 10, 1 );
-	add_filter( 'woocommerce_process_myaccount_field_billing_address_1', 'format_place', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_address_1', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_postcode', 'format_zipcode', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_billing_city', 'format_city', 10, 1 );
-	add_filter( 'woocommerce_process_myaccount_field_billing_city', 'format_city', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_city', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_city', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_telephone', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_telephone', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_email', 'format_email', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_last_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_last_name', 'trim_and_uppercase', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_shipping_address_1', 'format_place', 10, 1 );
-	add_filter( 'woocommerce_process_myaccount_field_shipping_address_1', 'format_place', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_address_1', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_shipping_address_1', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_postcode', 'format_zipcode', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_shipping_city', 'format_city', 10, 1 );
-	add_filter( 'woocommerce_process_myaccount_field_shipping_city', 'format_city', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_shipping_city', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_shipping_city', 'trim_and_uppercase', 10, 1 );
 	
 	function trim_and_uppercase( $value ) {
 		return implode( '-', array_map( 'ucwords', explode( '-', mb_strtolower( trim($value) ) ) ) );
@@ -1195,16 +1196,13 @@
 		}
 	}
 
-	function format_place( $value ) {
-		return trim_and_uppercase( $value );
-	}
-	
 	function format_zipcode( $value ) {
-		return trim_and_uppercase( $value );
+		// VERWIJDER TEKENS DIE GEEN CIJFER ZIJN?
+		return trim($value);
 	}
 
-	function format_city( $value ) {
-		return trim_and_uppercase( $value );
+	function format_email( $value ) {
+		return mb_strtolower( trim($value) );
 	}
 
 	function format_headquarter( $value ) {
@@ -3298,7 +3296,7 @@
 		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
 		$list_id = '5cce3040aa';
 		$email = $cur_user->user_email;
-		$member = md5( mb_strtolower($email) );
+		$member = md5( format_email($email) );
 
 		$args = array(
 			'headers' => array(
