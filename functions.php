@@ -3641,11 +3641,11 @@
 		} else {
 			switch ($key) {
 				case 'place':
-					return call_user_func( 'format_place', 'Ververijstraat 15', '.' );
+					return call_user_func( 'trim_and_uppercase', 'Ververijstraat 15', '.' );
 				case 'zipcode':
 					return call_user_func( 'format_zipcode', '9000', '.' );
 				case 'city':
-					return call_user_func( 'format_city', 'Gent', '.' );
+					return call_user_func( 'trim_and_uppercase', 'Gent', '.' );
 				case 'telephone':
 					return call_user_func( 'format_telephone', '092188899', '.' );
 				default:
