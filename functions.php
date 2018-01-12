@@ -1320,7 +1320,7 @@
 				case stristr( $shipping_method['method_id'], 'flat_rate' ):
 					
 					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -1352,7 +1352,7 @@
 					$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
 					write_log($service_point);
 					$service_point_info = explode ( '|', $service_point['extra'] );
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -1374,7 +1374,7 @@
 				default:
 					$meta_data = $shipping_method->get_meta_data();
 					$pickup_data = reset($meta_data);
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) )->setCellValue( 'F1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
 			}
 
 			// Selecteer het totaalbedrag
