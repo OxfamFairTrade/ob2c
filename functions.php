@@ -78,7 +78,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.3' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.4' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -3223,7 +3223,8 @@
 			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
 			// echo '</div>';
 			echo '<div class="notice notice-info">';
-				echo '<p>De aanpassingen voor B2B-bestellingen worden tegen de Commissie Verkoop & Marketing van 20 januari uitgerold naar productie. Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed en de aanstaande lancering van de nieuwe OFT-site gooiden roet in het eten.</p>';
+				echo '<p>In de week van 5 februari zullen een tiental nieuwe producten, die sinds deze week beschikbaar zijn in BestelWeb, toegevoegd worden aan de webshops. We werken ook een resem packshots bij die opnieuw een fairtradelabel dragen.</p>';
+				// echo '<p>De aanpassingen voor B2B-bestellingen worden tegen de Commissie Verkoop & Marketing van 20 januari uitgerold naar productie. Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed en de aanstaande lancering van de nieuwe OFT-site gooiden roet in het eten.</p>';
 				// echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
 				// echo '<p>Sinds begin deze maand vinden jullie - zoals reeds lang aangevraagd - in bijlage bij elke nieuwe bestelmail een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden. De picklijst kan ook gedownload worden via <a href="edit.php?post_type=shop_order">het WooCommerce-overzichtsscherm</a> in de back-end van de webshop.</p>';
 				// echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
