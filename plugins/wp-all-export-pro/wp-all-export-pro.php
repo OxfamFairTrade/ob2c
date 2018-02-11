@@ -140,6 +140,7 @@ else {
 		public static $session = null;
 
 		// GEWIJZIGD: Ook lokale beheerders toegang geven tot exports door rechten al vanaf 'manage_network_users' toe te kennen
+		// Creëert eigenlijk een security lek, aangezien je vanuit WP All Export alle PHP-code kunt doen uitvoeren
 		public static $capabilities = 'manage_network_users';
 
 		/**
