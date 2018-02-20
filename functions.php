@@ -3205,8 +3205,8 @@
 				echo '</div>';
 			}
 			// echo '<div class="notice notice-success">';
-			// 	echo '<p>In de back-end van de webshop verschenen 14 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-			// 	$skus = array( '20070', '24195', '25012', '25221', '25397', '25398', '25399', '25628', '25723', '26011', '26493', '26494', '27821', '27822' );
+			// 	echo '<p>In de back-end van de webshop verschenen 11 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+			// 	$skus = array( '20070', '25012', '25221', '25397', '25398', '25399', '25627', '25723', '26494', '27821', '27822' );
 			// 	foreach ( $skus as $sku ) {
 			// 		$product_id = wc_get_product_id_by_sku( $sku );
 			// 		if ( $product_id ) {
@@ -3221,7 +3221,8 @@
 			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Verder werkten we de packshots van een hele resem producten bij die inmiddels opnieuw een fairtradelogo dragen. De koffies Gold en Lake Kivu werden hernoemd naar respectievelijk Ethiopia en Congo.</p>';
 			// echo '</div>';
 			// echo '<div class="notice notice-info">';
-				// echo '<p>De aanpassingen voor B2B-bestellingen worden tegen de Commissie Verkoop & Marketing van 20 januari uitgerold naar productie. Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed en de aanstaande lancering van de nieuwe OFT-site gooiden roet in het eten.</p>';
+				echo '<p>Door het aansluiten van de webshops op de nieuwe centrale productdatabase van OFT kon de synchronisatie van februari helaas niet doorgaan. De 11 nieuwe producten die sinds eind januari in BestelWeb verschenen zullen daarom pas samen met de prijswijzigingen van 1 maart verschijnen (= nacht van woensdag 28 februari). Onze excuses voor dit ongemak. Pluspunt: de aanpassingen zorgen er voor dat toekomstige updates net een pak minder omslachtig worden.</p>';
+				// echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd opgelost. Allergenen en ingrediëntenlijsten worden nu live opgehaald uit de centrale database.</p>';
 				// echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
 				// echo '<p>Sinds begin deze maand vinden jullie - zoals reeds lang aangevraagd - in bijlage bij elke nieuwe bestelmail een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden. De picklijst kan ook gedownload worden via <a href="edit.php?post_type=shop_order">het WooCommerce-overzichtsscherm</a> in de back-end van de webshop.</p>';
 				// echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
