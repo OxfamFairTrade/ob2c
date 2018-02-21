@@ -1186,14 +1186,59 @@
 		}
 	}
 
-	function format_account( $value ) {
-		$value = str_replace( 'BE', '', $value );
-		$value = str_replace( 'IBAN', '', $value );
-		$value = preg_replace( '/[\s\-\.\/]/', '', $value );
-		if ( mb_strlen($value) === 14 ) {
-			return 'BE'.substr( $value, 0, 2 )." ".substr( $value, 2, 4 )." ".substr( $value, 6, 4 )." ".substr( $value, 10, 4 );
-		} else {
-			return 'ONGELDIG';
+	function format_account( $iban ) {
+		$countries = array( 'BE' => 16, 'NL' => 18 );
+		$translate_chars = array( 
+			'a' => 10,
+			'b' => 11,
+			'c' => 12,
+			'd' => 13,
+			'e' => 14,
+			'f' => 15,
+			'g' => 16,
+			'h' => 17,
+			'i' => 18,
+			'j' => 19,
+			'k' => 20,
+			'l' => 21,
+			'm' => 22,
+			'n' => 23,
+			'o' => 24,
+			'p' => 25,
+			'q' => 26,
+			'r' => 27,
+			's' => 28,
+			't' => 29,
+			'u' => 30,
+			'v' => 31,
+			'w' => 32,
+			'x' => 33,
+			'y' => 34,
+			'z' => 35
+		);
+
+		$iban = str_replace( 'IBAN', '', mb_strtoupper($iban) );
+		$iban = preg_replace( '/[\s\-\.\/]/', '', $iban );
+
+		if ( array_key_exists( substr( $iban, 0, 2 ), $countries ) and strlen($iban) === $countries[substr( $iban, 0, 2 )] ) {
+			$moved_char = substr( $iban, 4 ).substr( $iban, 0, 4 );
+			$moved_char_array = str_split($moved_char);
+			$controll_string = '';
+
+			foreach ( $moved_char_array as $key => $value ) {
+				if ( ! is_numeric($moved_char_array[$key]) ) {
+					$moved_char_array[$key] = $translate_chars[$moved_char_array[$key]];
+				}
+				$controll_string .= $moved_char_array[$key];
+			}
+
+			if ( bcmod( $controll_string, '97' ) === 1 ) {
+				return substr( $iban, 0, 4 )." ".substr( $iban, 4, 4 )." ".substr( $iban, 8, 4 )." ".substr( $iban, 12, 4 );
+			} else {
+				return 'INVALID CHECKSUM';
+			}
+		} else{
+			return 'INVALID LENGTH';
 		}
 	}
 
