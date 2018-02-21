@@ -1232,7 +1232,7 @@
 				$controll_string .= $moved_char_array[$key];
 			}
 
-			if ( bcmod( $controll_string, '97' ) === 1 ) {
+			if ( intval($controll_string) % 97 === 1 ) {
 				return substr( $iban, 0, 4 )." ".substr( $iban, 4, 4 )." ".substr( $iban, 8, 4 )." ".substr( $iban, 12, 4 );
 			} else {
 				return 'INVALID CHECKSUM';
