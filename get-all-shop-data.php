@@ -9,7 +9,8 @@
 <body style="margin: 20px;">
 
 	<?php
-		require_once 'wp-load.php';
+		// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
+		require_once '../../../wp-load.php';
 		
 		// Nodig want op de main site worden de gewoon de gegevens van de CVBA geretoureneerd (ID 28 = Regio Leuven)
 		switch_to_blog( 28 );

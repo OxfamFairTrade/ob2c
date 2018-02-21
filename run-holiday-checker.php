@@ -5,7 +5,7 @@
 <body>
 	<?php
 		// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-		require( '../../../wp-blog-header.php' );
+		require_once '../../../wp-load.php';
 		
 		if ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) {
 			$sites = get_sites( array( 'site__not_in' => array(1), 'archived' => 0, ) );

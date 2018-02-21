@@ -5,7 +5,7 @@
 <body>
 	<?php
 		// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-		require( '../../../wp-blog-header.php' );
+		require_once '../../../wp-load.php';
 		
 		if ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) {
 			$get_terms_args = array(
