@@ -1235,7 +1235,7 @@
 			if ( intval($controll_string) % 97 === 1 ) {
 				return substr( $iban, 0, 4 )." ".substr( $iban, 4, 4 )." ".substr( $iban, 8, 4 )." ".substr( $iban, 12, 4 );
 			} else {
-				return 'INVALID CHECKSUM';
+				return 'INVALID CHECKSUM: '.(intval($controll_string) % 97);
 			}
 		} else{
 			return 'INVALID LENGTH';
