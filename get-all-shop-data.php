@@ -25,11 +25,9 @@
 
 		foreach ( $results as $sellpoint ) {
 			$office_hours = get_office_hours($sellpoint->nid);
-			// var_dump_pre($office_hours);
-			
 			$data[] = $sellpoint->title;
-			$data[] = get_oxfam_shop_data( 'place', $sellpoint->nid );
-			$data[] = get_oxfam_shop_data( 'zipcode', $sellpoint->nid).' '.get_oxfam_shop_data( 'city', $sellpoint->nid);
+			$data[] = get_oxfam_shop_data( 'place', $sellpoint->nid, true );
+			$data[] = get_oxfam_shop_data( 'zipcode', $sellpoint->nid, true ).' '.get_oxfam_shop_data( 'city', $sellpoint->nid, true );
 			
 			foreach( $office_hours as $day ) {
 				if ( $day === false ) {
@@ -44,12 +42,12 @@
 			}
 			
 			// Zit momenteel nog niet in de tabellen!
-			$data[] = get_oxfam_shop_data( 'mail', $sellpoint->nid);
-			$data[] = get_oxfam_shop_data( 'account', $sellpoint->nid);
-			$data[] = get_oxfam_shop_data( 'tax', $sellpoint->nid);
-			$data[] = get_oxfam_shop_data( 'telephone', $sellpoint->nid);
+			$data[] = get_oxfam_shop_data( 'mail', $sellpoint->nid, true );
+			$data[] = get_oxfam_shop_data( 'account', $sellpoint->nid, true );
+			$data[] = get_oxfam_shop_data( 'tax', $sellpoint->nid, true );
+			$data[] = get_oxfam_shop_data( 'telephone', $sellpoint->nid, true );
 			// Zit momenteel nog niet in de tabellen!
-			$data[] = get_oxfam_shop_data( 'fax', $sellpoint->nid);
+			$data[] = get_oxfam_shop_data( 'fax', $sellpoint->nid, true );
 			
 			echo implode( ';', $data ).'<br>';
 			unset($data);

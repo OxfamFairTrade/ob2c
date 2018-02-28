@@ -1143,7 +1143,8 @@
 
 		// Ook checken op billing_address_1 want indien verzendadres niet afwijkt is dit het enige veld dat op dit ogenblik in $_POST voorkomt 
 		if ( ( isset($_POST['billing_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['billing_address_1'] ) === 0 ) or ( isset($_POST['shipping_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['shipping_address_1'] ) === 0 ) ) {
-			wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+			// TIJDELIJK UITGECSCHAKELD OM OWW00445 TE LATEN PASSEREN
+			// wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
 		}
 	}
 
@@ -1160,7 +1161,7 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_city', 'format_city', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_telephone', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_telephone', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_billing_email', 'format_email', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_email', 'format_mail', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_last_name', 'trim_and_uppercase', 10, 1 );
@@ -1255,7 +1256,7 @@
 		return trim_and_uppercase( $value );
 	}
 
-	function format_email( $value ) {
+	function format_mail( $value ) {
 		return mb_strtolower( trim($value) );
 	}
 
@@ -3349,7 +3350,7 @@
 		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
 		$list_id = '5cce3040aa';
 		$email = $cur_user->user_email;
-		$member = md5( format_email($email) );
+		$member = md5( format_mail($email) );
 
 		$args = array(
 			'headers' => array(
@@ -3636,12 +3637,13 @@
 		return in_array( get_current_blog_id(), $regions );
 	}
 
-	function get_oxfam_shop_data( $key, $node = 0 ) {
+	function get_oxfam_shop_data( $key, $node = 0, $raw = false ) {
 		global $wpdb;
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
 		if ( ! is_main_site() ) {
 			if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
-				if ( $node === '857' ) {
+				// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen 
+				if ( $raw === false and $node === '857' ) {
 					// Uitzonderingen voor Regio Leuven vzw
 					switch ($key) {
 						case 'tax':
@@ -3651,7 +3653,7 @@
 						case 'headquarter':
 							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
 					};
-				} elseif ( $node === '795' and $key === 'account' ) {
+				} elseif ( $raw === false and $node === '795' and $key === 'account' ) {
 					// Uitzondering voor Regio Antwerpen vzw
 					return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
 				} else {
@@ -3672,7 +3674,8 @@
 							// Voor KML-file moet longitude voor latitude komen!
 							return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
 						case 'telephone':
-							if ( $node === '857' ) {
+						case 'fax':
+							if ( $raw === false and $node === '857' ) {
 								// Uitzondering voor Regio Leuven
 								return call_user_func( 'format_telephone', '0486762195', '.' );
 							} else {	
@@ -3683,7 +3686,7 @@
 							return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 					}
 				} else {
-					if ( $key === 'telephone' and $node === '765' ) {
+					if ( $raw === false and $key === 'telephone' and $node === '765' ) {
 						// Uitzondering voor Assenede
 						return call_user_func( 'format_telephone', '0472799358', '.' );
 					}  else {
