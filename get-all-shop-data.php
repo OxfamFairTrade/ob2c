@@ -26,6 +26,7 @@
 		foreach ( $results as $sellpoint ) {
 			$office_hours = get_office_hours($sellpoint->nid);
 			$data[] = $sellpoint->title;
+			// VRAAG STEEDS DE 'RAW' INFO OP, ZONDER WEBSHOPCORRECTIES
 			$data[] = get_oxfam_shop_data( 'place', $sellpoint->nid, true );
 			$data[] = get_oxfam_shop_data( 'zipcode', $sellpoint->nid, true ).' '.get_oxfam_shop_data( 'city', $sellpoint->nid, true );
 			
