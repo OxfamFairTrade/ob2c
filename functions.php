@@ -3251,20 +3251,30 @@
 				echo '</div>';
 			}
 			echo '<div class="notice notice-success">';
-			// 	echo '<p>In de back-end van de webshop verschenen 13 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-			// 	$skus = array( '20070', '25012', '25221', '25397', '25398', '25399', '25627', '25628', '25723', '26493', '26494', '27821', '27822' );
-			// 	foreach ( $skus as $sku ) {
-			// 		$product_id = wc_get_product_id_by_sku( $sku );
-			// 		if ( $product_id ) {
-			// 			$product = wc_get_product( $product_id );
-			// 			echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
-			// 		}
-			// 	}
-			// 	echo '</ul><p>';
-			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Verder werkten we de packshots van een hele resem producten bij die inmiddels opnieuw een fairtradelogo dragen. De koffies Gold en Lake Kivu werden hernoemd naar respectievelijk Ethiopia en Congo.</p>';
+				echo '<p>In de back-end van de webshop verschenen 13 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+				$skus = array( '20070', '25397', '25398', '25399', '25627', '25628', '25723', '27821', '27822', '25012', '25221', '26493', '26494' );
+				foreach ( $skus as $sku ) {
+					$product_id = wc_get_product_id_by_sku( $sku );
+					if ( $product_id ) {
+						$product = wc_get_product( $product_id );
+						echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+					}
+				}
+				echo '</ul><p>';
+				echo '<p>Opgelet: de laatste vier producten zijn louter ter vervanging van reeds bestaande Maya-producten. Daarnaast lanceerden we ook de 5 seizoensartikelen voor Pasen:</p><ul style="margin-left: 2em;">';
+				$temp_skus = array( '24529', '24631', '24634', '24641', '24642' );
+				foreach ( $temp_skus as $sku ) {
+					$product_id = wc_get_product_id_by_sku( $sku );
+					if ( $product_id ) {
+						$product = wc_get_product( $product_id );
+						echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+					}
+				}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Verder werkten we de packshots van een hele resem producten bij die inmiddels opnieuw een fairtradelogo dragen. De koffies Gold en Lake Kivu werden hernoemd naar respectievelijk Ethiopia en Congo.</p>';
 			echo '</div>';
 			// echo '<div class="notice notice-info">';
 				// echo '<p>Door het aansluiten van de webshops op de nieuwe centrale productdatabase van OFT kon de synchronisatie van februari helaas niet doorgaan. De 11 nieuwe producten die sinds eind januari in BestelWeb verschenen zullen daarom pas samen met de prijswijzigingen van 1 maart verschijnen (= nacht van woensdag 28 februari). Onze excuses voor dit ongemak. Pluspunt: de aanpassingen zorgen er voor dat toekomstige updates net een pak minder omslachtig worden.</p>';
