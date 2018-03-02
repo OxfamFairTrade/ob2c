@@ -3261,7 +3261,7 @@
 					}
 				}
 				echo '</ul><p>';
-				echo '<p>Opgelet: de laatste vier producten zijn louter ter vervanging van reeds bestaande Maya-producten. Daarnaast lanceerden we ook de 5 seizoensartikelen voor Pasen:</p><ul style="margin-left: 2em;">';
+				echo '<p>Opgelet: de laatste 4 producten zijn louter ter vervanging van reeds bestaande Maya-producten. Daarnaast lanceerden we ook de 5 seizoensartikelen voor Pasen:</p><ul style="margin-left: 2em;">';
 				$temp_skus = array( '24529', '24631', '24634', '24641', '24642' );
 				foreach ( $temp_skus as $sku ) {
 					$product_id = wc_get_product_id_by_sku( $sku );
