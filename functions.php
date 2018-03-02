@@ -3069,7 +3069,7 @@
 	}
 
 	// Reset alle '_in_bestelweb' velden voor we aan de ERP-import beginnen
-	// add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
+	add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
 	
 	function before_xml_import( $import_id ) {
 		if ( $import_id == 7 ) {
@@ -3093,7 +3093,7 @@
 	}
 
 	// Zet producten die onaangeroerd bleven door de ERP-import uit voorraad
-	// add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
+	add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
 	
 	function after_xml_import( $import_id ) {
 		if ( $import_id == 7 ) {
@@ -3261,7 +3261,7 @@
 					}
 				}
 				echo '</ul><p>';
-				echo '<p>Opgelet: de laatste 4 producten zijn louter ter vervanging van reeds bestaande Maya-producten. Daarnaast lanceerden we ook de 5 seizoensartikelen voor Pasen:</p><ul style="margin-left: 2em;">';
+				echo '<p>Opgelet: de laatste 4 producten zijn louter ter vervanging van reeds bestaande Maya-producten. Verder werden de koffies Gold en Lake Kivu hernoemd naar respectievelijk Ethiopia en Congo. Daarnaast lanceerden we ook de 5 seizoensartikelen voor Pasen:</p><ul style="margin-left: 2em;">';
 				$temp_skus = array( '24529', '24631', '24634', '24641', '24642' );
 				foreach ( $temp_skus as $sku ) {
 					$product_id = wc_get_product_id_by_sku( $sku );
@@ -3274,7 +3274,7 @@
 				if ( current_user_can('manage_network_users') ) {
 					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Verder werkten we de packshots van een hele resem producten bij die inmiddels opnieuw een fairtradelogo dragen. De koffies Gold en Lake Kivu werden hernoemd naar respectievelijk Ethiopia en Congo.</p>';
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Tot slot werkten we de packshots van een grote groep producten bij die inmiddels opnieuw een fairtradelogo dragen. De sintproducten van 2017 werden verwijderd uit de database.</p>';
 			echo '</div>';
 			// echo '<div class="notice notice-info">';
 				// echo '<p>Door het aansluiten van de webshops op de nieuwe centrale productdatabase van OFT kon de synchronisatie van februari helaas niet doorgaan. De 11 nieuwe producten die sinds eind januari in BestelWeb verschenen zullen daarom pas samen met de prijswijzigingen van 1 maart verschijnen (= nacht van woensdag 28 februari). Onze excuses voor dit ongemak. Pluspunt: de aanpassingen zorgen er voor dat toekomstige updates net een pak minder omslachtig worden.</p>';
