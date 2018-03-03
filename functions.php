@@ -3251,7 +3251,7 @@
 				echo '</div>';
 			}
 			echo '<div class="notice notice-success">';
-				echo '<p>In de back-end van de webshop verschenen 13 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+				echo '<p>De prijswijzigingen van 1 maart werden doorgevoerd. Bovendien verschenen in de back-end van de webshop 13 nieuwe artikels:</p><ul style="margin-left: 2em;">';
 				$skus = array( '20070', '25397', '25398', '25399', '25627', '25628', '25723', '27821', '27822', '25012', '25221', '26493', '26494' );
 				foreach ( $skus as $sku ) {
 					$product_id = wc_get_product_id_by_sku( $sku );
@@ -3277,7 +3277,6 @@
 				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Tot slot werkten we de packshots van een grote groep producten bij die inmiddels opnieuw een fairtradelogo dragen. De sintproducten van 2017 werden verwijderd uit de database.</p>';
 			echo '</div>';
 			// echo '<div class="notice notice-info">';
-				// echo '<p>Door het aansluiten van de webshops op de nieuwe centrale productdatabase van OFT kon de synchronisatie van februari helaas niet doorgaan. De 11 nieuwe producten die sinds eind januari in BestelWeb verschenen zullen daarom pas samen met de prijswijzigingen van 1 maart verschijnen (= nacht van woensdag 28 februari). Onze excuses voor dit ongemak. Pluspunt: de aanpassingen zorgen er voor dat toekomstige updates net een pak minder omslachtig worden.</p>';
 				// echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd opgelost. Allergenen en ingrediëntenlijsten worden nu live opgehaald uit de centrale database.</p>';
 				// echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
 				// echo '<p>Sinds begin deze maand vinden jullie - zoals reeds lang aangevraagd - in bijlage bij elke nieuwe bestelmail een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden. De picklijst kan ook gedownload worden via <a href="edit.php?post_type=shop_order">het WooCommerce-overzichtsscherm</a> in de back-end van de webshop.</p>';
