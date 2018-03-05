@@ -165,7 +165,7 @@
 		// Veroorzaakt probleem indien volgorde niet 100% gerespecteerd wordt
 		// add_action( 'woocommerce_order_status_claimed_to_on-hold', 'delete_claiming_member_shop' );
 
-		// Laat afhalingen automatisch claimen door de gekozen winkel
+		// Laat succesvol betaalde afhalingen automatisch claimen door de gekozen winkel
 		add_action( 'woocommerce_thankyou', 'auto_claim_local_pickup' );
 		
 		// Maak zoeken op claimende winkel mogelijk?
@@ -239,7 +239,8 @@
 			return;
 		}
 		$order = wc_get_order( $order_id );
-		if ( $order->has_shipping_method('local_pickup_plus') ) {
+		// Check of de betaling wel succesvol was door enkel te claimen indien status reeds op 'In behandeling' staat
+		if ( $order->has_shipping_method('local_pickup_plus') and $order->get_status() === 'processing' ) {
 			$order->update_status( 'claimed' );
 		}
 	}
