@@ -147,13 +147,11 @@
 
 	if ( is_regional_webshop() ) {
 		// Definieer een profielveld in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
-		add_filter( 'user_contactmethods', 'define_member_of_shop_user_field', 10, 1 );
-		// Zorg ervoor dat het bewaard wordt
-		add_action( 'personal_options_update', 'save_member_of_shop_user_field' );
-		add_action( 'edit_user_profile_update', 'save_member_of_shop_user_field' );
-		// Vervang het tekstveld door een dropdown (origineel wordt met jQuery verborgen)
 		add_action( 'show_user_profile', 'add_member_of_shop_user_field' );
 		add_action( 'edit_user_profile', 'add_member_of_shop_user_field' );
+		// Zorg ervoor dat het ook bewaard wordt
+		add_action( 'personal_options_update', 'save_member_of_shop_user_field' );
+		add_action( 'edit_user_profile_update', 'save_member_of_shop_user_field' );
 		
 		// Voeg de claimende winkel toe aan de ordermetadata van zodra iemand op het winkeltje klikt (en verwijder indien we teruggaan)
 		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop' );
@@ -193,19 +191,6 @@
 		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
 	}
 
-	function define_member_of_shop_user_field( $contactmethods ) {
-		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
-		$contactmethods[$key] = 'Ik bevestig orders voor ...';
-		return $contactmethods;
-	}
-	
-	function save_member_of_shop_user_field( $user_id ) {
-		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
-		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
-		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
-		update_usermeta( $user_id, $key, $_POST[$key] );
-	}
-
 	function add_member_of_shop_user_field( $user ) {
 		if ( user_can( $user, 'manage_woocommerce' ) ) {
 			$key = 'blog_'.get_current_blog_id().'_member_of_shop';
@@ -233,6 +218,13 @@
 			</table>
 			<?php
 		}
+	}
+
+	function save_member_of_shop_user_field( $user_id ) {
+		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
+		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
+		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
+		update_usermeta( $user_id, $key, $_POST[$key] );
 	}
 
 	function auto_claim_local_pickup( $order_id ) {
@@ -1496,12 +1488,6 @@
 	add_action( 'admin_footer-user-edit.php', 'hide_others_profile_fields' );
 	
 	function hide_own_profile_fields() {
-		?>
-		<script type="text/javascript">
-			// ECHT NODIG?
-			// jQuery("tr[class$='member_of_shop-wrap']").remove();
-		</script>
-		<?php
 		if ( ! current_user_can( 'manage_options' ) ) {
 			?>
 			<script type="text/javascript">
@@ -1576,27 +1562,12 @@
 		}
 	}
 
-	// Definieer het 'is_b2b_customer'-veld in de back-end
-	add_filter( 'user_contactmethods', 'define_is_b2b_customer_field', 10, 1 );
-	// Zorg ervoor dat het bewaard wordt
-	add_action( 'personal_options_update', 'save_is_b2b_customer_field' );
-	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field' );
-	// Vervang het tekstveld door een checkbox (origineel wordt met jQuery verborgen?)
+	// Toon de 'is_b2b_customer'-checkbox in de back-end
 	add_action( 'show_user_profile', 'add_is_b2b_customer_field' );
 	add_action( 'edit_user_profile', 'add_is_b2b_customer_field' );
-
-	function define_is_b2b_customer_field( $contactmethods ) {
-		$key = 'is_b2b_customer';
-		$contactmethods[$key] = 'Geverifieerde bedrijfsklant';
-		return $contactmethods;
-	}
-	
-	function save_is_b2b_customer_field( $user_id ) {
-		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
-		// Usermeta is netwerkbreed DUS OOK HIER ID VAN BLOG TOEVOEGEN AAN DE KEY
-		$key = 'is_b2b_customer';
-		update_usermeta( $user_id, $key, $_POST[$key] );
-	}
+	// Zorg ervoor dat het ook bewaard wordt
+	add_action( 'personal_options_update', 'save_is_b2b_customer_field' );
+	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field' );
 
 	function add_is_b2b_customer_field( $user ) {
 		$key = 'is_b2b_customer';
@@ -1619,6 +1590,13 @@
 			</tr>
 		</table>
 		<?php
+	}
+
+	function save_is_b2b_customer_field( $user_id ) {
+		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
+		// Usermeta is netwerkbreed DUS OOK HIER ID VAN BLOG TOEVOEGEN AAN DE KEY
+		$key = 'is_b2b_customer';
+		update_usermeta( $user_id, $key, $_POST[$key] );
 	}
 
 	// Geef hint om B2B-klant te worden
@@ -1679,6 +1657,7 @@
 			}
 			// Waarde is een suggestie maar géén afgedwongen minimum, precies wat we willen!
 			$args['input_value'] = $multiple;
+			$args['step'] = $multiple;
 		}
 		return $args;
 	}
