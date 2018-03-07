@@ -1652,8 +1652,8 @@
 	add_filter( 'woocommerce_quantity_input_args', 'limit_to_stock', 10, 2 );
 	
 	function limit_to_stock( $args, $product ) {
-		// Enkel op productdetailpagina's toepassen om winkelmandjes niet te verstoren
-		if ( is_singular( 'product' ) and is_b2b_customer() ) {
+		// Om niet op winkelmandjes toe te passen: is_singular( 'product' )
+		if ( is_b2b_customer() ) {
 			$multiple = intval( $product->get_attribute('ompak') );
 			if ( $multiple < 1 ) {
 				$multiple = 1;
@@ -2146,6 +2146,7 @@
 		} else {
 			// Enkel gratis B2B-levering overhouden?
 			foreach ( $rates as $rate_key => $rate ) {
+				var_dump_pre($rate->zone_id);
 				// ZONE-ID = 0
 				if ( $rate->method_id === 'free_shipping' and $rate->zone_id === 0 ) {
 					$rates = $rates[$rate_key];
