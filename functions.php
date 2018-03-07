@@ -1550,14 +1550,14 @@
 	}
 
 	// Geef hint om B2B-klant te worden
-	// add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
+	add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
 
 	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
 		wc_add_notice( 'Heb je een factuur nodig? Vraag de winkel om een B2B-account.', 'notice' );
 	};
 	
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
-	add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
+	// add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
 
 	function zero_rate_for_companies( $tax_class, $product ) {
 		$current_user = wp_get_current_user();
@@ -1567,24 +1567,24 @@
 		return $tax_class;
 	}
 
-	// Vervang de prijssuffix indien het om een ingelogde B2B-klant gaat
-	add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
+	// Vervang de prijssuffix indien het om een ingelogde B2B-klant gaat MAG ENKEL VOOR BUITENLANDSE KLANTEN
+	// add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
 
 	function b2b_price_suffix( $suffix, $product ) {
 		$current_user = wp_get_current_user();
-		if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
+		if ( ! empty( get_user_meta( $current_user->ID, 'is_b2b_customer', true ) ) ) {
 			$suffix = str_replace( 'incl', 'excl', $suffix );
 		}
 		return $suffix;
 	}
 
-	// Toon overschrijving indien B2B-klant
-	// add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
+	// Toon enkel overschrijving als betaalmethode indien B2B-klant
+	add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
 
 	function b2b_restrict_to_bank_transfer( $gateways ) {
 		global $woocommerce;
 		$current_user = wp_get_current_user();
-		if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
+		if ( ! empty( get_user_meta( $current_user->ID, 'is_b2b_customer', true ) ) ) {
 			unset( $gateways['mollie_wc_gateway_mistercash'] );
 			unset( $gateways['mollie_wc_gateway_creditcard'] );
 			unset( $gateways['mollie_wc_gateway_kbc'] );
@@ -1592,7 +1592,8 @@
 			unset( $gateways['mollie_wc_gateway_ideal'] );
 		} else {
 			unset( $gateways['cod'] );
-			unset( $gateways['mollie_wc_gateway_banktransfer'] );
+			// Zullen we niet gebruiken, bedrag kan nog variëren
+			// unset( $gateways['mollie_wc_gateway_banktransfer'] );
 		}
 		return $gateways;
 	}

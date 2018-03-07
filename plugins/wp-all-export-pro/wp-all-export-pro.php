@@ -3,13 +3,20 @@
 Plugin Name: WP All Export Pro
 Plugin URI: http://www.wpallimport.com/export/
 Description: Export any post type to a CSV or XML file. Edit the exported data, and then re-import it later using WP All Import.
-Version: 1.4.7
+Version: 1.5.2
 Author: Soflyy
 */
 
-if( ! defined( 'PMXE_SESSION_COOKIE' ) )
-	define( 'PMXE_SESSION_COOKIE', '_pmxe_session' );
+// Enable error reporting in development
+if(getenv('WPAE_DEV')) {
+	//error_reporting(E_ALL);
+	//ini_set('display_errors', 1);
+    //xdebug_disable();
+}
 
+if( ! defined( 'PMXE_SESSION_COOKIE' ) ) {
+	define('PMXE_SESSION_COOKIE', '_pmxe_session');
+}
 /**
  * Plugin root dir with forward slashes as directory separator regardless of actuall DIRECTORY_SEPARATOR value
  * @var string
@@ -23,21 +30,12 @@ define('PMXE_ROOT_URL', rtrim(plugin_dir_url(__FILE__), '/'));
 
 if ( class_exists('PMXE_Plugin') and PMXE_EDITION == "free"){
 
-	function pmxe_notice(){
+    include_once __DIR__.'/src/WordPress/AdminNotice.php';
+    include_once __DIR__.'/src/WordPress/AdminErrorNotice.php';
+    $notice = new \Wpae\WordPress\AdminErrorNotice(printf(__('Please de-activate and remove the free version of the WP All Export before activating the paid version.', 'wp_all_export_plugin')));
+    $notice->render();
 
-		?>
-		<div class="error"><p>
-			<?php printf(__('Please de-activate and remove the free version of the WP All Export before activating the paid version.', 'wp_all_export_plugin'));
-			?>
-		</p></div>
-		<?php
-
-		deactivate_plugins( str_replace('\\', '/', dirname(__FILE__)) . '/wp-all-export-pro.php');
-
-	}
-
-	add_action('admin_notices', 'pmxe_notice');
-
+    deactivate_plugins( str_replace('\\', '/', dirname(__FILE__)) . '/wp-all-export-pro.php');
 }
 else {
 
@@ -49,7 +47,7 @@ else {
 	 */
 	define('PMXE_PREFIX', 'pmxe_');
 
-	define('PMXE_VERSION', '1.4.7');
+	define('PMXE_VERSION', '1.5.2');
 
 	define('PMXE_EDITION', 'paid');
 
@@ -137,11 +135,17 @@ else {
 		 */
 		const CRON_DIRECTORY =  WP_ALL_EXPORT_CRON_DIRECTORY;
 
+		const LANGUAGE_DOMAIN = 'wp_all_export_plugin';
+
 		public static $session = null;
 
 		// GEWIJZIGD: Ook lokale beheerders toegang geven tot exports door rechten al vanaf 'manage_network_users' toe te kennen
 		// Creëert eigenlijk een security lek, aangezien je vanuit WP All Export alle PHP-code kunt doen uitvoeren
 		public static $capabilities = 'manage_network_users';
+
+		public static $cache_key = '';
+
+		private static $hasActiveSchedulingLicense = null;
 
 		/**
 		 * Return singletone instance
@@ -158,6 +162,20 @@ else {
 			return 'WP All Export';
 		}
 
+		static public function getSchedulingName(){
+			return 'Automatic Scheduling';
+		}
+
+		static public function hasActiveSchedulingLicense() {
+
+            if(is_null(self::$hasActiveSchedulingLicense)) {
+                $scheduling = \Wpae\Scheduling\Scheduling::create();
+                $hasActiveSchedulingLicense = $scheduling->checkLicense();
+                self::$hasActiveSchedulingLicense = $hasActiveSchedulingLicense;
+            }
+
+            return self::$hasActiveSchedulingLicense;
+        }
 		/**
 		 * Common logic for requestin plugin info fields
 		 */
@@ -235,6 +253,9 @@ else {
 
 			require_once (self::ROOT_DIR . '/classes/installer.php');
 
+			$installer = new PMXE_Installer();
+			$installer->checkActivationConditions();
+
 			// register autoloading method
 			spl_autoload_register(array($this, 'autoload'));
 
@@ -242,6 +263,10 @@ else {
 			if (is_dir(self::ROOT_DIR . '/helpers')) foreach (PMXE_Helper::safe_glob(self::ROOT_DIR . '/helpers/*.php', PMXE_Helper::GLOB_RECURSE | PMXE_Helper::GLOB_PATH) as $filePath) {
 				require_once $filePath;
 			}
+
+			$plugin_basename = plugin_basename( __FILE__ );
+
+			self::$cache_key = md5( 'edd_plugin_' . sanitize_key( $plugin_basename ) . '_version_info' );
 
 			// init plugin options
 			$option_name = get_class($this) . '_Options';
@@ -291,6 +316,7 @@ else {
 			add_action('admin_init', array($this, 'adminInit'));
 			add_action('admin_init', array($this, 'fix_db_schema'));
 			add_action('init', array($this, 'init'));
+
 		}
 
 		public function init()
@@ -298,10 +324,17 @@ else {
 			$this->load_plugin_textdomain();
 		}
 
+		public function showNoticeAndDisablePlugin($message){
+                $notice = new \Wpae\WordPress\AdminErrorNotice($message);
+                $notice->render();
+                deactivate_plugins( str_replace('\\', '/', dirname(__FILE__)) . '/wp-all-export-pro.php');
+        }
 		/**
 		 * pre-dispatching logic for admin page controllers
 		 */
 		public function adminInit() {
+
+			wp_enqueue_style('wp-all-export-updater', PMXE_ROOT_URL . '/static/css/plugin-update-styles.css', array(), PMXE_VERSION);
 
 			// create history folder
 			$uploads = wp_upload_dir();
@@ -319,11 +352,11 @@ else {
 			}
 
 			if ( ! is_dir($uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY) or ! is_writable($uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY)) {
-				die(sprintf(__('Uploads folder %s must be writable', 'wp_all_export_plugin'), $uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY));
+                $this->showNoticeAndDisablePlugin(sprintf(__('Uploads folder %s must be writable', 'wp_all_export_plugin'), $uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY));
 			}
 
 			if ( ! is_dir($uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY) or ! is_writable($uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY)) {
-				die(sprintf(__('Uploads folder %s must be writable', 'wp_all_export_plugin'), $uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY));
+				$this->showNoticeAndDisablePlugin(sprintf(__('Uploads folder %s must be writable', 'wp_all_export_plugin'), $uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY));
 			}
 
 			$functions = $uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'functions.php';
@@ -486,6 +519,7 @@ else {
 
 
 			if(strpos($className, '\\') !== false){
+
 				// project-specific namespace prefix
 				$prefix = 'Wpae\\';
 
@@ -535,7 +569,7 @@ else {
 
 		/**
 		 * Update plugin option value
-		 * @param string $option Parameter name or array of name => value pairs
+		 * @param string|array $option Parameter name or array of name => value pairs
 		 * @param null $value
 		 * @return array
 		 * @throws Exception
@@ -546,10 +580,27 @@ else {
 			if (array_diff_key($option, $this->options)) {
 				throw new Exception("Specified option is not defined for the plugin");
 			}
+
+			if (!empty($option['license'])){
+				$option['license'] = self::encode(self::decode($option['license']));
+ 			}
+
+			if (!empty($option['scheduling_license'])){
+				$option['scheduling_license'] = self::encode(self::decode($option['scheduling_license']));
+			}
+
 			$this->options = $option + $this->options;
 			update_option(get_class($this) . '_Options', $this->options);
 
 			return $this->options;
+		}
+
+		public static function encode( $value ){
+			return base64_encode(md5(AUTH_SALT) . $value . md5(md5(AUTH_SALT)));
+		}
+
+		public static function decode( $encoded ){
+			return preg_match('/^[a-f0-9]{32}$/', $encoded) ? $encoded : str_replace(array(md5(AUTH_SALT), md5(md5(AUTH_SALT))), '', base64_decode($encoded));
 		}
 
 		/**
@@ -573,6 +624,13 @@ else {
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 			require self::ROOT_DIR . '/schema.php';
 			global $wpdb;
+
+			delete_transient(PMXE_Plugin::$cache_key);
+
+			$wpdb->query( $wpdb->prepare("DELETE FROM $wpdb->options WHERE option_name = %s", 'wp-all-export-pro_' . PMXE_Plugin::$cache_key) );
+			$wpdb->query( $wpdb->prepare("DELETE FROM $wpdb->options WHERE option_name = %s", 'wp-all-export-pro_timeout_' . PMXE_Plugin::$cache_key) );
+
+			delete_site_transient('update_plugins');
 
 			if (function_exists('is_multisite') && is_multisite()) {
 		        // check if it is a network activation - if so, run the activation function for each blog id
@@ -759,6 +817,8 @@ else {
 				'cc_sql' => array(),
 				'cc_options' => array(),
 				'cc_settings' => array(),
+				'cc_combine_multiple_fields' => array(),
+				'cc_combine_multiple_fields_value' => array(),
 				'friendly_name' => '',
 				'fields' => array('default', 'other', 'cf', 'cats'),
 				'ids' => array(),
@@ -797,7 +857,16 @@ else {
         		'export_variations' => XmlExportEngine::VARIABLE_PRODUCTS_EXPORT_PARENT_AND_VARIATION,
 				'export_variations_title' => XmlExportEngine::VARIATION_USE_PARENT_TITLE,
                 'include_header_row' => 1,
-				'wpml_lang' => 'all'
+				'wpml_lang' => 'all',
+				'enable_export_scheduling' => 'false',
+
+				'scheduling_enable' => false,
+				'scheduling_weekly_days' => '',
+				'scheduling_run_on' => 'weekly',
+				'scheduling_monthly_day' => '',
+				'scheduling_times' => array(),
+				'scheduling_timezone' => 'UTC'
+
 			);
 		}		
 
@@ -829,11 +898,11 @@ else {
 	function wp_all_export_pro_updater(){	
 		// retrieve our license key from the DB
 		$wp_all_export_options = get_option('PMXE_Plugin_Options');
-		
+
 		// setup the updater
 		$updater = new PMXE_Updater( $wp_all_export_options['info_api_url'], __FILE__, array( 
 				'version' 	=> PMXE_VERSION,		// current version number
-				'license' 	=> false, // license key (used get_option above to retrieve from DB)
+				'license' 	=> (!empty($wp_all_export_options['license'])) ? PMXE_Plugin::decode($wp_all_export_options['license']) : false, // license key (used get_option above to retrieve from DB)
 				'item_name' => PMXE_Plugin::getEddName(), 	// name of this plugin
 				'author' 	=> 'Soflyy'  // author of this plugin
 			)
