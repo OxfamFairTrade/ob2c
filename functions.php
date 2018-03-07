@@ -147,7 +147,7 @@
 
 	if ( is_regional_webshop() ) {
 		// Definieer een profielveld in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
-		add_filter( 'user_contactmethods', 'add_member_of_shop_user_field', 10, 1 );
+		add_filter( 'user_contactmethods', 'define_member_of_shop_user_field', 10, 1 );
 		// Zorg ervoor dat het bewaard wordt
 		add_action( 'personal_options_update', 'save_member_of_shop_user_field' );
 		add_action( 'edit_user_profile_update', 'save_member_of_shop_user_field' );
@@ -193,7 +193,7 @@
 		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
 	}
 
-	function add_member_of_shop_user_field( $contactmethods ) {
+	function define_member_of_shop_user_field( $contactmethods ) {
 		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
 		$contactmethods[$key] = 'Ik bevestig orders voor ...';
 		return $contactmethods;
@@ -1577,7 +1577,7 @@
 	}
 
 	// Definieer het 'is_b2b_customer'-veld in de back-end
-	add_filter( 'user_contactmethods', 'add_is_b2b_customer_field', 10, 1 );
+	add_filter( 'user_contactmethods', 'define_is_b2b_customer_field', 10, 1 );
 	// Zorg ervoor dat het bewaard wordt
 	add_action( 'personal_options_update', 'save_is_b2b_customer_field' );
 	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field' );
@@ -1585,7 +1585,7 @@
 	add_action( 'show_user_profile', 'add_is_b2b_customer_field' );
 	add_action( 'edit_user_profile', 'add_is_b2b_customer_field' );
 
-	function add_is_b2b_customer_field( $contactmethods ) {
+	function define_is_b2b_customer_field( $contactmethods ) {
 		$key = 'is_b2b_customer';
 		$contactmethods[$key] = 'Geverifieerde bedrijfsklant';
 		return $contactmethods;
