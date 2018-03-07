@@ -1708,7 +1708,12 @@
 				break;
 		}
 		$descr .= '</small>';
-		return $label.'<br>'.$descr;
+		// Geen schattingen tonen aan B2B-klanten
+		if ( ! is_b2b_customer() ) {
+			return $label.'<br>'.$descr;
+		} else {
+			return $label;
+		}
 	}
 
 	// Haal de openingsuren van de node voor een bepaalde dag op
