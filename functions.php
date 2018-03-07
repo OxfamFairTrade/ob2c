@@ -788,7 +788,6 @@
 	function cart_update_qty_script() {
 		if ( is_cart() ) {
 			global $woocommerce;
-			// validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 			?>
 				<script>
 					var wto;
@@ -1964,7 +1963,7 @@
 			} else {
 				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden 
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) and is_cart() ) {
-					// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat de klant niet meer radicaal wijzigt (niet afschrikken met error!)
+					// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat particuliere klant niet meer radicaal wijzigt (niet afschrikken met error!)
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
 					file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
 					$msg = WC()->session->get( 'no_zip_delivery' );
@@ -1975,7 +1974,7 @@
 						WC()->session->set( 'no_zip_delivery', 'SHOWN' );
 					}
 				} else {
-					WC()->session->set( 'no_zip_delivery', 'FIRST' );
+					WC()->session->set( 'no_zip_delivery', 'RESET' );
 				}
 			}
 		}
@@ -2023,121 +2022,136 @@
 	
 	function hide_shipping_recalculate_taxes( $rates, $package ) {
 		global $woocommerce;
-		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
+		
+		if ( ! is_b2b_customer() ) {
+			validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 
-		// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
-		$free_home_available = false;
-		foreach ( $rates as $rate ) {
-			if ( $rate->method_id === 'free_shipping' ) {
-				$free_home_available = true;
-				break;
+			// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
+			$free_home_available = false;
+			foreach ( $rates as $rate ) {
+				if ( $rate->method_id === 'free_shipping' ) {
+					// ZONE-ID = 0
+					if ( $rate->zone_id === 0 ) {
+						unset( $rates[$rate_key] );
+					} else {
+						$free_home_available = true;	
+					}
+					break;
+				}
 			}
-		}
 
-		if ( $free_home_available ) {
-			// Verberg alle betalende methodes indien er een gratis thuislevering beschikbaar is
-			foreach ( $rates as $rate_key => $rate ) {
-				if ( floatval( $rate->cost ) > 0.0 ) {
-					unset( $rates[$rate_key] );
+			if ( $free_home_available ) {
+				// Verberg alle betalende methodes indien er een gratis thuislevering beschikbaar is
+				foreach ( $rates as $rate_key => $rate ) {
+					if ( floatval( $rate->cost ) > 0.0 ) {
+						unset( $rates[$rate_key] );
+					}
+				}
+			} else {
+				// Verberg alle gratis methodes die geen afhaling zijn
+				foreach ( $rates as $rate_key => $rate ) {
+					if ( $rate->method_id !== 'local_pickup_plus' and floatval( $rate->cost ) === 0.0 ) {
+						// IS DIT WEL NODIG, ZIJ WORDEN TOCH AL VERBORGEN DOOR WOOCOMMERCE?
+						// unset( $rates[$rate_key] );
+					}
+				}
+			}
+
+			// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
+			$forbidden_cnt = 0;
+			$plastic_cnt = 0;
+			foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
+				// ENKEL FRUITSAP 1 L EN LEEGGOED 24 FLESJES ALS BREEKBAAR MARKEREN OM TELLING TE VERGEMAKKELIJKEN
+				if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
+					$forbidden_cnt += intval($item_value['quantity']);
+					if ( $item_value['product_id'] == wc_get_product_id_by_sku('WLBS24M') ) {
+						$plastic_cnt += intval($item_value['quantity']);
+					}
+				} 
+			}
+			
+			if ( $forbidden_cnt > 0 ) {
+				foreach ( $rates as $rate_key => $rate ) {
+					// Blokkeer alle methodes behalve afhalingen
+					if ( $rate->method_id !== 'local_pickup_plus' ) {
+						unset( $rates[$rate_key] );
+					}
+				}
+				// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
+				if ( does_home_delivery() ) {
+					$msg = WC()->session->get( 'no_home_delivery' );
+					// Toon de foutmelding slechts één keer
+					// if ( $msg !== 'SHOWN' ) {
+						wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $forbidden_cnt - $plastic_cnt, $plastic_cnt ), 'error' );
+						WC()->session->set( 'no_home_delivery', 'SHOWN' );
+					// }
+				}
+			} else {
+				WC()->session->set( 'no_home_delivery', 'RESET' );
+			}
+			
+			// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
+			// UITGESCHAKELD OMWILLE VAN OWW BRUGGE
+			// $cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
+			// if ( $cart_weight > 29 ) {
+			// 	foreach ( $rates as $rate_key => $rate ) {
+			// 		// Blokkeer alle methodes behalve afhalingen
+			// 		if ( $rate->method_id !== 'local_pickup_plus' ) {
+			// 			unset( $rates[$rate_key] );
+			// 		}
+			// 	}
+			// 	wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht in kilogram (%s).', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
+			// }
+
+			$low_vat_slug = 'voeding';
+			$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
+			$low_vat_rate = reset( $low_vat_rates );
+			
+			// Slug voor de 'standard rate' is een lege string!
+			$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
+			$standard_vat_rate = reset( $standard_vat_rates );
+			
+			$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
+			if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
+				// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
+				$cost = 5.7438;
+				// Ook belastingen expliciet herberekenen!
+				$taxes = $cost*0.21;
+				$tax_id_free = $low_vat_rate->tax_rate_id;
+				$tax_id_cost = $standard_vat_rate->tax_rate_id;
+			} else {
+				$cost = 6.5566;
+				// Deze stap doen we vooral omwille van het wispelturige gedrag van deze tax
+				$taxes = $cost*0.06;
+				$tax_id_free = $standard_vat_rate->tax_rate_id;
+				$tax_id_cost = $low_vat_rate->tax_rate_id;
+			}
+			
+			// Overschrijf alle verzendprijzen (dus niet enkel in 'uitsluitend 21%'-geval -> te onzeker) indien betalende thuislevering
+			if ( ! $free_home_available ) {
+				foreach ( $rates as $rate_key => $rate ) {
+					switch ( $rate_key ) {
+						case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method' ) ):
+							$rate->cost = $cost;
+							// Unset i.p.v. op nul te zetten
+							unset($rate->taxes[$tax_id_free]);
+							$rate->taxes[$tax_id_cost] = $taxes;
+							break;
+						default:
+							// Dit zijn de gratis pick-ups (+ eventueel thuisleveringen), niets mee doen
+							break;
+					}
 				}
 			}
 		} else {
-			// Verberg alle gratis methodes die geen afhaling zijn
+			// Enkel gratis B2B-levering overhouden?
 			foreach ( $rates as $rate_key => $rate ) {
-				if ( $rate->method_id !== 'local_pickup_plus' and floatval( $rate->cost ) === 0.0 ) {
-					// IS DIT WEL NODIG, ZIJ WORDEN TOCH AL VERBORGEN DOOR WOOCOMMERCE?
-					// unset( $rates[$rate_key] );
+				// ZONE-ID = 0
+				if ( $rate->method_id === 'free_shipping' and $rate->zone_id === 0 ) {
+					$rates = $rates[$rate_key];
 				}
 			}
 		}
-
-		// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
-		$forbidden_cnt = 0;
-		$plastic_cnt = 0;
-		foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
-			// ENKEL FRUITSAP 1 L EN LEEGGOED 24 FLESJES ALS BREEKBAAR MARKEREN OM TELLING TE VERGEMAKKELIJKEN
-			if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
-				$forbidden_cnt += intval($item_value['quantity']);
-				if ( $item_value['product_id'] == wc_get_product_id_by_sku('WLBS24M') ) {
-					$plastic_cnt += intval($item_value['quantity']);
-				}
-			} 
-		}
-		
-		if ( $forbidden_cnt > 0 ) {
-			foreach ( $rates as $rate_key => $rate ) {
-				// Blokkeer alle methodes behalve afhalingen
-				if ( $rate->method_id !== 'local_pickup_plus' ) {
-					unset( $rates[$rate_key] );
-				}
-			}
-			// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
-			if ( does_home_delivery() ) {
-				$msg = WC()->session->get( 'no_home_delivery' );
-				// Toon de foutmelding slechts één keer
-				// if ( $msg !== 'SHOWN' ) {
-					wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $forbidden_cnt - $plastic_cnt, $plastic_cnt ), 'error' );
-					WC()->session->set( 'no_home_delivery', 'SHOWN' );
-				// }
-			}
-		} else {
-			WC()->session->set( 'no_home_delivery', 'FIRST' );
-		}
-		
-		// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
-		// UITGESCHAKELD OMWILLE VAN OWW BRUGGE
-		// $cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
-		// if ( $cart_weight > 29 ) {
-		// 	foreach ( $rates as $rate_key => $rate ) {
-		// 		// Blokkeer alle methodes behalve afhalingen
-		// 		if ( $rate->method_id !== 'local_pickup_plus' ) {
-		// 			unset( $rates[$rate_key] );
-		// 		}
-		// 	}
-		// 	wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht in kilogram (%s).', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
-		// }
-
-		$low_vat_slug = 'voeding';
-		$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
-		$low_vat_rate = reset( $low_vat_rates );
-		
-		// Slug voor de 'standard rate' is een lege string!
-		$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
-		$standard_vat_rate = reset( $standard_vat_rates );
-		
-		$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
-		if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
-			// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
-			$cost = 5.7438;
-			// Ook belastingen expliciet herberekenen!
-			$taxes = $cost*0.21;
-			$tax_id_free = $low_vat_rate->tax_rate_id;
-			$tax_id_cost = $standard_vat_rate->tax_rate_id;
-		} else {
-			$cost = 6.5566;
-			// Deze stap doen we vooral omwille van het wispelturige gedrag van deze tax
-			$taxes = $cost*0.06;
-			$tax_id_free = $standard_vat_rate->tax_rate_id;
-			$tax_id_cost = $low_vat_rate->tax_rate_id;
-		}
-		
-		// Overschrijf alle verzendprijzen (dus niet enkel in 'uitsluitend 21%'-geval -> te onzeker) indien betalende thuislevering
-		if ( ! $free_home_available ) {
-			foreach ( $rates as $rate_key => $rate ) {
-				switch ( $rate_key ) {
-					case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method' ) ):
-						$rate->cost = $cost;
-						// Unset i.p.v. op nul te zetten
-						unset($rate->taxes[$tax_id_free]);
-						$rate->taxes[$tax_id_cost] = $taxes;
-						break;
-					default:
-						// Dit zijn de gratis pick-ups (+ eventueel thuisleveringen), niets mee doen
-						break;
-				}
-			}
-		}
-
 		return $rates;
 	}
 
