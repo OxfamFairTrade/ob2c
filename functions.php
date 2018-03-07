@@ -147,13 +147,13 @@
 
 	if ( is_regional_webshop() ) {
 		// Definieer een profielveld in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
-		add_filter( 'user_contactmethods', 'add_member_of_shop_field', 10, 1 );
+		add_filter( 'user_contactmethods', 'add_member_of_shop_user_field', 10, 1 );
 		// Zorg ervoor dat het bewaard wordt
-		add_action( 'personal_options_update', 'save_extra_user_field' );
-		add_action( 'edit_user_profile_update', 'save_extra_user_field' );
+		add_action( 'personal_options_update', 'save_member_of_shop_user_field' );
+		add_action( 'edit_user_profile_update', 'save_member_of_shop_user_field' );
 		// Vervang het tekstveld door een dropdown (origineel wordt met jQuery verborgen)
-		add_action( 'show_user_profile', 'add_extra_user_field' );
-		add_action( 'edit_user_profile', 'add_extra_user_field' );
+		add_action( 'show_user_profile', 'add_member_of_shop_user_field' );
+		add_action( 'edit_user_profile', 'add_member_of_shop_user_field' );
 		
 		// Voeg de claimende winkel toe aan de ordermetadata van zodra iemand op het winkeltje klikt (en verwijder indien we teruggaan)
 		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop' );
@@ -193,19 +193,20 @@
 		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
 	}
 
-	function add_member_of_shop_field( $contactmethods ) {
-		$contactmethods['blog_'.get_current_blog_id().'_member_of_shop'] = 'Ik bevestig orders voor ...';
+	function add_member_of_shop_user_field( $contactmethods ) {
+		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
+		$contactmethods[$key] = 'Ik bevestig orders voor ...';
 		return $contactmethods;
 	}
 	
-	function save_extra_user_field( $user_id ) {
+	function save_member_of_shop_user_field( $user_id ) {
 		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
-		// Usermeta is sitewide, dus ID van blog toevoegen aan de key!
+		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
 		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
 		update_usermeta( $user_id, $key, $_POST[$key] );
 	}
 
-	function add_extra_user_field( $user ) {
+	function add_member_of_shop_user_field( $user ) {
 		if ( user_can( $user, 'manage_woocommerce' ) ) {
 			$key = 'blog_'.get_current_blog_id().'_member_of_shop';
 			?>
@@ -232,26 +233,6 @@
 			</table>
 			<?php
 		}
-		$key = 'is_b2b_customer';
-		$b2b = get_the_author_meta( $key, $user->ID );
-		?>
-		<h3 style="color: red;">B2B-verkoop</h3>
-		<table class="form-table">
-			<tr>
-				<th><label for="<?php echo $key; ?>">Geverifieerde bedrijfsklant</label></th>
-				<td>
-					<?php
-						echo '<input type="checkbox" name="'.$key.'" id="'.$key.'" value="yes"';
-						if ( $b2b == 'yes' ) {
-							echo ' checked="checked"';
-						}
-						echo ' />';
-					?>
-					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
-				</td>
-			</tr>
-		</table>
-		<?php
 	}
 
 	function auto_claim_local_pickup( $order_id ) {
@@ -1517,7 +1498,8 @@
 	function hide_own_profile_fields() {
 		?>
 		<script type="text/javascript">
-			jQuery("tr[class$='member_of_shop-wrap']").remove();
+			// ECHT NODIG?
+			// jQuery("tr[class$='member_of_shop-wrap']").remove();
 		</script>
 		<?php
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -1575,12 +1557,76 @@
 		}
 	}
 
+
+
+	################
+	# B2B FUNCTIES #
+	################
+
+	// Algemene functie die retourneert of we met een B2B-klant bezig zijn
+	function is_b2b_customer( $user_id = false ) {
+		if ( intval($user_id) < 1 ) {
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+		}
+		if ( get_user_meta( intval($user_id), 'is_b2b_customer', true ) === 'yes' ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// Definieer het 'is_b2b_customer'-veld in de back-end
+	add_filter( 'user_contactmethods', 'add_is_b2b_customer_field', 10, 1 );
+	// Zorg ervoor dat het bewaard wordt
+	add_action( 'personal_options_update', 'save_is_b2b_customer_field' );
+	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field' );
+	// Vervang het tekstveld door een checkbox (origineel wordt met jQuery verborgen?)
+	add_action( 'show_user_profile', 'add_is_b2b_customer_field' );
+	add_action( 'edit_user_profile', 'add_is_b2b_customer_field' );
+
+	function add_is_b2b_customer_field( $contactmethods ) {
+		$key = 'is_b2b_customer';
+		$contactmethods[$key] = 'Geverifieerde bedrijfsklant';
+		return $contactmethods;
+	}
+	
+	function save_is_b2b_customer_field( $user_id ) {
+		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
+		// Usermeta is netwerkbreed DUS OOK HIER ID VAN BLOG TOEVOEGEN AAN DE KEY
+		$key = 'is_b2b_customer';
+		update_usermeta( $user_id, $key, $_POST[$key] );
+	}
+
+	function add_is_b2b_customer_field( $user ) {
+		$key = 'is_b2b_customer';
+		$b2b = get_the_author_meta( $key, $user->ID );
+		?>
+		<h3>B2B-verkoop</h3>
+		<table class="form-table">
+			<tr>
+				<th><label for="<?php echo $key; ?>">Geverifieerde bedrijfsklant</label></th>
+				<td>
+					<?php
+						echo '<input type="checkbox" name="'.$key.'" id="'.$key.'" value="yes"';
+						if ( $b2b == 'yes' ) {
+							echo ' checked="checked"';
+						}
+						echo ' />';
+					?>
+					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
+				</td>
+			</tr>
+		</table>
+		<?php
+	}
+
 	// Geef hint om B2B-klant te worden
 	add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
 
 	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
 		wc_add_notice( 'Heb je een factuur nodig? Vraag de winkel om een B2B-account.', 'notice' );
-	};
+	}
 	
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
 	// add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
@@ -1637,17 +1683,10 @@
 		return $args;
 	}
 
-	function is_b2b_customer( $user_id = false ) {
-		if ( intval($user_id) < 1 ) {
-			$current_user = wp_get_current_user();
-			$user_id = $current_user->ID;
-		}
-		if ( get_user_meta( intval($user_id), 'is_b2b_customer', true ) === 'yes' ) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+
+
+
+
 
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
