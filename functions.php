@@ -1603,7 +1603,9 @@
 	add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
 
 	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
-		wc_add_notice( 'Heb je een factuur nodig? Vraag de winkel om een B2B-account.', 'notice' );
+		if ( ! is_b2b_customer() ) {
+			wc_add_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag de winkel om een B2B-account.', 'notice' );
+		}
 	}
 	
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
@@ -3822,8 +3824,12 @@
 	}
 
 	function is_regional_webshop() {
-		// Antwerpen, Leuven en Vilvoorde
-		$regions = array( 24, 28, 34 );
+		if ( get_current_site()->domain === 'demo.oxfamwereldwinkels.be' ) {
+			$regions = array( 9 );
+		} else {
+			// Antwerpen, Leuven en Vilvoorde
+			$regions = array( 24, 28, 34 );
+		}
 		return in_array( get_current_blog_id(), $regions );
 	}
 
