@@ -3433,32 +3433,32 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			echo '<div class="notice notice-success">';
-				echo '<p>De prijswijzigingen van 1 maart werden doorgevoerd. Bovendien verschenen in de back-end van de webshop 13 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-				$skus = array( '20070', '25397', '25398', '25399', '25627', '25628', '25723', '27821', '27822', '25012', '25221', '26493', '26494' );
-				foreach ( $skus as $sku ) {
-					$product_id = wc_get_product_id_by_sku( $sku );
-					if ( $product_id ) {
-						$product = wc_get_product( $product_id );
-						echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
-					}
-				}
-				echo '</ul><p>';
-				echo '<p>Opgelet: de laatste 4 producten zijn louter ter vervanging van reeds bestaande Maya-producten. Verder werden de koffies Gold en Lake Kivu hernoemd naar respectievelijk Ethiopia en Congo. Daarnaast lanceerden we ook de 5 seizoensartikelen voor Pasen:</p><ul style="margin-left: 2em;">';
-				$temp_skus = array( '24529', '24631', '24634', '24641', '24642' );
-				foreach ( $temp_skus as $sku ) {
-					$product_id = wc_get_product_id_by_sku( $sku );
-					if ( $product_id ) {
-						$product = wc_get_product( $product_id );
-						echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
-					}
-				}
-				echo '</ul><p>';
-				if ( current_user_can('manage_network_users') ) {
-					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Tot slot werkten we de packshots van een grote groep producten bij die inmiddels opnieuw een fairtradelogo dragen. De sintproducten van 2017 werden verwijderd uit de database.</p>';
-			echo '</div>';
+			// echo '<div class="notice notice-success">';
+			// 	echo '<p>De prijswijzigingen van 1 maart werden doorgevoerd. Bovendien verschenen in de back-end van de webshop 13 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+			// 	$skus = array( '20070', '25397', '25398', '25399', '25627', '25628', '25723', '27821', '27822', '25012', '25221', '26493', '26494' );
+			// 	foreach ( $skus as $sku ) {
+			// 		$product_id = wc_get_product_id_by_sku( $sku );
+			// 		if ( $product_id ) {
+			// 			$product = wc_get_product( $product_id );
+			// 			echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+			// 		}
+			// 	}
+			// 	echo '</ul><p>';
+			// 	echo '<p>Opgelet: de laatste 4 producten zijn louter ter vervanging van reeds bestaande Maya-producten. Verder werden de koffies Gold en Lake Kivu hernoemd naar respectievelijk Ethiopia en Congo. Daarnaast lanceerden we ook de 5 seizoensartikelen voor Pasen:</p><ul style="margin-left: 2em;">';
+			// 	$temp_skus = array( '24529', '24631', '24634', '24641', '24642' );
+			// 	foreach ( $temp_skus as $sku ) {
+			// 		$product_id = wc_get_product_id_by_sku( $sku );
+			// 		if ( $product_id ) {
+			// 			$product = wc_get_product( $product_id );
+			// 			echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+			// 		}
+			// 	}
+			// 	echo '</ul><p>';
+			// 	if ( current_user_can('manage_network_users') ) {
+			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+			// 	}
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Tot slot werkten we de packshots van een grote groep producten bij die inmiddels opnieuw een fairtradelogo dragen. De sintproducten van 2017 werden verwijderd uit de database.</p>';
+			// echo '</div>';
 			// echo '<div class="notice notice-info">';
 				// echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd opgelost. Allergenen en ingrediëntenlijsten worden nu live opgehaald uit de centrale database.</p>';
 				// echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
