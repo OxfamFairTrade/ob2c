@@ -13,7 +13,7 @@
 	 */
 
 	// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-	require_once '../../../wp-blog-header.php';
+	require_once '../../../wp-load.php';
 
 	if ( $_GET['import_key'] !== IMPORT_KEY ) {
 		die("Helaba, dit mag niet!");

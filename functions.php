@@ -78,7 +78,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.3' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.4' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -165,7 +165,7 @@
 		// Veroorzaakt probleem indien volgorde niet 100% gerespecteerd wordt
 		// add_action( 'woocommerce_order_status_claimed_to_on-hold', 'delete_claiming_member_shop' );
 
-		// Laat afhalingen automatisch claimen door de gekozen winkel
+		// Laat succesvol betaalde afhalingen automatisch claimen door de gekozen winkel
 		add_action( 'woocommerce_thankyou', 'auto_claim_local_pickup' );
 		
 		// Maak zoeken op claimende winkel mogelijk?
@@ -239,7 +239,8 @@
 			return;
 		}
 		$order = wc_get_order( $order_id );
-		if ( $order->has_shipping_method('local_pickup_plus') ) {
+		// Check of de betaling wel succesvol was door enkel te claimen indien status reeds op 'In behandeling' staat
+		if ( $order->has_shipping_method('local_pickup_plus') and $order->get_status() === 'processing' ) {
 			$order->update_status( 'claimed' );
 		}
 	}
@@ -415,6 +416,7 @@
 					}
 					echo '<span style="color: '.$color.';">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
 				} elseif ( in_array( $the_order->get_status(), $completed_statusses ) ) {
+					// Veroorzaakt fatale error indien get_date_completed() niet ingesteld
 					if ( $the_order->get_date_completed()->date_i18n( 'Y-m-d H:i:s' ) < $delivery ) {
 						echo '<i>op tijd geleverd</i>';
 					} else {
@@ -872,8 +874,7 @@
 					} );
 				</script>
 			<?php
-		} elseif ( is_account_page() ) {
-			// Gebruiker is zeker ingelogd
+		} elseif ( is_account_page() and is_user_logged_in() ) {
 			$current_user = wp_get_current_user();
 			$user_meta = get_userdata($current_user->ID);
 			$user_roles = $user_meta->roles;
@@ -1147,8 +1148,10 @@
 			wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );
 		}
 
-		if ( isset($_POST['shipping_address_1']) and preg_match( '/[0-9]+/', $_POST['shipping_address_1'] ) === 0 ) {
-			wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+		// Ook checken op billing_address_1 want indien verzendadres niet afwijkt is dit het enige veld dat op dit ogenblik in $_POST voorkomt 
+		if ( ( isset($_POST['billing_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['billing_address_1'] ) === 0 ) or ( isset($_POST['shipping_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['shipping_address_1'] ) === 0 ) ) {
+			// TIJDELIJK UITGECSCHAKELD OM OWW00445 TE LATEN PASSEREN
+			// wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
 		}
 	}
 
@@ -1165,6 +1168,7 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_city', 'format_city', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_telephone', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_telephone', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_email', 'format_mail', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_last_name', 'trim_and_uppercase', 10, 1 );
@@ -1190,27 +1194,77 @@
 		}
 	}
 
-	function format_account( $value ) {
-		$value = str_replace( 'BE', '', $value );
-		$value = str_replace( 'IBAN', '', $value );
-		$value = preg_replace( '/[\s\-\.\/]/', '', $value );
-		if ( mb_strlen($value) === 14 ) {
-			return 'BE'.substr( $value, 0, 2 )." ".substr( $value, 2, 4 )." ".substr( $value, 6, 4 )." ".substr( $value, 10, 4 );
-		} else {
-			return 'ONGELDIG';
+	function format_account( $iban ) {
+		$countries = array( 'BE' => 16, 'NL' => 18 );
+		$translate_chars = array( 
+			'A' => 10,
+			'B' => 11,
+			'C' => 12,
+			'D' => 13,
+			'E' => 14,
+			'F' => 15,
+			'G' => 16,
+			'H' => 17,
+			'I' => 18,
+			'J' => 19,
+			'K' => 20,
+			'L' => 21,
+			'M' => 22,
+			'N' => 23,
+			'O' => 24,
+			'P' => 25,
+			'Q' => 26,
+			'R' => 27,
+			'S' => 28,
+			'T' => 29,
+			'U' => 30,
+			'V' => 31,
+			'W' => 32,
+			'X' => 33,
+			'Y' => 34,
+			'Z' => 35,
+		);
+
+		$iban = str_replace( 'IBAN', '', mb_strtoupper($iban) );
+		$iban = preg_replace( '/[\s\-\.\/]/', '', $iban );
+
+		if ( array_key_exists( substr( $iban, 0, 2 ), $countries ) and strlen($iban) === $countries[substr( $iban, 0, 2 )] ) {
+			$moved_char = substr( $iban, 4 ).substr( $iban, 0, 4 );
+			$moved_char_array = str_split($moved_char);
+			$controll_string = '';
+
+			foreach ( $moved_char_array as $key => $value ) {
+				if ( ! is_numeric($moved_char_array[$key]) ) {
+					$moved_char_array[$key] = $translate_chars[$moved_char_array[$key]];
+				}
+				$controll_string .= $moved_char_array[$key];
+			}
+
+			if ( intval($controll_string) % 97 === 1 ) {
+				return substr( $iban, 0, 4 )." ".substr( $iban, 4, 4 )." ".substr( $iban, 8, 4 )." ".substr( $iban, 12, 4 );
+			} else {
+				return 'INVALID CHECKSUM';
+			}
+		} else{
+			return 'INVALID LENGTH';
 		}
 	}
 
 	function format_place( $value ) {
 		return trim_and_uppercase( $value );
 	}
-	
+
 	function format_zipcode( $value ) {
-		return trim_and_uppercase( $value );
+		// VERWIJDER TEKENS DIE GEEN CIJFER ZIJN?
+		return trim($value);
 	}
 
 	function format_city( $value ) {
 		return trim_and_uppercase( $value );
+	}
+
+	function format_mail( $value ) {
+		return mb_strtolower( trim($value) );
 	}
 
 	function format_headquarter( $value ) {
@@ -1321,7 +1375,7 @@
 				case stristr( $shipping_method['method_id'], 'flat_rate' ):
 					
 					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -1342,7 +1396,7 @@
 				case stristr( $shipping_method['method_id'], 'free_shipping' ):
 
 					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 					break;
 
 				case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
@@ -1351,7 +1405,7 @@
 					$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
 					write_log($service_point);
 					$service_point_info = explode ( '|', $service_point['extra'] );
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'F1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -1372,8 +1426,7 @@
 				default:
 					$meta_data = $shipping_method->get_meta_data();
 					$pickup_data = reset($meta_data);
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) )->setCellValue( 'F1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
-					break;
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
 			}
 
 			// Selecteer het totaalbedrag
@@ -2568,19 +2621,13 @@
 	function show_delivery_warning() {
 		global $product;
 		if ( $product->get_shipping_class() === 'breekbaar' ) {
-			echo "<p>Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: kleine glazen flesjes en tetrabrikken zijn wel beschikbaar voor thuislevering.</p>";
-		}
-
-		if ( $product->get_sku() === '20211' and date_i18n('Y-m-d') < '2017-09-01' ) {
-			echo "<p style='margin: 1em 0; color: red;'>ZOMERPROMO: 5 + 1 FLES GRATIS</p>";
+			echo "<p>Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.</p>";
 		}
 
 		$cat_ids = $product->get_category_ids();
 		$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
-		if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' ) {
+		if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
 			echo "<p style='margin: 1em 0;'>Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
-		} elseif ( get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-			echo "<p style='margin: 1em 0;'>Je dient minstens 16 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
 		}
 	}
 
@@ -2927,7 +2974,7 @@
 		$continents = get_terms( $args );
 		$partners = array();
 		
-		if ( count($terms) > 0 ) {
+		if ( is_array($terms) and count($terms) > 0 ) {
 			foreach ( $terms as $term ) {
 				if ( ! in_array( $term->parent, $continents, true ) ) {
 					// De bovenliggende term is geen continent, dus het is een partner!
@@ -2989,6 +3036,7 @@
 		global $product;
 		$partners = get_partner_terms_by_product( $product );
 		if ( count( $partners ) > 0 ) {
+			$partners_with_quote = array();
 			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
 			foreach ( $partners as $term_id => $partner_name ) {
 				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
@@ -3084,21 +3132,22 @@
 		}
 	}
 
-	// Stel de attributen in die berekend moeten worden uit andere waarden
-	add_action( 'set_object_terms', 'update_origin_on_update', 50, 6 );
+	// Stel de attributen in die berekend moeten worden uit andere waarden NIET MEER NODIG
+	// add_action( 'set_object_terms', 'update_origin_on_update', 50, 6 );
 	
 	function update_origin_on_update( $post_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
 		// Enkel uitvoeren indien de partnerinfo van een product bijgewerkt werd
 		if ( get_post_type( $post_id ) === 'product' and $taxonomy === 'product_partner' ) {
-			write_log("HERKOMST BIJWERKEN ...");
 			$productje = wc_get_product( $post_id );
 			$countries_nl = get_countries_by_product( $productje );
 			
 			// Check of er wel herkomstinfo beschikbaar is
 			if ( $countries_nl !== false ) {
+				write_log( "HERKOMST_NL VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_nl ) );
 				update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
 			
-				if ( is_main_site() ) {
+				// WORDT NIET DOORLOPEN BIJ IMPORT, ALTERNATIEVE VOLDOENDE VOORWAARDE?
+				if ( is_main_site() or get_current_blog_id() === 1 ) {
 					foreach ( $countries_nl as $country ) {
 						$nl = get_site_option( 'countries_nl' );
 						$code = array_search( $country, $nl, true );
@@ -3111,8 +3160,10 @@
 
 					sort($countries_fr, SORT_STRING);
 					update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
+					write_log( "HERKOMST_FR VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_fr ) );
 					sort($countries_en, SORT_STRING);
 					update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
+					write_log( "HERKOMST_EN VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_en ) );
 				}
 			}
 		}
@@ -3310,10 +3361,38 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			echo '<div class="notice notice-info">';
-				echo '<p>Sinds begin deze maand vinden jullie - zoals reeds lang aangevraagd - in bijlage bij elke nieuwe bestelmail een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden. De picklijst kan ook gedownload worden via <a href="edit.php?post_type=shop_order">het WooCommerce-overzichtsscherm</a> in de back-end van de webshop.</p>';
-				// echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
+			echo '<div class="notice notice-success">';
+				echo '<p>De prijswijzigingen van 1 maart werden doorgevoerd. Bovendien verschenen in de back-end van de webshop 13 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+				$skus = array( '20070', '25397', '25398', '25399', '25627', '25628', '25723', '27821', '27822', '25012', '25221', '26493', '26494' );
+				foreach ( $skus as $sku ) {
+					$product_id = wc_get_product_id_by_sku( $sku );
+					if ( $product_id ) {
+						$product = wc_get_product( $product_id );
+						echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+					}
+				}
+				echo '</ul><p>';
+				echo '<p>Opgelet: de laatste 4 producten zijn louter ter vervanging van reeds bestaande Maya-producten. Verder werden de koffies Gold en Lake Kivu hernoemd naar respectievelijk Ethiopia en Congo. Daarnaast lanceerden we ook de 5 seizoensartikelen voor Pasen:</p><ul style="margin-left: 2em;">';
+				$temp_skus = array( '24529', '24631', '24634', '24641', '24642' );
+				foreach ( $temp_skus as $sku ) {
+					$product_id = wc_get_product_id_by_sku( $sku );
+					if ( $product_id ) {
+						$product = wc_get_product( $product_id );
+						echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+					}
+				}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Tot slot werkten we de packshots van een grote groep producten bij die inmiddels opnieuw een fairtradelogo dragen. De sintproducten van 2017 werden verwijderd uit de database.</p>';
 			echo '</div>';
+			// echo '<div class="notice notice-info">';
+				// echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd opgelost. Allergenen en ingrediëntenlijsten worden nu live opgehaald uit de centrale database.</p>';
+				// echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
+				// echo '<p>Sinds begin deze maand vinden jullie - zoals reeds lang aangevraagd - in bijlage bij elke nieuwe bestelmail een Excel-file op printvriendelijk formaat. Indien gewenst kun je dit klaarleggen of doorsturen zodat een winkelier de bestelling kan klaarzetten. Bovenaan staat vermeld of het om een afhaling of thuislevering gaat. In de laatste kolom is ruimte voorzien om te noteren hoeveel stuks effectief geleverd werden. De picklijst kan ook gedownload worden via <a href="edit.php?post_type=shop_order">het WooCommerce-overzichtsscherm</a> in de back-end van de webshop.</p>';
+				// echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
+			// echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
@@ -3324,22 +3403,6 @@
 				// echo '<p>De domiciliëringsopdracht van de Nederlandse betaalprovider Adyen die eind juni geactiveerd werd op jullie winkelrekening, dient voor de betaling van verzendingen die je via SendCloud regelt. (Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen.) Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen verzendlabels meer aanmaken voor Bpost en dien je zelf (fors duurdere) etiketten aan te schaffen in een postpunt.</p>';
 				// echo '</div>';
 			}
-			// echo '<div class="notice notice-success">';
-			// 	echo '<p>In de back-end van de webshop verschenen 10 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-			// 	$skus = array( '22720', '22721', '24501', '24614', '24626', '24635', '24637', '24638', '24639', '24640' );
-			// 	foreach ( $skus as $sku ) {
-			// 		$product_id = wc_get_product_id_by_sku( $sku );
-			// 		if ( $product_id ) {
-			// 			$productje = wc_get_product( $product_id );
-			// 			echo '<li><a href="'.$productje->get_permalink().'" target="_blank">'.$productje->get_title().'</a> ('.$productje->get_attribute( 'pa_shopplus' ).')</li>';
-			// 		}	
-			// 	}
-			// 	echo '</ul><p>';
-			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. Opgelet: door een kleine lapsus is de status van Lautaro Cabernet Sauvignon (W10055) in alle webshops weer op \'Uit voorraad\' gezet. Pas dit aan indien je het product in je assortiment hebt.</p><p>';
-			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast werden de packshots van Groot Eiland Shiraz-Pinotage (W10063), Groot Eiland Chardonnay-Chenin Blanc (W10256) en Zeevruchten (W14500) bijgewerkt. Tot slot werden de fairtradepercentages vervolledigd. Volgende week vullen we de allergenen bij de nieuwe producten nog aan.</p>';
-			// echo '</div>';
 		}
 	}
 
@@ -3407,7 +3470,7 @@
 		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
 		$list_id = '5cce3040aa';
 		$email = $cur_user->user_email;
-		$member = md5( mb_strtolower($email) );
+		$member = md5( format_mail($email) );
 
 		$args = array(
 			'headers' => array(
@@ -3694,12 +3757,13 @@
 		return in_array( get_current_blog_id(), $regions );
 	}
 
-	function get_oxfam_shop_data( $key, $node = 0 ) {
+	function get_oxfam_shop_data( $key, $node = 0, $raw = false ) {
 		global $wpdb;
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
 		if ( ! is_main_site() ) {
 			if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
-				if ( $node === '857' ) {
+				// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen 
+				if ( $raw === false and $node === '857' ) {
 					// Uitzonderingen voor Regio Leuven vzw
 					switch ($key) {
 						case 'tax':
@@ -3709,7 +3773,7 @@
 						case 'headquarter':
 							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
 					};
-				} elseif ( $node === '795' and $key === 'account' ) {
+				} elseif ( $raw === false and $node === '795' and $key === 'account' ) {
 					// Uitzondering voor Regio Antwerpen vzw
 					return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
 				} else {
@@ -3726,26 +3790,33 @@
 					switch ($key) {
 						case 'shop':
 							return $row->field_sellpoint_shop_nid;
+						case 'mail':
+							return format_mail($row->field_sellpoint_mail_email);
 						case 'll':
 							// Voor KML-file moet longitude voor latitude komen!
 							return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
 						case 'telephone':
-							if ( $node === '857' ) {
+						case 'fax':
+							if ( $raw === false and $node === '857' ) {
 								// Uitzondering voor Regio Leuven
 								return call_user_func( 'format_telephone', '0486762195', '.' );
 							} else {	
 								// Geef alternatieve delimiter mee
-								return call_user_func( 'format_telephone', $row->field_sellpoint_telephone_value, '.' );
+								return call_user_func( 'format_telephone', $row->{'field_sellpoint_'.$key.'_value'}, '.' );
 							}
 						default:
 							return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 					}
 				} else {
-					if ( $key === 'telephone' and $node === '765' ) {
-						// Uitzondering voor Assenede
-						return call_user_func( 'format_telephone', '0472799358', '.' );
-					}  else {
-						return "(niet gevonden)";
+					if ( $raw === false ) {
+						if ( $key === 'telephone' and $node === '765' ) {
+							// Uitzondering voor Assenede
+							return call_user_func( 'format_telephone', '0472799358', '.' );
+						} else {
+							return "(niet gevonden)";
+						}
+					} else {
+						return "";
 					}
 				}
 			}		
@@ -3971,11 +4042,17 @@
 		if ( is_array( $categories ) ) {
 			foreach ( $categories as $category ) {
 				if ( ! empty( $category->parent ) ) {
+					// Voeg de bovenliggende cateogrie toe
 					$parent = get_term( $category->parent, 'product_cat' );
-					// Voer de synoniemen ook hierop door
-					$search = array_keys($relevanssi_variables['synonyms']);
-					$replace = array_values($relevanssi_variables['synonyms']);
-					$content .= str_ireplace($search, $replace, $parent->name).' ';
+					if ( array_key_exists( 'synonyms', $relevanssi_variables ) ) {
+						// Laat de synoniemenlijst hier eerst nog op inwerken (indien gedefinieerd)
+						$search = array_keys($relevanssi_variables['synonyms']);
+						$replace = array_values($relevanssi_variables['synonyms']);
+						$content .= str_ireplace( $search, $replace, $parent->name ).' ';
+					} else {
+						// Voeg direct toe
+						$content .= $parent->name.' ';
+					}
 				}
 			}
 		}

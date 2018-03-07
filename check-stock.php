@@ -5,7 +5,7 @@
 <body>
 	<?php
 		// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-		require( '../../../wp-blog-header.php' );
+		require_once '../../../wp-load.php';
 		
 		switch_to_blog(1);
 
