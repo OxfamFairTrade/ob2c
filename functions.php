@@ -207,14 +207,14 @@
 
 	function add_extra_user_field( $user ) {
 		if ( user_can( $user, 'manage_woocommerce' ) ) {
+			$key = 'blog_'.get_current_blog_id().'_member_of_shop';
 			?>
 			<h3 style="color: red;">Regiosamenwerking</h3>
 			<table class="form-table" style="color: red;">
 				<tr>
-					<th><label for="dropdown" style="color: red;">Ik bevestig orders voor ...</label></th>
+					<th><label for="<?php echo $key; ?>" style="color: red;">Ik bevestig orders voor ...</label></th>
 					<td>
 						<?php
-							$key = 'blog_'.get_current_blog_id().'_member_of_shop';
 							echo '<select name="'.$key.'" id="'.$key.'" style="color: red;">';
 								$member_of = get_the_author_meta( $key, $user->ID );
 								$shops = get_option( 'oxfam_member_shops' );
@@ -232,6 +232,26 @@
 			</table>
 			<?php
 		}
+		$key = 'is_b2b_customer';
+		$b2b = get_the_author_meta( $key, $user->ID );
+		?>
+		<h3 style="color: red;">B2B-verkoop</h3>
+		<table class="form-table">
+			<tr>
+				<th><label for="<?php echo $key; ?>">Geverifieerde bedrijfsklant</label></th>
+				<td>
+					<?php
+						echo '<input type="checkbox" name="'.$key.'" id="'.$key.'" value="yes"';
+						if ( $b2b == 'yes' ) {
+							echo ' checked="checked"';
+						}
+						echo ' />';
+					?>
+					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
+				</td>
+			</tr>
+		</table>
+		<?php
 	}
 
 	function auto_claim_local_pickup( $order_id ) {
@@ -993,10 +1013,12 @@
 		$address_fields['billing_email']['placeholder'] = "luc@gmail.com";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
 		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
-		// $address_fields['billing_company']['label'] = "Bedrijf";
-		// $address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
-		// $address_fields['billing_vat']['label'] = "BTW-nummer";
-		// $address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
+		if ( is_b2b_customer() ) {
+			$address_fields['billing_company']['label'] = "Bedrijf";
+			$address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
+			$address_fields['billing_vat']['label'] = "BTW-nummer";
+			$address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
+		}
 		
 		$address_fields['billing_first_name']['class'] = array('form-row-first');
 		$address_fields['billing_last_name']['class'] = array('form-row-last');
@@ -1465,7 +1487,11 @@
 		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
 		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
 		unset( $profile_fields['billing']['fields']['billing_address_2'] );
-		unset( $profile_fields['billing']['fields']['billing_company'] );
+		if ( ! is_b2b_customer() ) {
+			unset( $profile_fields['billing']['fields']['billing_company'] );
+		} else {
+			$profile_fields['billing']['fields']['billing_vat']['label'] = 'BTW-nummer';
+		}
 		unset( $profile_fields['billing']['fields']['billing_state'] );
 		
 		$profile_fields['shipping']['title'] = 'Verzendgegevens';
@@ -1478,8 +1504,8 @@
 		unset( $profile_fields['shipping']['fields']['shipping_company'] );
 		unset( $profile_fields['shipping']['fields']['shipping_state'] );
 
-		$profile_fields['billing']['fields'] = array_swap_assoc('billing_city', 'billing_postcode', $profile_fields['billing']['fields']);
-		$profile_fields['shipping']['fields'] = array_swap_assoc('shipping_city', 'shipping_postcode', $profile_fields['shipping']['fields']);
+		$profile_fields['billing']['fields'] = array_swap_assoc( 'billing_city', 'billing_postcode', $profile_fields['billing']['fields'] );
+		$profile_fields['shipping']['fields'] = array_swap_assoc( 'shipping_city', 'shipping_postcode', $profile_fields['shipping']['fields'] );
 		
 		return $profile_fields;
 	}
@@ -1571,8 +1597,7 @@
 	// add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
 
 	function b2b_price_suffix( $suffix, $product ) {
-		$current_user = wp_get_current_user();
-		if ( ! empty( get_user_meta( $current_user->ID, 'is_b2b_customer', true ) ) ) {
+		if ( is_b2b_customer() ) {
 			$suffix = str_replace( 'incl', 'excl', $suffix );
 		}
 		return $suffix;
@@ -1582,9 +1607,7 @@
 	add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
 
 	function b2b_restrict_to_bank_transfer( $gateways ) {
-		global $woocommerce;
-		$current_user = wp_get_current_user();
-		if ( ! empty( get_user_meta( $current_user->ID, 'is_b2b_customer', true ) ) ) {
+		if ( is_b2b_customer() ) {
 			unset( $gateways['mollie_wc_gateway_mistercash'] );
 			unset( $gateways['mollie_wc_gateway_creditcard'] );
 			unset( $gateways['mollie_wc_gateway_kbc'] );
@@ -1592,10 +1615,35 @@
 			unset( $gateways['mollie_wc_gateway_ideal'] );
 		} else {
 			unset( $gateways['cod'] );
-			// Zullen we niet gebruiken, bedrag kan nog variëren
+			// Zullen we niet gebruiken, bedrag kan immers nog variëren
 			// unset( $gateways['mollie_wc_gateway_banktransfer'] );
 		}
 		return $gateways;
+	}
+
+	// Zorg ervoor dat de spinners niet enkel in het winkelwagentje maar ook in de catalogus (en scanner) gelimiteerd zijn tot de beschikbare voorraad
+	add_filter( 'woocommerce_quantity_input_args', 'limit_to_stock', 10, 2 );
+	
+	function limit_to_stock( $args, $product ) {
+		$multiple = intval( $product->get_attribute('ompak') );
+		if ( is_b2b_customer() or $multiple < 1 ) {
+			$multiple = 1;
+		}
+		// Wordt deze waarde ook afgedwongen?
+		$args['min_value'] = $multiple;
+		return $args;
+	}
+
+	function is_b2b_customer( $user_id = false ) {
+		if ( intval($user_id) < 1 ) {
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+		}
+		if ( get_user_meta( intval($user_id), 'is_b2b_customer', true ) === 'yes' ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
