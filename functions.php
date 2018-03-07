@@ -992,6 +992,8 @@
 		
 		$address_fields['billing_first_name']['class'] = array('form-row-first');
 		$address_fields['billing_last_name']['class'] = array('form-row-last');
+		$address_fields['billing_company']['class'] = array('form-row-first');
+		$address_fields['billing_vat']['class'] = array('form-row-last');
 		$address_fields['billing_address_1']['class'] = array('form-row-first');
 		$address_fields['billing_address_1']['clear'] = false;
 		$address_fields['billing_email']['class'] = array('form-row-first');
@@ -1459,17 +1461,17 @@
 		$profile_fields['billing']['title'] = 'Klantgegevens';
 		$profile_fields['billing']['fields']['billing_first_name']['label'] = 'Voornaam';
 		$profile_fields['billing']['fields']['billing_last_name']['label'] = 'Familienaam';
+		if ( ! is_b2b_customer() ) {
+			unset( $profile_fields['billing']['fields']['billing_company'] );
+		} else {
+			$profile_fields['billing']['fields']['billing_vat']['label'] = 'BTW-nummer';
+		}
 		$profile_fields['billing']['fields']['billing_address_1']['label'] = 'Straat en huisnummer';
 		$profile_fields['billing']['fields']['billing_postcode']['label'] = 'Postcode';
 		$profile_fields['billing']['fields']['billing_city']['label'] = 'Gemeente';
 		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
 		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
 		unset( $profile_fields['billing']['fields']['billing_address_2'] );
-		if ( ! is_b2b_customer() ) {
-			unset( $profile_fields['billing']['fields']['billing_company'] );
-		} else {
-			$profile_fields['billing']['fields']['billing_vat']['label'] = 'BTW-nummer';
-		}
 		unset( $profile_fields['billing']['fields']['billing_state'] );
 		
 		$profile_fields['shipping']['title'] = 'Verzendgegevens';
