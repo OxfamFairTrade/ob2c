@@ -1625,12 +1625,15 @@
 	add_filter( 'woocommerce_quantity_input_args', 'limit_to_stock', 10, 2 );
 	
 	function limit_to_stock( $args, $product ) {
-		$multiple = intval( $product->get_attribute('ompak') );
-		if ( is_b2b_customer() or $multiple < 1 ) {
-			$multiple = 1;
+		// Enkel op productdetailpagina's toepassen om winkelmandjes niet te verstoren
+		if ( is_singular( 'product' ) and is_b2b_customer() ) {
+			$multiple = intval( $product->get_attribute('ompak') );
+			if ( $multiple < 1 ) {
+				$multiple = 1;
+			}
+			// Waarde is een suggestie maar géén afgedwongen minimum, precies wat we willen!
+			$args['input_value'] = $multiple;
 		}
-		// Wordt deze waarde ook afgedwongen?
-		$args['min_value'] = $multiple;
 		return $args;
 	}
 
