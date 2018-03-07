@@ -240,9 +240,8 @@
 
 	function register_claiming_member_shop( $order_id ) {
 		$order = wc_get_order( $order_id );
-		$blog_id = get_current_blog_id();
 		// Een gewone klant heeft deze eigenschap niet en retourneert dus sowieso 'false'
-		$owner = get_the_author_meta( 'blog_'.$blog_id.'_member_of_shop', get_current_user_id() );
+		$owner = get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() );
 		
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
 			// Koppel automatisch aan de winkel waar de afhaling zal gebeuren
@@ -986,12 +985,10 @@
 		$address_fields['billing_email']['placeholder'] = "luc@gmail.com";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
 		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
-		if ( is_b2b_customer() ) {
-			$address_fields['billing_company']['label'] = "Bedrijf";
-			$address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
-			$address_fields['billing_vat']['label'] = "BTW-nummer";
-			$address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
-		}
+		$address_fields['billing_company']['label'] = "Bedrijf";
+		$address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
+		$address_fields['billing_vat']['label'] = "BTW-nummer";
+		$address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
 		
 		$address_fields['billing_first_name']['class'] = array('form-row-first');
 		$address_fields['billing_last_name']['class'] = array('form-row-last');
@@ -1013,7 +1010,7 @@
 			'class' => array('form-row-last'),
 			'clear' => true,
 		);
-		
+
 		$order = array(
 			"billing_first_name",
 			"billing_last_name",
@@ -1027,7 +1024,15 @@
 			"billing_phone",
 		);
 
-		foreach($order as $field) {
+		if ( is_b2b_customer() ) {
+			$order_b2b = array(
+				"billing_company",
+				"billing_vat",
+			);
+			$order = $order_b2b + $order;	
+		}
+
+		foreach ( $order as $field ) {
 			$ordered_fields[$field] = $address_fields[$field];
 		}
 
@@ -1520,11 +1525,6 @@
 	}
 
 	function hide_others_profile_fields() {
-		?>
-		<script type="text/javascript">
-			jQuery("tr[class$='member_of_shop-wrap']").remove();
-		</script>
-		<?php
 		if ( ! current_user_can( 'manage_options' ) ) {
 		?>
 			<script type="text/javascript">
@@ -1549,13 +1549,13 @@
 	# B2B FUNCTIES #
 	################
 
-	// Algemene functie die retourneert of we met een B2B-klant bezig zijn
+	// Algemene functie die retourneert of de gebruiker een B2B-klant is van de huidige webshop
 	function is_b2b_customer( $user_id = false ) {
 		if ( intval($user_id) < 1 ) {
 			$current_user = wp_get_current_user();
 			$user_id = $current_user->ID;
 		}
-		if ( get_user_meta( intval($user_id), 'is_b2b_customer', true ) === 'yes' ) {
+		if ( get_user_meta( intval($user_id), 'blog_'.get_current_blog_id().'_is_b2b_customer', true ) === 'yes' ) {
 			return true;
 		} else {
 			return false;
@@ -1570,7 +1570,7 @@
 	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field' );
 
 	function add_is_b2b_customer_field( $user ) {
-		$key = 'is_b2b_customer';
+		$key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
 		$b2b = get_the_author_meta( $key, $user->ID );
 		?>
 		<h3>B2B-verkoop</h3>
@@ -1594,8 +1594,8 @@
 
 	function save_is_b2b_customer_field( $user_id ) {
 		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
-		// Usermeta is netwerkbreed DUS OOK HIER ID VAN BLOG TOEVOEGEN AAN DE KEY
-		$key = 'is_b2b_customer';
+		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
+		$key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
 		update_usermeta( $user_id, $key, $_POST[$key] );
 	}
 
@@ -1604,7 +1604,7 @@
 
 	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
 		if ( ! is_b2b_customer() ) {
-			wc_add_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag de winkel om een B2B-account.', 'notice' );
+			wc_add_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via '.get_company_email().'.', 'notice' );
 		}
 	}
 	
@@ -3913,20 +3913,20 @@
 	}
 
 	function get_company_name() {
-		return get_bloginfo( 'name' );
+		return get_bloginfo('name');
 	}
 
 	function get_main_shop_node() {
-		$list = get_option( 'oxfam_shop_nodes' );
+		$list = get_option('oxfam_shop_nodes');
 		return $list[0];
 	}
 
 	function get_company_email() {
-		return get_option( 'admin_email' );
+		return get_option('admin_email');
 	}
 
 	function get_company_contact() {
-		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data( 'telephone' )."<br>".get_oxfam_shop_data( 'tax' );
+		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data('telephone')."<br>".get_oxfam_shop_data('tax');
 	}
 
 	function get_company_address( $node = 0 ) {
