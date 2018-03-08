@@ -1468,6 +1468,7 @@
 		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
 		$profile_fields['billing']['fields']['billing_address_1']['label'] = 'Straat en huisnummer';
 		$profile_fields['billing']['fields']['billing_postcode']['label'] = 'Postcode';
+		$profile_fields['billing']['fields']['billing_postcode']['maxlength'] = 4;
 		$profile_fields['billing']['fields']['billing_city']['label'] = 'Gemeente';
 		unset( $profile_fields['billing']['fields']['billing_address_2'] );
 		unset( $profile_fields['billing']['fields']['billing_state'] );
@@ -1644,6 +1645,18 @@
 			return false;
 		}
 
+		$names = array( 'billing_company', 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_city', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_city', );
+		foreach ( $names as $key ) {
+			if ( isset($_POST[$key]) ) {
+				$_POST[$name] = trim_and_uppercase($_POST[$name]);
+			}
+		}
+		if ( isset($_POST['billing_email']) ) {
+			$_POST['billing_email'] = format_mail($_POST['billing_email']);
+		}
+		if ( isset($_POST['billing_phone']) ) {
+			$_POST['billing_phone'] = format_telephone($_POST['billing_phone']);
+		}
 		if ( isset($_POST['billing_vat']) ) {
 			$_POST['billing_vat'] = format_tax($_POST['billing_vat']);
 		}
@@ -1659,7 +1672,7 @@
 		} else {
 			$coupon_id = intval( get_user_meta( $user_id, $select_key, true ) );
 		}
-		$current_users = explode( ',', get_post_meta( $coupon_id, '_wjecf_customer_ids', true ) );
+		$current_users = explode( ',', trim( get_post_meta( $coupon_id, '_wjecf_customer_ids', true ) ) );
 		
 		if ( ! in_array( $user_id, $current_users ) ) {
 			$current_users[] = $user_id;
