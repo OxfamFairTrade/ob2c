@@ -1631,13 +1631,27 @@
 	}
 
 	function save_is_b2b_customer_field( $user_id ) {
-		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
+		if ( ! current_user_can( 'edit_user', $user_id ) ) {
+			return false;
+		}
+
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
 		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
 		update_usermeta( $user_id, $check_key, $_POST[$check_key] );
-		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbonb2b{PERCENTAGE}
+		
+		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
-		update_post_meta( intval($_POST[$select_key]), '_wjecf_customer_ids', $user_id );
+		if ( ! empty($_POST[$select_key]) ) {
+			$current_users = explode( ',', get_post_meta( intval($_POST[$select_key]), '_wjecf_customer_ids', true ) );
+			if ( ! in_array( $user_id, $current_users ) ) {
+				$current_users[] = $user_id;
+			} else {
+				if ( ( $key = array_search( $user_id, $current_users ) ) !== false ) {
+					unset($current_users[$key]);
+				}
+			}
+			update_post_meta( intval($_POST[$select_key]), '_wjecf_customer_ids', implode( ',', $current_users ) );
+		}
 	}
 
 	// Geen BTW tonen tijdens het winkelen
