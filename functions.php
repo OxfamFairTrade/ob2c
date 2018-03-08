@@ -224,7 +224,7 @@
 		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
 		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
-		update_usermeta( $user_id, $key, $_POST[$key] );
+		update_user_meta( $user_id, $key, $_POST[$key] );
 	}
 
 	function auto_claim_local_pickup( $order_id ) {
@@ -680,8 +680,8 @@
 	add_action( 'init', 'woocommerce_clear_cart_url' );
 	
 	function woocommerce_clear_cart_url() {
-		// Uniformeer de gebruikersdata net voor we ze opslaan in de database
-		add_filter( 'update_user_metadata', 'sanitize_woocommerce_customer_fields', 10, 5 );
+		// Uniformeer de gebruikersdata net voor we ze opslaan in de database STAAT GEEN WIJZIGINGEN TOE
+		// add_filter( 'update_user_metadata', 'sanitize_woocommerce_customer_fields', 10, 5 );
 
 		if ( isset( $_GET['referralZip'] ) ) {
 			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar
@@ -1644,16 +1644,20 @@
 			return false;
 		}
 
+		if ( isset($_POST['billing_vat']) ) {
+			$meta_value = format_tax($meta_value);
+		}
+
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
 		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
-		update_usermeta( $user_id, $check_key, $_POST[$check_key] );
+		update_user_meta( $user_id, $check_key, $_POST[$check_key] );
 		
 		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
 		if ( ! empty($_POST[$select_key]) ) {
 			$coupon_id = intval( $_POST[$select_key] );	
 		} else {
-			$coupon_id = intval( get_usermeta( $user_id, $select_key, true ) );
+			$coupon_id = intval( get_user_meta( $user_id, $select_key, true ) );
 		}
 		$current_users = explode( ',', get_post_meta( $coupon_id, '_wjecf_customer_ids', true ) );
 		
@@ -1667,15 +1671,7 @@
 		update_post_meta( $coupon_id, '_wjecf_customer_ids', implode( ',', $current_users ) );
 
 		// Nu pas de coupon-ID op de gebruiker bijwerken
-		update_usermeta( $user_id, $select_key, $_POST[$select_key] );
-	}
-
-	function sanitize_woocommerce_customer_fields( $null, $object_id, $meta_key, $meta_value, $prev_value ) {
-		write_log("HALLO, IK BEN ".$meta_key);
-		if ( 'billing_vat' === $meta_key ) {
-			$meta_value = format_tax($meta_value);
-		}
-		return null;
+		update_user_meta( $user_id, $select_key, $_POST[$select_key] );
 	}
 
 	// Geen BTW tonen bij producten en in het winkelmandje
