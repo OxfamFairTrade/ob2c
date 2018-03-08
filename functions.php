@@ -1497,7 +1497,7 @@
 		);
 
 		// BETER TONEN/VERBERGEN MET JQUERY?
-		if ( is_b2b_customer($_GET['user_id']) ) {
+		if ( is_b2b_customer() ) {
 			array_unshift( $order, 'billing_company', 'billing_vat' );
 		}
 
@@ -1573,8 +1573,13 @@
 	// Algemene functie die retourneert of de gebruiker een B2B-klant is van de huidige webshop
 	function is_b2b_customer( $user_id = false ) {
 		if ( intval($user_id) < 1 ) {
-			$current_user = wp_get_current_user();
-			$user_id = $current_user->ID;
+			if ( is_admin() and isset($_GET['user_id']) ) {
+				// In de back-end ook nog even checken of we geen profiel aan het bewerken zijn
+				$user_id = $_GET['user_id'];
+			} else {
+				$current_user = wp_get_current_user();
+				$user_id = $current_user->ID;
+			}
 		}
 		if ( get_user_meta( intval($user_id), 'blog_'.get_current_blog_id().'_is_b2b_customer', true ) === 'yes' ) {
 			return true;
@@ -1620,7 +1625,7 @@
 							echo '<option value="">n.v.t.</option>';
 							foreach ( $coupons as $coupon ) {
 								$payment_methods = get_post_meta( $coupon->ID, '_wjecf_payment_methods', true );
-								if ( $payment_methods[0] === 'cod' ) {
+								if ( count($payment_methods) === 1 and $payment_methods[0] === 'cod' ) {
 									echo '<option value="'.$coupon->ID.'" '.selected( $coupon->ID, $has_b2b_coupon ).'>'.str_replace( 'b2b', '', $coupon->post_title ).'</option>';
 								}
 							}
@@ -1673,9 +1678,9 @@
 		return null;
 	}
 
-	// Geen BTW tonen tijdens het winkelen
+	// Geen BTW tonen bij producten en in het winkelmandje
 	add_filter( 'pre_option_woocommerce_tax_display_shop', 'override_tax_display_setting' );
-	// add_filter( 'pre_option_woocommerce_tax_display_cart', 'override_tax_display_setting' );
+	add_filter( 'pre_option_woocommerce_tax_display_cart', 'override_tax_display_setting' );
 
 	function override_tax_display_setting() {
 		if ( is_b2b_customer() ) {
@@ -1683,6 +1688,16 @@
 		} else {
 			return 'incl';
 		}
+	}
+
+	// Vervang ook alle prijssuffixen!
+	add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
+
+	function b2b_price_suffix( $suffix, $product ) {
+		if ( is_b2b_customer() ) {
+			$suffix = str_replace( 'incl', 'excl', $suffix );
+		}
+		return $suffix;
 	}
 
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
@@ -1694,16 +1709,6 @@
 			$tax_class = 'vrijgesteld';
 		}
 		return $tax_class;
-	}
-
-	// Vervang de prijssuffix indien het om een ingelogde B2B-klant gaat MAG ENKEL VOOR BUITENLANDSE KLANTEN
-	// add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
-
-	function b2b_price_suffix( $suffix, $product ) {
-		if ( is_b2b_customer() ) {
-			$suffix = str_replace( 'incl', 'excl', $suffix );
-		}
-		return $suffix;
 	}
 
 	// Geef hint om B2B-klant te worden
