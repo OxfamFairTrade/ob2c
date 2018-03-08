@@ -1030,7 +1030,7 @@
 				"billing_company",
 				"billing_vat",
 			);
-			$order = $order_b2b + $order;
+			$order = array_unshift( $order_b2b, $order );
 		}
 
 		foreach ( $order as $field ) {
@@ -1487,7 +1487,6 @@
 			"billing_last_name",
 			"billing_email",
 			"billing_phone",
-			"billing_birthday",
 			"billing_address_1",
 			"billing_postcode",
 			"billing_city",
@@ -1500,7 +1499,7 @@
 				"billing_company",
 				"billing_vat",
 			);
-			$order = $order_b2b + $order;
+			$order = array_unshift( $order_b2b, $order );
 		}
 
 		foreach ( $order as $field ) {
