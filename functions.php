@@ -1257,8 +1257,8 @@
 	}
 
 	function format_zipcode( $value ) {
-		// VERWIJDER TEKENS DIE GEEN CIJFER ZIJN?
-		return trim($value);
+		// Verwijder alle tekens die geen cijfer zijn
+		return preg_replace( '/\D/', '', trim($value) );
 	}
 
 	function format_city( $value ) {
@@ -2117,7 +2117,7 @@
 	add_action( 'woocommerce_before_cart', 'show_almost_free_shipping_notice' );
 
 	function show_almost_free_shipping_notice() {
-		if ( is_cart() ) {
+		if ( is_cart() and ! is_b2b_customer() ) {
 			$threshold = 100;
 			// Subtotaal = winkelmandje inclusief belasting, exclusief verzending
 			$current = WC()->cart->subtotal;
@@ -2585,9 +2585,9 @@
 	}
 
 	function comma_string_to_array( $values ) {
-		$values = preg_replace( "/\s/", "", $values );
-		$values = preg_replace( "/\//", "-", $values );
-		$array = (array)preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
+		$values = preg_replace( '/\s/', '', $values );
+		$values = preg_replace( '/\//', '-', $values );
+		$array = (array)preg_split( '/(,|;|&)/', $values, -1, PREG_SPLIT_NO_EMPTY );
 
 		foreach ( $array as $key => $value ) {
 			$array[$key] = mb_strtolower( trim($value) );
@@ -2601,9 +2601,9 @@
 	}
 
 	function comma_string_to_numeric_array( $values ) {
-		$values = preg_replace( "/\s/", "", $values );
-		$values = preg_replace( "/\//", "-", $values );
-		$array = (array)preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
+		$values = preg_replace( '/\s/', '', $values );
+		$values = preg_replace( '/\//', '-', $values );
+		$array = (array)preg_split( '/(,|;|&)/', $values, -1, PREG_SPLIT_NO_EMPTY );
 
 		foreach ( $array as $key => $value ) {
 			$array[$key] = intval( $value );
