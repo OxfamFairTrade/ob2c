@@ -1694,7 +1694,7 @@
 	}
 
 	// Zorg ervoor dat wijzigingen aan klanten in kortingsbonnen ook gesynct worden met die profielen TO DO
-	add_action( 'save_post_shop_coupon', 'sync_reductions_with_users' );
+	add_action( 'save_post_shop_coupon', 'sync_reductions_with_users', 3, 10 );
 
 	function sync_reductions_with_users( $post_id, $post, $update ) {
 		write_log("COUPON WORDT BIJGEWERKT");
