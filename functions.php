@@ -1664,8 +1664,13 @@
 		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
 		update_user_meta( $user_id, $check_key, $_POST[$check_key] );
 		
-		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon
+		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon, op voorwaarde dat B2B aangevinkt is!
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
+		if ( $_POST[$check_key] !== 'yes' ) {
+			// Ledig het eventueel geselecteerde kortingstarief
+			$_POST[$select_key] = '';
+		}
+
 		if ( ! empty($_POST[$select_key]) ) {
 			$coupon_id = intval( $_POST[$select_key] );	
 		} else {
@@ -1679,6 +1684,7 @@
 			// Want anders retourneert explode() een leeg element
 			$current_users = array();
 		}
+		
 		if ( ! in_array( $user_id, $current_users ) ) {
 			$current_users[] = $user_id;
 		} else {
