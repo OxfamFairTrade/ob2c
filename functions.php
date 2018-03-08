@@ -1013,24 +1013,22 @@
 		);
 
 		$order = array(
-			"billing_first_name",
-			"billing_last_name",
-			"billing_address_1",
-			"billing_birthday",
-			"billing_postcode",
-			"billing_city",
+			'billing_first_name',
+			'billing_last_name',
+			'billing_email',
+			'billing_phone',
+			'billing_address_1',
+			'billing_birthday',
+			'billing_postcode',
+			'billing_city',
 			// NODIG VOOR SERVICE POINT!
-			"billing_country",
-			"billing_email",
-			"billing_phone",
+			'billing_country',
+			
 		);
 
 		if ( is_b2b_customer() ) {
-			$order_b2b = array(
-				"billing_company",
-				"billing_vat",
-			);
-			$order = array_unshift( $order_b2b, $order );
+			array_unshift( $order, 'billing_vat' );
+			array_unshift( $order, 'billing_company' );
 		}
 
 		foreach ( $order as $field ) {
@@ -1038,7 +1036,6 @@
 		}
 
 		$address_fields = $ordered_fields;
-		
 		return $address_fields;
 	}
 
@@ -1483,23 +1480,21 @@
 		$profile_fields['shipping']['fields'] = array_swap_assoc( 'shipping_city', 'shipping_postcode', $profile_fields['shipping']['fields'] );
 
 		$order = array(
-			"billing_first_name",
-			"billing_last_name",
-			"billing_email",
-			"billing_phone",
-			"billing_address_1",
-			"billing_postcode",
-			"billing_city",
-			"billing_country",
+			'billing_first_name',
+			'billing_last_name',
+			'billing_email',
+			'billing_phone',
+			'billing_address_1',
+			'billing_postcode',
+			'billing_city',
+			'billing_country',
+			
 		);
 
 		// BETER TONEN/VERBERGEN MET JQUERY?
-		if ( is_b2b_customer($_GET['user_id']) ) {
-			$order_b2b = array(
-				"billing_company",
-				"billing_vat",
-			);
-			$order = array_unshift( $order_b2b, $order );
+		if ( is_b2b_customer() ) {
+			array_unshift( $order, 'billing_vat' );
+			array_unshift( $order, 'billing_company' );
 		}
 
 		foreach ( $order as $field ) {
@@ -1507,7 +1502,6 @@
 		}
 
 		$profile_fields['billing']['fields'] = $billing_fields;
-		
 		return $profile_fields;
 	}
 
