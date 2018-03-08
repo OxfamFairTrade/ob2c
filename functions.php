@@ -1693,6 +1693,13 @@
 		update_user_meta( $user_id, $select_key, $_POST[$select_key] );
 	}
 
+	// Zorg ervoor dat wijzigingen aan klanten in kortingsbonnen ook gesynct worden met die profielen TO DO
+	add_action( 'save_post_shop_coupon', 'sync_reductions_with_users' );
+
+	function sync_reductions_with_users( $post_id, $post, $update ) {
+		write_log("COUPON WORDT BIJGEWERKT");
+	}
+
 	// Geen BTW tonen bij producten en in het winkelmandje
 	add_filter( 'pre_option_woocommerce_tax_display_shop', 'override_tax_display_setting' );
 	add_filter( 'pre_option_woocommerce_tax_display_cart', 'override_tax_display_setting' );
