@@ -195,13 +195,13 @@
 		if ( user_can( $user, 'manage_woocommerce' ) ) {
 			$key = 'blog_'.get_current_blog_id().'_member_of_shop';
 			?>
-			<h3 style="color: red;">Regiosamenwerking</h3>
-			<table class="form-table" style="color: red;">
+			<h3>Regiosamenwerking</h3>
+			<table class="form-table">
 				<tr>
-					<th><label for="<?php echo $key; ?>" style="color: red;">Ik bevestig orders voor ...</label></th>
+					<th><label for="<?php echo $key; ?>">Ik bevestig orders voor ...</label></th>
 					<td>
 						<?php
-							echo '<select name="'.$key.'" id="'.$key.'" style="color: red;">';
+							echo '<select name="'.$key.'" id="'.$key.'">';
 								$member_of = get_the_author_meta( $key, $user->ID );
 								$shops = get_option( 'oxfam_member_shops' );
 								$selected = empty( $member_of ) ? ' selected' : '';
@@ -1671,7 +1671,7 @@
 	}
 
 	function sanitize_woocommerce_customer_fields( $null, $object_id, $meta_key, $meta_value, $prev_value ) {
-		write_log("HALLO, IK BEN ER");
+		write_log("HALLO, IK BEN ".$meta_key);
 		if ( 'billing_vat' === $meta_key ) {
 			$meta_value = format_tax($meta_value);
 		}
