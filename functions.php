@@ -1611,14 +1611,13 @@
 					<td>
 						<select name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
 						<?php
-							// echo '<option value="">(selecteer)</option><option value="5%">5%</option><option value="10%">10%</option>';
 							$args = array(
 								'posts_per_page' => -1,
 								'post_type' => 'shop_coupon',
 								'post_status' => 'publish',
 							);
 							$coupons = get_posts($args);
-							echo '<option value="">(selecteer)</option>';
+							echo '<option value="">n.v.t.</option>';
 							foreach ( $coupons as $coupon ) {
 								$payment_methods = get_post_meta( $coupon->ID, '_wjecf_payment_methods', true );
 								if ( $payment_methods[0] === 'cod' ) {
@@ -1646,21 +1645,28 @@
 		
 		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
-		update_usermeta( $user_id, $select_key, $_POST[$select_key] );
 		if ( ! empty($_POST[$select_key]) ) {
-			$current_users = explode( ',', get_post_meta( intval($_POST[$select_key]), '_wjecf_customer_ids', true ) );
-			if ( ! in_array( $user_id, $current_users ) ) {
-				$current_users[] = $user_id;
-			} else {
-				if ( ( $key = array_search( $user_id, $current_users ) ) !== false ) {
-					unset($current_users[$key]);
-				}
-			}
-			update_post_meta( intval($_POST[$select_key]), '_wjecf_customer_ids', implode( ',', $current_users ) );
+			$coupon_id = intval( $_POST[$select_key] );	
+		} else {
+			$coupon_id = intval( get_usermeta( $user_id, $select_key, true ) );
 		}
+		$current_users = explode( ',', get_post_meta( $coupon_id, '_wjecf_customer_ids', true ) );
+		
+		if ( ! in_array( $user_id, $current_users ) ) {
+			$current_users[] = $user_id;
+		} else {
+			if ( ( $match_key = array_search( $user_id, $current_users ) ) !== false ) {
+				unset($current_users[$match_key]);
+			}
+		}
+		update_post_meta( $coupon_id, '_wjecf_customer_ids', implode( ',', $current_users ) );
+
+		// Nu pas de coupon-ID op de gebruiker bijwerken
+		update_usermeta( $user_id, $select_key, $_POST[$select_key] );
 	}
 
 	function sanitize_woocommerce_customer_fields( $null, $object_id, $meta_key, $meta_value, $prev_value ) {
+		write_log("HALLO, IK BEN ER");
 		if ( 'billing_vat' === $meta_key ) {
 			$meta_value = format_tax($meta_value);
 		}
