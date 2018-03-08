@@ -1585,32 +1585,39 @@
 	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field' );
 
 	function add_is_b2b_customer_field( $user ) {
-		$key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
-		$is_b2b_here = get_the_author_meta( $key, $user->ID );
+		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
+		$is_b2b_customer = get_the_author_meta( $check_key, $user->ID );
+		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
+		$has_b2b_coupon = get_the_author_meta( $select_key, $user->ID );
 		?>
 		<h3>B2B-verkoop</h3>
 		<table class="form-table">
 			<tr>
-				<th><label for="<?php echo $key; ?>">Geverifieerde bedrijfsklant</label></th>
+				<th><label for="<?php echo $check_key; ?>">Geverifieerde bedrijfsklant</label></th>
 				<td>
-					<?php
-						echo '<input type="checkbox" name="'.$key.'" id="'.$key.'" value="yes"';
-						if ( $is_b2b_here === 'yes' ) {
-							echo ' checked="checked"';
-						}
-						echo ' />';
-					?>
+					<input type="checkbox" name="<?php echo $check_key; ?>" id="<?php echo $check_key; ?>" value="yes" <?php checked( $is_b2b_customer, 'yes' ); ?> />;
 					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
 				</td>
 			</tr>
-			<?php if ( $is_b2b_here === 'yes' ) : ?>
-				<?php $key = 'blog_'.get_current_blog_id().'_has_b2b_coupon'; ?>
+			<?php if ( $is_b2b_customer === 'yes' ) : ?>
 				<tr>
-					<th><label for="<?php echo $key; ?>">Kortingspercentage</label></th>
+					<th><label for="<?php echo $select_key; ?>">Kortingspercentage</label></th>
 					<td>
+						<select name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
 						<?php
-							echo '<select name="'.$key.'" id="'.$key.'"><option value="">(selecteer)</option><option value="5%">5%</option><option value="10%">10%</option></select>';
+							// echo '<option value="">(selecteer)</option><option value="5%">5%</option><option value="10%">10%</option>';
+							$args = array(
+								'posts_per_page' => -1,
+								'post_type' => 'shop_coupon',
+								'post_status' => 'publish',
+							);
+							$coupons = get_posts($args);
+							echo '<option value="">(selecteer)</option>';
+							foreach ( $coupons as $coupon ) {
+								echo '<option value="'.$coupon->post_title.'" '.selected( $coupon->post_title, $has_b2b_coupon ).'>'.trim_and_uppercase( $coupon->post_title ).'</option>';
+							}
 						?>
+						</select>
 						<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje.</span>
 					</td>
 				</tr>
