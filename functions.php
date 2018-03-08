@@ -2144,7 +2144,7 @@
 
 			// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
 			$free_home_available = false;
-			foreach ( $rates as $rate ) {
+			foreach ( $rates as $rate_key => $rate ) {
 				if ( $rate->method_id === 'free_shipping' ) {
 					if ( $rate->zone_id === 0 ) {
 						unset( $rates[$rate_key] );
@@ -2261,7 +2261,6 @@
 		} else {
 			// Enkel gratis B2B-levering overhouden?
 			foreach ( $rates as $rate_key => $rate ) {
-				var_dump_pre($rate);
 				if ( $rate->method_id === 'free_shipping' ) {
 					$rates = $rates[$rate_key];
 				}
