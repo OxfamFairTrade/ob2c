@@ -1030,7 +1030,7 @@
 				"billing_company",
 				"billing_vat",
 			);
-			$order = $order_b2b + $order;	
+			$order = $order_b2b + $order;
 		}
 
 		foreach ( $order as $field ) {
@@ -1458,18 +1458,15 @@
 
 	function modify_user_admin_fields( $profile_fields ) {
 		$profile_fields['billing']['title'] = 'Klantgegevens';
+		$profile_fields['billing']['fields']['billing_company']['label'] = 'Bedrijf of vereniging';
+		$profile_fields['billing']['fields']['billing_vat']['label'] = 'BTW-nummer';
 		$profile_fields['billing']['fields']['billing_first_name']['label'] = 'Voornaam';
 		$profile_fields['billing']['fields']['billing_last_name']['label'] = 'Familienaam';
-		if ( ! is_b2b_customer() ) {
-			unset( $profile_fields['billing']['fields']['billing_company'] );
-		} else {
-			$profile_fields['billing']['fields']['billing_vat']['label'] = 'BTW-nummer';
-		}
+		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
+		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
 		$profile_fields['billing']['fields']['billing_address_1']['label'] = 'Straat en huisnummer';
 		$profile_fields['billing']['fields']['billing_postcode']['label'] = 'Postcode';
 		$profile_fields['billing']['fields']['billing_city']['label'] = 'Gemeente';
-		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
-		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
 		unset( $profile_fields['billing']['fields']['billing_address_2'] );
 		unset( $profile_fields['billing']['fields']['billing_state'] );
 		
@@ -1483,8 +1480,34 @@
 		unset( $profile_fields['shipping']['fields']['shipping_company'] );
 		unset( $profile_fields['shipping']['fields']['shipping_state'] );
 
-		$profile_fields['billing']['fields'] = array_swap_assoc( 'billing_city', 'billing_postcode', $profile_fields['billing']['fields'] );
 		$profile_fields['shipping']['fields'] = array_swap_assoc( 'shipping_city', 'shipping_postcode', $profile_fields['shipping']['fields'] );
+
+		$order = array(
+			"billing_first_name",
+			"billing_last_name",
+			"billing_email",
+			"billing_phone",
+			"billing_birthday",
+			"billing_address_1",
+			"billing_postcode",
+			"billing_city",
+			"billing_country",
+		);
+
+		// BETER TONEN/VERBERGEN MET JQUERY?
+		if ( is_b2b_customer($_GET['user_id']) ) {
+			$order_b2b = array(
+				"billing_company",
+				"billing_vat",
+			);
+			$order = $order_b2b + $order;
+		}
+
+		foreach ( $order as $field ) {
+			$billing_fields[$field] = $profile_fields['billing'][$field];
+		}
+
+		$profile_fields['billing'] = $billing_fields;
 		
 		return $profile_fields;
 	}
@@ -1589,6 +1612,21 @@
 					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
 				</td>
 			</tr>
+			<?php if ( is_b2b_customer($user->ID) ) : ?>
+				<tr>
+					<th><label for="<?php echo $key; ?>">Geverifieerde bedrijfsklant</label></th>
+					<td>
+						<?php
+							echo '<input type="checkbox" name="'.$key.'" id="'.$key.'" value="yes"';
+							if ( $b2b == 'yes' ) {
+								echo ' checked="checked"';
+							}
+							echo ' />';
+						?>
+						<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
+					</td>
+				</tr>
+			<?php endif; ?>
 		</table>
 		<?php
 	}
@@ -1598,17 +1636,21 @@
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
 		$key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
 		update_usermeta( $user_id, $key, $_POST[$key] );
+		// VOEG $user_id TOE AAN '_wjecf_customer_ids' van 'shop_coupon' met overeenstemmende b2b{PERCENTAGE}
 	}
 
-	// Geef hint om B2B-klant te worden
-	add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
+	// Geen BTW tonen tijdens het winkelen
+	add_filter( 'pre_option_woocommerce_tax_display_shop', 'override_tax_display_setting' );
+	// add_filter( 'pre_option_woocommerce_tax_display_cart', 'override_tax_display_setting' );
 
-	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
-		if ( ! is_b2b_customer() ) {
-			wc_add_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via '.get_company_email().'.', 'notice' );
+	function override_tax_display_setting() {
+		if ( is_b2b_customer() ) {
+			return 'excl';
+		} else {
+			return 'incl';
 		}
 	}
-	
+
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
 	// add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
 
@@ -1630,6 +1672,15 @@
 		return $suffix;
 	}
 
+	// Geef hint om B2B-klant te worden
+	add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
+
+	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
+		if ( ! is_b2b_customer() ) {
+			wc_add_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via '.get_company_email().'.', 'notice' );
+		}
+	}
+	
 	// Toon enkel overschrijving als betaalmethode indien B2B-klant
 	add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
 
@@ -1649,19 +1700,17 @@
 	}
 
 	// Zorg ervoor dat de spinners niet enkel in het winkelwagentje maar ook in de catalogus (en scanner) gelimiteerd zijn tot de beschikbare voorraad
-	add_filter( 'woocommerce_quantity_input_args', 'limit_to_stock', 10, 2 );
+	add_filter( 'woocommerce_quantity_input_args', 'suggest_order_unit_multiple', 10, 2 );
 	
-	function limit_to_stock( $args, $product ) {
-		if ( is_b2b_customer() ) {
+	function suggest_order_unit_multiple( $args, $product ) {
+		// Niet toepassen bij winkelmandjes
+		if ( ! is_cart() and is_b2b_customer() ) {
 			$multiple = intval( $product->get_attribute('ompak') );
 			if ( $multiple < 1 ) {
 				$multiple = 1;
 			}
-			// Enkel op productdetailpagina's toepassen om winkelmandjes niet te verstoren
-			if ( is_singular( 'product' ) ) {
-				// Waarde is een suggestie maar géén afgedwongen minimum, precies wat we willen!
-				$args['input_value'] = $multiple;
-			}
+			// Waarde is een suggestie maar géén afgedwongen minimum, precies wat we willen!
+			$args['input_value'] = $multiple;
 			$args['step'] = $multiple;
 		}
 		return $args;
