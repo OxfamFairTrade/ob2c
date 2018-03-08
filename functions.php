@@ -1644,9 +1644,8 @@
 			return false;
 		}
 
-		write_log($_POST['billing_vat']);
 		if ( isset($_POST['billing_vat']) ) {
-			$meta_value = format_tax($meta_value);
+			$_POST['billing_vat'] = format_tax($_POST['billing_vat']);
 		}
 
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
