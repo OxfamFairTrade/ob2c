@@ -1659,6 +1659,12 @@
 		if ( isset($_POST['billing_vat']) ) {
 			$_POST['billing_vat'] = format_tax($_POST['billing_vat']);
 		}
+		if ( isset($_POST['billing_postcode']) ) {
+			$_POST['billing_postcode'] = format_zipcode($_POST['billing_postcode']);
+		}
+		if ( isset($_POST['shipping_postcode']) ) {
+			$_POST['shipping_postcode'] = format_zipcode($_POST['shipping_postcode']);
+		}
 
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
 		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
