@@ -1641,6 +1641,7 @@
 		
 		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
+		update_usermeta( $user_id, $select_key, $_POST[$select_key] );
 		if ( ! empty($_POST[$select_key]) ) {
 			$current_users = explode( ',', get_post_meta( intval($_POST[$select_key]), '_wjecf_customer_ids', true ) );
 			if ( ! in_array( $user_id, $current_users ) ) {
