@@ -1645,9 +1645,9 @@
 			return false;
 		}
 
-		$names = array( 'billing_company', 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_city', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_city', );
-		foreach ( $names as $key ) {
-			if ( isset($_POST[$key]) ) {
+		$names = array( 'billing_company', 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_city', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_city' );
+		foreach ( $names as $name ) {
+			if ( isset($_POST[$name]) ) {
 				$_POST[$name] = trim_and_uppercase($_POST[$name]);
 			}
 		}
