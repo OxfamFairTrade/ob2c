@@ -1187,8 +1187,10 @@
 		$value = preg_replace( '/[\s\-\.\/]/', '', $value );
 		if ( mb_strlen($value) === 10 ) {
 			return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
-		} else {
+		} elseif ( mb_strlen($value) === 9 ) {
 			return 'BE 0'.substr( $value, 0, 3 ).".".substr( $value, 3, 3 ).".".substr( $value, 6, 3 );
+		} else {
+			return '';
 		}
 	}
 
@@ -1653,6 +1655,16 @@
 			}
 			update_post_meta( intval($_POST[$select_key]), '_wjecf_customer_ids', implode( ',', $current_users ) );
 		}
+	}
+
+	// Uniformeer de gebruikersdata net voor we ze opslaan in de database
+	add_filter( 'update_user_metadata', 'sanitize_customer_fields', 10, 5 );
+
+	function sanitize_customer_fields( $null, $object_id, $meta_key, $meta_value, $prev_value ) {
+		if ( 'billing_vat' === $meta_key ) {
+			$meta_value = format_tax($meta_value);
+		}
+		return null;
 	}
 
 	// Geen BTW tonen tijdens het winkelen
