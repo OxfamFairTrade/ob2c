@@ -2148,15 +2148,29 @@
 		if ( ! is_b2b_customer() ) {
 			validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 
+			var_dump_pre($rates);
+
+			$shipping_zones = WC_Shipping_Zones::get_zones();
+			foreach ( $shipping_zones as $shipping_zone ) {
+				if ( $shipping_zone->get_zone_name() === 'B2B' ) {
+					$b2b_methods = $shipping_zone->get_shipping_methods();
+					var_dump_pre($b2b_methods);
+					foreach ( $b2b_methods as $b2b_method_key => $b2b_method ) {
+						unset($rates[$b2b_method_key]);	
+					}
+					break;
+				}
+			}
+
+			if ( $rate->zone_id === 0 ) {
+				unset( $rates[$rate_key] );
+			}
+						
 			// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
 			$free_home_available = false;
 			foreach ( $rates as $rate_key => $rate ) {
 				if ( $rate->method_id === 'free_shipping' ) {
-					if ( $rate->zone_id === 0 ) {
-						unset( $rates[$rate_key] );
-					} else {
-						$free_home_available = true;	
-					}
+					$free_home_available = true;	
 					break;
 				}
 			}
