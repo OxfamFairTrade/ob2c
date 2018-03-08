@@ -1672,8 +1672,14 @@
 		} else {
 			$coupon_id = intval( get_user_meta( $user_id, $select_key, true ) );
 		}
-		$current_users = explode( ',', trim( get_post_meta( $coupon_id, '_wjecf_customer_ids', true ) ) );
-		
+
+		$current_users_string = trim( get_post_meta( $coupon_id, '_wjecf_customer_ids', true ) );
+		if ( strlen( $current_users_string ) > 0 ) {
+			$current_users = explode( ',', $current_users_string );	
+		} else {
+			// Want anders retourneert explode() een leeg element
+			$current_users = array();
+		}
 		if ( ! in_array( $user_id, $current_users ) ) {
 			$current_users[] = $user_id;
 		} else {
