@@ -1027,8 +1027,7 @@
 		);
 
 		if ( is_b2b_customer() ) {
-			array_unshift( $order, 'billing_vat' );
-			array_unshift( $order, 'billing_company' );
+			array_unshift( $order, 'billing_company', 'billing_vat' );
 		}
 
 		foreach ( $order as $field ) {
@@ -1492,9 +1491,8 @@
 		);
 
 		// BETER TONEN/VERBERGEN MET JQUERY?
-		if ( is_b2b_customer() ) {
-			array_unshift( $order, 'billing_vat' );
-			array_unshift( $order, 'billing_company' );
+		if ( is_b2b_customer($_GET['user_id']) ) {
+			array_unshift( $order, 'billing_company', 'billing_vat' );
 		}
 
 		foreach ( $order as $field ) {
