@@ -2153,11 +2153,12 @@
 			$shipping_zones = WC_Shipping_Zones::get_zones();
 			foreach ( $shipping_zones as $shipping_zone ) {
 				var_dump_pre($shipping_zone);
-				if ( $shipping_zone['name'] === 'B2B' ) {
-					// $b2b_methods = $shipping_zone->get_shipping_methods();
-					// foreach ( $b2b_methods as $b2b_method_key => $b2b_method ) {
-					// 	unset($rates[$b2b_method_key]);	
-					// }
+				if ( $shipping_zone['zone_name'] === 'B2B' ) {
+					$b2b_methods = $shipping_zone['shipping_methods'];
+					foreach ( $b2b_methods as $shipping_method ) {
+						$method_key = $shipping_method['id'].':'.$shipping_method['instance_id'];
+						unset($rates[$method_key]);	
+					}
 					break;
 				}
 			}
