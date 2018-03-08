@@ -680,6 +680,9 @@
 	add_action( 'init', 'woocommerce_clear_cart_url' );
 	
 	function woocommerce_clear_cart_url() {
+		// Uniformeer de gebruikersdata net voor we ze opslaan in de database
+		add_filter( 'update_user_metadata', 'sanitize_woocommerce_customer_fields', 10, 5 );
+
 		if ( isset( $_GET['referralZip'] ) ) {
 			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar
 			WC()->customer->set_billing_postcode( intval( $_GET['referralZip'] ) );
@@ -1657,10 +1660,7 @@
 		}
 	}
 
-	// Uniformeer de gebruikersdata net voor we ze opslaan in de database
-	add_filter( 'update_user_metadata', 'sanitize_customer_fields', 10, 5 );
-
-	function sanitize_customer_fields( $null, $object_id, $meta_key, $meta_value, $prev_value ) {
+	function sanitize_woocommerce_customer_fields( $null, $object_id, $meta_key, $meta_value, $prev_value ) {
 		if ( 'billing_vat' === $meta_key ) {
 			$meta_value = format_tax($meta_value);
 		}
