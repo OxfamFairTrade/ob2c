@@ -1023,7 +1023,6 @@
 			'billing_city',
 			// NODIG VOOR SERVICE POINT!
 			'billing_country',
-			
 		);
 
 		if ( is_b2b_customer() ) {
@@ -1033,6 +1032,8 @@
 		foreach ( $order as $field ) {
 			$ordered_fields[$field] = $address_fields[$field];
 		}
+
+		var_dump_pre($ordered_fields);
 
 		$address_fields = $ordered_fields;
 		return $address_fields;
@@ -1595,7 +1596,7 @@
 			<tr>
 				<th><label for="<?php echo $check_key; ?>">Geverifieerde bedrijfsklant</label></th>
 				<td>
-					<input type="checkbox" name="<?php echo $check_key; ?>" id="<?php echo $check_key; ?>" value="yes" <?php checked( $is_b2b_customer, 'yes' ); ?> />;
+					<input type="checkbox" name="<?php echo $check_key; ?>" id="<?php echo $check_key; ?>" value="yes" <?php checked( $is_b2b_customer, 'yes' ); ?> />
 					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
 				</td>
 			</tr>
@@ -1614,7 +1615,9 @@
 							$coupons = get_posts($args);
 							echo '<option value="">(selecteer)</option>';
 							foreach ( $coupons as $coupon ) {
-								echo '<option value="'.$coupon->post_title.'" '.selected( $coupon->post_title, $has_b2b_coupon ).'>'.trim_and_uppercase( $coupon->post_title ).'</option>';
+								if ( get_post_meta( $coupon->ID, '_wjecf_payment_methods', true ) === 'cod' ) {
+									echo '<option value="'.$coupon->post_title.'" '.selected( $coupon->post_title, $has_b2b_coupon ).'>'.str_replace( 'b2b', '', $coupon->post_title ).'</option>';
+								}
 							}
 						?>
 						</select>
