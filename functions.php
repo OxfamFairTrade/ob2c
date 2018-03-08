@@ -1036,8 +1036,7 @@
 			$ordered_fields[$field] = $address_fields[$field];
 		}
 
-		var_dump_pre($ordered_fields);
-
+		// WORDT NOG EENS HERORDEND DOOR WOOCOMMERCE???
 		$address_fields = $ordered_fields;
 		return $address_fields;
 	}
@@ -2147,7 +2146,6 @@
 			$free_home_available = false;
 			foreach ( $rates as $rate ) {
 				if ( $rate->method_id === 'free_shipping' ) {
-					// ZONE-ID = 0
 					if ( $rate->zone_id === 0 ) {
 						unset( $rates[$rate_key] );
 					} else {
@@ -2263,9 +2261,8 @@
 		} else {
 			// Enkel gratis B2B-levering overhouden?
 			foreach ( $rates as $rate_key => $rate ) {
-				var_dump_pre($rate->zone_id);
-				// ZONE-ID = 0
-				if ( $rate->method_id === 'free_shipping' and $rate->zone_id === 0 ) {
+				var_dump_pre($rate);
+				if ( $rate->method_id === 'free_shipping' ) {
 					$rates = $rates[$rate_key];
 				}
 			}
