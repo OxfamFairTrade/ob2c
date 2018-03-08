@@ -1625,7 +1625,7 @@
 							echo '<option value="">n.v.t.</option>';
 							foreach ( $coupons as $coupon ) {
 								$payment_methods = get_post_meta( $coupon->ID, '_wjecf_payment_methods', true );
-								if ( count($payment_methods) === 1 and $payment_methods[0] === 'cod' ) {
+								if ( is_array($payment_methods) and $payment_methods[0] === 'cod' ) {
 									echo '<option value="'.$coupon->ID.'" '.selected( $coupon->ID, $has_b2b_coupon ).'>'.str_replace( 'b2b', '', $coupon->post_title ).'</option>';
 								}
 							}
@@ -1644,6 +1644,7 @@
 			return false;
 		}
 
+		write_log($_POST['billing_vat']);
 		if ( isset($_POST['billing_vat']) ) {
 			$meta_value = format_tax($meta_value);
 		}
