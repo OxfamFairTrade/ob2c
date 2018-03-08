@@ -1504,10 +1504,10 @@
 		}
 
 		foreach ( $order as $field ) {
-			$billing_fields[$field] = $profile_fields['billing'][$field];
+			$billing_fields[$field] = $profile_fields['billing']['fields'][$field];
 		}
 
-		$profile_fields['billing'] = $billing_fields;
+		$profile_fields['billing']['fields'] = $billing_fields;
 		
 		return $profile_fields;
 	}
@@ -1595,7 +1595,7 @@
 
 	function add_is_b2b_customer_field( $user ) {
 		$key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
-		$b2b = get_the_author_meta( $key, $user->ID );
+		$is_b2b_here = get_the_author_meta( $key, $user->ID );
 		?>
 		<h3>B2B-verkoop</h3>
 		<table class="form-table">
@@ -1604,7 +1604,7 @@
 				<td>
 					<?php
 						echo '<input type="checkbox" name="'.$key.'" id="'.$key.'" value="yes"';
-						if ( $b2b == 'yes' ) {
+						if ( $is_b2b_here === 'yes' ) {
 							echo ' checked="checked"';
 						}
 						echo ' />';
@@ -1612,18 +1612,15 @@
 					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
 				</td>
 			</tr>
-			<?php if ( is_b2b_customer($user->ID) ) : ?>
+			<?php if ( $is_b2b_here === 'yes' ) : ?>
+				<?php $key = 'blog_'.get_current_blog_id().'_has_b2b_coupon'; ?>
 				<tr>
-					<th><label for="<?php echo $key; ?>">Geverifieerde bedrijfsklant</label></th>
+					<th><label for="<?php echo $key; ?>">Kortingspercentage</label></th>
 					<td>
 						<?php
-							echo '<input type="checkbox" name="'.$key.'" id="'.$key.'" value="yes"';
-							if ( $b2b == 'yes' ) {
-								echo ' checked="checked"';
-							}
-							echo ' />';
+							echo '<select name="'.$key.'" id="'.$key.'"><option value="">(selecteer)</option><option value="5%">5%</option><option value="10%">10%</option></select>';
 						?>
-						<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
+						<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje.</span>
 					</td>
 				</tr>
 			<?php endif; ?>
