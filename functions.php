@@ -2156,9 +2156,8 @@
 					$b2b_methods = $shipping_zone['shipping_methods'];
 					foreach ( $b2b_methods as $shipping_method ) {
 						$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
-						unset($rates[$method_key]);	
+						unset($rates[$method_key]);
 					}
-					break;
 				}
 			}
 
@@ -2283,8 +2282,17 @@
 		} else {
 			// Enkel gratis B2B-levering overhouden?
 			foreach ( $rates as $rate_key => $rate ) {
-				if ( $rate->method_id === 'free_shipping' ) {
-					$rates = $rates[$rate_key];
+				$shipping_zones = WC_Shipping_Zones::get_zones();
+				foreach ( $shipping_zones as $shipping_zone ) {
+					if ( $shipping_zone['zone_name'] !== 'B2B' ) {
+						$non_b2b_methods = $shipping_zone['shipping_methods'];
+						foreach ( $non_b2b_methods as $shipping_method ) {
+							if ( $shipping_method->name !== 'local_pickup_plus' ) {
+								$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
+								unset($rates[$method_key]);
+							}
+						}
+					}
 				}
 			}
 		}
