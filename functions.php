@@ -1615,8 +1615,9 @@
 							$coupons = get_posts($args);
 							echo '<option value="">(selecteer)</option>';
 							foreach ( $coupons as $coupon ) {
-								if ( get_post_meta( $coupon->ID, '_wjecf_payment_methods', true ) === 'cod' ) {
-									echo '<option value="'.$coupon->post_title.'" '.selected( $coupon->post_title, $has_b2b_coupon ).'>'.str_replace( 'b2b', '', $coupon->post_title ).'</option>';
+								$payment_methods = get_post_meta( $coupon->ID, '_wjecf_payment_methods', true );
+								if ( $payment_methods[0] === 'cod' ) {
+									echo '<option value="'.$coupon->ID.'" '.selected( $coupon->ID, $has_b2b_coupon ).'>'.str_replace( 'b2b', '', $coupon->post_title ).'</option>';
 								}
 							}
 						?>
@@ -1632,9 +1633,11 @@
 	function save_is_b2b_customer_field( $user_id ) {
 		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
-		$key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
-		update_usermeta( $user_id, $key, $_POST[$key] );
-		// VOEG $user_id TOE AAN '_wjecf_customer_ids' van 'shop_coupon' met overeenstemmende b2b{PERCENTAGE}
+		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
+		update_usermeta( $user_id, $check_key, $_POST[$check_key] );
+		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbonb2b{PERCENTAGE}
+		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
+		update_post_meta( intval($_POST[$select_key]), '_wjecf_customer_ids', $user_id );
 	}
 
 	// Geen BTW tonen tijdens het winkelen
