@@ -634,6 +634,9 @@
 			remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
+		if ( is_b2b_customer() ) {
+			$price .= ' per stuk';
+		}
 		return $price;
 	}
 
