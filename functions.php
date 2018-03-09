@@ -987,7 +987,7 @@
 		$address_fields['billing_email']['placeholder'] = "luc@gmail.com";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
 		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
-		$address_fields['billing_company']['label'] = "Bedrijf";
+		$address_fields['billing_company']['label'] = "Bedrijf of vereniging";
 		$address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
 		$address_fields['billing_vat']['label'] = "BTW-nummer";
 		$address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
@@ -1067,7 +1067,6 @@
 		}
 
 		$address_fields = $ordered_fields;
-		
 		return $address_fields;
 	}
 
@@ -1116,6 +1115,7 @@
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
 		$fields['order']['order_comments']['description'] = sprintf( __( 'Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer van de hoofdwinkel (%s).', 'oxfam-webshop' ), get_oxfam_shop_data( 'telephone' ) );
 
+		var_dump_pre($fields);
 		return $fields;
 	}
 
