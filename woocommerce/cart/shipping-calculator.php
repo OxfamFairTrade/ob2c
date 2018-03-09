@@ -12,8 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-// GEWIJZIGD: Niet tonen indien webshop geen thuislevering organiseert
-if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) or ! WC()->cart->needs_shipping() or ! does_home_delivery() ) {
+// GEWIJZIGD: Niet tonen indien webshop geen thuislevering organiseert of het om een B2B-klant gaat
+if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) or ! WC()->cart->needs_shipping() or ! does_home_delivery() or is_b2b_customer() ) {
 	return;
 }
 
