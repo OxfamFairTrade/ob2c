@@ -2,6 +2,9 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
+	require_once '../../../wc-api/autoload.php';
+	use Automattic\WooCommerce\Client;
+
 	// Voorlopig laten staan!
 	$prohibited_shops = array();
 
@@ -2364,6 +2367,8 @@
 		$empties_product = wc_get_product( $empties_array['id'] );
 		// Zou niet mogen, maar toch even checken
 		if ( $empties_product !== false ) {
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'leeggoed' );
 			switch ( $empties_product->get_sku() ) {
 				case 'WLBS6M':
 				case 'WLBS24M':
@@ -2395,9 +2400,9 @@
 						$plastic_sku = 'WLBS24M';
 					}
 
-					write_log($empties_array);
-					write_log($product_item);
-					write_log($plastic_sku." bij NIEUWE ".$empties_sku." checken");
+					$logger->debug( $empties_array, $context );
+					$logger->debug( $product_item, $context );
+					$logger->debug( $plastic_sku.' bij NIEUWE '.$empties_sku.' checken', $context );
 					
 					$plastic_in_cart = false;
 					$plastic_product_id = wc_get_product_id_by_sku($plastic_sku);
@@ -3061,6 +3066,24 @@
 			}
 			
 		} elseif ( $type === 'food' ) {
+			$oft_api = new Client(
+				'https://www.oxfamfairtrade.be', WC_KEY, WC_SECRET,
+				[
+					'wp_api' => true,
+					'version' => 'wc/v2',
+					'query_string_auth' => true,
+				]
+			);
+
+			$params = array( 'status' => 'any', 'sku' => $product->get_sku(), );
+			$oft_products = $oft_api->get( 'products', $params );
+			var_dump_pre($oft_products);
+			foreach ( $oft_products as $oft_product ) {
+				$oft_meta_data = $oft_product->meta_data;
+			}
+
+
+
 			$attributes = $product->get_attributes();
 
 			foreach ( $attributes as $attribute ) {
