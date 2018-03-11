@@ -517,7 +517,7 @@
 	}
 
 	// Check tijdelijk de verstuurde bevestigingsmails door mezelf in BCC te zetten
-	// add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
+	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
 
 	function put_administrator_in_bcc( $headers, $object ) {
 		// if ( $object === 'customer_processing_order' ) {
