@@ -3,6 +3,7 @@
 	if ( ! defined('ABSPATH') ) exit;
 
 	use Automattic\WooCommerce\Client;
+	use Automattic\WooCommerce\HttpClient\HttpClientException;
 	
 	// Voorlopig laten staan!
 	$prohibited_shops = array();
@@ -2367,7 +2368,7 @@
 		// Zou niet mogen, maar toch even checken
 		if ( $empties_product !== false ) {
 			$logger = wc_get_logger();
-			$context = array( 'source' => 'leeggoed' );
+			$context = array( 'source' => 'Empties' );
 			switch ( $empties_product->get_sku() ) {
 				case 'WLBS6M':
 				case 'WLBS24M':
@@ -2399,8 +2400,8 @@
 						$plastic_sku = 'WLBS24M';
 					}
 
-					$logger->debug( $empties_array, $context );
-					$logger->debug( $product_item, $context );
+					$logger->debug( wc_print_r( $empties_array, true ), $context );
+					$logger->debug( wc_print_r( $product_item, true ), $context );
 					$logger->debug( $plastic_sku.' bij NIEUWE '.$empties_sku.' checken', $context );
 					
 					$plastic_in_cart = false;
@@ -3064,125 +3065,139 @@
 			<?php	
 			}
 			
-		} elseif ( $type === 'food' ) {
+		} else {
 			
-			if ( false === ( $oft_meta_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
+			if ( false === ( $oft_quality_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
 
 				// Haal de kwaliteitsdata op in de OFT-site indien ze nog niet gecached werd in een transient 
 				require_once WP_CONTENT_DIR.'/wc-api/autoload.php';
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'Quality' );
 				$oft_db = new Client(
-					'https://www.oxfamfairtrade.be', WC_KEY, WC_SECRET,
+					'https://www.oxfamfairtrade.be', OFT_WC_KEY, OFT_WC_SECRET,
 					[
 						'wp_api' => true,
 						'version' => 'wc/v2',
 						'query_string_auth' => true,
 					]
 				);
-
+				// Trash kan niet doorzocht worden maar eenmaal we de ID hebben kunnen we het product wel nog opvragen!
 				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), );
-				$oft_products = $oft_db->get( 'products', $params );
-				$allowed_keys = array( '_fairtrade_share', '_ingredients', '_energy', '_fat', '_fasat', '_famscis', '_fapucis', '_fibtg', '_choavl', '_sugar', '_polyl', '_starch', '_salteq' );
 				
-				// Stop waarden in een array met als keys de namen van de eigenschappen
-				foreach ( $oft_products[0]->meta_data as $meta_object ) {
-					if ( in_array( $meta_object->key, $allowed_keys ) ) {
-						$oft_meta_data[$meta_object->key] = $meta_object->value;
+				try {
+					$oft_products = $oft_db->get( 'products', $params );
+					// $oft_product = $oft_db->get( 'products/'.$product->get_meta('oft_product_id') );
+					$last_response = $oft_db->http->getResponse();
+
+					$allowed_keys = array( '_ingredients', '_energy', '_fat', '_fasat', '_famscis', '_fapucis', '_fibtg', '_choavl', '_sugar', '_polyl', '_starch', '_salteq' );
+					
+					if ( $last_response->getCode() === 200 and count($oft_products) === 1 ) {
+						
+						// Stop voedingswaarden in een array met als keys de namen van de eigenschappen
+						foreach ( $oft_products[0]->meta_data as $meta_data ) {
+							if ( in_array( $meta_data->key, $allowed_keys ) ) {
+								$oft_quality_data['food'][$meta_data->key] = $meta_data->value;
+							}
+						}
+
+						// Stop allergenen in een array met als keys de slugs van de allergenen
+						foreach ( $oft_products[0]->product_allergen as $product_allergen ) {
+							$oft_quality_data['allergen'][$product_allergen->slug] = $product_allergen->name;
+						}
+
+						set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
+
+					} else {
+						$logger->warning( 'SKU '.$product->get_sku().' not found in OFT database', $context );
 					}
-				}
-				if ( count($oft_meta_data) > 0 ) {
-					set_site_transient( $product->get_sku().'_quality_data', $oft_meta_data, DAY_IN_SECONDS );
+
+				} catch ( HttpClientException $e ) {
+					$logger->critical( $e->getMessage(), $context );
 				}
 			}
+
+			if ( $type === 'food' ) {
 			
-			if ( array_key_exists( '_energy', $oft_meta_data ) ) {
+				if ( floatval($oft_quality_data['food']['_energy']) > 0 ) {
+					$has_row = true;
+					foreach ( $oft_quality_data['food'] as $key => $value ) {
+						if ( floatval($value) > 0 ) {
+							?>
+							<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+								<th><?php
+									$sub_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
+									if ( in_array( $key, $sub_keys ) ) {
+										echo '<i style="padding-left: 20px;">waarvan '.$key.'</i>';
+									} else {
+										echo $key;
+									}
+								?></th>
+								<td><?php
+									if ( in_array( $key, $sub_keys ) ) {
+										echo '<i>'.$value.'</i>';
+									} else {
+										echo $value;
+									}
+								?></td>
+							</tr>
+							<?php
+						}
+					}
+				}
+
+			} elseif ( $type === 'allergen' ) {
+
+				// Altijd tonen!
 				$has_row = true;
-				foreach ( $oft_meta_data as $key => $value ) {
-					?>
-					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-						<th><?php
-							$sub_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
-							if ( in_array( $key, $sub_keys ) ) {
-								echo '<i style="padding-left: 20px;">waarvan '.$key.'</i>';
-							} else {
-								echo $key;
-							}
-						?></th>
-						<td><?php
-							if ( in_array( $key, $sub_keys ) ) {
-								echo '<i>'.$value.'</i>';
-							} else {
-								echo $value;
-							}
-						?></td>
-					</tr>
+				$contains = array();
+				$traces = array();
+				$no_allergens = false;
+				foreach ( $oft_quality_data['allergen'] as $slug => $name ) {
+					$parts = explode( '-', $slug );
+					if ( $parts[0] === 'c' ) {
+						$contains[] = $name;
+					} elseif ( $parts[0] === 'mc' ) {
+						$traces[] = $name;
+					} elseif ( $parts[0] === 'none' ) {
+						$no_allergens = true;
+					}
+				}
+				?>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo 'Dit product bevat'; ?></th>
+					<td>
 					<?php
-				}
-			}
+						if ( count($contains) > 0 ) {
+							echo implode( ', ', $contains );
+						} else {
+							if ( $no_allergens === false or count($traces) > 0 ) {
+								echo 'geen meldingsplichtige allergenen';
+							} else {
+								echo '/';
+							}
+						}
+					?>
+					</td>
+				</tr>
 
-		} elseif ( $type === 'allergen' ) {
-			
-			if ( false === ( $oft_allergen_data = get_site_transient( $product->get_sku().'_allergen_data' ) ) ) {
-
-				// Haal de allergenendata op in de OFT-site indien ze nog niet gecached werd in een transient 
-				require_once WP_CONTENT_DIR.'/wc-api/autoload.php';
-				$oft_db = new Client(
-					'https://www.oxfamfairtrade.be', WC_KEY, WC_SECRET,
-					[
-						'wp_api' => true,
-						'version' => 'wc/v2',
-						'query_string_auth' => true,
-					]
-				);
-
-				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), );
-				$oft_products = $oft_db->get( 'products', $params );
-				
-				// Stop waarden in een array met als keys de namen van de eigenschappen
-				foreach ( $oft_products[0]->product_allergen as $allergen ) {
-					$oft_allergen_data[$allergen->slug] = $allergen->name;
-				}
-				set_site_transient( $product->get_sku().'_allergen_data', $oft_allergen_data, DAY_IN_SECONDS );
-			}
-
-			// Allergenentab altijd tonen!
-			$has_row = true;
-			$contains = array();
-			$traces = array();
-			foreach ( $oft_allergen_data as $slug => $name ) {
-				$parts = explode( '-', $slug );
-				if ( $parts[0] === 'c' ) {
-					$contains[] = $name;
-				} elseif ( $parts[0] === 'mc' ) {
-					$traces[] = $name;
-				}
-			}
-			?>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo 'Dit product bevat'; ?></th>
-				<td>
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo 'Kan sporen bevatten van'; ?></th>
+					<td>
+					<?php
+						if ( count($traces) > 0 ) {
+							echo implode( ', ', $traces );
+						} else {
+							if ( $no_allergens === false or count($contains) > 0 ) {
+								echo 'geen meldingsplichtige allergenen';
+							} else {
+								echo '/';
+							}
+						}
+					?>
+					</td>
+				</tr>
 				<?php
-					if ( count($contains) > 0 ) {
-						echo implode( ', ', $contains );
-					} else {
-						echo '/';
-					}
-				?>
-				</td>
-			</tr>
-
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo 'Kan sporen bevatten van'; ?></th>
-				<td>
-				<?php
-					if ( count( $traces ) > 0 ) {
-						echo implode( ', ', $traces );
-					} else {
-						echo '/';
-					}
-				?>
-				</td>
-			</tr>
-			<?php
+			}
 		}
 		
 		echo '</table>';
