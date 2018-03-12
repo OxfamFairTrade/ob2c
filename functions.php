@@ -2,9 +2,8 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	require_once '../../../wc-api/autoload.php';
 	use Automattic\WooCommerce\Client;
-
+	
 	// Voorlopig laten staan!
 	$prohibited_shops = array();
 
@@ -638,7 +637,7 @@
 			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
 		if ( is_b2b_customer() ) {
-			$price .= ' per stuk';
+			$price .= ' (= prijs per stuk!)';
 		}
 		return $price;
 	}
@@ -3066,72 +3065,95 @@
 			}
 			
 		} elseif ( $type === 'food' ) {
-			$oft_api = new Client(
-				'https://www.oxfamfairtrade.be', WC_KEY, WC_SECRET,
-				[
-					'wp_api' => true,
-					'version' => 'wc/v2',
-					'query_string_auth' => true,
-				]
-			);
+			
+			if ( false === ( $oft_meta_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
 
-			$params = array( 'status' => 'any', 'sku' => $product->get_sku(), );
-			$oft_products = $oft_api->get( 'products', $params );
-			var_dump_pre($oft_products);
-			foreach ( $oft_products as $oft_product ) {
-				$oft_meta_data = $oft_product->meta_data;
-			}
+				// Haal de kwaliteitsdata op in de OFT-site indien ze nog niet gecached werd in een transient 
+				require_once WP_CONTENT_DIR.'/wc-api/autoload.php';
+				$oft_db = new Client(
+					'https://www.oxfamfairtrade.be', WC_KEY, WC_SECRET,
+					[
+						'wp_api' => true,
+						'version' => 'wc/v2',
+						'query_string_auth' => true,
+					]
+				);
 
-
-
-			$attributes = $product->get_attributes();
-
-			foreach ( $attributes as $attribute ) {
-				$forbidden = array( 'pa_ompak', 'pa_eenheid', 'pa_fairtrade', 'pa_shopplus' );
-				// Logica omkeren: nu tonen we enkel de 'verborgen' attributen
-				if ( empty( $attribute['is_visible'] ) and ! in_array( $attribute['name'], $forbidden ) ) {
-					$has_row = true;
-				} else {
-					continue;
+				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), );
+				$oft_products = $oft_db->get( 'products', $params );
+				$allowed_keys = array( '_fairtrade_share', '_ingredients', '_energy', '_fat', '_fasat', '_famscis', '_fapucis', '_fibtg', '_choavl', '_sugar', '_polyl', '_starch', '_salteq' );
+				
+				// Stop waarden in een array met als keys de namen van de eigenschappen
+				foreach ( $oft_products[0]->meta_data as $meta_object ) {
+					if ( in_array( $meta_object->key, $allowed_keys ) ) {
+						$oft_meta_data[$meta_object->key] = $meta_object->value;
+					}
 				}
-				?>
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php
-						$subattributes = array( 'pa_fapucis', 'pa_famscis', 'pa_fasat', 'pa_polyl', 'pa_starch', 'pa_sugar' );
-						if ( in_array( $attribute['name'], $subattributes ) ) {
-							echo '<i style="padding-left: 20px;">waarvan '.lcfirst( wc_attribute_label( $attribute['name'] ) ).'</i>';
-						} else {
-							echo wc_attribute_label( $attribute['name'] );
-						}
-					?></th>
-					<td><?php
-						$values = wc_get_product_terms( $product->get_id(), $attribute['name'], array( 'fields' => 'names' ) );
-						if ( in_array( $attribute['name'], $subattributes ) ) {
-							// echo var_dump($values);
-							echo '<i>'.apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values ).'</i>';
-						} else {
-							echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
-							// echo var_dump($values);
-						}
-					?></td>
-				</tr>
-				<?php
+				if ( count($oft_meta_data) > 0 ) {
+					set_site_transient( $product->get_sku().'_quality_data', $oft_meta_data, DAY_IN_SECONDS );
+				}
+			}
+			
+			if ( array_key_exists( '_energy', $oft_meta_data ) ) {
+				$has_row = true;
+				foreach ( $oft_meta_data as $key => $value ) {
+					?>
+					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+						<th><?php
+							$sub_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
+							if ( in_array( $key, $sub_keys ) ) {
+								echo '<i style="padding-left: 20px;">waarvan '.$key.'</i>';
+							} else {
+								echo $key;
+							}
+						?></th>
+						<td><?php
+							if ( in_array( $key, $sub_keys ) ) {
+								echo '<i>'.$value.'</i>';
+							} else {
+								echo $value;
+							}
+						?></td>
+					</tr>
+					<?php
+				}
 			}
 
 		} elseif ( $type === 'allergen' ) {
+			
+			if ( false === ( $oft_allergen_data = get_site_transient( $product->get_sku().'_allergen_data' ) ) ) {
+
+				// Haal de allergenendata op in de OFT-site indien ze nog niet gecached werd in een transient 
+				require_once WP_CONTENT_DIR.'/wc-api/autoload.php';
+				$oft_db = new Client(
+					'https://www.oxfamfairtrade.be', WC_KEY, WC_SECRET,
+					[
+						'wp_api' => true,
+						'version' => 'wc/v2',
+						'query_string_auth' => true,
+					]
+				);
+
+				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), );
+				$oft_products = $oft_db->get( 'products', $params );
+				
+				// Stop waarden in een array met als keys de namen van de eigenschappen
+				foreach ( $oft_products[0]->product_allergen as $allergen ) {
+					$oft_allergen_data[$allergen->slug] = $allergen->name;
+				}
+				set_site_transient( $product->get_sku().'_allergen_data', $oft_allergen_data, DAY_IN_SECONDS );
+			}
+
 			// Allergenentab altijd tonen!
 			$has_row = true;
-			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
 			$contains = array();
 			$traces = array();
-
-			if ( $allergens !== false ) {
-				foreach ( $allergens as $allergen ) {
-					if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'contains' ) {
-						$contains[] = $allergen;
-					} elseif ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'may-contain' ) {
-						$traces[] = $allergen;
-					}
+			foreach ( $oft_allergen_data as $slug => $name ) {
+				$parts = explode( '-', $slug );
+				if ( $parts[0] === 'c' ) {
+					$contains[] = $name;
+				} elseif ( $parts[0] === 'mc' ) {
+					$traces[] = $name;
 				}
 			}
 			?>
@@ -3139,19 +3161,11 @@
 				<th><?php echo 'Dit product bevat'; ?></th>
 				<td>
 				<?php
-					$i = 0;
-					$str = '/';
-					if ( count( $contains ) > 0 ) {
-						foreach ( $contains as $substance ) {
-							$i++;
-							if ( $i === 1 ) {
-								$str = $substance->name;
-							} else {
-								$str .= ', '.$substance->name;
-							}
-						}
+					if ( count($contains) > 0 ) {
+						echo implode( ', ', $contains );
+					} else {
+						echo '/';
 					}
-					echo $str;
 				?>
 				</td>
 			</tr>
@@ -3160,19 +3174,11 @@
 				<th><?php echo 'Kan sporen bevatten van'; ?></th>
 				<td>
 				<?php
-					$i = 0;
-					$str = '/';
 					if ( count( $traces ) > 0 ) {
-						foreach ( $traces as $substance ) {
-							$i++;
-							if ( $i === 1 ) {
-								$str = $substance->name;
-							} else {
-								$str .= ', '.$substance->name;
-							}
-						}
+						echo implode( ', ', $traces );
+					} else {
+						echo '/';
 					}
-					echo $str;
 				?>
 				</td>
 			</tr>
