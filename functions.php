@@ -3454,7 +3454,7 @@
 	}
 
 	function print_copyright() {
-		return "<a href='".get_site_url( get_current_blog_id(), '/contact/' )."'>".get_company_name()." &copy; ".date_i18n('Y')."</a>";
+		return '<a href="'.get_site_url( get_current_blog_id(), '/contact/' ).'">'.get_company_name().' &copy; 2017-'.date_i18n('Y').'</a>';
 	}
 
 	function print_office_hours( $atts = [] ) {

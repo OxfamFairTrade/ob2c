@@ -26,7 +26,7 @@
 	// Instantiate Mollie class
 	$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 	
-	switch_to_blog( 34 );
+	switch_to_blog( 39 );
 
 	try {
 		// Parameters op te halen uit site
