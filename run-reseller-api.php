@@ -8,7 +8,7 @@
 	 * @copyright   Copyright © 2012 Mollie B.V.
 	 * @link        https://www.mollie.com
 	 * @category    Mollie
-	 * @version     1.8
+	 * @version     1.9
 	 *
 	 */
 
@@ -16,17 +16,17 @@
 	require_once '../../../wp-load.php';
 
 	if ( $_GET['import_key'] !== IMPORT_KEY ) {
-		die("Helaba, dit mag niet!");
+		die("Access prohibited!");
 	}
 
 	// Register autoloader
-	require_once '../../plugins/mollie-reseller-api/autoloader.php';
+	require_once WP_PLUGIN_DIR.'/mollie-reseller-api/autoloader.php';
 	Mollie_Autoloader::register();
 
 	// Instantiate Mollie class
 	$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 	
-	switch_to_blog( 33 );
+	switch_to_blog( 34 );
 
 	try {
 		// Parameters op te halen uit site
@@ -49,10 +49,11 @@
 		$url = get_bloginfo('url');
 		
 		// Parameters handmatig in te vullen
-		$login = 'owwgemeente';
-		$name = '';
-		$representative = '';
-		$bic = 'AXABBE22';
+		$login = 'owwhoogstraten';
+		$name = 'Yvonne Vlaminckx';
+		$representative = 'Yvonne Vlaminckx';
+		$bic = 'NICABEBB';
+		// $bic = 'AXABBE22';
 		// $bic = 'GEBABEBB';
 		// $bic = 'GKCCBEBB';
 		// $bic = 'HBKABE22';
