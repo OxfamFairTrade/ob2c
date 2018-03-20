@@ -23,8 +23,8 @@
 					}
 				// }
 			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) or ! current_user_can('manage_woocommerce') ) {
-				// Keer terug naar het portaal, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
-				wp_safe_redirect( site_url() );
+				// Keer terug naar het netwerkportaal, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
+				wp_safe_redirect( network_site_url() );
 				exit();
 			}
 		}
