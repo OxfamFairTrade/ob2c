@@ -23,8 +23,8 @@
 					}
 				// }
 			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) or ! current_user_can('manage_woocommerce') ) {
-				// Keer terug naar het netwerkportaal, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
-				wp_safe_redirect( network_site_url() );
+				// Toon de tijdelijke boodschap, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
+				wp_safe_redirect( network_site_url('/nog-even-geduld.html') );
 				exit();
 			}
 		}
@@ -1727,11 +1727,17 @@
 				}
 
 				if ( $node === 'fruithoekje' ) {
-					if ( date_i18n( 'N', $from ) < 5 and date_i18n( 'G', $from ) < 12 ) {
-						// Geen actie nodig
-					} else {
-						// We zitten al na de deadline van donderdag 12u, begin pas vanaf volgende werkdag te tellen
+					if ( date_i18n( 'N', $from ) > 4 or ( date_i18n( 'N', $from ) == 4 and date_i18n( 'G', $from ) >= 12 ) ) {
+						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week vrijdag uit te komen
 						$from = strtotime( '+1 weekday', $from );
+					}
+
+					// Zoek de eerste vrijdag na de volgende middagdeadline
+					$timestamp = strtotime( 'next Friday', $from );
+				} elseif( $node == 837 ) {
+					if ( date_i18n( 'N', $from ) > 2 or ( date_i18n( 'N', $from ) == 2 and date_i18n( 'G', $from ) >= 12 ) ) {
+						// Na de deadline van dinsdag 12u00: begin pas bij derde werkdag, kwestie van zeker op volgende week vrijdag uit te komen
+						$from = strtotime( '+3 weekdays', $from );
 					}
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline
