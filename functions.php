@@ -2,9 +2,6 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
-	// Voorlopig laten staan!
-	$prohibited_shops = array();
-
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
@@ -3521,9 +3518,8 @@
 	}
 
 	function print_welcome() {
-		global $prohibited_shops;
-		// Negeer niet-gepubliceerde en gearchiveerde sites
-		$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, 'count' => true ) );
+		// Negeer afgeschermde en gearchiveerde sites
+		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
 		// Trek hoofdsite af van totaal
 		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-afhaling.png" class="placemarker">';
 		$msg .= '<h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
@@ -3766,10 +3762,9 @@
 	}
 
 	function get_shops() {
-		global $prohibited_shops;
 		$global_zips = array();
-		// Negeer niet-gepubliceerde en gearchiveerde sites
-		$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, ) );
+		// Negeer afgeschermde en gearchiveerde sites
+		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			$local_zips = get_option( 'oxfam_zip_codes' );

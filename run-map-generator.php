@@ -8,7 +8,6 @@
 		require_once '../../../wp-load.php';
 		
 		if ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) {
-			update_site_option( 'oxfam_blocked_sites', array( 39 ) );
 			$global_file = fopen("../../maps/global.kml", "w");
 			$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 			
@@ -16,9 +15,9 @@
 			$str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-levering.png</href></Icon></IconStyle></Style>";
 			$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 			
-			// Sluit niet-gepubliceerde en gearchiveerde webshops uit
-			global $prohibited_shops;
-			$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, ) );
+			// Sluit afgeschermde en gearchiveerde webshops uit
+			update_site_option( 'oxfam_blocked_sites', array( 39 ) );
+			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
 					// Sluit hoofdsite uit
