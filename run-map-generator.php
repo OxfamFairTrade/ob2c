@@ -8,6 +8,7 @@
 		require_once '../../../wp-load.php';
 		
 		if ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) {
+			update_site_option( 'oxfam_blocked_sites', array( 39 ) );
 			$global_file = fopen("../../maps/global.kml", "w");
 			$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 			

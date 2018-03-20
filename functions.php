@@ -9,8 +9,7 @@
 	add_action( 'init', 'force_user_login' );
 	
 	function force_user_login() {
-		$blocked_sites = array( 39 );
-		if ( in_array( get_current_blog_id(), $blocked_sites ) ) {
+		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
 			if ( ! is_user_logged_in() ) {
 				$url = get_current_url();
 				// Niet redirecten op LIVE-omgeving
