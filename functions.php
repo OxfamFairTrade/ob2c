@@ -5,24 +5,28 @@
 	// Voorlopig laten staan!
 	$prohibited_shops = array();
 
-	// Verhinder bekijken van staging door niet-ingelogde bezoekers
+	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
 	function force_user_login() {
-		if ( ! current_user_can('manage_woocommerce') ) {
-			$url = get_current_url();
-			// Nooit redirecten op LIVE-omgeving
-			// if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
-				$blocked_sites = array( 39 );
-				if ( in_array( get_current_blog_id(), $blocked_sites ) ) {
+		$blocked_sites = array( 39 );
+		if ( in_array( get_current_blog_id(), $blocked_sites ) ) {
+			if ( ! is_user_logged_in() ) {
+				$url = get_current_url();
+				// Niet redirecten op LIVE-omgeving
+				// if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 					// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
 					if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 						// Stuur gebruiker na inloggen terug naar huidige pagina
 						wp_safe_redirect( wp_login_url($url) );
 						exit();
 					}
-				}
-			// }
+				// }
+			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) or ! current_user_can('manage_woocommerce') ) {
+				// Keer terug naar het portaal, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
+				wp_safe_redirect( site_url() );
+				exit();
+			}
 		}
 
 		// Stuur Digizine-lezers meteen door op basis van postcode in hun profiel
