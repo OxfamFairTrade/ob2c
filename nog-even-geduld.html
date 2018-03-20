@@ -13,7 +13,7 @@
 	
 	<script type="text/javascript">
 		function delayedRedirect(){
-			location.replace("https://www.oxfamwereldwinkels.be/nl/winkels");
+			location.replace("https://shop.oxfamwereldwinkels.be");
 		}	
 	</script>
 
@@ -31,13 +31,22 @@
 		}
 	</style>
 
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-60318248-11"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'UA-60318248-11');
+	</script>
+
 </head>
 
 <body onLoad="setTimeout('delayedRedirect()', 10000)">
 
 <div class="main" style="height: 100%;">
 	<div class="wrapper" style="max-width: 900px; height: 100%;">
-		<a href="https://www.oxfamwereldwinkels.be/nl/winkels">
+		<a href="https://shop.oxfamwereldwinkels.be">
 		<div style="height: 40%; background-image: url('https://www.lecouperet.net/hcb/images/403.png'); background-size: 100%; background-position: bottom; background-repeat: no-repeat;">
 			<span class="helper"></span>
 		</div>
@@ -46,7 +55,7 @@
 			<div id="typewriter" class="tikken-404" style="margin: 0 auto; text-align: center;">
 				Deze webshop is <span id="rood">nog niet actief</span>
 				op dit moment. Je wordt doorgestuurd naar
-				<span id="rood">onze reguliere website</span>.
+				<span id="rood">de portaalpagina</span>.
 			</div>
 		</div>
 	</div>

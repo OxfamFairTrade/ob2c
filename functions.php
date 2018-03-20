@@ -5,21 +5,24 @@
 	// Voorlopig laten staan!
 	$prohibited_shops = array();
 
-	// Verhinder bekijken van testsites door niet-ingelogde bezoekers
+	// Verhinder bekijken van staging door niet-ingelogde bezoekers
 	add_action( 'init', 'force_user_login' );
 	
 	function force_user_login() {
-		if ( ! is_user_logged_in() ) {
+		if ( ! current_user_can('manage_woocommerce') ) {
 			$url = get_current_url();
 			// Nooit redirecten op LIVE-omgeving
-			if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
-				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
-				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
-					// Stuur gebruiker na inloggen terug naar huidige pagina
-					wp_safe_redirect( wp_login_url($url) );
-					exit();
+			// if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
+				$blocked_sites = array( 39 );
+				if ( in_array( get_current_blog_id(), $blocked_sites ) ) {
+					// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
+					if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
+						// Stuur gebruiker na inloggen terug naar huidige pagina
+						wp_safe_redirect( wp_login_url($url) );
+						exit();
+					}
 				}
-			}
+			// }
 		}
 
 		// Stuur Digizine-lezers meteen door op basis van postcode in hun profiel
@@ -116,7 +119,7 @@
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
-	$default_holidays = array( '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02', '2018-07-21', '2018-08-15' );
+	$default_holidays = array( '2018-04-01', '2018-04-02', '2018-07-21', '2018-08-15', '2018-11-01', '2018-11-11', '2018-12-25', '2019-01-01' );
 	
 
 
@@ -136,13 +139,14 @@
 		}
 	}
 
-	// Zorg ervoor dat lokale beheerders toch al hun gearchiveerde site kunnen bekijken
+	// Zorg ervoor dat lokale beheerders toch al hun gearchiveerde site kunnen bekijken HEEFT DIT NOG ZIN?
 	add_filter( 'ms_site_check', 'allow_local_manager_on_archived' );
 
 	function allow_local_manager_on_archived() {
-		if ( current_user_can( 'manage_woocommerce' ) ) {
+		if ( current_user_can('manage_woocommerce') ) {
 			return true;
 		}
+		// Terug te plaatsen winkelboodschap: "We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening."
 	}
 
 	if ( is_regional_webshop() ) {
@@ -1490,7 +1494,7 @@
 			jQuery("tr[class$='member_of_shop-wrap']").remove();
 		</script>
 		<?php
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can('manage_options') ) {
 			?>
 			<script type="text/javascript">
 				jQuery("tr.user-rich-editing-wrap").hide();
@@ -1527,7 +1531,7 @@
 			jQuery("tr[class$='member_of_shop-wrap']").remove();
 		</script>
 		<?php
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can('manage_options') ) {
 		?>
 			<script type="text/javascript">
 				jQuery("tr.user-rich-editing-wrap").hide();
