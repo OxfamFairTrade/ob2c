@@ -3795,7 +3795,7 @@
 	}, 10, 2);
 
 	function get_company_and_year() {
-		return '<span style="color: #60646c">'.get_company_name().' &copy; 2016-'.date_i18n('Y').'</span>';
+		return '<span style="color: #60646c">'.get_company_name().' &copy; 2017-'.date_i18n('Y').'</span>';
 	}
 
 	function get_local_logo_url() {
