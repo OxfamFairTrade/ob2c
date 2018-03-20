@@ -35,7 +35,7 @@
 		$address = get_oxfam_shop_data('place');
 		$zip = get_oxfam_shop_data('zipcode');
 		$city = get_oxfam_shop_data('city');
-		$phone = '32'.substr( get_oxfam_shop_data('telephone'), 1 );
+		$phone = '32'.str_replace( '/', '', str_replace( '.', '', substr( get_oxfam_shop_data('telephone'), 1 ) ) );
 		$email = get_bloginfo('admin_email');
 		$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
 		$headquarter = get_oxfam_shop_data('headquarter');
@@ -50,8 +50,8 @@
 		
 		// Parameters handmatig in te vullen
 		$login = 'owwhoogstraten';
-		$name = 'Yvonne Vlaminckx';
-		$representative = 'Yvonne Vlaminckx';
+		$name = '';
+		$representative = '';
 		$bic = 'NICABEBB';
 		// $bic = 'AXABBE22';
 		// $bic = 'GEBABEBB';
@@ -124,11 +124,11 @@
 			// WERKT ALLEMAAL NIET, DOE HANDMATIG
 			// update_option( 'mollie-payments-for-woocommerce_live_api_key', $profilexml->profile->api_keys->live );
 			// echo "<p>Live API-key gewijzigd in webshop!</p>";
-			// update_option( 'mollie-payments-for-woocommerce_test_mode_enabled', 'no' );
-			// echo "<p>Testbetalingen uitgeschakeld!</p>";
 			// update_option( 'mollie-payments-for-woocommerce_test_api_key', $profilexml->profile->api_keys->test );
 			// echo "<p>Test API-key gewijzigd in webshop!</p>";
-
+			// update_option( 'mollie-payments-for-woocommerce_test_mode_enabled', 'no' );
+			// echo "<p>Testbetalingen uitgeschakeld!</p>";
+			
 			echo "<p></p>";
 		} else {
 			echo '<pre>'.var_export($profilexml, true).'</pre>';
