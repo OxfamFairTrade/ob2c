@@ -1724,7 +1724,7 @@
 
 				if ( $node === 'fruithoekje' ) {
 					if ( date_i18n( 'N', $from ) > 4 or ( date_i18n( 'N', $from ) == 4 and date_i18n( 'G', $from ) >= 12 ) ) {
-						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week vrijdag uit te komen
+						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
 					}
 
@@ -1732,12 +1732,12 @@
 					$timestamp = strtotime( 'next Friday', $from );
 				} elseif( $node == 837 ) {
 					if ( date_i18n( 'N', $from ) > 2 or ( date_i18n( 'N', $from ) == 2 and date_i18n( 'G', $from ) >= 12 ) ) {
-						// Na de deadline van dinsdag 12u00: begin pas bij derde werkdag, kwestie van zeker op volgende week vrijdag uit te komen
-						$from = strtotime( '+3 weekdays', $from );
+						// Na de deadline van dinsdag 12u00: begin pas bij tweede werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+2 weekdays', $from );
 					}
 
-					// Zoek de eerste vrijdag na de volgende middagdeadline
-					$timestamp = strtotime( 'next Friday', $from );
+					// Zoek de eerste donderdag na de volgende middagdeadline (wordt wegens openingsuren automatisch vrijdagochtend)
+					$timestamp = strtotime( 'next Thursday', $from );
 				} else {
 					$timestamp = get_first_working_day( $from );
 
