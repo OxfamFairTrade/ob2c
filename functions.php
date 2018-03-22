@@ -1678,7 +1678,7 @@
 		
 		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon, op voorwaarde dat B2B aangevinkt is!
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
-		if ( get_user_meta( $user_id, $check_key ) !== 'yes' ) {
+		if ( get_user_meta( $user_id, $check_key, true ) !== 'yes' ) {
 			// Ledig het eventueel geselecteerde kortingstarief
 			$_POST[$select_key] = '';
 		}
