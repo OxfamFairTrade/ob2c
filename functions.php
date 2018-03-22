@@ -1678,36 +1678,50 @@
 		
 		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon, op voorwaarde dat B2B aangevinkt is!
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
-		if ( $_POST[$check_key] !== 'yes' ) {
+		if ( get_user_meta( $user_id, $check_key ) !== 'yes' ) {
 			// Ledig het eventueel geselecteerde kortingstarief
 			$_POST[$select_key] = '';
 		}
 
-		if ( ! empty($_POST[$select_key]) ) {
-			$coupon_id = intval( $_POST[$select_key] );	
-		} else {
-			$coupon_id = intval( get_user_meta( $user_id, $select_key, true ) );
-		}
+		if ( isset($_POST[$select_key]) ) {
+			$new_coupon_id = intval( $_POST[$select_key] );
+			$previous_coupon_id = intval( get_user_meta( $user_id, $select_key, true ) );
 
-		$current_users_string = trim( get_post_meta( $coupon_id, '_wjecf_customer_ids', true ) );
-		if ( strlen( $current_users_string ) > 0 ) {
-			$current_users = explode( ',', $current_users_string );	
-		} else {
-			// Want anders retourneert explode() een leeg element
-			$current_users = array();
-		}
-		
-		if ( ! in_array( $user_id, $current_users ) ) {
-			$current_users[] = $user_id;
-		} else {
-			if ( ( $match_key = array_search( $user_id, $current_users ) ) !== false ) {
-				unset($current_users[$match_key]);
+			if ( $new_coupon_id !== $previous_coupon_id ) {
+				// Haal de rechthebbenden op van de vroegere coupon
+				$previous_users_string = trim( get_post_meta( $previous_coupon_id, '_wjecf_customer_ids', true ) );
+				if ( strlen( $previous_users_string ) > 0 ) {
+					$previous_users = explode( ',', $previous_users_string );	
+				} else {
+					// Want anders retourneert explode() een leeg element
+					$previous_users = array();
+				}
+
+				// Verwijder de user-ID van de vorige coupon
+				if ( ( $match_key = array_search( $user_id, $previous_users ) ) !== false ) {
+					unset($previous_users[$match_key]);
+				}
+				update_post_meta( $previous_coupon_id, '_wjecf_customer_ids', implode( ',', $previous_users ) );
+
+				// Haal de huidige rechthebbenden op van de nu geselecteerde coupon
+				$current_users_string = trim( get_post_meta( $new_coupon_id, '_wjecf_customer_ids', true ) );
+				if ( strlen( $current_users_string ) > 0 ) {
+					$current_users = explode( ',', $current_users_string );	
+				} else {
+					// Want anders retourneert explode() een leeg element
+					$current_users = array();
+				}
+
+				// Voeg de user-ID toe aan de geselecteerde coupon
+				if ( ! in_array( $user_id, $current_users ) ) {
+					$current_users[] = $user_id;
+				}
+				update_post_meta( $new_coupon_id, '_wjecf_customer_ids', implode( ',', $current_users ) );
 			}
-		}
-		update_post_meta( $coupon_id, '_wjecf_customer_ids', implode( ',', $current_users ) );
 
-		// Nu pas de coupon-ID op de gebruiker bijwerken
-		update_user_meta( $user_id, $select_key, $_POST[$select_key] );
+			// Nu pas de coupon-ID op de gebruiker bijwerken
+			update_user_meta( $user_id, $select_key, $_POST[$select_key] );
+		}
 	}
 
 	// Zorg ervoor dat wijzigingen aan klanten in kortingsbonnen ook gesynct worden met die profielen TO DO
