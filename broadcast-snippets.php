@@ -1,5 +1,9 @@
 <?php
 
+	// Subsites afschermen en verbergen op kaart
+	$oxfam_blocked_sites = array();
+	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
+
 	// Startpagina instellen
 	$homepage = get_page_by_title( 'Startpagina' );
 	if ( $homepage ) {
