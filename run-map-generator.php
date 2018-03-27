@@ -72,7 +72,8 @@
 			fwrite($global_file, $str);
 			fclose($global_file);
 
-			echo "Mapdata bijgewerkt!";
+			write_log("Kaarten bijgewerkt voor ".( count($sites) - 1 )." webshops!");
+			echo "The end";
 		} else {
 			die("Access prohibited!");
 		}
