@@ -16,10 +16,11 @@
 			$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 			
 			// Sluit afgeschermde en gearchiveerde webshops uit
-			update_site_option( 'oxfam_blocked_sites', array( 39 ) );
 			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
+			
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
+					
 					// Sluit hoofdsite uit
 					if ( ! is_main_site() ) {
 						$str .= "<Placemark>";
@@ -63,6 +64,7 @@
 							fclose($local_file);
 						}
 					}
+					
 				restore_current_blog();
 			}
 
@@ -71,9 +73,9 @@
 			fclose($global_file);
 
 			echo "Mapdata bijgewerkt!";
-    	} else {
-    		die("Helaba, dit mag niet!");
-    	}
+		} else {
+			die("Access prohibited!");
+		}
 	?>
 </body>
 

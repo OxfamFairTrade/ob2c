@@ -5,7 +5,7 @@
 <body>
 	<?php
 		// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-		require( '../../../wp-blog-header.php' );
+		require_once '../../../wp-load.php';
 		
 		$args = array(
 			'post_type'			=> 'product',
@@ -20,7 +20,7 @@
 			while ( $to_toggle->have_posts() ) {
 				$to_toggle->the_post();
 				$productje = wc_get_product( get_the_ID() );
-		        $countries_nl = get_countries_by_product( $productje );
+				$countries_nl = get_countries_by_product( $productje );
 				
 				// Check of er wel herkomstinfo beschikbaar is
 				if ( $countries_nl !== false ) {
@@ -43,8 +43,8 @@
 					sort($countries_en, SORT_STRING);
 					update_post_meta( get_the_ID(), '_herkomst_en', implode( ', ', $countries_en ) );
 				}
-		        echo $productje->get_sku()." bijgewerkt!<br>";
-		        $i++;
+				echo $productje->get_sku()." bijgewerkt!<br>";
+				$i++;
 			}
 			echo "<br>".$i." producten doorlopen!";
 			wp_reset_postdata();
