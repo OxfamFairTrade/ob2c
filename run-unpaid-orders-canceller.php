@@ -34,7 +34,7 @@
 			// https://shop.oxfamwereldwinkels.be/regioleuven/wp-admin/admin.php?page=wc-settings&do_update_woocommerce=true
 			// IN DE KIJKERS CHECKEN
 
-			write_log("Onbetaalde bestellingen geannuleerd voor ".count($sites)." webshops!");
+			write_log("Onbetaalde bestellingen geannuleerd voor ".(count($sites)-1)." webshops!");
 			echo "The end";
 		} else {
 			die("Access prohibited!");
