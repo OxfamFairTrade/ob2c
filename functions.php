@@ -886,17 +886,26 @@
 			}
 		}
 
-		// Smartlook uitschakelen
-		if ( ! is_user_logged_in() and 1 === 0 ) {
+		// Facebook-pixel voor Regio Leuven 
+		if ( get_current_blog_id() === 28 ) {
 			?>
-				<script type="text/javascript">
-					window.smartlook||(function(d) {
-					var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
-					var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
-					c.charset='utf-8';c.src='https://rec.smartlook.com/recorder.js';h.appendChild(c);
-					})(document);
-					smartlook('init', 'e6996862fe1127c697c24f1887605b3b9160a885');
+				<script>
+					!function(f,b,e,v,n,t,s)
+					{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+					n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+					if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+					n.queue=[];t=b.createElement(e);t.async=!0;
+					t.src=v;s=b.getElementsByTagName(e)[0];
+					s.parentNode.insertBefore(t,s)}(window,document,'script',
+					'https://connect.facebook.net/nl_NL/fbevents.js');
+					fbq('init', '421231331671214'); 
+					fbq('track', 'PageView');
 				</script>
+				<noscript>
+					 <img height="1" width="1" 
+					src="https://www.facebook.com/tr?id=421231331671214&ev=PageView
+					&noscript=1"/>
+				</noscript>
 			<?php
 		}
 
