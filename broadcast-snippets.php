@@ -41,6 +41,42 @@
 		}
 		wp_reset_postdata();
 	}
+	
+	// Unassigned producten opnieuw aan hoofdsite koppelen
+	$args = array(
+		'post_type'			=> 'product',
+		'post_status'		=> array( 'publish' ),
+		'posts_per_page'	=> 100,
+		'paged'				=> 1,
+	);
+
+	$all_products = new WP_Query( $args );
+	if ( $all_products->have_posts() ) {
+		while ( $all_products->have_posts() ) {
+			$all_products->the_post();
+			// $sku = '25628';
+			// $global_product_id = wc_get_product_id_by_sku( $sku );
+			$global_product_id = get_the_ID();
+			$global_product = wc_get_product( $global_product_id );
+			$sku = $global_product->get_sku();
+			for ( $id = 7; $id < 40; $id++ ) {
+				switch_to_blog( $id );
+				$product_id = wc_get_product_id_by_sku( $sku );
+				$product = wc_get_product( $product_id );
+				$product->update_meta_data( '_woonet_child_inherit_updates', 'yes' );
+				$product->update_meta_data( '_woonet_network_is_child_product_id', $global_product_id );
+				$product->update_meta_data( '_woonet_network_is_child_site_id', 1 );
+				$product->delete_meta_data('_woonet_network_unassigned_product_id');
+				$product->delete_meta_data('_woonet_network_unassigned_site_id');
+				$product->save();
+				restore_current_blog();
+				$global_product->update_meta_data( '_woonet_publish_to_'.$id, 'yes' );
+			}
+			$global_product->save();
+			write_log( $global_product->get_sku() );
+		}
+		wp_reset_postdata();
+	}
 
 	// Product-ID's in kortingsbon lokaal maken
 	$args = array(
