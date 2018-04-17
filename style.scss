@@ -292,12 +292,12 @@ div.nm-single-product {
 
 /* Zet de titels op de homepage groter */
 .titels-homepage h4 {
-	font-size: 2em;
+	font-size: 2em !important;
 }
 
 .onderschrift-homepage figcaption {
-	font-size: 1.1em;
-	line-height: 1.3em;
+	font-size: 1.1em !important;
+	line-height: 1.3em !important;
 }
 
 /* Lijstjes netjes laten inspringen */
