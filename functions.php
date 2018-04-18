@@ -2373,30 +2373,30 @@
 
 	function oxfam_photo_action_callback() {
 		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
-		// UITSCHAKELEN, PUBLICATIE NAAR CHILD SITE GEBEURT VANZELF BIJ EERSTVOLGENDE SYNC (ID'S UPDATEN)
-		// $sites = get_sites( array( 'public' => 1 ) );
-		// foreach ( $sites as $site ) {
-			// switch_to_blog( $site->blog_id );
-			echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
-			// restore_current_blog();
-		// }
+		// NIET IN LOKALE BIBLIOTHEKEN REGISTREREN, PUBLICATIE NAAR CHILD SITE GEBEURT VANZELF BIJ EERSTVOLGENDE SYNC (ID'S UPDATEN)
+		echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
 		wp_die();
 	}
 
 	function wp_get_attachment_id_by_post_name( $post_title ) {
 		$args = array(
 			// We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
-			'posts_per_page'	=> 1,
-			'post_type'			=> 'attachment',
-			// Moet er in principe bij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
-			'post_status'		=> 'inherit',
-			// De titel is steeds gelijk aan de bestandsnaam (NIET NA DE IMPORT) en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
-			'title'				=> trim($post_title),
+			'posts_per_page' => 1,
+			'post_type'	=> 'attachment',
+			// Moet erbij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
+			'post_status' => 'inherit',
+			// De titel is NA DE IMPORT NIET MEER gelijk aan de bestandsnaam, dus zoek op basis van het gekoppelde bestand
+			'meta_key' => '_wp_attached_file',
+			'meta_value' => trim($post_title).'.jpg',
 		);
+
 		$attachments = new WP_Query($args);
 		if ( $attachments->have_posts() ) {
-			$attachments->the_post();
-			$attachment_id = get_the_ID();
+			$attachment_id = array();
+			while ( $attachments->have_posts() ) {
+				$attachments->the_post();
+				$attachment_id[] = get_the_ID();
+			}
 			wp_reset_postdata();
 		} else {
 			$attachment_id = false;
@@ -2410,26 +2410,9 @@
 		$filetitle = $filetitle[0];
 		$product_id = 0;
 
-		if ( ! is_main_site() ) {
-			// Bepaal het bestemmingspad in de subsite (zonder dimensies!)
-			$child_filepath = str_replace( '/uploads/', '/uploads/sites/'.get_current_blog_id().'/', $main_filepath );
-			switch_to_blog(1);
-			// Zoek het pad van de 'large' thumbnail op in de hoofdsite
-			$main_attachment_id = wp_get_attachment_id_by_post_name( $filetitle );
-			if ( $main_attachment_id ) {
-				// Kopieer een middelgrote thumbnail van de hoofdsite als 'full' naar de huidige subsite
-				copy( get_scaled_image_path( $main_attachment_id, 'medium' ), $child_filepath );
-				$current_filepath = $child_filepath;
-			}
-			restore_current_blog();
-		} else {
-			$current_filepath = $main_filepath;
-		}
-
 		// Check of er al een vorige versie bestaat
 		$updated = false;
 		$deleted = false;
-		// GEBEURT IN DE LOKALE MEDIABIB
 		$old_id = wp_get_attachment_id_by_post_name( $filetitle );
 		if ( $old_id ) {
 			// Bewaar de post_parent van het originele attachment
@@ -2440,16 +2423,15 @@
 			}
 
 			// Stel het originele high-res bestand veilig
-			rename( $current_filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg' );
+			rename( $main_filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg' );
 			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
-			// GEBEURT IN DE LOKALE MEDIABIB
 			if ( wp_delete_attachment( $old_id, true ) ) {
 				// Extra check op het succesvol verwijderen
 				$deleted = true;
 			}
 			$updated = true;
 			// Hernoem opnieuw zodat de links weer naar de juiste file wijzen 
-			rename( WP_CONTENT_DIR.'/uploads/temporary.jpg', $current_filepath );
+			rename( WP_CONTENT_DIR.'/uploads/temporary.jpg', $main_filepath );
 		}
 		
 		// Creëer de parameters voor de foto
@@ -2464,7 +2446,7 @@
 
 		// Probeer de foto in de mediabibliotheek te stoppen
 		// Laatste argument: stel de uploadlocatie van de nieuwe afbeelding in op het product van het origineel (of 0 = geen)
-		$attachment_id = wp_insert_attachment( $attachment, $current_filepath, $product_id );
+		$attachment_id = wp_insert_attachment( $attachment, $main_filepath, $product_id );
 		
 		if ( ! is_wp_error( $attachment_id ) ) {
 			// Check of de uploadlocatie ingegeven was!
@@ -2491,7 +2473,7 @@
 			}
 
 			// Registreer ook de metadata
-			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $current_filepath );
+			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $main_filepath );
 			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
 			// Toon een succesboodschap
 			if ( $updated ) {
@@ -3441,7 +3423,7 @@
 	}
 
 	function print_widget_contact() {
-		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), get_oxfam_shop_data('telephone') ).'[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een aanklikbaar telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', get_oxfam_shop_data('telephone') ), 1 ).'">'.get_oxfam_shop_data('telephone').'</a>' ).'[/nm_feature]');
 	}
 
 	function print_greeting() {
