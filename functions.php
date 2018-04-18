@@ -2378,7 +2378,7 @@
 		wp_die();
 	}
 
-	function wp_get_attachment_id_by_post_name( $post_title ) {
+	function oxfam_get_attachment_id_by_file_name( $post_title ) {
 		$args = array(
 			// We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
 			'posts_per_page' => 1,
@@ -2390,17 +2390,16 @@
 			'meta_value' => trim($post_title).'.jpg',
 		);
 
+		$attachment_id = false;
 		$attachments = new WP_Query($args);
 		if ( $attachments->have_posts() ) {
-			$attachment_id = array();
 			while ( $attachments->have_posts() ) {
 				$attachments->the_post();
-				$attachment_id[] = get_the_ID();
+				$attachment_id = get_the_ID();
 			}
 			wp_reset_postdata();
-		} else {
-			$attachment_id = false;
 		}
+
 		return $attachment_id;
 	}
 
@@ -2413,7 +2412,7 @@
 		// Check of er al een vorige versie bestaat
 		$updated = false;
 		$deleted = false;
-		$old_id = wp_get_attachment_id_by_post_name( $filetitle );
+		$old_id = oxfam_get_attachment_id_by_file_name( $filetitle );
 		if ( $old_id ) {
 			// Bewaar de post_parent van het originele attachment
 			$product_id = wp_get_post_parent_id( $old_id );

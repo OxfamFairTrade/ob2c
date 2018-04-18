@@ -131,9 +131,9 @@
 		}
 	?>
 
-	<p>Hieronder zie je een lijstje met alle originelen die sinds de laatste fotoregistratie naar de FTP-server geüpload werden. Hiervoor plaatsen we de packshots uit <a href="file:///\\vmfile\data\1-Vormgeving & Publicaties\OFT-sync (LATEN STAAN)\RGB HI-RES\">F:\1-Vormgeving & Publicaties\OFT-sync (LATEN STAAN)\RGB HI-RES\</a> die sinds de laatste update bijgewerkt werden handmatig in de uploadmap van het netwerk. Om de thumbnails aan te maken en de foto's te registreren in de mediabib dien je daarna nog op onderstaande knop te klikken.</p>
+	<p>Hieronder zie je een lijstje met alle originelen die sinds de laatste fotoregistratie naar de FTP-server geüpload werden. Hiervoor plaatsen we de packshots uit <a href="file:///\\vmfile\data\1-Vormgeving & Publicaties\OFT-sync (LATEN STAAN)\RGB HI-RES\">F:\1-Vormgeving & Publicaties\OFT-sync (LATEN STAAN)\RGB HI-RES\</a> die sinds de laatste update bijgewerkt werden handmatig in de uploadmap van het netwerk. Om de thumbnails aan te maken en de foto's te registreren in de mediabib dien je daarna nog op onderstaande knop te klikken. Foto's kunnen hierbij niet dubbel geüpload worden.</p>
 
-	<p>Foto's kunnen hierbij niet dubbel geüpload worden. Bijgewerkte foto's die al aan een product gelinkt waren, worden daar opnieuw aan gelinkt. In het andere geval is het wachten tot de volgende ERP-import. Bij nieuwe producten gebeurt de verspreiding van het packshot naar de lokale webshops automatisch tijdens de bulkdistributie. Voor bijgewerkte packshots is het belangrijk om éérst de snippet te laten lopen die de beelden in de lokale mediabibliotheken verwijdert, zodat ook die beelden automatisch opnieuw aangemaakt en gekoppeld worden tijdens de ERP-import.</p>
+	<p>Bijgewerkte foto's die al aan een product gelinkt waren, worden daar opnieuw aan gelinkt. In het andere geval is het wachten tot de volgende ERP-import. Bij nieuwe producten gebeurt de verspreiding van het packshot naar de lokale webshops automatisch tijdens de bulkdistributie. Voor bijgewerkte packshots is het belangrijk om éérst de snippet te laten lopen die de beelden in de lokale mediabibliotheken verwijdert, zodat ook die beelden automatisch opnieuw aangemaakt en gekoppeld worden tijdens de ERP-import.</p>
 
 	<div class="output"></div>
 
