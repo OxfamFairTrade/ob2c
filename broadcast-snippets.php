@@ -117,11 +117,9 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '25398', '25399', '25397', '28020', '25721', '25723', '25717', '25720', '25722', '27510', '28330', '28319', '28329', '24016', '25480', '25481', '28318', '24293', '25011', '24291', '24290', '27109', '27101', '27100', '26700', '26402', '25600', '25316', '25315', '25301', '25300', '25216', '25219', '25218', '22800', '22601', '22401', '22600', '23402', '23507', '25211', '25210', '27111', '27503', '27506', '27502', '28018', '22024', '22025', '22200', '22704', '22706', '24218', '24219', '24220', '24230', '24232', '24231', '24233', '20058', '20059', '24240', '24006', '24100', '24101', '24102', '24103', '24117', '20257', '24531', '20225', '20067', '24300', '20052', '25715', '20212', '20055', '20032', '20031', '20252', '26712', '20253', '23705', '23702', '23506', '23505', '23504', '23503', '23400', '23006', '23401', '27009', '24500', '20054', '24501', '25208', '25201', '25302', '20211', '25310', '25314', '26494', '22805', '22602', '20070', '27103', '27051', '25407', '26499', '25406', '24529', '21515', '26703', '26009', '24502', '23002', '22604', '22400', '22029', '22026', '22005', '20260', '21500', '25220', '25221', '26701', '27008', '22023', '21107', '21100', '21102', '21103', '21104', '21052', '21050', '21002', '21003', '21008', '21009', '21010', '21000', '20249', '26401', '26400', '25217', '20250', '22013', '25628', '25627', '27822', '27821', '28311', '28312', '20050' );
+	$photos_to_delete = array( '20058', '20067', '20071', '20073', '20154', '20252', '20253', '20415', '20608', '21050', '21100', '21102', '21103', '21104', '21107', '22019', '22805', '23201', '24286', '24303', '24531', '25617', '25627', '25628', '25718', '25724', '26000', '26008', '26010', '26011', '26012', '27013', '27202', '27821', '27822', '28018', '28311', '28312' );
 	foreach ( $photos_to_delete as $sku ) {
-		$photo_id = wp_get_attachment_id_by_post_name( $sku );
-		// Voor hoofdniveau (titel van foto niet meer gelijk aan artikelnummer na koppeling)
-		// $photo_id = attachment_url_to_postid( 'https://shop.oxfamwereldwinkels.be/wp-content/uploads/'.$sku.'.jpg' );
+		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
 			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
 			wp_delete_attachment( $photo_id, true );
@@ -131,15 +129,14 @@
 	// Product weer linken aan juiste (geüpdatete) foto
 	$sku = '21515';
 	$product_id = wc_get_product_id_by_sku( $sku );
-	$new_photo_id = wp_get_attachment_id_by_post_name( $sku );
+	$new_photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 	if ( $product_id and $new_photo_id ) {
 		$product = wc_get_product( $product_id );
 		
 		// Update de mapping tussen globale en lokale foto
 		switch_to_blog( 1 );
-		// OPGELET: NA IMPORT BEVAT DE TITEL OP HET HOOFDNIVEAU DE OMSCHRIJVING VAN HET PRODUCT DUS DIT WERKT NIET
-		// $new_global_photo_id = wp_get_attachment_id_by_post_name( $sku );
-		$new_global_photo_id = 886;
+		// NA IMPORT BEVAT DE TITEL OP HET HOOFDNIVEAU DE OMSCHRIJVING VAN HET PRODUCT, DUS NIET OPZOEKEN VIA TITEL
+		$new_global_photo_id = attachment_url_to_postid( 'https://shop.oxfamwereldwinkels.be/wp-content/uploads/'.$sku.'.jpg' );
 		restore_current_blog();
 		$new_value = array( $new_global_photo_id => $new_photo_id );
 		update_post_meta( $product_id, '_woonet_images_mapping', $new_value );
