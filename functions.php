@@ -3251,22 +3251,23 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			// echo '<div class="notice notice-success">';
-			// 	echo '<p>Geen aprilvis, in de back-end van de webshop verschenen 7 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-			// 	$skus = array( '20073', '25220', '25617', '25724', '26000', '26010', '26011', );
-			// 	foreach ( $skus as $sku ) {
-			// 		$product_id = wc_get_product_id_by_sku( $sku );
-			// 		if ( $product_id ) {
-			// 			$product = wc_get_product( $product_id );
-			// 			echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
-			// 		}
-			// 	}
-			// 	echo '</ul><p>';
-			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-success">';
+				echo '<p>In de back-end van de webshop verschenen 6 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+				$skus = array( '20073', '24286', '25724', '26000', '26011', '28021', );
+				// $skus = array( '25220', '25617', '26010', '26012', );
+				foreach ( $skus as $sku ) {
+					$product_id = wc_get_product_id_by_sku( $sku );
+					if ( $product_id ) {
+						$product = wc_get_product( $product_id );
+						echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+					}
+				}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast werden een 30-tal packshots bijgewerkt en werd 22019 BIO Aymarakoffie herbenoemd als BIO Perukoffie. De 4 holfiguren specifiek voor Pasen werden uit de database verwijderd.</p>';
+			echo '</div>';
 			// echo '<div class="notice notice-info">';
 				// echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd opgelost. Allergenen en ingrediëntenlijsten worden nu live opgehaald uit de centrale database.</p>';
 				// echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
