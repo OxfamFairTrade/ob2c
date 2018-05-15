@@ -5,7 +5,7 @@
  * @see 	    https://docs.woocommerce.com/document/template-structure/
  * @author 		WooThemes
  * @package 	WooCommerce/Templates
- * @version     3.3.0
+ * @version     3.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,12 +25,13 @@ if ( is_b2b_customer() ) {
 	$multiple = 1;
 }
 
-echo apply_filters( 'woocommerce_loop_add_to_cart_link', // WPCS: XSS ok.
-	sprintf( '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',
+echo apply_filters( 'woocommerce_loop_add_to_cart_link',
+	sprintf( '<a rel="nofollow" href="%s" data-quantity="%s" data-product_id="%s" data-product_sku="%s" class="%s">%s</a>',
 		esc_url( $product->add_to_cart_url() ),
-		esc_attr( isset( $args['quantity'] ) ? $args['quantity'] : $multiple ),
-		esc_attr( isset( $args['class'] ) ? $args['class'] : 'button' ),
-		isset( $args['attributes'] ) ? wc_implode_html_attributes( $args['attributes'] ) : '',
+		esc_attr( isset( $quantity ) ? $quantity : $multiple ),
+		esc_attr( $product->get_id() ),
+		esc_attr( $product->get_sku() ),
+		esc_attr( isset( $class ) ? $class : 'button' ),
 		esc_html( $product->add_to_cart_text() )
 	),
-$product, $args );
+$product );
