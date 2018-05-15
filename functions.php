@@ -2744,7 +2744,7 @@
 	// Registreer de AJAX-acties
 	add_action( 'wp_ajax_oxfam_stock_action', 'oxfam_stock_action_callback' );
 	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
-	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_invitation_action_callback' );
+	add_action( 'wp_ajax_oxfam_invitation_action', 'oxfam_invitation_action_callback' );
 
 	function oxfam_stock_action_callback() {
 		echo save_local_product_details($_POST['id'], $_POST['meta'], $_POST['value']);
