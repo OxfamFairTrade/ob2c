@@ -12,28 +12,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+$customer = get_user_by( 'login', $user_login );
+
 ?>
 
 <?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<?php if ( 'yes' === get_the_author_meta( 'blog_'.get_current_blog_id().'_is_b2b_customer', $user_ID ) ) : ?>
+<?php if ( 'yes' === get_the_author_meta( 'blog_'.get_current_blog_id().'_is_b2b_customer', $customer->ID ) ) : ?>
 
 	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de webshop (%1$s) en gebruikersnaam (%2$s).', 'oxfam-webshop' ), esc_html( $blogname ), '<strong>' . esc_html( $user_login ) . '</strong>' ); ?></p>
+
+	<p style="text-align: center;">
+		<a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'login' => rawurlencode( $user_login ) ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>">
+			<b><?php _e( 'Speciale wachtwoordresetlink', 'oxfam-webshop' ); ?> &raquo;</b>
+		</a>
+	</p>
 
 <?php else : ?>	
 
 	<p><?php printf( __( 'Eerste alinea in de welkomstmail aan nieuwe gebruikers, inclusief naam van de webshop (%1$s) en vetgedrukte gebruikersnaam (%2$s).', 'oxfam-webshop' ), esc_html( $blogname ), '<strong>' . esc_html( $user_login ) . '</strong>' ); ?></p>
 
-<?php endif; ?>
-
-<?php if ( 'yes' === get_option( 'woocommerce_registration_generate_password' ) && $password_generated ) : ?>
-
-	<p><?php printf( __( 'Your password has been automatically generated: %s', 'woocommerce' ), '<strong>' . esc_html( $user_pass ) . '</strong>' ); ?></p>
+	<p><?php printf( __( 'Uitleg over de \'Mijn account\'-pagina, inclusief URL in de webshop waar de gebruiker zich registreerde (%s).', 'oxfam-webshop' ), esc_url( wc_get_page_permalink( 'myaccount' ) ) ); ?></p>
 
 <?php endif; ?>
 
-	<p><?php printf( __( 'Uitleg over en URL naar (%s) de \'Mijn account\'-pagina in de webshop waar de gebruiker zich registreerde.', 'oxfam-webshop' ), make_clickable( esc_url( wc_get_page_permalink( 'myaccount' ) ) ) ); ?></p>
-
-	<p><?php printf( __( 'Uitsmijter van de welkomstmail.', 'oxfam-webshop' ), make_clickable( esc_url( wc_get_page_permalink( 'myaccount' ) ) ) ); ?></p>
+<p><?php printf( __( 'Uitsmijter van de welkomstmail.', 'oxfam-webshop' ) ); ?></p>
 
 <?php do_action( 'woocommerce_email_footer', $email );

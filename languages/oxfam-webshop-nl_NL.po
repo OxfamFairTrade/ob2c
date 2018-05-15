@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2018-05-15 17:49+0200\n"
-"PO-Revision-Date: 2018-05-15 18:05+0200\n"
+"POT-Creation-Date: 2018-05-15 18:35+0200\n"
+"PO-Revision-Date: 2018-05-15 18:35+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -312,7 +312,7 @@ msgstr ""
 "Volg de zending bij Bpost met behulp van dit nummer: <a href=\"%2$s\" target="
 "\"_blank\">%1$s</a>."
 
-#: woocommerce/emails/customer-new-account.php:21
+#: woocommerce/emails/customer-new-account.php:23
 #, php-format
 msgid ""
 "Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de "
@@ -324,7 +324,11 @@ msgstr ""
 "achteraf te betalen op factuur. Leveringen op locatie gebeuren in onderling "
 "overleg."
 
-#: woocommerce/emails/customer-new-account.php:25
+#: woocommerce/emails/customer-new-account.php:27
+msgid "Speciale wachtwoordresetlink"
+msgstr "Stel je wachtwoord in en bekijk je account"
+
+#: woocommerce/emails/customer-new-account.php:33
 #, php-format
 msgid ""
 "Eerste alinea in de welkomstmail aan nieuwe gebruikers, inclusief naam van "
@@ -335,23 +339,18 @@ msgstr ""
 "bij alle webshops van Oxfam-Wereldwinkels. Zo hoef je je gegevens niet "
 "telkens opnieuw in te voeren en wordt je winkelmandje permanent bewaard."
 
-#: woocommerce/emails/customer-new-account.php:31
-#, php-format
-msgid "Your password has been automatically generated: %s"
-msgstr ""
-
 #: woocommerce/emails/customer-new-account.php:35
 #, php-format
 msgid ""
-"Uitleg over en URL naar (%s) de 'Mijn account'-pagina in de webshop waar de "
-"gebruiker zich registreerde."
+"Uitleg over de 'Mijn account'-pagina, inclusief URL in de webshop waar de "
+"gebruiker zich registreerde (%s)."
 msgstr ""
-"Onder <a href=\"%s\" target=\"_blank\">Mijn account</a> krijg je bovendien "
+"Onder '<a href=\"%s\" target=\"_blank\">Mijn account</a>' krijg je bovendien "
 "een overzicht van al je vorige bestellingen. Je kunt er ook je persoonlijke "
 "gegevens bekijken, je wachtwoord wijzigen en je abonnement op onze "
 "nieuwsbrieven beheren."
 
-#: woocommerce/emails/customer-new-account.php:37
+#: woocommerce/emails/customer-new-account.php:39
 msgid "Uitsmijter van de welkomstmail."
 msgstr ""
 "Tot binnenkort? Aarzel niet om ons te contacteren als je nog vragen hebt!"
