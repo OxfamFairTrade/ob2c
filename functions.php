@@ -2939,6 +2939,17 @@
 		return realpath( str_replace( wp_basename($file), $info['file'], $file ) );
 	}
 
+	function retrieve_password_for_customer( $user ) {
+		// Creëer een key en sla ze op in de 'users'-tabel
+		$key = get_password_reset_key($user);
+
+		// Verstuur de e-mail met de speciale link
+		WC()->mailer();
+		do_action( 'woocommerce_reset_password_notification', $user->user_login, $key );
+
+		return true;
+	}
+
 	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
 	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-breekbaar
 	add_action( 'woocommerce_single_product_summary', 'show_delivery_warning', 45 );
