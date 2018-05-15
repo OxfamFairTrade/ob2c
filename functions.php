@@ -1640,6 +1640,51 @@
 						<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje.</span>
 					</td>
 				</tr>
+				<tr>
+					<th><label for="send_invitation">Uitnodiging</label></th>
+					<td>
+						<?php
+							echo '<button type="button" class="button" id="send_invitation" style="min-width: 400px;">Verstuur welkomstmail naar accounteigenaar</button>';
+							echo '<p class="send_invitation description">';
+							if ( ! empty( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) {
+								printf( 'Laatste uitnodiging verstuurd: %s.', date( 'd-n-Y H:i:s', strtotime( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) );
+							}
+							echo '</p>';
+						?>
+						
+						<script type="text/javascript">
+							jQuery(document).ready(function() {
+								jQuery( 'button#send_invitation' ).on( 'click', function() {
+									jQuery(this).prop( 'disabled', true ).text( 'Aan het verwerken ...' );
+									sendB2bWelcome( <?php echo $user->ID; ?> );
+								});
+
+								function sendB2bWelcome( customer_id ) {
+									var input = {
+										'action': 'oxfam_invitation_action',
+										'customer_id': customer_id,
+									};
+									
+									jQuery.ajax({
+										type: 'POST',
+										url: ajaxurl,
+										data: input,
+										dataType: 'html',
+										success: function( msg ) {
+											jQuery( 'button#send_invitation' ).text( msg );
+											var today = new Date();
+											jQuery( 'p.send_invitation.description' ).html( 'Laatste actie ondernomen: '+today.toLocaleString('nl-NL')+'.' );
+										},
+										error: function( jqXHR, statusText, errorThrown ) {
+											jQuery( 'button#send_invitation' ).text( 'Asynchroon laden van PHP-file mislukt!' );
+											jQuery( 'p.send_invitation.description' ).html( 'Herlaad de pagina en probeer het eens opnieuw.' );
+										},
+									});
+								}
+							});
+						</script>
+					</td>
+				</tr>
 			<?php endif; ?>
 		</table>
 		<?php
@@ -2174,8 +2219,6 @@
 		if ( ! is_b2b_customer() ) {
 			validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 
-			var_dump_pre($rates);
-
 			$shipping_zones = WC_Shipping_Zones::get_zones();
 			foreach ( $shipping_zones as $shipping_zone ) {
 				if ( $shipping_zone['zone_name'] === 'B2B' ) {
@@ -2187,7 +2230,7 @@
 				}
 			}
 
-			var_dump_pre($rates);
+			// var_dump_pre($rates);
 
 			if ( $rate->zone_id === 0 ) {
 				unset( $rates[$rate_key] );
@@ -2701,6 +2744,7 @@
 	// Registreer de AJAX-acties
 	add_action( 'wp_ajax_oxfam_stock_action', 'oxfam_stock_action_callback' );
 	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
+	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_invitation_action_callback' );
 
 	function oxfam_stock_action_callback() {
 		echo save_local_product_details($_POST['id'], $_POST['meta'], $_POST['value']);
@@ -2731,6 +2775,27 @@
 			echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
 			// restore_current_blog();
 		// }
+		wp_die();
+	}
+
+	function oxfam_invitation_action_callback() {
+		$new_account_path = get_stylesheet_directory() . '/woocommerce/emails/customer-new-account.php';
+		$reset_password_path = get_stylesheet_directory() . '/woocommerce/emails/customer-reset-password.php';
+		$temporary_path = get_stylesheet_directory() . '/woocommerce/emails/temporary.php';
+		rename( $reset_password_path, $temporary_path );
+		rename( $new_account_path, $reset_password_path );
+
+		$user = get_user_by( 'id', $_POST['customer_id'] );
+		if ( retrieve_password_for_customer( $user ) ) {
+			printf( 'Eigenaar van \'%s\' succesvol uitgenodigd!', $user->user_login );
+			update_user_meta( $user->ID, 'blog_'.get_current_blog_id().'_b2b_invitation_sent', current_time('mysql') );
+		} else {
+			printf( 'Uitnodigen eigenaar van \'%s\' mislukt!', $user->user_login );
+		}
+
+		rename( $reset_password_path, $new_account_path );
+		rename( $temporary_path, $reset_password_path );
+
 		wp_die();
 	}
 
