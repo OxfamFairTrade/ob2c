@@ -1584,7 +1584,9 @@
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
 				jQuery("#send_user_notification").prop( 'checked', false );
-				// jQuery("#send_user_notification").hide();
+				jQuery("#send_user_notification").hide();
+				jQuery("#noconfirmation").prop( 'checked', true );
+				// jQuery("#noconfirmation").hide();
 			} );
 		</script>
 		<?php
