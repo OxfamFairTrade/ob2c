@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2018-05-15 18:35+0200\n"
-"PO-Revision-Date: 2018-05-15 18:35+0200\n"
+"POT-Creation-Date: 2018-05-15 19:51+0200\n"
+"PO-Revision-Date: 2018-05-15 19:51+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -312,7 +312,11 @@ msgstr ""
 "Volg de zending bij Bpost met behulp van dit nummer: <a href=\"%2$s\" target="
 "\"_blank\">%1$s</a>."
 
-#: woocommerce/emails/customer-new-account.php:23
+#: woocommerce/emails/customer-new-account.php:16
+msgid "Titel in de header van de welkomstmail"
+msgstr "Info over je account"
+
+#: woocommerce/emails/customer-new-account.php:24
 #, php-format
 msgid ""
 "Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de "
@@ -320,15 +324,21 @@ msgid ""
 msgstr ""
 "We maakten een bedrijfsaccount voor je aan bij %1$s. Klik op de link "
 "hieronder om een wachtwoord te kiezen. Met je gebruikersnaam %2$s kun je "
-"daarna inloggen op onze webshop. Als geverifieerde B2B-klant dien je pas "
-"achteraf te betalen op factuur. Leveringen op locatie gebeuren in onderling "
-"overleg."
+"daarna inloggen op onze webshop."
 
-#: woocommerce/emails/customer-new-account.php:27
+#: woocommerce/emails/customer-new-account.php:28
 msgid "Speciale wachtwoordresetlink"
 msgstr "Stel je wachtwoord in en bekijk je account"
 
-#: woocommerce/emails/customer-new-account.php:33
+#: woocommerce/emails/customer-new-account.php:32
+msgid ""
+"Tweede alinea in de uitnodingsmail aan B2B-gebruikers met praktische info "
+"over bestellingen en leveringen."
+msgstr ""
+"Als geverifieerde B2B-klant dien je pas achteraf te betalen op factuur. "
+"Leveringen op locatie gebeuren in onderling overleg."
+
+#: woocommerce/emails/customer-new-account.php:36
 #, php-format
 msgid ""
 "Eerste alinea in de welkomstmail aan nieuwe gebruikers, inclusief naam van "
@@ -339,7 +349,7 @@ msgstr ""
 "bij alle webshops van Oxfam-Wereldwinkels. Zo hoef je je gegevens niet "
 "telkens opnieuw in te voeren en wordt je winkelmandje permanent bewaard."
 
-#: woocommerce/emails/customer-new-account.php:35
+#: woocommerce/emails/customer-new-account.php:38
 #, php-format
 msgid ""
 "Uitleg over de 'Mijn account'-pagina, inclusief URL in de webshop waar de "
@@ -350,7 +360,7 @@ msgstr ""
 "gegevens bekijken, je wachtwoord wijzigen en je abonnement op onze "
 "nieuwsbrieven beheren."
 
-#: woocommerce/emails/customer-new-account.php:39
+#: woocommerce/emails/customer-new-account.php:42
 msgid "Uitsmijter van de welkomstmail."
 msgstr ""
 "Tot binnenkort? Aarzel niet om ons te contacteren als je nog vragen hebt!"

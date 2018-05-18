@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $customer = get_user_by( 'login', $user_login );
+$email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' );
 
 ?>
 
@@ -27,6 +28,8 @@ $customer = get_user_by( 'login', $user_login );
 			<b><?php _e( 'Speciale wachtwoordresetlink', 'oxfam-webshop' ); ?> &raquo;</b>
 		</a>
 	</p>
+
+	<p><?php _e( 'Tweede alinea in de uitnodingsmail aan B2B-gebruikers met praktische info over bestellingen en leveringen.', 'oxfam-webshop' ); ?></p>
 
 <?php else : ?>	
 
