@@ -42,6 +42,7 @@
 		$url .= '://' . $_SERVER['SERVER_NAME'];
 		$url .= in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ) ) ? '' : ':' . $_SERVER['SERVER_PORT'];
 		$url .= $_SERVER['REQUEST_URI'];
+		if ( isset( $_GET['key'] ) ) $url .= '?key='.$_GET['key'];
 		return $url;
 	}
 	
