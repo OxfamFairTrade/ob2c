@@ -1575,8 +1575,20 @@
 	# B2B FUNCTIES #
 	################
 
-	// Nooit e-mailconfirmatie versturen bij aanmaken nieuwe account WERKT NIET
+	// Nooit e-mailconfirmatie versturen bij aanmaken nieuwe account
 	// add_filter( 'wpmu_welcome_user_notification', '__return_false' );
+	add_action( 'user_new_form', 'uncheck_notify_register_form' );
+	
+	function uncheck_notify_register_form() {
+		?>
+		<script type="text/javascript">
+			jQuery(document).ready(function() {
+				jQuery("#send_user_notification").prop( 'checked', false );
+				// jQuery("#send_user_notification").hide();
+			} );
+		</script>
+		<?php
+	}
 
 	// Algemene functie die retourneert of de gebruiker een B2B-klant is van de huidige webshop
 	function is_b2b_customer( $user_id = false ) {
