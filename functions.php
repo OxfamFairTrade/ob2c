@@ -14,10 +14,10 @@
 	function force_user_login() {
 		if ( ! is_user_logged_in() ) {
 			$url = get_current_url();
-			// Nooit redirecten op LIVE-omgeving
-			if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
+			// Nooit redirecten op LIVE-omgeving TIJDELIJK OP DEMO
+			if ( get_current_site()->domain !== 'demo.oxfamwereldwinkels.be' ) {
 				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
-				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, 'key=' ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
+				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					// Stuur gebruiker na inloggen terug naar huidige pagina
 					wp_safe_redirect( wp_login_url($url) );
 					exit();
@@ -42,7 +42,6 @@
 		$url .= '://' . $_SERVER['SERVER_NAME'];
 		$url .= in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ) ) ? '' : ':' . $_SERVER['SERVER_PORT'];
 		$url .= $_SERVER['REQUEST_URI'];
-		if ( isset( $_GET['key'] ) ) $url .= '?key='.$_GET['key'];
 		return $url;
 	}
 	
