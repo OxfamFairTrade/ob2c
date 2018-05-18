@@ -17,7 +17,7 @@
 			// Nooit redirecten op LIVE-omgeving
 			if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
-				if ( ! isset( $_GET['key'] ) and preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
+				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, 'key=' ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					// Stuur gebruiker na inloggen terug naar huidige pagina
 					wp_safe_redirect( wp_login_url($url) );
 					exit();
