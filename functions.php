@@ -17,7 +17,7 @@
 			// Nooit redirecten op LIVE-omgeving
 			if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
-				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
+				if ( ! isset( $_GET['key'] ) and preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					// Stuur gebruiker na inloggen terug naar huidige pagina
 					wp_safe_redirect( wp_login_url($url) );
 					exit();
@@ -35,9 +35,6 @@
 				}
 			}
 		}
-
-		// Nooit e-mailconfirmatie versturen bij aanmaken nieuwe account
-		add_filter( 'wpmu_welcome_user_notification', '__return_false' );
 	}
 
 	function get_current_url() {
@@ -1577,6 +1574,9 @@
 	################
 	# B2B FUNCTIES #
 	################
+
+	// Nooit e-mailconfirmatie versturen bij aanmaken nieuwe account WERKT NIET
+	// add_filter( 'wpmu_welcome_user_notification', '__return_false' );
 
 	// Algemene functie die retourneert of de gebruiker een B2B-klant is van de huidige webshop
 	function is_b2b_customer( $user_id = false ) {
