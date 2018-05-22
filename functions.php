@@ -3240,7 +3240,7 @@
 	}
 	
 	// Voeg een bericht toe bovenaan alle adminpagina's
-	add_action( 'admin_notices', 'oxfam_admin_notices' );
+	// add_action( 'admin_notices', 'oxfam_admin_notices' );
 
 	function oxfam_admin_notices() {
 		global $pagenow, $post_type;
@@ -3252,9 +3252,8 @@
 				echo '</div>';
 			}
 			echo '<div class="notice notice-success">';
-				echo '<p>In de back-end van de webshop verschenen 6 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-				$skus = array( '20073', '24286', '25724', '26000', '26011', '28021', );
-				// $skus = array( '25220', '25617', '26010', '26012', );
+				echo '<p>In de back-end van de webshop verschenen 9 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+				$skus = array( '21061', '25220', '25617', '26010', '26012', '27996', '27997', '27998', '27999' );
 				foreach ( $skus as $sku ) {
 					$product_id = wc_get_product_id_by_sku( $sku );
 					if ( $product_id ) {
