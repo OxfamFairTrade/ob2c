@@ -1001,7 +1001,11 @@
 		$address_fields['billing_first_name']['class'] = array('form-row-first');
 		$address_fields['billing_last_name']['class'] = array('form-row-last');
 		$address_fields['billing_company']['class'] = array('form-row-first');
+		// Wordt pas toegevoegd indien B2B-klant, dus mag verplicht worden
+		$address_fields['billing_company']['required'] = true;
 		$address_fields['billing_vat']['class'] = array('form-row-last');
+		// Want verenigingen hebben niet noodzakelijk een BTW-nummer!
+		$address_fields['billing_vat']['required'] = false;
 		$address_fields['billing_address_1']['class'] = array('form-row-first');
 		$address_fields['billing_address_1']['clear'] = false;
 		$address_fields['billing_email']['class'] = array('form-row-first');
@@ -1121,7 +1125,6 @@
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
 		$fields['order']['order_comments']['description'] = sprintf( __( 'Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer van de hoofdwinkel (%s).', 'oxfam-webshop' ), get_oxfam_shop_data( 'telephone' ) );
 
-		var_dump_pre($fields);
 		return $fields;
 	}
 
@@ -1165,6 +1168,8 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_company', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_vat', 'format_tax', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'format_place', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_address_1', 'format_place', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_postcode', 'format_zipcode', 10, 1 );
@@ -1849,7 +1854,7 @@
 		return $gateways;
 	}
 
-	// Zorg ervoor dat de spinners niet enkel in het winkelwagentje maar ook in de catalogus (en scanner) gelimiteerd zijn tot de beschikbare voorraad
+	// Zorg ervoor dat de spinners ook in de catalogus per ompak omhoog/omlaag gaan
 	add_filter( 'woocommerce_quantity_input_args', 'suggest_order_unit_multiple', 10, 2 );
 	
 	function suggest_order_unit_multiple( $args, $product ) {
@@ -1865,11 +1870,6 @@
 		}
 		return $args;
 	}
-
-
-
-
-
 
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
