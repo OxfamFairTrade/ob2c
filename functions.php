@@ -1860,6 +1860,8 @@
 			$multiple = intval( $product->get_attribute('ompak') );
 			if ( $multiple < 1 ) {
 				$multiple = 1;
+			} else {
+				$args['max_value'] = 4*$multiple;
 			}
 
 			$args['min_value'] = 0;
@@ -1867,10 +1869,9 @@
 			if ( is_cart() or $args['nm_mini_cart_quantity'] === true ) {
 				write_log('INPUT ARGS CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 				// Step enkel toepassen indien er nu al een veelvoud van de ompakhoeveelheid in het mandje zit!
+				// In de mini-cart wordt de step niet opnieuw ingesteld omdat AJAX niet de hele blok refresht
 				if ( $args['input_value'] % $multiple === 0 ) {
 					$args['step'] = $multiple;
-				} else {
-					$args['step'] = 1;
 				}
 			} else {
 				write_log('INPUT ARGS NO CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
