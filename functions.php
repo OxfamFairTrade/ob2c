@@ -1865,7 +1865,6 @@
 				// $args['max_value'] = 4*$multiple;
 			}
 
-			// $args['min_value'] = 0;
 			// write_log('QUANTITY INPUT ARGS '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 			
 			if ( is_cart() or $args['nm_mini_cart_quantity'] === true ) {
@@ -1886,17 +1885,17 @@
 	add_filter( 'woocommerce_quantity_input_min', 'set_min_input_to_zero', 10, 2 );
 	
 	function set_min_input_to_zero( $min, $product ) {
-		return 0;
+		return 1;
 	}
 
-	add_filter( 'woocommerce_product_add_to_cart_text', 'add_order_unit_multiple_to_text', 10, 2 );
-	add_filter( 'woocommerce_product_single_add_to_cart_text', 'add_order_unit_multiple_to_text', 10, 2 );
+	add_filter( 'woocommerce_product_add_to_cart_text', 'add_multiple_to_add_to_cart_text', 10, 2 );
+	add_filter( 'woocommerce_product_single_add_to_cart_text', 'add_multiple_to_add_to_cart_text', 10, 2 );
 	
-	function add_order_unit_multiple_to_text( $text, $product ) {
-		if ( is_b2b_customer() ) {
+	function add_multiple_to_add_to_cart_text( $text, $product ) {
+		if ( is_b2b_customer() and ! is_single() ) {
 			$multiple = intval( $product->get_attribute('ompak') );
 			if ( $multiple < 2 ) {
-				$text = 'Voeg toe aan winkelmandje';
+				$text = 'Voeg 1 stuk toe aan winkelmandje';
 			} else {
 				$text = 'Voeg '.$multiple.' stuks toe aan winkelmandje';
 			}
