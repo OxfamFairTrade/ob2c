@@ -1854,12 +1854,12 @@
 		return $gateways;
 	}
 
-	// Zorg ervoor dat de spinners ook in de catalogus per ompak omhoog/omlaag gaan
+	// Zorg ervoor dat de spinners overal per ompak omhoog/omlaag gaan
 	add_filter( 'woocommerce_quantity_input_args', 'suggest_order_unit_multiple', 10, 2 );
 	
 	function suggest_order_unit_multiple( $args, $product ) {
-		// Niet toepassen bij winkelmandjes
-		if ( ! is_cart() and is_b2b_customer() ) {
+		// Niet toepassen bij winkelmandjes: ! is_cart()
+		if ( is_b2b_customer() ) {
 			$multiple = intval( $product->get_attribute('ompak') );
 			if ( $multiple < 1 ) {
 				$multiple = 1;
@@ -1870,6 +1870,10 @@
 		}
 		return $args;
 	}
+
+	// add_filter( 'woocommerce_loop_add_to_cart_link', 'suggest_multiple' );
+
+
 
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
