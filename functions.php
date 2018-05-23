@@ -638,7 +638,7 @@
 			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
 		if ( is_b2b_customer() ) {
-			$price .= ' (= prijs per stuk!)';
+			$price .= ' x'.$product->get_attribute('ompak').' per ompak';
 		}
 		return $price;
 	}
@@ -1848,8 +1848,6 @@
 			unset( $gateways['mollie_wc_gateway_ideal'] );
 		} else {
 			unset( $gateways['cod'] );
-			// Zullen we niet gebruiken, bedrag kan immers nog variëren
-			// unset( $gateways['mollie_wc_gateway_banktransfer'] );
 		}
 		return $gateways;
 	}
@@ -1865,16 +1863,16 @@
 			}
 			
 			if ( is_cart() ) {
+				write_log('INPUT ARGS CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 				// Step enkel toepassen indien er nu al een veelvoud van de ompakhoeveelheid in het mandje zit!
 				if ( $args['input_value'] % $multiple === 0 ) {
 					$args['step'] = $multiple;
 				}
-				write_log('INPUT ARGS CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 			} else {
+				write_log('INPUT ARGS NO CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 				// Input value enkel herinstellen buiten winkelmandje!
 				$args['input_value'] = $multiple;
 				$args['step'] = $multiple;
-				write_log('INPUT ARGS NO CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 			}
 		}
 		return $args;
