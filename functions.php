@@ -1861,27 +1861,26 @@
 			if ( $multiple < 1 ) {
 				$multiple = 1;
 			}
+
+			$args['min_value'] = 0;
 			
 			if ( is_cart() or $args['nm_mini_cart_quantity'] === true ) {
 				write_log('INPUT ARGS CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 				// Step enkel toepassen indien er nu al een veelvoud van de ompakhoeveelheid in het mandje zit!
 				if ( $args['input_value'] % $multiple === 0 ) {
 					$args['step'] = $multiple;
+				} else {
+					$args['step'] = 1;
 				}
 			} else {
 				write_log('INPUT ARGS NO CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 				// Input value enkel herinstellen buiten winkelmandje!
 				$args['input_value'] = $multiple;
-				$args['min_value'] = 0;
 				$args['step'] = $multiple;
 			}
 		}
 		return $args;
 	}
-
-	// add_filter( 'woocommerce_loop_add_to_cart_link', 'suggest_multiple' );
-
-
 
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );

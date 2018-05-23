@@ -21,9 +21,6 @@ if ( is_b2b_customer() ) {
 	if ( $multiple < 1 ) {
 		$multiple = 1;
 	}
-	if ( isset( $quantity ) and $quantity === 1 ) {
-		$quantity = $multiple;
-	}
 }
 
 write_log('ADD TO CART '.$product->get_sku().': '.$quantity.' quantity - '.$multiple.' multiple');
