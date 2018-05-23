@@ -21,6 +21,9 @@ if ( is_b2b_customer() ) {
 	if ( $multiple < 1 ) {
 		$multiple = 1;
 	}
+	if ( isset( $quantity ) and $quantity === 1 ) {
+		$quantity = $multiple;
+	}
 }
 
 write_log('ADD TO CART '.$product->get_sku().': '.$quantity.' quantity - '.$multiple.' multiple');
@@ -28,7 +31,7 @@ write_log('ADD TO CART '.$product->get_sku().': '.$quantity.' quantity - '.$mult
 echo apply_filters( 'woocommerce_loop_add_to_cart_link',
 	sprintf( '<a rel="nofollow" href="%s" data-quantity="%s" data-product_id="%s" data-product_sku="%s" class="%s">%s</a>',
 		esc_url( $product->add_to_cart_url() ),
-		esc_attr( isset( $multiple ) ? $multiple : $quantity ),
+		esc_attr( isset( $quantity ) ? $quantity : ( isset( $multiple ) ? $multiple : 1 ) ),
 		esc_attr( $product->get_id() ),
 		esc_attr( $product->get_sku() ),
 		esc_attr( isset( $class ) ? $class : 'button' ),

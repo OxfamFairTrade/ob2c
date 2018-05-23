@@ -638,7 +638,7 @@
 			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
 		if ( is_b2b_customer() ) {
-			$price .= ' x'.$product->get_attribute('ompak').' per ompak';
+			$price .= ' PER STUK ('.$product->get_attribute('ompak').' per ompak)';
 		}
 		return $price;
 	}
@@ -1872,6 +1872,7 @@
 				write_log('INPUT ARGS NO CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 				// Input value enkel herinstellen buiten winkelmandje!
 				$args['input_value'] = $multiple;
+				$args['min_value'] = 0;
 				$args['step'] = $multiple;
 			}
 		}
