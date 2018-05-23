@@ -638,7 +638,7 @@
 			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
 		if ( is_b2b_customer() ) {
-			$price .= ' per stuk (x'.$product->get_attribute('ompak').')';
+			$price .= ' per stuk (per '.$product->get_attribute('ompak').' verpakt)';
 		}
 		return $price;
 	}
@@ -1865,8 +1865,8 @@
 				// $args['max_value'] = 4*$multiple;
 			}
 
-			$args['min_value'] = 0;
-			write_log('QUANTITY INPUT ARGS '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
+			// $args['min_value'] = 0;
+			// write_log('QUANTITY INPUT ARGS '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 			
 			if ( is_cart() or $args['nm_mini_cart_quantity'] === true ) {
 				// Step enkel overrulen indien er op dit moment een veelvoud van de ompakhoeveelheid in het winkelmandje zit!
@@ -1881,6 +1881,13 @@
 			}
 		}
 		return $args;
+	}
+
+	add_filter( 'woocommerce_product_add_to_cart_text', 'add_order_unit_multiple_to_text', 10, 2 );
+
+	function add_order_unit_multiple_to_text( $var, $instance ) {
+		var_dump_pre($var);
+		var_dump_pre($instance);
 	}
 
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 

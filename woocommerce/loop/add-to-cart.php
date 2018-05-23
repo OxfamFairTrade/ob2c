@@ -16,10 +16,14 @@ global $product, $nm_page_includes;
 
 $nm_page_includes['products'] = true; // Required for the "Add to cart" element/shortcode
 
+$product_text = $product->add_to_cart_text();
+
 if ( is_b2b_customer() ) {
 	$multiple = intval( $product->get_attribute('ompak') );
-	if ( $multiple < 1 ) {
+	if ( $multiple < 2 ) {
 		$multiple = 1;
+	} else {
+		$product_text = 'Voeg '.$multiple.' stuks toe aan mandje';
 	}
 }
 
@@ -32,6 +36,6 @@ echo apply_filters( 'woocommerce_loop_add_to_cart_link',
 		esc_attr( $product->get_id() ),
 		esc_attr( $product->get_sku() ),
 		esc_attr( isset( $class ) ? $class : 'button' ),
-		esc_html( $product->add_to_cart_text() )
+		esc_html( $product_text )
 	),
 $product );
