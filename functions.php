@@ -1858,15 +1858,24 @@
 	add_filter( 'woocommerce_quantity_input_args', 'suggest_order_unit_multiple', 10, 2 );
 	
 	function suggest_order_unit_multiple( $args, $product ) {
-		// Niet toepassen bij winkelmandjes: ! is_cart()
 		if ( is_b2b_customer() ) {
 			$multiple = intval( $product->get_attribute('ompak') );
 			if ( $multiple < 1 ) {
 				$multiple = 1;
 			}
-			// Waarde is een suggestie maar géén afgedwongen minimum, precies wat we willen!
-			$args['input_value'] = $multiple;
-			$args['step'] = $multiple;
+			
+			if ( is_cart() ) {
+				// Step enkel toepassen indien er nu al een veelvoud van de ompakhoeveelheid in het mandje zit!
+				if ( $args['input_value'] % $multiple === 0 ) {
+					$args['step'] = $multiple;
+				}
+				write_log('INPUT ARGS CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
+			} else {
+				// Input value enkel herinstellen buiten winkelmandje!
+				$args['input_value'] = $multiple;
+				$args['step'] = $multiple;
+				write_log('INPUT ARGS NO CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
+			}
 		}
 		return $args;
 	}
