@@ -638,7 +638,7 @@
 			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
 		if ( is_b2b_customer() ) {
-			$price .= ' PER STUK ('.$product->get_attribute('ompak').' per ompak)';
+			$price .= ' per stuk (verpakt per '.$product->get_attribute('ompak').')';
 		}
 		return $price;
 	}
@@ -1862,7 +1862,7 @@
 				$multiple = 1;
 			}
 			
-			if ( is_cart() ) {
+			if ( is_cart() or $args['nm_mini_cart_quantity'] === true ) {
 				write_log('INPUT ARGS CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 				// Step enkel toepassen indien er nu al een veelvoud van de ompakhoeveelheid in het mandje zit!
 				if ( $args['input_value'] % $multiple === 0 ) {
