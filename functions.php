@@ -638,7 +638,7 @@
 			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
 		if ( is_b2b_customer() ) {
-			$price .= ' per stuk (verpakt per '.$product->get_attribute('ompak').')';
+			$price .= ' per stuk (x'.$product->get_attribute('ompak').')';
 		}
 		return $price;
 	}
@@ -1861,21 +1861,21 @@
 			if ( $multiple < 1 ) {
 				$multiple = 1;
 			} else {
-				$args['max_value'] = 4*$multiple;
+				// Eventuele bestellimiet instellen
+				// $args['max_value'] = 4*$multiple;
 			}
 
 			$args['min_value'] = 0;
+			write_log('QUANTITY INPUT ARGS '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 			
 			if ( is_cart() or $args['nm_mini_cart_quantity'] === true ) {
-				write_log('INPUT ARGS CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
-				// Step enkel toepassen indien er nu al een veelvoud van de ompakhoeveelheid in het mandje zit!
-				// In de mini-cart wordt de step niet opnieuw ingesteld omdat AJAX niet de hele blok refresht
+				// Step enkel overrulen indien er op dit moment een veelvoud van de ompakhoeveelheid in het winkelmandje zit!
+				// In de mini-cart wordt dit niet tijdens page-load bepaald omdat AJAX niet de hele blok refresht
 				if ( $args['input_value'] % $multiple === 0 ) {
 					$args['step'] = $multiple;
 				}
 			} else {
-				write_log('INPUT ARGS NO CART '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
-				// Input value enkel herinstellen buiten winkelmandje!
+				// Input value enkel overrulen buiten het winkelmandje!
 				$args['input_value'] = $multiple;
 				$args['step'] = $multiple;
 			}
