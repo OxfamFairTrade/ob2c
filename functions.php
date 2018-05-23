@@ -1885,9 +1885,8 @@
 
 	add_filter( 'woocommerce_product_add_to_cart_text', 'add_order_unit_multiple_to_text', 10, 2 );
 
-	function add_order_unit_multiple_to_text( $var, $instance ) {
-		var_dump_pre($var);
-		var_dump_pre($instance);
+	function add_order_unit_multiple_to_text( $text, $product ) {
+		return $text;
 	}
 
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
