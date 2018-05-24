@@ -638,7 +638,8 @@
 			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
 		if ( is_b2b_customer() ) {
-			$price .= ' per stuk (per '.$product->get_attribute('ompak').' verpakt)';
+			// $price .= ' per stuk (per '.$product->get_attribute('ompak').' verpakt)';
+			$price .= ' per stuk X '.$product->get_attribute('ompak');
 		}
 		return $price;
 	}
@@ -1922,9 +1923,9 @@
 		if ( is_b2b_customer() ) {
 			$multiple = intval( $product->get_attribute('ompak') );
 			if ( $multiple < 2 ) {
-				$text = 'Voeg 1 stuk toe aan winkelmandje';
+				$text = 'Voeg 1 stuk toe aan mandje';
 			} else {
-				$text = 'Voeg '.$multiple.' stuks toe aan winkelmandje';
+				$text = 'Voeg '.$multiple.' stuks toe aan mandje';
 			}
 		} else {
 			$text = 'Voeg toe aan winkelmandje';
@@ -2499,6 +2500,7 @@
 					if ( $shipping_zone['zone_name'] !== 'B2B' ) {
 						$non_b2b_methods = $shipping_zone['shipping_methods'];
 						foreach ( $non_b2b_methods as $shipping_method ) {
+							var_dump_pre($shipping_method);
 							if ( $shipping_method->name !== 'local_pickup_plus' ) {
 								$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
 								unset($rates[$method_key]);
@@ -4057,7 +4059,9 @@
 	}
 
 	function print_widget_delivery() {
-		if ( does_home_delivery() ) {
+		if ( is_b2b_customer() ) {
+			$text = __( 'Inhoud van praktisch blokje in footer (indien B2B-klant).', 'oxfam-webshop' );
+		} elseif ( does_home_delivery() ) {
 			$text = __( 'Inhoud van praktisch blokje in footer (indien ook thuislevering).', 'oxfam-webshop' );
 		} else {
 			$text = __( 'Inhoud van praktisch blokje in footer (inden enkel afhaling).', 'oxfam-webshop' );
