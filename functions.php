@@ -1859,7 +1859,7 @@
 
 	function show_b2b_account_hint() {
 		if ( ! is_b2b_customer() ) {
-			wc_add_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via '.get_company_email().'.', 'notice' );
+			wc_print_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via '.get_company_email().'.', 'notice' );
 		}
 	}
 	
