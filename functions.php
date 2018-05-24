@@ -2457,15 +2457,15 @@
 
 	function check_subscription_preference( $posted ) {
 		global $woocommerce;
-		if ( ! empty( $posted['subscribe_digizine'] ) ) {
-			if ( $posted['subscribe_digizine'] !== 1 ) {
+		if ( ! empty( $_POST['subscribe_digizine'] ) ) {
+			if ( $_POST['subscribe_digizine'] !== 1 ) {
 				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
 			}
 		}
 
-		if ( ! empty( $posted['billing_vat'] ) ) {
-			if ( format_tax($posted['billing_vat']) === 'INVALID' ) {
-				wc_add_notice( __( 'Het BTW-nummer dat je ingaf is geen geldig Belgisch exemplaar. Gelieve het te corrigeren of te verwijderen.', 'oxfam-webshop' ), 'error' );
+		if ( ! empty( $_POST['billing_vat'] ) ) {
+			if ( format_tax($_POST['billing_vat']) === 'INVALID' ) {
+				wc_add_notice( __( 'Het BTW-nummer dat je ingaf is geen geldig Belgisch exemplaar. Gelieve het te corrigeren of leeg te laten.', 'oxfam-webshop' ), 'error' );
 			}
 		}
 
