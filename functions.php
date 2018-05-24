@@ -1644,16 +1644,19 @@
 								'posts_per_page' => -1,
 								'post_type' => 'shop_coupon',
 								'post_status' => 'publish',
-								'orderby' => 'title',
-								'order' => 'ASC',
 							);
 							$coupons = get_posts($args);
+							$b2b_coupons = array();
 							echo '<option value="">n.v.t.</option>';
 							foreach ( $coupons as $coupon ) {
 								$payment_methods = get_post_meta( $coupon->ID, '_wjecf_payment_methods', true );
 								if ( is_array($payment_methods) and $payment_methods[0] === 'cod' ) {
-									echo '<option value="'.$coupon->ID.'" '.selected( $coupon->ID, $has_b2b_coupon ).'>'.str_replace( 'b2b', '', $coupon->post_title ).'</option>';
+									$b2b_coupons[str_replace( 'b2b', '', $coupon->post_title )] = $coupon;
 								}
+							}
+							asort( $b2b_coupons, SORT_NATURAL );
+							foreach ($b2b_coupons as $key => $b2b_coupon ) {
+								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.$key.'</option>';
 							}
 						?>
 						</select>
