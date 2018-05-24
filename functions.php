@@ -1199,7 +1199,13 @@
 		$value = str_replace( 'BE', '', $value );
 		$value = preg_replace( '/[\s\-\.\/]/', '', $value );
 		if ( mb_strlen($value) === 10 ) {
-			return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
+			$digit_8 = intval( substr( $value, 0, 8 ) );
+			$checksum = 97 - ( $digit_8 - intval( $digit_8 / 97 ) * 97 );
+			if ( $cheksum === intval( substr( $value, 8, 2 ) ) ) {
+				return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
+			} else {
+				return 'ERROR';
+			}
 		} elseif ( mb_strlen($value) === 9 ) {
 			return 'BE 0'.substr( $value, 0, 3 ).".".substr( $value, 3, 3 ).".".substr( $value, 6, 3 );
 		} else {
