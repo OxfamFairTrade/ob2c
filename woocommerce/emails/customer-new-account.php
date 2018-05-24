@@ -21,7 +21,40 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <?php if ( 'yes' === get_the_author_meta( 'blog_'.get_current_blog_id().'_is_b2b_customer', $customer->ID ) ) : ?>
 
-	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de webshop (%1$s) en gebruikersnaam (%2$s).', 'oxfam-webshop' ), esc_html( $blogname ), '<strong>' . esc_html( $user_login ) . '</strong>' ); ?></p>
+	<p><?php
+			if ( '' !== $customer->first_name and '' !== $customer->last_name ) {
+				$name = $customer->first_name.' '.$customer->last_name;
+			} else {
+				$name = 'klant';
+			}
+			printf( __( 'Begroeting van de bedrijfsverantwoordelijke (%s)', 'oxfam-webshop' ), esc_html( $name ) );
+		?>
+	</p>
+
+	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de webshop (%s).', 'oxfam-webshop' ), esc_html( $blogname ) ); ?></p>
+
+	<p><?php
+			$author_metas = array(
+				'billing_company' => 'Bedrijf of vereniging',
+				'billing_vat' => 'BTW-nummer',
+				'billing_address_1' => 'Factuuradres',
+				'billing_postcode' => 'Postcode',
+				'billing_city' => 'Gemeente',
+			);
+			
+			foreach ( $author_metas as $key => $label ) {
+				if ( '' !== get_the_author_meta( $key, $customer->ID ) ) {
+					if ( $key === 'billing_city' ) {
+						echo 'Gemeente: '.get_the_author_meta( 'billing_postcode', $customer->ID ).' '.get_the_author_meta( $key, $customer->ID ).'<br/>';
+					} elseif ( $key !== 'billing_postcode' ) {
+						echo $label.': '.get_the_author_meta( $key, $customer->ID ).'<br/>';
+					}
+				}
+			}
+		?>
+	</p>
+
+	<p><?php printf( __( 'Tweede alinea in de uitnodingsmail aan B2B-gebruikers, inclusief gebruikersnaam (%s).', 'oxfam-webshop' ), '<strong>' . esc_html( $user_login ) . '</strong>' ); ?></p>
 
 	<p style="text-align: center;">
 		<a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'login' => rawurlencode( $user_login ) ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>">
@@ -29,21 +62,9 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 		</a>
 	</p>
 
-	<p><?php
-			$author_metas = array(
-				'billing_company' => 'Bedrijf of vereniging',
-				'billing_vat' => 'BTW-nummer',
-			);
-			
-			foreach ( $author_metas as $key => $label ) {
-				if ( '' !== get_the_author_meta( $key, $customer->ID ) ) {
-					echo $label.': '.get_the_author_meta( $key, $customer->ID ).'<br/>';
-				}
-			}
-		?>
-	</p>
+	<p><?php _e( 'Derde alinea in de uitnodingsmail aan B2B-gebruikers met praktische info over bestellingen en leveringen.', 'oxfam-webshop' ); ?></p>
 
-	<p><?php _e( 'Tweede alinea in de uitnodingsmail aan B2B-gebruikers met praktische info over bestellingen en leveringen.', 'oxfam-webshop' ); ?></p>
+	<p><?php _e( 'Vierde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?></p>
 
 <?php else : ?>	
 

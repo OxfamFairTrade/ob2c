@@ -1219,10 +1219,12 @@
 			if ( $checksum === intval( substr( $value, 8, 2 ) ) ) {
 				return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
 			} else {
-				return 'INVALID';
+				return 'INVALID CHECKSUM';
 			}
+		} elseif ( mb_strlen($value) >= 1 ) {
+			return 'INVALID LENGTH';
 		} else {
-			return 'INVALID';
+			return '';
 		}
 	}
 
@@ -1275,10 +1277,10 @@
 			if ( intval($controll_string) % 97 === 1 ) {
 				return substr( $iban, 0, 4 )." ".substr( $iban, 4, 4 )." ".substr( $iban, 8, 4 )." ".substr( $iban, 12, 4 );
 			} else {
-				return 'INVALID';
+				return 'INVALID CHECKSUM';
 			}
-		} else{
-			return 'INVALID';
+		} else {
+			return 'INVALID LENGTH';
 		}
 	}
 
@@ -1853,9 +1855,9 @@
 	}
 
 	// Geef hint om B2B-klant te worden
-	add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
+	add_action( 'woocommerce_before_checkout_form', 'show_b2b_account_hint', 10, 1 );
 
-	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
+	function show_b2b_account_hint() {
 		if ( ! is_b2b_customer() ) {
 			wc_add_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via '.get_company_email().'.', 'notice' );
 		}
@@ -2474,7 +2476,7 @@
 		}
 
 		if ( ! empty( $_POST['billing_vat'] ) ) {
-			if ( format_tax($_POST['billing_vat']) === 'INVALID' ) {
+			if ( strpos( format_tax($_POST['billing_vat']), 'INVALID' ) !== false ) {
 				wc_add_notice( __( 'Het BTW-nummer dat je ingaf is geen geldig Belgisch exemplaar. Gelieve het te corrigeren of leeg te laten.', 'oxfam-webshop' ), 'error' );
 			}
 		}
