@@ -638,8 +638,8 @@
 			return "<i>Geen verkoop vanuit nationaal</i>";
 		}
 		if ( is_b2b_customer() ) {
+			$price .= ' per stuk';
 			// $price .= ' per stuk (per '.$product->get_attribute('ompak').' verpakt)';
-			$price .= ' per stuk X '.$product->get_attribute('ompak');
 		}
 		return $price;
 	}
@@ -2366,6 +2366,7 @@
 			$shipping_zones = WC_Shipping_Zones::get_zones();
 			foreach ( $shipping_zones as $shipping_zone ) {
 				if ( $shipping_zone['zone_name'] === 'B2B' ) {
+					// Alle B2B-levermethodes uitschakelen
 					$b2b_methods = $shipping_zone['shipping_methods'];
 					foreach ( $b2b_methods as $shipping_method ) {
 						$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
@@ -2373,8 +2374,6 @@
 					}
 				}
 			}
-
-			// var_dump_pre($rates);
 
 			if ( $rate->zone_id === 0 ) {
 				unset( $rates[$rate_key] );
@@ -2493,15 +2492,16 @@
 				}
 			}
 		} else {
-			// Enkel gratis B2B-levering overhouden?
 			foreach ( $rates as $rate_key => $rate ) {
 				$shipping_zones = WC_Shipping_Zones::get_zones();
 				foreach ( $shipping_zones as $shipping_zone ) {
 					if ( $shipping_zone['zone_name'] !== 'B2B' ) {
+						// Alle niet-B2B-levermethodes uitschakelen
 						$non_b2b_methods = $shipping_zone['shipping_methods'];
 						foreach ( $non_b2b_methods as $shipping_method ) {
-							var_dump_pre($shipping_method);
-							if ( $shipping_method->name !== 'local_pickup_plus' ) {
+							var_dump_pre($shipping_method->id);
+							// Behalve afhalingen!
+							if ( $shipping_method->id !== 'local_pickup_plus' ) {
 								$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
 								unset($rates[$method_key]);
 							}
@@ -2510,6 +2510,7 @@
 				}
 			}
 		}
+		var_dump_pre($rates);
 		return $rates;
 	}
 
