@@ -1654,8 +1654,8 @@
 									$b2b_coupons[str_replace( 'b2b', '', $coupon->post_title )] = $coupon;
 								}
 							}
-							asort( $b2b_coupons, SORT_NATURAL );
-							foreach ($b2b_coupons as $key => $b2b_coupon ) {
+							ksort( $b2b_coupons, SORT_NATURAL );
+							foreach ( $b2b_coupons as $key => $b2b_coupon ) {
 								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.$key.'</option>';
 							}
 						?>
