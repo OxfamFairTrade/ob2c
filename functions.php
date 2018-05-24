@@ -1644,6 +1644,8 @@
 								'posts_per_page' => -1,
 								'post_type' => 'shop_coupon',
 								'post_status' => 'publish',
+								'orderby' => 'title',
+								'order' => 'ASC',
 							);
 							$coupons = get_posts($args);
 							echo '<option value="">n.v.t.</option>';
@@ -1858,7 +1860,7 @@
 	function suggest_order_unit_multiple( $args, $product ) {
 		if ( is_b2b_customer() ) {
 			$multiple = intval( $product->get_attribute('ompak') );
-			if ( $multiple < 1 ) {
+			if ( $multiple < 2 ) {
 				$multiple = 1;
 			} else {
 				// Eventuele bestellimiet instellen
