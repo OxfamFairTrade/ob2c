@@ -35,10 +35,12 @@ if ( ! $checkout->enable_signup && ! $checkout->enable_guest_checkout && ! is_us
     <ul class="nm-checkout-login-coupon">
         <?php if ( isset( $nm_globals['checkout_login_message'] ) ) : ?>
         <li><?php wc_print_notice( $nm_globals['checkout_login_message'], 'notice' ); ?></li>
-        <?php 
-            endif;
-            // GEWIJZIGD: Definieer extra actie
-            do_action( 'woocommerce_just_before_checkout', $checkout );
+        <?php endif; ?>
+        <li><?php
+            // GEWIJZIGD: Definieer een extra actie voor notices met zelfde layout als inlogherinnering
+            echo do_action( 'woocommerce_just_before_checkout_form', $checkout );
+        ?></li>
+        <?php
             if ( isset( $nm_globals['checkout_coupon_message'] ) ) :
         ?>
         <li><?php wc_print_notice( $nm_globals['checkout_coupon_message'], 'notice' ); ?></li>

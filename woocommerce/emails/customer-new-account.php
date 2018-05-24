@@ -33,7 +33,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de webshop (%s).', 'oxfam-webshop' ), esc_html( $blogname ) ); ?></p>
 
-	<p><?php
+	<ul><?php
 			$author_metas = array(
 				'billing_company' => 'Bedrijf of vereniging',
 				'billing_vat' => 'BTW-nummer',
@@ -45,14 +45,14 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 			foreach ( $author_metas as $key => $label ) {
 				if ( '' !== get_the_author_meta( $key, $customer->ID ) ) {
 					if ( $key === 'billing_city' ) {
-						echo 'Gemeente: '.get_the_author_meta( 'billing_postcode', $customer->ID ).' '.get_the_author_meta( $key, $customer->ID ).'<br/>';
+						echo '<li>Gemeente: '.get_the_author_meta( 'billing_postcode', $customer->ID ).' '.get_the_author_meta( $key, $customer->ID ).'</li>';
 					} elseif ( $key !== 'billing_postcode' ) {
-						echo $label.': '.get_the_author_meta( $key, $customer->ID ).'<br/>';
+						echo '<li>'.$label.': '.get_the_author_meta( $key, $customer->ID ).'</li>';
 					}
 				}
 			}
 		?>
-	</p>
+	</ul>
 
 	<p><?php printf( __( 'Tweede alinea in de uitnodingsmail aan B2B-gebruikers, inclusief gebruikersnaam (%s).', 'oxfam-webshop' ), '<strong>' . esc_html( $user_login ) . '</strong>' ); ?></p>
 

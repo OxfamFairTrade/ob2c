@@ -18,7 +18,7 @@ if ( is_user_logged_in() || 'no' === get_option( 'woocommerce_enable_checkout_lo
 
 $info_message  = apply_filters( 'woocommerce_checkout_login_message', __( 'Returning customer?', 'woocommerce' ) );
 $info_message .= ' <a href="#" class="showlogin">' . __( 'Click here to login', 'woocommerce' ) . '</a>';
-//wc_print_notice( $info_message, 'notice' );
+
 global $nm_globals;
 $nm_globals['checkout_login_message'] = $info_message;
 ?>
@@ -27,7 +27,7 @@ $nm_globals['checkout_login_message'] = $info_message;
     <?php
         woocommerce_login_form(
             array(
-                // GEWIJZIGD: Wijzig tekst
+                // GEWIJZIGD: Aangepaste tekst
                 'message'  => __( 'Vul hieronder je gegevens in als je je tijdens een vorige bestelling al registreerde. Nog geen account? Sluit dan dit venster en vink tijdens het afwerken van je bestelling aan dat je een wachtwoord wil aanmaken.', 'oxfam-webshop' ),
                 'redirect' => wc_get_page_permalink( 'checkout' ),
                 'hidden'   => true
