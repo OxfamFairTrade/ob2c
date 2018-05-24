@@ -1128,6 +1128,7 @@
 		return $fields;
 	}
 
+	// B2B-velden hebben 'billing'-prefix en worden dus sowieso al opgeslagen (maar niet automatisch getoond)
 	// add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_fields_on_order' );
 
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
@@ -1208,10 +1209,10 @@
 			if ( $checksum === intval( substr( $value, 8, 2 ) ) ) {
 				return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
 			} else {
-				return 'INVALID CHECKSUM';
+				return 'INVALID';
 			}
 		} else {
-			return 'INVALID LENGTH';
+			return 'INVALID';
 		}
 	}
 
@@ -1264,10 +1265,10 @@
 			if ( intval($controll_string) % 97 === 1 ) {
 				return substr( $iban, 0, 4 )." ".substr( $iban, 4, 4 )." ".substr( $iban, 8, 4 )." ".substr( $iban, 12, 4 );
 			} else {
-				return 'INVALID CHECKSUM';
+				return 'INVALID';
 			}
 		} else{
-			return 'INVALID LENGTH';
+			return 'INVALID';
 		}
 	}
 
@@ -2463,7 +2464,7 @@
 		}
 
 		if ( ! empty( $posted['billing_vat'] ) ) {
-			if ( format_tax($posted['billing_vat']) === '' ) {
+			if ( format_tax($posted['billing_vat']) === 'INVALID' ) {
 				wc_add_notice( __( 'Het BTW-nummer dat je ingaf is geen geldig Belgisch exemplaar. Gelieve het te corrigeren of te verwijderen.', 'oxfam-webshop' ), 'error' );
 			}
 		}
