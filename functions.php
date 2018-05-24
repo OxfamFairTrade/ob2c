@@ -1937,6 +1937,70 @@
 		return $text;
 	}
 
+	// Verberg onnuttige adresvelden tijdens het bewerken op het orderdetailscherm in de back-end
+	add_filter( 'woocommerce_admin_billing_fields', 'custom_admin_billing_fields' );
+	add_filter( 'woocommerce_admin_shipping_fields', 'custom_admin_shipping_fields' );
+	add_action( 'woocommerce_admin_order_data_after_billing_address', 'show_custom_billing_fields', 10, 1 );
+
+	function custom_admin_billing_fields( $address_fields ) {
+		unset($address_fields['first_name']);
+		unset($address_fields['last_name']);
+		unset($address_fields['address_2']);
+		unset($address_fields['state']);
+		return $address_fields;
+	}
+
+	function custom_admin_shipping_fields( $address_fields ) {
+		unset($address_fields['first_name']);
+		unset($address_fields['last_name']);
+		unset($address_fields['company']);
+		unset($address_fields['address_2']);
+		unset($address_fields['state']);
+		return $address_fields;
+	}
+
+	function show_custom_billing_fields( $order ) {
+		if ( $order->get_meta('_billing_vat') !== '' ) {
+			echo '<p><strong>'.__( 'BTW-nummer', 'oxfam-webshop' ).':</strong><br/>'.$order->get_meta('_billing_vat').'</p>';
+		}
+	}
+
+	// Geef de adresregels binnen 'Mijn account' een logische volgorde
+	add_action( 'woocommerce_my_account_my_address_formatted_address', 'show_custom_address_fields', 10, 3 );
+
+	function show_custom_address_fields( $address, $customer_id, $type ) {
+		if ( $type === 'billing' ) {
+			if ( is_b2b_customer() and get_user_meta( $customer_id, 'billing_vat', true ) ) {
+				$address['first_name'] = '';
+				$address['last_name'] = '';
+				$address['address_2'] = $address['address_1'];
+				$address['address_1'] = get_user_meta( $customer_id, 'billing_vat', true );
+			}
+		}
+		return $address;
+	}
+
+	// Toon extra klantendata onder de contactgegevens (net boven de adressen)
+	add_action( 'woocommerce_order_details_after_customer_details', 'shuffle_account_address', 100, 1 );
+
+	function shuffle_account_address( $order ) {
+		// Let op de underscore, wordt verwerkt als een intern veld!
+		if ( $order->get_meta('_billing_vat') !== '' ) {
+			?>
+			<li>
+				<h3>BTW-nummer</h3>
+				<div><?php echo esc_html( $order->get_meta('_billing_vat') ); ?></div>
+			</li>
+			<?php
+		}
+	}
+
+
+
+	###################
+	# HELPER FUNCTIES #
+	###################
+
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
 	
