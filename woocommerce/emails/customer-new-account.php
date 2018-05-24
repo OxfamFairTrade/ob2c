@@ -29,6 +29,20 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 		</a>
 	</p>
 
+	<p><?php
+			$author_metas = array(
+				'billing_company' => 'Bedrijf of vereniging',
+				'billing_vat' => 'BTW-nummer',
+			);
+			
+			foreach ( $author_metas as $key => $label ) {
+				if ( '' !== get_the_author_meta( $key, $customer->ID ) ) {
+					echo $label.': '.get_the_author_meta( $key, $customer->ID ).'<br/>';
+				}
+			}
+		?>
+	</p>
+
 	<p><?php _e( 'Tweede alinea in de uitnodingsmail aan B2B-gebruikers met praktische info over bestellingen en leveringen.', 'oxfam-webshop' ); ?></p>
 
 <?php else : ?>	

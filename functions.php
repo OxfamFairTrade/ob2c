@@ -1128,8 +1128,18 @@
 		return $fields;
 	}
 
-	// B2B-velden hebben 'billing'-prefix en worden dus sowieso al opgeslagen (maar niet automatisch getoond)
-	// add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_fields_on_order' );
+	// Registreer of het een B2B-verkoop is of niet
+	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_fields_on_order' );
+
+	function save_b2b_fields_on_order( $order_id ) {
+		if ( is_b2b_customer() ) {
+			$value = 'yes';
+		} else {
+			$value = 'no';
+		}
+		// Extra velden met 'billing'-prefix worden al automatisch opgeslagen (maar niet getoond)
+		update_post_meta( $order_id, 'b2b_sale', $value );
+	}
 
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
 	add_action( 'woocommerce_order_status_pending_to_processing', 'save_estimated_delivery' );
@@ -2455,7 +2465,7 @@
 	// Check of de persoon moet worden ingeschreven op het digizine 
 	add_action( 'woocommerce_checkout_process', 'check_subscription_preference', 10, 1 );
 
-	function check_subscription_preference( $posted ) {
+	function check_subscription_preference() {
 		global $woocommerce;
 		if ( ! empty( $_POST['subscribe_digizine'] ) ) {
 			if ( $_POST['subscribe_digizine'] !== 1 ) {
