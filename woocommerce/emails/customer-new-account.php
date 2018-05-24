@@ -62,9 +62,13 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 		</a>
 	</p>
 
-	<p><?php _e( 'Derde alinea in de uitnodingsmail aan B2B-gebruikers met praktische info over bestellingen en leveringen.', 'oxfam-webshop' ); ?></p>
+	<p><?php _e( 'Derde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?></p>
 
 	<p><?php _e( 'Vierde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?></p>
+
+	<p><?php _e( 'Vijfde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?></p>
+
+	<p><?php _e( 'Zesde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?></p>
 
 <?php else : ?>	
 

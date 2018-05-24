@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2018-05-24 16:16+0200\n"
-"PO-Revision-Date: 2018-05-24 16:26+0200\n"
+"POT-Creation-Date: 2018-05-24 17:37+0200\n"
+"PO-Revision-Date: 2018-05-24 17:39+0200\n"
 "Last-Translator: Frederik Neirynck <contact@lecouperet.net>\n"
 "Language-Team: Le Couperet\n"
 "Language: nl_NL\n"
@@ -333,8 +333,8 @@ msgid ""
 "Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de "
 "webshop (%s)."
 msgstr ""
-"We maakten een bedrijfsaccount voor je aan op de webshop van %s. Hieronder "
-"zie je de gegevens die we daarvoor gebruikten."
+"We maakten een bedrijfsaccount voor je aan op de webshop van %s. Dit zijn de "
+"gegevens die we daarvoor gebruikten:"
 
 #: woocommerce/emails/customer-new-account.php:57
 #, php-format
@@ -351,28 +351,32 @@ msgid "Speciale wachtwoordresetlink"
 msgstr "Stel je wachtwoord in en bekijk je account"
 
 #: woocommerce/emails/customer-new-account.php:65
-msgid ""
-"Derde alinea in de uitnodingsmail aan B2B-gebruikers met praktische info "
-"over bestellingen en leveringen."
+msgid "Derde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
 "Als geverifieerde B2B-klant dien je niet op voorhand te betalen en bezorgen "
 "we je achteraf een factuur voor de effectief geleverde goederen. Indien je "
-"van een vast kortingstarief geniet, tonen we dit wel al in je winkelmandje. "
-"Standaard worden producten per handige omverpakking toegevoegd (veelvoud van "
-"6, 10, 12, ...) maar je kunt de hoeveelheden altijd handmatig aanpassen naar "
-"een specifieke hoeveelheid.\n"
-"\n"
-"Leveringen op locatie gebeuren in onderling overleg. Hou er wel rekening mee "
-"dat grote bestellingen iets langer op zich kunnen laten wachten."
+"van een vast kortingstarief geniet, tonen we dit wel al in je winkelmandje."
 
 #: woocommerce/emails/customer-new-account.php:67
 msgid "Vierde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
-"Blijf je liever op je vertrouwde manieren bestellen? Geen probleem! Negeer "
-"dan gewoon deze mail. Na enkele weken vervalt deze uitnodiging en "
-"verwijderen we je gegevens."
+"Standaard worden producten per omverpakking toegevoegd in veelvouden van 6, "
+"10, 12, ... Dit vergemakkelijkt de verwerking, maar je kunt de hoeveelheden "
+"nog altijd handmatig aanpassen naar een andere specifieke hoeveelheid."
+
+#: woocommerce/emails/customer-new-account.php:69
+msgid "Vijfde alinea in de uitnodingsmail aan B2B-gebruikers."
+msgstr ""
+"Leveringen op locatie gebeuren in onderling overleg. Hou er wel rekening mee "
+"dat grote bestellingen iets langer op zich kunnen laten wachten."
 
 #: woocommerce/emails/customer-new-account.php:71
+msgid "Zesde alinea in de uitnodingsmail aan B2B-gebruikers."
+msgstr ""
+"Blijf je liever op je vertrouwde manieren bestellen? Geen probleem! Negeer "
+"dan gewoon deze mail. Na enkele weken vervalt deze uitnodiging."
+
+#: woocommerce/emails/customer-new-account.php:75
 #, php-format
 msgid ""
 "Eerste alinea in de welkomstmail aan nieuwe gebruikers, inclusief naam van "
@@ -383,7 +387,7 @@ msgstr ""
 "bij alle webshops van Oxfam-Wereldwinkels. Zo hoef je je gegevens niet "
 "telkens opnieuw in te voeren en wordt je winkelmandje permanent bewaard."
 
-#: woocommerce/emails/customer-new-account.php:73
+#: woocommerce/emails/customer-new-account.php:77
 #, php-format
 msgid ""
 "Uitleg over de 'Mijn account'-pagina, inclusief URL in de webshop waar de "
@@ -394,7 +398,7 @@ msgstr ""
 "gegevens bekijken, je wachtwoord wijzigen en je abonnement op onze "
 "nieuwsbrieven beheren."
 
-#: woocommerce/emails/customer-new-account.php:77
+#: woocommerce/emails/customer-new-account.php:81
 msgid "Uitsmijter van de welkomstmail."
 msgstr ""
 "Tot binnenkort? Aarzel niet om ons te contacteren als je nog vragen hebt!"
@@ -467,6 +471,15 @@ msgstr "Efraim Sebrechts & Frederik Neirynck"
 #. Author URI of the plugin/theme
 msgid "https://www.oxfamwereldwinkels.be"
 msgstr "https://www.oxfamwereldwinkels.be"
+
+#~ msgid ""
+#~ "Derde alinea in de uitnodingsmail aan B2B-gebruikers met praktische info "
+#~ "over bestellingen en leveringen."
+#~ msgstr ""
+#~ "Als geverifieerde B2B-klant dien je niet op voorhand te betalen en "
+#~ "bezorgen we je achteraf een factuur voor de effectief geleverde goederen. "
+#~ "Indien je van een vast kortingstarief geniet, tonen we dit wel al in je "
+#~ "winkelmandje."
 
 #~ msgid ""
 #~ "Om een bestelling te kunnen plaatsen dien je minstens 18 jaar oud te zijn."
