@@ -23,7 +23,7 @@ if ( is_b2b_customer() ) {
 	}
 }
 
-write_log('ADD TO CART '.$product->get_sku().': '.$quantity.' quantity - '.$multiple.' multiple');
+// write_log('ADD TO CART '.$product->get_sku().': '.$quantity.' quantity - '.$multiple.' multiple');
 
 echo apply_filters( 'woocommerce_loop_add_to_cart_link',
 	sprintf( '<a rel="nofollow" href="%s" data-quantity="%s" data-product_id="%s" data-product_sku="%s" class="%s">%s</a>',

@@ -1895,7 +1895,7 @@
 
 			// write_log('QUANTITY INPUT ARGS '.$product->get_sku().': '.$args['input_value'].' quantity - '.$multiple.' multiple');
 			
-			if ( is_cart() or $args['nm_mini_cart_quantity'] === true ) {
+			if ( is_cart() or ( array_key_exists( 'nm_mini_cart_quantity', $args) and $args['nm_mini_cart_quantity'] === true ) ) {
 				// Step enkel overrulen indien er op dit moment een veelvoud van de ompakhoeveelheid in het winkelmandje zit!
 				// In de mini-cart wordt dit niet tijdens page-load bepaald omdat AJAX niet de hele blok refresht
 				if ( $args['input_value'] % $multiple === 0 ) {
@@ -2647,6 +2647,7 @@
 	function update_plastic_empties_quantity( $quantity, $empties_item ) {
 		// Filter wordt per definitie enkel doorlopen bij het updaten van leeggoed
 		$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
+		write_log($product_item);
 		$empties_product = wc_get_product( $empties_item['product_id'] );
 		$empties_sku = $empties_product->get_sku();
 		switch ( $empties_sku ) {
