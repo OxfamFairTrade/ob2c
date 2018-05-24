@@ -1128,7 +1128,8 @@
 		return $fields;
 	}
 
-	// add_action( 'woocommerce_checkout_update_order_meta', 'save_estimated_delivery' );
+	// add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_fields_on_order' );
+
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
 	add_action( 'woocommerce_order_status_pending_to_processing', 'save_estimated_delivery' );
 
@@ -2453,9 +2454,15 @@
 			}
 		}
 
-		// Eventueel bestelminimum om te kunnen afrekenen
+		if ( ! empty( $posted['billing_vat'] ) ) {
+			if ( format_tax($posted['billing_vat']) === '' ) {
+				wc_add_notice( __( 'Het BTW-nummer dat je ingaf is geen geldig Belgisch exemplaar. Gelieve het te corrigeren of te verwijderen.', 'oxfam-webshop' ), 'error' );
+			}
+		}
+
+		// Stel een bestelminimum (en fictief -maximum) in
 		$min = 10;
-		$max = 500;
+		$max = 5000;
 		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
 		} elseif ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) > $max ) {
