@@ -1686,7 +1686,7 @@
 								'post_type' => 'shop_coupon',
 								'post_status' => 'publish',
 								'meta_key' => 'coupon_amount',
-								'orderby' => 'meta_value_numm',
+								'orderby' => 'meta_value_num',
 								'order' => 'ASC',
 								'meta_query' => array(
 									array(
