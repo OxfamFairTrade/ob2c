@@ -2,6 +2,9 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
+	use Automattic\WooCommerce\Client;
+	use Automattic\WooCommerce\HttpClient\HttpClientException;
+	
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
@@ -10,14 +13,14 @@
 			if ( ! is_user_logged_in() ) {
 				$url = get_current_url();
 				// Niet redirecten op LIVE-omgeving
-				// if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
+				if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 					// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
 					if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 						// Stuur gebruiker na inloggen terug naar huidige pagina
 						wp_safe_redirect( wp_login_url($url) );
 						exit();
 					}
-				// }
+				}
 			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) or ! current_user_can('manage_woocommerce') ) {
 				// Toon de tijdelijke boodschap, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
 				wp_safe_redirect( network_site_url('/nog-even-geduld.html') );
@@ -151,13 +154,11 @@
 
 	if ( is_regional_webshop() ) {
 		// Definieer een profielveld in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
-		add_filter( 'user_contactmethods', 'add_member_of_shop_field', 10, 1 );
-		// Zorg ervoor dat het bewaard wordt
-		add_action( 'personal_options_update', 'save_extra_user_field' );
-		add_action( 'edit_user_profile_update', 'save_extra_user_field' );
-		// Vervang het tekstveld door een dropdown (origineel wordt met jQuery verborgen)
-		add_action( 'show_user_profile', 'add_extra_user_field' );
-		add_action( 'edit_user_profile', 'add_extra_user_field' );
+		add_action( 'show_user_profile', 'add_member_of_shop_user_field' );
+		add_action( 'edit_user_profile', 'add_member_of_shop_user_field' );
+		// Zorg ervoor dat het ook bewaard wordt
+		add_action( 'personal_options_update', 'save_member_of_shop_user_field' );
+		add_action( 'edit_user_profile_update', 'save_member_of_shop_user_field' );
 		
 		// Voeg de claimende winkel toe aan de ordermetadata van zodra iemand op het winkeltje klikt (en verwijder indien we teruggaan)
 		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop' );
@@ -197,29 +198,17 @@
 		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
 	}
 
-	function add_member_of_shop_field( $contactmethods ) {
-		$contactmethods['blog_'.get_current_blog_id().'_member_of_shop'] = 'Ik bevestig orders voor ...';
-		return $contactmethods;
-	}
-	
-	function save_extra_user_field( $user_id ) {
-		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
-		// Usermeta is sitewide, dus ID van blog toevoegen aan de key!
-		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
-		update_usermeta( $user_id, $key, $_POST[$key] );
-	}
-
-	function add_extra_user_field( $user ) {
+	function add_member_of_shop_user_field( $user ) {
 		if ( user_can( $user, 'manage_woocommerce' ) ) {
+			$key = 'blog_'.get_current_blog_id().'_member_of_shop';
 			?>
-			<h3 style="color: red;">Regiosamenwerking</h3>
-			<table class="form-table" style="color: red;">
+			<h3>Regiosamenwerking</h3>
+			<table class="form-table">
 				<tr>
-					<th><label for="dropdown" style="color: red;">Ik bevestig orders voor ...</label></th>
+					<th><label for="<?php echo $key; ?>">Ik bevestig orders voor ...</label></th>
 					<td>
 						<?php
-							$key = 'blog_'.get_current_blog_id().'_member_of_shop';
-							echo '<select name="'.$key.'" id="'.$key.'" style="color: red;">';
+							echo '<select name="'.$key.'" id="'.$key.'">';
 								$member_of = get_the_author_meta( $key, $user->ID );
 								$shops = get_option( 'oxfam_member_shops' );
 								$selected = empty( $member_of ) ? ' selected' : '';
@@ -238,6 +227,13 @@
 		}
 	}
 
+	function save_member_of_shop_user_field( $user_id ) {
+		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
+		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
+		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
+		update_user_meta( $user_id, $key, $_POST[$key] );
+	}
+
 	function auto_claim_local_pickup( $order_id ) {
 		if ( ! $order_id ) {
 			return;
@@ -251,9 +247,8 @@
 
 	function register_claiming_member_shop( $order_id ) {
 		$order = wc_get_order( $order_id );
-		$blog_id = get_current_blog_id();
 		// Een gewone klant heeft deze eigenschap niet en retourneert dus sowieso 'false'
-		$owner = get_the_author_meta( 'blog_'.$blog_id.'_member_of_shop', get_current_user_id() );
+		$owner = get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() );
 		
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
 			// Koppel automatisch aan de winkel waar de afhaling zal gebeuren
@@ -574,18 +569,19 @@
 	add_filter( 'woocommerce_email_heading_customer_completed_order', 'change_completed_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_refunded_order', 'change_refunded_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_note', 'change_note_email_heading', 10, 2 );
+	add_filter( 'woocommerce_email_heading_customer_new_account', 'change_new_account_email_heading', 10, 2 );
 
-	function change_new_order_email_heading( $email_heading, $order ) {
+	function change_new_order_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de mail aan de webshopbeheerder', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
-	function change_processing_email_heading( $email_heading, $order ) {
+	function change_processing_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de 1ste bevestigingsmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
-	function change_completed_email_heading( $email_heading, $order ) {
+	function change_completed_email_heading( $email_heading, $email ) {
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
 			$email_heading = __( 'Heading van de 2de bevestigingsmail (indien afhaling)', 'oxfam-webshop' );
 		} else {
@@ -594,13 +590,18 @@
 		return $email_heading;
 	}
 
-	function change_refunded_email_heading( $email_heading, $order ) {
+	function change_refunded_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de terugbetalingsmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
-	function change_note_email_heading( $email_heading, $order ) {
+	function change_note_email_heading( $email_heading, $email ) {
 		$email_heading = __( 'Heading van de opmerkingenmail', 'oxfam-webshop' );
+		return $email_heading;
+	}
+
+	function change_new_account_email_heading( $email_heading, $email ) {
+		$email_heading = __( 'Heading van de welkomstmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
@@ -639,6 +640,10 @@
 			remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
 			remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 			return "<i>Geen verkoop vanuit nationaal</i>";
+		}
+		if ( is_b2b_customer() ) {
+			$price .= ' per stuk';
+			// $price .= ' per stuk (per '.$product->get_attribute('ompak').' verpakt)';
 		}
 		return $price;
 	}
@@ -686,6 +691,9 @@
 	add_action( 'init', 'woocommerce_clear_cart_url' );
 	
 	function woocommerce_clear_cart_url() {
+		// Uniformeer de gebruikersdata net voor we ze opslaan in de database STAAT GEEN WIJZIGINGEN TOE
+		// add_filter( 'update_user_metadata', 'sanitize_woocommerce_customer_fields', 10, 5 );
+
 		if ( isset( $_GET['referralZip'] ) ) {
 			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar
 			WC()->customer->set_billing_postcode( intval( $_GET['referralZip'] ) );
@@ -794,7 +802,6 @@
 	function cart_update_qty_script() {
 		if ( is_cart() ) {
 			global $woocommerce;
-			// validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 			?>
 				<script>
 					var wto;
@@ -1000,13 +1007,19 @@
 		$address_fields['billing_email']['placeholder'] = "luc@gmail.com";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
 		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
-		// $address_fields['billing_company']['label'] = "Bedrijf";
-		// $address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
-		// $address_fields['billing_vat']['label'] = "BTW-nummer";
-		// $address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
+		$address_fields['billing_company']['label'] = "Bedrijf of vereniging";
+		$address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
+		$address_fields['billing_vat']['label'] = "BTW-nummer";
+		$address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
 		
 		$address_fields['billing_first_name']['class'] = array('form-row-first');
 		$address_fields['billing_last_name']['class'] = array('form-row-last');
+		$address_fields['billing_company']['class'] = array('form-row-first');
+		// Wordt pas toegevoegd indien B2B-klant, dus mag verplicht worden
+		$address_fields['billing_company']['required'] = true;
+		$address_fields['billing_vat']['class'] = array('form-row-last');
+		// Want verenigingen hebben niet noodzakelijk een BTW-nummer!
+		$address_fields['billing_vat']['required'] = false;
 		$address_fields['billing_address_1']['class'] = array('form-row-first');
 		$address_fields['billing_address_1']['clear'] = false;
 		$address_fields['billing_email']['class'] = array('form-row-first');
@@ -1025,26 +1038,30 @@
 			'class' => array('form-row-last'),
 			'clear' => true,
 		);
-		
+
 		$order = array(
-			"billing_first_name",
-			"billing_last_name",
-			"billing_address_1",
-			"billing_birthday",
-			"billing_postcode",
-			"billing_city",
+			'billing_first_name',
+			'billing_last_name',
+			'billing_email',
+			'billing_phone',
+			'billing_address_1',
+			'billing_birthday',
+			'billing_postcode',
+			'billing_city',
 			// NODIG VOOR SERVICE POINT!
-			"billing_country",
-			"billing_email",
-			"billing_phone",
+			'billing_country',
 		);
 
-		foreach($order as $field) {
+		if ( is_b2b_customer() ) {
+			array_unshift( $order, 'billing_company', 'billing_vat' );
+		}
+
+		foreach ( $order as $field ) {
 			$ordered_fields[$field] = $address_fields[$field];
 		}
 
+		// WORDT NOG EENS HERORDEND DOOR WOOCOMMERCE???
 		$address_fields = $ordered_fields;
-		
 		return $address_fields;
 	}
 
@@ -1074,7 +1091,6 @@
 		}
 
 		$address_fields = $ordered_fields;
-		
 		return $address_fields;
 	}
 
@@ -1126,7 +1142,19 @@
 		return $fields;
 	}
 
-	// add_action( 'woocommerce_checkout_update_order_meta', 'save_estimated_delivery' );
+	// Registreer of het een B2B-verkoop is of niet
+	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_fields_on_order' );
+
+	function save_b2b_fields_on_order( $order_id ) {
+		if ( is_b2b_customer() ) {
+			$value = 'yes';
+		} else {
+			$value = 'no';
+		}
+		// Extra velden met 'billing'-prefix worden al automatisch opgeslagen (maar niet getoond)
+		update_post_meta( $order_id, 'b2b_sale', $value );
+	}
+
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
 	add_action( 'woocommerce_order_status_pending_to_processing', 'save_estimated_delivery' );
 
@@ -1157,8 +1185,7 @@
 
 		// Ook checken op billing_address_1 want indien verzendadres niet afwijkt is dit het enige veld dat op dit ogenblik in $_POST voorkomt 
 		if ( ( isset($_POST['billing_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['billing_address_1'] ) === 0 ) or ( isset($_POST['shipping_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['shipping_address_1'] ) === 0 ) ) {
-			// TIJDELIJK UITGECSCHAKELD OM OWW00445 TE LATEN PASSEREN
-			// wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+			wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
 		}
 	}
 
@@ -1167,6 +1194,8 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_company', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_vat', 'format_tax', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'format_place', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_address_1', 'format_place', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_postcode', 'format_zipcode', 10, 1 );
@@ -1194,10 +1223,22 @@
 	function format_tax( $value ) {
 		$value = str_replace( 'BE', '', $value );
 		$value = preg_replace( '/[\s\-\.\/]/', '', $value );
+		if ( mb_strlen($value) === 9 ) {
+			$value = '0'.$value;
+		}
+
 		if ( mb_strlen($value) === 10 ) {
-			return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
+			$digit_8 = intval( substr( $value, 0, 8 ) );
+			$checksum = 97 - ( $digit_8 - intval( $digit_8 / 97 ) * 97 );
+			if ( $checksum === intval( substr( $value, 8, 2 ) ) ) {
+				return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
+			} else {
+				return 'INVALID CHECKSUM';
+			}
+		} elseif ( mb_strlen($value) >= 1 ) {
+			return 'INVALID LENGTH';
 		} else {
-			return 'BE 0'.substr( $value, 0, 3 ).".".substr( $value, 3, 3 ).".".substr( $value, 6, 3 );
+			return '';
 		}
 	}
 
@@ -1252,7 +1293,7 @@
 			} else {
 				return 'INVALID CHECKSUM';
 			}
-		} else{
+		} else {
 			return 'INVALID LENGTH';
 		}
 	}
@@ -1262,8 +1303,8 @@
 	}
 
 	function format_zipcode( $value ) {
-		// VERWIJDER TEKENS DIE GEEN CIJFER ZIJN?
-		return trim($value);
+		// Verwijder alle tekens die geen cijfer zijn
+		return preg_replace( '/\D/', '', trim($value) );
 	}
 
 	function format_city( $value ) {
@@ -1372,6 +1413,7 @@
 						break;
 					default:
 						$tax = '0.21';
+						break;
 				}
 				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
 				$i++;
@@ -1397,14 +1439,12 @@
 							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 						}
 					}
-
 					break;
 
 				case stristr( $shipping_method['method_id'], 'free_shipping' ):
 
 					// Leveradres invullen (is in principe zeker beschikbaar!)
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
-
 					break;
 
 				case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
@@ -1429,7 +1469,6 @@
 							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 						}
 					}
-					
 					break;
 
 				default:
@@ -1466,15 +1505,17 @@
 
 	function modify_user_admin_fields( $profile_fields ) {
 		$profile_fields['billing']['title'] = 'Klantgegevens';
+		$profile_fields['billing']['fields']['billing_company']['label'] = 'Bedrijf of vereniging';
+		$profile_fields['billing']['fields']['billing_vat']['label'] = 'BTW-nummer';
 		$profile_fields['billing']['fields']['billing_first_name']['label'] = 'Voornaam';
 		$profile_fields['billing']['fields']['billing_last_name']['label'] = 'Familienaam';
+		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
+		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
 		$profile_fields['billing']['fields']['billing_address_1']['label'] = 'Straat en huisnummer';
 		$profile_fields['billing']['fields']['billing_postcode']['label'] = 'Postcode';
+		$profile_fields['billing']['fields']['billing_postcode']['maxlength'] = 4;
 		$profile_fields['billing']['fields']['billing_city']['label'] = 'Gemeente';
-		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
-		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
 		unset( $profile_fields['billing']['fields']['billing_address_2'] );
-		unset( $profile_fields['billing']['fields']['billing_company'] );
 		unset( $profile_fields['billing']['fields']['billing_state'] );
 		
 		$profile_fields['shipping']['title'] = 'Verzendgegevens';
@@ -1487,9 +1528,30 @@
 		unset( $profile_fields['shipping']['fields']['shipping_company'] );
 		unset( $profile_fields['shipping']['fields']['shipping_state'] );
 
-		$profile_fields['billing']['fields'] = array_swap_assoc('billing_city', 'billing_postcode', $profile_fields['billing']['fields']);
-		$profile_fields['shipping']['fields'] = array_swap_assoc('shipping_city', 'shipping_postcode', $profile_fields['shipping']['fields']);
-		
+		$profile_fields['shipping']['fields'] = array_swap_assoc( 'shipping_city', 'shipping_postcode', $profile_fields['shipping']['fields'] );
+
+		$order = array(
+			'billing_first_name',
+			'billing_last_name',
+			'billing_email',
+			'billing_phone',
+			'billing_address_1',
+			'billing_postcode',
+			'billing_city',
+			'billing_country',
+			
+		);
+
+		// BETER TONEN/VERBERGEN MET JQUERY?
+		if ( is_b2b_customer() ) {
+			array_unshift( $order, 'billing_company', 'billing_vat' );
+		}
+
+		foreach ( $order as $field ) {
+			$billing_fields[$field] = $profile_fields['billing']['fields'][$field];
+		}
+
+		$profile_fields['billing']['fields'] = $billing_fields;
 		return $profile_fields;
 	}
 
@@ -1498,24 +1560,21 @@
 	add_action( 'admin_footer-user-edit.php', 'hide_others_profile_fields' );
 	
 	function hide_own_profile_fields() {
-		?>
-		<script type="text/javascript">
-			jQuery("tr[class$='member_of_shop-wrap']").remove();
-		</script>
-		<?php
 		if ( ! current_user_can('manage_options') ) {
 			?>
 			<script type="text/javascript">
-				jQuery("tr.user-rich-editing-wrap").hide();
-				jQuery("tr.user-comment-shortcuts-wrap").hide();
-				jQuery("tr.user-language-wrap").hide();
+				jQuery("tr.user-rich-editing-wrap").css( 'display', 'none' );
+				jQuery("tr.user-comment-shortcuts-wrap").css( 'display', 'none' );
+				jQuery("tr.user-language-wrap").css( 'display', 'none' );
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
-				jQuery("tr.user-nickname-wrap").hide();
-				jQuery("tr.user-url-wrap").hide();
-				jQuery("h2:contains('Over jezelf')").next('.form-table').hide();
-				jQuery("h2:contains('Over jezelf')").hide();
-				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
-				jQuery("h2:contains('Over de gebruiker')").hide();
+				jQuery("tr.user-nickname-wrap").css( 'display', 'none' );
+				jQuery("tr.user-url-wrap").css( 'display', 'none' );
+				jQuery("h2:contains('Over jezelf')").next('.form-table').css( 'display', 'none' );
+				jQuery("h2:contains('Over jezelf')").css( 'display', 'none' );
+				jQuery("h2:contains('Over de gebruiker')").next('.form-table').css( 'display', 'none' );
+				jQuery("h2:contains('Over de gebruiker')").css( 'display', 'none' );
+				/* Enkel lokale beheerders mogen dit instellen */
+				jQuery("tr[class$='member_of_shop-wrap']").css( 'display', 'none' );
 			</script>
 			<?php
 		}
@@ -1535,38 +1594,275 @@
 	}
 
 	function hide_others_profile_fields() {
-		?>
-		<script type="text/javascript">
-			jQuery("tr[class$='member_of_shop-wrap']").remove();
-		</script>
-		<?php
 		if ( ! current_user_can('manage_options') ) {
 		?>
 			<script type="text/javascript">
-				jQuery("tr.user-rich-editing-wrap").hide();
-				jQuery("tr.user-admin-color-wrap").hide();
-				jQuery("tr.user-comment-shortcuts-wrap").hide();
-				jQuery("tr.user-admin-bar-front-wrap").hide();
-				jQuery("tr.user-language-wrap").hide();
+				jQuery("tr.user-rich-editing-wrap").css( 'display', 'none' );
+				jQuery("tr.user-admin-color-wrap").css( 'display', 'none' );
+				jQuery("tr.user-comment-shortcuts-wrap").css( 'display', 'none' );
+				jQuery("tr.user-admin-bar-front-wrap").css( 'display', 'none' );
+				jQuery("tr.user-language-wrap").css( 'display', 'none' );
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
-				jQuery("tr.user-nickname-wrap").hide();
-				jQuery("tr.user-url-wrap").hide();
-				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
-				jQuery("h2:contains('Over de gebruiker')").hide();
+				jQuery("tr.user-nickname-wrap").css( 'display', 'none' );
+				jQuery("tr.user-url-wrap").css( 'display', 'none' );
+				jQuery("h2:contains('Over de gebruiker')").next('.form-table').css( 'display', 'none' );
+				jQuery("h2:contains('Over de gebruiker')").css( 'display', 'none' );
+				/* Enkel lokale beheerders mogen dit instellen */
+				jQuery("tr[class$='member_of_shop-wrap']").css( 'display', 'none' );
 			</script>
 		<?php
 		}
 	}
 
-	// Geef hint om B2B-klant te worden
-	// add_action( 'woocommerce_before_checkout_form', 'action_woocommerce_before_checkout_form', 10, 1 );
 
-	function action_woocommerce_before_checkout_form( $wccm_autocreate_account ) {
-		wc_add_notice( 'Heb je een factuur nodig? Vraag de winkel om een B2B-account.', 'notice' );
-	};
+
+	################
+	# B2B FUNCTIES #
+	################
+
+	// Nooit e-mailconfirmatie versturen bij aanmaken nieuwe account
+	add_action( 'user_new_form', 'check_disable_confirm_new_user' );
 	
+	function check_disable_confirm_new_user() {
+		?>
+		<script type="text/javascript">
+			jQuery(document).ready(function() {
+				jQuery("#noconfirmation").prop( 'checked', true );
+				jQuery("#noconfirmation").parents('tr').hide();
+			} );
+		</script>
+		<?php
+	}
+
+	// Algemene functie die retourneert of de gebruiker een B2B-klant is van de huidige webshop
+	function is_b2b_customer( $user_id = false ) {
+		if ( intval($user_id) < 1 ) {
+			if ( is_admin() and isset($_GET['user_id']) ) {
+				// In de back-end ook nog even checken of we geen profiel aan het bewerken zijn
+				$user_id = $_GET['user_id'];
+			} else {
+				$current_user = wp_get_current_user();
+				$user_id = $current_user->ID;
+			}
+		}
+		if ( get_user_meta( intval($user_id), 'blog_'.get_current_blog_id().'_is_b2b_customer', true ) === 'yes' ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// Toon de 'is_b2b_customer'-checkbox in de back-end
+	add_action( 'show_user_profile', 'add_is_b2b_customer_field' );
+	add_action( 'edit_user_profile', 'add_is_b2b_customer_field' );
+	// Zorg ervoor dat het ook bewaard wordt
+	add_action( 'personal_options_update', 'save_is_b2b_customer_field' );
+	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field' );
+
+	function add_is_b2b_customer_field( $user ) {
+		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
+		$is_b2b_customer = get_the_author_meta( $check_key, $user->ID );
+		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
+		$has_b2b_coupon = get_the_author_meta( $select_key, $user->ID );
+		?>
+		<h3>B2B-verkoop</h3>
+		<table class="form-table">
+			<tr>
+				<th><label for="<?php echo $check_key; ?>">Geverifieerde bedrijfsklant</label></th>
+				<td>
+					<input type="checkbox" name="<?php echo $check_key; ?>" id="<?php echo $check_key; ?>" value="yes" <?php checked( $is_b2b_customer, 'yes' ); ?> />
+					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
+				</td>
+			</tr>
+			<?php if ( $is_b2b_customer === 'yes' ) : ?>
+				<tr>
+					<th><label for="<?php echo $select_key; ?>">Kortingspercentage</label></th>
+					<td>
+						<select name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
+						<?php
+							$args = array(
+								'posts_per_page' => -1,
+								'post_type' => 'shop_coupon',
+								'post_status' => 'publish',
+							);
+							$coupons = get_posts($args);
+							$b2b_coupons = array();
+							echo '<option value="">n.v.t.</option>';
+							foreach ( $coupons as $coupon ) {
+								$payment_methods = get_post_meta( $coupon->ID, '_wjecf_payment_methods', true );
+								if ( is_array($payment_methods) and $payment_methods[0] === 'cod' ) {
+									$b2b_coupons[str_replace( 'b2b', '', $coupon->post_title )] = $coupon;
+								}
+							}
+							ksort( $b2b_coupons, SORT_NATURAL );
+							foreach ( $b2b_coupons as $key => $b2b_coupon ) {
+								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.$key.'</option>';
+							}
+						?>
+						</select>
+						<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje (met uitzondering van leeggoed).</span>
+					</td>
+				</tr>
+				<tr>
+					<th><label for="send_invitation">Uitnodiging</label></th>
+					<td>
+						<?php
+							echo '<button type="button" class="button" id="send_invitation" style="min-width: 400px;">Verstuur welkomstmail naar accounteigenaar</button>';
+							echo '<p class="send_invitation description">';
+							if ( ! empty( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) {
+								printf( 'Laatste uitnodiging verstuurd: %s.', date( 'd-n-Y H:i:s', strtotime( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) );
+							}
+							echo '</p>';
+						?>
+						
+						<script type="text/javascript">
+							jQuery(document).ready(function() {
+								jQuery( 'button#send_invitation' ).on( 'click', function() {
+									jQuery(this).prop( 'disabled', true ).text( 'Aan het verwerken ...' );
+									sendB2bWelcome( <?php echo $user->ID; ?> );
+								});
+
+								function sendB2bWelcome( customer_id ) {
+									var input = {
+										'action': 'oxfam_invitation_action',
+										'customer_id': customer_id,
+									};
+									
+									jQuery.ajax({
+										type: 'POST',
+										url: ajaxurl,
+										data: input,
+										dataType: 'html',
+										success: function( msg ) {
+											jQuery( 'button#send_invitation' ).text( msg );
+											var today = new Date();
+											jQuery( 'p.send_invitation.description' ).html( 'Laatste actie ondernomen: '+today.toLocaleString('nl-NL')+'.' );
+										},
+										error: function( jqXHR, statusText, errorThrown ) {
+											jQuery( 'button#send_invitation' ).text( 'Asynchroon laden van PHP-file mislukt!' );
+											jQuery( 'p.send_invitation.description' ).html( 'Herlaad de pagina en probeer het eens opnieuw.' );
+										},
+									});
+								}
+							});
+						</script>
+					</td>
+				</tr>
+			<?php endif; ?>
+		</table>
+		<?php
+	}
+
+	function save_is_b2b_customer_field( $user_id ) {
+		if ( ! current_user_can( 'edit_user', $user_id ) ) {
+			return false;
+		}
+
+		$names = array( 'billing_company', 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_city', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_city' );
+		foreach ( $names as $name ) {
+			if ( isset($_POST[$name]) ) {
+				$_POST[$name] = trim_and_uppercase($_POST[$name]);
+			}
+		}
+		if ( isset($_POST['billing_email']) ) {
+			$_POST['billing_email'] = format_mail($_POST['billing_email']);
+		}
+		if ( isset($_POST['billing_phone']) ) {
+			$_POST['billing_phone'] = format_telephone($_POST['billing_phone']);
+		}
+		if ( isset($_POST['billing_vat']) ) {
+			$_POST['billing_vat'] = format_tax($_POST['billing_vat']);
+		}
+		if ( isset($_POST['billing_postcode']) ) {
+			$_POST['billing_postcode'] = format_zipcode($_POST['billing_postcode']);
+		}
+		if ( isset($_POST['shipping_postcode']) ) {
+			$_POST['shipping_postcode'] = format_zipcode($_POST['shipping_postcode']);
+		}
+
+		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
+		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
+		update_user_meta( $user_id, $check_key, $_POST[$check_key] );
+		
+		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon, op voorwaarde dat B2B aangevinkt is!
+		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
+		if ( get_user_meta( $user_id, $check_key, true ) !== 'yes' ) {
+			// Ledig het eventueel geselecteerde kortingstarief
+			$_POST[$select_key] = '';
+		}
+
+		if ( isset($_POST[$select_key]) ) {
+			$new_coupon_id = intval( $_POST[$select_key] );
+			$previous_coupon_id = intval( get_user_meta( $user_id, $select_key, true ) );
+
+			if ( $new_coupon_id !== $previous_coupon_id ) {
+				// Haal de rechthebbenden op van de vroegere coupon
+				$previous_users_string = trim( get_post_meta( $previous_coupon_id, '_wjecf_customer_ids', true ) );
+				if ( strlen( $previous_users_string ) > 0 ) {
+					$previous_users = explode( ',', $previous_users_string );	
+				} else {
+					// Want anders retourneert explode() een leeg element
+					$previous_users = array();
+				}
+
+				// Verwijder de user-ID van de vorige coupon
+				if ( ( $match_key = array_search( $user_id, $previous_users ) ) !== false ) {
+					unset($previous_users[$match_key]);
+				}
+				update_post_meta( $previous_coupon_id, '_wjecf_customer_ids', implode( ',', $previous_users ) );
+
+				// Haal de huidige rechthebbenden op van de nu geselecteerde coupon
+				$current_users_string = trim( get_post_meta( $new_coupon_id, '_wjecf_customer_ids', true ) );
+				if ( strlen( $current_users_string ) > 0 ) {
+					$current_users = explode( ',', $current_users_string );	
+				} else {
+					// Want anders retourneert explode() een leeg element
+					$current_users = array();
+				}
+
+				// Voeg de user-ID toe aan de geselecteerde coupon
+				if ( ! in_array( $user_id, $current_users ) ) {
+					$current_users[] = $user_id;
+				}
+				update_post_meta( $new_coupon_id, '_wjecf_customer_ids', implode( ',', $current_users ) );
+			}
+
+			// Nu pas de coupon-ID op de gebruiker bijwerken
+			update_user_meta( $user_id, $select_key, $_POST[$select_key] );
+		}
+	}
+
+	// Zorg ervoor dat wijzigingen aan klanten in kortingsbonnen ook gesynct worden met die profielen TO DO + STEEDS MINIMUM 1 USER ALS TOEGESTANE KLANT INSTELLEN (ANDERS GEEN BEPERKING)
+	// add_action( 'save_post_shop_coupon', 'sync_reductions_with_users', 3, 10 );
+
+	function sync_reductions_with_users( $post_id, $post, $update ) {
+		write_log("COUPON WORDT BIJGEWERKT");
+	}
+
+	// Geen BTW tonen bij producten en in het winkelmandje
+	add_filter( 'pre_option_woocommerce_tax_display_shop', 'override_tax_display_setting' );
+	add_filter( 'pre_option_woocommerce_tax_display_cart', 'override_tax_display_setting' );
+
+	function override_tax_display_setting() {
+		if ( is_b2b_customer() ) {
+			return 'excl';
+		} else {
+			return 'incl';
+		}
+	}
+
+	// Vervang ook alle prijssuffixen!
+	add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
+
+	function b2b_price_suffix( $suffix, $product ) {
+		if ( is_b2b_customer() ) {
+			$suffix = str_replace( 'incl', 'excl', $suffix );
+		}
+		return $suffix;
+	}
+
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
-	add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
+	// add_filter( 'woocommerce_product_get_tax_class', 'zero_rate_for_companies', 1, 2 );
 
 	function zero_rate_for_companies( $tax_class, $product ) {
 		$current_user = wp_get_current_user();
@@ -1576,24 +1872,20 @@
 		return $tax_class;
 	}
 
-	// Vervang de prijssuffix indien het om een ingelogde B2B-klant gaat
-	add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
+	// Geef hint om B2B-klant te worden
+	add_action( 'woocommerce_just_before_checkout_form', 'show_b2b_account_hint', 10 );
 
-	function b2b_price_suffix( $suffix, $product ) {
-		$current_user = wp_get_current_user();
-		if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
-			$suffix = str_replace( 'incl', 'excl', $suffix );
+	function show_b2b_account_hint() {
+		if ( ! is_b2b_customer() ) {
+			wc_print_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via <a href="mailto:'.get_company_email().'">'.get_company_email().'</a>.', 'notice' );
 		}
-		return $suffix;
 	}
-
-	// Toon overschrijving indien B2B-klant
-	// add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
+	
+	// Toon enkel overschrijving als betaalmethode indien B2B-klant
+	add_filter( 'woocommerce_available_payment_gateways', 'b2b_restrict_to_bank_transfer' );
 
 	function b2b_restrict_to_bank_transfer( $gateways ) {
-		global $woocommerce;
-		$current_user = wp_get_current_user();
-		if ( ! empty( get_user_meta( $current_user->ID, 'is_vat_exempt', true ) ) ) {
+		if ( is_b2b_customer() ) {
 			unset( $gateways['mollie_wc_gateway_mistercash'] );
 			unset( $gateways['mollie_wc_gateway_creditcard'] );
 			unset( $gateways['mollie_wc_gateway_kbc'] );
@@ -1601,10 +1893,129 @@
 			unset( $gateways['mollie_wc_gateway_ideal'] );
 		} else {
 			unset( $gateways['cod'] );
-			unset( $gateways['mollie_wc_gateway_banktransfer'] );
 		}
 		return $gateways;
 	}
+
+	// Zorg ervoor dat de spinners overal per ompak omhoog/omlaag gaan
+	add_filter( 'woocommerce_quantity_input_args', 'suggest_order_unit_multiple', 10, 2 );
+	
+	function suggest_order_unit_multiple( $args, $product ) {
+		if ( is_b2b_customer() ) {
+			$multiple = intval( $product->get_attribute('ompak') );
+			if ( $multiple < 2 ) {
+				$multiple = 1;
+			} else {
+				// Eventuele bestellimiet instellen
+				// $args['max_value'] = 4*$multiple;
+			}
+
+			if ( is_cart() or ( array_key_exists( 'nm_mini_cart_quantity', $args) and $args['nm_mini_cart_quantity'] === true ) ) {
+				// Step enkel overrulen indien er op dit moment een veelvoud van de ompakhoeveelheid in het winkelmandje zit!
+				// In de mini-cart wordt dit niet tijdens page-load bepaald omdat AJAX niet de hele blok refresht
+				if ( $args['input_value'] % $multiple === 0 ) {
+					$args['step'] = $multiple;
+				}
+			} else {
+				// Input value enkel overrulen buiten het winkelmandje!
+				$args['input_value'] = $multiple;
+				$args['step'] = $multiple;
+			}
+		}
+		return $args;
+	}
+
+	add_filter( 'woocommerce_quantity_input_min', 'set_min_input_to_zero', 10, 2 );
+	
+	function set_min_input_to_zero( $min, $product ) {
+		return 0;
+	}
+
+	add_filter( 'woocommerce_product_add_to_cart_text', 'add_multiple_to_add_to_cart_text', 10, 2 );
+	add_filter( 'woocommerce_product_single_add_to_cart_text', 'change_single_add_to_cart_text', 10, 2 );
+	
+	function add_multiple_to_add_to_cart_text( $text, $product ) {
+		if ( is_b2b_customer() ) {
+			$multiple = intval( $product->get_attribute('ompak') );
+			if ( $multiple < 2 ) {
+				$text = 'Voeg 1 stuk toe aan mandje';
+			} else {
+				$text = 'Voeg '.$multiple.' stuks toe aan mandje';
+			}
+		} else {
+			$text = 'Voeg toe aan winkelmandje';
+		}
+		return $text;
+	}
+
+	function change_single_add_to_cart_text( $text, $product ) {
+		$text = 'Voeg toe aan winkelmandje';
+		return $text;
+	}
+
+	// Verberg onnuttige adresvelden tijdens het bewerken op het orderdetailscherm in de back-end
+	add_filter( 'woocommerce_admin_billing_fields', 'custom_admin_billing_fields' );
+	add_filter( 'woocommerce_admin_shipping_fields', 'custom_admin_shipping_fields' );
+	add_action( 'woocommerce_admin_order_data_after_billing_address', 'show_custom_billing_fields', 10, 1 );
+
+	function custom_admin_billing_fields( $address_fields ) {
+		unset($address_fields['first_name']);
+		unset($address_fields['last_name']);
+		unset($address_fields['address_2']);
+		unset($address_fields['state']);
+		return $address_fields;
+	}
+
+	function custom_admin_shipping_fields( $address_fields ) {
+		unset($address_fields['first_name']);
+		unset($address_fields['last_name']);
+		unset($address_fields['company']);
+		unset($address_fields['address_2']);
+		unset($address_fields['state']);
+		return $address_fields;
+	}
+
+	function show_custom_billing_fields( $order ) {
+		if ( $order->get_meta('_billing_vat') !== '' ) {
+			echo '<p><strong>'.__( 'BTW-nummer', 'oxfam-webshop' ).':</strong><br/>'.$order->get_meta('_billing_vat').'</p>';
+		}
+	}
+
+	// Geef de adresregels binnen 'Mijn account' een logische volgorde
+	add_action( 'woocommerce_my_account_my_address_formatted_address', 'show_custom_address_fields', 10, 3 );
+
+	function show_custom_address_fields( $address, $customer_id, $type ) {
+		if ( $type === 'billing' ) {
+			if ( is_b2b_customer() and get_user_meta( $customer_id, 'billing_vat', true ) ) {
+				$address['first_name'] = '';
+				$address['last_name'] = '';
+				$address['address_2'] = $address['address_1'];
+				$address['address_1'] = get_user_meta( $customer_id, 'billing_vat', true );
+			}
+		}
+		return $address;
+	}
+
+	// Toon extra klantendata onder de contactgegevens (net boven de adressen)
+	add_action( 'woocommerce_order_details_after_customer_details', 'shuffle_account_address', 100, 1 );
+
+	function shuffle_account_address( $order ) {
+		// Let op de underscore, wordt verwerkt als een intern veld!
+		if ( $order->get_meta('_billing_vat') !== '' ) {
+			?>
+			<li>
+				<h3>BTW-nummer</h3>
+				<div><?php echo esc_html( $order->get_meta('_billing_vat') ); ?></div>
+			</li>
+			<?php
+		}
+	}
+
+
+
+	###################
+	# HELPER FUNCTIES #
+	###################
 
 	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
 	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
@@ -1642,7 +2053,12 @@
 				break;
 		}
 		$descr .= '</small>';
-		return $label.'<br>'.$descr;
+		// Geen schattingen tonen aan B2B-klanten
+		if ( ! is_b2b_customer() ) {
+			return $label.'<br>'.$descr;
+		} else {
+			return $label;
+		}
 	}
 
 	// Haal de openingsuren van de node voor een bepaalde dag op
@@ -1905,7 +2321,7 @@
 			} else {
 				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden 
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) and is_cart() ) {
-					// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat de klant niet meer radicaal wijzigt (niet afschrikken met error!)
+					// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat particuliere klant niet meer radicaal wijzigt (niet afschrikken met error!)
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
 					file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
 					$msg = WC()->session->get( 'no_zip_delivery' );
@@ -1916,7 +2332,7 @@
 						WC()->session->set( 'no_zip_delivery', 'SHOWN' );
 					}
 				} else {
-					WC()->session->set( 'no_zip_delivery', 'FIRST' );
+					WC()->session->set( 'no_zip_delivery', 'RESET' );
 				}
 			}
 		}
@@ -1937,7 +2353,7 @@
 	add_action( 'woocommerce_before_cart', 'show_almost_free_shipping_notice' );
 
 	function show_almost_free_shipping_notice() {
-		if ( is_cart() ) {
+		if ( is_cart() and ! is_b2b_customer() ) {
 			$threshold = 100;
 			// Subtotaal = winkelmandje inclusief belasting, exclusief verzending
 			$current = WC()->cart->subtotal;
@@ -1947,7 +2363,9 @@
 					$cnt = WC()->session->get( 'go_to_100_message_count', 0 );
 					// Opgelet: WooCoomerce moet actief zijn, we moeten in de front-end zitten én er moet al een winkelmandje aangemaakt zijn!
 					WC()->session->set( 'go_to_100_message_count', $cnt+1 );
-					if ( $cnt % 7 === 0 ) {
+					$msg = WC()->session->get( 'no_home_delivery' );
+					// Enkel tonen indien thuislevering effectief beschikbaar is voor het huidige winkelmandje
+					if ( $cnt % 7 === 0 and $msg !== 'SHOWN' ) {
 						wc_print_notice( 'Tip: als je nog '.wc_price( $threshold - $current ).' toevoegt, kom je in aanmerking voor gratis thuislevering.', 'success' );
 					}
 				}
@@ -1962,116 +2380,153 @@
 	
 	function hide_shipping_recalculate_taxes( $rates, $package ) {
 		global $woocommerce;
-		validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
+		
+		if ( ! is_b2b_customer() ) {
+			validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
 
-		// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
-		$free_home_available = false;
-		foreach ( $rates as $rate ) {
-			if ( $rate->method_id === 'free_shipping' ) {
-				$free_home_available = true;
-				break;
+			$shipping_zones = WC_Shipping_Zones::get_zones();
+			foreach ( $shipping_zones as $shipping_zone ) {
+				if ( $shipping_zone['zone_name'] === 'B2B' ) {
+					// Alle B2B-levermethodes uitschakelen
+					$b2b_methods = $shipping_zone['shipping_methods'];
+					foreach ( $b2b_methods as $shipping_method ) {
+						$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
+						unset($rates[$method_key]);
+					}
+				}
 			}
-		}
 
-		if ( $free_home_available ) {
-			// Verberg alle betalende methodes indien er een gratis thuislevering beschikbaar is
+			// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
+			$free_home_available = false;
 			foreach ( $rates as $rate_key => $rate ) {
-				if ( floatval( $rate->cost ) > 0.0 ) {
-					unset( $rates[$rate_key] );
+				if ( $rate->method_id === 'free_shipping' ) {
+					$free_home_available = true;	
+					break;
+				}
+			}
+
+			if ( $free_home_available ) {
+				// Verberg alle betalende methodes indien er een gratis thuislevering beschikbaar is
+				foreach ( $rates as $rate_key => $rate ) {
+					if ( floatval( $rate->cost ) > 0.0 ) {
+						unset( $rates[$rate_key] );
+					}
+				}
+			} else {
+				// Verberg alle gratis methodes die geen afhaling zijn
+				foreach ( $rates as $rate_key => $rate ) {
+					if ( $rate->method_id !== 'local_pickup_plus' and floatval( $rate->cost ) === 0.0 ) {
+						// IS DIT WEL NODIG, ZIJ WORDEN TOCH AL VERBORGEN DOOR WOOCOMMERCE?
+						// unset( $rates[$rate_key] );
+					}
+				}
+			}
+
+			// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
+			$forbidden_cnt = 0;
+			$plastic_cnt = 0;
+			foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
+				// ENKEL FRUITSAP 1 L EN LEEGGOED 24 FLESJES ALS BREEKBAAR MARKEREN OM TELLING TE VERGEMAKKELIJKEN
+				if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
+					$forbidden_cnt += intval($item_value['quantity']);
+					if ( $item_value['product_id'] == wc_get_product_id_by_sku('WLBS24M') ) {
+						$plastic_cnt += intval($item_value['quantity']);
+					}
+				} 
+			}
+			
+			if ( $forbidden_cnt > 0 ) {
+				foreach ( $rates as $rate_key => $rate ) {
+					// Blokkeer alle methodes behalve afhalingen
+					if ( $rate->method_id !== 'local_pickup_plus' ) {
+						unset( $rates[$rate_key] );
+					}
+				}
+				// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
+				if ( does_home_delivery() ) {
+					$msg = WC()->session->get( 'no_home_delivery' );
+					// Toon de foutmelding slechts één keer
+					// if ( $msg !== 'SHOWN' ) {
+						wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $forbidden_cnt - $plastic_cnt, $plastic_cnt ), 'error' );
+						WC()->session->set( 'no_home_delivery', 'SHOWN' );
+					// }
+				}
+			} else {
+				WC()->session->set( 'no_home_delivery', 'RESET' );
+			}
+			
+			// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
+			// UITGESCHAKELD OMWILLE VAN OWW BRUGGE
+			// $cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
+			// if ( $cart_weight > 29 ) {
+			// 	foreach ( $rates as $rate_key => $rate ) {
+			// 		// Blokkeer alle methodes behalve afhalingen
+			// 		if ( $rate->method_id !== 'local_pickup_plus' ) {
+			// 			unset( $rates[$rate_key] );
+			// 		}
+			// 	}
+			// 	wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht in kilogram (%s).', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
+			// }
+
+			$low_vat_slug = 'voeding';
+			$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
+			$low_vat_rate = reset( $low_vat_rates );
+			
+			// Slug voor de 'standard rate' is een lege string!
+			$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
+			$standard_vat_rate = reset( $standard_vat_rates );
+			
+			$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
+			if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
+				// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
+				$cost = 5.7438;
+				// Ook belastingen expliciet herberekenen!
+				$taxes = $cost*0.21;
+				$tax_id_free = $low_vat_rate->tax_rate_id;
+				$tax_id_cost = $standard_vat_rate->tax_rate_id;
+			} else {
+				$cost = 6.5566;
+				// Deze stap doen we vooral omwille van het wispelturige gedrag van deze tax
+				$taxes = $cost*0.06;
+				$tax_id_free = $standard_vat_rate->tax_rate_id;
+				$tax_id_cost = $low_vat_rate->tax_rate_id;
+			}
+			
+			// Overschrijf alle verzendprijzen (dus niet enkel in 'uitsluitend 21%'-geval -> te onzeker) indien betalende thuislevering
+			if ( ! $free_home_available ) {
+				foreach ( $rates as $rate_key => $rate ) {
+					switch ( $rate_key ) {
+						case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method' ) ):
+							$rate->cost = $cost;
+							// Unset i.p.v. op nul te zetten
+							unset($rate->taxes[$tax_id_free]);
+							$rate->taxes[$tax_id_cost] = $taxes;
+							break;
+						default:
+							// Dit zijn de gratis pick-ups (+ eventueel thuisleveringen), niets mee doen
+							break;
+					}
 				}
 			}
 		} else {
-			// Verberg alle gratis methodes die geen afhaling zijn
 			foreach ( $rates as $rate_key => $rate ) {
-				if ( $rate->method_id !== 'local_pickup_plus' and floatval( $rate->cost ) === 0.0 ) {
-					// IS DIT WEL NODIG, ZIJ WORDEN TOCH AL VERBORGEN DOOR WOOCOMMERCE?
-					// unset( $rates[$rate_key] );
+				$shipping_zones = WC_Shipping_Zones::get_zones();
+				foreach ( $shipping_zones as $shipping_zone ) {
+					if ( $shipping_zone['zone_name'] !== 'B2B' ) {
+						// Alle niet-B2B-levermethodes uitschakelen
+						$non_b2b_methods = $shipping_zone['shipping_methods'];
+						foreach ( $non_b2b_methods as $shipping_method ) {
+							// Behalve geavanceerde afhalingen, maar die vallen sowieso niet onder een zone!
+							if ( $shipping_method->id !== 'local_pickup_plus' ) {
+								$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
+								unset($rates[$method_key]);
+							}
+						}
+					}
 				}
 			}
 		}
-
-		// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
-		$forbidden_cnt = 0;
-		foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
-			if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
-				$forbidden_cnt = $forbidden_cnt + $item_value['quantity'];
-			} 
-		}
 		
-		if ( $forbidden_cnt > 0 ) {
-			foreach ( $rates as $rate_key => $rate ) {
-				// Blokkeer alle methodes behalve afhalingen
-				if ( $rate->method_id !== 'local_pickup_plus' ) {
-					unset( $rates[$rate_key] );
-				}
-			}
-			// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
-			if ( does_home_delivery() ) {
-				$msg = WC()->session->get( 'no_home_delivery' );
-				// Toon de foutmelding slechts één keer
-				if ( $msg !== 'SHOWN' ) {
-					wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van producten die niet thuisgeleverd worden, inclusief het aantal flessen (%d).', 'oxfam-webshop' ), $forbidden_cnt - floor( $forbidden_cnt / 6 ) ), 'error' );
-					WC()->session->set( 'no_home_delivery', 'SHOWN' );
-				}
-			}
-		} else {
-			WC()->session->set( 'no_home_delivery', 'FIRST' );
-		}
-		
-		// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
-		// UITGESCHAKELD OMWILLE VAN OWW BRUGGE
-		// $cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
-		// if ( $cart_weight > 29 ) {
-		// 	foreach ( $rates as $rate_key => $rate ) {
-		// 		// Blokkeer alle methodes behalve afhalingen
-		// 		if ( $rate->method_id !== 'local_pickup_plus' ) {
-		// 			unset( $rates[$rate_key] );
-		// 		}
-		// 	}
-		// 	wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht in kilogram (%s).', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
-		// }
-
-		$low_vat_slug = 'voeding';
-		$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
-		$low_vat_rate = reset( $low_vat_rates );
-		
-		// Slug voor de 'standard rate' is een lege string!
-		$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
-		$standard_vat_rate = reset( $standard_vat_rates );
-		
-		$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
-		if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
-			// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
-			$cost = 5.7438;
-			// Ook belastingen expliciet herberekenen!
-			$taxes = $cost*0.21;
-			$tax_id_free = $low_vat_rate->tax_rate_id;
-			$tax_id_cost = $standard_vat_rate->tax_rate_id;
-		} else {
-			$cost = 6.5566;
-			// Deze stap doen we vooral omwille van het wispelturige gedrag van deze tax
-			$taxes = $cost*0.06;
-			$tax_id_free = $standard_vat_rate->tax_rate_id;
-			$tax_id_cost = $low_vat_rate->tax_rate_id;
-		}
-		
-		// Overschrijf alle verzendprijzen (dus niet enkel in 'uitsluitend 21%'-geval -> te onzeker) indien betalende thuislevering
-		if ( ! $free_home_available ) {
-			foreach ( $rates as $rate_key => $rate ) {
-				switch ( $rate_key ) {
-					case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method' ) ):
-						$rate->cost = $cost;
-						// Unset i.p.v. op nul te zetten
-						unset($rate->taxes[$tax_id_free]);
-						$rate->taxes[$tax_id_cost] = $taxes;
-						break;
-					default:
-						// Dit zijn de gratis pick-ups (+ eventueel thuisleveringen), niets mee doen
-						break;
-				}
-			}
-		}
-
 		return $rates;
 	}
 
@@ -2095,17 +2550,23 @@
 	// Check of de persoon moet worden ingeschreven op het digizine 
 	add_action( 'woocommerce_checkout_process', 'check_subscription_preference', 10, 1 );
 
-	function check_subscription_preference( $posted ) {
+	function check_subscription_preference() {
 		global $woocommerce;
-		if ( ! empty( $posted['subscribe_digizine'] ) ) {
-			if ( $posted['subscribe_digizine'] !== 1 ) {
+		if ( ! empty( $_POST['subscribe_digizine'] ) ) {
+			if ( $_POST['subscribe_digizine'] !== 1 ) {
 				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
 			}
 		}
 
-		// Eventueel bestelminimum om te kunnen afrekenen
+		if ( ! empty( $_POST['billing_vat'] ) ) {
+			if ( strpos( format_tax($_POST['billing_vat']), 'INVALID' ) !== false ) {
+				wc_add_notice( __( 'Het BTW-nummer dat je ingaf is geen geldig Belgisch exemplaar. Gelieve het te corrigeren of leeg te laten.', 'oxfam-webshop' ), 'error' );
+			}
+		}
+
+		// Stel een bestelminimum (en fictief -maximum) in
 		$min = 10;
-		$max = 500;
+		$max = 5000;
 		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
 		} elseif ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) > $max ) {
@@ -2126,35 +2587,59 @@
 	// Voeg bakken leeggoed enkel toe per 6 of 24 flessen
 	add_filter( 'wc_force_sell_add_to_cart_product', 'check_plastic_empties_quantity', 10, 2 );
 
-	function check_plastic_empties_quantity( $empties, $product_item ) {
-		$empties_product = wc_get_product( $empties['id'] );
+	function check_plastic_empties_quantity( $empties_array, $product_item ) {
+		// $empties_array bevat geen volwaardig cart_item, enkel array met de keys id / quantity / variation_id / variation!
+		$empties_product = wc_get_product( $empties_array['id'] );
 		// Zou niet mogen, maar toch even checken
 		if ( $empties_product !== false ) {
-			switch ( $empties_product->get_sku() ) {
+			$empties_sku = $empties_product->get_sku();
+			
+			switch ( $empties_sku ) {
 				case 'WLBS6M':
-					$forbidden_qty = 0;
-					$glass_id = wc_get_product_id_by_sku('WLFSG');
-					$plastic_id = wc_get_product_id_by_sku('WLBS6M');
-					// write_log($empties);
-					// write_log($product_item);
+				case 'WLBS24M':
+					$empties_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $empties_sku ) ) );
+					$empties_array['quantity'] = floor( intval($product_item['quantity']) / $empties_step );
+					break;
+
+				case 'WLFSG':
+				case 'WLFSK':
+					// Definieer de koppeling tussen glas en plastic
+					if ( $empties_sku === 'WLFSG' ) {
+						$plastic_sku = 'WLBS6M';
+					} elseif ( $empties_sku === 'WLFSK' ) {
+						$plastic_sku = 'WLBS24M';
+					}
+
+					write_log($plastic_sku." bij NIEUWE ".$empties_sku." checken");
+					
+					$plastic_in_cart = false;
+					$plastic_product_id = wc_get_product_id_by_sku($plastic_sku);
+					$plastic_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $plastic_sku ) ) );
+					
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-						if ( intval($values['product_id']) === $glass_id ) {
-							$forbidden_qty += intval($values['quantity']);
-							// write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
-						}
-						if ( intval($values['product_id']) === $plastic_id ) {
-							$plastic_qty = intval($values['quantity']);
+						if ( $values['product_id'] == $product_item['product_id'] ) {
+							$product_item_key = $cart_item_key;
+							break;
 						}
 					}
-					write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
-					$empties['quantity'] = floor( intval($product_item['quantity']) / 6 );
-					break;
-				case 'WLBS24M':
-					$empties['quantity'] = floor( intval($product_item['quantity']) / 24 );
+
+					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+						if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
+							write_log("We hebben een plastic bak ".$plastic_sku." gevonden die gelinkt is aan ".$product_item['product_id']."!");
+							$plastic_in_cart = true;
+							break;
+						}
+					}
+
+					if ( ! $plastic_in_cart and floor( intval($product_item['quantity']) / $plastic_step ) >= 1 ) {
+						write_log("We voegen de eerste plastic bak ".$plastic_sku." handmatig toe aan ".$product_item['product_id']."!");
+						// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
+						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_array['variation_id'], $empties_array['variation'], array( 'forced_by' => $product_item_key ) );
+					}
 					break;
 			}
 		}
-		return $empties;
+		return $empties_array;
 	}
 
 	// Zorg ervoor dat het basisproduct toch gekocht kan worden als de bak hierboven nog niet toevoegd mag worden NIET ALS OPLOSSING GEBRUIKEN VOOR VOORRAADSTATUS LEEGGOED
@@ -2164,60 +2649,138 @@
 	add_filter( 'wc_force_sell_update_quantity', 'update_plastic_empties_quantity', 10, 2 );
 
 	function update_plastic_empties_quantity( $quantity, $empties_item ) {
+		// Filter wordt per definitie enkel doorlopen bij het updaten van leeggoed
 		$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
 		$empties_product = wc_get_product( $empties_item['product_id'] );
-		switch ( $empties_product->get_sku() ) {
+		$empties_sku = $empties_product->get_sku();
+		
+		switch ( $empties_sku ) {
 			case 'WLBS6M':
-				return floor( intval($product_item['quantity']) / 6 );
 			case 'WLBS24M':
-				return floor( intval($product_item['quantity']) / 24 );
-			// PROBLEEM: BAK WORDT ENKEL TOEGEVOEGD BIJ 6/24 IDENTIEKE FLESSEN
-			case 'WLFSG':
-				$forbidden_qty = 0;
-				$plastic_qty = 0;
-				$glass_id = wc_get_product_id_by_sku('WLFSG');
-				$plastic_id = wc_get_product_id_by_sku('WLBS6M');
-				// write_log($empties_item);
-				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-					if ( intval($values['product_id']) === $glass_id ) {
-						$forbidden_qty += intval($values['quantity']);
-						// write_log($values['quantity']." GROTE FLESSEN LEEGGOED ERBIJ GETELD");
-					}
-					if ( intval($values['product_id']) === $plastic_id ) {
-						$plastic_qty += intval($values['quantity']);
-						$plastic_item_key = $cart_item_key;
-					}
-				}
-				write_log("AANTAL GROTE FLESSEN LEEGGOED: ".$forbidden_qty);
-				if ( $forbidden_qty === 6 and $plastic_qty === 0 ) {
-					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
-					$args['forced_by'] = $empties_item['forced_by'];
-					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS6M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
-				} elseif ( $forbidden_qty % 6 === 0 and $plastic_qty !== 0 ) {
-					$result = WC()->cart->set_quantity( $plastic_item_key, floor( $forbidden_qty / 6 ), 1 );
-				}
+				$empties_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $empties_sku ) ) );
+				$quantity = floor( intval($product_item['quantity']) / $empties_step );
 				return $quantity;
-			case 'WLFSK';
-				if ( intval($product_item['quantity']) === 24 ) {
-					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
-					$args['forced_by'] = $empties_item['forced_by'];
-					$result = WC()->cart->add_to_cart( wc_get_product_id_by_sku('WLBS24M'), 1, $empties_item['variation_id'], $empties_item['variation'], $args );
+
+			case 'WLFSG':
+			case 'WLFSK':
+				// Definieer de koppeling tussen glas en plastic
+				if ( $empties_sku === 'WLFSG' ) {
+					$plastic_sku = 'WLBS6M';
+				} elseif ( $empties_sku === 'WLFSK' ) {
+					$plastic_sku = 'WLBS24M';
 				}
+
+				write_log($plastic_sku." bij BESTAANDE ".$empties_sku." checken");
+				
+				$plastic_in_cart = false;
+				$plastic_product_id = wc_get_product_id_by_sku($plastic_sku);
+				$plastic_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $plastic_sku ) ) );
+				
+				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+					if ( $values['product_id'] == $product_item['product_id'] ) {
+						$product_item_key = $cart_item_key;
+						break;
+					}
+				}
+				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
+						write_log("We hebben een plastic bak ".$plastic_sku." gevonden die gelinkt is aan ".$product_item['product_id']."!");
+						$plastic_in_cart = true;
+						break;
+					}
+				}
+
+				if ( ! $plastic_in_cart and floor( intval($product_item['quantity']) / $plastic_step ) >= 1 ) {
+					write_log("We voegen de eerste plastic bakken ".$plastic_sku." handmatig toe aan ".$product_item['product_id']."!");
+					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
+					$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $empties_item['forced_by'] ) );
+				}
+
+				// Geen idee waarom $quantity naar 1 terugvalt ... dus reset met het aantal van het hoofdproduct!
+				$quantity = $product_item['quantity'];
+				return $quantity;
+
 			default:
 				return $quantity;
 		}
 	}
 
-	// Tel leeggoed niet mee bij aantal items in winkelmandje
+	// MOGELIJKE TOEVOEGINGEN:
+	// - Alle leeggoed als één totaal tonen
+	// - Bakken universeel toevoegen per 6/24 flessen i.p.v. producten (vergt verleggen van 'forced_by'-koppeling = miserie!)
+
+	// Toon bij onzichtbaar leeggoed het woord 'flessen' na het productaantal
 	add_filter( 'woocommerce_cart_item_quantity', 'add_bottles_to_quantity', 10, 3 );
 	
 	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
 		$productje = wc_get_product( $cart_item['product_id'] );
 		if ( $productje->is_visible() ) {
 			return $product_quantity;
+		} elseif ( $productje->get_sku() === 'GIFT' ) {
+			return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
 		} else {
-			return $product_quantity.' flessen';
+			$qty = intval($product_quantity);
+			switch ( $productje->get_sku() ) {
+				case 'WLFSG':
+					return sprintf( _n( '%d fles', '%d flessen', $qty ), $qty );
+				case 'WLFSK':
+					return sprintf( _n( '%d flesje', '%d flesjes', $qty ), $qty );
+				default:
+					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty );
+			}
 		}
+	}
+
+	// Zet leeggoed en cadeauverpakking onderaan HOEFT NIET ELKE KEER DOORLOPEN TE WORDEN?
+	add_action( 'woocommerce_cart_loaded_from_session', 'reorder_cart_items' );
+
+	function reorder_cart_items( $cart ) {
+		// Niets doen bij leeg winkelmandje
+		if ( empty( $cart->cart_contents ) ) {
+			return;
+		}
+
+		$cart_sort = $cart->cart_contents;
+		$glass_items = array();
+		$plastic_items = array();
+
+		foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
+			if ( $cart_item['data']->get_sku() === 'GIFT' ) {
+				// Sla het item van de cadeauverpakking op en verwijder het
+				$gift_item = $cart_item;
+				unset($cart_sort[$cart_item_key]);
+			}
+
+			if ( strpos( $cart_item['data']->get_sku(), 'WLF' ) !== false ) {
+				$glass_items[$cart_item_key] = $cart_item;
+				unset($cart_sort[$cart_item_key]);
+			}
+
+			if ( strpos( $cart_item['data']->get_sku(), 'WLB' ) !== false ) {
+				$plastic_items[$cart_item_key] = $cart_item;
+				unset($cart_sort[$cart_item_key]);
+			}
+		}
+
+		$cart_sort = array_merge( $cart_sort, $glass_items, $plastic_items );
+
+		if ( isset($gift_item) ) {
+			// Voeg de cadeauverpakking opnieuw toe helemaal achteraan (indien het voorkwam)
+			$cart_sort[$cart_item_key] = $gift_item;
+		}
+
+		// Vervang de itemlijst door de nieuwe array
+		$cart->cart_contents = $cart_sort;
+	}
+
+	// Toon leeggoed en cadeauverpakking niet in de mini-cart (wordt wel meegeteld in totaalbedrag!)
+	add_filter( 'woocommerce_widget_cart_item_visible', 'wc_cp_cart_item_visible', 10, 3 );
+
+	function wc_cp_cart_item_visible( $visible, $cart_item, $cart_item_key ) {
+		if ( ! is_numeric( $cart_item['data']->get_sku() ) ) {
+			$visible = false;
+		}
+		return $visible;
 	}
 
 	// Tel leeggoed niet mee bij aantal items in winkelmandje
@@ -2234,6 +2797,13 @@
 		}
 
 		return $count - $subtract;
+	}
+
+	// Toon het totaalbedrag van al het leeggoed onderaan
+	// add_action( 'woocommerce_widget_shopping_cart_before_buttons', 'show_empties_subtotal' );
+
+	function show_empties_subtotal() {
+		echo 'waarvan XX euro leeggoed';
 	}
 	
 
@@ -2262,9 +2832,9 @@
 	}
 
 	function comma_string_to_array( $values ) {
-		$values = preg_replace( "/\s/", "", $values );
-		$values = preg_replace( "/\//", "-", $values );
-		$array = (array)preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
+		$values = preg_replace( '/\s/', '', $values );
+		$values = preg_replace( '/\//', '-', $values );
+		$array = (array)preg_split( '/(,|;|&)/', $values, -1, PREG_SPLIT_NO_EMPTY );
 
 		foreach ( $array as $key => $value ) {
 			$array[$key] = mb_strtolower( trim($value) );
@@ -2278,9 +2848,9 @@
 	}
 
 	function comma_string_to_numeric_array( $values ) {
-		$values = preg_replace( "/\s/", "", $values );
-		$values = preg_replace( "/\//", "-", $values );
-		$array = (array)preg_split( "/(,|;|&)/", $values, -1, PREG_SPLIT_NO_EMPTY );
+		$values = preg_replace( '/\s/', '', $values );
+		$values = preg_replace( '/\//', '-', $values );
+		$array = (array)preg_split( '/(,|;|&)/', $values, -1, PREG_SPLIT_NO_EMPTY );
 
 		foreach ( $array as $key => $value ) {
 			$array[$key] = intval( $value );
@@ -2350,13 +2920,14 @@
 	// Registreer de AJAX-acties
 	add_action( 'wp_ajax_oxfam_stock_action', 'oxfam_stock_action_callback' );
 	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
+	add_action( 'wp_ajax_oxfam_invitation_action', 'oxfam_invitation_action_callback' );
 
 	function oxfam_stock_action_callback() {
 		echo save_local_product_details($_POST['id'], $_POST['meta'], $_POST['value']);
 		wp_die();
 	}
 
-	function save_local_product_details($id, $meta, $value) {			
+	function save_local_product_details( $id, $meta, $value ) {			
 		$msg = "";
 		$product = wc_get_product($id);
 		if ( $meta === 'stockstatus' ) {
@@ -2375,6 +2946,24 @@
 		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
 		// NIET IN LOKALE BIBLIOTHEKEN REGISTREREN, PUBLICATIE NAAR CHILD SITE GEBEURT VANZELF BIJ EERSTVOLGENDE SYNC (ID'S UPDATEN)
 		echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
+		wp_die();
+	}
+
+	function oxfam_invitation_action_callback() {
+		$new_account_path = get_stylesheet_directory() . '/woocommerce/emails/customer-new-account.php';
+		$reset_password_path = get_stylesheet_directory() . '/woocommerce/emails/customer-reset-password.php';
+		$temporary_path = get_stylesheet_directory() . '/woocommerce/emails/temporary.php';
+		rename( $reset_password_path, $temporary_path );
+		rename( $new_account_path, $reset_password_path );
+		$user = get_user_by( 'id', $_POST['customer_id'] );
+		if ( retrieve_password_for_customer( $user ) ) {
+			printf( 'Eigenaar van \'%s\' succesvol uitgenodigd!', $user->user_login );
+			update_user_meta( $user->ID, 'blog_'.get_current_blog_id().'_b2b_invitation_sent', current_time('mysql') );
+		} else {
+			printf( 'Uitnodigen eigenaar van \'%s\' mislukt!', $user->user_login );
+		}
+		rename( $reset_password_path, $new_account_path );
+		rename( $temporary_path, $reset_password_path );
 		wp_die();
 	}
 
@@ -2502,6 +3091,17 @@
 		if ( ! is_array($info) or ! isset($info['file']) ) return false;
 		
 		return realpath( str_replace( wp_basename($file), $info['file'], $file ) );
+	}
+
+	function retrieve_password_for_customer( $user ) {
+		// Creëer een key en sla ze op in de 'users'-tabel
+		$key = get_password_reset_key($user);
+
+		// Verstuur de e-mail met de speciale link
+		WC()->mailer();
+		do_action( 'woocommerce_reset_password_notification', $user->user_login, $key );
+
+		return true;
 	}
 
 	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
@@ -2709,100 +3309,139 @@
 			<?php	
 			}
 			
-		} elseif ( $type === 'food' ) {
-			$attributes = $product->get_attributes();
+		} else {
+			
+			if ( false === ( $oft_quality_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
 
-			foreach ( $attributes as $attribute ) {
-				$forbidden = array( 'pa_ompak', 'pa_eenheid', 'pa_fairtrade', 'pa_shopplus' );
-				// Logica omkeren: nu tonen we enkel de 'verborgen' attributen
-				if ( empty( $attribute['is_visible'] ) and ! in_array( $attribute['name'], $forbidden ) ) {
+				// Haal de kwaliteitsdata op in de OFT-site indien ze nog niet gecached werd in een transient 
+				require_once WP_CONTENT_DIR.'/wc-api/autoload.php';
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'Quality' );
+				$oft_db = new Client(
+					'https://www.oxfamfairtrade.be', OFT_WC_KEY, OFT_WC_SECRET,
+					[
+						'wp_api' => true,
+						'version' => 'wc/v2',
+						'query_string_auth' => true,
+					]
+				);
+				// Trash kan niet doorzocht worden maar eenmaal we de ID hebben kunnen we het product wel nog opvragen!
+				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), );
+				
+				try {
+					$oft_products = $oft_db->get( 'products', $params );
+					// $oft_product = $oft_db->get( 'products/'.$product->get_meta('oft_product_id') );
+					$last_response = $oft_db->http->getResponse();
+
+					$allowed_keys = array( '_ingredients', '_energy', '_fat', '_fasat', '_famscis', '_fapucis', '_fibtg', '_choavl', '_sugar', '_polyl', '_starch', '_salteq' );
+					
+					if ( $last_response->getCode() === 200 and count($oft_products) === 1 ) {
+						
+						// Stop voedingswaarden in een array met als keys de namen van de eigenschappen
+						foreach ( $oft_products[0]->meta_data as $meta_data ) {
+							if ( in_array( $meta_data->key, $allowed_keys ) ) {
+								$oft_quality_data['food'][$meta_data->key] = $meta_data->value;
+							}
+						}
+
+						// Stop allergenen in een array met als keys de slugs van de allergenen
+						foreach ( $oft_products[0]->product_allergen as $product_allergen ) {
+							$oft_quality_data['allergen'][$product_allergen->slug] = $product_allergen->name;
+						}
+
+						set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
+
+					} else {
+						$logger->warning( 'SKU '.$product->get_sku().' not found in OFT database', $context );
+					}
+
+				} catch ( HttpClientException $e ) {
+					$logger->critical( $e->getMessage(), $context );
+				}
+			}
+
+			if ( $type === 'food' ) {
+			
+				if ( floatval($oft_quality_data['food']['_energy']) > 0 ) {
 					$has_row = true;
-				} else {
-					continue;
+					foreach ( $oft_quality_data['food'] as $key => $value ) {
+						if ( floatval($value) > 0 ) {
+							?>
+							<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+								<th><?php
+									$sub_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
+									if ( in_array( $key, $sub_keys ) ) {
+										echo '<i style="padding-left: 20px;">waarvan '.$key.'</i>';
+									} else {
+										echo $key;
+									}
+								?></th>
+								<td><?php
+									if ( in_array( $key, $sub_keys ) ) {
+										echo '<i>'.$value.'</i>';
+									} else {
+										echo $value;
+									}
+								?></td>
+							</tr>
+							<?php
+						}
+					}
+				}
+
+			} elseif ( $type === 'allergen' ) {
+
+				// Altijd tonen!
+				$has_row = true;
+				$contains = array();
+				$traces = array();
+				$no_allergens = false;
+				foreach ( $oft_quality_data['allergen'] as $slug => $name ) {
+					$parts = explode( '-', $slug );
+					if ( $parts[0] === 'c' ) {
+						$contains[] = $name;
+					} elseif ( $parts[0] === 'mc' ) {
+						$traces[] = $name;
+					} elseif ( $parts[0] === 'none' ) {
+						$no_allergens = true;
+					}
 				}
 				?>
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php
-						$subattributes = array( 'pa_fapucis', 'pa_famscis', 'pa_fasat', 'pa_polyl', 'pa_starch', 'pa_sugar' );
-						if ( in_array( $attribute['name'], $subattributes ) ) {
-							echo '<i style="padding-left: 20px;">waarvan '.lcfirst( wc_attribute_label( $attribute['name'] ) ).'</i>';
+					<th><?php echo 'Dit product bevat'; ?></th>
+					<td>
+					<?php
+						if ( count($contains) > 0 ) {
+							echo implode( ', ', $contains );
 						} else {
-							echo wc_attribute_label( $attribute['name'] );
+							if ( $no_allergens === false or count($traces) > 0 ) {
+								echo 'geen meldingsplichtige allergenen';
+							} else {
+								echo '/';
+							}
 						}
-					?></th>
-					<td><?php
-						$values = wc_get_product_terms( $product->get_id(), $attribute['name'], array( 'fields' => 'names' ) );
-						if ( in_array( $attribute['name'], $subattributes ) ) {
-							// echo var_dump($values);
-							echo '<i>'.apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values ).'</i>';
+					?>
+					</td>
+				</tr>
+
+				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+					<th><?php echo 'Kan sporen bevatten van'; ?></th>
+					<td>
+					<?php
+						if ( count($traces) > 0 ) {
+							echo implode( ', ', $traces );
 						} else {
-							echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
-							// echo var_dump($values);
+							if ( $no_allergens === false or count($contains) > 0 ) {
+								echo 'geen meldingsplichtige allergenen';
+							} else {
+								echo '/';
+							}
 						}
-					?></td>
+					?>
+					</td>
 				</tr>
 				<?php
 			}
-
-		} elseif ( $type === 'allergen' ) {
-			// Allergenentab altijd tonen!
-			$has_row = true;
-			$allergens = get_the_terms( $product->get_id(), 'product_allergen' );
-			$contains = array();
-			$traces = array();
-
-			if ( $allergens !== false ) {
-				foreach ( $allergens as $allergen ) {
-					if ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'contains' ) {
-						$contains[] = $allergen;
-					} elseif ( get_term_by( 'id', $allergen->parent, 'product_allergen' )->slug === 'may-contain' ) {
-						$traces[] = $allergen;
-					}
-				}
-			}
-			?>
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo 'Dit product bevat'; ?></th>
-				<td>
-				<?php
-					$i = 0;
-					$str = '/';
-					if ( count( $contains ) > 0 ) {
-						foreach ( $contains as $substance ) {
-							$i++;
-							if ( $i === 1 ) {
-								$str = $substance->name;
-							} else {
-								$str .= ', '.$substance->name;
-							}
-						}
-					}
-					echo $str;
-				?>
-				</td>
-			</tr>
-
-			<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-				<th><?php echo 'Kan sporen bevatten van'; ?></th>
-				<td>
-				<?php
-					$i = 0;
-					$str = '/';
-					if ( count( $traces ) > 0 ) {
-						foreach ( $traces as $substance ) {
-							$i++;
-							if ( $i === 1 ) {
-								$str = $substance->name;
-							} else {
-								$str .= ', '.$substance->name;
-							}
-						}
-					}
-					echo $str;
-				?>
-				</td>
-			</tr>
-			<?php
 		}
 		
 		echo '</table>';
@@ -3251,22 +3890,32 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			echo '<div class="notice notice-success">';
-				echo '<p>In de back-end van de webshop verschenen 9 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-				$skus = array( '21061', '25220', '25617', '26010', '26012', '27996', '27997', '27998', '27999' );
-				foreach ( $skus as $sku ) {
-					$product_id = wc_get_product_id_by_sku( $sku );
-					if ( $product_id ) {
-						$product = wc_get_product( $product_id );
-						echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
-					}
-				}
-				echo '</ul><p>';
-				if ( current_user_can('manage_network_users') ) {
-					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast werden een 30-tal packshots bijgewerkt en werd 22019 BIO Aymarakoffie herbenoemd als BIO Perukoffie. De 4 holfiguren specifiek voor Pasen werden uit de database verwijderd.</p>';
-			echo '</div>';
+			// echo '<div class="notice notice-success">';
+			// 	echo '<p>De prijswijzigingen van 1 maart werden doorgevoerd. Bovendien verschenen in de back-end van de webshop 13 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+			// 	$skus = array( '20070', '25397', '25398', '25399', '25627', '25628', '25723', '27821', '27822', '25012', '25221', '26493', '26494' );
+			// 	foreach ( $skus as $sku ) {
+			// 		$product_id = wc_get_product_id_by_sku( $sku );
+			// 		if ( $product_id ) {
+			// 			$product = wc_get_product( $product_id );
+			// 			echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+			// 		}
+			// 	}
+			// 	echo '</ul><p>';
+			// 	echo '<p>Opgelet: de laatste 4 producten zijn louter ter vervanging van reeds bestaande Maya-producten. Verder werden de koffies Gold en Lake Kivu hernoemd naar respectievelijk Ethiopia en Congo. Daarnaast lanceerden we ook de 5 seizoensartikelen voor Pasen:</p><ul style="margin-left: 2em;">';
+			// 	$temp_skus = array( '24529', '24631', '24634', '24641', '24642' );
+			// 	foreach ( $temp_skus as $sku ) {
+			// 		$product_id = wc_get_product_id_by_sku( $sku );
+			// 		if ( $product_id ) {
+			// 			$product = wc_get_product( $product_id );
+			// 			echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+			// 		}
+			// 	}
+			// 	echo '</ul><p>';
+			// 	if ( current_user_can('manage_network_users') ) {
+			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+			// 	}
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Tot slot werkten we de packshots van een grote groep producten bij die inmiddels opnieuw een fairtradelogo dragen. De sintproducten van 2017 werden verwijderd uit de database.</p>';
+			// echo '</div>';
 			// echo '<div class="notice notice-info">';
 				// echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd opgelost. Allergenen en ingrediëntenlijsten worden nu live opgehaald uit de centrale database.</p>';
 				// echo '<p>De allergenen en voedingswaardes van alle producten werden vervolledigd. <a href="https://shop.oxfamwereldwinkels.be/wp-cron.php?export_hash=82868eb7bb778be2&export_id=2&action=get_data" target="_blank">Download hier alvast een overzichtelijke allergenenlijst.</a> Na een laatste controle publiceren we deze lijst op Copain onder het productnieuws.</p>';
@@ -3413,7 +4062,9 @@
 	}
 
 	function print_widget_delivery() {
-		if ( does_home_delivery() ) {
+		if ( is_b2b_customer() ) {
+			$text = __( 'Inhoud van praktisch blokje in footer (indien B2B-klant).', 'oxfam-webshop' );
+		} elseif ( does_home_delivery() ) {
 			$text = __( 'Inhoud van praktisch blokje in footer (indien ook thuislevering).', 'oxfam-webshop' );
 		} else {
 			$text = __( 'Inhoud van praktisch blokje in footer (inden enkel afhaling).', 'oxfam-webshop' );
@@ -3631,8 +4282,12 @@
 	}
 
 	function is_regional_webshop() {
-		// Antwerpen, Leuven en Vilvoorde
-		$regions = array( 24, 28, 34 );
+		if ( get_current_site()->domain === 'demo.oxfamwereldwinkels.be' ) {
+			$regions = array( 9 );
+		} else {
+			// Antwerpen, Leuven en Vilvoorde
+			$regions = array( 24, 28, 34 );
+		}
 		return in_array( get_current_blog_id(), $regions );
 	}
 
@@ -3716,20 +4371,20 @@
 	}
 
 	function get_company_name() {
-		return get_bloginfo( 'name' );
+		return get_bloginfo('name');
 	}
 
 	function get_main_shop_node() {
-		$list = get_option( 'oxfam_shop_nodes' );
+		$list = get_option('oxfam_shop_nodes');
 		return $list[0];
 	}
 
 	function get_company_email() {
-		return get_option( 'admin_email' );
+		return get_option('admin_email');
 	}
 
 	function get_company_contact() {
-		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data( 'telephone' )."<br>".get_oxfam_shop_data( 'tax' );
+		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data('telephone')."<br>".get_oxfam_shop_data('tax');
 	}
 
 	function get_company_address( $node = 0 ) {

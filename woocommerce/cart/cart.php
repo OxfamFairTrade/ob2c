@@ -26,7 +26,7 @@ wc_print_notices();
 
 do_action( 'woocommerce_before_cart' ); ?>
 
-<form class="woocommerce-cart-form" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post">
+<form class="woocommerce-cart-form" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post" novalidate>
 
 <h3><?php esc_html_e( 'Shopping Cart', 'nm-framework' ); ?></h3>
     
@@ -47,8 +47,8 @@ do_action( 'woocommerce_before_cart' ); ?>
 				<tr class="woocommerce-cart-form__cart-item <?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
 
 						<?php
-							// GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed (beter expliciet op artikelnummer triggeren?)
-							if ( $_product->is_visible() ) {
+							// GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed
+							if ( $_product->is_visible() or $_product->get_sku() === 'GIFT' ) {
 								echo '<td class="product-thumbnail">';
 							} else {
 								echo '<td class="product-thumbnail empties">';
@@ -142,7 +142,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 				<?php } ?>
                 
                 <!-- GEWIJZIGD: Knop voor emptyCart toegevoegd en andere knop rechts laten floaten -->
-				<a href="<?php echo WC()->cart->get_cart_url().'?emptyCart'; ?>" id="wisknop" class="button border">Winkelmandje leegmaken</a>
+				<a href="<?php echo esc_url( wc_get_cart_url().'?emptyCart' ); ?>" id="wisknop" class="button border">Winkelmandje leegmaken</a>
 
 				<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" style="float: right;" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
                 

@@ -334,7 +334,7 @@ class WC_Gift_Wrapping {
                 echo '<li class="giftwrap_li' . esc_attr( $show_thumb ) . '"><input type="radio" ' . $radio_checked . ' name="giftwrapproduct" id="' . esc_attr( $giftwrap_label ) . esc_attr( $label ) .  '" value="' . $giftwrap_product->ID . '">';
                 echo '<label for="' . esc_attr( $giftwrap_label ) . esc_attr( $label ) . '" class="giftwrap_desc"><span class="giftwrap_title"> ' . $giftwrap_product->post_title . '</span> ' . $giftwrap_product_price . '</label>' . $product_image . '</li>';
             } ?>
-            </ul>
+        	</ul>
               
         <?php // only one gift wrap product 
         } else { ?>
@@ -346,7 +346,8 @@ class WC_Gift_Wrapping {
                 $giftwrap_label = strtolower( preg_replace( '/\s*/', '', get_the_title( $giftwrap_product->ID ) ) );
                 if ( $this->giftwrap_show_thumb == 'yes' ) {
                     $product_image = wp_get_attachment_image( get_post_thumbnail_id( $giftwrap_product->ID ), 'thumbnail' );
-                    $product_image = '<div class="giftwrap_thumb"><a href="' . $giftwrap_product_URL . '">' . $product_image . '</a></div>';
+                    // GEWIJZIGD: Link uitschakelen
+                    $product_image = '<div class="giftwrap_thumb">' . $product_image . '</div>';
                     $show_thumb = ' show_thumb';
                 }
                 $gift_wrap_set = WC()->session->get( 'gift_wrap_set' );
@@ -567,7 +568,8 @@ class WC_Gift_Wrapping {
     */
 	public function add_gift_wrap_after_cart() {
 
-		if ( count( $this->get_giftwrapped_products() ) > 0 ) { ?>
+		// GEWIJZIGD: Enkel tonen indien nog niet in het winkelmandje
+		if ( count( $this->get_giftwrapped_products() ) > 0 and $this->is_gift_wrap_in_cart() === false ) { ?>
 
         <div class="wc-giftwrap giftwrap-collaterals">
             <?php

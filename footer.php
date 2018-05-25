@@ -100,7 +100,7 @@
                                 <ul id="nm-mobile-menu-top-ul" class="menu">
                                     <?php if ( $nm_globals['cart_link'] ) : ?>
                                     <li class="nm-mobile-menu-item-cart menu-item">
-                                        <a href="<?php echo esc_url( WC()->cart->get_cart_url() ); ?>" id="nm-mobile-menu-cart-btn">
+                                        <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" id="nm-mobile-menu-cart-btn">
                                             <?php echo nm_get_cart_title(); ?>
                                             <?php echo nm_get_cart_contents_count(); ?>
                                         </a>

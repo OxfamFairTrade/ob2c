@@ -12,8 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-// GEWIJZIGD: Niet tonen indien webshop geen thuislevering organiseert
-if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) or ! WC()->cart->needs_shipping() or ! does_home_delivery() ) {
+if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) or ! WC()->cart->needs_shipping() ) {
 	return;
 }
 
