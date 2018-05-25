@@ -1679,24 +1679,28 @@
 					<th><label for="<?php echo $select_key; ?>">Kortingspercentage</label></th>
 					<td>
 						<select name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
-						<?php
+						<?php	
+							$b2b_payment_method = array('cod');
 							$args = array(
 								'posts_per_page' => -1,
 								'post_type' => 'shop_coupon',
 								'post_status' => 'publish',
+								'meta_key' => 'coupon_amount',
+								'orderby' => 'meta_value_numm',
+								'order' => 'ASC',
+								'meta_query' => array(
+									array(
+										'key' => '_wjecf_payment_methods',
+										'value' => serialize($b2b_payment_method),
+										'compare' => 'LIKE',
+									)
+								),
 							);
-							$coupons = get_posts($args);
-							$b2b_coupons = array();
+
+							$b2b_coupons = get_posts($args);
 							echo '<option value="">n.v.t.</option>';
-							foreach ( $coupons as $coupon ) {
-								$payment_methods = get_post_meta( $coupon->ID, '_wjecf_payment_methods', true );
-								if ( is_array($payment_methods) and $payment_methods[0] === 'cod' ) {
-									$b2b_coupons[str_replace( 'b2b', '', $coupon->post_title )] = $coupon;
-								}
-							}
-							ksort( $b2b_coupons, SORT_NATURAL );
-							foreach ( $b2b_coupons as $key => $b2b_coupon ) {
-								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.$key.'</option>';
+							foreach ( $b2b_coupons as $b2b_coupon ) {
+								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.$b2b_coupon->coupon_amount.'%</option>';
 							}
 						?>
 						</select>
@@ -1820,6 +1824,10 @@
 					$current_users = array();
 				}
 
+				// Koppel de coupon altijd aan user-ID 1 (= admin) om te vermijden dat de restricties wegvallen indien er geen enkele échte klant aan gekoppeld is!
+				if ( ! in_array( 1, $current_users ) ) {
+					$current_users[] = 1;
+				}
 				// Voeg de user-ID toe aan de geselecteerde coupon
 				if ( ! in_array( $user_id, $current_users ) ) {
 					$current_users[] = $user_id;
@@ -2444,7 +2452,7 @@
 				}
 				// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
 				if ( does_home_delivery() ) {
-					$msg = WC()->session->get( 'no_home_delivery' );
+					$msg = WC()->session->get('no_home_delivery');
 					// Toon de foutmelding slechts één keer
 					// if ( $msg !== 'SHOWN' ) {
 						wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $forbidden_cnt - $plastic_cnt, $plastic_cnt ), 'error' );

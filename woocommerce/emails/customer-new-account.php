@@ -21,7 +21,8 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <?php if ( 'yes' === get_the_author_meta( 'blog_'.get_current_blog_id().'_is_b2b_customer', $customer->ID ) ) : ?>
 
-	<p><?php
+	<p>
+		<?php
 			if ( '' !== $customer->first_name and '' !== $customer->last_name ) {
 				$name = $customer->first_name.' '.$customer->last_name;
 			} else {
@@ -33,7 +34,8 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de webshop (%s).', 'oxfam-webshop' ), esc_html( $blogname ) ); ?></p>
 
-	<ul><?php
+	<ul>
+		<?php
 			$author_metas = array(
 				'billing_company' => 'Bedrijf of vereniging',
 				'billing_vat' => 'BTW-nummer',
@@ -62,7 +64,17 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 		</a>
 	</p>
 
-	<p><?php _e( 'Derde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?></p>
+	<p>
+		<?php
+			_e( 'Derde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' );
+
+			$b2b_coupon_id = intval( get_the_author_meta( 'blog_'.get_current_blog_id().'_has_b2b_coupon', $customer->ID ) );
+			if ( $b2b_coupon_id > 0 ) {
+				$b2b_coupon = get_post($b2b_coupon_id);
+				echo ' '.sprintf( __( 'Uitleg over algemeen kortingstarief, inclusief percentage (%s).', 'oxfam-webshop' ), $b2b_coupon->coupon_amount.'%' );
+			}
+		?>
+	</p>
 
 	<p><?php _e( 'Vierde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?></p>
 
