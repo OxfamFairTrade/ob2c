@@ -2015,8 +2015,11 @@
 	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 3 );
 
 	function put_administrator_in_bcc( $headers, $type, $object ) {
-		write_log("MAIL: ".$type);
-		if ( $type === 'customer_new_account' ) {
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'Mail' );
+		$logger->warning( wc_print_r( $object, true ), $context );
+		// We hernoemen de 'customer_new_account'-mail maar dit is wel degelijk het type!
+		if ( is_b2b_customer() and $type === 'customer_reset_password' ) {
 			$headers .= 'BCC: "'.get_company_name().'" <info@fullstackahead.be>\r\n';
 		}
 		$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>\r\n';
