@@ -2708,7 +2708,7 @@
 		}
 	}
 
-	// Zet de cadeauverpakking helemaal onderaan
+	// Zet leeggoed en cadeauverpakking onderaan HOEFT NIET ELKE KEER DOORLOPEN TE WORDEN?
 	add_action( 'woocommerce_cart_loaded_from_session', 'reorder_cart_items' );
 
 	function reorder_cart_items( $cart ) {
