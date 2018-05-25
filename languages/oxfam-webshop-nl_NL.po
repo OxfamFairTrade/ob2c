@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2018-05-25 21:10+0200\n"
-"PO-Revision-Date: 2018-05-25 21:13+0200\n"
+"POT-Creation-Date: 2018-05-25 21:26+0200\n"
+"PO-Revision-Date: 2018-05-25 21:27+0200\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: nl_NL\n"
@@ -341,12 +341,12 @@ msgstr "Beste %s"
 #: woocommerce/emails/customer-new-account.php:35
 #, php-format
 msgid ""
-"Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de "
+"Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van "
 "webshop (%s)."
 msgstr ""
-"Goed nieuws! We maakten voor jouw organisatie een professionele account aan "
-"om bestellingen te plaatsen via de webshop van %s. Dit zijn de gegevens die "
-"we invulden:"
+"Goed nieuws! We maakten voor jouw organisatie een zakelijke account aan om "
+"bestellingen te plaatsen via de webshop van %s. Dit zijn de gegevens die we "
+"invulden:"
 
 #: woocommerce/emails/customer-new-account.php:59
 #, php-format
@@ -355,8 +355,9 @@ msgid ""
 "gebruikersnaam (%s)."
 msgstr ""
 "Klik op de link hieronder om een wachtwoord te kiezen. Met je gebruikersnaam "
-"%s kun je daarna inloggen op onze webshop en meteen producten bestellen. "
-"Indien nodig kun je je gegevens ook meteen aanpassen."
+"%s kun je daarna inloggen op onze webshop en meteen producten bestellen. Het "
+"Zuiden was nog nooit zo dichtbij! Indien nodig kun je je gegevens ook "
+"aanpassen."
 
 #: woocommerce/emails/customer-new-account.php:63
 msgid "Speciale wachtwoordresetlink"
@@ -365,15 +366,18 @@ msgstr "Stel je wachtwoord in en bekijk je account"
 #: woocommerce/emails/customer-new-account.php:69
 msgid "Derde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
-"Als geverifieerde B2B-klant dien je niet op voorhand te betalen en bezorgen "
+"Als geverifieerde B2B-klant dien je nooit op voorhand te betalen en bezorgen "
 "we je achteraf een factuur voor de effectief geleverde goederen."
 
 #: woocommerce/emails/customer-new-account.php:74
 #, php-format
-msgid "Uitleg over algemeen kortingstarief, inclusief percentage (%s)."
+msgid ""
+"Uitleg over algemeen kortingstarief, inclusief percentage (%1$s) en naam van "
+"webshop (%2$s)."
 msgstr ""
-"Bovendien geniet jouw organisatie bij ons van een vast kortingstarief van %s "
-"(uitgezonderd leeggoed). Deze korting tonen we meteen in je winkelmandje."
+"Bovendien geniet jouw organisatie bij %2$s van een vast kortingstarief van "
+"%1$s (uitgezonderd leeggoed). Deze korting tonen we meteen in je "
+"winkelmandje."
 
 #: woocommerce/emails/customer-new-account.php:79
 msgid "Vierde alinea in de uitnodingsmail aan B2B-gebruikers."
@@ -418,9 +422,13 @@ msgstr ""
 "nieuwsbrieven beheren."
 
 #: woocommerce/emails/customer-new-account.php:93
-msgid "Uitsmijter van de welkomstmail."
+msgid "Uitsmijter van het mailbericht bij nieuwe accounts."
 msgstr ""
-"Tot binnenkort? Aarzel niet om ons te contacteren als je nog vragen hebt!"
+"Aarzel niet om ons te contacteren als je nog vragen hebt. Tot binnenkort?"
+
+#: woocommerce/emails/customer-new-account.php:95
+msgid "Ondertekening van het mailbericht bij nieuwe accounts."
+msgstr "Het webshopteam"
 
 #: woocommerce/emails/customer-note.php:23
 msgid ""
@@ -490,6 +498,10 @@ msgstr "Efraim Sebrechts & Frederik Neirynck"
 #. Author URI of the plugin/theme
 msgid "https://www.oxfamwereldwinkels.be"
 msgstr "https://www.oxfamwereldwinkels.be"
+
+#~ msgid "Uitsmijter van de welkomstmail."
+#~ msgstr ""
+#~ "Tot binnenkort? Aarzel niet om ons te contacteren als je nog vragen hebt!"
 
 #~ msgid ""
 #~ "Derde alinea in de uitnodingsmail aan B2B-gebruikers met praktische info "

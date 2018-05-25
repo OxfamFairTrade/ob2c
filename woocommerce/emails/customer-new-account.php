@@ -32,7 +32,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 		?>
 	</p>
 
-	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van de webshop (%s).', 'oxfam-webshop' ), esc_html( $blogname ) ); ?></p>
+	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van webshop (%s).', 'oxfam-webshop' ), get_company_name() ); ?></p>
 
 	<ul>
 		<?php
@@ -71,7 +71,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 			$b2b_coupon_id = intval( get_the_author_meta( 'blog_'.get_current_blog_id().'_has_b2b_coupon', $customer->ID ) );
 			if ( $b2b_coupon_id > 0 ) {
 				$b2b_coupon = get_post($b2b_coupon_id);
-				echo ' '.sprintf( __( 'Uitleg over algemeen kortingstarief, inclusief percentage (%s).', 'oxfam-webshop' ), $b2b_coupon->coupon_amount.'%' );
+				echo ' '.sprintf( __( 'Uitleg over algemeen kortingstarief, inclusief percentage (%1$s) en naam van webshop (%2$s).', 'oxfam-webshop' ), $b2b_coupon->coupon_amount.'%', get_company_name() );
 			}
 		?>
 	</p>
@@ -90,6 +90,8 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <?php endif; ?>
 
-<p><?php printf( __( 'Uitsmijter van de welkomstmail.', 'oxfam-webshop' ) ); ?></p>
+<p><?php printf( __( 'Uitsmijter van het mailbericht bij nieuwe accounts.', 'oxfam-webshop' ) ); ?></p>
+
+<p><?php printf( __( 'Ondertekening van het mailbericht bij nieuwe accounts.', 'oxfam-webshop' ) ); ?></p>
 
 <?php do_action( 'woocommerce_email_footer', $email );
