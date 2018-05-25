@@ -8,7 +8,7 @@
 	 * @copyright   Copyright © 2012 Mollie B.V.
 	 * @link        https://www.mollie.com
 	 * @category    Mollie
-	 * @version     1.8
+	 * @version     1.9
 	 *
 	 */
 
@@ -16,17 +16,17 @@
 	require_once '../../../wp-load.php';
 
 	if ( $_GET['import_key'] !== IMPORT_KEY ) {
-		die("Helaba, dit mag niet!");
+		die("Access prohibited!");
 	}
 
 	// Register autoloader
-	require_once '../../plugins/mollie-reseller-api/autoloader.php';
+	require_once WP_PLUGIN_DIR.'/mollie-reseller-api/autoloader.php';
 	Mollie_Autoloader::register();
 
 	// Instantiate Mollie class
 	$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 	
-	switch_to_blog( 33 );
+	switch_to_blog( 39 );
 
 	try {
 		// Parameters op te halen uit site
@@ -35,7 +35,7 @@
 		$address = get_oxfam_shop_data('place');
 		$zip = get_oxfam_shop_data('zipcode');
 		$city = get_oxfam_shop_data('city');
-		$phone = '32'.substr( get_oxfam_shop_data('telephone'), 1 );
+		$phone = '32'.str_replace( '/', '', str_replace( '.', '', substr( get_oxfam_shop_data('telephone'), 1 ) ) );
 		$email = get_bloginfo('admin_email');
 		$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
 		$headquarter = get_oxfam_shop_data('headquarter');
@@ -49,10 +49,11 @@
 		$url = get_bloginfo('url');
 		
 		// Parameters handmatig in te vullen
-		$login = 'owwgemeente';
+		$login = 'owwhoogstraten';
 		$name = '';
 		$representative = '';
-		$bic = 'AXABBE22';
+		$bic = 'NICABEBB';
+		// $bic = 'AXABBE22';
 		// $bic = 'GEBABEBB';
 		// $bic = 'GKCCBEBB';
 		// $bic = 'HBKABE22';
@@ -123,11 +124,11 @@
 			// WERKT ALLEMAAL NIET, DOE HANDMATIG
 			// update_option( 'mollie-payments-for-woocommerce_live_api_key', $profilexml->profile->api_keys->live );
 			// echo "<p>Live API-key gewijzigd in webshop!</p>";
-			// update_option( 'mollie-payments-for-woocommerce_test_mode_enabled', 'no' );
-			// echo "<p>Testbetalingen uitgeschakeld!</p>";
 			// update_option( 'mollie-payments-for-woocommerce_test_api_key', $profilexml->profile->api_keys->test );
 			// echo "<p>Test API-key gewijzigd in webshop!</p>";
-
+			// update_option( 'mollie-payments-for-woocommerce_test_mode_enabled', 'no' );
+			// echo "<p>Testbetalingen uitgeschakeld!</p>";
+			
 			echo "<p></p>";
 		} else {
 			echo '<pre>'.var_export($profilexml, true).'</pre>';

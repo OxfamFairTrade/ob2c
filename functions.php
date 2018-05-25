@@ -5,23 +5,26 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 	
-	// Voorlopig laten staan!
-	$prohibited_shops = array();
-
-	// Verhinder bekijken van testsites door niet-ingelogde bezoekers
+	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
 	function force_user_login() {
-		if ( ! is_user_logged_in() ) {
-			$url = get_current_url();
-			// Nooit redirecten op LIVE-omgeving TIJDELIJK OP DEMO
-			if ( get_current_site()->domain !== 'demo.oxfamwereldwinkels.be' ) {
-				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
-				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
-					// Stuur gebruiker na inloggen terug naar huidige pagina
-					wp_safe_redirect( wp_login_url($url) );
-					exit();
+		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
+			if ( ! is_user_logged_in() ) {
+				$url = get_current_url();
+				// Niet redirecten op LIVE-omgeving
+				if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
+					// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
+					if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
+						// Stuur gebruiker na inloggen terug naar huidige pagina
+						wp_safe_redirect( wp_login_url($url) );
+						exit();
+					}
 				}
+			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) or ! current_user_can('manage_woocommerce') ) {
+				// Toon de tijdelijke boodschap, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
+				wp_safe_redirect( network_site_url('/nog-even-geduld.html') );
+				exit();
 			}
 		}
 
@@ -81,7 +84,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.4' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.5' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -119,7 +122,7 @@
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
-	$default_holidays = array( '2017-11-01', '2017-11-11', '2017-12-25', '2018-01-01', '2018-04-01', '2018-04-02', '2018-07-21', '2018-08-15' );
+	$default_holidays = array( '2018-04-01', '2018-04-02', '2018-05-01', '2018-05-10', '2018-05-20', '2018-05-21', '2018-07-21', '2018-08-15', '2018-11-01', '2018-11-11', '2018-12-25', '2019-01-01' );
 	
 
 
@@ -139,13 +142,14 @@
 		}
 	}
 
-	// Zorg ervoor dat lokale beheerders toch al hun gearchiveerde site kunnen bekijken
+	// Zorg ervoor dat lokale beheerders toch al hun gearchiveerde site kunnen bekijken HEEFT DIT NOG ZIN?
 	add_filter( 'ms_site_check', 'allow_local_manager_on_archived' );
 
 	function allow_local_manager_on_archived() {
-		if ( current_user_can( 'manage_woocommerce' ) ) {
+		if ( current_user_can('manage_woocommerce') ) {
 			return true;
 		}
+		// Terug te plaatsen winkelboodschap: "We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening."
 	}
 
 	if ( is_regional_webshop() ) {
@@ -889,17 +893,26 @@
 			}
 		}
 
-		// Smartlook uitschakelen
-		if ( ! is_user_logged_in() and 1 === 0 ) {
+		// Facebook-pixel voor Regio Leuven 
+		if ( get_current_blog_id() === 28 ) {
 			?>
-				<script type="text/javascript">
-					window.smartlook||(function(d) {
-					var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
-					var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
-					c.charset='utf-8';c.src='https://rec.smartlook.com/recorder.js';h.appendChild(c);
-					})(document);
-					smartlook('init', 'e6996862fe1127c697c24f1887605b3b9160a885');
+				<script>
+					!function(f,b,e,v,n,t,s)
+					{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+					n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+					if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+					n.queue=[];t=b.createElement(e);t.async=!0;
+					t.src=v;s=b.getElementsByTagName(e)[0];
+					s.parentNode.insertBefore(t,s)}(window,document,'script',
+					'https://connect.facebook.net/nl_NL/fbevents.js');
+					fbq('init', '421231331671214'); 
+					fbq('track', 'PageView');
 				</script>
+				<noscript>
+					 <img height="1" width="1" 
+					src="https://www.facebook.com/tr?id=421231331671214&ev=PageView
+					&noscript=1"/>
+				</noscript>
 			<?php
 		}
 
@@ -1547,19 +1560,21 @@
 	add_action( 'admin_footer-user-edit.php', 'hide_others_profile_fields' );
 	
 	function hide_own_profile_fields() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can('manage_options') ) {
 			?>
 			<script type="text/javascript">
-				jQuery("tr.user-rich-editing-wrap").hide();
-				jQuery("tr.user-comment-shortcuts-wrap").hide();
-				jQuery("tr.user-language-wrap").hide();
+				jQuery("tr.user-rich-editing-wrap").css( 'display', 'none' );
+				jQuery("tr.user-comment-shortcuts-wrap").css( 'display', 'none' );
+				jQuery("tr.user-language-wrap").css( 'display', 'none' );
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
-				jQuery("tr.user-nickname-wrap").hide();
-				jQuery("tr.user-url-wrap").hide();
-				jQuery("h2:contains('Over jezelf')").next('.form-table').hide();
-				jQuery("h2:contains('Over jezelf')").hide();
-				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
-				jQuery("h2:contains('Over de gebruiker')").hide();
+				jQuery("tr.user-nickname-wrap").css( 'display', 'none' );
+				jQuery("tr.user-url-wrap").css( 'display', 'none' );
+				jQuery("h2:contains('Over jezelf')").next('.form-table').css( 'display', 'none' );
+				jQuery("h2:contains('Over jezelf')").css( 'display', 'none' );
+				jQuery("h2:contains('Over de gebruiker')").next('.form-table').css( 'display', 'none' );
+				jQuery("h2:contains('Over de gebruiker')").css( 'display', 'none' );
+				/* Enkel lokale beheerders mogen dit instellen */
+				jQuery("tr[class$='member_of_shop-wrap']").css( 'display', 'none' );
 			</script>
 			<?php
 		}
@@ -1579,19 +1594,21 @@
 	}
 
 	function hide_others_profile_fields() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can('manage_options') ) {
 		?>
 			<script type="text/javascript">
-				jQuery("tr.user-rich-editing-wrap").hide();
-				jQuery("tr.user-admin-color-wrap").hide();
-				jQuery("tr.user-comment-shortcuts-wrap").hide();
-				jQuery("tr.user-admin-bar-front-wrap").hide();
-				jQuery("tr.user-language-wrap").hide();
+				jQuery("tr.user-rich-editing-wrap").css( 'display', 'none' );
+				jQuery("tr.user-admin-color-wrap").css( 'display', 'none' );
+				jQuery("tr.user-comment-shortcuts-wrap").css( 'display', 'none' );
+				jQuery("tr.user-admin-bar-front-wrap").css( 'display', 'none' );
+				jQuery("tr.user-language-wrap").css( 'display', 'none' );
 				/* Zeker niét verwijderen -> breekt opslaan van pagina! */
-				jQuery("tr.user-nickname-wrap").hide();
-				jQuery("tr.user-url-wrap").hide();
-				jQuery("h2:contains('Over de gebruiker')").next('.form-table').hide();
-				jQuery("h2:contains('Over de gebruiker')").hide();
+				jQuery("tr.user-nickname-wrap").css( 'display', 'none' );
+				jQuery("tr.user-url-wrap").css( 'display', 'none' );
+				jQuery("h2:contains('Over de gebruiker')").next('.form-table').css( 'display', 'none' );
+				jQuery("h2:contains('Over de gebruiker')").css( 'display', 'none' );
+				/* Enkel lokale beheerders mogen dit instellen */
+				jQuery("tr[class$='member_of_shop-wrap']").css( 'display', 'none' );
 			</script>
 		<?php
 		}
@@ -2131,15 +2148,21 @@
 				}
 
 				if ( $node === 'fruithoekje' ) {
-					if ( date_i18n( 'N', $from ) < 5 and date_i18n( 'G', $from ) < 12 ) {
-						// Geen actie nodig
-					} else {
-						// We zitten al na de deadline van donderdag 12u, begin pas vanaf volgende werkdag te tellen
+					if ( date_i18n( 'N', $from ) > 4 or ( date_i18n( 'N', $from ) == 4 and date_i18n( 'G', $from ) >= 12 ) ) {
+						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
 					}
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
+				} elseif( $node == 837 ) {
+					if ( date_i18n( 'N', $from ) > 2 or ( date_i18n( 'N', $from ) == 2 and date_i18n( 'G', $from ) >= 12 ) ) {
+						// Na de deadline van dinsdag 12u00: begin pas bij tweede werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+2 weekdays', $from );
+					}
+
+					// Zoek de eerste donderdag na de volgende middagdeadline (wordt wegens openingsuren automatisch vrijdagochtend)
+					$timestamp = strtotime( 'next Thursday', $from );
 				} else {
 					$timestamp = get_first_working_day( $from );
 
@@ -2904,7 +2927,7 @@
 		wp_die();
 	}
 
-	function save_local_product_details($id, $meta, $value) {			
+	function save_local_product_details( $id, $meta, $value ) {			
 		$msg = "";
 		$product = wc_get_product($id);
 		if ( $meta === 'stockstatus' ) {
@@ -2921,13 +2944,8 @@
 
 	function oxfam_photo_action_callback() {
 		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
-		// UITSCHAKELEN, PUBLICATIE NAAR CHILD SITE GEBEURT VANZELF BIJ EERSTVOLGENDE SYNC (ID'S UPDATEN)
-		// $sites = get_sites( array( 'public' => 1 ) );
-		// foreach ( $sites as $site ) {
-			// switch_to_blog( $site->blog_id );
-			echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
-			// restore_current_blog();
-		// }
+		// NIET IN LOKALE BIBLIOTHEKEN REGISTREREN, PUBLICATIE NAAR CHILD SITE GEBEURT VANZELF BIJ EERSTVOLGENDE SYNC (ID'S UPDATEN)
+		echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
 		wp_die();
 	}
 
@@ -2937,7 +2955,6 @@
 		$temporary_path = get_stylesheet_directory() . '/woocommerce/emails/temporary.php';
 		rename( $reset_password_path, $temporary_path );
 		rename( $new_account_path, $reset_password_path );
-
 		$user = get_user_by( 'id', $_POST['customer_id'] );
 		if ( retrieve_password_for_customer( $user ) ) {
 			printf( 'Eigenaar van \'%s\' succesvol uitgenodigd!', $user->user_login );
@@ -2945,31 +2962,33 @@
 		} else {
 			printf( 'Uitnodigen eigenaar van \'%s\' mislukt!', $user->user_login );
 		}
-
 		rename( $reset_password_path, $new_account_path );
 		rename( $temporary_path, $reset_password_path );
-
 		wp_die();
 	}
 
-	function wp_get_attachment_id_by_post_name( $post_title ) {
+	function oxfam_get_attachment_id_by_file_name( $post_title ) {
 		$args = array(
 			// We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
-			'posts_per_page'	=> 1,
-			'post_type'			=> 'attachment',
-			// Moet er in principe bij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
-			'post_status'		=> 'inherit',
-			// De titel is steeds gelijk aan de bestandsnaam (NIET NA DE IMPORT) en beter dan de 'name' die uniek moet zijn en door WP automatisch voorzien wordt van volgnummers
-			'title'				=> trim($post_title),
+			'posts_per_page' => 1,
+			'post_type'	=> 'attachment',
+			// Moet erbij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
+			'post_status' => 'inherit',
+			// De titel is NA DE IMPORT NIET MEER gelijk aan de bestandsnaam, dus zoek op basis van het gekoppelde bestand
+			'meta_key' => '_wp_attached_file',
+			'meta_value' => trim($post_title).'.jpg',
 		);
+
+		$attachment_id = false;
 		$attachments = new WP_Query($args);
 		if ( $attachments->have_posts() ) {
-			$attachments->the_post();
-			$attachment_id = get_the_ID();
+			while ( $attachments->have_posts() ) {
+				$attachments->the_post();
+				$attachment_id = get_the_ID();
+			}
 			wp_reset_postdata();
-		} else {
-			$attachment_id = false;
 		}
+
 		return $attachment_id;
 	}
 
@@ -2979,27 +2998,10 @@
 		$filetitle = $filetitle[0];
 		$product_id = 0;
 
-		if ( ! is_main_site() ) {
-			// Bepaal het bestemmingspad in de subsite (zonder dimensies!)
-			$child_filepath = str_replace( '/uploads/', '/uploads/sites/'.get_current_blog_id().'/', $main_filepath );
-			switch_to_blog(1);
-			// Zoek het pad van de 'large' thumbnail op in de hoofdsite
-			$main_attachment_id = wp_get_attachment_id_by_post_name( $filetitle );
-			if ( $main_attachment_id ) {
-				// Kopieer een middelgrote thumbnail van de hoofdsite als 'full' naar de huidige subsite
-				copy( get_scaled_image_path( $main_attachment_id, 'medium' ), $child_filepath );
-				$current_filepath = $child_filepath;
-			}
-			restore_current_blog();
-		} else {
-			$current_filepath = $main_filepath;
-		}
-
 		// Check of er al een vorige versie bestaat
 		$updated = false;
 		$deleted = false;
-		// GEBEURT IN DE LOKALE MEDIABIB
-		$old_id = wp_get_attachment_id_by_post_name( $filetitle );
+		$old_id = oxfam_get_attachment_id_by_file_name( $filetitle );
 		if ( $old_id ) {
 			// Bewaar de post_parent van het originele attachment
 			$product_id = wp_get_post_parent_id( $old_id );
@@ -3009,16 +3011,15 @@
 			}
 
 			// Stel het originele high-res bestand veilig
-			rename( $current_filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg' );
+			rename( $main_filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg' );
 			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
-			// GEBEURT IN DE LOKALE MEDIABIB
 			if ( wp_delete_attachment( $old_id, true ) ) {
 				// Extra check op het succesvol verwijderen
 				$deleted = true;
 			}
 			$updated = true;
 			// Hernoem opnieuw zodat de links weer naar de juiste file wijzen 
-			rename( WP_CONTENT_DIR.'/uploads/temporary.jpg', $current_filepath );
+			rename( WP_CONTENT_DIR.'/uploads/temporary.jpg', $main_filepath );
 		}
 		
 		// Creëer de parameters voor de foto
@@ -3033,7 +3034,7 @@
 
 		// Probeer de foto in de mediabibliotheek te stoppen
 		// Laatste argument: stel de uploadlocatie van de nieuwe afbeelding in op het product van het origineel (of 0 = geen)
-		$attachment_id = wp_insert_attachment( $attachment, $current_filepath, $product_id );
+		$attachment_id = wp_insert_attachment( $attachment, $main_filepath, $product_id );
 		
 		if ( ! is_wp_error( $attachment_id ) ) {
 			// Check of de uploadlocatie ingegeven was!
@@ -3060,7 +3061,7 @@
 			}
 
 			// Registreer ook de metadata
-			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $current_filepath );
+			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $main_filepath );
 			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
 			// Toon een succesboodschap
 			if ( $updated ) {
@@ -3878,7 +3879,7 @@
 	}
 	
 	// Voeg een bericht toe bovenaan alle adminpagina's
-	add_action( 'admin_notices', 'oxfam_admin_notices' );
+	// add_action( 'admin_notices', 'oxfam_admin_notices' );
 
 	function oxfam_admin_notices() {
 		global $pagenow, $post_type;
@@ -4072,7 +4073,7 @@
 	}
 
 	function print_widget_contact() {
-		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), get_oxfam_shop_data('telephone') ).'[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een aanklikbaar telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', get_oxfam_shop_data('telephone') ), 1 ).'">'.get_oxfam_shop_data('telephone').'</a>' ).'[/nm_feature]');
 	}
 
 	function print_greeting() {
@@ -4094,7 +4095,7 @@
 	}
 
 	function print_copyright() {
-		return "<a href='".get_site_url( get_current_blog_id(), '/contact/' )."'>".get_company_name()." &copy; ".date_i18n('Y')."</a>";
+		return '<a href="'.get_site_url( get_current_blog_id(), '/contact/' ).'">'.get_company_name().' &copy; 2017-'.date_i18n('Y').'</a>';
 	}
 
 	function print_office_hours( $atts = [] ) {
@@ -4148,9 +4149,8 @@
 	}
 
 	function print_welcome() {
-		global $prohibited_shops;
-		// Negeer niet-gepubliceerde en gearchiveerde sites
-		$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, 'count' => true ) );
+		// Negeer afgeschermde en gearchiveerde sites
+		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
 		// Trek hoofdsite af van totaal
 		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-afhaling.png" class="placemarker">';
 		$msg .= '<h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
@@ -4397,10 +4397,9 @@
 	}
 
 	function get_shops() {
-		global $prohibited_shops;
 		$global_zips = array();
-		// Negeer niet-gepubliceerde en gearchiveerde sites
-		$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, ) );
+		// Negeer afgeschermde en gearchiveerde sites
+		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			$local_zips = get_option( 'oxfam_zip_codes' );
@@ -4431,7 +4430,7 @@
 	}, 10, 2);
 
 	function get_company_and_year() {
-		return '<span style="color: #60646c">'.get_company_name().' &copy; 2016-'.date_i18n('Y').'</span>';
+		return '<span style="color: #60646c">'.get_company_name().' &copy; 2017-'.date_i18n('Y').'</span>';
 	}
 
 	function get_local_logo_url() {

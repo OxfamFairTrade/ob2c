@@ -15,11 +15,12 @@
 			$str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-levering.png</href></Icon></IconStyle></Style>";
 			$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 			
-			// Sluit niet-gepubliceerde en gearchiveerde webshops uit
-			global $prohibited_shops;
-			$sites = get_sites( array( 'site__not_in' => $prohibited_shops, 'public' => 1, ) );
+			// Sluit afgeschermde en gearchiveerde webshops uit
+			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
+			
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
+					
 					// Sluit hoofdsite uit
 					if ( ! is_main_site() ) {
 						$str .= "<Placemark>";
@@ -63,6 +64,7 @@
 							fclose($local_file);
 						}
 					}
+					
 				restore_current_blog();
 			}
 
@@ -70,10 +72,11 @@
 			fwrite($global_file, $str);
 			fclose($global_file);
 
-			echo "Mapdata bijgewerkt!";
-    	} else {
-    		die("Helaba, dit mag niet!");
-    	}
+			write_log("Kaarten bijgewerkt voor ".( count($sites) - 1 )." webshops!");
+			echo "The end";
+		} else {
+			die("Access prohibited!");
+		}
 	?>
 </body>
 

@@ -172,13 +172,14 @@
 						}
 
 						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
-							// Dit zou in principe al moeten volstaan voor een automatische update, maar wellicht beter faseren?
 							if ( jQuery(this).find(":selected").val() == 'instock' ) {
 								var to_change = jQuery("#oxfam-products").find(".border-color-red").length; 
 								var go = confirm("Ben je zeker dat je "+to_change+" producten in voorraad wil zetten?");
 								if ( go == true ) {
 									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
-									jQuery("#oxfam-products").find(".border-color-red").parent().find("select.toggle").val('instock').trigger('change');
+									jQuery("#oxfam-products").find(".border-color-red").parent().find("select.toggle").val('instock').each( function() {
+										jQuery(this).delay(25).trigger('change');	
+									});
 									// SUCCESBOODSCHAP TONEN NA AFLOOP
 									jQuery(this).parent().parent().find(".output").delay(10000).animate({
 							    		opacity: 0,
@@ -194,7 +195,9 @@
 								var go = confirm("Ben je zeker dat je "+to_change+" producten op uitverkocht wil zetten?");
 								if ( go == true ) {
 									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
-									jQuery("#oxfam-products").find(".border-color-green").parent().find("select.toggle").val('outofstock').trigger('change');
+									jQuery("#oxfam-products").find(".border-color-green").parent().find("select.toggle").val('outofstock').each( function() {
+										jQuery(this).delay(25).trigger('change');	
+									});
 									// SUCCESBOODSCHAP TONEN NA AFLOOP
 									jQuery(this).parent().parent().find(".output").delay(10000).animate({
 							    		opacity: 0,
