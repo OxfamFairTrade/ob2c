@@ -2015,6 +2015,7 @@
 	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 3 );
 
 	function put_administrator_in_bcc( $headers, $type, $object ) {
+		write_log("MAIL: ".$type);
 		if ( $type === 'customer_new_account' ) {
 			$headers .= 'BCC: "'.get_company_name().'" <info@fullstackahead.be>\r\n';
 		}
@@ -2964,7 +2965,8 @@
 		$new_account_path = get_stylesheet_directory() . '/woocommerce/emails/customer-new-account.php';
 		$reset_password_path = get_stylesheet_directory() . '/woocommerce/emails/customer-reset-password.php';
 		$temporary_path = get_stylesheet_directory() . '/woocommerce/emails/temporary.php';
-		rename( $reset_password_path, $temporary_path );
+		// Beter: check of $reset_password_path wel bestaat (= template werd overschreven)
+		// rename( $reset_password_path, $temporary_path );
 		rename( $new_account_path, $reset_password_path );
 		$user = get_user_by( 'id', $_POST['customer_id'] );
 		if ( retrieve_password_for_customer( $user ) ) {
@@ -2974,7 +2976,7 @@
 			printf( 'Uitnodigen eigenaar van \'%s\' mislukt!', $user->user_login );
 		}
 		rename( $reset_password_path, $new_account_path );
-		rename( $temporary_path, $reset_password_path );
+		// rename( $temporary_path, $reset_password_path );
 		wp_die();
 	}
 
