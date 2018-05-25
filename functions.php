@@ -1809,8 +1809,8 @@
 					$previous_users = array();
 				}
 
-				// Verwijder de user-ID van de vorige coupon
-				if ( ( $match_key = array_search( $user_id, $previous_users ) ) !== false ) {
+				// Verwijder de user-ID van de vorige coupon, tenzij het user-ID 1 is (= admin)
+				if ( $user_id !== 1 and ( $match_key = array_search( $user_id, $previous_users ) ) !== false ) {
 					unset($previous_users[$match_key]);
 				}
 				update_post_meta( $previous_coupon_id, '_wjecf_customer_ids', implode( ',', $previous_users ) );
@@ -1824,7 +1824,7 @@
 					$current_users = array();
 				}
 
-				// Koppel de coupon altijd aan user-ID 1 (= admin) om te vermijden dat de restricties wegvallen indien er geen enkele échte klant aan gekoppeld is!
+				// Koppel de coupon altijd aan user-ID 1 om te vermijden dat de restricties wegvallen indien er geen enkele échte klant aan gekoppeld is!
 				if ( ! in_array( 1, $current_users ) ) {
 					$current_users[] = 1;
 				}
