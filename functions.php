@@ -522,16 +522,6 @@
 	function fix_bounce_address( $phpmailer ) {
 		$phpmailer->Sender = $phpmailer->From;
 	}
-
-	// Check tijdelijk de verstuurde bevestigingsmails door mezelf in BCC te zetten
-	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
-
-	function put_administrator_in_bcc( $headers, $object ) {
-		// if ( $object === 'customer_processing_order' ) {
-			$headers .= 'BCC: "Frederik Neirynck" <'.get_site_option('admin_email').'>\r\n';
-		// }
-		return $headers;
-	}
 	
 	// Pas het onderwerp van de mails aan naargelang de gekozen levermethode
 	add_filter( 'woocommerce_email_subject_customer_processing_order', 'change_processing_order_subject', 10, 2 );
@@ -2022,12 +2012,13 @@
 	}
 
 	// Zet webshopbeheerder in BCC bij versturen uitnodiginsmails
-	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
+	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 3 );
 
 	function put_administrator_in_bcc( $headers, $type, $object ) {
 		if ( $type === 'customer_new_account' ) {
 			$headers .= 'BCC: "'.get_company_name().'" <info@fullstackahead.be>\r\n';
 		}
+		$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>\r\n';
 		return $headers;
 	}
 
