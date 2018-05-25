@@ -1859,7 +1859,7 @@
 		}
 	}
 
-	// Vervang ook alle prijssuffixen!
+	// Vervang alle prijssuffixen
 	add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
 
 	function b2b_price_suffix( $suffix, $product ) {
@@ -1933,12 +1933,14 @@
 		return $args;
 	}
 
+	// Laat de spinners tot 0 i.p.v. 1 gaan 
 	add_filter( 'woocommerce_quantity_input_min', 'set_min_input_to_zero', 10, 2 );
 	
 	function set_min_input_to_zero( $min, $product ) {
 		return 0;
 	}
 
+	// Toon aantal stuks dat toegevoegd zal worden aan het winkelmandje
 	add_filter( 'woocommerce_product_add_to_cart_text', 'add_multiple_to_add_to_cart_text', 10, 2 );
 	add_filter( 'woocommerce_product_single_add_to_cart_text', 'change_single_add_to_cart_text', 10, 2 );
 	
@@ -1957,7 +1959,7 @@
 	}
 
 	function change_single_add_to_cart_text( $text, $product ) {
-		$text = 'Voeg toe aan winkelmandje';
+		$text = 'Voeg toe aan mandje';
 		return $text;
 	}
 
@@ -2017,6 +2019,16 @@
 			</li>
 			<?php
 		}
+	}
+
+	// Zet webshopbeheerder in BCC bij versturen uitnodiginsmails
+	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
+
+	function put_administrator_in_bcc( $headers, $type, $object ) {
+		if ( $type === 'customer_new_account' ) {
+			$headers .= 'BCC: "'.get_company_name().'" <info@fullstackahead.be>\r\n';
+		}
+		return $headers;
 	}
 
 
