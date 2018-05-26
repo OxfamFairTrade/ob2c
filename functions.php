@@ -234,6 +234,7 @@
 
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
 		$member_key = 'blog_'.get_current_blog_id().'_member_of_shop';
+		// Check of het veld wel bestaat voor deze gebruiker
 		if ( isset($_POST[$member_key]) ) {
 			update_user_meta( $user_id, $member_key, $_POST[$member_key] );
 		}
@@ -1781,7 +1782,10 @@
 
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
 		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
-		update_user_meta( $user_id, $check_key, $_POST[$check_key] );
+		// Check of het veld wel bestaat voor deze gebruiker
+		if ( isset($_POST[$check_key]) ) {
+			update_user_meta( $user_id, $check_key, $_POST[$check_key] );
+		}
 		
 		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon, op voorwaarde dat B2B aangevinkt is!
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
