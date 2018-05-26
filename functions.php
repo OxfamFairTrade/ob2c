@@ -2034,7 +2034,7 @@
 	function put_administrator_in_bcc( $headers, $type, $object ) {
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'WooCommerce' );
-		$logger->informational( 'Mail van type '.$type.' getriggerd', $context );
+		$logger->debug( 'Mail van type '.$type.' getriggerd', $context );
 		// $logger->debug( wc_print_r( $object, true ), $context );
 		
 		$extra_recipients = array();
