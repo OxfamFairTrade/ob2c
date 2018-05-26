@@ -2489,7 +2489,15 @@
 					$msg = WC()->session->get('no_home_delivery');
 					// Toon de foutmelding slechts één keer
 					// if ( $msg !== 'SHOWN' ) {
-						wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $forbidden_cnt - $plastic_cnt, $plastic_cnt ), 'error' );
+						$glass_cnt = $forbidden_cnt - $plastic_cnt;
+						if ( $glass_cnt > 0 and $plastic_cnt > 0 ) {
+							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%s grote fles', '%s grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap en '.sprintf( _n( '%s krat', '%s kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+						} elseif ( $glass_cnt > 0 ) {
+							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%s grote fles', '%s grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+						} elseif ( $plastic_cnt > 0 ) {
+							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%s krat', '%s kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Dit is te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verminder het aantal kleine flesjes fruitsap in je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+						}
+						// wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $glass_cnt, $plastic_cnt ), 'error' );
 						WC()->session->set( 'no_home_delivery', 'SHOWN' );
 					// }
 				}
@@ -2498,7 +2506,6 @@
 			}
 			
 			// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
-			// UITGESCHAKELD OMWILLE VAN OWW BRUGGE
 			// $cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
 			// if ( $cart_weight > 29 ) {
 			// 	foreach ( $rates as $rate_key => $rate ) {
