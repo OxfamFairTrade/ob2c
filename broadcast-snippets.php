@@ -90,6 +90,7 @@
 	if ( $all_coupons->have_posts() ) {
 		while ( $all_coupons->have_posts() ) {
 			$all_coupons->the_post();
+			write_log("BLOG ".get_current_blog_id()." MET POST ".get_the_ID());
 			$ids = get_post_meta( get_the_ID(), 'product_ids', true );
 			if ( $ids !== '' ) {
 				$global_ids = explode( ',', $ids );

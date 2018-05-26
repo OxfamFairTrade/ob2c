@@ -3817,15 +3817,16 @@
 		}
 	}
 
-	// Functie die post-ID's van de hoofdsite vertaalt en het metaveld opslaat in de huidige subsite (op basis van artikelnummer)
+	// Functie die product-ID's van de hoofdsite vertaalt en het metaveld opslaat in de huidige subsite (op basis van artikelnummer)
 	/**
 	* @param int $local_product_id
-	* @param string $metakey
+	* @param string $meta_key
 	* @param array $product_meta_item_row
 	*/	
 	function translate_main_to_local_ids( $local_product_id, $meta_key, $product_meta_item_row ) {
 		if ( $product_meta_item_row ) {
 			foreach ( $product_meta_item_row as $main_product_id ) {
+				write_log($main_product_id);
 				switch_to_blog( 1 );
 				$main_product = wc_get_product( $main_product_id );
 				restore_current_blog();
