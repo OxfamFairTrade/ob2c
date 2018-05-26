@@ -1552,8 +1552,8 @@
 	}
 
 	// Verberg bepaalde profielvelden (en niet verwijderen, want dat reset sommige waardes!)
-	add_action( 'admin_footer-profile.php', 'hide_own_profile_fields' );
-	add_action( 'admin_footer-user-edit.php', 'hide_others_profile_fields' );
+	// add_action( 'admin_footer-profile.php', 'hide_own_profile_fields' );
+	// add_action( 'admin_footer-user-edit.php', 'hide_others_profile_fields' );
 	
 	function hide_own_profile_fields() {
 		if ( ! current_user_can('manage_options') ) {
@@ -1569,8 +1569,8 @@
 				jQuery("h2:contains('Over jezelf')").css( 'display', 'none' );
 				jQuery("h2:contains('Over de gebruiker')").next('.form-table').css( 'display', 'none' );
 				jQuery("h2:contains('Over de gebruiker')").css( 'display', 'none' );
-				/* Enkel lokale beheerders mogen dit instellen */
-				jQuery("tr[class$='member_of_shop-wrap']").css( 'display', 'none' );
+				/* Wordt enkel toegevoegd indien toegelaten dus hoeft niet verborgen te worden */
+				// jQuery("tr[class$='member_of_shop-wrap']").css( 'display', 'none' );
 			</script>
 			<?php
 		}
@@ -1603,8 +1603,6 @@
 				jQuery("tr.user-url-wrap").css( 'display', 'none' );
 				jQuery("h2:contains('Over de gebruiker')").next('.form-table').css( 'display', 'none' );
 				jQuery("h2:contains('Over de gebruiker')").css( 'display', 'none' );
-				/* Enkel lokale beheerders mogen dit instellen */
-				jQuery("tr[class$='member_of_shop-wrap']").css( 'display', 'none' );
 			</script>
 		<?php
 		}
