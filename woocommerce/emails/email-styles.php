@@ -133,7 +133,8 @@ $text_lighter_20 = wc_hex_lighter( $text, 20 );
 }
 
 #header_wrapper {
-	padding: 36px 48px;
+	/* GEWIJZIGD */
+	padding: 32px 40px;
 	display: block;
 }
 
