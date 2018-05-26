@@ -2465,19 +2465,21 @@
 			}
 
 			// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
-			$forbidden_cnt = 0;
+			$glass_cnt = 0;
 			$plastic_cnt = 0;
 			foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
-				// ENKEL FRUITSAP 1 L EN LEEGGOED 24 FLESJES ALS BREEKBAAR MARKEREN OM TELLING TE VERGEMAKKELIJKEN
 				if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
-					$forbidden_cnt += intval($item_value['quantity']);
-					if ( $item_value['product_id'] == wc_get_product_id_by_sku('WLBS24M') ) {
+					// Omwille van de icoontjes is niet alleen het leeggoed maar ook het product als breekbaar gemarkeerd!
+					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
+						$glass_cnt += intval($item_value['quantity']);
+					}
+					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6M') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24M') ) {
 						$plastic_cnt += intval($item_value['quantity']);
 					}
 				} 
 			}
 			
-			if ( $forbidden_cnt > 0 ) {
+			if ( $glass_cnt + $plastic_cnt > 0 ) {
 				foreach ( $rates as $rate_key => $rate ) {
 					// Blokkeer alle methodes behalve afhalingen
 					if ( $rate->method_id !== 'local_pickup_plus' ) {
@@ -2489,7 +2491,6 @@
 					$msg = WC()->session->get('no_home_delivery');
 					// Toon de foutmelding slechts één keer
 					// if ( $msg !== 'SHOWN' ) {
-						$glass_cnt = $forbidden_cnt - $plastic_cnt;
 						if ( $glass_cnt > 0 and $plastic_cnt > 0 ) {
 							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%s grote fles', '%s grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap en '.sprintf( _n( '%s krat', '%s kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
 						} elseif ( $glass_cnt > 0 ) {
