@@ -2018,11 +2018,13 @@
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'Mail' );
 		$logger->warning( wc_print_r( $object, true ), $context );
-		// We hernoemen de 'customer_new_account'-mail maar dit is wel degelijk het type!
+		
+		$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>';
+		// We hernoemen de 'customer_new_account'-template maar het type blijft ongewijzigd!
 		if ( is_b2b_customer() and $type === 'customer_reset_password' ) {
-			$headers .= 'BCC: "'.get_company_name().'" <info@fullstackahead.be>\r\n';
+			$headers .= ',"'.get_company_name().'" <info@fullstackahead.be>';
 		}
-		$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>\r\n';
+		$headers .= '\r\n';
 		return $headers;
 	}
 
