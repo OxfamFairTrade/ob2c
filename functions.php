@@ -1756,16 +1756,19 @@
 			return false;
 		}
 
-		$logger = wc_get_logger();
-		$context = array( 'source' => 'WP User' );
-		$logger->debug( wc_print_r( $_POST, true ), $context );
-
 		$names = array( 'billing_company', 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_city', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_city' );
 		foreach ( $names as $name ) {
 			if ( isset($_POST[$name]) ) {
 				$_POST[$name] = trim_and_uppercase($_POST[$name]);
+				if ( $name === 'billing_company' ) {
+					update_user_meta( $user_id, $name, $_POST[$name] );
+				}
 			}
 		}
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'WP User' );
+		$logger->debug( wc_print_r( $_POST, true ), $context );
+
 		if ( isset($_POST['billing_email']) ) {
 			$_POST['billing_email'] = format_mail($_POST['billing_email']);
 		}
@@ -1773,7 +1776,8 @@
 			$_POST['billing_phone'] = format_telephone($_POST['billing_phone']);
 		}
 		if ( isset($_POST['billing_vat']) ) {
-			$_POST['billing_vat'] = format_tax($_POST['billing_vat']);
+			// $_POST['billing_vat'] = format_tax($_POST['billing_vat']);
+			update_user_meta( $user_id, 'billing_vat', format_tax($_POST['billing_vat']) );
 		}
 		if ( isset($_POST['billing_postcode']) ) {
 			$_POST['billing_postcode'] = format_zipcode($_POST['billing_postcode']);
