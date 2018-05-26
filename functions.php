@@ -228,10 +228,15 @@
 	}
 
 	function save_member_of_shop_user_field( $user_id ) {
-		if ( ! current_user_can( 'edit_user', $user_id ) ) return false;
+		if ( ! current_user_can( 'edit_user', $user_id ) ) {
+			return false;
+		}
+
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
-		$key = 'blog_'.get_current_blog_id().'_member_of_shop';
-		update_user_meta( $user_id, $key, $_POST[$key] );
+		$member_key = 'blog_'.get_current_blog_id().'_member_of_shop';
+		if ( isset($_POST[$member_key]) ) {
+			update_user_meta( $user_id, $member_key, $_POST[$member_key] );
+		}
 	}
 
 	function auto_claim_local_pickup( $order_id ) {

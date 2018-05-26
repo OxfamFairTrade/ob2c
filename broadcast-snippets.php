@@ -262,6 +262,8 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		update_option( 'woocommerce_cod_settings', $cod_settings );
 	}
 
+	// Verzendzones wijzigen
+
 	// Tabel met stopwoorden kopiëren
 
 	// Sjabloon van WP All Export kopiëren
