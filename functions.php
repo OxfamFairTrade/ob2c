@@ -1847,11 +1847,20 @@
 		}
 	}
 
-	// Zorg ervoor dat wijzigingen aan klanten in kortingsbonnen ook gesynct worden met die profielen TO DO + STEEDS MINIMUM 1 USER ALS TOEGESTANE KLANT INSTELLEN (ANDERS GEEN BEPERKING)
-	// add_action( 'save_post_shop_coupon', 'sync_reductions_with_users', 3, 10 );
+	// Zorg ervoor dat wijzigingen aan klanten in kortingsbonnen ook gesynct worden met die profielen
+	add_action( 'woocommerce_update_coupon', 'sync_reductions_with_users', 1, 10 );
+	add_action( 'threewp_broadcast_broadcasting_after_switch_to_blog', 'sync_reductions_with_users', 1, 5 );
 
-	function sync_reductions_with_users( $post_id, $post, $update ) {
-		write_log("COUPON WORDT BIJGEWERKT");
+	function sync_reductions_with_users( $post_id ) {
+		write_log( get_post_meta( $post_id, 'exclude_product_ids', true ) );
+		write_log( "COUPON ".$post_id." WORDT BIJGEWERKT IN BLOG ".get_current_blog_id() );
+	}
+
+	function sync_reductions_with_users( $action ) {
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'Broadcast' );
+		$logger->debug( wc_print_r( $action, true ), $context );
+		write_log( "GESWITCHED NAAR BLOG ".get_current_blog_id() );
 	}
 
 	// Geen BTW tonen bij producten en in het winkelmandje
@@ -3824,9 +3833,9 @@
 	* @param array $product_meta_item_row
 	*/	
 	function translate_main_to_local_ids( $local_product_id, $meta_key, $product_meta_item_row ) {
+		write_log("MAAK POST ".get_the_ID()." LOKAAL IN BLOG ".get_current_blog_id());
 		if ( $product_meta_item_row ) {
 			foreach ( $product_meta_item_row as $main_product_id ) {
-				write_log($main_product_id);
 				switch_to_blog( 1 );
 				$main_product = wc_get_product( $main_product_id );
 				restore_current_blog();
