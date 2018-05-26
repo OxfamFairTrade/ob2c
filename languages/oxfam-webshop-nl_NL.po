@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2018-05-25 21:26+0200\n"
-"PO-Revision-Date: 2018-05-25 21:33+0200\n"
+"PO-Revision-Date: 2018-05-26 10:56+0200\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: nl_NL\n"
@@ -355,9 +355,8 @@ msgid ""
 "gebruikersnaam (%s)."
 msgstr ""
 "Klik op de link hieronder om een wachtwoord te kiezen. Met je gebruikersnaam "
-"%s kun je daarna inloggen op onze webshop en meteen producten bestellen. Het "
-"Zuiden was nog nooit zo dichtbij! Indien nodig kun je je gegevens ook "
-"aanpassen."
+"%s kun je daarna inloggen op onze webshop en meteen producten bestellen. "
+"Onze partners in het Zuiden waren nog nooit zo dichtbij!"
 
 #: woocommerce/emails/customer-new-account.php:63
 msgid "Speciale wachtwoordresetlink"
@@ -366,8 +365,8 @@ msgstr "Stel je wachtwoord in en bekijk je account"
 #: woocommerce/emails/customer-new-account.php:69
 msgid "Derde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
-"Als geverifieerde B2B-klant dien je nooit op voorhand te betalen en bezorgen "
-"we je achteraf een factuur voor de effectief geleverde goederen."
+"Als geverifieerde B2B-klant dien je nooit op voorhand te betalen. We "
+"bezorgen je achteraf een factuur voor de effectief geleverde goederen."
 
 #: woocommerce/emails/customer-new-account.php:74
 #, php-format
@@ -375,16 +374,16 @@ msgid ""
 "Uitleg over algemeen kortingstarief, inclusief percentage (%1$s) en naam van "
 "webshop (%2$s)."
 msgstr ""
-"Bovendien geniet jouw organisatie bij %2$s van een reductie van %1$s op alle "
-"producten (uitgezonderd leeggoed). Dit kortingsbedrag tonen we meteen in je "
-"winkelmandje."
+"Bovendien geniet je als trouwe klant bij %2$s van een korting van %1$s op "
+"alle producten (uitgezonderd leeggoed). Deze reductie wordt onmiddellijk "
+"zichtbaar in je winkelmandje."
 
 #: woocommerce/emails/customer-new-account.php:79
 msgid "Vierde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
-"Voor een vlotte verwerking worden producten standaard per omverpakking "
-"toegevoegd (in veelvouden van 6, 10, 12, ...). Achteraf kun je de aantallen "
-"in je winkelmandje echter nog altijd veranderen in een willekeurige "
+"Voor een vlotte verwerking worden producten standaard per ompak toegevoegd. "
+"Is zo'n makkelijk hanteerbaar veelvoud van 6, 10, 12, ... stuks even te "
+"groot? Overschrijf het getal in je winkelmandje dan gewoon met de gewenste "
 "hoeveelheid."
 
 #: woocommerce/emails/customer-new-account.php:81
@@ -396,8 +395,8 @@ msgstr ""
 #: woocommerce/emails/customer-new-account.php:83
 msgid "Zesde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
-"Blijf je liever op je vertrouwde manieren bestellen? Geen probleem! Negeer "
-"dan gewoon deze mail. Na enkele weken vervalt deze uitnodiging."
+"Blijf je liever op je vertrouwde manier bestellen? Geen probleem! Negeer dan "
+"gewoon deze mail. Na enkele weken vervalt deze uitnodiging."
 
 #: woocommerce/emails/customer-new-account.php:87
 #, php-format

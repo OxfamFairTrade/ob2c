@@ -2014,17 +2014,22 @@
 	// Zet webshopbeheerder in BCC bij versturen uitnodiginsmails
 	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 3 );
 
-	function put_administrator_in_bcc( $headers, $type, $object ) {
-		$logger = wc_get_logger();
-		$context = array( 'source' => 'Mail' );
-		$logger->warning( wc_print_r( $object, true ), $context );
+	function put_administrator_in_bcc( $headers, $type, $user ) {
+		// $logger = wc_get_logger();
+		// $context = array( 'source' => 'Mail' );
+		// $logger->warning( wc_print_r( $user, true ), $context );
+		// $logger->warning( wc_print_r( $type, true ), $context );
 		
-		$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>';
+		$extra_recipients = array();
+		$extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
+		
 		// We hernoemen de 'customer_new_account'-template maar het type blijft ongewijzigd!
-		if ( is_b2b_customer() and $type === 'customer_reset_password' ) {
-			$headers .= ',"'.get_company_name().'" <info@fullstackahead.be>';
+		// Hoe verkomen dat kopie verstuurd wordt bij échte wachtwoordreset van B2B-gebruiker?
+		if ( is_b2b_customer( $user->ID ) and $type === 'customer_reset_password' ) {
+			$extra_recipients[] = get_company_name().' <'.get_company_email().'>';
 		}
-		$headers .= '\r\n';
+
+		$headers .= 'BCC: '.implode( ',', $extra_recipients ).'\r\n';
 		return $headers;
 	}
 
@@ -4448,7 +4453,7 @@
 	}, 10, 2);
 
 	function get_company_and_year() {
-		return '<span style="color: #60646c">'.get_company_name().' &copy; 2017-'.date_i18n('Y').'</span>';
+		return get_company_name().' &copy; 2017-'.date_i18n('Y');
 	}
 
 	function get_local_logo_url() {
