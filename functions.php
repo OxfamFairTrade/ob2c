@@ -3823,7 +3823,7 @@
 	* @param string $metakey
 	* @param array $product_meta_item_row
 	*/	
-	function translate_main_to_local_ids( $local_product_id, $metakey, $product_meta_item_row ) {
+	function translate_main_to_local_ids( $local_product_id, $meta_key, $product_meta_item_row ) {
 		if ( $product_meta_item_row ) {
 			foreach ( $product_meta_item_row as $main_product_id ) {
 				switch_to_blog( 1 );
@@ -3832,13 +3832,13 @@
 				$local_product_ids[] = wc_get_product_id_by_sku( $main_product->get_sku() );
 			}
 			// Niet serialiseren voor coupons
-			if ( $metakey === 'product_ids' ) {
+			if ( $meta_key === 'product_ids' or $meta_key === 'exclude_product_ids' ) {
 				$local_product_ids = implode( ',', $local_product_ids );
 			}
-			update_post_meta( $local_product_id, $metakey, $local_product_ids );
+			update_post_meta( $local_product_id, $meta_key, $local_product_ids );
 		} else {
 			// Zorg ervoor dat het veld ook bij de child geleegd wordt!
-			update_post_meta( $local_product_id, $metakey, null );
+			update_post_meta( $local_product_id, $meta_key, null );
 		}
 	}
 

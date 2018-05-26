@@ -82,7 +82,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> array( 'publish' ),
-		'title'			=> 'chileens-duo',
+		'title'			=> 'b2b5%',
 	);
 
 	$all_coupons = new WP_Query( $args );
@@ -91,9 +91,14 @@
 		while ( $all_coupons->have_posts() ) {
 			$all_coupons->the_post();
 			$ids = get_post_meta( get_the_ID(), 'product_ids', true );
-			if ( $ids !== false ) {
+			if ( $ids !== '' ) {
 				$global_ids = explode( ',', $ids );
 				translate_main_to_local_ids( get_the_ID(), 'product_ids', $global_ids );
+			}
+			$exclude_ids = get_post_meta( get_the_ID(), 'exclude_product_ids', true );
+			if ( $exclude_ids !== '' ) {
+				$exclude_global_ids = explode( ',', $exclude_ids );
+				translate_main_to_local_ids( get_the_ID(), 'exclude_product_ids', $exclude_global_ids );
 			}
 		}
 		wp_reset_postdata();
