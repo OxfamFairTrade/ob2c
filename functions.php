@@ -2014,19 +2014,22 @@
 	// Zet webshopbeheerder in BCC bij versturen uitnodiginsmails
 	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 3 );
 
-	function put_administrator_in_bcc( $headers, $type, $user ) {
-		// $logger = wc_get_logger();
-		// $context = array( 'source' => 'Mail' );
-		// $logger->warning( wc_print_r( $user, true ), $context );
-		// $logger->warning( wc_print_r( $type, true ), $context );
+	function put_administrator_in_bcc( $headers, $type, $object ) {
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'WooCommerce' );
+		$logger->informational( 'Mail van type '.$type.' getriggerd', $context );
+		// $logger->debug( wc_print_r( $object, true ), $context );
 		
 		$extra_recipients = array();
 		$extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
 		
 		// We hernoemen de 'customer_new_account'-template maar het type blijft ongewijzigd!
-		// Hoe verkomen dat kopie verstuurd wordt bij échte wachtwoordreset van B2B-gebruiker?
-		if ( is_b2b_customer( $user->ID ) and $type === 'customer_reset_password' ) {
-			$extra_recipients[] = get_company_name().' <'.get_company_email().'>';
+		if ( $type === 'customer_reset_password' ) {
+			// Bij dit type mogen we ervan uit gaan dat $oject een WP_User bevat met de property ID
+			if ( is_b2b_customer( $object->ID ) ) {
+				// Hoe voorkomen we dat kopie verstuurd wordt bij échte wachtwoordreset van B2B-gebruiker?
+				$extra_recipients[] = get_company_name().' <'.get_company_email().'>';
+			}
 		}
 
 		$headers .= 'BCC: '.implode( ',', $extra_recipients ).'\r\n';

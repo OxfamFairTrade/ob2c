@@ -56,7 +56,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 		?>
 	</ul>
 
-	<p><?php printf( __( 'Tweede alinea in de uitnodingsmail aan B2B-gebruikers, inclusief gebruikersnaam (%s).', 'oxfam-webshop' ), '<strong>&laquo; ' . esc_html( $user_login ) . ' &raquo;</strong>' ); ?></p>
+	<p><?php printf( __( 'Tweede alinea in de uitnodingsmail aan B2B-gebruikers, inclusief gebruikersnaam (%s).', 'oxfam-webshop' ), '<strong>&laquo;&nbsp;' . esc_html( $user_login ) . '&nbsp;&raquo;</strong>' ); ?></p>
 
 	<p style="text-align: center;">
 		<a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'login' => rawurlencode( $user_login ) ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>">
