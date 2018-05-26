@@ -138,7 +138,7 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
         <?php if ( ! WC()->cart->is_empty() ) : ?>
         
         <p class="total">
-            <strong><?php _e( 'Subtotal', 'woocommerce' ); ?>:</strong>
+            <strong>Subtotaal (incl. leeggoed):</strong>
             <span class="nm-cart-panel-summary-subtotal">
                 <?php echo WC()->cart->get_cart_subtotal(); ?>
             </span>

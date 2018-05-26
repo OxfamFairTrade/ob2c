@@ -1791,6 +1791,8 @@
 		// Check of het veld wel bestaat voor deze gebruiker
 		if ( isset($_POST[$check_key]) ) {
 			update_user_meta( $user_id, $check_key, $_POST[$check_key] );
+		} else {
+			update_user_meta( $user_id, $check_key, 'no' );
 		}
 		
 		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon, op voorwaarde dat B2B aangevinkt is!
