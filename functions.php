@@ -1552,8 +1552,8 @@
 	}
 
 	// Verberg bepaalde profielvelden (en niet verwijderen, want dat reset sommige waardes!)
-	// add_action( 'admin_footer-profile.php', 'hide_own_profile_fields' );
-	// add_action( 'admin_footer-user-edit.php', 'hide_others_profile_fields' );
+	add_action( 'admin_footer-profile.php', 'hide_own_profile_fields' );
+	add_action( 'admin_footer-user-edit.php', 'hide_others_profile_fields' );
 	
 	function hide_own_profile_fields() {
 		if ( ! current_user_can('manage_options') ) {
@@ -1755,6 +1755,10 @@
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
 		}
+
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'WP User' );
+		$logger->debug( wc_print_r( $_POST, true ), $context );
 
 		$names = array( 'billing_company', 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_city', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_city' );
 		foreach ( $names as $name ) {
