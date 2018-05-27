@@ -1881,7 +1881,7 @@
 
 	function b2b_price_suffix( $suffix, $product ) {
 		if ( is_b2b_customer() ) {
-			$suffix = str_replace( 'incl', 'excl', $suffix );
+			$suffix = str_replace( '(incl)', 'excl', $suffix );
 		}
 		return $suffix;
 	}

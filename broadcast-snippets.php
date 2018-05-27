@@ -270,6 +270,10 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 	// Instellingen van een WooCommerce-mail wijzigen (let op met overschrijvingen in subsites!)
 	switch_to_blog(1);
 	$mail_settings = get_option('woocommerce_new_order_settings');
+	// $mail_settings = get_option('woocommerce_customer_new_account_settings');
+	// $mail_settings = get_option('woocommerce_customer_processing_order_settings');
+	// $mail_settings = get_option('woocommerce_customer_reset_password_settings');
+	// $mail_settings = get_option('woocommerce_customer_note_settings');
 	restore_current_blog();
 	if ( is_array($mail_settings) ) {
 		$mail_settings['enabled'] = 'yes';
