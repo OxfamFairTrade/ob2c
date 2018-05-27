@@ -3476,7 +3476,7 @@
 						if ( count($contains) > 0 ) {
 							echo implode( ', ', $contains );
 						} else {
-							if ( $no_allergens === false or count($traces) > 0 ) {
+							if ( $no_allergens === true or count($traces) > 0 ) {
 								echo 'geen meldingsplichtige allergenen';
 							} else {
 								echo '/';
@@ -3493,7 +3493,7 @@
 						if ( count($traces) > 0 ) {
 							echo implode( ', ', $traces );
 						} else {
-							if ( $no_allergens === false or count($contains) > 0 ) {
+							if ( $no_allergens === true or count($contains) > 0 ) {
 								echo 'geen meldingsplichtige allergenen';
 							} else {
 								echo '/';
