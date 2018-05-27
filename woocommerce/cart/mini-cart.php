@@ -138,7 +138,29 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
         <?php if ( ! WC()->cart->is_empty() ) : ?>
         
         <p class="total">
-            <strong>Subtotaal (incl. leeggoed):</strong>
+            <strong><?php
+                $empties = false;
+                foreach( WC()->cart->get_cart_contents() as $item_key => $item_value ) {
+                    if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
+                        $empties = true;
+                        break;
+                    } 
+                }
+               
+                if ( WC()->cart->get_discount_total() > 0 ) {
+                    if ( $empties ) {
+                        echo 'Subtotaal (incl. leeggoed en korting):';
+                    } else {
+                        echo 'Subtotaal (incl. korting):';
+                    }
+                } else {
+                    if ( $empties ) {
+                        echo 'Subtotaal (incl. leeggoed):';
+                    } else {
+                        echo 'Subtotaal:';
+                    }
+                }
+            ?></strong>
             <span class="nm-cart-panel-summary-subtotal">
                 <?php echo WC()->cart->get_cart_subtotal(); ?>
             </span>

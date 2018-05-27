@@ -2477,7 +2477,7 @@
 			// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
 			$glass_cnt = 0;
 			$plastic_cnt = 0;
-			foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
+			foreach( WC()->cart->get_cart_contents() as $item_key => $item_value ) {
 				if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
 					// Omwille van de icoontjes is niet alleen het leeggoed maar ook het product als breekbaar gemarkeerd!
 					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
@@ -2517,7 +2517,7 @@
 			}
 			
 			// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
-			// $cart_weight = wc_get_weight( $woocommerce->cart->cart_contents_weight, 'kg' );
+			// $cart_weight = wc_get_weight( WC()->cart->get_cart_contents_weight(), 'kg' );
 			// if ( $cart_weight > 29 ) {
 			// 	foreach ( $rates as $rate_key => $rate ) {
 			// 		// Blokkeer alle methodes behalve afhalingen
@@ -2611,7 +2611,6 @@
 	add_action( 'woocommerce_checkout_process', 'check_subscription_preference', 10, 1 );
 
 	function check_subscription_preference() {
-		global $woocommerce;
 		if ( ! empty( $_POST['subscribe_digizine'] ) ) {
 			if ( $_POST['subscribe_digizine'] !== 1 ) {
 				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
@@ -2626,10 +2625,10 @@
 
 		// Stel een bestelminimum (en fictief -maximum) in
 		$min = 10;
-		$max = 5000;
-		if ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) < $min ) {
+		$max = 10000;
+		if ( round( WC()->cart->get_total(), 2 ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
-		} elseif ( round( $woocommerce->cart->cart_contents_total+$woocommerce->cart->tax_total, 2 ) > $max ) {
+		} elseif ( round( WC()->cart->get_total(), 2 ) > $max ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
 		}
 	}
@@ -2670,8 +2669,6 @@
 						$plastic_sku = 'WLBS24M';
 					}
 
-					write_log($plastic_sku." bij NIEUWE ".$empties_sku." checken");
-					
 					$plastic_in_cart = false;
 					$plastic_product_id = wc_get_product_id_by_sku($plastic_sku);
 					$plastic_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $plastic_sku ) ) );
@@ -2685,14 +2682,16 @@
 
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 						if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
-							write_log("We hebben een plastic bak ".$plastic_sku." gevonden die gelinkt is aan ".$product_item['product_id']."!");
+							$main_product = wc_get_product($product_item['product_id']);
+							write_log("We hebben een ".$plastic_sku."-krat gevonden dat gelinkt is aan SKU ".$main_product->get_sku()."!");
 							$plastic_in_cart = true;
 							break;
 						}
 					}
 
 					if ( ! $plastic_in_cart and floor( intval($product_item['quantity']) / $plastic_step ) >= 1 ) {
-						write_log("We voegen de eerste plastic bak ".$plastic_sku." handmatig toe aan ".$product_item['product_id']."!");
+						$main_product = wc_get_product($product_item['product_id']);
+						write_log("We voegen het eerste ".$plastic_sku."-krat handmatig toe aan SKU ".$main_product->get_sku()."!");
 						// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
 						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_array['variation_id'], $empties_array['variation'], array( 'forced_by' => $product_item_key ) );
 					}
@@ -2730,8 +2729,6 @@
 					$plastic_sku = 'WLBS24M';
 				}
 
-				write_log($plastic_sku." bij BESTAANDE ".$empties_sku." checken");
-				
 				$plastic_in_cart = false;
 				$plastic_product_id = wc_get_product_id_by_sku($plastic_sku);
 				$plastic_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $plastic_sku ) ) );
@@ -2744,14 +2741,16 @@
 				}
 				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
-						write_log("We hebben een plastic bak ".$plastic_sku." gevonden die gelinkt is aan ".$product_item['product_id']."!");
+						$main_product = wc_get_product($product_item['product_id']);
+						write_log("We hebben een ".$plastic_sku."-krat gevonden dat gelinkt is aan SKU ".$main_product->get_sku()."!");
 						$plastic_in_cart = true;
 						break;
 					}
 				}
 
 				if ( ! $plastic_in_cart and floor( intval($product_item['quantity']) / $plastic_step ) >= 1 ) {
-					write_log("We voegen de eerste plastic bakken ".$plastic_sku." handmatig toe aan ".$product_item['product_id']."!");
+					$main_product = wc_get_product($product_item['product_id']);
+					write_log("We voegen het eerste ".$plastic_sku."-krat handmatig toe aan SKU ".$main_product->get_sku()."!");
 					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
 					$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $empties_item['forced_by'] ) );
 				}
@@ -2796,41 +2795,41 @@
 
 	function reorder_cart_items( $cart ) {
 		// Niets doen bij leeg winkelmandje
-		if ( empty( $cart->cart_contents ) ) {
+		if ( empty( $cart->get_cart_contents() ) ) {
 			return;
 		}
 
-		$cart_sort = $cart->cart_contents;
+		$cart_sorted = $cart->get_cart_contents();
 		$glass_items = array();
 		$plastic_items = array();
 
-		foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
+		foreach ( $cart->get_cart_contents() as $cart_item_key => $cart_item ) {
 			if ( $cart_item['data']->get_sku() === 'GIFT' ) {
 				// Sla het item van de cadeauverpakking op en verwijder het
 				$gift_item = $cart_item;
-				unset($cart_sort[$cart_item_key]);
+				unset($cart_sorted[$cart_item_key]);
 			}
 
 			if ( strpos( $cart_item['data']->get_sku(), 'WLF' ) !== false ) {
 				$glass_items[$cart_item_key] = $cart_item;
-				unset($cart_sort[$cart_item_key]);
+				unset($cart_sorted[$cart_item_key]);
 			}
 
 			if ( strpos( $cart_item['data']->get_sku(), 'WLB' ) !== false ) {
 				$plastic_items[$cart_item_key] = $cart_item;
-				unset($cart_sort[$cart_item_key]);
+				unset($cart_sorted[$cart_item_key]);
 			}
 		}
 
-		$cart_sort = array_merge( $cart_sort, $glass_items, $plastic_items );
+		$cart_sorted = array_merge( $cart_sorted, $glass_items, $plastic_items );
 
 		if ( isset($gift_item) ) {
 			// Voeg de cadeauverpakking opnieuw toe helemaal achteraan (indien het voorkwam)
-			$cart_sort[$cart_item_key] = $gift_item;
+			$cart_sorted[$cart_item_key] = $gift_item;
 		}
 
 		// Vervang de itemlijst door de nieuwe array
-		$cart->cart_contents = $cart_sort;
+		$cart->set_cart_contents($cart_sorted);
 	}
 
 	// Toon leeggoed en cadeauverpakking niet in de mini-cart (wordt wel meegeteld in totaalbedrag!)
@@ -3386,45 +3385,62 @@
 						'query_string_auth' => true,
 					]
 				);
-				// Trash kan niet doorzocht worden op SKU
+				// Trash wordt niet doorzocht via SKU
 				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), 'lang' => 'nl' );
-				// Maar eenmaal we de ID hebben kunnen we het als fallback wel nog op die manier opvragen!
-				// $oft_product = $oft_db->get( 'products/'.$product->get_meta('oft_product_id') );
 				
 				try {
 					$oft_products = $oft_db->get( 'products', $params );
 					$last_response = $oft_db->http->getResponse();
+					
 					$allowed_keys = array( '_ingredients', '_energy', '_fat', '_fasat', '_famscis', '_fapucis', '_fibtg', '_choavl', '_sugar', '_polyl', '_starch', '_salteq' );
 					
-					if ( $last_response->getCode() === 200 and count($oft_products) === 1 ) {
-						
-						// WC PHP API 2.0+
-						// Stop voedingswaarden in een array met als keys de namen van de eigenschappen
-						foreach ( $oft_products[0]->meta_data as $meta_data ) {
-							if ( in_array( $meta_data->key, $allowed_keys ) ) {
-								$oft_quality_data['food'][$meta_data->key] = $meta_data->value;
+					if ( $last_response->getCode() === 200 ) {
+						if ( count($oft_products) > 1 ) {
+							$logger->alert( 'Multiple results found for SKU '.$product->get_sku().' in OFT database', $context );
+						} else {
+							$oft_product = reset($oft_products);
+							
+							if ( $oft_product === false ) {	
+								$logger->notice( 'SKU '.$product->get_sku().' not found in OFT database', $context );
+								
+								// Indien we de oude product-ID uit de OFT-database hebben, kunnen we $oft_product langs deze weg nog rechtstreeks opvullen
+								if ( $product->meta_exists('oft_product_id') and intval( $product->get_meta('oft_product_id') ) > 0 ) {
+									$oft_product = $oft_db->get( 'products/'.$product->get_meta('oft_product_id') );
+									$logger->notice( 'SKU '.$product->get_sku().' queried by ID from OFT database', $context );
+								}
+							}
+
+							if ( $oft_product !== false ) {	
+								
+								// WC PHP API 2.0+
+								// Stop voedingswaarden in een array met als keys de namen van de eigenschappen
+								foreach ( $oft_product->meta_data as $meta_data ) {
+									if ( in_array( $meta_data->key, $allowed_keys ) ) {
+										$oft_quality_data['food'][$meta_data->key] = $meta_data->value;
+									}
+								}
+
+								// Stop allergenen in een array met als keys de slugs van de allergenen
+								foreach ( $oft_product->product_allergen as $product_allergen ) {
+									$oft_quality_data['allergen'][$product_allergen->slug] = $product_allergen->name;
+								}
+
+								set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
+
 							}
 						}
-
-						// Stop allergenen in een array met als keys de slugs van de allergenen
-						foreach ( $oft_products[0]->product_allergen as $product_allergen ) {
-							$oft_quality_data['allergen'][$product_allergen->slug] = $product_allergen->name;
-						}
-
-						set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
-
 					} else {
-						$logger->warning( 'SKU '.$product->get_sku().' not found in OFT database', $context );
+						$logger->alert( 'API response code was '.$last_response->getCode(), $context );
 					}
-
 				} catch ( HttpClientException $e ) {
-					$logger->critical( $e->getMessage(), $context );
+					$logger->alert( $e->getMessage(), $context );
 				}
 			}
 
 			if ( $type === 'food' ) {
 			
-				if ( floatval($oft_quality_data['food']['_energy']) > 0 ) {
+				// Check of er voedingswaarden zijn
+				if ( array_key_exists( 'food', $oft_quality_data ) and floatval($oft_quality_data['food']['_energy']) > 0 ) {
 					$has_row = true;
 					foreach ( $oft_quality_data['food'] as $key => $value ) {
 						if ( floatval($value) > 0 ) {
@@ -3453,7 +3469,7 @@
 
 			} elseif ( $type === 'allergen' ) {
 
-				// Altijd tonen!
+				// Allergenen altijd tonen!
 				$has_row = true;
 				$contains = array();
 				$traces = array();
