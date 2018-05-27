@@ -2829,7 +2829,9 @@
 		}
 
 		// Vervang de itemlijst door de nieuwe array
-		$cart->set_cart_contents($cart_sorted);
+		$cart->cart_contents = $cart_sorted;
+		// Vanaf WC 3.2+ gebruiken
+		// $cart->set_cart_contents($cart_sorted);
 	}
 
 	// Toon leeggoed en cadeauverpakking niet in de mini-cart (wordt wel meegeteld in totaalbedrag!)
