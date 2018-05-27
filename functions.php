@@ -2477,7 +2477,7 @@
 			// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
 			$glass_cnt = 0;
 			$plastic_cnt = 0;
-			foreach( WC()->cart->get_cart_contents() as $item_key => $item_value ) {
+			foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
 				if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
 					// Omwille van de icoontjes is niet alleen het leeggoed maar ook het product als breekbaar gemarkeerd!
 					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
@@ -2626,9 +2626,9 @@
 		// Stel een bestelminimum (en fictief -maximum) in
 		$min = 10;
 		$max = 10000;
-		if ( round( WC()->cart->get_total(), 2 ) < $min ) {
+		if ( WC()->cart->get_cart_subtotal() < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
-		} elseif ( round( WC()->cart->get_total(), 2 ) > $max ) {
+		} elseif ( WC()->cart->get_cart_subtotal() > $max ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
 		}
 	}
@@ -2795,15 +2795,15 @@
 
 	function reorder_cart_items( $cart ) {
 		// Niets doen bij leeg winkelmandje
-		if ( empty( $cart->get_cart_contents() ) ) {
+		if ( empty( $cart->cart_contents ) ) {
 			return;
 		}
 
-		$cart_sorted = $cart->get_cart_contents();
+		$cart_sorted = $cart->cart_contents;
 		$glass_items = array();
 		$plastic_items = array();
 
-		foreach ( $cart->get_cart_contents() as $cart_item_key => $cart_item ) {
+		foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
 			if ( $cart_item['data']->get_sku() === 'GIFT' ) {
 				// Sla het item van de cadeauverpakking op en verwijder het
 				$gift_item = $cart_item;
