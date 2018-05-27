@@ -139,7 +139,7 @@
 		$product = wc_get_product( $product_id );
 		
 		// Update de mapping tussen globale en lokale foto
-		switch_to_blog( 1 );
+		switch_to_blog(1);
 		// NA IMPORT BEVAT DE TITEL OP HET HOOFDNIVEAU DE OMSCHRIJVING VAN HET PRODUCT, DUS NIET OPZOEKEN VIA TITEL
 		$new_global_photo_id = attachment_url_to_postid( 'https://shop.oxfamwereldwinkels.be/wp-content/uploads/'.$sku.'.jpg' );
 		restore_current_blog();
@@ -265,6 +265,24 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		$cod_settings['instructions'] = 'Na de levering van de goederen bezorgen we je een factuur met het definitieve bedrag en de betaalinstructies.';
 		$cod_settings['enable_for_virtual'] = 'no';
 		update_option( 'woocommerce_cod_settings', $cod_settings );
+	}
+
+	// Instellingen van een WooCommerce-mail wijzigen (let op met overschrijvingen in subsites!)
+	switch_to_blog(1);
+	$mail_settings = get_option('woocommerce_new_order_settings');
+	restore_current_blog();
+	if ( is_array($mail_settings) ) {
+		$mail_settings['enabled'] = 'yes';
+		$mail_settings['recipient'] =  get_company_email();
+		$mail_settings['subject'] = 'Actie vereist: nieuwe online bestelling ({order_number}) – {order_date}';
+		$mail_settings['heading'] = 'Hoera, een nieuwe bestelling!';
+		update_option( 'woocommerce_new_order_settings', $mail_settings );
+		
+		$local_settings = get_option('woocommerce_new_order_settings');
+		write_log("BLOG ".get_current_blog_id().": ".$local_settings['recipient']);
+		write_log("BLOG ".get_current_blog_id().": ".$local_settings['subject']);
+		write_log("BLOG ".get_current_blog_id().": ".$local_settings['heading']);
+		unset($local_settings);
 	}
 
 	// Verzendzones wijzigen

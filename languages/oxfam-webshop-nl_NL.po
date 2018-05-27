@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2018-05-25 21:26+0200\n"
-"PO-Revision-Date: 2018-05-26 10:56+0200\n"
+"PO-Revision-Date: 2018-05-27 17:50+0200\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: nl_NL\n"
@@ -365,8 +365,8 @@ msgstr "Stel je wachtwoord in en bekijk je account"
 #: woocommerce/emails/customer-new-account.php:69
 msgid "Derde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
-"Als geverifieerde B2B-klant dien je nooit op voorhand te betalen. We "
-"bezorgen je achteraf een factuur voor de effectief geleverde goederen."
+"Als geverifieerde B2B-klant dien je niet op voorhand te betalen. We bezorgen "
+"je achteraf een factuur voor de effectief geleverde goederen."
 
 #: woocommerce/emails/customer-new-account.php:74
 #, php-format
