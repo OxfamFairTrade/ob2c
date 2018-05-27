@@ -3398,17 +3398,17 @@
 					
 					if ( $last_response->getCode() === 200 and count($oft_products) === 1 ) {
 						
+						// WC PHP API 2.0+
 						// Stop voedingswaarden in een array met als keys de namen van de eigenschappen
-						// VERVANG ALLE ARRAY KEYS DOOR PROPERTIES VOOR WC PHP API 2.0+ (bv. $oft_products[0]->meta_data)
-						foreach ( $oft_products[0]['meta_data'] as $meta_data ) {
-							if ( in_array( $meta_data['key'], $allowed_keys ) ) {
-								$oft_quality_data['food'][$meta_data['key']] = $meta_data['value'];
+						foreach ( $oft_products[0]->meta_data as $meta_data ) {
+							if ( in_array( $meta_data->key, $allowed_keys ) ) {
+								$oft_quality_data['food'][$meta_data->key] = $meta_data->value;
 							}
 						}
 
 						// Stop allergenen in een array met als keys de slugs van de allergenen
-						foreach ( $oft_products[0]['product_allergen'] as $product_allergen ) {
-							$oft_quality_data['allergen'][$product_allergen['slug']] = $product_allergen['name'];
+						foreach ( $oft_products[0]->product_allergen as $product_allergen ) {
+							$oft_quality_data['allergen'][$product_allergen->slug] = $product_allergen->name;
 						}
 
 						set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
