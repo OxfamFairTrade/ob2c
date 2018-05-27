@@ -1849,14 +1849,14 @@
 
 	// Zorg ervoor dat wijzigingen aan klanten in kortingsbonnen ook gesynct worden met die profielen
 	add_action( 'woocommerce_update_coupon', 'sync_reductions_with_users', 1, 10 );
-	add_action( 'threewp_broadcast_broadcasting_after_switch_to_blog', 'sync_reductions_with_users', 1, 5 );
+	add_action( 'threewp_broadcast_broadcasting_after_switch_to_blog', 'check_broadcast_data', 1, 5 );
 
 	function sync_reductions_with_users( $post_id ) {
 		write_log( get_post_meta( $post_id, 'exclude_product_ids', true ) );
 		write_log( "COUPON ".$post_id." WORDT BIJGEWERKT IN BLOG ".get_current_blog_id() );
 	}
 
-	function sync_reductions_with_users( $action ) {
+	function check_broadcast_data( $action ) {
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'Broadcast' );
 		$logger->debug( wc_print_r( $action, true ), $context );
