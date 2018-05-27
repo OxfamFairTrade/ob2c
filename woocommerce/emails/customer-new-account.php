@@ -28,7 +28,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 			} else {
 				$name = 'klant';
 			}
-			printf( __( 'Begroeting van de bedrijfsverantwoordelijke (%s)', 'oxfam-webshop' ), esc_html( $name ) );
+			echo 'Beste '.$name;
 		?>
 	</p>
 
@@ -92,6 +92,6 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <p><?php printf( __( 'Uitsmijter van het mailbericht bij nieuwe accounts.', 'oxfam-webshop' ) ); ?></p>
 
-<p><?php printf( __( 'Ondertekening van het mailbericht bij nieuwe accounts.', 'oxfam-webshop' ) ); ?></p>
+<p><?php printf( __( 'Ondertekening van mails met accountinfo.', 'oxfam-webshop' ) ); ?></p>
 
 <?php do_action( 'woocommerce_email_footer', $email );

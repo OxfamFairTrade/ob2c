@@ -1447,7 +1447,6 @@
 
 					// VERWIJZEN NAAR POSTPUNT
 					$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
-					write_log($service_point);
 					$service_point_info = explode ( '|', $service_point['extra'] );
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
 
@@ -2502,11 +2501,11 @@
 					// Toon de foutmelding slechts één keer
 					// if ( $msg !== 'SHOWN' ) {
 						if ( $glass_cnt > 0 and $plastic_cnt > 0 ) {
-							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%s grote fles', '%s grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap en '.sprintf( _n( '%s krat', '%s kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d grote fles', '%d grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap en '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
 						} elseif ( $glass_cnt > 0 ) {
-							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%s grote fles', '%s grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d grote fles', '%d grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
 						} elseif ( $plastic_cnt > 0 ) {
-							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%s krat', '%s kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Dit is te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verminder het aantal kleine flesjes fruitsap in je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Dit is te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verminder het aantal kleine flesjes fruitsap in je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
 						}
 						// wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $glass_cnt, $plastic_cnt ), 'error' );
 						WC()->session->set( 'no_home_delivery', 'SHOWN' );
@@ -3017,7 +3016,7 @@
 		$reset_password_path = get_stylesheet_directory() . '/woocommerce/emails/customer-reset-password.php';
 		$temporary_path = get_stylesheet_directory() . '/woocommerce/emails/temporary.php';
 		// Beter: check of $reset_password_path wel bestaat (= template werd overschreven)
-		// rename( $reset_password_path, $temporary_path );
+		rename( $reset_password_path, $temporary_path );
 		rename( $new_account_path, $reset_password_path );
 		$user = get_user_by( 'id', $_POST['customer_id'] );
 		if ( retrieve_password_for_customer( $user ) ) {
@@ -3027,7 +3026,7 @@
 			printf( 'Uitnodigen eigenaar van \'%s\' mislukt!', $user->user_login );
 		}
 		rename( $reset_password_path, $new_account_path );
-		// rename( $temporary_path, $reset_password_path );
+		rename( $temporary_path, $reset_password_path );
 		wp_die();
 	}
 

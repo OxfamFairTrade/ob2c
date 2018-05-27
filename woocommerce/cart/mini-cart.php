@@ -147,11 +147,13 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                     } 
                 }
                
-                if ( WC()->cart->get_total_discount() > 0 ) {
+                if ( floatval( WC()->cart->discount_cart ) > 0 ) {
+                // Vanaf WC 3.2+ gebruiken
+                // if ( WC()->cart->get_discount_total() ) > 0 ) {
                     if ( $empties ) {
-                        echo 'Subtotaal (incl. leeggoed en korting):';
+                        echo 'Subtotaal (incl. leeggoed, excl. korting):';
                     } else {
-                        echo 'Subtotaal (incl. korting):';
+                        echo 'Subtotaal (excl. korting):';
                     }
                 } else {
                     if ( $empties ) {
@@ -160,6 +162,8 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                         echo 'Subtotaal:';
                     }
                 }
+                // write_log( wc_print_r( WC()->cart, true ) );
+                // echo '<br/>Shipping total: '.WC()->cart->shipping_total;
             ?></strong>
             <span class="nm-cart-panel-summary-subtotal">
                 <?php echo WC()->cart->get_cart_subtotal(); ?>

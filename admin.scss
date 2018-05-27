@@ -1,10 +1,10 @@
 /*!
-	Theme Name:   	Oxfam-Wereldwinkels Admin
-	Author:       	Frederik Neirynck
-	Author URI:		http://www.oxfamfairtrade.be
-	Description:  	Toevoegingen voor custom Oxfam-pagina's in de back-end.
-	Version:      	1.2.0
-	Text Domain:  	oxfam-admin
+	Theme Name:		Oxfam-Wereldwinkels Admin
+	Author:			Frederik Neirynck
+	Author URI:		https://www.oxfamfairtrade.be
+	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
+	Version:		1.2.1
+	Text Domain:	oxfam-admin
 */
 
 #woocommerce_dashboard_status .wc_status_list li.claimed-orders a::before {
@@ -129,17 +129,12 @@
 
 /* Dirty fix om 'Bestelling toevoegen' te verbergen NOG NODIG? */
 body.post-type-shop_order div.wrap > a.page-title-action {
-	display: none;
+	// display: none;
 }
 
 /* Actieknop 'In behandeling' bij onbetaalde bestellingen verbergen */
 body.post-type-shop_order td.column-order_actions a.button.tips.processing {
 	display: none;
-}
-
-/* Verberg link naar het volledige Jetpack-dashboard (vereist login die beheerders toch niet hebben) */
-div.gotonewdash {
-	display: none !important;
 }
 
 /* Verberg onnodige knoppen bij terugbetalingen (wordt ook nog gefixt in core) */
@@ -152,8 +147,18 @@ button.do-manual-refund,
 	display: none !important;
 }
 
+/* Verberg link naar het volledige Jetpack-dashboard (vereist login die beheerders toch niet hebben) */
+div.gotonewdash {
+	// display: none !important;
+}
+
 /* Verberg Jetpack-notificaties rechtsboven */
 li#wp-admin-bar-notes {
+	// display: none;
+}
+
+/* Meldingen van framework voor WP Mail Log verbergen*/
+div.redux-notice {
 	display: none;
 }
 
