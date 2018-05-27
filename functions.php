@@ -1848,8 +1848,9 @@
 	}
 
 	// Zorg ervoor dat wijzigingen aan klanten in kortingsbonnen ook gesynct worden met die profielen
-	add_action( 'woocommerce_update_coupon', 'sync_reductions_with_users', 1, 10 );
-	add_action( 'threewp_broadcast_broadcasting_after_switch_to_blog', 'check_broadcast_data', 1, 5 );
+	// add_action( 'woocommerce_update_coupon', 'sync_reductions_with_users', 10, 1 );
+	// GEVAARLIJK, LOGS LOPEN VOL
+	// add_action( 'threewp_broadcast_broadcasting_after_switch_to_blog', 'check_broadcast_data', 5 );
 
 	function sync_reductions_with_users( $post_id ) {
 		write_log( get_post_meta( $post_id, 'exclude_product_ids', true ) );
@@ -3385,28 +3386,29 @@
 						'query_string_auth' => true,
 					]
 				);
-				// Trash kan niet doorzocht worden maar eenmaal we de ID hebben kunnen we het product wel nog opvragen!
-				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), );
+				// Trash kan niet doorzocht worden op SKU
+				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), 'lang' => 'nl' );
+				// Maar eenmaal we de ID hebben kunnen we het als fallback wel nog op die manier opvragen!
+				// $oft_product = $oft_db->get( 'products/'.$product->get_meta('oft_product_id') );
 				
 				try {
 					$oft_products = $oft_db->get( 'products', $params );
-					// $oft_product = $oft_db->get( 'products/'.$product->get_meta('oft_product_id') );
 					$last_response = $oft_db->http->getResponse();
-
 					$allowed_keys = array( '_ingredients', '_energy', '_fat', '_fasat', '_famscis', '_fapucis', '_fibtg', '_choavl', '_sugar', '_polyl', '_starch', '_salteq' );
 					
 					if ( $last_response->getCode() === 200 and count($oft_products) === 1 ) {
 						
 						// Stop voedingswaarden in een array met als keys de namen van de eigenschappen
-						foreach ( $oft_products[0]->meta_data as $meta_data ) {
-							if ( in_array( $meta_data->key, $allowed_keys ) ) {
-								$oft_quality_data['food'][$meta_data->key] = $meta_data->value;
+						// VERVANG ALLE ARRAY KEYS DOOR PROPERTIES VOOR WC PHP API 2.0+ (bv. $oft_products[0]->meta_data)
+						foreach ( $oft_products[0]['meta_data'] as $meta_data ) {
+							if ( in_array( $meta_data['key'], $allowed_keys ) ) {
+								$oft_quality_data['food'][$meta_data['key']] = $meta_data['value'];
 							}
 						}
 
 						// Stop allergenen in een array met als keys de slugs van de allergenen
-						foreach ( $oft_products[0]->product_allergen as $product_allergen ) {
-							$oft_quality_data['allergen'][$product_allergen->slug] = $product_allergen->name;
+						foreach ( $oft_products[0]['product_allergen'] as $product_allergen ) {
+							$oft_quality_data['allergen'][$product_allergen['slug']] = $product_allergen['name'];
 						}
 
 						set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
