@@ -797,7 +797,6 @@
 	
 	function cart_update_qty_script() {
 		if ( is_cart() ) {
-			global $woocommerce;
 			?>
 				<script>
 					var wto;
@@ -1148,7 +1147,7 @@
 			$value = 'no';
 		}
 		// Extra velden met 'billing'-prefix worden al automatisch opgeslagen (maar niet getoond)
-		update_post_meta( $order_id, 'b2b_sale', $value );
+		update_post_meta( $order_id, 'is_b2b_sale', $value );
 	}
 
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
@@ -1386,8 +1385,8 @@
 			$shipping_methods = $order->get_shipping_methods();
 			$shipping_method = reset($shipping_methods);
 			$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
-			// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING!
-			// $delivery_timestamp = $order->get_meta('estimated_delivery');
+			// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING???
+			write_log( "ESTIMATED DELIVERY VIA ORDER->GET_META: ".$order->get_meta('estimated_delivery') );
 			
 			// Bestelgegevens invullen
 			$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
@@ -1414,6 +1413,18 @@
 				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
 				$i++;
 			}
+
+			// KORTINGEN VERMELDEN IS LASTIG: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
+			foreach ( $order->get_used_coupons() as $coupon_name ) {
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTING:' )->setCellValue( 'B'.$i, mb_strtoupper($coupon_name) );
+				$i++;
+			}
+
+			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
+				// DOE IETS MET DE BTW
+				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
+				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
+			} 
 
 			switch ( $shipping_method['method_id'] ) {
 				case stristr( $shipping_method['method_id'], 'flat_rate' ):
@@ -1475,21 +1486,25 @@
 			// Selecteer het totaalbedrag
 			$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
 
-			$folder = generate_pseudo_random_string();
-			mkdir( WP_CONTENT_DIR.'/uploads/xlsx/'.$folder, 0755 );
-			$filename = $folder.'/'.$order_number.'.xlsx';
+			// Check of we een nieuwe file maken of een bestaande overschrijven
+			$filename = $order->get_meta('_excel_file_name');
+			if ( $filename === false ) {
+				$folder = generate_pseudo_random_string();
+				mkdir( WP_CONTENT_DIR.'/uploads/xlsx/'.$folder, 0755 );
+				$filename = $folder.'/'.$order_number.'.xlsx';
+				
+				// Bewaar de locatie van de file (random file!) als metadata
+				$order->add_meta_data( '_excel_file_name', $filename, true );
+				$order->save_meta_data();
+			}
+
 			$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
 			$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
 			
+			// Bijlage enkel meesturen in 'new_order'-mail aan admin
 			if ( $status === 'new_order' ) {
-				// Niet meesturen in terugbetaalmail aan klant
 				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
 			}
-			
-			// Bewaar de locatie van de file (random file!) als metadata
-			$order->add_meta_data( '_excel_file_name', $filename, true );
-			$order->save_meta_data();
-
 		}
 
 		return $attachments;
@@ -2430,10 +2445,8 @@
 	add_filter( 'woocommerce_package_rates', 'hide_shipping_recalculate_taxes', 10, 2 );
 	
 	function hide_shipping_recalculate_taxes( $rates, $package ) {
-		global $woocommerce;
-		
 		if ( ! is_b2b_customer() ) {
-			validate_zip_code( intval( $woocommerce->customer->get_shipping_postcode() ) );
+			validate_zip_code( intval( WC()->customer->get_shipping_postcode() ) );
 
 			$shipping_zones = WC_Shipping_Zones::get_zones();
 			foreach ( $shipping_zones as $shipping_zone ) {
@@ -2535,7 +2548,7 @@
 			$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
 			$standard_vat_rate = reset( $standard_vat_rates );
 			
-			$tax_classes = $woocommerce->cart->get_cart_item_tax_classes();
+			$tax_classes = WC()->cart->get_cart_item_tax_classes();
 			if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
 				// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
 				$cost = 5.7438;
@@ -2626,7 +2639,7 @@
 		$min = 10;
 		$max = 10000;
 		// WC()->cart->get_cart_subtotal() geeft het subtotaal vòòr korting, verzending en (indien B2B) BTW
-		// WC()->cart->cart_contents_total geeft het subtotaal vòor BTW maar nà korting en verzending
+		// WC()->cart->cart_contents_total geeft het subtotaal vòor BTW en verzending maar nà korting
 		if ( floatval( WC()->cart->cart_contents_total ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
 		} elseif ( floatval( WC()->cart->cart_contents_total ) > $max ) {

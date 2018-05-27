@@ -127,9 +127,9 @@
 	max-width: 400px;
 }
 
-/* Dirty fix om 'Bestelling toevoegen' te verbergen NOG NODIG? */
+/* Handmatige knop 'Bestelling toevoegen' verbergen op overzichtsscherm (ondanks beperkte rechten) */
 body.post-type-shop_order div.wrap > a.page-title-action {
-	// display: none;
+	display: none;
 }
 
 /* Actieknop 'In behandeling' bij onbetaalde bestellingen verbergen */
@@ -137,24 +137,28 @@ body.post-type-shop_order td.column-order_actions a.button.tips.processing {
 	display: none;
 }
 
-/* Verberg onnodige knoppen bij terugbetalingen (wordt ook nog gefixt in core) */
+/* Verberg onnodige knoppen bij terugbetalingen */
 div.wc-order-item-bulk-edit,
 /* button.bulk-delete-items,
 button.bulk-decrease-stock,
 button.bulk-increase-stock, */
-button.do-manual-refund,
 [data-plugin-id="order_status_manager"] {
+	display: none !important;
+}
+
+/* Kan verbeterd worden m.b.v. wijziging in woocommerce/includes/admin/meta-boxes/views/html-order-items.php (= enkel getoond indien betaalmethode niet API-refundable) */
+button.do-manual-refund {
 	display: none !important;
 }
 
 /* Verberg link naar het volledige Jetpack-dashboard (vereist login die beheerders toch niet hebben) */
 div.gotonewdash {
-	// display: none !important;
+	display: none !important;
 }
 
 /* Verberg Jetpack-notificaties rechtsboven */
 li#wp-admin-bar-notes {
-	// display: none;
+	display: none;
 }
 
 /* Meldingen van framework voor WP Mail Log verbergen*/
