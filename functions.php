@@ -1905,11 +1905,11 @@
 	}
 
 	function add_ex_tax_label_price( $price, $cart_item, $cart_item_key ) {
-		return $price.' excl. BTW';
+		return $price.' <small class="woocommerce-price-suffix">excl. BTW</small>';
 	}
 
 	function remove_ex_tax_label_subtotals() {
-		return '';
+		return 'excl. BTW';
 	}
 
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
