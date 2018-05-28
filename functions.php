@@ -1417,23 +1417,25 @@
 				$i++;
 			}
 
-			// KORTINGEN VERMELDEN IS LASTIG: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
+			// Exacte kortingsbedrag vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
 			foreach ( $order->get_used_coupons() as $coupon_name ) {
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTING:' )->setCellValue( 'B'.$i, mb_strtoupper($coupon_name) );
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTING' )->setCellValue( 'B'.$i, mb_strtoupper($coupon_name) )->setCellValue( 'F'.$i, 'BEDRAG TE BEPALEN' );
 				$i++;
 			}
 
 			// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING???
 			write_log( "ESTIMATED DELIVERY VIA ORDER->GET_META: ".$order->get_meta('estimated_delivery') );
+			write_log( "ESTIMATED DELIVERY VIA GET_POST_META: ".get_post_meta( $order->get_id(), 'estimated_delivery', true ) );
 			write_log( "IS B2B SALE VIA ORDER->GET_META: ".$order->get_meta('is_b2b_sale') );
+			write_log( "IS B2B SALE VIA GET_POST_META: ".get_post_meta( $order->get_id(), 'is_b2b_sale', true ) );
 			
 			if ( $order->get_meta('is_b2b_sale') === 'no' ) {
 				// Haal geschatte leverdatum op
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 			} else {
-				// Switch naar BTW exclusief
-				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
-				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
+				// Switch naar excl. BTW ENKEL DOEN INDIEN WE OOK DE LINE ITEMS SWITCHEN NAAR EXCLUSIEF BTW
+				// $label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
+				// $objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
 			} 
 
 			switch ( $shipping_method['method_id'] ) {
@@ -1497,6 +1499,7 @@
 			$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
 
 			write_log( "EXCEL FILE NAME VIA ORDER->GET_META: ".$order->get_meta('_excel_file_name') );
+			write_log( "EXCEL FILE NAME VIA GET_POST_META: ".get_post_meta( $order->get_id(), '_excel_file_name', true ) );
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
 			$filename = $order->get_meta('_excel_file_name');
