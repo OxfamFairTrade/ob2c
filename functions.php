@@ -1904,9 +1904,10 @@
 		// Vervang alle prijssuffixen
 		add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
 
-		// Voeg '(excl. BTW)' toe bij stukprijzen in winkelmandje
+		// Voeg 'excl. BTW' toe bij stukprijzen in winkelmandje en 
 		add_filter( 'woocommerce_cart_item_price', 'add_ex_tax_label_price', 10, 3 );
 		add_filter( 'woocommerce_cart_subtotal', 'add_ex_tax_label_price', 10, 3 );
+		add_filter( 'woocommerce_order_formatted_line_subtotal', 'add_ex_tax_label_price', 10, 3 );
 
 		// Verwijder '(excl. BTW)' bij subtotalen
 		// add_filter( 'wc_price_args', 'remove_ex_tax_label' );
