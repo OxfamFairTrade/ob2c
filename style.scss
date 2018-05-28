@@ -482,14 +482,17 @@ tr.shipping .woocommerce-Price-amount {
 	}
 
 	/* Bestelstatus met uitleg */
+	mark.order-number,
+	mark.order-date,
 	mark.order-status {
-		background-color: $see-through-green;
+		background-color: $light-grey;
 		padding: 3px;
 	}
 
 	/* Nieuwe prijs na terugbetaling */
 	ins {
 		background-color: $light-grey;
+		padding: 3px;
 	}
 }
 
@@ -506,6 +509,7 @@ tr.shipping .woocommerce-Price-amount {
 	}
 
 	small.ingredients {
+		display: block;
 		text-align: right;
 	}
 }
