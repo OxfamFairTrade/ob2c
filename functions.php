@@ -4,6 +4,12 @@
 
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
+
+	add_filter( 'woocommerce_order_number', 'remove_hashtag_before_order_number', 1000 );
+
+	function remove_hashtag_before_order_number( $order_number ) {
+		return str_replace( '#', '', $order_number );
+	}
 	
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
@@ -84,7 +90,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.9' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.10' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
