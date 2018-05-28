@@ -1137,32 +1137,7 @@
 		return $fields;
 	}
 
-	// Registreer of het een B2B-verkoop is of niet
-	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_fields_on_order' );
-
-	function save_b2b_fields_on_order( $order_id ) {
-		if ( is_b2b_customer() ) {
-			$value = 'yes';
-		} else {
-			$value = 'no';
-		}
-		// Extra velden met 'billing'-prefix worden al automatisch opgeslagen (maar niet getoond)
-		update_post_meta( $order_id, 'is_b2b_sale', $value );
-	}
-
-	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
-	add_action( 'woocommerce_order_status_pending_to_processing', 'save_estimated_delivery' );
-
-	function save_estimated_delivery( $order_id ) {
-		$order = wc_get_order($order_id);
-		$shipping = $order->get_shipping_methods();
-		$shipping = reset($shipping);
-		$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
-		$order->add_meta_data( 'estimated_delivery', $timestamp, true );
-		$order->save_meta_data();
-	}
-
-	// Valideer en formatteer het geboortedatumveld
+	// Valideer en formatteer VOOR UITCHECKEN het geboortedatumveld
 	add_action( 'woocommerce_checkout_process', 'verify_age' );
 
 	function verify_age() {
@@ -1181,6 +1156,37 @@
 		// Ook checken op billing_address_1 want indien verzendadres niet afwijkt is dit het enige veld dat op dit ogenblik in $_POST voorkomt 
 		if ( ( isset($_POST['billing_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['billing_address_1'] ) === 0 ) or ( isset($_POST['shipping_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['shipping_address_1'] ) === 0 ) ) {
 			wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+		}
+	}
+
+	// Registreer bij NA UITCHECKEN of het een B2B-verkoop is of niet
+	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_fields_on_order' );
+
+	function save_b2b_fields_on_order( $order_id ) {
+		if ( is_b2b_customer() ) {
+			$value = 'yes';
+			// Extra velden met 'billing'-prefix worden automatisch opgeslagen (maar niet getoond), geen actie nodig
+		} else {
+			$value = 'no';
+		}
+		update_post_meta( $order_id, 'is_b2b_sale', $value );
+		write_log("SAVED IS_B2B_SALE IN woocommerce_checkout_update_order_meta");
+	}
+
+	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
+	add_action( 'woocommerce_order_status_pending_to_processing', 'save_estimated_delivery' );
+
+	function save_estimated_delivery( $order_id ) {
+		$order = wc_get_order($order_id);
+		$shipping = $order->get_shipping_methods();
+		$shipping = reset($shipping);
+
+		// Of $order->get_meta('is_b2b_sale') gebruiken indien reeds beschikbaar?
+		if ( ! is_b2b_customer() ) {
+			$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
+			$order->add_meta_data( 'estimated_delivery', $timestamp, true );
+			$order->save_meta_data();
+			write_log("SAVED ESTIMATED_DELIVERY IN woocommerce_order_status_pending_to_processing");
 		}
 	}
 
@@ -1381,12 +1387,9 @@
 			$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
 			$objPHPExcel->setActiveSheetIndex(0);
 
-			// Sla de leverdatum op
+			// Sla de levermethode op
 			$shipping_methods = $order->get_shipping_methods();
 			$shipping_method = reset($shipping_methods);
-			$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
-			// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING???
-			write_log( "ESTIMATED DELIVERY VIA ORDER->GET_META: ".$order->get_meta('estimated_delivery') );
 			
 			// Bestelgegevens invullen
 			$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
@@ -1420,8 +1423,15 @@
 				$i++;
 			}
 
-			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
-				// DOE IETS MET DE BTW
+			// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING???
+			write_log( "ESTIMATED DELIVERY VIA ORDER->GET_META: ".$order->get_meta('estimated_delivery') );
+			write_log( "IS B2B SALE VIA ORDER->GET_META: ".$order->get_meta('is_b2b_sale') );
+			
+			if ( $order->get_meta('is_b2b_sale') === 'no' ) {
+				// Haal geschatte leverdatum op
+				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
+			} else {
+				// Switch naar BTW exclusief
 				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
 				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
 			} 
