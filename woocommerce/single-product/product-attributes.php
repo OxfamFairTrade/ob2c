@@ -16,8 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <table class="shop_attributes">
 	<?php
-	// Sluit bepaalde zichtbare taxonomiëen toch nog uit (flexibeler!)
-	$forbidden_attributes = array( 'pa_eenheid', 'pa_ompak', 'pa_shopplus' );
+	// Sluit bepaalde zichtbare taxonomiëen toch nog uit
+	$forbidden_attributes = array( 'pa_eenheid', 'pa_shopplus' );
 	foreach ( $forbidden_attributes as $name ) {
 		if ( array_key_exists( $name, $attributes ) ) {
 			unset( $attributes[$name] );

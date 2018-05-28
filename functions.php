@@ -409,8 +409,8 @@
 		if ( $column === 'estimated_delivery' ) {
 			$processing_statusses = array( 'processing', 'claimed' );
 			$completed_statusses = array( 'completed' );
-			if ( $the_order->get_meta( 'estimated_delivery', true ) ) {
-				$delivery = date( 'Y-m-d H:i:s', $the_order->get_meta( 'estimated_delivery', true ) );
+			if ( $the_order->get_meta('estimated_delivery') ) {
+				$delivery = date( 'Y-m-d H:i:s', $the_order->get_meta('estimated_delivery') );
 				if ( in_array( $the_order->get_status(), $processing_statusses ) ) {
 					if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
 						$color = 'red';
@@ -431,13 +431,15 @@
 			} else {
 				if ( $the_order->get_status() === 'cancelled' ) {
 					echo '<i>geannuleerd</i>';
+				} elseif ( $the_order->get_meta('is_b2b_sale') === 'yes' ) {
+					echo '<i>B2B-bestelling</i>';
 				} else {
 					echo '<i>niet beschikbaar</i>';
 				}
 			}
 		} elseif ( $column === 'excel_file_name' ) {
-			if ( strpos( $the_order->get_meta( '_excel_file_name', true ), '.xlsx' ) > 10 ) {
-				$file = content_url( '/uploads/xlsx/'.$the_order->get_meta( '_excel_file_name', true ) );
+			if ( strpos( $the_order->get_meta('_excel_file_name'), '.xlsx' ) > 10 ) {
+				$file = content_url( '/uploads/xlsx/'.$the_order->get_meta('_excel_file_name') );
 				echo '<a href="'.$file.'" target="_blank">Download</a>';
 			} else {
 				echo '<i>niet beschikbaar</i>';
@@ -3741,12 +3743,12 @@
 	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 12 );
 	
 	// Herkomstlanden tonen, net boven de winkelmandknop
-	add_action( 'woocommerce_single_product_summary', 'show_herkomst', 14 );
+	add_action( 'woocommerce_single_product_summary', 'show_product_origin', 14 );
 
-	function show_herkomst() {
+	function show_product_origin() {
 		global $product;
 		echo '<p class="herkomst">';
-		echo 'Herkomst: '.$product->get_meta( '_herkomst_nl', true );
+		echo 'Herkomst: '.$product->get_meta( '_herkomst_nl');
 		echo '</p>';
 	}
 
@@ -3787,7 +3789,7 @@
 		$energy_attributes = array( 'pa_ener' );
 
 		global $product;
-		$eh = $product->get_attribute( 'pa_eenheid' );
+		$eh = $product->get_attribute('pa_eenheid');
 		if ( $eh === 'L' ) {
 			$suffix = 'liter';
 		} elseif ( $eh === 'KG' ) {
@@ -3827,18 +3829,20 @@
 		$ignored_fields[] = '_wc_rating_count';
 		$ignored_fields[] = '_wc_average_rating';
 		$ignored_fields[] = '_barcode';
+		$ignored_fields[] = '_in_bestelweb';
+
+		// TE VERWIJDEREN VELDEN
 		$ignored_fields[] = 'title_fr';
 		$ignored_fields[] = 'description_fr';
 		$ignored_fields[] = '_herkomst_fr';
 		$ignored_fields[] = 'title_en';
 		$ignored_fields[] = 'description_en';
 		$ignored_fields[] = '_herkomst_en';
-		$ignored_fields[] = '_barcode';
-		$ignored_fields[] = '_in_bestelweb';
 		$ignored_fields[] = 'pal_aantallagen';
 		$ignored_fields[] = 'pal_aantalperlaag';
 		$ignored_fields[] = 'steh_ean';
 		$ignored_fields[] = 'intrastat';
+
 		return $ignored_fields;
 	}
 
@@ -4116,7 +4120,7 @@
 				echo '<p>Allergenen worden vanaf nu live opgehaald uit de centrale OFT-database. Hierdoor zullen deze gegevens veel sneller beschikbaar zijn voor nieuwe producten en kunnen eventuele fouten op een uniforme en betrouwbare manier gecorrigeerd worden. Bovendien kunnen we nu ook de gedetailleerde ingrediëntenlijst weergeven.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-info">';
-				echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd definitief opgelost. Meer info <a href="https://github.com/OxfamFairTrade/ob2c/wiki/6.-Klantenservice#hoe-springen-we-om-met-leeggoed" target="_blank">in deze bijgewerkte FAQ</a>. Gelieve ons te contacteren indien je toch nog foutjes zou opmerken. Let op: om het winkelen overzichtelijker te maken wordt het leeggoed niet langer getoond in het winkelmandje in de zijbalk. Het daar getoonde subtotaal vermeldt daarentegen nu wél expliciet \'incl. leeggoed\' en \'excl. korting\' (indien van toepassing).</p>';
+				echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd definitief opgelost. Meer info <a href="https://github.com/OxfamFairTrade/ob2c/wiki/6.-Klantenservice#hoe-springen-we-om-met-leeggoed" target="_blank">in deze bijgewerkte FAQ</a>. Let wel: mixes van producten in kratten zijn technisch niet mogelijk.</p><p>Gelieve ons te contacteren indien je toch nog foutjes zou opmerken. Opgelet: om het winkelen overzichtelijker te maken wordt het leeggoed niet langer getoond in het winkelmandje in de zijbalk. Het daar getoonde subtotaal vermeldt daarentegen nu wél expliciet \'incl. leeggoed\' en/of \'excl. korting\' (indien van toepassing).</p>';
 				// echo '<p>Onder de knop \'WP Mail Log\' kun je vanaf nu alle mails bekijken die de afgelopen 2 weken verstuurd worden door je webshop. Zo kunnen jullie beter controleren welke communicatie er precies vertrok naar de klanten. Zoals gewoonlijk belanden eventuele foutmeldingen over onbezorgbare mails (bv. omdat de klant een typfout maakte in zijn mailadres) in de mailbox van de lokale webshop.</p>';
 			echo '</div>';
 			if ( does_home_delivery() ) {
