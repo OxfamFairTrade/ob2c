@@ -1612,8 +1612,10 @@ class WC_Shipping_Local_Pickup_Plus extends WC_Shipping_Method {
 			echo '</address>';
 
 			if ( isset( $pickup_location['note'] ) && $pickup_location['note'] ) {
-				// GEWIJZIGD: Zorg ervoor dat de openingsuren in de shortcode uitgeschreven worden
-				echo '<div>' . do_shortcode($pickup_location['note']) . '</div>';
+				// GEWIJZIGD: Voeg titel toe
+				echo '<header class="title"><h3>Openingsuren</h3></header>';
+				// GEWIJZIGD: Zorg ervoor dat dezelfde styling toegepast wordt én dat de openingsuren in de shortcode uitgeschreven worden
+				echo '<address><p>' . do_shortcode($pickup_location['note']) . '</p></address>';
 			}
 		}
 
