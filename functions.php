@@ -1878,26 +1878,38 @@
 		write_log( "GESWITCHED NAAR BLOG ".get_current_blog_id() );
 	}
 
-	// Geen BTW tonen bij producten en in het winkelmandje
-	add_filter( 'pre_option_woocommerce_tax_display_shop', 'override_tax_display_setting' );
-	add_filter( 'pre_option_woocommerce_tax_display_cart', 'override_tax_display_setting' );
+	// Vanaf wanneer geeft deze functie een zinnig antwoord?
+	if ( is_b2b_customer() ) {
+		// Geen BTW tonen bij producten en in het winkelmandje
+		add_filter( 'pre_option_woocommerce_tax_display_shop', 'override_tax_display_setting' );
+		add_filter( 'pre_option_woocommerce_tax_display_cart', 'override_tax_display_setting' );
 
-	function override_tax_display_setting() {
-		if ( is_b2b_customer() ) {
-			return 'excl';
-		} else {
-			return 'incl';
-		}
+		// Vervang alle prijssuffixen
+		add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
+
+		// Voeg '(excl. BTW)' toe bij stukprijzen in winkelmandje
+		add_filter( 'woocommerce_cart_item_price', 'add_ex_tax_label_price' );
+
+		// Verwijder '(excl. BTW)' bij subtotalen
+		// add_filter( 'wc_price_args', 'remove_ex_tax_label' );
+		add_filter( 'woocommerce_countries_ex_tax_or_vat', 'remove_ex_tax_label_subtotals' );
+		
 	}
 
-	// Vervang alle prijssuffixen
-	add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
+	function override_tax_display_setting() {
+		return 'excl';
+	}
 
 	function b2b_price_suffix( $suffix, $product ) {
-		if ( is_b2b_customer() ) {
-			$suffix = str_replace( '(incl)', 'excl', $suffix );
-		}
-		return $suffix;
+		return str_replace( 'incl', 'excl', $suffix );
+	}
+
+	function add_ex_tax_label_price() {
+		return 'excl. BTW';
+	}
+
+	function remove_ex_tax_label() {
+		return '';
 	}
 
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
