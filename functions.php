@@ -1888,7 +1888,7 @@
 		add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
 
 		// Voeg '(excl. BTW)' toe bij stukprijzen in winkelmandje
-		add_filter( 'woocommerce_cart_item_price', 'add_ex_tax_label_price' );
+		add_filter( 'woocommerce_cart_item_price', 'add_ex_tax_label_price', 10, 3 );
 
 		// Verwijder '(excl. BTW)' bij subtotalen
 		// add_filter( 'wc_price_args', 'remove_ex_tax_label' );
@@ -1904,11 +1904,11 @@
 		return str_replace( 'incl', 'excl', $suffix );
 	}
 
-	function add_ex_tax_label_price() {
-		return 'excl. BTW';
+	function add_ex_tax_label_price( $price, $cart_item, $cart_item_key ) {
+		return $price.' excl. BTW';
 	}
 
-	function remove_ex_tax_label() {
+	function remove_ex_tax_label_subtotals() {
 		return '';
 	}
 
