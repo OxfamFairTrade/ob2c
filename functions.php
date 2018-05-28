@@ -1889,6 +1889,7 @@
 
 		// Voeg '(excl. BTW)' toe bij stukprijzen in winkelmandje
 		add_filter( 'woocommerce_cart_item_price', 'add_ex_tax_label_price', 10, 3 );
+		add_filter( 'woocommerce_cart_subtotal', 'add_ex_tax_label_price', 10, 3 );
 
 		// Verwijder '(excl. BTW)' bij subtotalen
 		// add_filter( 'wc_price_args', 'remove_ex_tax_label' );
@@ -1909,7 +1910,7 @@
 	}
 
 	function remove_ex_tax_label_subtotals() {
-		return 'excl. BTW';
+		return '';
 	}
 
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN

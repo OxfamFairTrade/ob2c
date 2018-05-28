@@ -25,19 +25,20 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$method = reset($methods);
 	$pickup_location = $method->get_meta('pickup_location');
 	
-	$delivery = get_post_meta( $order->get_id(), 'estimated_delivery', true );
+	if ( $order->get_meta('is_b2b_sale') === 'no' ) {
+		$delivery = $order->get_meta('estimated_delivery');
+		// We gaan ervan uit dat deze waarde altijd bestaat maar toch even loggen bij calamiteiten
+		if ( $delivery === false ) {
+			write_log("AFHAALMAIL VERSTUURD TERWIJL TIJDSSCHATTING ONTBREEKT");
+		}
 
-	// We gaan ervan uit dat deze waarde altijd bestaat maar toch even loggen bij calamiteiten
-	if ( $delivery === false ) {
-		write_log("AFHAALMAIL VERSTUURD TERWIJL TIJDSSCHATTING ONTBREEKT");
+		echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling), inclusief afhaallocatie (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ), $pickup_location['shipping_company'], date_i18n( 'l d/m', $delivery ), date_i18n( 'G\ui', $delivery ) ) . '</p>';
+	} else {
+		echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail van een B2B-bestelling (indien afhaling), inclusief afhaallocatie (%s).', 'oxfam-webshop' ), $pickup_location['shipping_company'] ) . '</p>';
 	}
-	
-	echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling in de winkel), inclusief afhaalwinkel (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ), $pickup_location['shipping_company'], date_i18n( 'l d/m', $delivery ), date_i18n( 'G\ui', $delivery ) ) . '</p>';
 } else {
 	echo '<p>' . __( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ) . '</p>';
 }
-
-echo '<p>&nbsp;</p>';
 
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.

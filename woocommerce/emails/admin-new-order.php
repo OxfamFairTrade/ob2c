@@ -25,6 +25,10 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>Vergeet de bestelling in de webshop niet als \'Afgerond\' te markeren van zodra het pakje samengesteld is. Pas dan ontvangt de klant een tweede mail waarin hij/zij op de hoogte gebracht wordt dat de bestelling klaarstaat voor afhaling in de winkel.</p>';
 }
 
+if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
+	echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een B2B-bestelling die nog niet betaald werd! Je zult geen bedrag ontvangen via Mollie. Stel een factuur op voor de effectief geleverde goederen en volg zelf de betaling op.</p>';
+}
+
 $tax_classes = $order->get_items_tax_classes();
 if ( in_array( 'voeding', $tax_classes ) === false and $order->get_shipping_total() > 0 ) {
 	echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. Als winkel hou je aan deze thuislevering netto 5,74 i.p.v. 6,56 euro over.</p>';
