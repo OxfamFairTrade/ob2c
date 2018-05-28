@@ -1496,9 +1496,11 @@
 			// Selecteer het totaalbedrag
 			$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
 
+			write_log( "EXCEL FILE NAME VIA ORDER->GET_META: ".$order->get_meta('_excel_file_name') );
+
 			// Check of we een nieuwe file maken of een bestaande overschrijven
 			$filename = $order->get_meta('_excel_file_name');
-			if ( $filename === false ) {
+			if ( $filename === false or strlen($filename) < 10 ) {
 				$folder = generate_pseudo_random_string();
 				mkdir( WP_CONTENT_DIR.'/uploads/xlsx/'.$folder, 0755 );
 				$filename = $folder.'/'.$order_number.'.xlsx';
