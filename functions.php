@@ -84,7 +84,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.11' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.12' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -3531,7 +3531,7 @@
 
 					foreach ( $food_api_labels as $food_key => $food_label ) {
 						// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er expliciet een (nul)waarde ingesteld is
-						if ( in_array( $meta_key, $food_required_keys ) or array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
+						if ( in_array( $food_key, $food_required_keys ) or array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
 							$food_value = '';
 							if ( array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
 								// Vul de waarde in uit de database
@@ -3548,7 +3548,13 @@
 							?>
 							<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 								<th class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php echo $food_label; ?></th>
-								<td class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php echo $food_value; ?> g</td>
+								<td class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php
+									if ( $food_key === '_energy' ) {
+										echo $food_value.' kJ';
+									} else {
+										echo $food_value.' g';
+									}
+								?></td>
 							</tr>
 							<?php
 						}
@@ -3569,7 +3575,7 @@
 							<td><?php 
 								echo $ingredients;
 								if ( get_ingredients_legend($ingredients) ) {
-									echo '<br/>'.implode( '<br/>', get_ingredients_legend($ingredients) );
+									echo '<small class="ingredients">'.implode( '<br/>', get_ingredients_legend($ingredients) ).'</small>';
 								}
 							?></td>
 						</tr>
