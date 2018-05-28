@@ -1790,7 +1790,8 @@
 			if ( isset($_POST[$name]) ) {
 				$_POST[$name] = trim_and_uppercase($_POST[$name]);
 				if ( $name === 'billing_company' ) {
-					update_user_meta( $user_id, $name, $_POST[$name] );
+					// ZOU AUTOMATISCH MOETEN GAAN
+					// update_user_meta( $user_id, $name, $_POST[$name] );
 				}
 			}
 		}
@@ -1805,8 +1806,9 @@
 			$_POST['billing_phone'] = format_telephone($_POST['billing_phone']);
 		}
 		if ( isset($_POST['billing_vat']) ) {
-			// $_POST['billing_vat'] = format_tax($_POST['billing_vat']);
-			update_user_meta( $user_id, 'billing_vat', format_tax($_POST['billing_vat']) );
+			$_POST['billing_vat'] = format_tax($_POST['billing_vat']);
+			// ZOU AUTOMATISCH MOETEN GAAN
+			// update_user_meta( $user_id, 'billing_vat', format_tax($_POST['billing_vat']) );
 		}
 		if ( isset($_POST['billing_postcode']) ) {
 			$_POST['billing_postcode'] = format_zipcode($_POST['billing_postcode']);
