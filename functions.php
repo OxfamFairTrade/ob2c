@@ -3529,6 +3529,8 @@
 					global $food_api_labels, $food_required_keys, $food_secondary_keys;
 					$has_row = true;
 
+					wc_print_r( $oft_quality_data, true );
+
 					foreach ( $food_api_labels as $food_key => $food_label ) {
 						// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er expliciet een (nul)waarde ingesteld is
 						if ( in_array( $food_key, $food_required_keys ) or array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
