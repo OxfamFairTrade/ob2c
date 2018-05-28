@@ -84,7 +84,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.10' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.11' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -3370,6 +3370,38 @@
 		return $tabs;
 	}
 
+	// Lijst van alle keys en labels die op het voedingstabblad kunnen verschijnen en via WC API extern opgehaald worden
+	$food_api_labels = array(
+		'_energy' => 'Energie',
+		'_fat' => 'Vetten',
+		'_fasat' => 'waarvan verzadigde vetzuren',
+		'_famscis' => 'waarvan enkelvoudig onverzadigde vetzuren',
+		'_fapucis' => 'waarvan meervoudig onverzadigde vetzuren',
+		'_choavl' => 'Koolhydraten',
+		'_sugar' => 'waarvan suikers',
+		'_polyl' => 'waarvan polyolen',
+		'_starch' => 'waarvan zetmeel',
+		'_fibtg' => 'Vezels',
+		'_pro' => 'Eiwitten',
+		'_salteq' => 'Zout',
+	);
+	$food_required_keys = array( '_fat', '_fasat', '_choavl', '_sugar', '_pro', '_salteq' );
+	$food_secondary_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
+
+	// Haal de legende op die bij een gegeven ingrediëntenlijst hoort
+	function get_ingredients_legend( $ingredients ) {
+		$legend = array();
+		if ( ! empty( $ingredients ) ) {
+			if ( strpos( $ingredients, '*' ) !== false ) {
+				$legend[] = '* '.__( 'ingrediënt uit een eerlijke handelsrelatie', 'oxfam-webshop' );
+			}
+			if ( strpos( $ingredients, '°' ) !== false ) {
+				$legend[] = '° '.__( 'ingrediënt van biologische landbouw', 'oxfam-webshop' );
+			}
+		}
+		return $legend;
+	}
+
 	// Retourneer de gegevens voor een custom tab (antwoordt met FALSE indien geen gegevens beschikbaar)
 	function get_tab_content( $type ) {
 		global $product;
@@ -3443,10 +3475,9 @@
 				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), 'lang' => 'nl' );
 				
 				try {
+					global $food_api_labels;
 					$oft_products = $oft_db->get( 'products', $params );
 					$last_response = $oft_db->http->getResponse();
-					
-					$allowed_keys = array( '_ingredients', '_energy', '_fat', '_fasat', '_famscis', '_fapucis', '_fibtg', '_choavl', '_sugar', '_polyl', '_starch', '_salteq' );
 					
 					if ( $last_response->getCode() === 200 ) {
 						if ( count($oft_products) > 1 ) {
@@ -3469,7 +3500,7 @@
 								// WC PHP API 2.0+
 								// Stop voedingswaarden in een array met als keys de namen van de eigenschappen
 								foreach ( $oft_product->meta_data as $meta_data ) {
-									if ( in_array( $meta_data->key, $allowed_keys ) ) {
+									if ( array_key_exists( $meta_data->key, $food_api_labels ) ) {
 										$oft_quality_data['food'][$meta_data->key] = $meta_data->value;
 									}
 								}
@@ -3493,28 +3524,31 @@
 
 			if ( $type === 'food' ) {
 			
-				// Check of er voedingswaarden zijn
+				// Check of er voedingswaarden zijn, tonen van zodra energie ingevuld is
 				if ( array_key_exists( 'food', $oft_quality_data ) and floatval($oft_quality_data['food']['_energy']) > 0 ) {
+					global $food_api_labels, $food_required_keys, $food_secondary_keys;
 					$has_row = true;
-					foreach ( $oft_quality_data['food'] as $key => $value ) {
-						if ( floatval($value) > 0 ) {
+
+					foreach ( $food_api_labels as $food_key => $food_label ) {
+						// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er expliciet een (nul)waarde ingesteld is
+						if ( in_array( $meta_key, $food_required_keys ) or array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
+							$food_value = '';
+							if ( array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
+								// Vul de waarde in uit de database
+								$food_value = $oft_quality_data['food'][$food_key];
+							}
+
+							if ( floatval($food_value) > 0 ) {
+								// Formatter het getal als Belgische tekst
+								$food_value = str_replace( '.', ',', $food_value );
+							} else {
+								// Zet een nul (zonder expliciete precisie)
+								$food_value = '0';
+							}
 							?>
 							<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-								<th><?php
-									$sub_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
-									if ( in_array( $key, $sub_keys ) ) {
-										echo '<i style="padding-left: 20px;">waarvan '.$key.'</i>';
-									} else {
-										echo $key;
-									}
-								?></th>
-								<td><?php
-									if ( in_array( $key, $sub_keys ) ) {
-										echo '<i>'.$value.'</i>';
-									} else {
-										echo $value;
-									}
-								?></td>
+								<th class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php echo $food_label; ?></th>
+								<td class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php echo $food_value; ?> g</td>
 							</tr>
 							<?php
 						}
@@ -3525,6 +3559,24 @@
 
 				// Allergenen altijd tonen!
 				$has_row = true;
+
+				if ( array_key_exists( '_ingredients', $oft_quality_data['food'] ) ) {
+					$ingredients = $oft_quality_data['food']['_ingredients'];
+					if ( strlen($ingredients) > 3 ) {
+						?>
+						<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+							<th><?php echo 'Ingrediënten'; ?></th>
+							<td><?php 
+								echo $ingredients;
+								if ( get_ingredients_legend($ingredients) ) {
+									echo '<br/>'.implode( '<br/>', get_ingredients_legend($ingredients) );
+								}
+							?></td>
+						</tr>
+						<?php
+					}
+				}
+
 				$contains = array();
 				$traces = array();
 				$no_allergens = false;
@@ -4050,14 +4102,14 @@
 			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Tot slot werkten we de packshots van een grote groep producten bij die inmiddels opnieuw een fairtradelogo dragen. De sintproducten van 2017 werden verwijderd uit de database.</p>';
 			// echo '</div>';
 			echo '<div class="notice notice-success">';
-				echo '<p>Sinds deze week is het mogelijk om B2B-klanten te registreren! Betalen via factuur, bestellen per ompak, toekennen van kortingen, ... <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Lees er alles over in de handleiding!</a></p>';
+				echo '<p>Sinds deze week is het mogelijk om B2B-klanten te registreren. Betalen via factuur, bestellen per ompak, toekennen van kortingen, ... <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Lees er alles over in de handleiding!</a></p>';
 			echo '</div>';
 			echo '<div class="notice notice-success">';
-				echo '<p>Allergenen worden vanaf nu live opgehaald uit de centrale OFT-database. Hierdoor zullen deze gegevens veel vroeger beschikbaar zijn voor nieuwe producten en kunnen eventuele fouten op een snelle en betrouwbare manier gecorrigeerd worden. Bovendien tonen we nu ook de gedetailleerde ingrediëntenlijst.</p>';
+				echo '<p>Allergenen worden vanaf nu live opgehaald uit de centrale OFT-database. Hierdoor zullen deze gegevens veel sneller beschikbaar zijn voor nieuwe producten en kunnen eventuele fouten op een uniforme en betrouwbare manier gecorrigeerd worden. Bovendien kunnen we nu ook de gedetailleerde ingrediëntenlijst weergeven.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-info">';
-				echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd definitief opgelost. Meer info in <a href="https://github.com/OxfamFairTrade/ob2c/wiki/6.-Klantenservice#hoe-springen-we-om-met-leeggoed" target="_blank">deze bijgewerkte FAQ</a>. Gelieve ons te contacteren indien je toch nog foutjes zou opmerken. Let op: om het winkelen overzichtelijker te maken wordt het leeggoed niet langer getoond in het winkelmandje in de zijbalk. Het daar getoonde subtotaal vermeldt daarentegen nu wél expliciet \'incl. leeggoed\' en \'excl. korting\' (indien van toepassing).</p>';
-				// echo '<p>De afgelopen dagen zagen we mails vanuit de webshop geregeld in de map \'Ongewenste post\' belanden, zelfs bij de webshopbeheerders. We pasten onze DNS-instellingen aan zodat mailprogramma\'s beter kunnen controleren of de site die de mail verstuurde te vertrouwen is. Sindsdien zien we geen problemen meer. Een handig neveneffect is dat foutmeldingen over onafgeleverde mails (bv. omdat de klant een typfout maakte in zijn mailadres) vanaf nu ook automatisch naar de mailbox van de lokale webshop gestuurd worden. Zo kunnen jullie meteen zien wanneer een klant niet succesvol gecontacteerd kon worden.</p>';
+				echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd definitief opgelost. Meer info <a href="https://github.com/OxfamFairTrade/ob2c/wiki/6.-Klantenservice#hoe-springen-we-om-met-leeggoed" target="_blank">in deze bijgewerkte FAQ</a>. Gelieve ons te contacteren indien je toch nog foutjes zou opmerken. Let op: om het winkelen overzichtelijker te maken wordt het leeggoed niet langer getoond in het winkelmandje in de zijbalk. Het daar getoonde subtotaal vermeldt daarentegen nu wél expliciet \'incl. leeggoed\' en \'excl. korting\' (indien van toepassing).</p>';
+				// echo '<p>Onder de knop \'WP Mail Log\' kun je vanaf nu alle mails bekijken die de afgelopen 2 weken verstuurd worden door je webshop. Zo kunnen jullie beter controleren welke communicatie er precies vertrok naar de klanten. Zoals gewoonlijk belanden eventuele foutmeldingen over onbezorgbare mails (bv. omdat de klant een typfout maakte in zijn mailadres) in de mailbox van de lokale webshop.</p>';
 			echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
