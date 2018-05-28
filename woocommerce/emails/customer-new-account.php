@@ -84,14 +84,14 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <?php else : ?>	
 
-	<p><?php printf( __( 'Eerste alinea in de welkomstmail aan nieuwe gebruikers, inclusief naam van de webshop (%1$s) en vetgedrukte gebruikersnaam (%2$s).', 'oxfam-webshop' ), esc_html( $blogname ), '<strong>' . esc_html( $user_login ) . '</strong>' ); ?></p>
+	<p><?php printf( __( 'Eerste alinea in de welkomstmail aan nieuwe gebruikers, inclusief naam van webshop (%1$s) en vetgedrukte gebruikersnaam (%2$s).', 'oxfam-webshop' ), get_company_name(), '<strong>' . esc_html( $user_login ) . '</strong>' ); ?></p>
 
-	<p><?php printf( __( 'Uitleg over de \'Mijn account\'-pagina, inclusief URL in de webshop waar de gebruiker zich registreerde (%s).', 'oxfam-webshop' ), esc_url( wc_get_page_permalink( 'myaccount' ) ) ); ?></p>
+	<p><?php printf( __( 'Uitleg over de \'Mijn account\'-pagina, inclusief URL in webshop waar de gebruiker zich registreerde (%s).', 'oxfam-webshop' ), esc_url( wc_get_page_permalink( 'myaccount' ) ) ); ?></p>
 
 <?php endif; ?>
 
-<p><?php printf( __( 'Uitsmijter van het mailbericht bij nieuwe accounts.', 'oxfam-webshop' ) ); ?></p>
+<p><?php _e( 'Uitsmijter van het mailbericht bij nieuwe accounts.', 'oxfam-webshop' ); ?></p>
 
-<p><?php printf( __( 'Ondertekening van mails met accountinfo.', 'oxfam-webshop' ) ); ?></p>
+<p><?php printf( __( 'Ondertekening van mails met accountinfo, inclusief regio van webshop (%s).', 'oxfam-webshop' ), str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ); ?></p>
 
 <?php do_action( 'woocommerce_email_footer', $email );

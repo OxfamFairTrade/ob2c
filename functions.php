@@ -1741,7 +1741,7 @@
 					<th><label for="send_invitation">Uitnodiging</label></th>
 					<td>
 						<?php
-							echo '<button type="button" class="button" id="send_invitation" style="min-width: 400px;">Verstuur welkomstmail naar accounteigenaar</button>';
+							echo '<button type="button" class="button" id="send_invitation" style="min-width: 600px;">Verstuur welkomstmail naar accounteigenaar</button>';
 							echo '<p class="send_invitation description">';
 							if ( ! empty( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) {
 								printf( 'Laatste uitnodiging verstuurd: %s.', date( 'd-n-Y H:i:s', strtotime( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) );
@@ -2669,7 +2669,7 @@
 
 		if ( ! empty( $_POST['billing_vat'] ) ) {
 			if ( strpos( format_tax($_POST['billing_vat']), 'INVALID' ) !== false ) {
-				wc_add_notice( __( 'Het BTW-nummer dat je ingaf is geen geldig Belgisch exemplaar. Gelieve het te corrigeren of leeg te laten.', 'oxfam-webshop' ), 'error' );
+				wc_add_notice( __( 'Foutmelding na het ingeven van een ongeldig BTW-nummer.', 'oxfam-webshop' ), 'error' );
 			}
 		}
 
@@ -3071,10 +3071,10 @@
 		rename( $new_account_path, $reset_password_path );
 		$user = get_user_by( 'id', $_POST['customer_id'] );
 		if ( retrieve_password_for_customer( $user ) ) {
-			printf( 'Succesvol uitgenodigd! Kopie verstuurd naar %s.', get_company_email() );
+			printf( 'Succesvol uitgenodigd, kopie verstuurd naar %s!', get_company_email() );
 			update_user_meta( $user->ID, 'blog_'.get_current_blog_id().'_b2b_invitation_sent', current_time('mysql') );
 		} else {
-			printf( 'Uitnodigen eigenaar van \'%s\' mislukt! Probeer het opnieuw.', $user->user_login );
+			printf( 'Uitnodigen eigenaar \'%s\' mislukt, herlaad pagina en probeer eens opnieuw!', $user->user_login );
 		}
 		rename( $reset_password_path, $new_account_path );
 		rename( $temporary_path, $reset_password_path );
