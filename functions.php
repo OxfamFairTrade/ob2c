@@ -5,12 +5,6 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
-	add_filter( 'woocommerce_order_number', 'remove_hashtag_before_order_number', 1000 );
-
-	function remove_hashtag_before_order_number( $order_number ) {
-		return str_replace( '#', '', $order_number );
-	}
-	
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
