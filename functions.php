@@ -3063,10 +3063,10 @@
 		rename( $new_account_path, $reset_password_path );
 		$user = get_user_by( 'id', $_POST['customer_id'] );
 		if ( retrieve_password_for_customer( $user ) ) {
-			printf( 'Eigenaar van \'%s\' succesvol uitgenodigd!', $user->user_login );
+			printf( 'Succesvol uitgenodigd! Kopie verstuurd naar %s.', get_company_email() );
 			update_user_meta( $user->ID, 'blog_'.get_current_blog_id().'_b2b_invitation_sent', current_time('mysql') );
 		} else {
-			printf( 'Uitnodigen eigenaar van \'%s\' mislukt!', $user->user_login );
+			printf( 'Uitnodigen eigenaar van \'%s\' mislukt! Probeer het opnieuw.', $user->user_login );
 		}
 		rename( $reset_password_path, $new_account_path );
 		rename( $temporary_path, $reset_password_path );
