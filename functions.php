@@ -641,7 +641,6 @@
 		}
 		if ( is_b2b_customer() ) {
 			$price .= ' per stuk';
-			// $price .= ' per stuk (per '.$product->get_attribute('ompak').' verpakt)';
 		}
 		return $price;
 	}
@@ -1432,8 +1431,12 @@
 			// Exacte kortingsbedrag per coupon APART vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
 			$used_coupons = $order->get_used_coupons();
 			if ( count($used_coupons) >= 1 ) {
+				$discount = $order->get_discount_total();
+				if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
+					$discount += $order->get_discount_tax();
+				}
 				$i++;
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTING' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$order->get_discount_total() );
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Korting' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
 			}
 
 			$pickup_text = 'Afhaling in winkel';
@@ -1912,7 +1915,6 @@
 		add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
 
 		// Voeg 'excl. BTW' toe bij stukprijzen en subtotalen in winkelmandje en orderdetail (= ook mails!)
-		add_filter( 'woocommerce_cart_item_price', 'add_ex_tax_label_price', 10, 3 );
 		add_filter( 'woocommerce_cart_subtotal', 'add_ex_tax_label_price', 10, 3 );
 		add_filter( 'woocommerce_order_formatted_line_subtotal', 'add_ex_tax_label_price', 10, 3 );
 
@@ -1929,12 +1931,20 @@
 		return str_replace( 'incl', 'excl', $suffix );
 	}
 
-	function add_ex_tax_label_price( $price, $cart_item, $cart_item_key ) {
-		return $price.' <small class="woocommerce-price-suffix">excl. BTW</small>';
-	}
-
 	function remove_ex_tax_label_subtotals() {
 		return '';
+	}
+
+	// Voeg 'incl. BTW' of 'excl. BTW' toe bij stukprijzen in winkelmandje
+	add_filter( 'woocommerce_cart_item_price', 'add_ex_tax_label_price', 10, 3 );
+
+	function add_ex_tax_label_price( $price, $cart_item, $cart_item_key ) {
+		if ( is_b2b_customer() ) {
+			$type = 'excl.';
+		} else {
+			$type = 'incl.';
+		}
+		return $price.' <small class="woocommerce-price-suffix">'.$type.' BTW</small>';
 	}
 
 	// Schakel BTW-berekeningen op productniveau uit voor geverifieerde bedrijfsklanten MAG ENKEL VOOR BUITENLANDSE KLANTEN
@@ -2820,19 +2830,22 @@
 	
 	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
 		$productje = wc_get_product( $cart_item['product_id'] );
+		$product_sku = $productje->get_sku();
 		if ( $productje->is_visible() ) {
 			return $product_quantity;
-		} elseif ( $productje->get_sku() === 'GIFT' ) {
+		} elseif ( $product_sku === 'GIFT' ) {
 			return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
 		} else {
 			$qty = intval($product_quantity);
-			switch ( $productje->get_sku() ) {
-				case 'WLFSG':
-					return sprintf( _n( '%d fles', '%d flessen', $qty ), $qty );
+			switch ( $product_sku ) {
 				case 'WLFSK':
 					return sprintf( _n( '%d flesje', '%d flesjes', $qty ), $qty );
+				case 'WLBS6M':
+				case 'WLBS24M':
+					$multiple = str_replace( 'M', '', str_replace( 'WLBS', '', $product_sku ) );
+					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' '.sprintf( '(per %s fl.)', $multiple );
 				default:
-					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' '.sprintf( '(per %d ex.)', $productje->get_attribute('ompak') );
+					return sprintf( _n( '%d fles', '%d flessen', $qty ), $qty );
 			}
 		}
 	}
