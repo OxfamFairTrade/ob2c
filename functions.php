@@ -2842,9 +2842,9 @@
 				case 'WLFSK':
 					return sprintf( _n( '%d flesje', '%d flesjes', $qty ), $qty );
 				case 'WLBS6M':
+					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 6 flessen)';
 				case 'WLBS24M':
-					$multiple = str_replace( 'M', '', str_replace( 'WLBS', '', $product_sku ) );
-					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' '.sprintf( '(per %s fl.)', $multiple );
+					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 24 flesjes)';
 				default:
 					return sprintf( _n( '%d fles', '%d flessen', $qty ), $qty );
 			}
