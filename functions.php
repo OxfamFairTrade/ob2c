@@ -9,6 +9,7 @@
 	add_action( 'init', 'force_user_login' );
 	
 	function force_user_login() {
+		// update_site_option( 'oxfam_blocked_sites', array( 1, 9, 10, 11, 12 ) );
 		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
 			if ( ! is_user_logged_in() ) {
 				$url = get_current_url();
@@ -1428,7 +1429,8 @@
 				$i++;
 			}
 
-			// Exacte kortingsbedrag per coupon APART vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
+			// Vermeld de totale korting (inclusief/exclusief BTW)
+			// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
 			$used_coupons = $order->get_used_coupons();
 			if ( count($used_coupons) >= 1 ) {
 				$discount = $order->get_discount_total();
@@ -1441,16 +1443,15 @@
 
 			$pickup_text = 'Afhaling in winkel';
 			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
-				// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
+				// ORDER->GET_META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
 				write_log( "IS B2B SALE VIA ORDER->GET_META: ".$order->get_meta('is_b2b_sale') );
 
 				// Switch suffix naar 'excl. BTW'
 				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
 				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
 			} else {
-				// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
+				// ORDER->GET_META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
 				write_log( "ESTIMATED DELIVERY VIA ORDER->GET_META: ".$order->get_meta('estimated_delivery') );
-				write_log( "ESTIMATED DELIVERY VIA GET_POST_META: ".get_post_meta( $order->get_id(), 'estimated_delivery', true ) );
 			
 				// Haal geschatte leverdatum op en voeg tijdstip toe aan tekst
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
