@@ -1798,10 +1798,6 @@
 		foreach ( $names as $name ) {
 			if ( isset($_POST[$name]) ) {
 				$_POST[$name] = trim_and_uppercase($_POST[$name]);
-				if ( $name === 'billing_company' ) {
-					// ZOU AUTOMATISCH MOETEN GAAN
-					// update_user_meta( $user_id, $name, $_POST[$name] );
-				}
 			}
 		}
 		$logger = wc_get_logger();
@@ -1816,8 +1812,6 @@
 		}
 		if ( isset($_POST['billing_vat']) ) {
 			$_POST['billing_vat'] = format_tax($_POST['billing_vat']);
-			// ZOU AUTOMATISCH MOETEN GAAN
-			// update_user_meta( $user_id, 'billing_vat', format_tax($_POST['billing_vat']) );
 		}
 		if ( isset($_POST['billing_postcode']) ) {
 			$_POST['billing_postcode'] = format_zipcode($_POST['billing_postcode']);
@@ -1989,7 +1983,7 @@
 				// $args['max_value'] = 4*$multiple;
 			}
 
-			if ( is_cart() or ( array_key_exists( 'nm_mini_cart_quantity', $args) and $args['nm_mini_cart_quantity'] === true ) ) {
+			if ( is_cart() or ( array_key_exists( 'nm_mini_cart_quantity', $args ) and $args['nm_mini_cart_quantity'] === true ) ) {
 				// Step enkel overrulen indien er op dit moment een veelvoud van de ompakhoeveelheid in het winkelmandje zit!
 				// In de mini-cart wordt dit niet tijdens page-load bepaald omdat AJAX niet de hele blok refresht
 				if ( $args['input_value'] % $multiple === 0 ) {
@@ -2692,7 +2686,7 @@
 
 	function remove_msg_filter( $msg ) {
 		if ( is_checkout() ) {
-			return "";
+			return '';
 		}
 		return $msg;
 	}
@@ -2755,10 +2749,10 @@
 		return $empties_array;
 	}
 
-	// Zorg ervoor dat het basisproduct toch gekocht kan worden als de bak hierboven nog niet toevoegd mag worden NIET ALS OPLOSSING GEBRUIKEN VOOR VOORRAADSTATUS LEEGGOED
+	// Zorg ervoor dat het basisproduct toch gekocht kan worden als het krat omwille van functie hierboven nog niet toevoegd mag worden
 	add_filter( 'wc_force_sell_disallow_no_stock', '__return_false' );
 	
-	// Check bij de bakken leeggoed of we al aan een volledige set van 6 of 24 flessen zitten 
+	// Check bij de bakken leeggoed of we al aan een volledige set van 6/24 flessen zitten 
 	add_filter( 'wc_force_sell_update_quantity', 'update_plastic_empties_quantity', 10, 2 );
 
 	function update_plastic_empties_quantity( $quantity, $empties_item ) {
@@ -2818,10 +2812,6 @@
 		}
 	}
 
-	// MOGELIJKE TOEVOEGINGEN:
-	// - Alle leeggoed als één totaal tonen
-	// - Bakken universeel toevoegen per 6/24 flessen i.p.v. producten (vergt verleggen van 'forced_by'-koppeling = miserie!)
-
 	// Toon bij onzichtbaar leeggoed het woord 'flessen' na het productaantal
 	add_filter( 'woocommerce_cart_item_quantity', 'add_bottles_to_quantity', 10, 3 );
 	
@@ -2844,7 +2834,7 @@
 		}
 	}
 
-	// Zet leeggoed en cadeauverpakking onderaan HOEFT NIET ELKE KEER DOORLOPEN TE WORDEN?
+	// Zet leeggoed en cadeauverpakking onderaan
 	add_action( 'woocommerce_cart_loaded_from_session', 'reorder_cart_items' );
 
 	function reorder_cart_items( $cart ) {
@@ -2888,7 +2878,7 @@
 		// $cart->set_cart_contents($cart_sorted);
 	}
 
-	// Toon leeggoed en cadeauverpakking niet in de mini-cart (wordt wel meegeteld in totaalbedrag!)
+	// Toon leeggoed en cadeauverpakking niet in de mini-cart (maar wordt wel meegeteld in subtotaal!)
 	add_filter( 'woocommerce_widget_cart_item_visible', 'wc_cp_cart_item_visible', 10, 3 );
 
 	function wc_cp_cart_item_visible( $visible, $cart_item, $cart_item_key ) {
@@ -3226,7 +3216,7 @@
 
 	function show_delivery_warning() {
 		global $product;
-		if ( $product->get_shipping_class() === 'breekbaar' ) {
+		if ( ! is_b2b_customer() and $product->get_shipping_class() === 'breekbaar' ) {
 			echo "<p>Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.</p>";
 		}
 
@@ -3275,7 +3265,7 @@
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 	}
 
-	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan
+	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan NIET MEER NODIG
 	add_action( 'init', 'register_allergen_taxonomy', 0 );
 
 	function register_allergen_taxonomy() {
@@ -3315,7 +3305,7 @@
 	}
 
 	// Maak onze custom taxonomiën beschikbaar in menu editor
-	add_filter('woocommerce_attribute_show_in_nav_menus', 'register_custom_taxonomies_for_menus', 1, 2 );
+	add_filter( 'woocommerce_attribute_show_in_nav_menus', 'register_custom_taxonomies_for_menus', 1, 2 );
 
 	function register_custom_taxonomies_for_menus( $register, $name = '' ) {
 		$register = true;
@@ -3748,7 +3738,7 @@
 	function show_product_origin() {
 		global $product;
 		echo '<p class="herkomst">';
-		echo 'Herkomst: '.$product->get_meta( '_herkomst_nl');
+		echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
 		echo '</p>';
 	}
 
@@ -3786,7 +3776,6 @@
 	function add_suffixes( $wpautop, $attribute, $values ) {
 		$weighty_attributes = array( 'pa_choavl', 'pa_famscis', 'pa_fapucis', 'pa_fasat', 'pa_fat', 'pa_fibtg', 'pa_polyl', 'pa_pro', 'pa_salteq', 'pa_starch', 'pa_sugar' );
 		$percenty_attributes = array( 'pa_alcohol', 'pa_fairtrade' );
-		$energy_attributes = array( 'pa_ener' );
 
 		global $product;
 		$eh = $product->get_attribute('pa_eenheid');
@@ -3800,8 +3789,6 @@
 			$values[0] = str_replace('.', ',', $values[0]).' g';
 		} elseif ( in_array( $attribute['name'], $percenty_attributes ) ) {
 			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' %';
-		} elseif ( in_array( $attribute['name'], $energy_attributes ) ) {
-			$values[0] = number_format( $values[0], 0, ',', '.' ).' kJ';
 		} elseif ( $attribute['name'] === 'pa_eprijs' ) {
 			$values[0] = '&euro; '.number_format( str_replace( ',', '.', $values[0] ), 2, ',', '.' ).' per '.$suffix;
 		} elseif ( $attribute['name'] === 'pa_ompak' ) {
@@ -4111,7 +4098,7 @@
 			// 	if ( current_user_can('manage_network_users') ) {
 			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Tot slot werkten we de packshots van een grote groep producten bij die inmiddels opnieuw een fairtradelogo dragen. De sintproducten van 2017 werden verwijderd uit de database.</p>';
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Twee oude producten (20023 en 26495) werden uit de database verwijderd.</p>';
 			// echo '</div>';
 			echo '<div class="notice notice-success">';
 				echo '<p>Sinds deze week is het mogelijk om B2B-klanten te registreren. Betalen via factuur, bestellen per ompak, toekennen van kortingen, ... <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Lees er alles over in de handleiding!</a></p>';
@@ -4121,8 +4108,8 @@
 			echo '</div>';
 			echo '<div class="notice notice-info">';
 				echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd definitief opgelost. Meer info <a href="https://github.com/OxfamFairTrade/ob2c/wiki/6.-Klantenservice#hoe-springen-we-om-met-leeggoed" target="_blank">in deze bijgewerkte FAQ</a>. Let wel: mixes van producten in kratten zijn technisch niet mogelijk.</p><p>Gelieve ons te contacteren indien je toch nog foutjes zou opmerken. Opgelet: om het winkelen overzichtelijker te maken wordt het leeggoed niet langer getoond in het winkelmandje in de zijbalk. Het daar getoonde subtotaal vermeldt daarentegen nu wél expliciet \'incl. leeggoed\' en/of \'excl. korting\' (indien van toepassing).</p>';
-				// echo '<p>Onder de knop \'WP Mail Log\' kun je vanaf nu alle mails bekijken die de afgelopen 2 weken verstuurd worden door je webshop. Zo kunnen jullie beter controleren welke communicatie er precies vertrok naar de klanten. Zoals gewoonlijk belanden eventuele foutmeldingen over onbezorgbare mails (bv. omdat de klant een typfout maakte in zijn mailadres) in de mailbox van de lokale webshop.</p>';
 			echo '</div>';
+			// echo '<p>Onder de knop \'WP Mail Log\' kun je vanaf nu alle mails bekijken die de afgelopen 2 weken verstuurd worden door je webshop. Zo kunnen jullie beter controleren welke communicatie er precies vertrok naar de klanten. Zoals gewoonlijk belanden eventuele foutmeldingen over onbezorgbare mails (bv. omdat de klant een typfout maakte in zijn mailadres) in de mailbox van de lokale webshop.</p>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
@@ -4741,7 +4728,7 @@
 	}
 
 	// Verhinder dat zeer zeldzame zoektermen in de index de machine learning verstoren
-	add_filter('relevanssi_get_words_query', 'limit_suggestions');
+	add_filter( 'relevanssi_get_words_query', 'limit_suggestions' );
 	
 	function limit_suggestions( $query ) {
 		$query = $query." HAVING COUNT(term) > 1";
