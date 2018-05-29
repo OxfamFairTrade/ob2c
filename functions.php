@@ -1514,7 +1514,8 @@
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
 			}
 
-			// Selecteer het totaalbedrag
+			// Bereken en selecteer het totaalbedrag
+			$objPHPExcel->getActiveSheet()->getCell('F5')->getCalculatedValue();
 			$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
