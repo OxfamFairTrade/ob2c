@@ -2832,7 +2832,7 @@
 				case 'WLFSK':
 					return sprintf( _n( '%d flesje', '%d flesjes', $qty ), $qty );
 				default:
-					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty );
+					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' '.sprintf( '(per %d ex.)', $productje->get_attribute('ompak') );
 			}
 		}
 	}
