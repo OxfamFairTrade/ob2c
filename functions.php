@@ -1403,7 +1403,7 @@
 			$i = 8;
 			// Vul de artikeldata item per item in vanaf rij 8
 			foreach ( $order->get_items() as $order_item_id => $item ) {
-				$product = $order->get_product_from_item( $item );
+				$product = $order->get_product_from_item($item);
 				switch ( $product->get_tax_class() ) {
 					case 'voeding':
 						$tax = '0.06';
@@ -1415,14 +1415,24 @@
 						$tax = '0.21';
 						break;
 				}
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $item['line_total']+$item['line_tax'] );
+				$product_price = $product->get_price();
+				$line_total = $item['line_subtotal'];
+
+				if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
+					// Stukprijs exclusief BTW bij B2B-bestellingen
+					$product_price /= 1+$tax;
+				} else {
+					// BTW erbij tellen bij particulieren
+					$line_total += $item['line_subtotal_tax'];
+				}
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total );
 				$i++;
 			}
 
 			// Exacte kortingsbedrag per coupon APART vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
 			$used_coupons = $order->get_used_coupons();
-			if ( count($used_coupons) >= 1) {
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTINGEN' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$order->get_discount_total() );
+			if ( count($used_coupons) >= 1 ) {
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTING' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$order->get_discount_total() );
 				$i++;
 			}
 
@@ -1434,14 +1444,14 @@
 			write_log( "IS B2B SALE VIA GET_POST_META: ".get_post_meta( $order->get_id(), 'is_b2b_sale', true ) );
 			
 			$pickup_text = 'Afhaling in winkel';
-			if ( $order->get_meta('is_b2b_sale') === 'no' ) {
+			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
+				// Switch suffix naar 'excl. BTW'
+				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
+				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
+			} else {
 				// Haal geschatte leverdatum op en voeg tijdstip toe aan tekst
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 				$pickup_text .= ' vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp );
-			} else {
-				// Switch naar excl. BTW ENKEL DOEN INDIEN WE OOK DE LINE ITEMS SWITCHEN NAAR EXCLUSIEF BTW
-				// $label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
-				// $objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
 			} 
 
 			switch ( $shipping_method['method_id'] ) {
@@ -1895,7 +1905,7 @@
 		write_log( "GESWITCHED NAAR BLOG ".get_current_blog_id() );
 	}
 
-	// Vanaf wanneer geeft deze functie een zinnig antwoord?
+	// Functie geeft blijkbaar zeer vroeg al een zinnig antwoord
 	if ( is_b2b_customer() ) {
 		// Geen BTW tonen bij producten en in het winkelmandje
 		add_filter( 'pre_option_woocommerce_tax_display_shop', 'override_tax_display_setting' );
@@ -1904,13 +1914,12 @@
 		// Vervang alle prijssuffixen
 		add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
 
-		// Voeg 'excl. BTW' toe bij stukprijzen in winkelmandje en 
+		// Voeg 'excl. BTW' toe bij stukprijzen en subtotalen in winkelmandje en orderdetail (= ook mails!)
 		add_filter( 'woocommerce_cart_item_price', 'add_ex_tax_label_price', 10, 3 );
 		add_filter( 'woocommerce_cart_subtotal', 'add_ex_tax_label_price', 10, 3 );
 		add_filter( 'woocommerce_order_formatted_line_subtotal', 'add_ex_tax_label_price', 10, 3 );
 
 		// Verwijder '(excl. BTW)' bij subtotalen
-		// add_filter( 'wc_price_args', 'remove_ex_tax_label' );
 		add_filter( 'woocommerce_countries_ex_tax_or_vat', 'remove_ex_tax_label_subtotals' );
 		
 	}
