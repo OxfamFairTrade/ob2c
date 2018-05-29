@@ -482,11 +482,18 @@ tr.shipping .woocommerce-Price-amount {
 	}
 
 	/* Bestelstatus met uitleg */
-	mark.order-number,
-	mark.order-date,
 	mark.order-status {
 		background-color: $light-grey;
 		padding: 3px;
+	}
+
+	.nm-order-info {
+		mark.order-number,
+		mark.order-date,
+		mark.order-status {
+			background-color: $see-through-green;
+			padding: 3px;
+		}
 	}
 
 	/* Nieuwe prijs na terugbetaling */

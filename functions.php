@@ -1373,7 +1373,7 @@
 	add_filter( 'woocommerce_email_attachments', 'attach_picklist_to_email', 10, 3 );
 
 	function attach_picklist_to_email( $attachments, $status , $order ) {
-		// EXCEL ALTIJD BIJWERKEN, OOK BIJ REFUND
+		// Excel altijd bijwerken wanneer de mail opnieuw verstuurd wordt, ook bij refunds
 		$create_statuses = array( 'new_order', 'customer_refunded_order' );
 		
 		if ( isset($status) and in_array( $status, $create_statuses ) ) {
@@ -1449,10 +1449,7 @@
 				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
 				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
 			} else {
-				// ORDER->GET_META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
-				write_log( "ESTIMATED DELIVERY VIA ORDER->GET_META: ".$order->get_meta('estimated_delivery') );
-			
-				// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() NOG NIET BEPAALD en voeg tijdstip toe aan tekst
+				// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD en voeg tijdstip toe aan tekst
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 				$pickup_text .= ' vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp );
 			} 
@@ -1515,8 +1512,7 @@
 			}
 
 			// Bereken en selecteer het totaalbedrag
-			$objPHPExcel->getActiveSheet()->getCell('F5')->getCalculatedValue();
-			$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
+			$objPHPExcel->getActiveSheet()->setSelectedCell('F5')->setCellValue( 'F5', $objPHPExcel->getActiveSheet()->getCell('F5')->getCalculatedValue() );
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
 			$filename = $order->get_meta('_excel_file_name');
