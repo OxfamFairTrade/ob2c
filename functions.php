@@ -1432,23 +1432,23 @@
 			// Exacte kortingsbedrag per coupon APART vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
 			$used_coupons = $order->get_used_coupons();
 			if ( count($used_coupons) >= 1 ) {
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTING' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$order->get_discount_total() );
 				$i++;
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTING' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$order->get_discount_total() );
 			}
 
-
-			// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING???
-			write_log( "ESTIMATED DELIVERY VIA ORDER->GET_META: ".$order->get_meta('estimated_delivery') );
-			write_log( "ESTIMATED DELIVERY VIA GET_POST_META: ".get_post_meta( $order->get_id(), 'estimated_delivery', true ) );
-			write_log( "IS B2B SALE VIA ORDER->GET_META: ".$order->get_meta('is_b2b_sale') );
-			write_log( "IS B2B SALE VIA GET_POST_META: ".get_post_meta( $order->get_id(), 'is_b2b_sale', true ) );
-			
 			$pickup_text = 'Afhaling in winkel';
 			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
+				// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
+				write_log( "IS B2B SALE VIA ORDER->GET_META: ".$order->get_meta('is_b2b_sale') );
+
 				// Switch suffix naar 'excl. BTW'
 				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
 				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
 			} else {
+				// ORDER-META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
+				write_log( "ESTIMATED DELIVERY VIA ORDER->GET_META: ".$order->get_meta('estimated_delivery') );
+				write_log( "ESTIMATED DELIVERY VIA GET_POST_META: ".get_post_meta( $order->get_id(), 'estimated_delivery', true ) );
+			
 				// Haal geschatte leverdatum op en voeg tijdstip toe aan tekst
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 				$pickup_text .= ' vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp );
@@ -1484,7 +1484,7 @@
 
 				case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
 
-					// VERWIJZEN NAAR POSTPUNT
+					// Verwijzen naar postpunt
 					$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
 					$service_point_info = explode ( '|', $service_point['extra'] );
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
@@ -1513,9 +1513,6 @@
 
 			// Selecteer het totaalbedrag
 			$objPHPExcel->getActiveSheet()->setSelectedCell('F5');
-
-			write_log( "EXCEL FILE NAME VIA ORDER->GET_META: ".$order->get_meta('_excel_file_name') );
-			write_log( "EXCEL FILE NAME VIA GET_POST_META: ".get_post_meta( $order->get_id(), '_excel_file_name', true ) );
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
 			$filename = $order->get_meta('_excel_file_name');
