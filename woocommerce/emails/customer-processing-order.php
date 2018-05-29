@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 do_action( 'woocommerce_email_header', $email_heading, $email );
 
 // Is altijd ingevuld, dus geen check doen
-echo '<p>Dag '.$order->get_billing_first_name().',</p>';
+echo '<p>Dag '.$order->get_billing_first_name().'</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$methods = $order->get_shipping_methods();

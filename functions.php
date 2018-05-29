@@ -1441,10 +1441,8 @@
 			}
 
 			$pickup_text = 'Afhaling in winkel';
+			// Dieze $order->get_meta() is hier reeds beschikbaar!
 			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
-				// ORDER->GET_META REEDS BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
-				write_log( "IS B2B SALE VIA ORDER->GET_META: ".$order->get_meta('is_b2b_sale') );
-
 				// Switch suffix naar 'excl. BTW'
 				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
 				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
