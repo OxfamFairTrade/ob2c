@@ -19,18 +19,18 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<?php if ( 'yes' === get_the_author_meta( 'blog_'.get_current_blog_id().'_is_b2b_customer', $customer->ID ) ) : ?>
+<p>
+	<?php
+		if ( '' !== $customer->first_name and '' !== $customer->last_name ) {
+			$name = $customer->first_name.' '.$customer->last_name;
+		} else {
+			$name = 'klant';
+		}
+		echo 'Beste '.$name;
+	?>
+</p>
 
-	<p>
-		<?php
-			if ( '' !== $customer->first_name and '' !== $customer->last_name ) {
-				$name = $customer->first_name.' '.$customer->last_name;
-			} else {
-				$name = 'klant';
-			}
-			echo 'Beste '.$name;
-		?>
-	</p>
+<?php if ( 'yes' === get_the_author_meta( 'blog_'.get_current_blog_id().'_is_b2b_customer', $customer->ID ) ) : ?>
 
 	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van webshop (%s).', 'oxfam-webshop' ), get_company_name() ); ?></p>
 
