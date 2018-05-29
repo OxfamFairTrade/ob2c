@@ -1419,15 +1419,10 @@
 				$i++;
 			}
 
-			// Exacte kortingsbedrag per coupon vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
-			foreach ( $order->get_used_coupons() as $coupon_name ) {
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTING' )->setCellValue( 'B'.$i, mb_strtoupper($coupon_name) )->setCellValue( 'F'.$i, 'BEDRAG TE BEPALEN' );
-				$i++;
-			}
-			// Alternatieve methode (alles samen)
+			// Exacte kortingsbedrag per coupon APART vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
 			$used_coupons = $order->get_used_coupons();
 			if ( count($used_coupons) >= 1) {
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTING' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, wc_price( -$order->get_discount_total() ) );
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'KORTINGEN' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$order->get_discount_total() );
 				$i++;
 			}
 
@@ -1438,9 +1433,11 @@
 			write_log( "IS B2B SALE VIA ORDER->GET_META: ".$order->get_meta('is_b2b_sale') );
 			write_log( "IS B2B SALE VIA GET_POST_META: ".get_post_meta( $order->get_id(), 'is_b2b_sale', true ) );
 			
+			$pickup_text = 'Afhaling in winkel';
 			if ( $order->get_meta('is_b2b_sale') === 'no' ) {
-				// Haal geschatte leverdatum op
+				// Haal geschatte leverdatum op en voeg tijdstip toe aan tekst
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
+				$pickup_text .= ' vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp );
 			} else {
 				// Switch naar excl. BTW ENKEL DOEN INDIEN WE OOK DE LINE ITEMS SWITCHEN NAAR EXCLUSIEF BTW
 				// $label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
@@ -1501,7 +1498,7 @@
 				default:
 					$meta_data = $shipping_method->get_meta_data();
 					$pickup_data = reset($meta_data);
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Afhaling in de winkel vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp ) )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
 			}
 
 			// Selecteer het totaalbedrag
