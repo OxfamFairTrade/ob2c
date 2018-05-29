@@ -1172,7 +1172,7 @@
 			$value = 'no';
 		}
 		update_post_meta( $order_id, 'is_b2b_sale', $value );
-		write_log("SAVED IS_B2B_SALE IN woocommerce_checkout_update_order_meta");
+		write_log("SAVED IS_B2B_SALE STATUS IN woocommerce_checkout_update_order_meta");
 	}
 
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
@@ -1183,8 +1183,7 @@
 		$shipping = $order->get_shipping_methods();
 		$shipping = reset($shipping);
 
-		// Of $order->get_meta('is_b2b_sale') gebruiken indien reeds beschikbaar?
-		if ( ! is_b2b_customer() ) {
+		if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
 			$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
 			$order->add_meta_data( 'estimated_delivery', $timestamp, true );
 			$order->save_meta_data();
@@ -1443,7 +1442,7 @@
 
 			$pickup_text = 'Afhaling in winkel';
 			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
-				// ORDER->GET_META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
+				// ORDER->GET_META REEDS BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
 				write_log( "IS B2B SALE VIA ORDER->GET_META: ".$order->get_meta('is_b2b_sale') );
 
 				// Switch suffix naar 'excl. BTW'
@@ -1453,7 +1452,7 @@
 				// ORDER->GET_META NOG NIET BESCHIKBAAR BIJ GLOEDNIEUWE BESTELLING?
 				write_log( "ESTIMATED DELIVERY VIA ORDER->GET_META: ".$order->get_meta('estimated_delivery') );
 			
-				// Haal geschatte leverdatum op en voeg tijdstip toe aan tekst
+				// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() NOG NIET BEPAALD en voeg tijdstip toe aan tekst
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 				$pickup_text .= ' vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp );
 			} 
