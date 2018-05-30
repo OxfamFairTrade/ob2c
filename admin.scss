@@ -3,14 +3,22 @@
 	Author:			Frederik Neirynck
 	Author URI:		https://www.oxfamfairtrade.be
 	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
-	Version:		1.2.1
+	Version:		1.2.2
 	Text Domain:	oxfam-admin
 */
 
-#woocommerce_dashboard_status .wc_status_list li.claimed-orders a::before {
-	font-family: 'Dashicons';
-	content: '\f513';
-	color: #e70052;
+#woocommerce_dashboard_status .wc_status_list {
+	li.claimed-orders a::before {
+		font-family: 'Dashicons';
+		content: '\f513';
+		color: #e70052;
+	}
+
+	li.pending-orders a::before {
+		font-family: 'WooCommerce';
+		content: '\e012';
+		color: #ffba00;
+	}
 }
 
 .dashboard_page_relevanssi-premium-relevanssi .postbox-container {

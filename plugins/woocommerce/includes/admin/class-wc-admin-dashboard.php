@@ -146,10 +146,11 @@ class WC_Admin_Dashboard {
 
 		foreach ( wc_get_order_types( 'order-count' ) as $type ) {
 			$counts = (array) wp_count_posts( $type );
+			// GEWIJZIGD: Vervang 'on-hold' door interessantere statussen
 			if ( is_regional_webshop() ) {
 				$on_hold_count += isset( $counts['wc-claimed'] ) ? $counts['wc-claimed'] : 0;
 			} else {
-				$on_hold_count += isset( $counts['wc-on-hold'] ) ? $counts['wc-on-hold'] : 0;	
+				$on_hold_count += isset( $counts['wc-pending'] ) ? $counts['wc-pending'] : 0;	
 			}
 			$processing_count += isset( $counts['wc-processing'] ) ? $counts['wc-processing'] : 0;
 		}
@@ -157,10 +158,10 @@ class WC_Admin_Dashboard {
 		<li class="processing-orders">
 			<a href="<?php echo admin_url( 'edit.php?post_status=wc-processing&post_type=shop_order' ); ?>">
 				<?php
-					// GEWIJZIGD: Zeg 'wachten op bevestiging' bij regiowerkingen
+					// GEWIJZIGD: Noem het 'wachten op bevestiging' bij regiowerkingen
 					if ( is_regional_webshop() ) {
 						printf(
-							_n( '<strong>%s bestelling</strong> wacht op bevestiging', '<strong>%s bestellingen</strong> wachten op bevestiging', $processing_count, 'woocommerce' ),
+							_n( '<strong>%s bestelling</strong> wacht op bevestiging', '<strong>%s bestellingen</strong> wachten op bevestiging', $processing_count ),
 							$processing_count
 						);
 					}
@@ -175,6 +176,7 @@ class WC_Admin_Dashboard {
 			</a>
 		</li>
 		<?php
+		// GEWIJZIGD: Varieer tweede blokje volgens inhoud
 		if ( is_regional_webshop() ) {
 			echo '<li class="claimed-orders">';
 				echo '<a href="'.admin_url( 'edit.php?post_status=wc-claimed&post_type=shop_order' ).'">';
@@ -185,10 +187,10 @@ class WC_Admin_Dashboard {
 				echo '</a>';
 			echo '</li>';
 		} else {
-			echo '<li class="on-hold-orders">';
-				echo '<a href="'.admin_url( 'edit.php?post_status=wc-on-hold&post_type=shop_order' ).'">';
+			echo '<li class="pending-orders">';
+				echo '<a href="'.admin_url( 'edit.php?post_status=wc-pending&post_type=shop_order' ).'">';
 					printf(
-						_n( '<strong>%s order</strong> on-hold', '<strong>%s orders</strong> on-hold', $on_hold_count, 'woocommerce' ),
+						_n( '<strong>%s bestelling</strong> wacht op betaling', '<strong>%s bestellingen</strong> wachten op betaling', $on_hold_count ),
 						$on_hold_count
 					);
 				echo '</a>';
