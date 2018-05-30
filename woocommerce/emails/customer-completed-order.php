@@ -24,7 +24,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ) . '</p>';
 } else {
 	echo '<p>';
-	if ( $order->get_meta('is_b2b_sale') === 'no' ) {
+	if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
 		$text = __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' );
 		if ( get_tracking_number( $order->get_id() ) ) {
 			if ( $order->has_shipping_method('service_point_shipping_method') ) {
