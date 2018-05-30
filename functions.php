@@ -1569,10 +1569,10 @@
 		$profile_fields['billing']['title'] = $billing_title;
 		$profile_fields['billing']['fields']['billing_company']['label'] = 'Bedrijf of vereniging';
 		// Klasse slaat op tekstveld, niet op de hele rij
-		$profile_fields['billing']['fields']['billing_company']['class'] = 'show-if-b2b-checked';
+		$profile_fields['billing']['fields']['billing_company']['class'] = 'show-if-b2b-checked important-b2b-field';
 		$profile_fields['billing']['fields']['billing_vat']['label'] = 'BTW-nummer';
 		$profile_fields['billing']['fields']['billing_vat']['description'] = 'Geldig Belgisch ondernemingsnummer van 9 of 10 cijfers (optioneel).';
-		$profile_fields['billing']['fields']['billing_vat']['class'] = 'show-if-b2b-checked';
+		$profile_fields['billing']['fields']['billing_vat']['class'] = 'show-if-b2b-checked important-b2b-field';
 		$profile_fields['billing']['fields']['billing_first_name']['label'] = 'Voornaam';
 		$profile_fields['billing']['fields']['billing_last_name']['label'] = 'Familienaam';
 		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
@@ -1738,14 +1738,14 @@
 			<tr>
 				<th><label for="<?php echo $check_key; ?>">Geverifieerde bedrijfsklant</label></th>
 				<td>
-					<input type="checkbox" name="<?php echo $check_key; ?>" id="<?php echo $check_key; ?>" value="yes" <?php checked( $is_b2b_customer, 'yes' ); ?> />
+					<input type="checkbox" class="important-b2b-field" name="<?php echo $check_key; ?>" id="<?php echo $check_key; ?>" value="yes" <?php checked( $is_b2b_customer, 'yes' ); ?> />
 					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Raadpleeg de handleiding.</a></span>
 				</td>
 			</tr>
 			<tr class="show-if-b2b-checked">
 				<th><label for="<?php echo $select_key; ?>">Kortingspercentage</label></th>
 				<td>
-					<select name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
+					<select class="important-b2b-field" name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
 					<?php	
 						$b2b_payment_method = array('cod');
 						$args = array(
@@ -1798,20 +1798,21 @@
 
 							jQuery('#<?php echo $check_key; ?>').on( 'change', function() {
 								jQuery('.show-if-b2b-checked').closest('tr').toggle();
-								disableInvitation();
 							});
 
-							jQuery('#<?php echo $select_key; ?>').on( 'change', function() {
+							jQuery('.important-b2b-field').on( 'change', function() {
 								disableInvitation();
 							});
 
 							function disableInvitation() {
-								jQuery('.disable-on-b2b-change').text('Werk het profiel bij vooraleer je de uitnodiging verstuurt').prop( 'disabled', true );
+								jQuery('.disable-on-b2b-change').text("Klik op 'Gebruiker bijwerken' vooraleer je de uitnodiging verstuurt").prop( 'disabled', true );
 							}
 
 							jQuery('button#send_invitation').on( 'click', function() {
-								jQuery(this).prop( 'disabled', true ).text( 'Aan het verwerken ...' );
-								sendB2bWelcome( <?php echo $user->ID; ?> );
+								if ( confirm("Weet je zeker dat je dit wil doen?") ) {
+									jQuery(this).prop( 'disabled', true ).text( 'Aan het verwerken ...' );
+									sendB2bWelcome( <?php echo $user->ID; ?> );
+								}
 							});
 
 							function sendB2bWelcome( customer_id ) {
