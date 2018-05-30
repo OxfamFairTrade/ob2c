@@ -4177,7 +4177,7 @@
 	}
 	
 	// Voeg een bericht toe bovenaan alle adminpagina's
-	// add_action( 'admin_notices', 'oxfam_admin_notices' );
+	add_action( 'admin_notices', 'oxfam_admin_notices' );
 
 	function oxfam_admin_notices() {
 		global $pagenow, $post_type;
