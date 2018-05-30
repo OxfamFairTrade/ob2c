@@ -30,13 +30,23 @@
 		}
 
 		// Stuur Digizine-lezers meteen door op basis van postcode in hun profiel
-		if ( is_main_site() and isset( $_GET['landingZip'] ) ) {
-			$zip = str_replace( ',', '', str_replace( '%2C', '', $_GET['landingZip'] ) );
-			$global_zips = get_shops();
-			if ( strlen( $zip ) === 4 ) {
-				if ( array_key_exists( $zip, $global_zips ) ) {
-					wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip );
+		if ( is_main_site() ) {
+			if ( isset( $_GET['landingZip'] ) ) {
+				$zip = str_replace( ',', '', str_replace( '%2C', '', $_GET['landingZip'] ) );
+				$global_zips = get_shops();
+				if ( strlen( $zip ) === 4 ) {
+					if ( array_key_exists( $zip, $global_zips ) ) {
+						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip.'&addSku='.$_GET['addSku'] );
+					}
 				}
+			}
+		} else {
+			if ( isset( $_GET['addSku'] ) ) {
+				// Voeg SKU meteen toe aan winkelmandje
+				// Via aanbevolen filter
+				add_action( 'template_redirect', 'add_product_to_cart' );
+				// Rechtstreeks
+				// WC()->cart->add_to_cart( wc_get_product_id_by_sku($_GET['addSku']), 1 );
 			}
 		}
 	}
@@ -47,6 +57,24 @@
 		$url .= in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ) ) ? '' : ':' . $_SERVER['SERVER_PORT'];
 		$url .= $_SERVER['REQUEST_URI'];
 		return $url;
+	}
+
+	function add_product_to_cart() {
+		if ( ! is_admin() ) {
+			$product_id = wc_get_product_id_by_sku( $_GET['addSku'] );
+			$found = false;
+			if ( sizeof( WC()->cart->get_cart() ) > 0 ) {
+				foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
+					$productje = $values['data'];
+					if ( $productje->get_id() == $product_id ) {
+						$found = true;
+					}
+				}
+			}
+			if ( ! $found ) {
+				WC()->cart->add_to_cart( $product_id );
+			}
+		}
 	}
 	
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
@@ -708,6 +736,7 @@
 			WC()->cart->empty_cart();
 		}
 		
+		// Zet korte beschrijving meer naar onder
 		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
 		add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 100 );
 	}
@@ -1163,9 +1192,9 @@
 	}
 
 	// Registreer bij NA UITCHECKEN of het een B2B-verkoop is of niet
-	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_fields_on_order' );
+	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_order_fields' );
 
-	function save_b2b_fields_on_order( $order_id ) {
+	function save_b2b_order_fields( $order_id ) {
 		if ( is_b2b_customer() ) {
 			$value = 'yes';
 			// Extra velden met 'billing'-prefix worden automatisch opgeslagen (maar niet getoond), geen actie nodig
@@ -1173,7 +1202,6 @@
 			$value = 'no';
 		}
 		update_post_meta( $order_id, 'is_b2b_sale', $value );
-		write_log("SAVED IS_B2B_SALE STATUS IN woocommerce_checkout_update_order_meta");
 	}
 
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
@@ -1188,7 +1216,6 @@
 			$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
 			$order->add_meta_data( 'estimated_delivery', $timestamp, true );
 			$order->save_meta_data();
-			write_log("SAVED ESTIMATED_DELIVERY IN woocommerce_order_status_pending_to_processing");
 		}
 	}
 
@@ -1700,13 +1727,13 @@
 	}
 
 	// Toon de 'is_b2b_customer'-checkbox in de back-end
-	add_action( 'show_user_profile', 'add_is_b2b_customer_field' );
-	add_action( 'edit_user_profile', 'add_is_b2b_customer_field' );
-	// Zorg ervoor dat het ook bewaard wordt (inhaken vòòr de 'save_customer_meta_fields'-actie van WooCommerce met default priority)
-	add_action( 'personal_options_update', 'save_is_b2b_customer_field', 5 );
-	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field', 5 );
+	add_action( 'show_user_profile', 'add_b2b_customer_fields' );
+	add_action( 'edit_user_profile', 'add_b2b_customer_fields' );
+	// Zorg ervoor dat het ook geformatteerd / bewaard wordt (inhaken vòòr 'save_customer_meta_fields'-actie van WooCommerce met default priority)
+	add_action( 'personal_options_update', 'save_b2b_customer_fields', 5 );
+	add_action( 'edit_user_profile_update', 'save_b2b_customer_fields', 5 );
 
-	function add_is_b2b_customer_field( $user ) {
+	function add_b2b_customer_fields( $user ) {
 		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
 		$is_b2b_customer = get_the_author_meta( $check_key, $user->ID );
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
@@ -1721,8 +1748,9 @@
 					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Raadpleeg de handleiding.</a></span>
 				</td>
 			</tr>
+			<!-- Eventueel altijd inladen en tonen/verbergen m.b.v. jQuery -->
 			<?php if ( $is_b2b_customer === 'yes' ) : ?>
-				<tr>
+				<tr class="show-if-b2b-checked">
 					<th><label for="<?php echo $select_key; ?>">Kortingspercentage</label></th>
 					<td>
 						<select name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
@@ -1745,9 +1773,9 @@
 							);
 
 							$b2b_coupons = get_posts($args);
-							echo '<option value="">n.v.t.</option>';
+							echo '<option value="">GEEN</option>';
 							foreach ( $b2b_coupons as $b2b_coupon ) {
-								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.$b2b_coupon->coupon_amount.'%</option>';
+								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.number_format( $b2b_coupon->coupon_amount, 1, ',', '.' ).'%</option>';
 							}
 						?>
 						</select>
@@ -1804,7 +1832,7 @@
 		<?php
 	}
 
-	function save_is_b2b_customer_field( $user_id ) {
+	function save_b2b_customer_fields( $user_id ) {
 		if ( ! current_user_can( 'edit_users', $user_id ) ) {
 			return false;
 		}
@@ -1820,7 +1848,7 @@
 		$logger->debug( wc_print_r( $_POST, true ), $context );
 
 		if ( isset($_POST['billing_email']) ) {
-			// Retourneert false indien geen geldig e-mailformaat
+			// Retourneert false indien ongeldig e-mailformaat
 			$_POST['billing_email'] = is_email( format_mail($_POST['billing_email']) );
 		}
 		if ( isset($_POST['billing_phone']) ) {
@@ -1843,9 +1871,10 @@
 			update_user_meta( $user_id, $check_key, $_POST[$check_key] );
 		} else {
 			update_user_meta( $user_id, $check_key, 'no' );
+			// 'billing_company' en 'billing_vat' laten we gewoon staan, niet expliciet ledigen!
 		}
 		
-		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon, op voorwaarde dat B2B aangevinkt is!
+		// Voeg de ID van de klant toe aan de overeenstemmende kortingsbon, op voorwaarde dat B2B aangevinkt is
 		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
 		if ( get_user_meta( $user_id, $check_key, true ) !== 'yes' ) {
 			// Ledig het eventueel geselecteerde kortingstarief
@@ -2748,7 +2777,7 @@
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 						if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
 							$main_product = wc_get_product($product_item['product_id']);
-							write_log("We hebben een ".$plastic_sku."-krat gevonden dat gelinkt is aan SKU ".$main_product->get_sku()."!");
+							// write_log("We hebben een ".$plastic_sku."-krat gevonden dat gelinkt is aan SKU ".$main_product->get_sku()."!");
 							$plastic_in_cart = true;
 							break;
 						}
@@ -2807,7 +2836,7 @@
 				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
 						$main_product = wc_get_product($product_item['product_id']);
-						write_log("We hebben een ".$plastic_sku."-krat gevonden dat gelinkt is aan SKU ".$main_product->get_sku()."!");
+						// write_log("We hebben een ".$plastic_sku."-krat gevonden dat gelinkt is aan SKU ".$main_product->get_sku()."!");
 						$plastic_in_cart = true;
 						break;
 					}
@@ -3883,10 +3912,8 @@
 			
 			// Check of er wel herkomstinfo beschikbaar is
 			if ( $countries_nl !== false ) {
-				write_log( "HERKOMST_NL VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_nl ) );
 				update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
 			
-				// WORDT NIET DOORLOPEN BIJ IMPORT, ALTERNATIEVE VOLDOENDE VOORWAARDE?
 				if ( is_main_site() or get_current_blog_id() === 1 ) {
 					foreach ( $countries_nl as $country ) {
 						$nl = get_site_option( 'countries_nl' );
@@ -3900,10 +3927,8 @@
 
 					sort($countries_fr, SORT_STRING);
 					update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
-					write_log( "HERKOMST_FR VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_fr ) );
 					sort($countries_en, SORT_STRING);
 					update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
-					write_log( "HERKOMST_EN VAN POST-ID ".$post_id." BIJWERKEN: ".implode( ', ', $countries_en ) );
 				}
 			}
 		}

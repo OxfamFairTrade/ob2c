@@ -127,7 +127,7 @@ class WC_Admin_Dashboard {
 		}
 
 		$this->status_widget_order_rows();
-		// DISABLE
+		// GEWIJZIGD: Schakel rij met productvoorraden uit
 		// $this->status_widget_stock_rows();
 
 		do_action( 'woocommerce_after_dashboard_status_widget', $reports );
@@ -157,13 +157,14 @@ class WC_Admin_Dashboard {
 		<li class="processing-orders">
 			<a href="<?php echo admin_url( 'edit.php?post_status=wc-processing&post_type=shop_order' ); ?>">
 				<?php
+					// GEWIJZIGD: Zeg 'wachten op bevestiging' bij regiowerkingen
 					if ( is_regional_webshop() ) {
 						printf(
 							_n( '<strong>%s bestelling</strong> wacht op bevestiging', '<strong>%s bestellingen</strong> wachten op bevestiging', $processing_count, 'woocommerce' ),
 							$processing_count
 						);
 					}
-					// OM GOD WEET WELKE REDEN WERKT ELSE HIER NIET
+					// Om God weet welke reden werkt else hier niet ...
 					if ( ! is_regional_webshop() ) {
 						printf(
 							_n( '<strong>%s order</strong> awaiting processing', '<strong>%s orders</strong> awaiting processing', $processing_count, 'woocommerce' ),

@@ -40,7 +40,7 @@ class WC_Shortcode_Cart {
 			WC()->customer->set_calculated_shipping( true );
 			WC()->customer->save();
 
-			// GEWIJZIGD: Laat deze lelijke en vrij nutteloze boodschap achterwege
+			// GEWIJZIGD: Laat lelijke en vrij nutteloze boodschap achterwege
 			// wc_add_notice( __( 'Shipping costs updated.', 'woocommerce' ), 'notice' );
 
 			do_action( 'woocommerce_calculated_shipping' );
