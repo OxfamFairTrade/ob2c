@@ -1553,7 +1553,7 @@
 		$profile_fields['billing']['fields']['billing_first_name']['label'] = 'Voornaam';
 		$profile_fields['billing']['fields']['billing_last_name']['label'] = 'Familienaam';
 		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
-		$profile_fields['billing']['fields']['billing_email']['description'] = 'E-mailadres waarop de klant zijn/haar bestelbevestigingen ontvangt.';
+		$profile_fields['billing']['fields']['billing_email']['description'] = 'E-mailadres waarop de klant zijn/haar bevestigingsmails ontvangt.';
 		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
 		$profile_fields['billing']['fields']['billing_address_1']['label'] = 'Straat en huisnummer';
 		$profile_fields['billing']['fields']['billing_postcode']['label'] = 'Postcode';
@@ -1718,7 +1718,7 @@
 				<th><label for="<?php echo $check_key; ?>">Geverifieerde bedrijfsklant</label></th>
 				<td>
 					<input type="checkbox" name="<?php echo $check_key; ?>" id="<?php echo $check_key; ?>" value="yes" <?php checked( $is_b2b_customer, 'yes' ); ?> />
-					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op.</span>
+					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Raadpleeg de handleiding.</a></span>
 				</td>
 			</tr>
 			<?php if ( $is_b2b_customer === 'yes' ) : ?>
@@ -4034,8 +4034,8 @@
 	function dashboard_pilot_news_widget_function() {
 		echo "<div class='rss-widget'>";
 		echo "<p>De <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Daarnaast kun je nog altijd <a href='https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 1ste opleidingssessie</a> raadplegen voor een overzicht van alle afspraken, en de <a href='https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-2de-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 2de opleidingssessie</a> voor meer praktische details.</p>";
-		echo "<p>Voor onderling overleg (en met ons) kun je vanaf nu ook terecht op <a href='https://oxfamfairtrade.slack.com' target='_blank'>Slack</a>. Iedere webshopvrijwilliger kreeg hiervoor op 22/05/2017 een uitnodigingsmail. Dit is optioneel, alle belangwekkende mededelingen blijven we op dit dashboard plaatsen. In de handleiding vind je steeds de meest uitgebreide informatie, gebruik eventueel de zoekfunctie bovenaan rechts. Op <a href='http://extranet.oxfamwereldwinkels.be/webshop target='_blank'>Extranet</a> vind je ook een overzicht van de belangrijkste documenten.</p>";
-		echo "<p>Voor dringende problemen bel je vanaf 1 juli gewoon naar de Klantendienst, die een opleiding kreeg om jullie bij te staan bij het beheer.</p>";
+		// echo "<p>Voor onderling overleg (en met ons) kun je vanaf nu ook terecht op <a href='https://oxfamfairtrade.slack.com' target='_blank'>Slack</a>. Iedere webshopvrijwilliger kreeg hiervoor op 22/05/2017 een uitnodigingsmail. Dit is optioneel, alle belangwekkende mededelingen blijven we op dit dashboard plaatsen. In de handleiding vind je steeds de meest uitgebreide informatie, gebruik eventueel de zoekfunctie bovenaan rechts. Op <a href='https://copain.oww.be/webshop' target='_blank'>Copain</a> vind je ook een overzicht van de belangrijkste documenten.</p>";
+		echo "<p>Voor dringende problemen bel je gewoon naar de Klantendienst, die een opleiding kreeg om jullie bij te staan bij het beheer.</p>";
 		echo "</div>";
 		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
 	}
