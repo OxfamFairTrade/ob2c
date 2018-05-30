@@ -3588,25 +3588,25 @@
 							$oft_product = reset($oft_products);
 							
 							if ( $oft_product === false ) {	
-								$logger->notice( 'SKU '.$product->get_sku().' not found in OFT database', $context );
-								
 								// Indien we de oude product-ID uit de OFT-database hebben, kunnen we $oft_product langs deze weg nog rechtstreeks opvullen
 								if ( $product->meta_exists('oft_product_id') and intval( $product->get_meta('oft_product_id') ) > 0 ) {
-									// Antwoord bevat geen ingrediënten???
-									$oft_product = $oft_db->get( 'products/'.$product->get_meta('oft_product_id'), array( 'lang' => 'nl' ) );
+									$oft_product = $oft_db->get( 'products/'.$product->get_meta('oft_product_id') );
 									$last_response = $oft_db->http->getResponse();
 
 									if ( $last_response->getCode() === 200 ) {
 										$logger->notice( 'SKU '.$product->get_sku().' queried by ID in OFT database', $context );
 									} else {
+										$oft_product = false;
 										$logger->alert( 'SKU '.$product->get_sku().' could not be queried by ID in OFT database', $context );
 									}
+								} else {
+									$logger->notice( 'SKU '.$product->get_sku().' not found in OFT database', $context );
 								}
 							}
 
 							if ( $oft_product !== false ) {	
 								
-								// WC PHP API 2.0+
+								// WC PHP API 2.0+ (objecten i.p.v. arrays)
 								// Stop voedingswaarden in een array met als keys de namen van de eigenschappen
 								foreach ( $oft_product->meta_data as $meta_data ) {
 									if ( array_key_exists( $meta_data->key, $food_api_labels ) ) {
@@ -3631,118 +3631,121 @@
 				}
 			}
 
-			if ( $type === 'food' ) {
-			// if ( $oft_quality_data ) {
+			// Check of de data inmiddels wel beschikbaar is
+			if ( $oft_quality_data ) {
 				
-				// Check of er voedingswaarden zijn, tonen van zodra energie ingevuld is
-				if ( array_key_exists( 'food', $oft_quality_data ) and floatval($oft_quality_data['food']['_energy']) > 0 ) {
-					global $food_api_labels, $food_required_keys, $food_secondary_keys;
+				if ( $type === 'food' ) {
+					
+					// Check of er voedingswaarden zijn, tonen van zodra energie ingevuld is
+					if ( array_key_exists( 'food', $oft_quality_data ) and floatval($oft_quality_data['food']['_energy']) > 0 ) {
+						global $food_api_labels, $food_required_keys, $food_secondary_keys;
+						$has_row = true;
+
+						wc_print_r( $oft_quality_data, true );
+
+						foreach ( $food_api_labels as $food_key => $food_label ) {
+							// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er expliciet een (nul)waarde ingesteld is
+							if ( in_array( $food_key, $food_required_keys ) or array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
+								$food_value = '';
+								if ( array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
+									// Vul de waarde in uit de database
+									$food_value = $oft_quality_data['food'][$food_key];
+								}
+
+								if ( floatval($food_value) > 0 ) {
+									// Formatter het getal als Belgische tekst
+									$food_value = str_replace( '.', ',', $food_value );
+								} else {
+									// Zet een nul (zonder expliciete precisie)
+									$food_value = '0';
+								}
+								?>
+								<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+									<th class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php echo $food_label; ?></th>
+									<td class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php
+										if ( $food_key === '_energy' ) {
+											echo $food_value.' kJ';
+										} else {
+											echo $food_value.' g';
+										}
+									?></td>
+								</tr>
+								<?php
+							}
+						}
+					}
+
+				} elseif ( $type === 'allergen' ) {
+
+					// Allergenen altijd tonen!
 					$has_row = true;
 
-					wc_print_r( $oft_quality_data, true );
-
-					foreach ( $food_api_labels as $food_key => $food_label ) {
-						// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er expliciet een (nul)waarde ingesteld is
-						if ( in_array( $food_key, $food_required_keys ) or array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
-							$food_value = '';
-							if ( array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
-								// Vul de waarde in uit de database
-								$food_value = $oft_quality_data['food'][$food_key];
-							}
-
-							if ( floatval($food_value) > 0 ) {
-								// Formatter het getal als Belgische tekst
-								$food_value = str_replace( '.', ',', $food_value );
-							} else {
-								// Zet een nul (zonder expliciete precisie)
-								$food_value = '0';
-							}
+					if ( array_key_exists( '_ingredients', $oft_quality_data['food'] ) ) {
+						$ingredients = $oft_quality_data['food']['_ingredients'];
+						if ( strlen($ingredients) > 3 ) {
 							?>
 							<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-								<th class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php echo $food_label; ?></th>
-								<td class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php
-									if ( $food_key === '_energy' ) {
-										echo $food_value.' kJ';
-									} else {
-										echo $food_value.' g';
+								<th><?php echo 'Ingrediënten'; ?></th>
+								<td><?php 
+									echo $ingredients;
+									if ( get_ingredients_legend($ingredients) ) {
+										echo '<small class="ingredients">'.implode( '<br/>', get_ingredients_legend($ingredients) ).'</small>';
 									}
 								?></td>
 							</tr>
 							<?php
 						}
 					}
-				}
 
-			} elseif ( $type === 'allergen' ) {
-
-				// Allergenen altijd tonen!
-				$has_row = true;
-
-				if ( array_key_exists( '_ingredients', $oft_quality_data['food'] ) ) {
-					$ingredients = $oft_quality_data['food']['_ingredients'];
-					if ( strlen($ingredients) > 3 ) {
-						?>
-						<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-							<th><?php echo 'Ingrediënten'; ?></th>
-							<td><?php 
-								echo $ingredients;
-								if ( get_ingredients_legend($ingredients) ) {
-									echo '<small class="ingredients">'.implode( '<br/>', get_ingredients_legend($ingredients) ).'</small>';
-								}
-							?></td>
-						</tr>
+					$contains = array();
+					$traces = array();
+					$no_allergens = false;
+					foreach ( $oft_quality_data['allergen'] as $slug => $name ) {
+						$parts = explode( '-', $slug );
+						if ( $parts[0] === 'c' ) {
+							$contains[] = $name;
+						} elseif ( $parts[0] === 'mc' ) {
+							$traces[] = $name;
+						} elseif ( $parts[0] === 'none' ) {
+							$no_allergens = true;
+						}
+					}
+					?>
+					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+						<th><?php echo 'Dit product bevat'; ?></th>
+						<td>
 						<?php
-					}
-				}
-
-				$contains = array();
-				$traces = array();
-				$no_allergens = false;
-				foreach ( $oft_quality_data['allergen'] as $slug => $name ) {
-					$parts = explode( '-', $slug );
-					if ( $parts[0] === 'c' ) {
-						$contains[] = $name;
-					} elseif ( $parts[0] === 'mc' ) {
-						$traces[] = $name;
-					} elseif ( $parts[0] === 'none' ) {
-						$no_allergens = true;
-					}
-				}
-				?>
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo 'Dit product bevat'; ?></th>
-					<td>
-					<?php
-						if ( count($contains) > 0 ) {
-							echo implode( ', ', $contains );
-						} else {
-							if ( $no_allergens === true or count($traces) > 0 ) {
-								echo 'geen meldingsplichtige allergenen';
+							if ( count($contains) > 0 ) {
+								echo implode( ', ', $contains );
 							} else {
-								echo '/';
+								if ( $no_allergens === true or count($traces) > 0 ) {
+									echo 'geen meldingsplichtige allergenen';
+								} else {
+									echo '/';
+								}
 							}
-						}
-					?>
-					</td>
-				</tr>
+						?>
+						</td>
+					</tr>
 
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo 'Kan sporen bevatten van'; ?></th>
-					<td>
-					<?php
-						if ( count($traces) > 0 ) {
-							echo implode( ', ', $traces );
-						} else {
-							if ( $no_allergens === true or count($contains) > 0 ) {
-								echo 'geen meldingsplichtige allergenen';
+					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
+						<th><?php echo 'Kan sporen bevatten van'; ?></th>
+						<td>
+						<?php
+							if ( count($traces) > 0 ) {
+								echo implode( ', ', $traces );
 							} else {
-								echo '/';
+								if ( $no_allergens === true or count($contains) > 0 ) {
+									echo 'geen meldingsplichtige allergenen';
+								} else {
+									echo '/';
+								}
 							}
-						}
-					?>
-					</td>
-				</tr>
-				<?php
+						?>
+						</td>
+					</tr>
+					<?php
+				}
 			}
 		}
 		
