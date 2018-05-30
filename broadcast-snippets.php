@@ -82,7 +82,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> array( 'publish' ),
-		'title'			=> 'b2b5%',
+		'title'			=> 'b2b-wereldwinkel',
 	);
 
 	$all_coupons = new WP_Query( $args );

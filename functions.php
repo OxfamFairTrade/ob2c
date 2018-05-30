@@ -998,10 +998,6 @@
 				jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', jQuery(this).is(":checked") );
 			});
 
-			/* Disable allergeenklasses */
-			jQuery( '#in-product_allergen-170' ).prop( 'disabled', true );
-			jQuery( '#in-product_allergen-171' ).prop( 'disabled', true );
-
 			/* Disbable prijswijzigingen bij terugbetalingen */
 			jQuery( '#order_line_items' ).find( '.refund_line_total.wc_input_price' ).prop( 'disabled', true );
 			jQuery( '#order_line_items' ).find( '.refund_line_tax.wc_input_price' ).prop( 'disabled', true );
@@ -1009,10 +1005,7 @@
 			jQuery( 'label[for=restock_refunded_items]' ).closest( 'tr' ).hide();
 		</script>
 		<?php
-		$current_user = wp_get_current_user();
-		$user_meta = get_userdata($current_user->ID);
-		$user_roles = $user_meta->roles;
-		if ( ! in_array( 'administrator', $user_roles ) ) {
+		if ( ! current_user_can('manage_options') ) {
 			?>
 			<script>
 				/* Orderstatus vastzetten */
@@ -1775,7 +1768,7 @@
 							$b2b_coupons = get_posts($args);
 							echo '<option value="">GEEN</option>';
 							foreach ( $b2b_coupons as $b2b_coupon ) {
-								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.number_format( $b2b_coupon->coupon_amount, 1, ',', '.' ).'%</option>';
+								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.number_format( $b2b_coupon->coupon_amount, 1, ',', '.' ).' %</option>';
 							}
 						?>
 						</select>
@@ -1796,6 +1789,10 @@
 						
 						<script type="text/javascript">
 							jQuery(document).ready(function() {
+								jQuery( 'input#'<?php echo $check_key; ?> ).on( 'change', function() {
+									jQuery( 'tr.show-if-b2b-checked' ).slideToggle();
+								});
+
 								jQuery( 'button#send_invitation' ).on( 'click', function() {
 									jQuery(this).prop( 'disabled', true ).text( 'Aan het verwerken ...' );
 									sendB2bWelcome( <?php echo $user->ID; ?> );
