@@ -3,7 +3,7 @@
 	Author:			Frederik Neirynck
 	Author URI:		https://www.oxfamfairtrade.be
 	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
-	Version:		1.2.2
+	Version:		1.2.4
 	Text Domain:	oxfam-admin
 */
 
@@ -172,6 +172,11 @@ li#wp-admin-bar-notes {
 /* Meldingen van framework voor WP Mail Log verbergen*/
 div.redux-notice {
 	display: none;
+}
+
+/* Geanimeerde profielvelden op zelfde breedte als gewone */
+input.show-if-b2b-checked {
+	width: 25em !important;
 }
 
 @media (max-width: 1024px) {

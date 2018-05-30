@@ -132,7 +132,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/admin.css', array(), '1.2.2' );
+		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/admin.css', array(), '1.2.4' );
 	}
 
 	// Fixes i.v.m. cURL
@@ -1568,8 +1568,11 @@
 		}
 		$profile_fields['billing']['title'] = $billing_title;
 		$profile_fields['billing']['fields']['billing_company']['label'] = 'Bedrijf of vereniging';
+		// Klasse slaat op tekstveld, niet op de hele rij
+		$profile_fields['billing']['fields']['billing_company']['class'] = 'show-if-b2b-checked';
 		$profile_fields['billing']['fields']['billing_vat']['label'] = 'BTW-nummer';
 		$profile_fields['billing']['fields']['billing_vat']['description'] = 'Geldig Belgisch ondernemingsnummer van 9 of 10 cijfers (optioneel).';
+		$profile_fields['billing']['fields']['billing_vat']['class'] = 'show-if-b2b-checked';
 		$profile_fields['billing']['fields']['billing_first_name']['label'] = 'Voornaam';
 		$profile_fields['billing']['fields']['billing_last_name']['label'] = 'Familienaam';
 		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
@@ -1594,7 +1597,9 @@
 
 		$profile_fields['shipping']['fields'] = array_swap_assoc( 'shipping_city', 'shipping_postcode', $profile_fields['shipping']['fields'] );
 
-		$order = array(
+		$billing_field_order = array(
+			'billing_company',
+			'billing_vat',
 			'billing_first_name',
 			'billing_last_name',
 			'billing_email',
@@ -1605,16 +1610,11 @@
 			'billing_country',
 		);
 
-		if ( is_b2b_customer() ) {
-			// Let op: tijdens het bewaren worden updategegevens via POST doorgegeven naar een pagina zonder GET-parameter!
-			array_unshift( $order, 'billing_company', 'billing_vat' );
+		foreach ( $billing_field_order as $field ) {
+			$ordered_billing_fields[$field] = $profile_fields['billing']['fields'][$field];
 		}
 
-		foreach ( $order as $field ) {
-			$billing_fields[$field] = $profile_fields['billing']['fields'][$field];
-		}
-
-		$profile_fields['billing']['fields'] = $billing_fields;
+		$profile_fields['billing']['fields'] = $ordered_billing_fields;
 		return $profile_fields;
 	}
 
@@ -1698,18 +1698,19 @@
 	// Algemene functie die retourneert of de gebruiker een B2B-klant is van de huidige webshop
 	function is_b2b_customer( $user_id = false ) {
 		if ( intval($user_id) < 1 ) {
+			// Val terug op de momenteel ingelogde gebruiker
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+			
 			if ( is_admin() ) {
+				// Extra checks op speciale gevallen in de back-end
 				if ( isset($_GET['user_id']) ) {
-					// Check in de back-end of we geen profiel van iemand anders aan het bekijken zijn
+					// Zijn we het profiel van iemand anders aan het bekijken?
 					$user_id = $_GET['user_id'];
 				} elseif ( isset($_POST['user_id']) ) {
-					// Check of we geen profiel van iemand anders aan het updaten zijn (heel belangrijk!)
+					// Zijn we het profiel van iemand anders aan het updaten?
 					$user_id = $_POST['user_id'];
 				}
-			} else {
-				// Val terug op de in alle andere gevallen relevante status van de momenteel ingelogde gebruiker
-				$current_user = wp_get_current_user();
-				$user_id = $current_user->ID;
 			}
 		}
 		if ( get_user_meta( intval($user_id), 'blog_'.get_current_blog_id().'_is_b2b_customer', true ) === 'yes' ) {
@@ -1741,90 +1742,104 @@
 					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Raadpleeg de handleiding.</a></span>
 				</td>
 			</tr>
-			<!-- Eventueel altijd inladen en tonen/verbergen m.b.v. jQuery -->
-			<?php if ( $is_b2b_customer === 'yes' ) : ?>
-				<tr class="show-if-b2b-checked">
-					<th><label for="<?php echo $select_key; ?>">Kortingspercentage</label></th>
-					<td>
-						<select name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
-						<?php	
-							$b2b_payment_method = array('cod');
-							$args = array(
-								'posts_per_page' => -1,
-								'post_type' => 'shop_coupon',
-								'post_status' => 'publish',
-								'meta_key' => 'coupon_amount',
-								'orderby' => 'meta_value_num',
-								'order' => 'ASC',
-								'meta_query' => array(
-									array(
-										'key' => '_wjecf_payment_methods',
-										'value' => serialize($b2b_payment_method),
-										'compare' => 'LIKE',
-									)
-								),
-							);
+			<tr class="show-if-b2b-checked">
+				<th><label for="<?php echo $select_key; ?>">Kortingspercentage</label></th>
+				<td>
+					<select name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
+					<?php	
+						$b2b_payment_method = array('cod');
+						$args = array(
+							'posts_per_page' => -1,
+							'post_type' => 'shop_coupon',
+							'post_status' => 'publish',
+							'meta_key' => 'coupon_amount',
+							'orderby' => 'meta_value_num',
+							'order' => 'ASC',
+							'meta_query' => array(
+								array(
+									'key' => '_wjecf_payment_methods',
+									'value' => serialize($b2b_payment_method),
+									'compare' => 'LIKE',
+								)
+							),
+						);
 
-							$b2b_coupons = get_posts($args);
-							echo '<option value="">GEEN</option>';
-							foreach ( $b2b_coupons as $b2b_coupon ) {
-								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.number_format( $b2b_coupon->coupon_amount, 1, ',', '.' ).' %</option>';
+						$b2b_coupons = get_posts($args);
+						echo '<option value="">Geen</option>';
+						foreach ( $b2b_coupons as $b2b_coupon ) {
+							echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.number_format( $b2b_coupon->coupon_amount, 1, ',', '.' ).'%</option>';
+						}
+					?>
+					</select>
+					<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje (met uitzondering van leeggoed).</span>
+				</td>
+			</tr>
+			<tr class="show-if-b2b-checked">
+				<th><label for="send_invitation">Uitnodiging</label></th>
+				<td>
+					<?php
+						$disabled = '';
+						if ( strlen( get_the_author_meta( 'billing_company', $user->ID ) ) < 2 ) {
+							$disabled = ' disabled';
+						}
+						echo '<button type="button" class="button disable-on-b2b-change" id="send_invitation" style="min-width: 600px;"'.$disabled.'>Verstuur welkomstmail naar accounteigenaar</button>';
+						echo '<p class="send_invitation description">';
+						if ( ! empty( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) {
+							printf( 'Laatste uitnodiging verstuurd: %s.', date( 'd-n-Y H:i:s', strtotime( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) );
+						}
+						echo '</p>';
+					?>
+					
+					<script type="text/javascript">
+						jQuery(document).ready(function() {
+							if ( ! jQuery('#<?php echo $check_key; ?>').is(':checked') ) {
+								jQuery('.show-if-b2b-checked').closest('tr').hide();
 							}
-						?>
-						</select>
-						<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje (met uitzondering van leeggoed).</span>
-					</td>
-				</tr>
-				<tr>
-					<th><label for="send_invitation">Uitnodiging</label></th>
-					<td>
-						<?php
-							echo '<button type="button" class="button" id="send_invitation" style="min-width: 600px;">Verstuur welkomstmail naar accounteigenaar</button>';
-							echo '<p class="send_invitation description">';
-							if ( ! empty( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) {
-								printf( 'Laatste uitnodiging verstuurd: %s.', date( 'd-n-Y H:i:s', strtotime( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) );
-							}
-							echo '</p>';
-						?>
-						
-						<script type="text/javascript">
-							jQuery(document).ready(function() {
-								jQuery( 'input#'<?php echo $check_key; ?> ).on( 'change', function() {
-									jQuery( 'tr.show-if-b2b-checked' ).slideToggle();
-								});
 
-								jQuery( 'button#send_invitation' ).on( 'click', function() {
-									jQuery(this).prop( 'disabled', true ).text( 'Aan het verwerken ...' );
-									sendB2bWelcome( <?php echo $user->ID; ?> );
-								});
-
-								function sendB2bWelcome( customer_id ) {
-									var input = {
-										'action': 'oxfam_invitation_action',
-										'customer_id': customer_id,
-									};
-									
-									jQuery.ajax({
-										type: 'POST',
-										url: ajaxurl,
-										data: input,
-										dataType: 'html',
-										success: function( msg ) {
-											jQuery( 'button#send_invitation' ).text( msg );
-											var today = new Date();
-											jQuery( 'p.send_invitation.description' ).html( 'Laatste actie ondernomen: '+today.toLocaleString('nl-NL')+'.' );
-										},
-										error: function( jqXHR, statusText, errorThrown ) {
-											jQuery( 'button#send_invitation' ).text( 'Asynchroon laden van PHP-file mislukt!' );
-											jQuery( 'p.send_invitation.description' ).html( 'Herlaad de pagina en probeer het eens opnieuw.' );
-										},
-									});
-								}
+							jQuery('#<?php echo $check_key; ?>').on( 'change', function() {
+								jQuery('.show-if-b2b-checked').closest('tr').toggle();
+								disableInvitation();
 							});
-						</script>
-					</td>
-				</tr>
-			<?php endif; ?>
+
+							jQuery('#<?php echo $select_key; ?>').on( 'change', function() {
+								disableInvitation();
+							});
+
+							function disableInvitation() {
+								jQuery('.disable-on-b2b-change').text('Werk het profiel bij vooraleer je de uitnodiging verstuurt').prop( 'disabled', true );
+							}
+
+							jQuery('button#send_invitation').on( 'click', function() {
+								jQuery(this).prop( 'disabled', true ).text( 'Aan het verwerken ...' );
+								sendB2bWelcome( <?php echo $user->ID; ?> );
+							});
+
+							function sendB2bWelcome( customer_id ) {
+								var input = {
+									'action': 'oxfam_invitation_action',
+									'customer_id': customer_id,
+								};
+								
+								jQuery.ajax({
+									type: 'POST',
+									url: ajaxurl,
+									data: input,
+									dataType: 'html',
+									success: function( msg ) {
+										jQuery( 'button#send_invitation' ).text( msg );
+										var today = new Date();
+										jQuery( 'p.send_invitation.description' ).html( 'Laatste actie ondernomen: '+today.toLocaleString('nl-NL')+'.' );
+									},
+									error: function( jqXHR, statusText, errorThrown ) {
+										jQuery( 'button#send_invitation' ).text( 'Asynchroon laden van PHP-file mislukt!' );
+										jQuery( 'p.send_invitation.description' ).html( 'Herlaad de pagina en probeer het eens opnieuw.' );
+									},
+								});
+							}
+						});
+					</script>
+				</td>
+			</tr>
 		</table>
 		<?php
 	}
