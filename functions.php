@@ -153,6 +153,7 @@
 		// Terug te plaatsen winkelboodschap: "We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening."
 	}
 
+	// Functie is niet gebaseerd op eigenschappen van gebruikers en dus al zeer vroeg al bepaald (geen 'init' nodig)
 	if ( is_regional_webshop() ) {
 		// Definieer een profielveld in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
 		add_action( 'show_user_profile', 'add_member_of_shop_user_field' );
@@ -570,17 +571,17 @@
 	add_filter( 'woocommerce_email_heading_customer_note', 'change_note_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_new_account', 'change_new_account_email_heading', 10, 2 );
 
-	function change_new_order_email_heading( $email_heading, $email ) {
+	function change_new_order_email_heading( $email_heading, $order ) {
 		$email_heading = __( 'Heading van de mail aan de webshopbeheerder', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
-	function change_processing_email_heading( $email_heading, $email ) {
+	function change_processing_email_heading( $email_heading, $order ) {
 		$email_heading = __( 'Heading van de 1ste bevestigingsmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
-	function change_completed_email_heading( $email_heading, $email ) {
+	function change_completed_email_heading( $email_heading, $order ) {
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
 			$email_heading = __( 'Heading van de 2de bevestigingsmail (indien afhaling)', 'oxfam-webshop' );
 		} else {
@@ -589,12 +590,12 @@
 		return $email_heading;
 	}
 
-	function change_refunded_email_heading( $email_heading, $email ) {
+	function change_refunded_email_heading( $email_heading, $order ) {
 		$email_heading = __( 'Heading van de terugbetalingsmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
 
-	function change_note_email_heading( $email_heading, $email ) {
+	function change_note_email_heading( $email_heading, $order ) {
 		$email_heading = __( 'Heading van de opmerkingenmail', 'oxfam-webshop' );
 		return $email_heading;
 	}
@@ -621,9 +622,9 @@
 
 	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
 		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
-		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_weight', '_length', '_width', '_height', '_thumbnail_id', '_force_sell_synced_ids', '_barcode', 'title_fr', 'description_fr', 'title_en', 'description_en', '_product_attributes' );
+		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_weight', '_length', '_width', '_height', '_thumbnail_id', '_force_sell_synced_ids', '_barcode', '_product_attributes' );
 		// Deze actie vuurt bij 'single value meta keys' enkel indien er een wezenlijke wijziging was, dus check hoeft niet meer
-		if ( get_post_type( $post_id ) === 'product' and in_array( $meta_key, $watched_metas ) ) {
+		if ( get_post_type($post_id) === 'product' and in_array( $meta_key, $watched_metas ) ) {
 			// Schrijf weg in log per weeknummer (zonder leading zero's)
 			$user = wp_get_current_user();
 			$str = date_i18n('d/m/Y H:i:s') . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . $user->user_firstname . "\t" . $meta_key . " gewijzigd in " . serialize($new_meta_value) . "\t" . get_the_title( $post_id ) . "\n";
@@ -1540,12 +1541,19 @@
 	add_filter( 'woocommerce_customer_meta_fields', 'modify_user_admin_fields', 10, 1 );
 
 	function modify_user_admin_fields( $profile_fields ) {
-		$profile_fields['billing']['title'] = 'Klantgegevens';
+		if ( ! is_b2b_customer() ) {
+			$billing_title = 'Klantgegevens';
+		} else {
+			$billing_title = 'Factuurgegevens';
+		}
+		$profile_fields['billing']['title'] = $billing_title;
 		$profile_fields['billing']['fields']['billing_company']['label'] = 'Bedrijf of vereniging';
 		$profile_fields['billing']['fields']['billing_vat']['label'] = 'BTW-nummer';
+		$profile_fields['billing']['fields']['billing_vat']['description'] = 'Geldig Belgisch ondernemingsnummer van 9 of 10 cijfers (optioneel).';
 		$profile_fields['billing']['fields']['billing_first_name']['label'] = 'Voornaam';
 		$profile_fields['billing']['fields']['billing_last_name']['label'] = 'Familienaam';
 		$profile_fields['billing']['fields']['billing_email']['label'] = 'Bestelcommunicatie naar';
+		$profile_fields['billing']['fields']['billing_email']['description'] = 'E-mailadres waarop de klant zijn/haar bestelbevestigingen ontvangt.';
 		$profile_fields['billing']['fields']['billing_phone']['label'] = 'Telefoonnummer';
 		$profile_fields['billing']['fields']['billing_address_1']['label'] = 'Straat en huisnummer';
 		$profile_fields['billing']['fields']['billing_postcode']['label'] = 'Postcode';
@@ -1575,11 +1583,10 @@
 			'billing_postcode',
 			'billing_city',
 			'billing_country',
-			
 		);
 
-		// BETER TONEN/VERBERGEN MET JQUERY?
 		if ( is_b2b_customer() ) {
+			// Let op: tijdens het bewaren worden updategegevens via POST doorgegeven naar een pagina zonder GET-parameter!
 			array_unshift( $order, 'billing_company', 'billing_vat' );
 		}
 
@@ -1671,10 +1678,16 @@
 	// Algemene functie die retourneert of de gebruiker een B2B-klant is van de huidige webshop
 	function is_b2b_customer( $user_id = false ) {
 		if ( intval($user_id) < 1 ) {
-			if ( is_admin() and isset($_GET['user_id']) ) {
-				// In de back-end ook nog even checken of we geen profiel aan het bewerken zijn
-				$user_id = $_GET['user_id'];
+			if ( is_admin() ) {
+				if ( isset($_GET['user_id']) ) {
+					// Check in de back-end of we geen profiel van iemand anders aan het bekijken zijn
+					$user_id = $_GET['user_id'];
+				} elseif ( isset($_POST['user_id']) ) {
+					// Check of we geen profiel van iemand anders aan het updaten zijn (heel belangrijk!)
+					$user_id = $_POST['user_id'];
+				}
 			} else {
+				// Val terug op de in alle andere gevallen relevante status van de momenteel ingelogde gebruiker
 				$current_user = wp_get_current_user();
 				$user_id = $current_user->ID;
 			}
@@ -1689,9 +1702,9 @@
 	// Toon de 'is_b2b_customer'-checkbox in de back-end
 	add_action( 'show_user_profile', 'add_is_b2b_customer_field' );
 	add_action( 'edit_user_profile', 'add_is_b2b_customer_field' );
-	// Zorg ervoor dat het ook bewaard wordt
-	add_action( 'personal_options_update', 'save_is_b2b_customer_field' );
-	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field' );
+	// Zorg ervoor dat het ook bewaard wordt (inhaken vòòr de 'save_customer_meta_fields'-actie van WooCommerce met default priority)
+	add_action( 'personal_options_update', 'save_is_b2b_customer_field', 5 );
+	add_action( 'edit_user_profile_update', 'save_is_b2b_customer_field', 5 );
 
 	function add_is_b2b_customer_field( $user ) {
 		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
@@ -1807,7 +1820,8 @@
 		$logger->debug( wc_print_r( $_POST, true ), $context );
 
 		if ( isset($_POST['billing_email']) ) {
-			$_POST['billing_email'] = format_mail($_POST['billing_email']);
+			// Retourneert false indien geen geldig e-mailformaat
+			$_POST['billing_email'] = is_email( format_mail($_POST['billing_email']) );
 		}
 		if ( isset($_POST['billing_phone']) ) {
 			$_POST['billing_phone'] = format_telephone($_POST['billing_phone']);
@@ -1901,33 +1915,63 @@
 	}
 
 	// Functie geeft blijkbaar zeer vroeg al een zinnig antwoord
-	if ( is_b2b_customer() ) {
-		// Geen BTW tonen bij producten en in het winkelmandje
-		add_filter( 'pre_option_woocommerce_tax_display_shop', 'override_tax_display_setting' );
-		add_filter( 'pre_option_woocommerce_tax_display_cart', 'override_tax_display_setting' );
+	add_action( 'init', 'activate_b2b_functions' );
 
-		// Vervang alle prijssuffixen
-		add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
+	function activate_b2b_functions() {
+		if ( is_b2b_customer() ) {
+			// Zorg ervoor dat de spinners overal per ompak omhoog/omlaag gaan
+			add_filter( 'woocommerce_quantity_input_args', 'suggest_order_unit_multiple', 10, 2 );
+	
+			// Geen BTW tonen bij producten en in het winkelmandje
+			add_filter( 'pre_option_woocommerce_tax_display_shop', 'override_tax_display_setting' );
+			add_filter( 'pre_option_woocommerce_tax_display_cart', 'override_tax_display_setting' );
 
-		// Voeg 'excl. BTW' toe bij stukprijzen en subtotalen in winkelmandje en orderdetail (= ook mails!)
-		add_filter( 'woocommerce_cart_subtotal', 'add_ex_tax_label_price', 10, 3 );
-		add_filter( 'woocommerce_order_formatted_line_subtotal', 'add_ex_tax_label_price', 10, 3 );
+			// Vervang alle prijssuffixen
+			add_filter( 'woocommerce_get_price_suffix', 'b2b_price_suffix', 10, 2 );
 
-		// Verwijder '(excl. BTW)' bij subtotalen
-		add_filter( 'woocommerce_countries_ex_tax_or_vat', 'remove_ex_tax_label_subtotals' );
-		
-	}
+			// Voeg 'excl. BTW' toe bij stukprijzen en subtotalen in winkelmandje en orderdetail (= ook mails!)
+			add_filter( 'woocommerce_cart_subtotal', 'add_ex_tax_label_price', 10, 3 );
+			add_filter( 'woocommerce_order_formatted_line_subtotal', 'add_ex_tax_label_price', 10, 3 );
 
-	function override_tax_display_setting() {
-		return 'excl';
-	}
+			// Verwijder '(excl. BTW)' bij subtotalen
+			add_filter( 'woocommerce_countries_ex_tax_or_vat', 'remove_ex_tax_label_subtotals' );
+			
+		}
 
-	function b2b_price_suffix( $suffix, $product ) {
-		return str_replace( 'incl', 'excl', $suffix );
-	}
+		function suggest_order_unit_multiple( $args, $product ) {
+			$multiple = intval( $product->get_attribute('ompak') );
+			if ( $multiple < 2 ) {
+				$multiple = 1;
+			} else {
+				// Eventuele bestellimiet instellen
+				// $args['max_value'] = 4*$multiple;
+			}
 
-	function remove_ex_tax_label_subtotals() {
-		return '';
+			if ( is_cart() or ( array_key_exists( 'nm_mini_cart_quantity', $args ) and $args['nm_mini_cart_quantity'] === true ) ) {
+				// Step enkel overrulen indien er op dit moment een veelvoud van de ompakhoeveelheid in het winkelmandje zit!
+				// In de mini-cart wordt dit niet tijdens page-load bepaald omdat AJAX niet de hele blok refresht
+				if ( $args['input_value'] % $multiple === 0 ) {
+					$args['step'] = $multiple;
+				}
+			} else {
+				// Input value enkel overrulen buiten het winkelmandje!
+				$args['input_value'] = $multiple;
+				$args['step'] = $multiple;
+			}
+			return $args;
+		}
+
+		function override_tax_display_setting() {
+			return 'excl';
+		}
+
+		function b2b_price_suffix( $suffix, $product ) {
+			return str_replace( 'incl', 'excl', $suffix );
+		}
+
+		function remove_ex_tax_label_subtotals() {
+			return '';
+		}
 	}
 
 	// Voeg 'incl. BTW' of 'excl. BTW' toe bij stukprijzen in winkelmandje
@@ -1976,41 +2020,6 @@
 			unset( $gateways['cod'] );
 		}
 		return $gateways;
-	}
-
-	// Zorg ervoor dat de spinners overal per ompak omhoog/omlaag gaan
-	add_filter( 'woocommerce_quantity_input_args', 'suggest_order_unit_multiple', 10, 2 );
-	
-	function suggest_order_unit_multiple( $args, $product ) {
-		if ( is_b2b_customer() ) {
-			$multiple = intval( $product->get_attribute('ompak') );
-			if ( $multiple < 2 ) {
-				$multiple = 1;
-			} else {
-				// Eventuele bestellimiet instellen
-				// $args['max_value'] = 4*$multiple;
-			}
-
-			if ( is_cart() or ( array_key_exists( 'nm_mini_cart_quantity', $args ) and $args['nm_mini_cart_quantity'] === true ) ) {
-				// Step enkel overrulen indien er op dit moment een veelvoud van de ompakhoeveelheid in het winkelmandje zit!
-				// In de mini-cart wordt dit niet tijdens page-load bepaald omdat AJAX niet de hele blok refresht
-				if ( $args['input_value'] % $multiple === 0 ) {
-					$args['step'] = $multiple;
-				}
-			} else {
-				// Input value enkel overrulen buiten het winkelmandje!
-				$args['input_value'] = $multiple;
-				$args['step'] = $multiple;
-			}
-		}
-		return $args;
-	}
-
-	// Laat de spinners tot 0 i.p.v. 1 gaan 
-	add_filter( 'woocommerce_quantity_input_min', 'set_min_input_to_zero', 10, 2 );
-	
-	function set_min_input_to_zero( $min, $product ) {
-		return 0;
 	}
 
 	// Toon aantal stuks dat toegevoegd zal worden aan het winkelmandje
@@ -4479,11 +4488,11 @@
 	}
 
 	function is_regional_webshop() {
-		if ( get_current_site()->domain === 'demo.oxfamwereldwinkels.be' ) {
-			$regions = array( 9 );
-		} else {
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 			// Antwerpen, Leuven en Vilvoorde
 			$regions = array( 24, 28, 34 );
+		} else {
+			$regions = array( 9 );
 		}
 		return in_array( get_current_blog_id(), $regions );
 	}
@@ -4803,7 +4812,7 @@
 
 	// Print variabelen op een overzichtelijke manier naar debug.log
 	if ( ! function_exists( 'write_log' ) ) {
-		function write_log ( $log )  {
+		function write_log( $log )  {
 			if ( true === WP_DEBUG ) {
 				if ( is_array( $log ) || is_object( $log ) ) {
 					error_log( print_r( $log, true ) );

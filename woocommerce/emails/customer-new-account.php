@@ -42,6 +42,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 				'billing_address_1' => 'Factuuradres',
 				'billing_postcode' => 'Postcode',
 				'billing_city' => 'Gemeente',
+				'billing_phone' => 'Telefoonnummer',
 			);
 			
 			foreach ( $author_metas as $key => $label ) {
