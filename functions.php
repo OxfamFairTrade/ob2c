@@ -40,14 +40,8 @@
 					}
 				}
 			}
-		} else {
-			if ( isset( $_GET['addSku'] ) ) {
-				// Voeg SKU meteen toe aan winkelmandje
-				// Via aanbevolen filter
-				add_action( 'template_redirect', 'add_product_to_cart' );
-				// Rechtstreeks
-				// WC()->cart->add_to_cart( wc_get_product_id_by_sku($_GET['addSku']), 1 );
-			}
+		} elseif ( isset( $_GET['addSku'] ) ) {
+			add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
 		}
 	}
 
@@ -59,11 +53,12 @@
 		return $url;
 	}
 
-	function add_product_to_cart() {
+	function add_product_to_cart_by_get_parameter() {
 		if ( ! is_admin() ) {
+			// Check of het product al in het winkelmandje zit
 			$product_id = wc_get_product_id_by_sku( $_GET['addSku'] );
 			$found = false;
-			if ( sizeof( WC()->cart->get_cart() ) > 0 ) {
+			if ( count( WC()->cart->get_cart() ) > 0 ) {
 				foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					$productje = $values['data'];
 					if ( $productje->get_id() == $product_id ) {
@@ -71,8 +66,11 @@
 					}
 				}
 			}
-			if ( ! $found ) {
-				WC()->cart->add_to_cart( $product_id );
+			$product_to_add = wc_get_product($product_id);
+			if ( $product_to_add !== false ) {
+				if ( WC()->cart->add_to_cart( $product_id, 1 ) === false ) {
+					wp_safe_redirect( $product_to_add->get_permalink() );
+				}
 			}
 		}
 	}
@@ -151,7 +149,7 @@
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
-	$default_holidays = array( '2018-04-01', '2018-04-02', '2018-05-01', '2018-05-10', '2018-05-20', '2018-05-21', '2018-07-21', '2018-08-15', '2018-11-01', '2018-11-11', '2018-12-25', '2019-01-01' );
+	$default_holidays = array( '2018-07-21', '2018-08-15', '2018-11-01', '2018-11-11', '2018-12-25', '2019-01-01' );
 	
 
 
@@ -364,8 +362,9 @@
 
 	function add_claimed_by_column( $columns ) {
 		$columns['claimed_by'] = 'Behandeling door';
-		// Eventueel bepaalde kolommen altijd uitschakelen?
+		// Eventueel bepaalde kolommen volledig verwijderen?
 		// unset( $columns['order_notes'] );
+		// unset( $columns['order_actions'] );
 		return $columns;
 	}
 
@@ -547,6 +546,55 @@
 			$warning_shown = true;
 		}
 		return $args;
+	}
+
+	// Voeg acties toe op orderdetailscherm om status te wijzigen (want keuzemenu bestelstatus geblokkeerd!)
+	add_action( 'woocommerce_order_actions', 'add_order_status_changing_actions' );
+
+	function add_order_status_changing_actions( $actions ) {
+		global $theorder;
+		
+		if ( $theorder->has_shipping_method('local_pickup_plus') ) {
+			$completed_label = 'Markeer als klaargezet in de winkel';
+		} else {
+			$completed_label = 'Markeer als ingepakt voor verzending';
+		}
+
+		if ( ! is_regional_webshop() ) {
+			if ( $theorder->get_status() === 'processing' ) {
+				$actions['oxfam_mark_completed'] = $completed_label;
+			}
+		} else {
+			if ( $theorder->get_status() === 'claimed' ) {
+				$actions['oxfam_mark_completed'] = $completed_label;
+			} elseif ( $theorder->get_status() === 'processing' ) {
+				$actions['oxfam_mark_claimed'] = 'Markeer als geclaimd';
+			}
+		}
+
+		if ( $theorder->get_meta('is_b2b_sale') === 'yes' ) {
+			// $actions['oxfam_mark_invoiced'] = 'Markeer als factuur opgesteld';
+		}
+
+		// Pas vanaf WC 3.1+ toegang tot alle statussen
+		// write_log( wc_print_r( $actions, true ) );
+		// unset($actions['send_order_details']);
+		// unset($actions['regenerate_download_permissions']);
+		
+		return $actions;
+	}
+
+	add_action( 'woocommerce_order_action_oxfam_mark_completed', 'proces_oxfam_mark_completed' );
+	add_action( 'woocommerce_order_action_oxfam_mark_claimed', 'proces_oxfam_mark_claimed' );
+
+	function proces_oxfam_mark_completed( $order ) {
+		$order->set_status('completed');
+		$order->save();
+	}
+
+	function proces_oxfam_mark_claimed( $order ) {
+		$order->set_status('claimed');
+		$order->save();
 	}
 
 	// Voer shortcodes ook uit in widgets, titels en e-mailfooters
