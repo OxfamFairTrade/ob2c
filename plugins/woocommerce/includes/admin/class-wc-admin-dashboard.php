@@ -154,6 +154,18 @@ class WC_Admin_Dashboard {
 			}
 			$processing_count += isset( $counts['wc-processing'] ) ? $counts['wc-processing'] : 0;
 		}
+
+		// GEWIJZIGD: Varieer tweede blokje volgens inhoud
+		if ( ! is_regional_webshop() ) {
+			echo '<li class="pending-orders">';
+				echo '<a href="'.admin_url( 'edit.php?post_status=wc-pending&post_type=shop_order' ).'">';
+					printf(
+						_n( '<strong>%s bestelling</strong> wacht op betaling', '<strong>%s bestellingen</strong> wachten op betaling', $on_hold_count ),
+						$on_hold_count
+					);
+				echo '</a>';
+			echo '</li>';
+		}
 		?>
 		<li class="processing-orders">
 			<a href="<?php echo admin_url( 'edit.php?post_status=wc-processing&post_type=shop_order' ); ?>">
@@ -182,15 +194,6 @@ class WC_Admin_Dashboard {
 				echo '<a href="'.admin_url( 'edit.php?post_status=wc-claimed&post_type=shop_order' ).'">';
 					printf(
 						_n( '<strong>%s order</strong> awaiting processing', '<strong>%s orders</strong> awaiting processing', $on_hold_count, 'woocommerce' ),
-						$on_hold_count
-					);
-				echo '</a>';
-			echo '</li>';
-		} else {
-			echo '<li class="pending-orders">';
-				echo '<a href="'.admin_url( 'edit.php?post_status=wc-pending&post_type=shop_order' ).'">';
-					printf(
-						_n( '<strong>%s bestelling</strong> wacht op betaling', '<strong>%s bestellingen</strong> wachten op betaling', $on_hold_count ),
 						$on_hold_count
 					);
 				echo '</a>';
