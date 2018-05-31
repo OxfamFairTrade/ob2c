@@ -3655,9 +3655,12 @@
 								if ( floatval($food_value) > 0 ) {
 									// Formatter het getal als Belgische tekst
 									$food_value = str_replace( '.', ',', $food_value );
-								} else {
+								} elseif ( in_array( $food_key, $food_required_keys ) ) {
 									// Zet een nul (zonder expliciete precisie)
 									$food_value = '0';
+								} else {
+									// Rij niet tonen, skip naar volgende key
+									break;
 								}
 								?>
 								<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
