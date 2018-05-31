@@ -3680,7 +3680,7 @@
 									$food_value = '0';
 								} else {
 									// Rij niet tonen, skip naar volgende key
-									break;
+									continue;
 								}
 								?>
 								<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
