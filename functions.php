@@ -5,6 +5,21 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	// Bevat geen WooCommerce-acties want die worden wegens een bug ingeladen via JavaScript!
+	// add_filter( 'bulk_actions-edit-shop_order', 'my_custom_bulk_actions', 1, 10000 );
+
+	function my_custom_bulk_actions( $actions ){
+		var_dump_pre( $actions );
+		return $actions;
+	}
+
+	// Poging om de actie die de JavaScript toe te voegen weer uitschakelt
+	// add_action( 'plugins_loaded', 'disable_wc_actions' );
+
+	function disable_wc_actions() {
+		remove_action( 'bulk_actions-edit-shop_order', array( WC_Admin_CPT_Shop_Order::getInstance(), 'admin_footer' ), 10 );
+	}
+
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
