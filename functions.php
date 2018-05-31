@@ -3198,6 +3198,11 @@
 		wp_die();
 	}
 
+	// Laat de wachtwoordlinks in de resetmails langer leven dan 1 dag (= standaard)
+	add_filter( 'password_reset_expiration', function( $expiration ) {
+		return MONTH_IN_SECONDS;
+	});
+
 	function oxfam_get_attachment_id_by_file_name( $post_title ) {
 		$args = array(
 			// We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan

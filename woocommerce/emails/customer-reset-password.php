@@ -29,9 +29,13 @@ $customer = get_user_by( 'login', $user_login );
 	?>
 </p>
 
-<p><?php _e( 'Someone requested that the password be reset for the following account:', 'woocommerce' ); ?></p>
-<p><?php printf( __( 'Username: %s', 'woocommerce' ), $user_login ); ?></p>
-<p><?php _e( 'If this was a mistake, just ignore this email and nothing will happen.', 'woocommerce' ); ?></p>
+<p>
+	<?php
+		printf( __( 'Iemand heeft verzocht om het wachtwoord van je account &laquo; %1$s &raquo; bij de webshop van %2$s opnieuw in te stellen.', 'oxfam-webshop' ), get_company_name(), $user_login );
+	?>
+</p>
+
+<p><?php _e( 'Was dit een vergissing? Negeer dan gewoon deze e-mail en er zal niets gebeuren.', 'oxfam-webshop' ); ?></p>
 
 <p style="text-align: center;">
 	<a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'login' => rawurlencode( $user_login ) ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>">
@@ -39,6 +43,6 @@ $customer = get_user_by( 'login', $user_login );
 	</a>
 </p>
 
-<p><?php printf( __( 'Ondertekening van mails met accountinfo.', 'oxfam-webshop' ) ); ?></p>
+<p><?php printf( __( 'Ondertekening van mails met accountinfo, inclusief regio van webshop (%s).', 'oxfam-webshop' ), str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ); ?></p>
 
 <?php do_action( 'woocommerce_email_footer', $email ); ?>
