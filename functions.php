@@ -3715,7 +3715,7 @@
 					// Allergenen altijd tonen!
 					$has_row = true;
 
-					if ( array_key_exists( '_ingredients', $oft_quality_data['food'] ) ) {
+					if ( array_key_exists( 'food', $oft_quality_data ) and array_key_exists( '_ingredients', $oft_quality_data['food'] ) ) {
 						$ingredients = $oft_quality_data['food']['_ingredients'];
 						if ( strlen($ingredients) > 3 ) {
 							?>
