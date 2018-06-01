@@ -5,21 +5,6 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
-	// Bevat geen WooCommerce-acties want die worden wegens een bug ingeladen via JavaScript!
-	// add_filter( 'bulk_actions-edit-shop_order', 'my_custom_bulk_actions', 1, 10000 );
-
-	function my_custom_bulk_actions( $actions ){
-		var_dump_pre( $actions );
-		return $actions;
-	}
-
-	// Poging om de actie die de JavaScript toe te voegen weer uitschakelt
-	// add_action( 'plugins_loaded', 'disable_wc_actions' );
-
-	function disable_wc_actions() {
-		remove_action( 'bulk_actions-edit-shop_order', array( WC_Admin_CPT_Shop_Order::getInstance(), 'admin_footer' ), 10 );
-	}
-
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
@@ -92,6 +77,18 @@
 	
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
 	$content_width = 1500;
+
+	// Google Analytics wordt standaard uitgeschakeld voor users met de rechten 'manage_options' (= enkel superadmins)
+	// add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
+
+	function disable_ga_tracking_for_certain_users( $disable, $type ) {
+		// $type bevat het soort GA-tracking
+		if ( current_user_can('manage_woocommerce') ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
 	add_action( 'init', 'allow_target_tag', 20 );
@@ -511,6 +508,21 @@
 		}
 		return $array;
 	}	
+
+	// Bevat geen WooCommerce-acties want die worden wegens een bug ingeladen via JavaScript!
+	// add_filter( 'bulk_actions-edit-shop_order', 'my_custom_bulk_actions', 1, 10000 );
+
+	function my_custom_bulk_actions( $actions ){
+		var_dump_pre( $actions );
+		return $actions;
+	}
+
+	// Poging om de actie die de JavaScript toe te voegen weer uitschakelt
+	// add_action( 'plugins_loaded', 'disable_wc_actions' );
+
+	function disable_wc_actions() {
+		remove_action( 'bulk_actions-edit-shop_order', array( WC_Admin_CPT_Shop_Order::getInstance(), 'admin_footer' ), 10 );
+	}
 
 	// Global om ervoor te zorgen dat de boodschap enkel in de eerste loop geëchood wordt
 	$warning_shown = false;
