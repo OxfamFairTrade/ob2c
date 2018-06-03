@@ -450,8 +450,8 @@
 		if ( $column === 'estimated_delivery' ) {
 			$processing_statusses = array( 'processing', 'claimed' );
 			$completed_statusses = array( 'completed' );
-			if ( $the_order->get_meta('estimated_delivery') ) {
-				$delivery = date( 'Y-m-d H:i:s', $the_order->get_meta('estimated_delivery') );
+			if ( $the_order->meta_exists('estimated_delivery') ) {
+				$delivery = date( 'Y-m-d H:i:s', intval( $the_order->get_meta('estimated_delivery') ) );
 				if ( in_array( $the_order->get_status(), $processing_statusses ) ) {
 					if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
 						$color = 'red';
@@ -1543,7 +1543,7 @@
 				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
 				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
 			} else {
-				// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD en voeg tijdstip toe aan tekst
+				// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 				$pickup_text .= ' vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp );
 			} 

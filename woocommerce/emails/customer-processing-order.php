@@ -26,7 +26,8 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$pickup_location = $method->get_meta('pickup_location');
 	
 	if ( $order->get_meta('is_b2b_sale') === 'no' ) {
-		$delivery = $order->get_meta('estimated_delivery');
+		// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD
+		$delivery = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 		// We gaan ervan uit dat deze waarde altijd bestaat maar toch even loggen bij calamiteiten
 		if ( $delivery === false ) {
 			write_log("AFHAALMAIL VERSTUURD TERWIJL TIJDSSCHATTING ONTBREEKT");
