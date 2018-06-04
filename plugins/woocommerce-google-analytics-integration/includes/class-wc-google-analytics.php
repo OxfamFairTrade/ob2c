@@ -281,8 +281,7 @@ class WC_Google_Analytics extends WC_Integration {
 		global $wp;
 		$display_ecommerce_tracking = false;
 
-		// GEWIJZIGD: Geen tracking doen bij iedereen die orders kan verwerken
-		if ( is_admin() || current_user_can( 'manage_woocommerce' ) || ! $this->ga_id ) {
+		if ( $this->disable_tracking( 'all' ) ) {
 			return;
 		}
 
@@ -346,7 +345,7 @@ class WC_Google_Analytics extends WC_Integration {
 	 * @return bool True if tracking for a certain setting is disabled
 	 */
 	private function disable_tracking( $type ) {
-		if ( is_admin() || current_user_can( 'manage_options' ) || ( ! $this->ga_id ) || 'no' === $type ) {
+		if ( is_admin() || current_user_can( 'manage_options' ) || ( ! $this->ga_id ) || 'no' === $type || apply_filters( 'woocommerce_ga_disable_tracking', false, $type ) ) {
 			return true;
 		}
 	}
@@ -376,11 +375,6 @@ class WC_Google_Analytics extends WC_Integration {
 			$code = "" . WC_Google_Analytics_JS::get_instance()->tracker_var() . "( 'ec:addProduct', {";
 			$code .= "'id': '" . esc_js( $product->get_sku() ? $product->get_sku() : ( '#' . $product->get_id() ) ) . "',";
 			$code .= "'name': '" . esc_js( $product->get_title() ) . "',";
-			$ids = $product->get_category_ids();
-			foreach ( $ids as $id ) {
-				$term = get_term_by( 'id', $id, 'product_cat' );
-			}
-			$code .= "'category': '" . esc_js( $term->name ) . "',";
 			$code .= "'quantity': $( 'input.qty' ).val() ? $( 'input.qty' ).val() : '1'";
 			$code .= "} );";
 			$parameters['enhanced'] = $code;
@@ -416,8 +410,17 @@ class WC_Google_Analytics extends WC_Integration {
 			return $url;
 		}
 
+		if ( ! is_object( WC()->cart ) ) {
+			return $url;
+		}
+
 		$item = WC()->cart->get_cart_item( $key );
 		$product = $item['data'];
+
+		if ( ! is_object( $product ) ) {
+			return $url;
+		}
+
 		$url = str_replace( 'href=', 'data-product_id="' . esc_attr( $product->get_id() ) . '" data-product_sku="' . esc_attr( $product->get_sku() )  . '" href=', $url );
 		return $url;
 	}
