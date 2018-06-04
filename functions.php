@@ -79,7 +79,7 @@
 	$content_width = 1500;
 
 	// Google Analytics wordt standaard uitgeschakeld voor users met de rechten 'manage_options' (= enkel superadmins)
-	// add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
+	add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
 		// $type bevat het soort GA-tracking
@@ -3212,7 +3212,7 @@
 
 	// Laat de wachtwoordlinks in de resetmails langer leven dan 1 dag (= standaard)
 	add_filter( 'password_reset_expiration', function( $expiration ) {
-		return MONTH_IN_SECONDS;
+		return 2*WEEK_IN_SECONDS;
 	});
 
 	function oxfam_get_attachment_id_by_file_name( $post_title ) {
