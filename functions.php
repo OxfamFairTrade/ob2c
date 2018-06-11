@@ -36,11 +36,11 @@
 				$global_zips = get_shops();
 				if ( strlen( $zip ) === 4 ) {
 					if ( array_key_exists( $zip, $global_zips ) ) {
-						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip.'&addSku='.$_GET['addSku'] );
+						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip );
 					}
 				}
 			}
-		} elseif ( isset( $_GET['addSku'] ) ) {
+		} elseif ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
 			add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
 		}
 	}
@@ -973,6 +973,7 @@
 						}
 					});
 
+					// WERKT NIET OVERAL
 					jQuery('.nm-page-full').find('a').attr( 'href', function(i,h) {
 						return h + ( h.indexOf('?') != -1 ? '&addSku=<?php echo $_GET['addSku']; ?>' : '?addSku=<?php echo $_GET['addSku']; ?>' );
 					});
