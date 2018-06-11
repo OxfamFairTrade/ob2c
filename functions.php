@@ -790,9 +790,9 @@
 	###############
 
 	// Voeg allerlei checks toe net na het inladen van WordPress
-	add_action( 'init', 'woocommerce_clear_cart_url' );
+	add_action( 'init', 'woocommerce_parameter_checks_after_loading' );
 	
-	function woocommerce_clear_cart_url() {
+	function woocommerce_parameter_checks_after_loading() {
 		// Uniformeer de gebruikersdata net voor we ze opslaan in de database STAAT GEEN WIJZIGINGEN TOE
 		// add_filter( 'update_user_metadata', 'sanitize_woocommerce_customer_fields', 10, 5 );
 
@@ -826,8 +826,15 @@
 		uasort( $items, function( $a, $b ) {
 			// Verhinder dat we ook tax- en verzendlijnen shufflen
 			if ( $a->get_type() === 'line_item' and $b->get_type() === 'line_item' ) {
-				$sku_a = $a->get_product()->get_sku();
-				$sku_b = $b->get_product()->get_sku();
+				$product_a = $a->get_product();
+				$product_b = $b->get_product();
+				// Check of producten nog bestaan!
+				if ( $product_a !== false ) {
+					$sku_a = $product_a->get_sku();
+				}
+				if ( $product_b !== false ) {
+					$sku_b = $product_b->get_sku();
+				}
 				if ( is_numeric( $sku_a ) ) {
 					if ( is_numeric( $sku_b ) ) {
 						return ( intval( $sku_a ) < intval( $sku_b ) ) ? -1 : 1;	
@@ -907,11 +914,11 @@
 			?>
 				<script>
 					var wto;
-					jQuery( 'div.woocommerce' ).on( 'change', '.qty', function() {
+					jQuery('div.woocommerce').on( 'change', '.qty', function() {
 						clearTimeout(wto);
 						// Time-out net iets groter dan buffertijd zodat we bij ingedrukt houden van de spinner niet gewoon +1/-1 doen
 						wto = setTimeout(function() {
-							jQuery( "[name='update_cart']" ).trigger( 'click' );
+							jQuery("[name='update_cart']").trigger('click');
 						}, 500);
 
 					});
@@ -921,11 +928,11 @@
 			?>
 				<script>
 					var wto;
-					jQuery( '#oxfam-zip-user' ).on( 'input change', function() {
+					jQuery('#oxfam-zip-user').on( 'input change', function() {
 						clearTimeout(wto);
 						var zip = jQuery(this).val();
-						var button = jQuery( '#do_oxfam_redirect' );
-						var zips = <?php echo json_encode( get_site_option( 'oxfam_flemish_zip_codes' ) ); ?>;
+						var button = jQuery('#do_oxfam_redirect');
+						var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
 						if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
 							button.prop( 'disabled', false ).parent().addClass('is-valid');
 							wto = setTimeout( function() {
@@ -939,17 +946,17 @@
 						}
 					});
 					
-					jQuery( '#oxfam-zip-user' ).keyup( function(event) {
+					jQuery('#oxfam-zip-user').keyup( function(event) {
 						if ( event.which == 13 ) {
-							jQuery( '#do_oxfam_redirect' ).trigger('click');
+							jQuery('#do_oxfam_redirect').trigger('click');
 						}
 					});
 					
-					jQuery( '#do_oxfam_redirect' ).on( 'click', function() {
+					jQuery('#do_oxfam_redirect').on( 'click', function() {
 						jQuery(this).prop( 'disabled', true );
-						var input = jQuery( '#oxfam-zip-user' );
+						var input = jQuery('#oxfam-zip-user');
 						var zip = input.val();
-						var url = jQuery( '#'+zip+'.oxfam-zip-value' ).val();
+						var url = jQuery('#'+zip+'.oxfam-zip-value').val();
 						if ( typeof url !== 'undefined' ) {
 							if ( url.length > 10 ) {
 								// TOE TE VOEGEN: +'&referralCity='+city (maar city nog niet bepaald)
@@ -966,6 +973,10 @@
 						}
 					});
 
+					jQuery('.nm-page-full').find('a').attr( 'href', function( i, h ) {
+						return h + ( h.indexOf('?') != -1 ? '&addSku='<?php echo $_GET['addSku']; ?> : '?addSku=<?php echo $_GET['addSku']; ?>' );
+					});
+
 					jQuery( function() {
 						var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
 						jQuery( '#oxfam-zip-user' ).autocomplete({
@@ -978,7 +989,7 @@
 								jQuery( '#oxfam-zip-user' ).trigger('change');
 							}
 						});
-					} );
+					});
 				</script>
 			<?php
 		} elseif ( is_account_page() and is_user_logged_in() ) {
