@@ -837,6 +837,7 @@
 				if ( $product_b !== false ) {
 					$sku_b = $product_b->get_sku();
 				}
+				// Deze logica plaatst niet-numerieke referenties (en dus ook inmiddels ter ziele gegane producten) onderaan
 				if ( is_numeric( $sku_a ) ) {
 					if ( is_numeric( $sku_b ) ) {
 						return ( intval( $sku_a ) < intval( $sku_b ) ) ? -1 : 1;	
@@ -975,9 +976,9 @@
 						}
 					});
 
-					// WERKT NIET OVERAL
-					jQuery('.nm-page-full').find('a').attr( 'href', function(i,h) {
-						return h + ( h.indexOf('?') != -1 ? '&addSku=<?php echo $_GET['addSku']; ?>' : '?addSku=<?php echo $_GET['addSku']; ?>' );
+					// WERKT NIET OVERAL (op demosite: .nm-page-full)
+					jQuery('.nm-row').find('a').attr( 'href', function(i,href) {
+						return href + ( href.indexOf('?') != -1 ? '&addSku=<?php echo $_GET['addSku']; ?>' : '?addSku=<?php echo $_GET['addSku']; ?>' );
 					});
 
 					jQuery( function() {
