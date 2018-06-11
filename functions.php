@@ -960,7 +960,7 @@
 						if ( typeof url !== 'undefined' ) {
 							if ( url.length > 10 ) {
 								// TOE TE VOEGEN: +'&referralCity='+city (maar city nog niet bepaald)
-								window.location.href = url+'?referralZip='+zip;
+								window.location.href = url+'?referralZip='+zip+'&addSku=<?php echo $_GET['addSku']; ?>';
 							} else {
 								alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
 								jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
@@ -973,8 +973,8 @@
 						}
 					});
 
-					jQuery('.nm-page-full').find('a').attr( 'href', function( i, h ) {
-						return h + ( h.indexOf('?') != -1 ? '&addSku='<?php echo $_GET['addSku']; ?> : '?addSku=<?php echo $_GET['addSku']; ?>' );
+					jQuery('.nm-page-full').find('a').attr( 'href', function(i,h) {
+						return h + ( h.indexOf('?') != -1 ? '&addSku=<?php echo $_GET['addSku']; ?>' : '?addSku=<?php echo $_GET['addSku']; ?>' );
 					});
 
 					jQuery( function() {
@@ -984,7 +984,7 @@
 							minLength: 1,
 							autoFocus: true,
 							position: { my : "right+20 top", at: "right bottom" },
-							close: function(event, ui) {
+							close: function(event,ui) {
 								// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
 								jQuery( '#oxfam-zip-user' ).trigger('change');
 							}
@@ -4758,24 +4758,24 @@
 		return $global_zips;
 	}
 
-	add_filter( 'flexmap_custom_map_types', function($mapTypes, $attrs) {
+	add_filter( 'flexmap_custom_map_types', function( $map_types, $attrs ) {
 		if ( empty($attrs['maptype']) ) {
-			return $mapTypes;
+			return $map_types;
 		}
 
-		if ( $attrs['maptype'] === 'light_monochrome' and empty( $mapTypes['light_monochrome'] ) ) {
+		if ( $attrs['maptype'] === 'light_monochrome' and empty($map_types['light_monochrome']) ) {
 			$custom_type = '{ "styles" : [{"stylers":[{"hue":"#ffffff"},{"invert_lightness":false},{"saturation":-100}]}], "options" : { "name" : "Light Monochrome" } }';
-			$mapTypes['light_monochrome'] = json_decode($custom_type);
+			$map_types['light_monochrome'] = json_decode($custom_type);
 		}
-		return $mapTypes;
-	}, 10, 2);
+		return $map_types;
+	}, 10, 2 );
 
 	function get_company_and_year() {
 		return get_company_name().' &copy; 2017-'.date_i18n('Y');
 	}
 
 	function get_local_logo_url() {
-		return get_stylesheet_directory_uri() . '/logo/' . get_option( 'oxfam_shop_node' ) . '.png';
+		return get_stylesheet_directory_uri().'/logo/'.get_option('oxfam_shop_node').'.png';
 	}
 
 	function get_oxfam_covered_zips() {

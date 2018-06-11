@@ -32,7 +32,7 @@
 							$str .= "<styleUrl>#pickup</styleUrl>";
 							$extra_text = 'Deze webshop voorziet enkel afhalingen in de winkel.';
 						}
-						$str .= "<description><![CDATA[<p><a href=".get_site_url().">".get_company_address()."</a></p><p style='text-align: center;'>".$extra_text."<br><a href=".get_site_url().">Ga naar de webshop »</a></p>]]></description>";
+						$str .= "<description><![CDATA[<p><a href='".get_site_url()."/'>".get_company_address()."</a></p><p style='text-align: center;'>".$extra_text."<br><a href='".get_site_url()."/'>Ga naar de webshop »</a></p>]]></description>";
 						$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
 						$str .= "</Placemark>";
 
