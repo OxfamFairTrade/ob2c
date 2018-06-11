@@ -67,7 +67,9 @@
 				}
 			}
 			$product_to_add = wc_get_product($product_id);
-			if ( $product_to_add !== false ) {
+			// Enkel proberen toevoegen indien het artikelnummer bestaat én nog niet in het winkelmandje zit (voorkomt ook opnieuw toevoegen bij terugnavigeren!)
+			if ( $product_to_add !== false and ! $found ) {
+				// Ga naar de productdetailpagina indien de poging mislukte (bv. wegens geen voorraad)
 				if ( WC()->cart->add_to_cart( $product_id, 1 ) === false ) {
 					wp_safe_redirect( $product_to_add->get_permalink() );
 				}
