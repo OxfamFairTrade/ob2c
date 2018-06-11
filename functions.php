@@ -981,6 +981,11 @@
 						return href + ( href.indexOf('?') != -1 ? '&addSku=<?php echo $_GET['addSku']; ?>' : '?addSku=<?php echo $_GET['addSku']; ?>' );
 					});
 
+					jQuery('.nm-row').find('a').on( 'click', function(event) {
+						event.preventDefault();
+						window.location.href = jQuery(this).attr('href')+'?addSku=<?php echo $_GET['addSku']; ?>';
+					});
+
 					jQuery( function() {
 						var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
 						jQuery( '#oxfam-zip-user' ).autocomplete({
@@ -2695,7 +2700,7 @@
 				if ( does_home_delivery() ) {
 					$msg = WC()->session->get('no_home_delivery');
 					// Toon de foutmelding slechts één keer
-					// if ( $msg !== 'SHOWN' ) {
+					if ( $msg !== 'SHOWN' ) {
 						if ( $glass_cnt > 0 and $plastic_cnt > 0 ) {
 							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d grote fles', '%d grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap en '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
 						} elseif ( $glass_cnt > 0 ) {
@@ -2705,7 +2710,7 @@
 						}
 						// wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $glass_cnt, $plastic_cnt ), 'error' );
 						WC()->session->set( 'no_home_delivery', 'SHOWN' );
-					// }
+					}
 				}
 			} else {
 				WC()->session->set( 'no_home_delivery', 'RESET' );
