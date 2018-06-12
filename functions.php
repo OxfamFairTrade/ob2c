@@ -36,7 +36,11 @@
 				$global_zips = get_shops();
 				if ( strlen( $zip ) === 4 ) {
 					if ( array_key_exists( $zip, $global_zips ) ) {
-						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip.'&addSku='.$_GET['addSku'] );
+						$suffix = '';
+						if ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
+							$suffix = '&addSku='.$_GET['addSku'];
+						}
+						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip.$suffix );
 					}
 				}
 			}
@@ -961,10 +965,16 @@
 							var input = jQuery('#oxfam-zip-user');
 							var zip = input.val();
 							var url = jQuery('#'+zip+'.oxfam-zip-value').val();
-							var cities = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ) ?>;
+							var all_cities = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ) ?>;
+							// Indien er meerdere plaatsnamen zijn, knippen we ze op en gebruikern we de eerste (= hoofdgemeente)
+							var cities_for_zip = all_cities[zip].split(' / ');
 							if ( typeof url !== 'undefined' ) {
 								if ( url.length > 10 ) {
-									window.location.href = url+'?referralZip='+zip+'&referralCity='+cities[zip]+'&addSku=<?php echo $_GET['addSku']; ?>';
+									var suffix = '';
+									<?php if ( isset( $_GET['addSku'] ) ) : ?>
+										suffix = '&addSku=<?php echo $_GET['addSku']; ?>';
+									<?php endif; ?>
+									window.location.href = url+'?referralZip='+zip+'&referralCity='+cities_for_zip[0]+suffix;
 								} else {
 									alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
 									jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
