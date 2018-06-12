@@ -964,7 +964,7 @@
 							var cities = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ) ?>;
 							if ( typeof url !== 'undefined' ) {
 								if ( url.length > 10 ) {
-									window.location.href = url+'?referralZip='+zip+'&referralCity='+cities[zip].'&addSku=<?php echo $_GET['addSku']; ?>';
+									window.location.href = url+'?referralZip='+zip+'&referralCity='+cities[zip]+'&addSku=<?php echo $_GET['addSku']; ?>';
 								} else {
 									alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
 									jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
