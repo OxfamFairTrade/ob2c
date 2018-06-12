@@ -36,7 +36,7 @@
 				$global_zips = get_shops();
 				if ( strlen( $zip ) === 4 ) {
 					if ( array_key_exists( $zip, $global_zips ) ) {
-						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip );
+						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip.'&addSku='.$_GET['addSku'] );
 					}
 				}
 			}
@@ -929,74 +929,71 @@
 			<?php
 		} elseif ( is_main_site() and is_front_page() ) {
 			?>
-				<script>
-					var wto;
-					jQuery('#oxfam-zip-user').on( 'input change', function() {
-						clearTimeout(wto);
-						var zip = jQuery(this).val();
-						var button = jQuery('#do_oxfam_redirect');
-						var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
-						if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
-							button.prop( 'disabled', false ).parent().addClass('is-valid');
-							wto = setTimeout( function() {
-								button.find('i').addClass('loading');
+				<script type="text/javascript">
+					jQuery(document).ready( function() {
+						var wto;
+						jQuery('#oxfam-zip-user').on( 'input change', function() {
+							clearTimeout(wto);
+							var zip = jQuery(this).val();
+							var button = jQuery('#do_oxfam_redirect');
+							var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
+							if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
+								button.prop( 'disabled', false ).parent().addClass('is-valid');
 								wto = setTimeout( function() {
-									button.trigger('click');
-								}, 750);
-							}, 250);
-						} else {
-							button.prop( 'disabled', true ).parent().removeClass('is-valid');
-						}
-					});
-					
-					jQuery('#oxfam-zip-user').keyup( function(event) {
-						if ( event.which == 13 ) {
-							jQuery('#do_oxfam_redirect').trigger('click');
-						}
-					});
-					
-					jQuery('#do_oxfam_redirect').on( 'click', function() {
-						jQuery(this).prop( 'disabled', true );
-						var input = jQuery('#oxfam-zip-user');
-						var zip = input.val();
-						var url = jQuery('#'+zip+'.oxfam-zip-value').val();
-						if ( typeof url !== 'undefined' ) {
-							if ( url.length > 10 ) {
-								// TOE TE VOEGEN: +'&referralCity='+city (maar city nog niet bepaald)
-								window.location.href = url+'?referralZip='+zip+'&addSku=<?php echo $_GET['addSku']; ?>';
+									button.find('i').addClass('loading');
+									wto = setTimeout( function() {
+										button.trigger('click');
+									}, 750);
+								}, 250);
 							} else {
-								alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
+								button.prop( 'disabled', true ).parent().removeClass('is-valid');
+							}
+						});
+						
+						jQuery('#oxfam-zip-user').keyup( function(event) {
+							if ( event.which == 13 ) {
+								jQuery('#do_oxfam_redirect').trigger('click');
+							}
+						});
+						
+						jQuery('#do_oxfam_redirect').on( 'click', function() {
+							jQuery(this).prop( 'disabled', true );
+							var input = jQuery('#oxfam-zip-user');
+							var zip = input.val();
+							var url = jQuery('#'+zip+'.oxfam-zip-value').val();
+							var cities = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ) ?>;
+							if ( typeof url !== 'undefined' ) {
+								if ( url.length > 10 ) {
+									window.location.href = url+'?referralZip='+zip+'&referralCity='+cities[zip].'&addSku=<?php echo $_GET['addSku']; ?>';
+								} else {
+									alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
+									jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
+									input.val('');
+								}
+							} else {
+								alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ); ?>");
 								jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
 								input.val('');
 							}
-						} else {
-							alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ); ?>");
-							jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
-							input.val('');
-						}
-					});
+						});
 
-					// WERKT NIET OVERAL (op demosite: .nm-page-full)
-					jQuery('.nm-row').find('a').attr( 'href', function(i,href) {
-						return href + ( href.indexOf('?') != -1 ? '&addSku=<?php echo $_GET['addSku']; ?>' : '?addSku=<?php echo $_GET['addSku']; ?>' );
-					});
+						// WERKT NIET IN GOOGLE MAPS VAK
+						jQuery('.nm-row').find('a').attr( 'href', function(i,href) {
+							return href + ( href.indexOf('?') != -1 ? '&addSku=<?php echo $_GET['addSku']; ?>' : '?addSku=<?php echo $_GET['addSku']; ?>' );
+						});
 
-					jQuery('.nm-row').find('a').on( 'click', function(event) {
-						event.preventDefault();
-						window.location.href = jQuery(this).attr('href')+'?addSku=<?php echo $_GET['addSku']; ?>';
-					});
-
-					jQuery( function() {
-						var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
-						jQuery( '#oxfam-zip-user' ).autocomplete({
-							source: zips,
-							minLength: 1,
-							autoFocus: true,
-							position: { my : "right+20 top", at: "right bottom" },
-							close: function(event,ui) {
-								// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
-								jQuery( '#oxfam-zip-user' ).trigger('change');
-							}
+						jQuery( function() {
+							var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
+							jQuery( '#oxfam-zip-user' ).autocomplete({
+								source: zips,
+								minLength: 1,
+								autoFocus: true,
+								position: { my : "right+20 top", at: "right bottom" },
+								close: function(event,ui) {
+									// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
+									jQuery( '#oxfam-zip-user' ).trigger('change');
+								}
+							});
 						});
 					});
 				</script>
@@ -1007,9 +1004,11 @@
 			$user_roles = $user_meta->roles;
 			if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_company_email() ) {
 				?>
-					<script>
-						jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').prop('readonly', true);
-						jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
+					<script type="text/javascript">
+						jQuery(document).ready( function() {
+							jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').prop('readonly', true);
+							jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
+						});
 					</script>
 				<?php
 			}
@@ -1018,7 +1017,7 @@
 		// Facebook-pixel voor Regio Leuven 
 		if ( get_current_blog_id() === 28 ) {
 			?>
-				<script>
+				<script type="text/javascript">
 					!function(f,b,e,v,n,t,s)
 					{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 					n.callMethod.apply(n,arguments):n.queue.push(arguments)};
