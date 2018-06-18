@@ -3936,7 +3936,7 @@
 		}
 		if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
 			echo '<p class="promotie">';
-				echo $product->get_meta('promo_text').' Geldig tot en met '.date_i18n( 'l j F Y', $product->get_date_on_sale_to() ).'.';
+				echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'.';
 			echo '</p>';
 		}
 	}
