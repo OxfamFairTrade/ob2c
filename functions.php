@@ -3934,9 +3934,9 @@
 				echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
 			echo '</p>';
 		}
-		if ( $product->get_meta('promo_text') !== '' ) {
+		if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
 			echo '<p class="promotie">';
-				echo $product->get_meta('promo_text');
+				echo $product->get_meta('promo_text').' Geldig tot en met '.date_i18n( 'l j F Y', $product->get_date_on_sale_to() ).'.';
 			echo '</p>';
 		}
 	}
