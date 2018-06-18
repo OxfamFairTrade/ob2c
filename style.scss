@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.5.12
+	Version:		1.5.13
 	Text Domain:	oxfam-webshop
 */
 
@@ -427,10 +427,14 @@ figure {
 	margin: 0 !important;
 }
 
-/* Styleer herkomstinfo boven winkelmandknop */
+/* Styleer herkomstinfo en promoties boven winkelmandknop */
 p.herkomst {
 	margin-bottom: 1em;
 	font-weight: bold;
+}
+p.promoties {
+	margin-bottom: 1em;
+	color: rgb(250, 22, 50);
 }
 .summary.entry-summary.clear {
 	// padding-left: 50px;

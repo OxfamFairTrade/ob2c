@@ -129,7 +129,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.12' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.13' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -754,6 +754,13 @@
 			$price .= ' per stuk';
 		}
 		return $price;
+	}
+
+	// Doorstreepte adviesprijs uitschakelen (meestal geen rechtsreekse productkorting)
+	add_filter( 'woocommerce_format_sale_price', 'format_sale_as_regular_price', 10, 3 );
+
+	function format_sale_as_regular_price( $price, $regular_price, $sale_price ) {
+		return wc_price($regular_price);
 	}
 
 	// Zorg ervoor dat winkelbeheerders na het opslaan van feestdagen niet naar het dashboard geleid worden
@@ -3922,9 +3929,16 @@
 
 	function show_product_origin() {
 		global $product;
-		echo '<p class="herkomst">';
-		echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
-		echo '</p>';
+		if ( $product->get_meta('_herkomst_nl') !== '' ) {
+			echo '<p class="herkomst">';
+				echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
+			echo '</p>';
+		}
+		if ( $product->get_meta('_promo_text') !== '' ) {
+			echo '<p class="promotie">';
+				echo $product->get_meta('_promo_text');
+			echo '</p>';
+		}
 	}
 
 	// Partnerquote tonen, net onder de winkelmandknop
