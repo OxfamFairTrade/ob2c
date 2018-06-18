@@ -3934,9 +3934,9 @@
 				echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
 			echo '</p>';
 		}
-		if ( $product->get_meta('_promo_text') !== '' ) {
+		if ( $product->get_meta('promo_text') !== '' ) {
 			echo '<p class="promotie">';
-				echo $product->get_meta('_promo_text');
+				echo $product->get_meta('promo_text');
 			echo '</p>';
 		}
 	}
@@ -4042,39 +4042,6 @@
 			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ), true );
 		}
 	}
-
-	// Stel de attributen in die berekend moeten worden uit andere waarden NIET MEER NODIG
-	// add_action( 'set_object_terms', 'update_origin_on_update', 50, 6 );
-	
-	function update_origin_on_update( $post_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ) {
-		// Enkel uitvoeren indien de partnerinfo van een product bijgewerkt werd
-		if ( get_post_type( $post_id ) === 'product' and $taxonomy === 'product_partner' ) {
-			$productje = wc_get_product( $post_id );
-			$countries_nl = get_countries_by_product( $productje );
-			
-			// Check of er wel herkomstinfo beschikbaar is
-			if ( $countries_nl !== false ) {
-				update_post_meta( $post_id, '_herkomst_nl', implode( ', ', $countries_nl ) );
-			
-				if ( is_main_site() or get_current_blog_id() === 1 ) {
-					foreach ( $countries_nl as $country ) {
-						$nl = get_site_option( 'countries_nl' );
-						$code = array_search( $country, $nl, true );
-						// We hebben een geldige landencode gevonden
-						if ( strlen($code) === 3 ) {
-							$countries_fr[] = translate_to_fr( $code );
-							$countries_en[] = translate_to_en( $code );
-						}
-					}
-
-					sort($countries_fr, SORT_STRING);
-					update_post_meta( $post_id, '_herkomst_fr', implode( ', ', $countries_fr ) );
-					sort($countries_en, SORT_STRING);
-					update_post_meta( $post_id, '_herkomst_en', implode( ', ', $countries_en ) );
-				}
-			}
-		}
-	}	
 
 	function translate_to_fr( $code ) {
 		$fr = get_site_option( 'countries_fr' );
