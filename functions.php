@@ -2089,6 +2089,8 @@
 			// Verwijder '(excl. BTW)' bij subtotalen
 			add_filter( 'woocommerce_countries_ex_tax_or_vat', 'remove_ex_tax_label_subtotals' );
 			
+			// Limiteer niet-B2B-kortingsbonnen tot particulieren
+			add_filter( 'wjecf_coupon_can_be_applied', 'restrain_coupons_to_b2c', 10, 2 );
 		}
 
 		function suggest_order_unit_multiple( $args, $product ) {
@@ -2124,6 +2126,15 @@
 
 		function remove_ex_tax_label_subtotals() {
 			return '';
+		}
+
+		function restrain_coupons_to_b2c( $can_be_applied, $coupon ) {
+			if ( strpos( 'b2b', $coupon->get_code() ) === false ) {
+				write_log("COUPON ".$coupon->get_code()." AFGEKEURD");
+				return false;
+			} else {
+				return $can_be_applied;
+			}
 		}
 	}
 
@@ -3934,7 +3945,7 @@
 				echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
 			echo '</p>';
 		}
-		if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
+		if ( ! is_b2b_customer() and $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
 			echo '<p class="promotie">';
 				echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'.';
 			echo '</p>';
