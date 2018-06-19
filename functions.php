@@ -2129,7 +2129,7 @@
 		}
 
 		function restrain_coupons_to_b2c( $can_be_applied, $coupon ) {
-			if ( strpos( 'b2b', $coupon->get_code() ) === false ) {
+			if ( strpos( $coupon->get_code(), 'b2b' ) === false ) {
 				write_log("COUPON ".$coupon->get_code()." AFGEKEURD");
 				return false;
 			} else {
