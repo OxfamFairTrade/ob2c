@@ -104,14 +104,13 @@
 		$allowedtags['a']['target'] = 1;
 	}
 
-	// Voeg klasse toe indien hoofdsite
+	// Voeg extra CSS-klasses toe aan body
 	add_filter( 'body_class', 'add_main_site_class' );
 
 	function add_main_site_class( $classes ) {
 		if ( is_main_site() ) {
 			$classes[] = 'portal';
 		}
-		// REEDS BEPAALD?
 		if ( is_b2b_customer() ) {
 			$classes[] = 'is_b2b_customer';
 		}
@@ -133,7 +132,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.13' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.14' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -760,7 +759,8 @@
 		return $price;
 	}
 
-	// Doorstreepte adviesprijs uitschakelen (meestal geen rechtsreekse productkorting)
+	// Doorstreepte adviesprijs en badge uitschakelen (meestal geen rechtsreekse productkorting)
+	add_filter( 'woocommerce_sale_flash', '__return_false' );
 	add_filter( 'woocommerce_format_sale_price', 'format_sale_as_regular_price', 10, 3 );
 
 	function format_sale_as_regular_price( $price, $regular_price, $sale_price ) {
@@ -2134,7 +2134,6 @@
 
 		function restrain_coupons_to_b2c( $can_be_applied, $coupon ) {
 			if ( strpos( $coupon->get_code(), 'b2b' ) === false ) {
-				write_log("COUPON ".$coupon->get_code()." AFGEKEURD");
 				return false;
 			} else {
 				return $can_be_applied;
