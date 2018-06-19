@@ -111,6 +111,10 @@
 		if ( is_main_site() ) {
 			$classes[] = 'portal';
 		}
+		// REEDS BEPAALD?
+		if ( is_b2b_customer() ) {
+			$classes[] = 'is_b2b_customer';
+		}
 		return $classes;
 	}
 
@@ -3935,7 +3939,7 @@
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
 	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 12 );
 	
-	// Herkomstlanden tonen, net boven de winkelmandknop
+	// Herkomstlanden en promoties net boven de winkelmandknop tonen
 	add_action( 'woocommerce_single_product_summary', 'show_product_origin', 14 );
 
 	function show_product_origin() {
@@ -3945,10 +3949,13 @@
 				echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
 			echo '</p>';
 		}
-		if ( ! is_b2b_customer() and $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
-			echo '<p class="promotie">';
-				echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'.';
-			echo '</p>';
+		if ( ! is_b2b_customer() ) {
+			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
+			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
+				echo '<p class="promotie">';
+					echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'. Niet van toepassing bij verkoop op factuur.';
+				echo '</p>';
+			}
 		}
 	}
 

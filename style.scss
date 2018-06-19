@@ -438,9 +438,6 @@ p.promotie {
 	font-style: italic;
 	line-height: 1.25em;
 }
-.summary.entry-summary.clear {
-	// padding-left: 50px;
-}
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
 tr.shipping .woocommerce-Price-amount {
@@ -658,6 +655,14 @@ li.product.product_shipping_class-breekbaar:hover::after,
 li.product.product_tag-promotie:hover::after {
 	opacity: 0.7;
 	transition: opacity 1s ease-out 0s;
+}
+
+/* Promotag niet tonen indien B2B-klant */
+body.is_b2b_customer {
+	li.product.product_tag-promotie::after,
+	div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
+		display: none !important;
+	}
 }
 
 .onsale {
