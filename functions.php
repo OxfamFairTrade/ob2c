@@ -170,7 +170,7 @@
 	}
 	
 	// Beheer alle wettelijke feestdagen uit de testperiode centraal
-	$default_holidays = array( '2018-07-21', '2018-08-15', '2018-11-01', '2018-11-11', '2018-12-25', '2019-01-01' );
+	$default_holidays = array( '2018-07-21', '2018-08-15', '2018-11-01', '2018-12-25', '2019-01-01' );
 	
 
 
@@ -179,7 +179,7 @@
 	####################
 
 	// Verberg startlocatie
-	add_filter( 'wpsl_js_settings', 'custom_js_settings' );
+	// add_filter( 'wpsl_js_settings', 'custom_js_settings' );
 
 	function custom_js_settings( $settings ) {
 		$settings['startMarker'] = '';
@@ -257,19 +257,24 @@
 			'oxfam_shop_node' => array(
 				'label' => 'Node OWW-site'
 			),
-			
+			'alternate_marker_url' => array(
+            	'label' => 'Afwijkende marker (indien enkel afhaling)'
+        	)
 		);
 
 		return $meta_fields;
 	}
 
-
+	// Geef de extra metadata mee in de JSON-response
 	add_filter( 'wpsl_frontend_meta_fields', 'custom_frontend_meta_fields' );
 
 	function custom_frontend_meta_fields( $store_fields ) {
 		$store_fields['wpsl_oxfam_shop_node'] = array( 
-			'name' => 'oxfam_shop_node',
-			'type' => 'text'
+			'name' => 'oxfam_shop_node'
+		);
+
+		$store_fields['wpsl_alternate_marker_url'] = array(
+			'name' => 'alternateMarkerUrl'
 		);
 
 		return $store_fields;
