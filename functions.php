@@ -201,11 +201,6 @@
 		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address2 %></span>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<% } %>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<span>' . wpsl_address_format_placeholders() . '</span>' . "\r\n"; // Use the correct address format
-
-		if ( !$wpsl_settings['hide_country'] ) {
-			$listing_template .= "\t\t\t\t" . '<span class="wpsl-country"><%= country %></span>' . "\r\n";
-		}
-
 		$listing_template .= "\t\t\t" . '</p>' . "\r\n";
 
 		// Show the phone and email data if they exist
@@ -239,11 +234,53 @@
 		$info_window_template .= "\t\t\t" . '<% } %>' . "\r\n";
 		$info_window_template .= "\t\t\t" . '<span>' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
 		$info_window_template .= "\t\t" . '</p>' . "\r\n";
-
-		$info_window_template .= "\t\t" . '<%= createInfoWindowActions( id ) %>' . "\r\n";
+		// $info_window_template .= "\t\t" . '<%= createInfoWindowActions( id ) %>' . "\r\n";
 		$info_window_template .= "\t" . '</div>' . "\r\n";
 
 		return $info_window_template;
+	}
+
+	// Voeg nodenummer toe als extra metadata op winkel
+	add_filter( 'wpsl_meta_box_fields', 'custom_meta_box_fields' );
+
+	function custom_meta_box_fields( $meta_fields ) {
+		$meta_fields[__( 'Additional Information', 'wpsl' )] = array(
+			'phone' => array(
+				'label' => 'Telefoonnummer'
+			),
+			'email' => array(
+				'label' => 'E-mailadres'
+			),
+			'url' => array(
+				'label' => 'Webshop-URL'
+			),
+			'oxfam_shop_node' => array(
+				'label' => 'Nodenummer OWW-site'
+			),
+			
+		);
+
+		return $meta_fields;
+	}
+
+
+	add_filter( 'wpsl_frontend_meta_fields', 'custom_frontend_meta_fields' );
+
+	function custom_frontend_meta_fields( $store_fields ) {
+		$store_fields['wpsl_oxfam_shop_node'] = array( 
+			'name' => 'oxfam_shop_node',
+			'type' => 'text'
+		);
+
+		return $store_fields;
+	}
+
+	// Laad onze custom markers
+	add_filter( 'wpsl_admin_marker_dir', 'custom_admin_marker_dir' );
+
+	function custom_admin_marker_dir() {
+		$admin_marker_dir = get_stylesheet_directory() . '/images/';
+		return $admin_marker_dir;
 	}
 
 
