@@ -234,14 +234,32 @@ body.portal.home {
 		border-top: none;
 	}
 
-	.wpsl-search-wrap {
-		.wpsl-checkbox-filter {
-			width: 300px;
+	.wpsl-search {
+		background-color: $fluo-green;
+		color: $black;
+	}
+
+	#wpsl-search-wrap {
+		#wpsl-checkbox-filter {
+			width: 70%;
+			text-align: center;
+		}
+
+		#wpsl-search-input {
+			height: 31px;
 		}
 
 		.wpsl-search-btn-wrap {
-			float: right;
+			float: right !important;
 		}
+	}
+
+	#wpsl-result-list {
+		width: 25%;
+	}
+
+	#wpsl-gmap {
+		width: 74%;
 	}
 
 	.wpsl-infobox {
