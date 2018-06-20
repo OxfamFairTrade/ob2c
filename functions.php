@@ -246,16 +246,16 @@
 	function custom_meta_box_fields( $meta_fields ) {
 		$meta_fields[__( 'Additional Information', 'wpsl' )] = array(
 			'phone' => array(
-				'label' => 'Telefoonnummer'
+				'label' => 'Telefoon'
 			),
 			'email' => array(
-				'label' => 'E-mailadres'
+				'label' => 'E-mail'
 			),
 			'url' => array(
 				'label' => 'Webshop-URL'
 			),
 			'oxfam_shop_node' => array(
-				'label' => 'Nodenummer OWW-site'
+				'label' => 'Node OWW-site'
 			),
 			
 		);
@@ -275,7 +275,8 @@
 		return $store_fields;
 	}
 
-	// Laad onze custom markers
+	// Laad onze custom markers (zowel in front-end als back-end)
+	define( 'WPSL_MARKER_URI', dirname( get_bloginfo('stylesheet_url') ) . '/images/' );
 	add_filter( 'wpsl_admin_marker_dir', 'custom_admin_marker_dir' );
 
 	function custom_admin_marker_dir() {
