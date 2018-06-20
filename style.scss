@@ -121,7 +121,6 @@ body.portal .nm-header.menu-centered {
 }
 
 body.portal {
-
 	.input-group {
 		text-align: center;
 		font-size: 105%;
@@ -198,7 +197,6 @@ body.portal {
 
 /* Enkel voor homepage van portaal! */ 
 body.portal.home {
-	
 	/* Wijzig achtergrondkleur en hoogte */
 	div.nm-page-wrap-inner > #nm-header-placeholder {
 		background-color: $fluo-green;
@@ -234,6 +232,12 @@ body.portal.home {
 
 	.nm-footer-widgets {
 		border-top: none;
+	}
+
+	.wpsl-infobox {
+		border-radius: 10px;
+		border-color: white;
+		border-width: 5px;
 	}
 }
 
