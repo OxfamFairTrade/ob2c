@@ -186,7 +186,24 @@
 		return $settings;
 	}
 
-	// Wijzig weergave van zoekresultaten
+	// Laad onze custom markers (zowel in front-end als back-end)
+	define( 'WPSL_MARKER_URI', dirname( get_bloginfo('stylesheet_url') ) . '/images/' );
+	add_filter( 'wpsl_admin_marker_dir', 'custom_admin_marker_dir' );
+
+	function custom_admin_marker_dir() {
+		$admin_marker_dir = get_stylesheet_directory() . '/images/';
+		return $admin_marker_dir;
+	}
+
+	// Selecteer 'Afhaling in de winkel' als default
+	add_filter( 'wpsl_dropdown_category_args', 'custom_dropdown_category_args' );
+
+	function custom_dropdown_category_args( $args ) {
+		$args['selected'] = 5689;
+		return $args;
+	}
+
+	// Wijzig de weergave van de zoekresultaten
 	add_filter( 'wpsl_listing_template', 'custom_listing_template' );
 
 	function custom_listing_template() {
@@ -221,7 +238,7 @@
 		return $listing_template;
 	}
 
-	// Pas het infovenster aan
+	// Wijzig de weergave van het infovenster
 	add_filter( 'wpsl_info_window_template', 'custom_info_window_template' );
 
 	function custom_info_window_template() { 
@@ -278,15 +295,6 @@
 		);
 
 		return $store_fields;
-	}
-
-	// Laad onze custom markers (zowel in front-end als back-end)
-	define( 'WPSL_MARKER_URI', dirname( get_bloginfo('stylesheet_url') ) . '/images/' );
-	add_filter( 'wpsl_admin_marker_dir', 'custom_admin_marker_dir' );
-
-	function custom_admin_marker_dir() {
-		$admin_marker_dir = get_stylesheet_directory() . '/images/';
-		return $admin_marker_dir;
 	}
 
 
