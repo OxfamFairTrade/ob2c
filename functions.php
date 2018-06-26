@@ -203,6 +203,14 @@
 		return $args;
 	}
 
+	function append_get_parameter_to_href( $str, $get_param ) {
+		if ( isset( $_GET[$get_param] ) ) {
+			// Check inbouwen op reeds aanwezige parameters in $2-fragment? 
+			$str = preg_replace( '/<a(.*)href="([^"]*)"(.*)>/','<a$1href="$2?'.$get_param.'='.$_GET[$get_param].'"$3>', $str );
+		}
+		return $str;
+	}
+
 	// Wijzig de weergave van de zoekresultaten
 	add_filter( 'wpsl_listing_template', 'custom_listing_template' );
 
@@ -212,12 +220,12 @@
 		$listing_template = '<li data-store-id="<%= id %>">' . "\r\n";
 		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
 		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . wpsl_store_header_template( 'listing' ) . "\r\n"; // Check which header format we use
+		$listing_template .= "\t\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template('listing'), 'addSku' ) . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %></span>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<% if ( address2 ) { %>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address2 %></span>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<% } %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<span>' . wpsl_address_format_placeholders() . '</span>' . "\r\n"; // Use the correct address format
+		$listing_template .= "\t\t\t\t" . '<span>' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
 		$listing_template .= "\t\t\t" . '</p>' . "\r\n";
 
 		// Show the phone and email data if they exist
@@ -244,7 +252,7 @@
 	function custom_info_window_template() { 
 		$info_window_template = '<div data-store-id="<%= id %>" class="wpsl-info-window">' . "\r\n";
 		$info_window_template .= "\t\t" . '<p>' . "\r\n";
-		$info_window_template .= "\t\t\t" .  wpsl_store_header_template() . "\r\n";  
+		$info_window_template .= "\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template(), 'addSku' ) . "\r\n";  
 		$info_window_template .= "\t\t\t" . '<span><%= address %></span>' . "\r\n";
 		$info_window_template .= "\t\t\t" . '<% if ( address2 ) { %>' . "\r\n";
 		$info_window_template .= "\t\t\t" . '<span><%= address2 %></span>' . "\r\n";
@@ -1123,12 +1131,6 @@
 								input.val('');
 							}
 						});
-
-						<?php if ( isset( $_GET['addSku'] ) ) : ?>
-							jQuery('#wpsl-wrap').find('.wpsl-store-location').find('a').attr( 'href', function(i,href) {
-								return href + ( href.indexOf('?') != -1 ? '&addSku=<?php echo $_GET['addSku']; ?>' : '?addSku=<?php echo $_GET['addSku']; ?>' );
-							});
-						<?php endif; ?>
 
 						jQuery( function() {
 							var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
