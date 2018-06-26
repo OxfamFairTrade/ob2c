@@ -1270,7 +1270,7 @@
 		$address_fields['billing_email']['label'] = "E-mailadres";
 		$address_fields['billing_email']['placeholder'] = "luc@gmail.com";
 		$address_fields['billing_phone']['label'] = "Telefoonnummer";
-		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data( 'telephone' );
+		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data('telephone');
 		$address_fields['billing_company']['label'] = "Bedrijf of vereniging";
 		$address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
 		$address_fields['billing_vat']['label'] = "BTW-nummer";

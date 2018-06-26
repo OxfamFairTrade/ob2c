@@ -23,6 +23,7 @@
 					
 					// Sluit hoofdsite uit
 					if ( ! is_main_site() ) {
+						// Voeg marker toe aan de globale kaart
 						$str .= "<Placemark>";
 						$str .= "<name><![CDATA[".get_company_name()."]]></name>";
 						if ( does_home_delivery() ) {
@@ -36,6 +37,7 @@
 						$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
 						$str .= "</Placemark>";
 
+						// Maak de lokale kaart aan met alle deelnemende winkelpunten, inclusief externen
 						if ( $locations = get_option( 'woocommerce_pickup_locations' ) ) {
 							$local_file = fopen("../../maps/site-".$site->blog_id.".kml", "w");
 							$txt = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
@@ -63,6 +65,52 @@
 							fwrite($local_file, $txt);
 							fclose($local_file);
 						}
+
+						$shop_node = get_option('oxfam_shop_node');
+						$args = array(
+							'post_type'	=> 'wpsl_stores',
+							'post_status' => 'publish',
+							'meta_key' => 'wpsl_oxfam_shop_node',
+							'meta_value' => $shop_node,
+						);
+
+						// Zoek de WP Store op die past bij de OWW-node
+						$stores = new WP_Query($args);
+						if ( $stores->have_posts() ) {
+							while ( $stores->have_posts() ) {
+								$stores->the_post();
+								$store_id = get_the_ID();
+							}
+							wp_reset_postdata();
+						} else {
+							// Maak nieuwe store aan door de ID op 0 te zetten
+							$store_id = 0;
+						}
+						$store_args = array(
+							'ID' =>	$store_id,
+							'post_title' => get_company_name(),
+							'post_status' => 'publish',
+							'post_type' => 'wpsl_stores',
+							'post_category' => array('afhaling'),
+							'meta_input' => array(
+								'wpsl_oxfam_shop_node' => $shop_node,
+								'wpsl_address' => get_oxfam_shop_data('place'),
+								'wpsl_city' => get_oxfam_shop_data('city'),
+								'wpsl_zip' => get_oxfam_shop_data('zipcode'),
+								'wpsl_lat' => get_oxfam_shop_data('ll'),
+								'wpsl_lng' => get_oxfam_shop_data('ll'),
+								'wpsl_url' => get_site_url(),
+								'wpsl_email' => get_company_email(),
+								'wpsl_phone' => get_oxfam_shop_data('telephone'),
+							),
+						);
+
+						if ( ! does_home_delivery() ) {
+							$store_args['wpsl_alternate_marker_url'] = '/wp-content/themes/oxfam-webshop/images/placemarker-afhaling@2x.png';
+						}
+
+						// GO FOR IT
+						wp_insert_post($store_args);
 					}
 					
 				restore_current_blog();
