@@ -195,7 +195,7 @@
 		return $admin_marker_dir;
 	}
 
-	// Selecteer 'Afhaling in de winkel' als default
+	// Selecteer 'Afhaling in de winkel' als default (werkt alleen bij dropdowns)
 	add_filter( 'wpsl_dropdown_category_args', 'custom_dropdown_category_args' );
 
 	function custom_dropdown_category_args( $args ) {
@@ -2565,9 +2565,9 @@
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
 				} elseif( $node == 837 ) {
-					if ( date_i18n( 'N', $from ) > 2 or ( date_i18n( 'N', $from ) == 2 and date_i18n( 'G', $from ) >= 12 ) ) {
-						// Na de deadline van dinsdag 12u00: begin pas bij tweede werkdag, kwestie van zeker op volgende week uit te komen
-						$from = strtotime( '+2 weekdays', $from );
+					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
+						// Na de deadline van zondag 22u00: begin pas bij vierde werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+4 weekdays', $from );
 					}
 
 					// Zoek de eerste donderdag na de volgende middagdeadline (wordt wegens openingsuren automatisch vrijdagochtend)
