@@ -112,7 +112,7 @@
 
 						if ( ! does_home_delivery() ) {
 							// Alternatieve marker indien enkel afhaling
-							$store_args['wpsl_alternate_marker_url'] = '/wp-content/themes/oxfam-webshop/images/placemarker-afhaling@2x.png';
+							$store_args['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling@2x.png';
 						}
 
 						// Maak aan op hoofdsite
@@ -120,6 +120,10 @@
 						$result = wp_insert_post($store_args);
 						// Winkelcategorie op deze manier instellen, 'tax_input'-argument bij wp_insert_post() werkt niet
 						wp_set_object_terms( $result, 'afhaling', 'wpsl_store_category', false );
+						if ( ! array_key_exists( 'wpsl_alternate_marker_url', $store_args ) ) {
+							// Tweede categorie instellen indien niet enkel afhaling
+							wp_set_object_terms( $result, 'levering', 'wpsl_store_category', true );
+						}
 						switch_to_blog( $site->blog_id );
 					}
 					

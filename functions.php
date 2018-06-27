@@ -178,37 +178,13 @@
 	# WP STORE LOCATOR #
 	####################
 
-	// Verberg startlocatie VOORZIE GEWOON MOOIER ICOONTJE
-	// add_filter( 'wpsl_js_settings', 'custom_js_settings' );
-
-	function custom_js_settings( $settings ) {
-		$settings['startMarker'] = '';
-		return $settings;
-	}
-
 	// Laad onze custom markers (zowel in front-end als back-end)
-	define( 'WPSL_MARKER_URI', dirname( get_bloginfo('stylesheet_url') ) . '/images/' );
+	define( 'WPSL_MARKER_URI', dirname( get_bloginfo('stylesheet_url') ).'/markers/' );
 	add_filter( 'wpsl_admin_marker_dir', 'custom_admin_marker_dir' );
 
 	function custom_admin_marker_dir() {
-		$admin_marker_dir = get_stylesheet_directory() . '/images/';
+		$admin_marker_dir = get_stylesheet_directory().'/markers/';
 		return $admin_marker_dir;
-	}
-
-	// Selecteer 'Afhaling in de winkel' als default WERKT ALLEEN BIJ DROPDOWNS
-	// add_filter( 'wpsl_dropdown_category_args', 'custom_dropdown_category_args' );
-
-	function custom_dropdown_category_args( $args ) {
-		$args['selected'] = 5689;
-		return $args;
-	}
-
-	function append_get_parameter_to_href( $str, $get_param ) {
-		if ( isset( $_GET[$get_param] ) ) {
-			// Check inbouwen op reeds aanwezige parameters in $2-fragment? 
-			$str = preg_replace( '/<a(.*)href="([^"]*)"(.*)>/','<a$1href="$2?'.$get_param.'='.$_GET[$get_param].'"$3>', $str );
-		}
-		return $str;
 	}
 
 	// Wijzig de weergave van de zoekresultaten
@@ -304,6 +280,30 @@
 		);
 
 		return $store_fields;
+	}
+
+	function append_get_parameter_to_href( $str, $get_param ) {
+		if ( isset( $_GET[$get_param] ) ) {
+			// Check inbouwen op reeds aanwezige parameters in $2-fragment? 
+			$str = preg_replace( '/<a(.*)href="([^"]*)"(.*)>/','<a$1href="$2?'.$get_param.'='.$_GET[$get_param].'"$3>', $str );
+		}
+		return $str;
+	}
+
+	// Verberg startlocatie VOORZIE GEWOON MOOIER ICOONTJE
+	// add_filter( 'wpsl_js_settings', 'custom_js_settings' );
+
+	function custom_js_settings( $settings ) {
+		$settings['startMarker'] = '';
+		return $settings;
+	}
+
+	// Selecteer 'Afhaling in de winkel' als default WERKT ALLEEN BIJ DROPDOWNS
+	// add_filter( 'wpsl_dropdown_category_args', 'custom_dropdown_category_args' );
+
+	function custom_dropdown_category_args( $args ) {
+		$args['selected'] = 5689;
+		return $args;
 	}
 
 
@@ -4638,12 +4638,8 @@
 		// Negeer afgeschermde en gearchiveerde sites
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
 		// Trek hoofdsite af van totaal
-		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-afhaling.png" class="placemarker">';
+		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-afhaling@2x.png" class="placemarker">';
 		$msg .= '<h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
-		// $msg .= '<div class="input-group">';
-		// $msg .= '<input type="text" class="minimal" placeholder="zoek een winkel" id="oxfam-zip-user" autocomplete="off"> ';
-		// $msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
-		// $msg .= '</div>';
 		return $msg;
 	}
 
@@ -4654,7 +4650,7 @@
 	function print_store_selector() {
 		$global_zips = get_shops();
 		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
-		$msg = '<img src="'.get_stylesheet_directory_uri().'/images/placemarker-levering.png" class="placemarker">';
+		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-levering@2x.png" class="placemarker">';
 		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
 		$msg .= '<div class="input-group">';
 		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
