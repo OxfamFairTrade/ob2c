@@ -4638,7 +4638,7 @@
 		// Negeer afgeschermde en gearchiveerde sites
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
 		// Trek hoofdsite af van totaal
-		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-afhaling@2x.png" class="placemarker">';
+		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png" class="placemarker">';
 		$msg .= '<h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
 		return $msg;
 	}
@@ -4650,7 +4650,7 @@
 	function print_store_selector() {
 		$global_zips = get_shops();
 		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
-		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-levering@2x.png" class="placemarker">';
+		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-levering.png" class="placemarker">';
 		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
 		$msg .= '<div class="input-group">';
 		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
