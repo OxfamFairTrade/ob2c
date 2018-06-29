@@ -8,6 +8,23 @@
 		require_once '../../../wp-load.php';
 		
 		if ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) {
+			// Verplaats alle WP Stores naar de prullenbak
+			$all_store_args = array(
+				'post_type'	=> 'wpsl_stores',
+				'post_status' => 'publish',
+				'posts_per_page' => -1,
+			);
+
+			$trashers = new WP_Query($all_store_args);
+		
+			if ( $trashers->have_posts() ) {
+				while ( $trashers->have_posts() ) {
+					$trashers->the_post();
+					wp_trash_post( get_the_ID() );
+				}
+				wp_reset_postdata();
+			}
+
 			$global_file = fopen("../../maps/global.kml", "w");
 			$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 			
@@ -68,23 +85,22 @@
 						}
 
 						$shop_node = get_option('oxfam_shop_node');
-						$args = array(
+						$node_args = array(
 							'post_type'	=> 'wpsl_stores',
-							'post_status' => 'publish',
+							'post_status' => 'trash',
+							'posts_per_page' => 1,
 							'meta_key' => 'wpsl_oxfam_shop_node',
 							'meta_value' => $shop_node,
 						);
 
-						// Zoek op de hoofdsite de WP Store op die past bij de OWW-node
+						// Zoek op de hoofdsite de zonet verwijderde WP Store op die past bij de OWW-node
 						switch_to_blog(1);
-						$stores = new WP_Query($args);
+						$stores = new WP_Query($node_args);
 						switch_to_blog( $site->blog_id );
 
 						if ( $stores->have_posts() ) {
-							while ( $stores->have_posts() ) {
-								$stores->the_post();
-								$store_id = get_the_ID();
-							}
+							$stores->the_post();
+							$store_id = get_the_ID();
 							wp_reset_postdata();
 						} else {
 							// Maak nieuwe store aan door de ID op 0 te zetten
