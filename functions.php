@@ -24,7 +24,7 @@
 				}
 			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) ) {
 				// Toon de tijdelijke boodschap, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
-				wp_safe_redirect( network_site_url('/nog-even-geduld.html') );
+				wp_safe_redirect( network_site_url('/wp-content/nog-even-geduld.html') );
 				exit();
 			}
 		}
