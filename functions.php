@@ -4383,31 +4383,27 @@
 				echo '</div>';
 			}
 			echo '<div class="notice notice-success">';
+				echo '<p>In de back-end van de webshop verschenen 6 nieuwe artikels:</p><ul style="margin-left: 2em;">';
+					$skus = array( '25629', '26315', '28800', '28801', '28802', '28803' );
+					foreach ( $skus as $sku ) {
+						$product_id = wc_get_product_id_by_sku( $sku );
+						if ( $product_id ) {
+							$product = wc_get_product( $product_id );
+							echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+						}
+					}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Twee noedelproducten kregen nieuwe ompaknummers (27202 => 27204 en 27203 => 27205).</p>';
+			echo '</div>';
+			echo '<div class="notice notice-success">';
 				echo '<p>Sinds eind mei is het mogelijk om B2B-klanten te registreren! Betalen via factuur, bestellen per ompak, toekennen van kortingen, ... <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Lees er alles over in de specifieke handleiding.</a></p>';
+				// echo '<p>Allergenen worden vanaf nu live opgehaald uit de centrale OFT-database. Hierdoor zullen deze gegevens onmiddellijk beschikbaar zijn bij nieuwe producten en kunnen eventuele fouten op een snelle en betrouwbare manier gecorrigeerd worden. Bovendien kunnen we nu ook de gedetailleerde ingrediëntenlijst weergeven, indien beschikbaar.</p>';
+				// echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd definitief opgelost. Meer info <a href="https://github.com/OxfamFairTrade/ob2c/wiki/6.-Klantenservice#hoe-springen-we-om-met-leeggoed" target="_blank">in deze bijgewerkte FAQ</a>. Let wel: het mixen van verschillende soorten fruitsap in één krat is technisch (nog) niet mogelijk. Om het winkelen overzichtelijker te maken wordt het leeggoed bovendien niet langer getoond in het winkelmandje in de zijbalk. Het subtotaal onderaan vermeldt daarentegen nu wél expliciet \'incl. leeggoed\' en/of \'excl. korting\', naar gelang de inhoud van het winkelmandje.</p>';
+				// echo '<p>Onder de knop \'WP Mail Log\' kun je vanaf nu alle mails bekijken die de afgelopen 2 weken verstuurd worden door je webshop. Zo kunnen jullie beter controleren welke communicatie er precies vertrok naar de klanten. Zoals gewoonlijk belanden eventuele foutmeldingen over onbezorgbare mails (bv. omdat de klant een typfout maakte in zijn mailadres) in de mailbox van de lokale webshop.</p>';
 			echo '</div>';
-			echo '<div class="notice notice-info">';
-				echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd definitief opgelost. Meer info <a href="https://github.com/OxfamFairTrade/ob2c/wiki/6.-Klantenservice#hoe-springen-we-om-met-leeggoed" target="_blank">in deze bijgewerkte FAQ</a>. Let wel: het mixen van verschillende soorten fruitsap in één krat is technisch (nog) niet mogelijk. Om het winkelen overzichtelijker te maken wordt het leeggoed bovendien niet langer getoond in het winkelmandje in de zijbalk. Het subtotaal onderaan vermeldt daarentegen nu wél expliciet \'incl. leeggoed\' en/of \'excl. korting\', naar gelang de inhoud van het winkelmandje.</p>';
-			echo '</div>';
-			// echo '<div class="notice notice-success">';
-			// 	echo '<p>In de back-end van de webshop verschenen 9 nieuwe artikels:</p><ul style="margin-left: 2em;">';
-			// 		$skus = array( '21061', '25220', '25617', '26010', '26012', '27996', '27997', '27998', '27999' );
-			// 		foreach ( $skus as $sku ) {
-			// 			$product_id = wc_get_product_id_by_sku( $sku );
-			// 			if ( $product_id ) {
-			// 				$product = wc_get_product( $product_id );
-			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
-			// 			}
-			// 		}
-			// 	echo '</ul><p>';
-			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Twee oude producten (20023 en 26495) werden uit de database verwijderd.</p>';
-			// echo '</div>';
-			echo '<div class="notice notice-info">';
-				echo '<p>Allergenen worden vanaf nu live opgehaald uit de centrale OFT-database. Hierdoor zullen deze gegevens onmiddellijk beschikbaar zijn bij nieuwe producten en kunnen eventuele fouten op een snelle en betrouwbare manier gecorrigeerd worden. Bovendien kunnen we nu ook de gedetailleerde ingrediëntenlijst weergeven, indien beschikbaar.</p>';
-			echo '</div>';
-			// echo '<p>Onder de knop \'WP Mail Log\' kun je vanaf nu alle mails bekijken die de afgelopen 2 weken verstuurd worden door je webshop. Zo kunnen jullie beter controleren welke communicatie er precies vertrok naar de klanten. Zoals gewoonlijk belanden eventuele foutmeldingen over onbezorgbare mails (bv. omdat de klant een typfout maakte in zijn mailadres) in de mailbox van de lokale webshop.</p>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
