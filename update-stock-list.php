@@ -69,8 +69,23 @@
 								$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
 								$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 							$content .= '</select></div>';
-							$content .= '<div class="cell"><input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
-							$content .= ' <label for="'.get_the_ID().'-featured">In de kijker?</label></div>';
+							$content .= '<div class="cell">';
+							if ( is_main_site() ) {
+								$shop_cnt = 0;
+								$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
+								foreach ( $sites as $site ) {
+									switch_to_blog( $site->blog_id );
+									$local_product = wc_get_product( wc_get_product_id_by_sku( $product->get_sku() ) );
+									if ( $local_product->is_in_stock() ) {
+										$shop_cnt++;
+									}
+									restore_current_blog();
+								}
+								$content .= 'Op voorraad in '.$shop_cnt.' webshops';
+							} else {
+								$content .= '<input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'> <label for="'.get_the_ID().'-featured">In de kijker?</label>';
+							}
+							$content .= '</div>';
 						$content .= '<div class="cell output"></div>';
 						$content .= '</div>';
 						$i++;
