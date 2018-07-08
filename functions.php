@@ -881,28 +881,27 @@
 	}
 
 	function add_inventory_fields() {
-		echo '<div class="options_group oft">';
+		global $product_object;
+		echo '<div class="options_group oft"><p class="form-field">';
 			$shops_instock = array();
 			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'orderby' => 'path' ) );
 			foreach ( $sites as $site ) {
 				if ( $site->blog_id != 1 ) {
 					switch_to_blog( $site->blog_id );
-					$local_product = wc_get_product( wc_get_product_id_by_sku( $product->get_sku() ) );
+					$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
 					if ( $local_product->is_in_stock() ) {
 						$shops_instock[] = get_bloginfo('name');
 					}
 					restore_current_blog();
 				}
 			}
-			echo 'Op voorraad in '.count($shops_instock).' webshops';
+			echo '<label>Op voorraad? ('.count($shops_instock).'/'.(count($sites)-1).')</label>';
 			if ( count($shops_instock) > 0 ) {
-				echo ':<ul>';
 				foreach ($shops_instock as $shop_name ) {
-					echo '<li>'.$shop_name.'</li>';
+					echo $shop_name.'<br/>';
 				}
-				echo '</ul>';
 			}
-		echo '</div>';
+		echo '</p></div>';
 	}
 
 	// Verberg alle koopknoppen op het hoofddomein (ook reeds geblokkeerd via .htaccess but better be safe than sorry)
