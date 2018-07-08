@@ -859,6 +859,8 @@
 		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		// Log wijzigingen aan metadata na het succesvol bijwerken
 		add_action( 'updated_post_metadata', 'log_product_changes', 100, 4 );
+		// Toon de lokale webshops die het product nog op voorraad hebben
+		add_action( 'woocommerce_product_options_inventory_product_data', 'add_inventory_fields', 5 );
 	}
 	
 	function add_product_revisions( $vars ) {
@@ -876,6 +878,31 @@
 			$str = date_i18n('d/m/Y H:i:s') . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . $user->user_firstname . "\t" . $meta_key . " gewijzigd in " . serialize($new_meta_value) . "\t" . get_the_title( $post_id ) . "\n";
 			file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND);
 		}
+	}
+
+	function add_inventory_fields() {
+		echo '<div class="options_group oft">';
+			$shops_instock = array();
+			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'orderby' => 'path' ) );
+			foreach ( $sites as $site ) {
+				if ( $site->blog_id != 1 ) {
+					switch_to_blog( $site->blog_id );
+					$local_product = wc_get_product( wc_get_product_id_by_sku( $product->get_sku() ) );
+					if ( $local_product->is_in_stock() ) {
+						$shops_instock[] = get_bloginfo('name');
+					}
+					restore_current_blog();
+				}
+			}
+			echo 'Op voorraad in '.count($shops_instock).' webshops';
+			if ( count($shops_instock) > 0 ) {
+				echo ':<ul>';
+				foreach ($shops_instock as $shop_name ) {
+					echo '<li>'.$shop_name.'</li>';
+				}
+				echo '</ul>';
+			}
+		echo '</div>';
 	}
 
 	// Verberg alle koopknoppen op het hoofddomein (ook reeds geblokkeerd via .htaccess but better be safe than sorry)
