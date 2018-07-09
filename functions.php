@@ -4422,7 +4422,7 @@
 				if ( current_user_can('manage_network_users') ) {
 					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Twee noedelproducten kregen nieuwe ompaknummers (27202 => 27204 en 27203 => 27205).</p>';
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Twee noedelproducten kregen nieuwe ompaknummers (27202 => 27204 en 27203 => 27205). De prijs steeg hierbij ook van 2,25 naar 2,40 euro (in overeenstemming met ShopPlus).</p>';
 			echo '</div>';
 			echo '<div class="notice notice-success">';
 				echo '<p>Sinds eind mei is het mogelijk om B2B-klanten te registreren! Betalen via factuur, bestellen per ompak, toekennen van kortingen, ... <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Lees er alles over in de specifieke handleiding.</a></p>';
