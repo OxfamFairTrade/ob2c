@@ -927,7 +927,7 @@
 		return wc_price($regular_price);
 	}
 
-	// Zorg ervoor dat winkelbeheerders na het opslaan van feestdagen niet naar het dashboard geleid worden
+	// Zorg ervoor dat winkelbeheerders o.a. na het opslaan van feestdagen niet naar het dashboard geleid worden
 	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
 
 	function ure_allow_args_for_oxfam_options( $args ) {
@@ -941,6 +941,9 @@
 		$args['admin.php']['oxfam-options'] = array(
 			'page',
 			'settings-updated',
+		);
+		$args['admin.php']['wpml_plugin_log'] = array(
+			'page',
 		);
 		$args['admin.php']['pmxe-admin-export'] = array(
 			'id',
