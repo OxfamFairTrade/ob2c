@@ -2435,7 +2435,7 @@
 		// $logger->debug( wc_print_r( $object, true ), $context );
 		
 		$extra_recipients = array();
-		$extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
+		// $extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
 		
 		// We hernoemen de 'customer_new_account'-template maar het type blijft ongewijzigd!
 		if ( $type === 'customer_reset_password' ) {

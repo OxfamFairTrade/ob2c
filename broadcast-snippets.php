@@ -289,6 +289,15 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		unset($local_settings);
 	}
 
+	// Instellingen van WP Mail Log kopieren naar subsites
+	switch_to_blog(1);
+	$wpml_settings = get_option('wpml_settings');
+	restore_current_blog();
+	if ( is_array($wpml_settings) ) {
+		update_option( 'wpml_settings', $wpml_settings );
+		delete_option('wpml_settings-transients');
+	}
+
 	// Verzendzones wijzigen
 
 	// Tabel met stopwoorden kopiëren
