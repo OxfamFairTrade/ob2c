@@ -927,7 +927,7 @@
 		return wc_price($regular_price);
 	}
 
-	// Zorg ervoor dat winkelbeheerders o.a. na het opslaan van feestdagen niet naar het dashboard geleid worden
+	// Zorg ervoor dat winkelbeheerders na bv. het opslaan van feestdagen of het filteren in regiorapporten niet teruggedwongen worden naar het dashboard
 	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
 
 	function ure_allow_args_for_oxfam_options( $args ) {
@@ -4428,7 +4428,7 @@
 				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Twee noedelproducten kregen nieuwe ompaknummers (27202 => 27204 en 27203 => 27205). De prijs steeg hierbij ook van 2,25 naar 2,40 euro (in overeenstemming met ShopPlus).</p>';
 			echo '</div>';
 			echo '<div class="notice notice-success">';
-				echo '<p>Sinds eind mei is het mogelijk om B2B-klanten te registreren! Betalen via factuur, bestellen per ompak, toekennen van kortingen, ... <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Lees er alles over in de specifieke handleiding.</a></p>';
+				echo '<p>Sinds eind mei is het mogelijk om B2B-klanten te registreren! Betalen via factuur, bestellen per ompak, toekennen van kortingen, ... <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Lees er alles over in de specifieke handleiding.</a> Omdat we merken dat sommige webshopbeheerders dubbele of laattijdige bevestigingsmails versturen, kun je de berichten die de webshop automatisch verstuurt (o.a. bij het als afgerond markeren van een bestelling of bij het aanmaken van een verzendlabel in SendCloud) raadplegen onder WP Mail Log. Om privacyredenen wordt enkel de berichten van de afgelopen twee weken bewaard.</p>';
 				// echo '<p>Allergenen worden vanaf nu live opgehaald uit de centrale OFT-database. Hierdoor zullen deze gegevens onmiddellijk beschikbaar zijn bij nieuwe producten en kunnen eventuele fouten op een snelle en betrouwbare manier gecorrigeerd worden. Bovendien kunnen we nu ook de gedetailleerde ingrediëntenlijst weergeven, indien beschikbaar.</p>';
 				// echo '<p>Een hardnekkig probleem bij het automatisch toevoegen van grote hoeveelheden leeggoed werd definitief opgelost. Meer info <a href="https://github.com/OxfamFairTrade/ob2c/wiki/6.-Klantenservice#hoe-springen-we-om-met-leeggoed" target="_blank">in deze bijgewerkte FAQ</a>. Let wel: het mixen van verschillende soorten fruitsap in één krat is technisch (nog) niet mogelijk. Om het winkelen overzichtelijker te maken wordt het leeggoed bovendien niet langer getoond in het winkelmandje in de zijbalk. Het subtotaal onderaan vermeldt daarentegen nu wél expliciet \'incl. leeggoed\' en/of \'excl. korting\', naar gelang de inhoud van het winkelmandje.</p>';
 				// echo '<p>Onder de knop \'WP Mail Log\' kun je vanaf nu alle mails bekijken die de afgelopen 2 weken verstuurd worden door je webshop. Zo kunnen jullie beter controleren welke communicatie er precies vertrok naar de klanten. Zoals gewoonlijk belanden eventuele foutmeldingen over onbezorgbare mails (bv. omdat de klant een typfout maakte in zijn mailadres) in de mailbox van de lokale webshop.</p>';
