@@ -1008,12 +1008,16 @@
 			if ( $a->get_type() === 'line_item' and $b->get_type() === 'line_item' ) {
 				$product_a = $a->get_product();
 				$product_b = $b->get_product();
-				// Check of producten nog bestaan!
+				// Zorg ervoor dat variabelen altijd gedefinieerd zijn!
 				if ( $product_a !== false ) {
 					$sku_a = $product_a->get_sku();
+				} else {
+					$sku_a = 'error';
 				}
 				if ( $product_b !== false ) {
 					$sku_b = $product_b->get_sku();
+				} else {
+					$sku_b = 'error';
 				}
 				// Deze logica plaatst niet-numerieke referenties (en dus ook inmiddels ter ziele gegane producten) onderaan
 				if ( is_numeric( $sku_a ) ) {
