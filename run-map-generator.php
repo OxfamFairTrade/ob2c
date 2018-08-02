@@ -25,12 +25,11 @@
 				wp_reset_postdata();
 			}
 
-			$global_file = fopen("../../maps/global.kml", "w");
-			$str = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
-			
-			// Definieer de styling (icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin)
-			$str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-levering.png</href></Icon></IconStyle></Style>";
-			$str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
+			// NIET MEER NODIG
+			// $global_file = fopen("../../maps/global.kml", "w");
+			// $str = "<xml version='1.0' encoding='UTF-8'><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
+			// $str .= "<Style id='shipping'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-levering.png</href></Icon></IconStyle></Style>";
+			// $str .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 			
 			// Sluit afgeschermde en gearchiveerde webshops uit
 			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
@@ -41,24 +40,26 @@
 					
 					// Sluit hoofdsite uit
 					if ( ! is_main_site() ) {
+						// NIET MEER NODIG
 						// Voeg marker toe aan de globale kaart
-						$str .= "<Placemark>";
-						$str .= "<name><![CDATA[".get_company_name()."]]></name>";
-						if ( does_home_delivery() ) {
-							$str .= "<styleUrl>#shipping</styleUrl>";
-							$extra_text = 'Deze webshop voorziet afhalingen én thuisleveringen.';
-						} else {
-							$str .= "<styleUrl>#pickup</styleUrl>";
-							$extra_text = 'Deze webshop voorziet enkel afhalingen in de winkel.';
-						}
-						$str .= "<description><![CDATA[<p><a href='".get_site_url()."/'>".get_company_address()."</a></p><p style='text-align: center;'>".$extra_text."<br><a href='".get_site_url()."/'>Ga naar de webshop »</a></p>]]></description>";
-						$str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
-						$str .= "</Placemark>";
+						// $str .= "<Placemark>";
+						// $str .= "<name><![CDATA[".get_company_name()."]]></name>";
+						// if ( does_home_delivery() ) {
+						// 	$str .= "<styleUrl>#shipping</styleUrl>";
+						// 	$extra_text = 'Deze webshop voorziet afhalingen én thuisleveringen.';
+						// } else {
+						// 	$str .= "<styleUrl>#pickup</styleUrl>";
+						// 	$extra_text = 'Deze webshop voorziet enkel afhalingen in de winkel.';
+						// }
+						// $str .= "<description><![CDATA[<p><a href='".get_site_url()."/'>".get_company_address()."</a></p><p style='text-align: center;'>".$extra_text."<br><a href='".get_site_url()."/'>Ga naar de webshop »</a></p>]]></description>";
+						// $str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
+						// $str .= "</Placemark>";
 
 						// Maak de lokale kaart aan met alle deelnemende winkelpunten, inclusief externen
 						if ( $locations = get_option( 'woocommerce_pickup_locations' ) ) {
 							$local_file = fopen("../../maps/site-".$site->blog_id.".kml", "w");
 							$txt = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
+							// Icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin
 							$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 							
 							foreach ( $locations as $location ) {
@@ -118,6 +119,7 @@
 								'wpsl_address' => get_oxfam_shop_data('place'),
 								'wpsl_city' => get_oxfam_shop_data('city'),
 								'wpsl_zip' => get_oxfam_shop_data('zipcode'),
+								'wpsl_country' => 'België',
 								'wpsl_lat' => $ll[1],
 								'wpsl_lng' => $ll[0],
 								'wpsl_url' => get_site_url(),
@@ -146,9 +148,10 @@
 				restore_current_blog();
 			}
 
-			$str .= "</Document></kml>";
-			fwrite($global_file, $str);
-			fclose($global_file);
+			// NIET MEER NODIG
+			// $str .= "</Document></kml>";
+			// fwrite($global_file, $str);
+			// fclose($global_file);
 
 			write_log("Kaarten bijgewerkt voor ".( count($sites) - 1 )." webshops!");
 			echo "The end";
