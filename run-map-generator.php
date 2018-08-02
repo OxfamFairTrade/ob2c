@@ -128,7 +128,7 @@
 
 						if ( ! does_home_delivery() ) {
 							// Alternatieve marker indien enkel afhaling
-							$store_args['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';
+							$store_args['meta_input']['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';
 						}
 
 						// Maak aan op hoofdsite
