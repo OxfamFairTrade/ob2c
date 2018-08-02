@@ -44,6 +44,9 @@
 					}
 				}
 			}
+			if ( isset( $_GET['addSku'] ) ) {
+				// wc_print_notice( 'Vooraleer we dit product kunnen toevoegen aan je winkelmandje dien je hieronder nog even je favoriete winkel of postcode te kiezen.', 'notice' );
+			}
 		} elseif ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
 			add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
 		}
@@ -2474,7 +2477,10 @@
 			// Nummers achter method_id slaan op de (unieke) instance_id binnen DEZE subsite!
 			// Alle instances van de 'Gratis afhaling in winkel'-methode
 			case stristr( $method->id, 'local_pickup' ):
-				$descr .= sprintf( __( 'Dag (%1$s) en uur (%2$s) vanaf wanneer de bestelling klaarstaat voor afhaling', 'oxfam-webshop' ), date_i18n( 'l d/m/Y', $timestamp ), date_i18n( 'G\ui', $timestamp ) );
+				// Check of de winkel wel openingsuren heeft!
+				if ( $timestamp ) {
+					$descr .= sprintf( __( 'Dag (%1$s) en uur (%2$s) vanaf wanneer de bestelling klaarstaat voor afhaling', 'oxfam-webshop' ), date_i18n( 'l d/m/Y', $timestamp ), date_i18n( 'G\ui', $timestamp ) );
+				}
 				$label .= ':'.wc_price(0);
 				break;
 			// Alle instances van postpuntlevering
@@ -2691,7 +2697,7 @@
 	}
 
 	// Zoek het eerstvolgende openeningsuur op een dag (indien $afternoon: pas vanaf 12u)
-	function find_first_opening_hour( $hours, $from, $afternoon = true ) {
+	function find_first_opening_hour( $hours, $from, $afternoon = true, $tried = 0 ) {
 		// Argument 'N' want get_office_hours() werkt van 1 tot 7!
 		$i = date_i18n( 'N', $from );
 		if ( $hours[$i] ) {
@@ -2731,9 +2737,15 @@
 				$timestamp = strtotime( date_i18n( 'Y-m-d', $from )." ".$day_part['start'] );
 			}
 		} else {
-			// Vandaag zijn we gesloten, probeer het morgen opnieuw
-			// Het mag ook een dag in het weekend zijn, de wachttijd is vervuld!
-			$timestamp = find_first_opening_hour( $hours, strtotime( 'tomorrow', $from ), false );
+			// Indien alle openingsuren weggehaald zijn (elke dag in $hours === false): stop na 7 pogingen
+			if ( $tried < 7 ) {
+				// Vandaag zijn we gesloten, probeer het morgen opnieuw
+				// Het mag nu ook een dag in het weekend zijn, de wachttijd is vervuld!
+				$timestamp = find_first_opening_hour( $hours, strtotime( 'tomorrow', $from ), false, $tried+1 );
+			} else {
+				// Beëindig de loop
+				$timestamp = false;
+			}
 		}
 		return $timestamp;
 	}
