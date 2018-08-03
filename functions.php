@@ -45,7 +45,7 @@
 				}
 			}
 			if ( isset( $_GET['addSku'] ) ) {
-				wc_add_notice( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen.', 'notice' );
+				wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen.', 'ob2c' ), 'error' );
 				// Voeg ergens op de portaalpagina wc_print_notices() toe;
 			}
 		} elseif ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
