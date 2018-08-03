@@ -81,6 +81,8 @@
 				if ( WC()->cart->add_to_cart( $product_id, 1 ) === false ) {
 					wp_safe_redirect( $product_to_add->get_permalink() );
 				}
+			} else {
+				wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet aangemaakt voor online verkoop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
 			}
 		}
 	}
