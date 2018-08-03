@@ -45,8 +45,9 @@
 				}
 			}
 			if ( isset( $_GET['addSku'] ) ) {
+				// Vermijd dubbele output (door heen-en-weer navigeren?)
+				wc_clear_notices();
 				wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen.', 'ob2c' ), 'error' );
-				// Voeg ergens op de portaalpagina wc_print_notices() toe;
 			}
 		} elseif ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
 			add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
@@ -75,11 +76,15 @@
 				}
 			}
 			$product_to_add = wc_get_product($product_id);
-			// Enkel proberen toevoegen indien het artikelnummer bestaat én nog niet in het winkelmandje zit (voorkomt ook opnieuw toevoegen bij terugnavigeren!)
-			if ( $product_to_add !== false and ! $found ) {
-				// Ga naar de productdetailpagina indien de poging mislukte (bv. wegens geen voorraad)
-				if ( WC()->cart->add_to_cart( $product_id, 1 ) === false ) {
-					wp_safe_redirect( $product_to_add->get_permalink() );
+			// Enkel proberen toevoegen indien het artikelnummer bestaat
+			if ( $product_to_add !== false ) {
+				// En als het nog niet in het winkelmandje zit (voorkomt ook opnieuw toevoegen bij terugnavigeren!)
+				if ( ! $found ) {
+					if ( WC()->cart->add_to_cart( $product_id, 1 ) === false ) {
+						// Ga naar de productdetailpagina indien de poging mislukte (wegens geen voorraad)
+						wc_add_notice( sprintf( __( 'Dit product is helaas niet voorradig in deze webshop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
+						wp_safe_redirect( $product_to_add->get_permalink() );
+					}
 				}
 			} else {
 				wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet aangemaakt voor online verkoop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
