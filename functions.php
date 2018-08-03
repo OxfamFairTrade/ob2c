@@ -4716,7 +4716,7 @@
 	}
 
 	function print_woocommerce_messages() {
-		if ( wc_notice_count() > 0 ) {
+		if ( function_exists('wc_print_notices') and wc_notice_count() > 0 ) {
 			return wc_print_notices();
 		} else {
 			return '';
