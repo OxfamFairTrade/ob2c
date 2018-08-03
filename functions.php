@@ -45,7 +45,7 @@
 				}
 			}
 			if ( isset( $_GET['addSku'] ) ) {
-				wc_add_notice( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel of postcode te kiezen.', 'notice' );
+				wc_add_notice( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen.', 'notice' );
 				// Voeg ergens op de portaalpagina wc_print_notices() toe;
 			}
 		} elseif ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
@@ -4570,7 +4570,8 @@
 	add_shortcode( 'openingsuren', 'print_office_hours' );
 	add_shortcode( 'toon_inleiding', 'print_welcome' );
 	add_shortcode( 'toon_titel', 'print_portal_title' );
-	add_shortcode( 'toon_shops', 'print_store_selector' );
+	// add_shortcode( 'toon_shops', 'print_store_selector' );
+	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	add_shortcode( 'toon_kaart', 'print_store_locator_map' );
 	add_shortcode( 'toon_thuislevering', 'print_delivery_snippet' );
 	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
@@ -4712,6 +4713,14 @@
 	function print_store_locator_map() {
 		// Eventuele styling: maptype='light_monochrome'
 		return do_shortcode("[flexiblemap src='".content_url('/maps/global.kml')."' width='100%' height='600px' zoom='9' hidemaptype='true' hidescale='false' kmlcache='4 hours' locale='nl-BE' id='map-oxfam']");
+	}
+
+	function print_woocommerce_messages() {
+		if ( wc_notice_count() > 0 ) {
+			return wc_print_notices();
+		} else {
+			return '';
+		}
 	}
 
 	function print_delivery_snippet() {
