@@ -83,6 +83,7 @@
 				}
 			} else {
 				wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet aangemaakt voor online verkoop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
+				wp_safe_redirect( get_permalink( woocommerce_get_page_id('shop') ) );
 			}
 		}
 	}
