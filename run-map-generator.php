@@ -138,7 +138,7 @@
 						$result = wp_insert_post($store_args);
 						// Winkelcategorie op deze manier instellen, 'tax_input'-argument bij wp_insert_post() werkt niet
 						wp_set_object_terms( $result, 'afhaling', 'wpsl_store_category', false );
-						if ( ! array_key_exists( 'wpsl_alternate_marker_url', $store_args ) ) {
+						if ( ! array_key_exists( 'wpsl_alternate_marker_url', $store_args['meta_input'] ) ) {
 							// Tweede categorie instellen indien niet enkel afhaling
 							wp_set_object_terms( $result, 'levering', 'wpsl_store_category', true );
 						}

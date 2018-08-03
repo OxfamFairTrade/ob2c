@@ -45,7 +45,8 @@
 				}
 			}
 			if ( isset( $_GET['addSku'] ) ) {
-				// wc_print_notice( 'Vooraleer we dit product kunnen toevoegen aan je winkelmandje dien je hieronder nog even je favoriete winkel of postcode te kiezen.', 'notice' );
+				wc_add_notice( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel of postcode te kiezen.', 'notice' );
+				// Voeg ergens op de portaalpagina wc_print_notices() toe;
 			}
 		} elseif ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
 			add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
