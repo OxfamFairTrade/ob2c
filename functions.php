@@ -10,6 +10,7 @@
 	
 	function force_user_login() {
 		// update_site_option( 'oxfam_blocked_sites', array( 1, 9, 10, 11, 12 ) );
+
 		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
 			if ( ! is_user_logged_in() ) {
 				$url = get_current_url();
@@ -50,6 +51,7 @@
 				wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen.', 'ob2c' ), 'error' );
 			}
 		} elseif ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
+			setcookie( 'latest_subsite', get_current_blog_id(), 30 * DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 			add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
 		}
 	}
