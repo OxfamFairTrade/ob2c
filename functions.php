@@ -32,27 +32,39 @@
 
 		// Stuur Digizine-lezers meteen door op basis van postcode in hun profiel
 		if ( is_main_site() ) {
+			$suffix = '';
+			if ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
+				$suffix = 'addSku='.$_GET['addSku'];
+			}
 			if ( isset( $_GET['landingZip'] ) ) {
 				$zip = str_replace( ',', '', str_replace( '%2C', '', $_GET['landingZip'] ) );
 				$global_zips = get_shops();
 				if ( strlen( $zip ) === 4 ) {
 					if ( array_key_exists( $zip, $global_zips ) ) {
-						$suffix = '';
-						if ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
-							$suffix = '&addSku='.$_GET['addSku'];
-						}
-						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip.$suffix );
+						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip.'&'.$suffix );
+						exit();
 					}
 				}
 			}
 			if ( isset( $_GET['addSku'] ) ) {
-				// Vermijd dubbele output (door heen-en-weer navigeren?)
-				wc_clear_notices();
-				wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen.', 'ob2c' ), 'error' );
+				if ( isset( $_COOKIE['latest_subsite'] ) ) {
+					$destination_blog = get_blog_details( $_COOKIE['latest_subsite'], false );
+					if ( $destination_blog->path !== '/' ) {
+						wp_safe_redirect( network_site_url($destination_blog->path.'?'.$suffix) );
+						exit();
+					}
+				} else {
+					// Vermijd dubbele output (door heen-en-weer navigeren?)
+					wc_clear_notices();
+					wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen.', 'ob2c' ), 'error' );
+				}
 			}
-		} elseif ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
-			setcookie( 'latest_subsite', get_current_blog_id(), 30 * DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
-			add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
+		} else {
+			// Dit update de cookie bij elke pageview!
+			setcookie( 'latest_subsite', get_current_blog_id(), time() + 30*DAY_IN_SECONDS, '/' );
+			if ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
+				add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
+			}
 		}
 	}
 
@@ -86,11 +98,13 @@
 						// Ga naar de productdetailpagina indien de poging mislukte (wegens geen voorraad)
 						wc_add_notice( sprintf( __( 'Dit product is helaas niet voorradig in deze webshop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
 						wp_safe_redirect( $product_to_add->get_permalink() );
+						exit();
 					}
 				}
 			} else {
-				wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet aangemaakt voor online verkoop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
+				wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
 				wp_safe_redirect( get_permalink( woocommerce_get_page_id('shop') ) );
+				exit();
 			}
 		}
 	}
@@ -102,7 +116,7 @@
 	add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
-		// $type bevat het soort GA-tracking
+		// Parameter $type bevat het soort GA-tracking
 		if ( current_user_can('manage_woocommerce') ) {
 			return true;
 		} else {
