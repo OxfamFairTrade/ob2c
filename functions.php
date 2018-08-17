@@ -972,11 +972,13 @@
 		);
 		$args['admin.php']['wpml_plugin_log'] = array(
 			'page',
+			'paged',
+			'action',
+			'action2',
 			's',
-		);
-		$args['admin.php']['wpml_plugin_about'] = array(
-			'page',
-			's',
+			'wpml-list_table_nonce',
+			'_wp_http_referer',
+			'_wpnonce',
 		);
 		$args['admin.php']['pmxe-admin-export'] = array(
 			'id',
