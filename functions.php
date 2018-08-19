@@ -95,8 +95,9 @@
 				// En als het nog niet in het winkelmandje zit (voorkomt ook opnieuw toevoegen bij terugnavigeren!)
 				if ( ! $found ) {
 					if ( WC()->cart->add_to_cart( $product_id, 1 ) === false ) {
+						// Notice over uitgeputte voorraad verschijnt automatisch!
+						// wc_add_notice( sprintf( __( 'Dit product is helaas niet voorradig in deze webshop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
 						// Ga naar de productdetailpagina indien de poging mislukte (wegens geen voorraad)
-						wc_add_notice( sprintf( __( 'Dit product is helaas niet voorradig in deze webshop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
 						wp_safe_redirect( $product_to_add->get_permalink() );
 						exit();
 					}
