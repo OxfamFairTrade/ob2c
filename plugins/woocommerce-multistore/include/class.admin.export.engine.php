@@ -63,6 +63,10 @@
                                                     '_payment_method_title'  =>  array(
                                                                                 'title'     =>  'Payment Title'
                                                                                 ),
+                                                    '_shipping_method'  =>  array(
+                                                                                'title'     =>  'Shipping Title',
+                                                                                'callback'  =>  'fields__shipping_method' 
+                                                                                ),
                                                     '_customer_user'  =>  array(
                                                                                 'title'     =>  'Customer ID',
                                                                                 'callback'  =>  'fields__customer_username' 
@@ -470,6 +474,12 @@
                 {
                     
                     return $order->get_billing_first_name() ." " . $order->get_billing_last_name() ." \n" . str_replace("<br/>", "\n", $order->get_formatted_billing_address());   
+                }
+
+            function fields__shipping_method( $order, $key )
+                {
+                    
+                    return $order->get_shipping_method();   
                 }
            
         }
