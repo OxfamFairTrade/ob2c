@@ -19,7 +19,6 @@
                                                                                 'title'     =>  'Site ID',
                                                                                 'callback'  =>  'fields__site_id' 
                                                                                 ),
-                                                    
                                                     '_order_number' =>  array(
                                                                                 'title'     =>  'Order ID',
                                                                                 'callback'  =>  'fields__order_number' 
@@ -42,9 +41,9 @@
                                                                                 'title'     =>  'Order Products',
                                                                                 'callback'  =>  'fields__order_products' 
                                                                                 ),
-                                                    '_order_discount'  =>  array(
-                                                                                'title'     =>  'Order Discount'
-                                                                                ),
+                                                    // '_order_discount'  =>  array(
+                                                    //                             'title'     =>  'Order Discount'
+                                                    //                             ),
                                                     '_cart_discount'  =>  array(
                                                                                 'title'     =>  'Cart Discount'
                                                                                 ),
@@ -57,9 +56,6 @@
                                                     '_order_shipping_tax'  =>  array(
                                                                                 'title'     =>  'Shipping Tax'
                                                                                 ),
-                                                    // '_payment_method'  =>  array(
-                                                    //                             'title'     =>  'Payment Method'
-                                                    //                             ),
                                                     '_payment_method_title'  =>  array(
                                                                                 'title'     =>  'Payment Title'
                                                                                 ),
@@ -71,12 +67,11 @@
                                                                                 'title'     =>  'Customer ID',
                                                                                 'callback'  =>  'fields__customer_username' 
                                                                                 ),
-                                                    // '_customer_user'  =>  array(
-                                                    //                             'title'     =>  'Customer Details',
-                                                    //                             'callback'  =>  'fields__customer_details' 
-                                                    //                             ),
-                                                    
-                                                    );
+                                                    '_customer_email'  =>  array(
+                                                                                'title'     =>  'Customer Details',
+                                                                                'callback'  =>  'fields__customer_email' 
+                                                                                ), 
+                                            );
                          
             function process( $settings )
                 {
@@ -427,13 +422,11 @@
                 
             function fields__order_date( $order, $key )
                 {
-                    
                     return date_i18n( 'd/m/Y', strtotime( $order->get_date_created() ) );    
                 }
                 
             function fields__order_status( $order, $key )
-                {
-                    
+                {  
                     return $order->get_status();
                 }
                 
@@ -447,7 +440,6 @@
                     }
                         
                     return implode( ', ', $row_cel_data );    
-                    
                 }
                 
             function fields__customer_username( $order, $key )
@@ -470,15 +462,13 @@
                     return $manager;
                 }
                 
-            function fields__customer_details( $order, $key )
+            function fields__customer_email( $order, $key )
                 {
-                    
-                    return $order->get_billing_first_name() ." " . $order->get_billing_last_name() ." \n" . str_replace("<br/>", "\n", $order->get_formatted_billing_address());   
+                    return $order->get_billing_email();   
                 }
 
             function fields__shipping_method( $order, $key )
-                {
-                    
+                {   
                     return $order->get_shipping_method();   
                 }
            
