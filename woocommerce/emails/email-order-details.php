@@ -17,11 +17,11 @@ $text_align = is_rtl() ? 'right' : 'left';
 do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plain_text, $email ); ?>
 
 <?php if ( ! $sent_to_admin ) : ?>
-	<!-- GEWIJZIGD: Geen hashtag voor bestelnummer -->	
-	<h2><?php printf( 'Jouw bestelling (%s)', $order->get_order_number() ); ?></h2>
+	<!-- GEWIJZIGD: Extra enter en geen hashtag voor bestelnummer -->	
+	<br/><h2><?php printf( 'Jouw bestelling (%s)', $order->get_order_number() ); ?></h2>
 <?php else : ?>
-	<!-- GEWIJZIGD: Geen hashtag voor bestelnummer en alles aanklikbaar maken -->	
-	<h2><a class="link" href="<?php echo esc_url( admin_url( 'post.php?post=' . $order->get_id() . '&action=edit' ) ); ?>"><b><?php printf( 'Bestelling %s', $order->get_order_number() ); ?> (<?php printf( '<time datetime="%s">%s</time>', $order->get_date_created()->format( 'c' ), wc_format_datetime( $order->get_date_created() ) ); ?>)</b></a></h2>
+	<!-- GEWIJZIGD: Extra enter, geen hashtag voor bestelnummer en alles aanklikbaar maken -->	
+	<br/><h2><a class="link" href="<?php echo esc_url( admin_url( 'post.php?post=' . $order->get_id() . '&action=edit' ) ); ?>"><b><?php printf( 'Bestelling %s', $order->get_order_number() ); ?> (<?php printf( '<time datetime="%s">%s</time>', $order->get_date_created()->format( 'c' ), wc_format_datetime( $order->get_date_created() ) ); ?>)</b></a></h2>
 <?php endif; ?>
 
 <table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
