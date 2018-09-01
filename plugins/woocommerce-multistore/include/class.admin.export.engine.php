@@ -67,12 +67,9 @@
                                                                                 'title'     =>  'Customer ID',
                                                                                 'callback'  =>  'fields__customer_username' 
                                                                                 ),
-                                                    // '_customer_email'  =>  array(
-                                                    //                             'title'     =>  'Customer Details',
-                                                    //                             'callback'  =>  'fields__customer_email' 
-                                                    //                             ),
-                                                    'is_b2b_sale'  =>  array(
-                                                                                'title'     =>  'B2B Order',
+                                                    '_customer_email'  =>  array(
+                                                                                'title'     =>  'Customer Details',
+                                                                                'callback'  =>  'fields__customer_email' 
                                                                                 ), 
                                             );
                          
