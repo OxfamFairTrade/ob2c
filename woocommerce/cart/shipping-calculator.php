@@ -20,6 +20,9 @@ if ( 'no' === get_option( 'woocommerce_enable_shipping_calc' ) or ! WC()->cart->
 
 <?php do_action( 'woocommerce_before_shipping_calculator' ); ?>
 
+<!-- Vervang box door tekst 'Thuisleveing niet mogelijk' indien er groot leeggoed in het winkelmandje zit -->
+<!-- Vergt definitie van een algemene functie, in plaats van verborgen in hide_shipping_recalculate_taxes() -->
+
 <form class="woocommerce-shipping-calculator" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post">
 
 	<!-- GEWIJZIGD: Tekst aanpassen -->
