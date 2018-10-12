@@ -122,7 +122,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '26012', '20261', '28310', '28811', '27013', '28800', '28801', '28802', '28803', '20068' );
+	$photos_to_delete = array( '20031', '20050', '20058', '20249', '20250', '27810', '27811', '27813', '27819', '27820', '27821', '27822' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
@@ -160,7 +160,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '22722', '22723', '26490', '27013' );
+	$outofstocks = array( '20700', '28810', '28811' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {

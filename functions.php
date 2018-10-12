@@ -4466,22 +4466,22 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			// echo '<div class="notice notice-success">';
-			// 	echo '<p>De productdatabase werd uitgebreid met 4 nieuwe artikels, voornamelijk sintchocolade:</p><ul style="margin-left: 2em;">';
-			// 		$skus = array( '22722', '22723', '26490', '27013' );
-			// 		foreach ( $skus as $sku ) {
-			// 			$product_id = wc_get_product_id_by_sku( $sku );
-			// 			if ( $product_id ) {
-			// 				$product = wc_get_product( $product_id );
-			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
-			// 			}
-			// 		}
-			// 	echo '</ul><p>';
-			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Binnenkort verschijnen ook de andere nieuwe verpakkingen van Fairtrade Original.</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-success">';
+				echo '<p>De seizoenschocolade is gepubliceerd, samen met enkele nieuwe producten:</p><ul style="margin-left: 2em;">';
+					$skus = array( '24626', '24635', '24637', '24639', '24640', '27113', '20700', '28810', '28811' );
+					foreach ( $skus as $sku ) {
+						$product_id = wc_get_product_id_by_sku( $sku );
+						if ( $product_id ) {
+							$product = wc_get_product( $product_id );
+							echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+						}
+					}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De kruidenpasta\'s kregen hun nieuwe Fairtrade Original-verpakking.</p>';
+			echo '</div>';
 			echo '<div class="notice notice-error">';
 				echo '<p>Door een probleem met de configuratie van de verzendzones verschijnt de levermethode \'Levering op locatie\' momenteel niet bij nabije B2B-klanten. We werken aan een oplossing!</p>';
 			echo '</div>';
