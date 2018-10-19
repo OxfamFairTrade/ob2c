@@ -1670,9 +1670,9 @@
 		// Formatteer vaste telefoonnummers
 		if ( mb_strlen($temp_tel) === 9 ) {
 			if ( intval($temp_tel[1]) === 2 or intval($temp_tel[1]) === 3 or intval($temp_tel[1]) === 4 or intval($temp_tel[1]) === 9 ) {
-				$value = substr($temp_tel, 0, 2) . $slash . substr($temp_tel, 2, 3).$delim.substr($temp_tel, 5, 2) . $delim . substr($temp_tel, 7, 2);
+				$value = substr( $temp_tel, 0, 2 ) . $slash . substr( $temp_tel, 2, 3 ) . $delim . substr( $temp_tel, 5, 2 ) . $delim . substr( $temp_tel, 7, 2 );
 			} else {
-				$value = substr($temp_tel, 0, 3) . $slash . substr($temp_tel, 3, 2).$delim.substr($temp_tel, 5, 2) . $delim . substr($temp_tel, 7, 2);
+				$value = substr( $temp_tel, 0, 3 ) . $slash . substr( $temp_tel, 3, 2 ) . $delim . substr( $temp_tel, 5, 2 ) . $delim . substr( $temp_tel, 7, 2 );
 			}
 		}
 
@@ -1687,17 +1687,17 @@
 	function format_hour( $value ) {
 		// Is al behoorlijk clean bij XIO (ingesteld via selects)
 		if ( strlen($value) === 4 ) {
-			return substr($value, 0, 2) . ':' . substr($value, 2, 2);
+			return substr( $value, 0, 2 ) . ':' . substr( $value, 2, 2 );
 		} else {
-			// Rekening houden met ochtenduren!
-			return substr($value, 0, 1) . ':' . substr($value, 1, 2);
+			// Hou rekening met ochtenduren!
+			return '0'.substr( $value, 0, 1 ) . ':' . substr( $value, 1, 2 );
 		}
 	}
 
 	function format_date( $value ) {
 		$new_value = preg_replace( '/[\s\-\.\/]/', '', $value );
 		if ( strlen($new_value) === 8 ) {
-			return substr($new_value, 0, 2) . '/' . substr($new_value, 2, 2) . '/' . substr($new_value, 4, 4);
+			return substr( $new_value, 0, 2 ) . '/' . substr( $new_value, 2, 2 ) . '/' . substr( $new_value, 4, 4 );
 		} else {
 			return false;
 		}
@@ -2552,8 +2552,7 @@
 		}
 	}
 
-	// Haal de openingsuren van de node voor een bepaalde dag op
-	// WERKT MET DAGINDEXES VAN 0 TOT 6!
+	// Haal de openingsuren van de node voor een bepaalde dag op (werkt met dagindexes van 0 tot 6!)
 	function get_office_hours_for_day( $day, $node = 0 ) {
 		global $wpdb;
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
@@ -2571,7 +2570,7 @@
 		return $hours;
 	}
 
-	// Stop de openingsuren in een logische array (met dagindices van 1 tot 7!) VERHUIS NAAR DATABASE AUB
+	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7!)
 	function get_office_hours( $node = 0 ) {
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
 		
