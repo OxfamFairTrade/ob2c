@@ -137,7 +137,7 @@
 						echo "</td>";
 					echo "</tr>";
 				}
-				$b2b_shipping_options = get_option('woocommerce_b2b_delivery_shipping_method_settings');
+				$b2b_shipping_options = get_option('woocommerce_b2b_home_delivery_settings');
 			?>
 			<tr valign="top">
 				<th class="left">

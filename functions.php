@@ -722,10 +722,10 @@
 							$members = get_option( 'oxfam_member_shops' );
 							foreach ( $members as $member ) {
 								if ( $member !== $_GET['claimed_by'] ) {
-									echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk ".trim_and_uppercase( $member )." »</a><br>";
+									echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk ".trim_and_uppercase( $member )." »</a><br/>";
 								}
 							}
-							echo "<br><a href='".esc_url( remove_query_arg( 'claimed_by' ) )."' style='color: black;'>Terug naar volledige regio »</a>";
+							echo "<br/><a href='".esc_url( remove_query_arg( 'claimed_by' ) )."' style='color: black;'>Terug naar volledige regio »</a>";
 						echo "</p>";
 					echo "</div>";
 				}
@@ -736,7 +736,7 @@
 						echo "<p style='text-align: right;'>";
 							$members = get_option( 'oxfam_member_shops' );
 							foreach ( $members as $member ) {
-								echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk enkel ".trim_and_uppercase( $member )." »</a><br>";
+								echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk enkel ".trim_and_uppercase( $member )." »</a><br/>";
 							}
 						echo "</p>";
 					echo "</div>";
@@ -2525,7 +2525,7 @@
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
 				$descr .= sprintf( __( 'Uiterste dag (%s) waarop het pakje beschikbaar zal zijn in postpunt / automaat', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
-				if ( floatval( $method->cost ) === 0.0 ) {
+				if ( floatval( $method->cost ) === 0 ) {
 					$label = str_replace( 'Afhaling', 'Gratis afhaling', $label );
 					$label .= ':'.wc_price(0);
 				}
@@ -2539,6 +2539,12 @@
 				$descr .= sprintf( __( 'Uiterste dag (%s) waarop de levering zal plaatsvinden', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
 				$label .= ':'.wc_price(0);
 				break;
+			// Alle instances van B2B-levering
+			case stristr( $method->id, 'b2b_home_delivery' ):
+				if ( floatval( $method->cost ) === 0 ) {
+					$label .= ':'.wc_price(0);
+				}
+				break;
 			default:
 				$descr .= __( 'Boodschap indien schatting leverdatum niet beschikbaar', 'oxfam-webshop' );
 				break;
@@ -2546,7 +2552,7 @@
 		$descr .= '</small>';
 		// Geen schattingen tonen aan B2B-klanten
 		if ( ! is_b2b_customer() ) {
-			return $label.'<br>'.$descr;
+			return $label.'<br/>'.$descr;
 		} else {
 			return $label;
 		}
@@ -2876,14 +2882,14 @@
 	add_action( 'woocommerce_shipping_init', 'create_b2b_home_delivery_method' );
 
 	function add_b2b_home_delivery_method( $methods ) {
-		$methods['b2b_delivery_shipping_method'] = 'WC_B2B_Home_Delivery_Method';
+		$methods['b2b_home_delivery'] = 'WC_B2B_Home_Delivery_Method';
 		return $methods;
 	}
 	
 	function create_b2b_home_delivery_method() {
 		class WC_B2B_Home_Delivery_Method extends WC_Shipping_Method {
 			public function __construct() {
-				$this->id = 'b2b_delivery_shipping_method';
+				$this->id = 'b2b_home_delivery';
 				$this->method_title = __( 'B2B-leveringen', 'ob2c' );
 				$this->init_form_fields();
 				$this->init_settings();
@@ -3076,11 +3082,9 @@
 					// Alle niet-B2B-levermethodes uitschakelen
 					$non_b2b_methods = $shipping_zone['shipping_methods'];
 					foreach ( $non_b2b_methods as $shipping_method ) {
-						// Behalve afhalingen en B2B-leveringen maar die vallen sowieso niet onder een zone!
-						// if ( $shipping_method->id !== 'local_pickup_plus' ) {
+						// Behalve afhalingen en B2B-leveringen maar die vallen niet onder een zone!
 						$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
 						unset($rates[$method_key]);
-						// }
 					}
 				}
 			}
@@ -3633,9 +3637,9 @@
 			// Toon een succesboodschap
 			if ( $updated ) {
 				$deleted = $deleted ? "verwijderd en opnieuw aangemaakt" : "bijgewerkt";
-				$msg = "<i>".$filename."</i> ".$deleted." in mediabibliotheek van site-ID ".get_current_blog_id()." om ".date_i18n('H:i:s')." ...<br>";
+				$msg = "<i>".$filename."</i> ".$deleted." in mediabibliotheek van site-ID ".get_current_blog_id()." om ".date_i18n('H:i:s')." ...<br/>";
 			} else {
-				$msg = "<i>".$filename."</i> aangemaakt in mediabibliotheek van site-ID ".get_current_blog_id()." om ".date_i18n('H:i:s')." ...<br>";
+				$msg = "<i>".$filename."</i> aangemaakt in mediabibliotheek van site-ID ".get_current_blog_id()." om ".date_i18n('H:i:s')." ...<br/>";
 			}
 			// Sla het uploadtijdstip van de laatste succesvolle registratie op (indien recenter dan huidige optiewaarde)
 			if ( $filestamp > get_option( 'laatste_registratie_timestamp' ) ) {
@@ -3644,7 +3648,7 @@
 			$registered = true;
 		} else {
 			// Geef een waarschuwing als de aanmaak mislukte
-			$msg = "Opgelet, er liep iets mis met <i>".$filename."</i>!<br>";
+			$msg = "Opgelet, er liep iets mis met <i>".$filename."</i>!<br/>";
 		}
 
 		return $msg;
@@ -3887,7 +3891,7 @@
 									$text = $partner_info['name'];
 								}
 								
-								if ( $i !== 1 ) $msg .= '<br>';
+								if ( $i !== 1 ) $msg .= '<br/>';
 								$msg .= $text." &mdash; ".$partner_info['country'];
 								$i++;
 							}
@@ -4729,7 +4733,7 @@
 			if ( $hours ) {
 				foreach ( $hours as $part => $part_hours ) {
 					if ( ! isset( $$day_index ) ) {
-						$output .= "<br>".ucwords( date_i18n( 'l', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
+						$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
 						$$day_index = true;
 					} else {
 						$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
@@ -4737,7 +4741,7 @@
 				}
 			}
 		}
-		// Knip de eerste <br> er weer af
+		// Knip de eerste <br/> er weer af
 		$output = substr( $output, 4 );
 		return $output;
 	}
@@ -4785,7 +4789,7 @@
 		$global_zips = get_shops();
 		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
 		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-levering.png" class="placemarker">';
-		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br>';
+		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br/>';
 		$msg .= '<div class="input-group">';
 		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
 		$msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
@@ -4842,7 +4846,7 @@
 				}
 				$i++;
 			}
-			$msg = "<small>(*) Oxfam-Wereldwinkels kiest bewust voor lokale verwerking. Deze webshop levert aan huis in ".$list.".<br><br>Staat je postcode niet in deze lijst? <a href='/'>Keer dan terug naar de portaalpagina</a> en vul daar je postcode in.</small>";
+			$msg = "<small>(*) Oxfam-Wereldwinkels kiest bewust voor lokale verwerking. Deze webshop levert aan huis in ".$list.".<br/><br/>Staat je postcode niet in deze lijst? <a href='/'>Keer dan terug naar de portaalpagina</a> en vul daar je postcode in.</small>";
 		}
 		return $msg;
 	}
@@ -5008,16 +5012,16 @@
 	}
 
 	function get_company_contact() {
-		return get_company_address()."<br><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br>".get_oxfam_shop_data('telephone')."<br>".get_oxfam_shop_data('tax');
+		return get_company_address()."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data('telephone')."<br/>".get_oxfam_shop_data('tax');
 	}
 
 	function get_company_address( $node = 0 ) {
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
-		return get_oxfam_shop_data( 'place', $node )."<br>".get_oxfam_shop_data( 'zipcode', $node )." ".get_oxfam_shop_data( 'city', $node );
+		return get_oxfam_shop_data( 'place', $node )."<br/>".get_oxfam_shop_data( 'zipcode', $node )." ".get_oxfam_shop_data( 'city', $node );
 	}
 
 	function get_full_company() {
-		return get_company_name()."<br>".get_company_address()."<br>".get_company_contact();
+		return get_company_name()."<br/>".get_company_address()."<br/>".get_company_contact();
 	}
 
 	function get_shops() {
