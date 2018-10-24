@@ -2871,24 +2871,83 @@
 		}
 	}
 	
+	// Definieer een globale B2B-levermethode zonder support voor verzendzones
+	add_filter( 'woocommerce_shipping_methods', 'add_b2b_home_delivery_method' );
+	add_action( 'woocommerce_shipping_init', 'create_b2b_home_delivery_method' );
+
+	function add_b2b_home_delivery_method( $methods ) {
+		$methods['b2b_delivery_shipping_method'] = 'WC_B2B_Home_Delivery_Method';
+		return $methods;
+	}
+	
+	function create_b2b_home_delivery_method() {
+		class WC_B2B_Home_Delivery_Method extends WC_Shipping_Method {
+			public function __construct() {
+				$this->id = 'b2b_delivery_shipping_method';
+				$this->method_title = __( 'B2B-leveringen', 'ob2c' );
+				$this->init_form_fields();
+				$this->init_settings();
+				$this->enabled = $this->get_option('enabled');
+				$this->title = $this->get_option('title');
+				$this->cost = $this->get_option('cost');
+				add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
+			}
+
+			public function init_form_fields() {
+				$this->form_fields = array(
+					'enabled' => array(
+						'title' => 'Actief?',
+						'type' => 'checkbox',
+						'label' => 'Schakel levering op locatie in voor bedrijfsklanten',
+						'default' => 'yes',
+					),
+					'title' => array(
+						'title' => 'Label?',
+						'type' => 'text',
+						'description' => 'Dit is de naam waarmee de verzendmethode onder het winkelmandje verschijnt.',
+						'default' => __( 'Levering op locatie (timing af te spreken)', 'ob2c' ),
+					),
+					'cost' => array(
+						'title' => __( 'Kostprijs?', 'ob2c' ),
+						'type' => 'number',
+						'custom_attributes' => array(
+							'step' => '0.05',
+							'min' => '0',
+							'max' => '20',
+						),
+						'default' => '0',
+					),
+				);
+			}
+
+			public function is_available( $package ) {
+				if ( $this->enabled === 'yes' and is_b2b_customer() ) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			public function calculate_shipping( $package ) {
+				$rate = array(
+					'id' => $this->id,
+					'label' => $this->title,
+					'cost' => $this->cost,
+					// Laat de BTW automatisch variëren volgens inhoud winkelmandje
+					'taxes' => '',
+					'calc_tax' => 'per_order',
+				);
+				$this->add_rate( $rate );
+			}
+		}
+	}
+
 	// Disable sommige verzendmethoden onder bepaalde voorwaarden
 	add_filter( 'woocommerce_package_rates', 'hide_shipping_recalculate_taxes', 10, 2 );
 	
 	function hide_shipping_recalculate_taxes( $rates, $package ) {
 		if ( ! is_b2b_customer() ) {
 			validate_zip_code( intval( WC()->customer->get_shipping_postcode() ) );
-
-			$shipping_zones = WC_Shipping_Zones::get_zones();
-			foreach ( $shipping_zones as $shipping_zone ) {
-				if ( $shipping_zone['zone_name'] === 'B2B' ) {
-					// Alle B2B-levermethodes uitschakelen
-					$b2b_methods = $shipping_zone['shipping_methods'];
-					foreach ( $b2b_methods as $shipping_method ) {
-						$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
-						unset($rates[$method_key]);
-					}
-				}
-			}
 
 			// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
 			$free_home_available = false;
@@ -3014,16 +3073,14 @@
 			foreach ( $rates as $rate_key => $rate ) {
 				$shipping_zones = WC_Shipping_Zones::get_zones();
 				foreach ( $shipping_zones as $shipping_zone ) {
-					if ( $shipping_zone['zone_name'] !== 'B2B' ) {
-						// Alle niet-B2B-levermethodes uitschakelen
-						$non_b2b_methods = $shipping_zone['shipping_methods'];
-						foreach ( $non_b2b_methods as $shipping_method ) {
-							// Behalve geavanceerde afhalingen, maar die vallen sowieso niet onder een zone!
-							if ( $shipping_method->id !== 'local_pickup_plus' ) {
-								$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
-								unset($rates[$method_key]);
-							}
-						}
+					// Alle niet-B2B-levermethodes uitschakelen
+					$non_b2b_methods = $shipping_zone['shipping_methods'];
+					foreach ( $non_b2b_methods as $shipping_method ) {
+						// Behalve afhalingen en B2B-leveringen maar die vallen sowieso niet onder een zone!
+						// if ( $shipping_method->id !== 'local_pickup_plus' ) {
+						$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
+						unset($rates[$method_key]);
+						// }
 					}
 				}
 			}
