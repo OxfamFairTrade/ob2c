@@ -2905,10 +2905,10 @@
 						'title' => 'Label?',
 						'type' => 'text',
 						'description' => 'Dit is de naam waarmee de verzendmethode onder het winkelmandje verschijnt.',
-						'default' => __( 'Levering op locatie (timing af te spreken)', 'ob2c' ),
+						'default' => 'Levering op locatie (timing af te spreken)',
 					),
 					'cost' => array(
-						'title' => __( 'Kostprijs?', 'ob2c' ),
+						'title' => 'Kostprijs?'
 						'type' => 'number',
 						'custom_attributes' => array(
 							'step' => '0.05',
@@ -2928,7 +2928,7 @@
 				}
 			}
 
-			public function calculate_shipping( $package ) {
+			public function calculate_shipping( $package = array() ) {
 				$rate = array(
 					'id' => $this->id,
 					'label' => $this->title,
