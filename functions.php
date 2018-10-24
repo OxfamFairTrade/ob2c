@@ -4525,9 +4525,6 @@
 			echo '<div class="notice notice-error">';
 				echo '<p>De zeevruchten werden in alle webshops uit voorraad gezet wegens het overschrijden van de houdbaarheidsdatum. Begin 2019 komt dit product terug, indien de tests bij de nieuwe verwerker goed verlopen.</p>';
 			echo '</div>';
-			echo '<div class="notice notice-error">';
-				echo '<p>Door een probleem met de configuratie van de verzendzones verschijnt de levermethode \'Levering op locatie\' momenteel niet bij nabije B2B-klanten. We blijven zoeken naar een oplossing!</p>';
-			echo '</div>';
 			echo '<div class="notice notice-success">';
 				echo '<p>De seizoenschocolade is gepubliceerd, samen met enkele nieuwe producten:</p><ul style="margin-left: 2em;">';
 					$skus = array( '24626', '24635', '24637', '24639', '24640', '27113', '20700', '28810', '28811' );
