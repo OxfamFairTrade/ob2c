@@ -157,10 +157,18 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_b2b_delivery_cost" title="">Kostprijs voor B2B-levering:<br/><small>Standaard wordt de levering op locatie voor B2B-klanten als gratis getoond, maar binnenkort kun je hier een uniforme tarief instellen (indien gewenst).</small></label>
+					<label for="oxfam_b2b_delivery_enabled" title="">B2B-levering beschikbaar?<br/><small>Standaard is levering op locatie beschikbaar voor alle B2B-klanten (ongeacht de postcode in hun verzendadres), maar binnenkort kun je dit hier uitschakelen.</small></label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_b2b_delivery_cost" class="text-input" value="<?php echo intval( $b2b_shipping_options['cost'] ); ?>" readonly>
+		  			<input type="checkbox" name="oxfam_b2b_delivery_enabled" value="yes" <?php checked( $b2b_shipping_options['enabled'], 'yes' ); ?> readonly>
+		  		</td>
+			</tr>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_b2b_delivery_cost" title="">Kostprijs voor B2B-levering:<br/><small>Indien ingeschakeld verschijnt de levering op locatie voor alle B2B-klanten als gratis, maar binnenkort kun je hier een uniform tarief instellen (indien gewenst).</small></label>
+				</th>
+		  		<td class="right">
+		  			<input type="text" name="oxfam_b2b_delivery_cost" class="text-input" value="<?php echo wc_price( $b2b_shipping_options['cost'], true ); ?>" readonly>
 		  		</td>
 			</tr>
 			<?php
