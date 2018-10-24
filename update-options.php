@@ -168,7 +168,7 @@
 					<label for="oxfam_b2b_delivery_cost" title="">Kostprijs voor B2B-levering:<br/><small>Indien ingeschakeld verschijnt de levering op locatie voor alle B2B-klanten als gratis, maar binnenkort kun je hier een uniform tarief instellen (indien gewenst).</small></label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_b2b_delivery_cost" class="text-input" value="<?php echo wc_price( $b2b_shipping_options['cost'], true ); ?>" readonly>
+		  			<input type="text" name="oxfam_b2b_delivery_cost" class="text-input" value="<?php echo esc_attr( wc_price( $b2b_shipping_options['cost'], true ) ); ?>" readonly>
 		  		</td>
 			</tr>
 			<?php
