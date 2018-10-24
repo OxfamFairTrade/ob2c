@@ -2908,7 +2908,7 @@
 						'default' => 'Levering op locatie (timing af te spreken)',
 					),
 					'cost' => array(
-						'title' => 'Kostprijs?'
+						'title' => 'Kostprijs?',
 						'type' => 'number',
 						'custom_attributes' => array(
 							'step' => '0.05',
