@@ -9,6 +9,11 @@
 	
 	<form method="post" action="options.php">
 		<table class="form-table" id="oxfam-options">
+			<tr valign="top">
+				<th class='left'><a href='https://outlook.office.com' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>
+				<td class='right'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>
+			</tr>
+
 			<?php
 				global $default_holidays;
 
@@ -20,18 +25,13 @@
 					// Er lijkt slechts één groep per keer opgeslagen te kunnen worden!
 					settings_fields( 'oxfam-options-local' );
 				}
-				
+
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 				$partner_id_customer = get_option( 'oxfam_mollie_partner_id', 2485891 );
 				
 				// Check of we niet op de hoofdaccount zitten, want anders fatale API-error
 				if ( $partner_id_customer != 2485891 and $partner_id_customer > 2000000 ) {
-					echo "<tr>";
-						echo "<th class='left'><a href='https://outlook.office.com' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>";
-						echo "<td class='right'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>";
-					echo "</tr>";
-
 					$login_link = $mollie->getLoginLink( $partner_id_customer );
 					echo "<tr>";
 						echo "<th class='left'><a href='".$login_link->redirect_url."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
@@ -63,11 +63,11 @@
 					$profiles = $mollie->profilesByPartnerId( $partner_id_customer );
 					if ( $profiles->resultcode == '10' ) {
 						if ( get_company_name() != trim_and_uppercase($profiles->items->profile->name) ) {
-							$name_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
+							$name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
 						// Fix voor winkels met twee nummers (bv. Mariakerke)
 						$phones = explode( ' of ', get_oxfam_shop_data( 'telephone' ) );
-						$warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
+						$warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
 						if ( $phones[0] != format_telephone( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
 							if ( count($phones) === 2 ) {
 								if ( $phones[1] != format_telephone( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
@@ -78,14 +78,14 @@
 							}
 						}
 						if ( get_company_email() != $profiles->items->profile->email ) {
-							$mail_warning = "<br><small style='color: red;'>Opgelet, bij Mollie staat een ander contactadres geregistreerd!</small>";
+							$mail_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactadres geregistreerd!</small>";
 						}
 					}
 
 					$accounts = $mollie->bankAccountsByPartnerId( $partner_id_customer );
 					if ( $accounts->resultcode == '10' ) {
 						if ( get_oxfam_shop_data( 'account' ) !== format_account( $accounts->items->bankaccount->iban_number ) ) {
-							$account_warning = "<br><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geverifieerd!</small>";
+							$account_warning = "<br/><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geverifieerd!</small>";
 						}
 					}
 				} else {
@@ -137,10 +137,11 @@
 						echo "</td>";
 					echo "</tr>";
 				}
+				$b2b_shipping_options = get_option('woocommerce_b2b_delivery_shipping_method_settings');
 			?>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering (<?php echo count( get_option('oxfam_zip_codes') ); ?>):<br><small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden.</small></label>
+					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering (<?php echo count( get_option('oxfam_zip_codes') ); ?>):<br/><small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
 		  		<td class="right">
 		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo implode( ', ', get_oxfam_covered_zips() ); ?>" <?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option('oxfam_zip_codes') ) ); ?></textarea>
@@ -148,10 +149,18 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op de contactpagina een rode banner verschijnen zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:<br><small>Typ alle datums waarop de webshop 'gesloten' is in het formaat JJJJ-MM-DD en scheid ze met een komma. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor <u>alle</u> levermethodes en afhaalpunten.</small></label>
+					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op de contactpagina een rode banner verschijnen zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:<br/><small>Typ alle datums waarop de webshop 'gesloten' is in het formaat JJJJ-MM-DD en scheid ze met een komma. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor <u>alle</u> levermethodes en afhaalpunten.</small></label>
 				</th>
 		  		<td class="right">
 		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="Bijvoorbeeld: <?php echo implode( ', ', $default_holidays ); ?>" <?php if ( current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option('oxfam_holidays') ) ); ?></textarea>
+		  		</td>
+			</tr>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_b2b_delivery_cost" title="">Kostprijs voor B2B-levering:<br/><small>Standaard wordt de levering op locatie voor B2B-klanten als gratis getoond, maar binnenkort kun je hier een uniforme tarief instellen (indien gewenst).</small></label>
+				</th>
+		  		<td class="right">
+		  			<input type="text" name="oxfam_b2b_delivery_cost" class="text-input" value="<?php echo intval( $b2b_shipping_options['cost'] ); ?>" readonly>
 		  		</td>
 			</tr>
 			<?php
@@ -164,7 +173,7 @@
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database!-->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: <?php if ( isset($tax_warning) ) echo $tax_warning; ?><br><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">Kloppen jullie gegevens in de KBO-databank nog?</a></small></label>
+					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: <?php if ( isset($tax_warning) ) echo $tax_warning; ?><br/><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">Kloppen jullie gegevens in de KBO-databank nog?</a></small></label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_tax" class="text-input" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>" readonly>
