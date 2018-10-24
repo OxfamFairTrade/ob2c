@@ -2870,6 +2870,13 @@
 			}
 		}
 	}
+
+	// Voeg B2B-levermethode toe
+	add_action( 'woocommerce_shipping_init', 'b2b_delivery_shipping_method_init' );
+
+	function b2b_delivery_shipping_method_init() {
+		require_once 'b2b-delivery-shipping-method.php';
+	}
 	
 	// Disable sommige verzendmethoden onder bepaalde voorwaarden
 	add_filter( 'woocommerce_package_rates', 'hide_shipping_recalculate_taxes', 10, 2 );
