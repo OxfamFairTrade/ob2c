@@ -160,7 +160,7 @@
 					<label for="oxfam_b2b_delivery_enabled" title="">B2B-levering beschikbaar?<br/><small>Standaard is levering op locatie beschikbaar voor alle B2B-klanten (ongeacht de postcode in hun verzendadres), maar binnenkort kun je dit hier uitschakelen.</small></label>
 				</th>
 		  		<td class="right">
-		  			<input type="checkbox" name="oxfam_b2b_delivery_enabled" value="yes" <?php checked( $b2b_shipping_options['enabled'], 'yes' ); ?> readonly>
+		  			<input type="checkbox" name="oxfam_b2b_delivery_enabled" value="yes" <?php checked( $b2b_shipping_options['enabled'], 'yes' ); ?> disabled>
 		  		</td>
 			</tr>
 			<tr valign="top">
