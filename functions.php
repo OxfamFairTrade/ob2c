@@ -2525,7 +2525,7 @@
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
 				$descr .= sprintf( __( 'Uiterste dag (%s) waarop het pakje beschikbaar zal zijn in postpunt / automaat', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
-				if ( floatval( $method->cost ) === 0 ) {
+				if ( floatval( $method->cost ) == 0 ) {
 					$label = str_replace( 'Afhaling', 'Gratis afhaling', $label );
 					$label .= ':'.wc_price(0);
 				}
@@ -2541,7 +2541,7 @@
 				break;
 			// Alle instances van B2B-levering
 			case stristr( $method->id, 'b2b_home_delivery' ):
-				if ( floatval( $method->cost ) === 0 ) {
+				if ( floatval( $method->cost ) == 0 ) {
 					$label .= ':'.wc_price(0);
 				}
 				break;
