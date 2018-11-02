@@ -1,5 +1,12 @@
 <?php
 
+	// Verwijder deprecated metadata op producten
+	global $wpdb;
+	$to_delete = array( 'fb_product_group_id', 'fb_product_item_id', 'fb_product_description', 'fb_visibility', 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean' );
+	foreach ( $to_delete as $meta_key ) {
+		$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => $meta_key ) );
+	}
+
 	// Subsites afschermen en verbergen op kaart
 	$oxfam_blocked_sites = array();
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
@@ -160,7 +167,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '20700', '28810', '28811' );
+	$outofstocks = array( '20263', '21011', '21108', '22209' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
