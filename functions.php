@@ -4530,8 +4530,8 @@
 				echo '<p>De zeevruchten werden in alle webshops uit voorraad gezet wegens het overschrijden van de houdbaarheidsdatum. Begin 2019 komt dit product terug, indien de tests bij de nieuwe verwerker goed verlopen.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-success">';
-				echo '<p>De seizoenschocolade is gepubliceerd, samen met enkele nieuwe producten:</p><ul style="margin-left: 2em;">';
-					$skus = array( '24626', '24635', '24637', '24639', '24640', '27113', '20700', '28810', '28811' );
+				echo '<p>Er verschijnen alweer 4 nieuwe referenties aan de horizon:</p><ul style="margin-left: 2em;">';
+					$skus = array( '20263', '21011', '21108', '22209' );
 					foreach ( $skus as $sku ) {
 						$product_id = wc_get_product_id_by_sku( $sku );
 						if ( $product_id ) {
@@ -4543,7 +4543,7 @@
 				if ( current_user_can('manage_network_users') ) {
 					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De kruidenpasta\'s kregen hun nieuwe Fairtrade Original-verpakking.</p>';
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De Goldkoffie in bonen werd hernoemd naar Ethiopiakoffie en kreeg een bijbehorende foto van de nieuwe verpakking.</p>';
 			echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
