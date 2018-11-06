@@ -1781,7 +1781,7 @@
 			}
 
 			$pickup_text = 'Afhaling in winkel';
-			// Dieze $order->get_meta() is hier reeds beschikbaar!
+			// Deze $order->get_meta() is hier reeds beschikbaar!
 			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
 				// Switch suffix naar 'excl. BTW'
 				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
@@ -1804,6 +1804,7 @@
 						$total_excl_tax = floatval( $shipping->get_total() );
 						// Enkel printen indien nodig
 						if ( $total_tax > 0.01 ) {
+							// TE VERALGEMENEN
 							if ( $total_tax < 1.00 ) {
 								$tax = 0.06;
 							} else {
@@ -1815,6 +1816,8 @@
 					break;
 
 				case stristr( $shipping_method['method_id'], 'free_shipping' ):
+				// KAN IN DE TOEKOMST OOK BETALEND ZIJN
+				case stristr( $shipping_method['method_id'], 'b2b_home_delivery' ):
 
 					// Leveradres invullen (is in principe zeker beschikbaar!)
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
@@ -1833,6 +1836,7 @@
 						$total_excl_tax = floatval( $shipping->get_total() );
 						// Enkel printen indien nodig
 						if ( $total_tax > 0.01 ) {
+							// TE VERALGEMENEN
 							if ( $total_tax < 1.00 ) {
 								$tax = 0.06;
 							} else {
@@ -3730,51 +3734,11 @@
 		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
 	}
 
-	// Creëer een custom hiërarchische taxonomie op producten om allergeneninfo in op te slaan NIET MEER NODIG
-	add_action( 'init', 'register_allergen_taxonomy', 0 );
-
-	function register_allergen_taxonomy() {
-		$taxonomy_name = 'product_allergen';
-		
-		$labels = array(
-			'name' => 'Allergenen',
-			'singular_name' => 'Allergeen',
-			'all_items' => 'Alle allergenen',
-			'parent_item' => 'Allergeen',
-			'parent_item_colon' => 'Allergeen:',
-			'new_item_name' => 'Nieuw allergeen',
-			'add_new_item' => 'Voeg nieuw allergeen toe',
-		);
-
-		$args = array(
-			'labels' => $labels,
-			'description' => 'Markeer dat het product dit allergeen bevat',
-			'public' => true,
-			'publicly_queryable' => true,
-			'hierarchical' => true,
-			'show_ui' => true,
-			'show_in_menu' => true,
-			'show_in_nav_menus' => true,
-			'show_in_rest' => true,
-			'show_tagcloud' => true,
-			'show_in_quick_edit' => true,
-			'show_admin_column' => true,
-			'query_var' => true,
-			// Allergenen zullen in principe nooit meer toegevoegd moeten worden, dus catmans enkel rechten geven op toekenning
-			'capabilities' => array( 'assign_terms' => 'edit_products', 'edit_terms' => 'create_sites', 'manage_terms' => 'create_sites', 'delete_terms' => 'create_sites' ),
-			'rewrite' => array( 'slug' => 'allergen', 'with_front' => false ),
-		);
-
-		register_taxonomy( $taxonomy_name, 'product', $args );
-		register_taxonomy_for_object_type( $taxonomy_name, 'product' );
-	}
-
 	// Maak onze custom taxonomiën beschikbaar in menu editor
 	add_filter( 'woocommerce_attribute_show_in_nav_menus', 'register_custom_taxonomies_for_menus', 1, 2 );
 
 	function register_custom_taxonomies_for_menus( $register, $name = '' ) {
-		$register = true;
-		return $register;
+		return true;
 	}
 
 	// Vermijd dat geselecteerde termen in hiërarchische taxonomieën naar boven springen
@@ -4058,15 +4022,19 @@
 					$contains = array();
 					$traces = array();
 					$no_allergens = false;
-					foreach ( $oft_quality_data['allergen'] as $slug => $name ) {
-						$parts = explode( '-', $slug );
-						if ( $parts[0] === 'c' ) {
-							$contains[] = $name;
-						} elseif ( $parts[0] === 'mc' ) {
-							$traces[] = $name;
-						} elseif ( $parts[0] === 'none' ) {
-							$no_allergens = true;
+					if ( array_key_exists( 'allergen', $oft_quality_data ) ) {
+						foreach ( $oft_quality_data['allergen'] as $slug => $name ) {
+							$parts = explode( '-', $slug );
+							if ( $parts[0] === 'c' ) {
+								$contains[] = $name;
+							} elseif ( $parts[0] === 'mc' ) {
+								$traces[] = $name;
+							} elseif ( $parts[0] === 'none' ) {
+								$no_allergens = true;
+							}
 						}
+					} else {
+						write_log( "ERROR: NO ALLERGEN TERMS SET YET FOR SKU ".$product->get_sku() );
 					}
 					?>
 					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
@@ -4189,13 +4157,13 @@
 		
 		if ( strlen( $partner->description ) > 20 ) {
 			// Knip bij het woord 'node/'
-			$url = explode('node/', $partner->description);
-			$parts = explode('"', $url[1]);
+			$url = explode( 'node/', $partner->description );
+			$parts = explode( '" ', $url[1] );
 			$partner_info['node'] = $parts[0];
 			$partner_info['url'] = 'https://www.oxfamwereldwinkels.be/node/'.$partner_info['node'];
 			
 			$quote = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
-			if ( strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
+			if ( isset( $quote->field_manufacturer_quote_value ) and strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
 				$partner_info['quote'] = trim($quote->field_manufacturer_quote_value);
 				$quote_by = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_hero_name WHERE entity_id = '.$partner_info['node'] );
 				if ( isset( $quote_by->field_manufacturer_hero_name_value ) ) {
