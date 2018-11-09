@@ -3,8 +3,8 @@
 	Plugin Name: My Account Newsletters
 	Description: Zorg ervoor dat een extra tabblaadje 'Digizine' verschijnt en dat 'Dashboard', 'Downloads' en 'Uitloggen' verborgen worden.
 	Version:     1.2.0
-	Author:      Le Couperet
-	Author URI:  https://www.lecouperet.net/
+	Author:      Full Stack Ahead
+	Author URI:  https://www.fullstackahead.be
 	Text Domain: my-account-newsletters
 	*/
 
@@ -52,7 +52,6 @@
 			unset( $items['dashboard'] );
 			unset( $items['downloads'] );
 			$items['nieuwsbrief'] = 'Digizine';
-			$items['customer-logout'] = $logout;
 			return $items;
 		}
 
