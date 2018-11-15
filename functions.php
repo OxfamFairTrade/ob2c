@@ -125,6 +125,21 @@
 		}
 	}
 
+	// Activeer Google Tag Manager
+	add_action( 'wp_head', 'add_google_tag_manager', 100 );
+
+	function add_google_tag_manager() {
+		?>
+		<!-- Google Tag Manager -->
+		<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+		new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+		j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+		'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+		})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
+		<!-- End Google Tag Manager -->
+		<?php
+	}
+
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
 	add_action( 'init', 'allow_target_tag', 20 );
 
