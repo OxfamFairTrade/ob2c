@@ -4525,10 +4525,13 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			echo '<div class="notice notice-error">';
-				echo '<p>De zeevruchten werden in alle webshops uit voorraad gezet wegens het overschrijden van de houdbaarheidsdatum. Begin 2019 komt dit product terug, indien de tests bij de nieuwe verwerker goed verlopen.</p>';
-			echo '</div>';
+			// echo '<div class="notice notice-warning">';
+			// 	echo '<p>Voor de eindejaarsfeesten zouden we graag verrassingspakketten aanbieden in de webshops. Zo kun je voor een richtbedrag een cadeautje samenstellen met zowel voeding als crafts. Om hiermee uit te pakken op de campagnesite fairefeesten.be hebben we echter een brede ondersteuning nodig. Klik hier voor meer info over het principe, en om aan te geven of jouw wereldwinkel hieraan wenst mee te werken.</p>';
+			// echo '</div>';
 			echo '<div class="notice notice-success">';
+				echo '<p>Vanaf nu verschijnt ook de volledige ingrediëntenlijst op het tabblad \'Allergenen\' van de productdetailpagina! Dit komt bovenop de wettelijk verplichte (sporen van) allergenen, die we altijd al toonden. Bovendien worden deze gegevens sinds enkele maanden opgehaald via een API-koppeling met maximum 24 uur latentie, zodat de webshops niet langer afhankelijk zijn van de maandelijkse productupdates.</p>';
+			echo '</div>';
+			echo '<div class="notice notice-info is-dismissible">';
 				echo '<p>Er verschijnen alweer 4 nieuwe referenties aan de horizon:</p><ul style="margin-left: 2em;">';
 					$skus = array( '20263', '21011', '21108', '22209' );
 					foreach ( $skus as $sku ) {
