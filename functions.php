@@ -3820,6 +3820,7 @@
 
 	// Lijst van alle keys en labels die op het voedingstabblad kunnen verschijnen en via WC API extern opgehaald worden
 	$food_api_labels = array(
+		'_ingredients' => 'Ingrediënten',
 		'_energy' => 'Energie',
 		'_fat' => 'Vetten',
 		'_fasat' => 'waarvan verzadigde vetzuren',
@@ -3953,7 +3954,7 @@
 							if ( $oft_product !== false ) {	
 								
 								// WC PHP API 2.0+ (objecten i.p.v. arrays)
-								// Stop voedingswaarden in een array met als keys de namen van de eigenschappen
+								// Stop voedingswaarden én ingrediënten in een array met als keys de namen van de eigenschappen
 								foreach ( $oft_product->meta_data as $meta_data ) {
 									if ( array_key_exists( $meta_data->key, $food_api_labels ) ) {
 										$oft_quality_data['food'][$meta_data->key] = $meta_data->value;
