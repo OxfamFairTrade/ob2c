@@ -3847,6 +3847,9 @@
 			if ( strpos( $ingredients, '°' ) !== false ) {
 				$legend[] = '° '.__( 'ingrediënt van biologische landbouw', 'oxfam-webshop' );
 			}
+			if ( strpos( $ingredients, '†' ) !== false ) {
+				$legend[] = '† '.__( 'ingrediënt verkregen in de periode van omschakeling naar biologische landbouw', 'oxfam-webshop' );
+			}
 		}
 		return $legend;
 	}
