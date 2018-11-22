@@ -2858,15 +2858,13 @@
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
 					file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
-					$msg = WC()->session->get( 'no_zip_delivery' );
+					$msg = WC()->session->get( 'no_zip_delivery_for_'.$zip );
 					// Toon de foutmelding slechts één keer
 					if ( $msg !== 'SHOWN' ) {
 						// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices( 'error' ) retourneert te checken
-						wc_add_notice( __( 'Foutmelding na het ingeven van een postcode waar deze webshop geen thuislevering voor organiseert.', 'oxfam-webshop' ), 'error' );
-						WC()->session->set( 'no_zip_delivery', 'SHOWN' );
+						wc_add_notice( sprintf( __('Foutmelding na het ingeven van postcode %s waar deze webshop geen thuislevering voor organiseert.', 'oxfam-webshop' ), $zip ), 'error' );
+						WC()->session->set( 'no_zip_delivery_for_'.$zip, 'SHOWN' );
 					}
-				} else {
-					WC()->session->set( 'no_zip_delivery', 'RESET' );
 				}
 			}
 		}
