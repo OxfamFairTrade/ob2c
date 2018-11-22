@@ -2849,6 +2849,7 @@
 
 	function validate_zip_code( $zip ) {
 		if ( does_home_delivery() and $zip !== 0 ) {
+			write_log(WC()->customer->get_shipping_postcode());
 			if ( ! array_key_exists( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) and is_cart() ) {
 				// Enkel tonen op de winkelmandpagina
 				wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
