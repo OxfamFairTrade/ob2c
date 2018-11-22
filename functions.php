@@ -1207,7 +1207,7 @@
 							var zip = input.val();
 							var url = jQuery('#'+zip+'.oxfam-zip-value').val();
 							var all_cities = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ) ?>;
-							// Indien er meerdere plaatsnamen zijn, knippen we ze op en gebruikern we de eerste (= hoofdgemeente)
+							// Indien er meerdere plaatsnamen zijn, knippen we ze op en gebruiken we de eerste (= hoofdgemeente)
 							var cities_for_zip = all_cities[zip].split(' / ');
 							if ( typeof url !== 'undefined' ) {
 								if ( url.length > 10 ) {
@@ -1222,7 +1222,7 @@
 									input.val('');
 								}
 							} else {
-								alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ); ?>");
+								alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ); ?> Tip: je kunt ook de naam van je gemeente beginnen te typen en de juiste postcode selecteren uit de suggesties die verschijnen.");
 								jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
 								input.val('');
 							}
@@ -2849,27 +2849,23 @@
 
 	function validate_zip_code( $zip ) {
 		if ( does_home_delivery() and $zip !== 0 ) {
-			if ( ! array_key_exists( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
-				// Check uitschakelen wegens 6491 Bomal én tekst die verwijst naar dropdown die niet aanwezig is in checkout 
-				// wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
+			if ( ! array_key_exists( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) and is_cart() ) {
+				// Enkel tonen op de winkelmandpagina
+				wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
 			} else {
 				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden
-				// Eventueel enkel tonen op de winkelmandpagina m.b.v. is_cart() 
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
 					file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
-					$msg = WC()->session->get( 'no_zip_delivery_for_'.$zip );
 					// Toon de foutmelding slechts één keer
-					if ( $msg !== 'SHOWN' ) {
+					if ( WC()->session->get( 'no_zip_delivery_in_'.get_current_blog_id().'_for_'.$zip ) !== 'SHOWN' ) {
 						$global_zips = get_shops();
 						if ( isset( $global_zips[$zip] ) ) {
 							$url = $global_zips[$zip];
-						} else {
-							$url = network_site_url();
+							// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices('error') retourneert te checken
+							wc_add_notice( sprintf( __('Foutmelding na het ingeven van postcode %1$s waar deze webshop geen thuislevering voor organiseert, inclusief URL %2$s van webshop die dat wel doet.', 'oxfam-webshop' ), $zip, $url ), 'error' );
+							WC()->session->set( 'no_zip_delivery_in_'.get_current_blog_id().'_for_'.$zip, 'SHOWN' );
 						}
-						// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices( 'error' ) retourneert te checken
-						wc_add_notice( sprintf( __('Foutmelding na het ingeven van postcode %1$s waar deze webshop geen thuislevering voor organiseert, inclusief URL %2$s van webshop die dat wel doet.', 'oxfam-webshop' ), $zip, $url ), 'error' );
-						WC()->session->set( 'no_zip_delivery_for_'.$zip, 'SHOWN' );
 					}
 				}
 			}
