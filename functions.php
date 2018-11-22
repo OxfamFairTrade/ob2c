@@ -4832,22 +4832,15 @@
 		if ( does_home_delivery() ) {
 			$cities = get_site_option( 'oxfam_flemish_zip_codes' );
 			$zips = get_oxfam_covered_zips();
-			$i = 1;
-			$list = "";
+			$list = array();
 			foreach ( $zips as $zip ) {
-				$zip_city = explode( '/', $cities[$zip] );
-				if ( $i < count($zips) ) {
-					if ( $i === count($zips) - 1 ) {
-						$list .= $zip." ".trim($zip_city[0])." en ";
-					} else {
-						$list .= $zip." ".trim($zip_city[0]).", ";
-					}
-				} else {
-					$list .= $zip." ".trim($zip_city[0]);
+				// Enkel Vlaamse steden expliciet vermelden
+				if ( array_key_exists( $zip, $cities ) ) {
+					$zip_city = explode( '/', $cities[$zip] );
+					$list[] = $zip." ".trim($zip_city[0]);
 				}
-				$i++;
 			}
-			$msg = "<small>(*) Oxfam-Wereldwinkels kiest bewust voor lokale verwerking. Deze webshop levert aan huis in ".$list.".<br/><br/>Staat je postcode niet in deze lijst? <a href='/'>Keer dan terug naar de portaalpagina</a> en vul daar je postcode in.</small>";
+			$msg = "<small>(*) Oxfam-Wereldwinkels kiest bewust voor lokale verwerking. Deze webshop levert aan huis in ".implode( ', ', $list ).".<br/><br/>Staat je postcode niet in deze lijst? <a href='/'>Keer dan terug naar de portaalpagina</a> en vul daar je postcode in.</small>";
 		}
 		return $msg;
 	}
