@@ -2861,8 +2861,14 @@
 					$msg = WC()->session->get( 'no_zip_delivery_for_'.$zip );
 					// Toon de foutmelding slechts één keer
 					if ( $msg !== 'SHOWN' ) {
+						$global_zips = get_shops();
+						if ( isset( $global_zips[$zip] ) ) {
+							$url = $global_zips[$zip];
+						} else {
+							$url = network_site_url();
+						}
 						// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices( 'error' ) retourneert te checken
-						wc_add_notice( sprintf( __('Foutmelding na het ingeven van postcode %s waar deze webshop geen thuislevering voor organiseert.', 'oxfam-webshop' ), $zip ), 'error' );
+						wc_add_notice( sprintf( __('Foutmelding na het ingeven van postcode %1$s waar deze webshop geen thuislevering voor organiseert, inclusief URL %2$s van webshop die dat wel doet.', 'oxfam-webshop' ), $zip, $url ), 'error' );
 						WC()->session->set( 'no_zip_delivery_for_'.$zip, 'SHOWN' );
 					}
 				}

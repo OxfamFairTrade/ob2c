@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2018-11-22 10:42+0100\n"
-"PO-Revision-Date: 2018-11-22 10:47+0100\n"
+"POT-Creation-Date: 2018-11-22 12:40+0100\n"
+"PO-Revision-Date: 2018-11-22 12:43+0100\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: nl_NL\n"
@@ -185,49 +185,51 @@ msgstr "Ten laatste geleverd op %s"
 msgid "Boodschap indien schatting leverdatum niet beschikbaar"
 msgstr "Geen schatting beschikbaar"
 
-#: functions.php:2865
+# Inline style is nodig om display: none; van Savoy te overrulen!
+#: functions.php:2871
 #, php-format
 msgid ""
-"Foutmelding na het ingeven van postcode %s waar deze webshop geen "
-"thuislevering voor organiseert."
+"Foutmelding na het ingeven van postcode %1$s waar deze webshop geen "
+"thuislevering voor organiseert, inclusief URL %2$s van webshop die dat wel "
+"doet."
 msgstr ""
-"Deze winkel levert niet aan huis in postcode %s. Kies voor afhaling in de "
-"winkel of keer terug naar <a href=“https://shop.oxfamwereldwinkels.be”>de "
-"portaalpagina</a> om de webshop te vinden die voor jouw gemeente wel "
-"thuislevering organiseert."
+"Deze winkel levert niet aan huis in postcode %1$s. Kies voor afhaling in de "
+"winkel of <a href=\"%2$s\" style=\"display: inline-block;\">ga naar de "
+"webshop</a> die in jouw gemeente thuislevering organiseert. Opgelet: je "
+"winkelmandje wordt niet automatisch overgezet!"
 
-#: functions.php:2923
+#: functions.php:2929
 msgid "B2B-leveringen"
 msgstr ""
 
-#: functions.php:3042 functions.php:3044
+#: functions.php:3048 functions.php:3050
 #, php-format
 msgid "%d grote fles"
 msgid_plural "%d grote flessen"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:3042 functions.php:3046 functions.php:3318 functions.php:3320
+#: functions.php:3048 functions.php:3052 functions.php:3324 functions.php:3326
 #, php-format
 msgid "%d krat"
 msgid_plural "%d kratten"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:3155
+#: functions.php:3161
 msgid "Foutmelding na het ingeven van een ongeldig BTW-nummer."
 msgstr ""
 "Het BTW-nummer dat je ingaf is geen geldig Belgisch exemplaar. Gelieve het "
 "te corrigeren of leeg te laten."
 
-#: functions.php:3165
+#: functions.php:3171
 #, php-format
 msgid ""
 "Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d)."
 msgstr ""
 "Sorry, onlinebestellingen van minder dan %d euro kunnen we niet verwerken."
 
-#: functions.php:3167
+#: functions.php:3173
 #, php-format
 msgid ""
 "Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d)."
@@ -235,78 +237,78 @@ msgstr ""
 "Dit is een erg grote bestelling van meer dan %d euro. Neem a.u.b. contact "
 "met ons op om te bekijken of we dit wel tijdig kunnen leveren."
 
-#: functions.php:3311
+#: functions.php:3317
 msgid "Oxfam pakt (voor) je in!"
 msgstr ""
 
-#: functions.php:3316
+#: functions.php:3322
 #, php-format
 msgid "%d flesje"
 msgid_plural "%d flesjes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:3322
+#: functions.php:3328
 #, php-format
 msgid "%d fles"
 msgid_plural "%d flessen"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:3844
+#: functions.php:3850
 msgid "ingrediënt uit een eerlijke handelsrelatie"
 msgstr ""
 
-#: functions.php:3847
+#: functions.php:3853
 msgid "ingrediënt van biologische landbouw"
 msgstr ""
 
-#: functions.php:3850
+#: functions.php:3856
 msgid ""
 "ingrediënt verkregen in de periode van omschakeling naar biologische landbouw"
 msgstr ""
 
-#: functions.php:4686
+#: functions.php:4692
 msgid "Titel van unique selling point in footer"
 msgstr "Altijd fair, altijd open!"
 
-#: functions.php:4686
+#: functions.php:4692
 msgid "Inhoud van unique selling point in footer."
 msgstr ""
 "Eerlijke handel geeft producenten in het Zuiden kansen op een betere "
 "toekomst. Met je aankoop laat je zien dat ook jij dat belangrijk vindt. Nu "
 "ook vanuit je luie zetel!"
 
-#: functions.php:4691
+#: functions.php:4697
 msgid "Inhoud van praktisch blokje in footer (indien B2B-klant)."
 msgstr ""
 "Als zakelijke klant geniet je van een betrouwbare en persoonlijke service. "
 "Na overleg leveren we jouw bestelling zo snel mogelijk op een locatie naar "
 "keuze. Het Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:4693
+#: functions.php:4699
 msgid "Inhoud van praktisch blokje in footer (indien ook thuislevering)."
 msgstr ""
 "Met alles wat je vóór 12 uur ’s middags bestelt, staan we maximaal 3 "
 "werkdagen later op je stoep. Afhalen in de wereldwinkel kan natuurlijk ook. "
 "Het Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:4695
+#: functions.php:4701
 msgid "Inhoud van praktisch blokje in footer (inden enkel afhaling)."
 msgstr ""
 "Alles wat je vóór 12 uur 's middags bestelt, kan je de volgende werkdag "
 "vanaf 12 uur afhalen in je wereldwinkel. (Of op het eerstvolgende moment dat "
 "de winkel open is.) Het Zuiden was nog nooit zo dichtbij!"
 
-#: functions.php:4697
+#: functions.php:4703
 msgid "Titel van praktisch blokje in footer"
 msgstr "Wereldproducten. Lokaal geleverd."
 
-#: functions.php:4701
+#: functions.php:4707
 msgid "Titel van contactblokje in footer"
 msgstr "Eerlijk handelen. Ook met jou."
 
-#: functions.php:4701
+#: functions.php:4707
 #, php-format
 msgid ""
 "Inhoud van het contactblokje in de footer. Bevat <a href=\"mailto:%1$s\">een "
@@ -316,12 +318,12 @@ msgstr ""
 "en formuleren heldere beloftes. Heb je toch nog vragen? <a href=\"mailto:%1$s"
 "\">Mail ons </a> of bel naar %2$s."
 
-#: functions.php:4714
+#: functions.php:4720
 #, php-format
 msgid "Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s)."
 msgstr "%1$s, %2$s! Welkom in de webshop van %3$s."
 
-#: functions.php:4781
+#: functions.php:4787
 #, php-format
 msgid ""
 "Begroetingstekst met het aantal webshops (%d) en promotie voor de "
@@ -331,16 +333,16 @@ msgstr ""
 "<br>En pik je boodschappen de volgende werkdag op in jouw wereldwinkel."
 "<br>Kies je winkel op de kaart hieronder."
 
-#: functions.php:4786
+#: functions.php:4792
 msgid "Titel in de header van de portaalpagina"
 msgstr "De grootste keuze aan eerlijke voedingsproducten"
 
-#: functions.php:4793
+#: functions.php:4799
 msgid "Blokje uitleg bij store selector op basis van postcode."
 msgstr ""
 "Levering aan huis kan ook!<br>Vul je postcode in en we sturen je meteen door."
 
-#: functions.php:4869
+#: functions.php:4868
 msgid "Tekst die verschijnt bovenaan de hoofdpagina met producten."
 msgstr ""
 "Maak je keuze uit de categorieën hierboven of scroll hieronder door het "
