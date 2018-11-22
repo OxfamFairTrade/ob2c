@@ -2850,12 +2850,13 @@
 	function validate_zip_code( $zip ) {
 		if ( does_home_delivery() and $zip !== 0 ) {
 			if ( ! array_key_exists( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) ) {
-				wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
+				// Check uitschakelen wegens 6491 Bomal én tekst die verwijst naar dropdown die niet aanwezig is in checkout 
+				// wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
 			} else {
-				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden 
-				if ( ! in_array( $zip, get_oxfam_covered_zips() ) and is_cart() ) {
-					// Enkel tonen op de winkelmandpagina, tijdens de checkout gaan we ervan uit dat particuliere klant niet meer radicaal wijzigt (niet afschrikken met error!)
-					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ingevuld waarvoor deze winkel geen verzending organiseert\n";
+				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden
+				// Eventueel enkel tonen op de winkelmandpagina m.b.v. is_cart() 
+				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
+					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
 					file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
 					$msg = WC()->session->get( 'no_zip_delivery' );
 					// Toon de foutmelding slechts één keer
