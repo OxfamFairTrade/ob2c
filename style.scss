@@ -730,6 +730,11 @@ li#wp-admin-bar-notes {
 	display: none;
 }
 
+/* Verberg links in notices niet */
+.nm-shop-notice a {
+	display: inline-block !important;
+}
+
 #sendcloudshipping_service_point_select,
 #sendcloudshipping_service_point_selected_label {
 	margin: 0.5em auto;

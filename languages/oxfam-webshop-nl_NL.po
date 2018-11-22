@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2018-11-22 12:40+0100\n"
-"PO-Revision-Date: 2018-11-22 12:43+0100\n"
+"PO-Revision-Date: 2018-11-22 12:48+0100\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: nl_NL\n"
@@ -185,7 +185,6 @@ msgstr "Ten laatste geleverd op %s"
 msgid "Boodschap indien schatting leverdatum niet beschikbaar"
 msgstr "Geen schatting beschikbaar"
 
-# Inline style is nodig om display: none; van Savoy te overrulen!
 #: functions.php:2871
 #, php-format
 msgid ""
@@ -193,10 +192,9 @@ msgid ""
 "thuislevering voor organiseert, inclusief URL %2$s van webshop die dat wel "
 "doet."
 msgstr ""
-"Deze winkel levert niet aan huis in postcode %1$s. Kies voor afhaling in de "
-"winkel of <a href=\"%2$s\" style=\"display: inline-block;\">ga naar de "
-"webshop</a> die in jouw gemeente thuislevering organiseert. Opgelet: je "
-"winkelmandje wordt niet automatisch overgezet!"
+"Deze winkel levert niet aan huis bij postcode %1$s. Kies voor afhaling in de "
+"winkel of <a href=\"%2$s\">ga naar de webshop</a> die in jouw gemeente "
+"thuislevering organiseert. Je winkelmandje wordt niet automatisch overgezet."
 
 #: functions.php:2929
 msgid "B2B-leveringen"
