@@ -2849,7 +2849,6 @@
 
 	function validate_zip_code( $zip ) {
 		if ( does_home_delivery() and $zip !== 0 ) {
-			write_log(WC()->customer->get_shipping_postcode());
 			if ( ! array_key_exists( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) and is_cart() ) {
 				// Enkel tonen op de winkelmandpagina
 				wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
@@ -2986,6 +2985,13 @@
 	
 	function hide_shipping_recalculate_taxes( $rates, $package ) {
 		if ( ! is_b2b_customer() ) {
+			$current_user = wp_get_current_user();
+			write_log( "SHIPPING POSTCODE FOR CUSTOMER ".$current_user->user_login.": ".WC()->customer->get_shipping_postcode() );
+			if ( ! WC()->cart->needs_shipping_address() and WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
+				// Zet de verzendpostcode gelijk aan de factuurpostcode
+				WC()->customer->set_shipping_postcode( WC()->customer->get_billing_postcode() );
+				write_log("SHIPPING POSTCODE FORCED TO BILLING");
+			}
 			validate_zip_code( intval( WC()->customer->get_shipping_postcode() ) );
 
 			// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
@@ -4746,7 +4752,7 @@
 			}
 		}
 		// Knip de eerste <br/> er weer af
-		$output = substr( $output, 4 );
+		$output = substr( $output, 5 );
 		return $output;
 	}
 
