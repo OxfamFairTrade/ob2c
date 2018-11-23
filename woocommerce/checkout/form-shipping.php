@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="shipping_address">
 
 			<?php do_action( 'woocommerce_before_checkout_shipping_form', $checkout ); ?>
-            
+            <p>Opgelet: indien je de postcode hieronder wijzigt, kan de momenteel geselecteerde verzendmethode misschien onbeschikbaar worden. Selecteer in dat geval eerst een nieuwe methode. <?php // echo print_delivery_zips(); ?></p>
             <div class="woocommerce-shipping-fields__field-wrapper">
                 <?php
 					$fields = $checkout->get_checkout_fields( 'shipping' );

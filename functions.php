@@ -1359,69 +1359,102 @@
 	add_filter( 'woocommerce_billing_fields', 'format_checkout_billing', 10, 1 );
 	
 	function format_checkout_billing( $address_fields ) {
-		$address_fields['billing_first_name']['label'] = "Voornaam";
-		$address_fields['billing_first_name']['placeholder'] = "Luc";
-		$address_fields['billing_last_name']['label'] = "Familienaam";
-		$address_fields['billing_last_name']['placeholder'] = "Van Haute";
-		$address_fields['billing_email']['label'] = "E-mailadres";
-		$address_fields['billing_email']['placeholder'] = "luc@gmail.com";
-		$address_fields['billing_phone']['label'] = "Telefoonnummer";
-		$address_fields['billing_phone']['placeholder'] = get_oxfam_shop_data('telephone');
-		$address_fields['billing_company']['label'] = "Bedrijf of vereniging";
-		$address_fields['billing_company']['placeholder'] = "Oxfam Fair Trade cvba";
-		$address_fields['billing_vat']['label'] = "BTW-nummer";
-		$address_fields['billing_vat']['placeholder'] = "BE 0453.066.016";
+		$address_fields['billing_first_name'] = array_merge(
+			$address_fields['billing_first_name'],
+			array(
+				'label' => 'Voornaam',
+				'placeholder' => 'Luc',
+				'class' => array('form-row-first'),
+				'priority' => 10,
+			)
+		);
 		
-		$address_fields['billing_first_name']['class'] = array('form-row-first');
-		$address_fields['billing_last_name']['class'] = array('form-row-last');
-		$address_fields['billing_company']['class'] = array('form-row-first');
-		// Wordt pas toegevoegd indien B2B-klant, dus mag verplicht worden
-		$address_fields['billing_company']['required'] = true;
-		$address_fields['billing_vat']['class'] = array('form-row-last');
-		// Want verenigingen hebben niet noodzakelijk een BTW-nummer!
-		$address_fields['billing_vat']['required'] = false;
-		$address_fields['billing_address_1']['class'] = array('form-row-first');
-		$address_fields['billing_address_1']['clear'] = false;
-		$address_fields['billing_email']['class'] = array('form-row-first');
-		$address_fields['billing_email']['clear'] = false;
-		$address_fields['billing_email']['required'] = true;
-		$address_fields['billing_phone']['class'] = array('form-row-last');
-		$address_fields['billing_phone']['clear'] = true;
-		$address_fields['billing_phone']['required'] = true;
+		$address_fields['billing_last_name'] = array_merge(
+			$address_fields['billing_last_name'],
+			array(
+				'label' => 'Familienaam',
+				'placeholder' => 'Van Haute',
+				'class' => array('form-row-last'),
+				'priority' => 11,
+			)
+		);
+
+		$address_fields['billing_email'] = array_merge(
+			$address_fields['billing_email'],
+			array(
+				'label' => 'E-mailadres',
+				'placeholder' => 'luc@gmail.com',
+				'class' => array('form-row-first'),
+				'clear' => false,
+				'priority' => 12,
+			)
+		);
 
 		$address_fields['billing_birthday'] = array(
-			'type' => 'text',
 			'label' => 'Geboortedatum',
 			'id' => 'datepicker',
 			'placeholder' => '16/03/1988',
 			'required' => true,
 			'class' => array('form-row-last'),
 			'clear' => true,
+			'priority' => 13,
+		);
+		
+		$address_fields['billing_address_1'] = array_merge(
+			$address_fields['billing_address_1'],
+			array(
+				'label' => 'Telefoonnummer',
+				'placeholder' => get_oxfam_shop_data('telephone'),
+				'class' => array('form-row-first'),
+				'clear' => false,
+				'required' => true,
+				'priority' => 30,
+			)
 		);
 
-		$order = array(
-			'billing_first_name',
-			'billing_last_name',
-			'billing_email',
-			'billing_phone',
-			'billing_address_1',
-			'billing_birthday',
-			'billing_postcode',
-			'billing_city',
-			// NODIG VOOR SERVICE POINT!
-			'billing_country',
+		unset($address_fields['billing_address_2']);
+		
+		$address_fields['billing_phone'] = array_merge(
+			$address_fields['billing_phone'],
+			array(
+				'label' => 'Telefoonnummer',
+				'placeholder' => get_oxfam_shop_data('telephone'),
+				'class' => array('form-row-last'),
+				'clear' => true,
+				'required' => true,
+				'priority' => 31,
+			)
 		);
-
+		
+		$address_fields['billing_postcode']['priority'] = 32;
+		$address_fields['billing_city']['priority'] = 33;
+		
 		if ( is_b2b_customer() ) {
-			array_unshift( $order, 'billing_company', 'billing_vat' );
+			$address_fields['billing_company'] = array_merge(
+				$address_fields['billing_company'],
+				array(
+					'label' => 'Bedrijf of vereniging',
+					'placeholder' => 'Oxfam Fair Trade cvba',
+					'required' => true,
+					'class' => array('form-row-first'),
+					'priority' => 20,
+				)
+			);
+			$address_fields['billing_vat'] = array(
+				'label' => 'BTW-nummer',
+				'placeholder' => 'BE 0453.066.016',
+				// Want verenigingen hebben niet noodzakelijk een BTW-nummer!
+				'required' => false,
+				'class' => array('form-row-last'),
+				'priority' => 21,
+			);
+		} else {
+			unset($address_fields['billing_company']);
 		}
 
-		foreach ( $order as $field ) {
-			$ordered_fields[$field] = $address_fields[$field];
-		}
+		// Onzichtbaar maar absoluut nodig voor service points!
+		$address_fields['billing_country']['priority'] = 100;
 
-		// WORDT NOG EENS HERORDEND DOOR WOOCOMMERCE???
-		$address_fields = $ordered_fields;
 		return $address_fields;
 	}
 
@@ -2849,14 +2882,24 @@
 
 	function validate_zip_code( $zip ) {
 		if ( does_home_delivery() and $zip !== 0 ) {
-			if ( ! array_key_exists( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) and is_cart() ) {
-				// Enkel tonen op de winkelmandpagina
+			// Eventueel enkel tonen op de winkelmandpagina m.b.v. is_cart()
+			if ( ! array_key_exists( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) and $zip !== 6941 ) {
 				wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
+				return false;
 			} else {
 				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
 					file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
+					
+					if ( WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
+						// Zet de verzendpostcode gelijk aan de factuurpostcode BETER LETTERLIJK IN FRONTEND DOEN?
+						WC()->customer->set_shipping_postcode( WC()->customer->get_billing_postcode() );
+						write_log("SHIPPING POSTCODE FORCED TO BILLING (ERROR PROCEDURE)");
+						$current_user = wp_get_current_user();
+						write_log( "SHIPPING POSTCODE FOR CUSTOMER ".$current_user->user_login." (ERROR PROCEDURE): ".WC()->customer->get_shipping_postcode() );
+					}
+
 					// Toon de foutmelding slechts één keer
 					if ( WC()->session->get( 'no_zip_delivery_in_'.get_current_blog_id().'_for_'.$zip ) !== 'SHOWN' ) {
 						$global_zips = get_shops();
@@ -2975,9 +3018,27 @@
 					'taxes' => '',
 					'calc_tax' => 'per_order',
 				);
-				$this->add_rate( $rate );
+				$this->add_rate($rate);
 			}
 		}
+	}
+
+	// Fix voor verborgen verzendadressen die aanpassen leverpostcode verhinderen
+	// add_filter( 'woocommerce_package_rates', 'fix_shipping_postcode', 100, 2 );
+
+	function fix_shipping_postcode( $rates, $package ) {
+		// write_log( serialize($rates) );
+		
+		$current_user = wp_get_current_user();
+		write_log( "SHIPPING POSTCODE FOR CUSTOMER ".$current_user->user_login.": ".WC()->customer->get_shipping_postcode() );
+		if ( ! apply_filters( 'woocommerce_ship_to_different_address_checked', 'shipping' === get_option( 'woocommerce_ship_to_destination' ) ) and WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
+			// Zet de verzendpostcode gelijk aan de factuurpostcode
+			WC()->customer->set_shipping_postcode( WC()->customer->get_billing_postcode() );
+			write_log("SHIPPING POSTCODE FORCED TO BILLING (GENERAL)");
+			write_log( "SHIPPING POSTCODE FOR CUSTOMER ".$current_user->user_login." (GENERAL): ".WC()->customer->get_shipping_postcode() );
+		}
+
+		return $rates;
 	}
 
 	// Disable sommige verzendmethoden onder bepaalde voorwaarden
@@ -2985,13 +3046,6 @@
 	
 	function hide_shipping_recalculate_taxes( $rates, $package ) {
 		if ( ! is_b2b_customer() ) {
-			$current_user = wp_get_current_user();
-			write_log( "SHIPPING POSTCODE FOR CUSTOMER ".$current_user->user_login.": ".WC()->customer->get_shipping_postcode() );
-			if ( ! WC()->cart->needs_shipping_address() and WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
-				// Zet de verzendpostcode gelijk aan de factuurpostcode
-				WC()->customer->set_shipping_postcode( WC()->customer->get_billing_postcode() );
-				write_log("SHIPPING POSTCODE FORCED TO BILLING");
-			}
 			validate_zip_code( intval( WC()->customer->get_shipping_postcode() ) );
 
 			// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
