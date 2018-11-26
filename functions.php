@@ -1375,13 +1375,12 @@
 			'id' => 'datepicker',
 			'label' => 'Geboortedatum',
 			'placeholder' => '16/03/1988',
+			'description' => 'Omdat we ook alcoholische dranken verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken dit niet voor andere doeleinden.',
 			'class' => array('form-row-last'),
 			'clear' => true,
 			'required' => true,
 			'priority' => 13,
 		);
-		
-		unset($address_fields['billing_address_2']);
 		
 		$address_fields['billing_phone'] = array_merge(
 			$address_fields['billing_phone'],
@@ -1415,8 +1414,8 @@
 	add_filter( 'woocommerce_shipping_fields', 'format_checkout_shipping', 10, 1 );
 	
 	function format_checkout_shipping( $address_fields ) {
-		unset($address_fields['shipping_address_2']);
-		unset($address_fields['shipping_company']);
+		$address_fields['shipping_company']['class'] = array('form-row-last');
+		$address_fields['shipping_company']['clear'] = true;
 		return $address_fields;
 	}
 
@@ -1470,14 +1469,17 @@
 			)
 		);
 
+		unset($address_fields['address_2']);
+
 		$address_fields['postcode'] = array_merge(
 			$address_fields['postcode'],
 			array(
 				'label' => 'Postcode',
 				'placeholder' => get_oxfam_shop_data('zipcode'),
+				// EXPLICIETE update_totals_on_change NIET MEER NODIG?
 				// Zorg ervoor dat de totalen automatisch bijgewerkt worden na aanpassen van de postcode
 				// Werkt enkel indien de voorgaande verplichte velden niet-leeg zijn, zie maybe_update_checkout() in woocommerce/assets/js/frontend/checkout.js 
-				'class' => array('form-row-first update_totals_on_change'),
+				'class' => array('form-row-first'),
 				'clear' => false,
 				'required' => true,
 				'priority' => 32,
