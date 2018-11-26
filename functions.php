@@ -1375,7 +1375,7 @@
 			'id' => 'datepicker',
 			'label' => 'Geboortedatum',
 			'placeholder' => '16/03/1988',
-			'description' => 'Omdat we ook alcoholische dranken verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken dit niet voor andere doeleinden.',
+			// 'description' => 'Omdat we ook alcoholische dranken verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken dit niet voor andere doeleinden.',
 			'class' => array('form-row-last'),
 			'clear' => true,
 			'required' => true,
@@ -1414,8 +1414,10 @@
 	add_filter( 'woocommerce_shipping_fields', 'format_checkout_shipping', 10, 1 );
 	
 	function format_checkout_shipping( $address_fields ) {
-		$address_fields['shipping_company']['class'] = array('form-row-last');
-		$address_fields['shipping_company']['clear'] = true;
+		$address_fields['shipping_address_1']['class'] = array('form-row-wide');
+		$address_fields['shipping_address_1']['clear'] = true;
+		$address_fields['shipping_postcode']['value'] = WC()->customer->get_shipping_postcode();
+		unset($address_fields['shipping_company']);
 		return $address_fields;
 	}
 
