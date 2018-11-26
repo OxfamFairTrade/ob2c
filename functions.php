@@ -1478,10 +1478,9 @@
 			array(
 				'label' => 'Postcode',
 				'placeholder' => get_oxfam_shop_data('zipcode'),
-				// EXPLICIETE update_totals_on_change NIET MEER NODIG?
 				// Zorg ervoor dat de totalen automatisch bijgewerkt worden na aanpassen van de postcode
 				// Werkt enkel indien de voorgaande verplichte velden niet-leeg zijn, zie maybe_update_checkout() in woocommerce/assets/js/frontend/checkout.js 
-				'class' => array('form-row-first'),
+				'class' => array('form-row-first update_totals_on_change'),
 				'clear' => false,
 				'required' => true,
 				'priority' => 32,
