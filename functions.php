@@ -1355,30 +1355,10 @@
 		}
 	}
 
-	// Label en layout de factuurgegevens
+	// Label en layout de factuurgegevens ENKEL GEBRUIKEN OM NON-CORE-FIELDS TE BEWERKEN OF VELDEN TE UNSETTEN
 	add_filter( 'woocommerce_billing_fields', 'format_checkout_billing', 10, 1 );
 	
 	function format_checkout_billing( $address_fields ) {
-		$address_fields['billing_first_name'] = array_merge(
-			$address_fields['billing_first_name'],
-			array(
-				'label' => 'Voornaam',
-				'placeholder' => 'Luc',
-				'class' => array('form-row-first'),
-				'priority' => 10,
-			)
-		);
-		
-		$address_fields['billing_last_name'] = array_merge(
-			$address_fields['billing_last_name'],
-			array(
-				'label' => 'Familienaam',
-				'placeholder' => 'Van Haute',
-				'class' => array('form-row-last'),
-				'priority' => 11,
-			)
-		);
-
 		$address_fields['billing_email'] = array_merge(
 			$address_fields['billing_email'],
 			array(
@@ -1386,32 +1366,21 @@
 				'placeholder' => 'luc@gmail.com',
 				'class' => array('form-row-first'),
 				'clear' => false,
+				'required' => true,
 				'priority' => 12,
 			)
 		);
 
 		$address_fields['billing_birthday'] = array(
-			'label' => 'Geboortedatum',
 			'id' => 'datepicker',
+			'label' => 'Geboortedatum',
 			'placeholder' => '16/03/1988',
-			'required' => true,
 			'class' => array('form-row-last'),
 			'clear' => true,
+			'required' => true,
 			'priority' => 13,
 		);
 		
-		$address_fields['billing_address_1'] = array_merge(
-			$address_fields['billing_address_1'],
-			array(
-				'label' => 'Telefoonnummer',
-				'placeholder' => get_oxfam_shop_data('telephone'),
-				'class' => array('form-row-first'),
-				'clear' => false,
-				'required' => true,
-				'priority' => 30,
-			)
-		);
-
 		unset($address_fields['billing_address_2']);
 		
 		$address_fields['billing_phone'] = array_merge(
@@ -1426,88 +1395,109 @@
 			)
 		);
 		
-		$address_fields['billing_postcode']['priority'] = 32;
-		$address_fields['billing_city']['priority'] = 33;
-		
 		if ( is_b2b_customer() ) {
-			$address_fields['billing_company'] = array_merge(
-				$address_fields['billing_company'],
-				array(
-					'label' => 'Bedrijf of vereniging',
-					'placeholder' => 'Oxfam Fair Trade cvba',
-					'required' => true,
-					'class' => array('form-row-first'),
-					'priority' => 20,
-				)
-			);
 			$address_fields['billing_vat'] = array(
 				'label' => 'BTW-nummer',
 				'placeholder' => 'BE 0453.066.016',
+				'class' => array('form-row-last'),
 				// Want verenigingen hebben niet noodzakelijk een BTW-nummer!
 				'required' => false,
-				'class' => array('form-row-last'),
 				'priority' => 21,
 			);
 		} else {
 			unset($address_fields['billing_company']);
 		}
 
-		// Onzichtbaar maar absoluut nodig voor service points!
-		$address_fields['billing_country']['priority'] = 100;
-
 		return $address_fields;
 	}
 
-	// Label en layout de verzendgegevens
+	// Label en layout de verzendgegevens ENKEL GEBRUIKEN OM NON-CORE-FIELDS TE BEWERKEN OF VELDEN TE UNSETTEN
 	add_filter( 'woocommerce_shipping_fields', 'format_checkout_shipping', 10, 1 );
 	
 	function format_checkout_shipping( $address_fields ) {
-		$address_fields['shipping_first_name']['label'] = "Voornaam";
-		$address_fields['shipping_first_name']['placeholder'] = "Luc";
-		$address_fields['shipping_last_name']['label'] = "Familienaam";
-		$address_fields['shipping_last_name']['placeholder'] = "Van Haute";
-		$address_fields['shipping_first_name']['class'] = array('form-row-first');
-		$address_fields['shipping_last_name']['class'] = array('form-row-last');
-		
-		$order = array(
-			"shipping_first_name",
-			"shipping_last_name",
-			"shipping_address_1",
-			"shipping_postcode",
-			"shipping_city",
-			// NODIG VOOR SERVICE POINT!
-			"shipping_country",
-		);
-
-		foreach($order as $field) {
-			$ordered_fields[$field] = $address_fields[$field];
-		}
-
-		$address_fields = $ordered_fields;
+		unset($address_fields['shipping_address_2']);
+		unset($address_fields['shipping_company']);
 		return $address_fields;
 	}
 
-	// Verduidelijk de labels en layout
+	// Verduidelijk de labels en layout van de basisvelden KOMT NA ALLE ANDERE ADRESFILTERS
 	add_filter( 'woocommerce_default_address_fields', 'format_addresses_frontend', 10, 1 );
 
 	function format_addresses_frontend( $address_fields ) {
-		$address_fields['address_1']['label'] = "Straat en huisnummer";
-		$address_fields['address_1']['placeholder'] = 'Stationstraat 16';
-		$address_fields['address_1']['required'] = true;
+		$address_fields['first_name'] = array_merge(
+			$address_fields['first_name'],
+			array(
+				'label' => 'Voornaam',
+				'placeholder' => 'Luc',
+				'class' => array('form-row-first'),
+				'clear' => false,
+				'priority' => 10,
+			)
+		);
 
-		$address_fields['postcode']['label'] = "Postcode";
-		$address_fields['postcode']['placeholder'] = get_oxfam_shop_data( 'zipcode' );
-		$address_fields['postcode']['required'] = true;
-		// Zorgt ervoor dat de totalen automatisch bijgewerkt worden na aanpassen
-		// Werkt enkel indien de voorgaande verplichte velden niet-leeg zijn, zie maybe_update_checkout() in woocommerce/assets/js/frontend/checkout.js 
-		$address_fields['postcode']['class'] = array('form-row-first update_totals_on_change');
-		$address_fields['postcode']['clear'] = false;
+		$address_fields['last_name'] = array_merge(
+			$address_fields['last_name'],
+			array(
+				'label' => 'Familienaam',
+				'placeholder' => 'Van Haute',
+				'class' => array('form-row-last'),
+				'clear' => true,
+				'priority' => 11,
+			)
+		);
 
-		$address_fields['city']['label'] = "Gemeente";
-		$address_fields['city']['placeholder'] = get_oxfam_shop_data( 'city' );
-		$address_fields['city']['required'] = true;
-		$address_fields['city']['class'] = array('form-row-last');
-		$address_fields['city']['clear'] = true;
+		$address_fields['company'] = array_merge(
+			$address_fields['company'],
+			array(
+				'label' => 'Bedrijf of vereniging',
+				'placeholder' => 'Oxfam Fair Trade cvba',
+				'class' => array('form-row-first'),
+				'clear' => false,
+				'required' => true,
+				'priority' => 20,
+			)
+		);
+
+		$address_fields['address_1'] = array_merge(
+			$address_fields['address_1'],
+			array(
+				'label' => 'Straat en huisnummer',
+				'placeholder' => 'Stationstraat 16',
+				'class' => array('form-row-first'),
+				'clear' => false,
+				'required' => true,
+				'priority' => 30,
+			)
+		);
+
+		$address_fields['postcode'] = array_merge(
+			$address_fields['postcode'],
+			array(
+				'label' => 'Postcode',
+				'placeholder' => get_oxfam_shop_data('zipcode'),
+				// Zorg ervoor dat de totalen automatisch bijgewerkt worden na aanpassen van de postcode
+				// Werkt enkel indien de voorgaande verplichte velden niet-leeg zijn, zie maybe_update_checkout() in woocommerce/assets/js/frontend/checkout.js 
+				'class' => array('form-row-first update_totals_on_change'),
+				'clear' => false,
+				'required' => true,
+				'priority' => 32,
+			)
+		);
+
+		$address_fields['city'] = array_merge(
+			$address_fields['city'],
+			array(
+				'label' => 'Gemeente',
+				'placeholder' => get_oxfam_shop_data('city'),
+				'class' => array('form-row-last'),
+				'clear' => true,
+				'required' => true,
+				'priority' => 33,
+			)
+		);
+
+		// Onzichtbaar gemaakt via CSS maar absoluut nodig voor service points!
+		$address_fields['country']['priority'] = 100;
 
 		return $address_fields;
 	}
@@ -1557,7 +1547,7 @@
 		}
 	}
 
-	// Registreer bij NA UITCHECKEN of het een B2B-verkoop is of niet
+	// Registreer NA UITCHECKEN of het een B2B-verkoop is of niet
 	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_order_fields' );
 
 	function save_b2b_order_fields( $order_id ) {
