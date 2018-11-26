@@ -1394,8 +1394,6 @@
 			)
 		);
 
-		$address_fields['billing_phone']['postcode'] = 32;
-		
 		if ( is_b2b_customer() ) {
 			$address_fields['billing_vat'] = array(
 				'label' => 'BTW-nummer',
@@ -1423,7 +1421,7 @@
 	}
 
 	// Verduidelijk de labels en layout van de basisvelden KOMT NA ALLE ANDERE ADRESFILTERS
-	add_filter( 'woocommerce_default_address_fields', 'format_addresses_frontend', 10, 1 );
+	add_filter( 'woocommerce_default_address_fields', 'format_addresses_frontend', 100, 1 );
 
 	function format_addresses_frontend( $address_fields ) {
 		$address_fields['first_name'] = array_merge(
@@ -3183,11 +3181,12 @@
 	// Zorg dat afhalingen in de winkel als standaard levermethode geselecteerd worden
 	// Nodig omdat Local Pickup Plus geen verzendzones gebruikt maar alles overkoepelt
 	// Documentatie in class-wc-shipping.php: "If not set, not available, or available methods have changed, set to the DEFAULT option"
-	add_filter( 'woocommerce_shipping_chosen_method', 'set_pickup_as_default_shipping', 10 );
+	add_filter( 'woocommerce_shipping_chosen_method', 'set_pickup_as_default_shipping', 10, 3 );
 
-	function set_pickup_as_default_shipping( $method ) {
-		$method = 'local_pickup_plus';
-		return $method;
+	function set_pickup_as_default_shipping( $default, $rates, $chosen_method ) {
+		write_log(serialize($chosen_method));
+		// return 'local_pickup_plus';
+		return $chosen_method;
 	}
 
 	// Voeg instructietekst toe boven de locaties
