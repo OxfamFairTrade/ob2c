@@ -1482,7 +1482,8 @@
 				'class' => array('form-row-first update_totals_on_change'),
 				'clear' => false,
 				'required' => true,
-				'priority' => 32,
+				// Wordt door een andere plugin naar 65 geforceerd
+				'priority' => 70,
 			)
 		);
 
@@ -1494,7 +1495,7 @@
 				'class' => array('form-row-last'),
 				'clear' => true,
 				'required' => true,
-				'priority' => 33,
+				'priority' => 71,
 			)
 		);
 
