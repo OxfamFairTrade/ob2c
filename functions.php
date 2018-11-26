@@ -3184,9 +3184,7 @@
 	add_filter( 'woocommerce_shipping_chosen_method', 'set_pickup_as_default_shipping', 10, 3 );
 
 	function set_pickup_as_default_shipping( $default, $rates, $chosen_method ) {
-		write_log(serialize($chosen_method));
-		// return 'local_pickup_plus';
-		return $chosen_method;
+		return 'local_pickup_plus';
 	}
 
 	// Voeg instructietekst toe boven de locaties
