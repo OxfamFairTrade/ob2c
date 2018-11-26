@@ -1393,6 +1393,8 @@
 				'priority' => 31,
 			)
 		);
+
+		$address_fields['billing_phone']['postcode'] = 32;
 		
 		if ( is_b2b_customer() ) {
 			$address_fields['billing_vat'] = array(
@@ -1416,7 +1418,6 @@
 	function format_checkout_shipping( $address_fields ) {
 		$address_fields['shipping_address_1']['class'] = array('form-row-wide');
 		$address_fields['shipping_address_1']['clear'] = true;
-		$address_fields['shipping_postcode']['value'] = WC()->customer->get_shipping_postcode();
 		unset($address_fields['shipping_company']);
 		return $address_fields;
 	}
@@ -1512,7 +1513,7 @@
 		$fields['account']['account_username']['label'] = "Kies een gebruikersnaam:";
 		$fields['account']['account_password']['label'] = "Kies een wachtwoord:";
 		
-		$shipping_methods = WC()->session->get( 'chosen_shipping_methods' );
+		$shipping_methods = WC()->session->get('chosen_shipping_methods');
 		$shipping_id = reset($shipping_methods);
 		switch ( $shipping_id ) {
 			case stristr( $shipping_id, 'local_pickup' ):

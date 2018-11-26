@@ -30,6 +30,16 @@ if ( ! defined( 'ABSPATH' ) ) {
             <div class="woocommerce-shipping-fields__field-wrapper">
                 <?php
 					$fields = $checkout->get_checkout_fields( 'shipping' );
+					// GEWIJZIGD: Zorg dat er altijd al een postcode ingevuld is, zodat de verzendmethodes niet verdwijnen bij het uitklappen
+					if ( intval( WC()->customer->get_shipping_postcode() ) < 1000 ) {
+						if ( intval( WC()->customer->get_billing_postcode() ) >= 1000 ) {
+							// Initialiseer op factuurpostcode
+							WC()->customer->set_shipping_postcode( WC()->customer->get_billing_postcode() );
+						} else {
+							// Initialiseer op winkelpostcode
+							WC()->customer->set_shipping_postcode( get_oxfam_shop_data('zipcode') );
+						}
+					}
 
 					foreach ( $fields as $key => $field ) {
 						if ( isset( $field['country_field'], $fields[ $field['country_field'] ] ) ) {
