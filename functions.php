@@ -1546,7 +1546,8 @@
 
 		// Ook checken op billing_address_1 want indien verzendadres niet afwijkt is dit het enige veld dat op dit ogenblik in $_POST voorkomt 
 		if ( ( isset($_POST['billing_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['billing_address_1'] ) === 0 ) or ( isset($_POST['shipping_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['shipping_address_1'] ) === 0 ) ) {
-			wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+			// DEFINITIEF UITSCHAKELEN, BLIJFT SOMS PROBLEMEN GEVEN
+			// wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
 		}
 	}
 
