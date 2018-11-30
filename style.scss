@@ -301,14 +301,6 @@ body.page-template-default div.nm-row.nm-row-boxed.nm-row-max-width {
 	width: 50%;
 }
 
-/* Maak de leeggoedicoontjes kleiner */
-.shop_table.cart .product-thumbnail.empties {
-	padding: 20px;
-}
-.nm-cart-panel-thumbnail-wrap.empties {
-	padding: 10px;
-}
-
 /* Verzorg spatiëring tussen betaalicoontjes */
 .nm-footer-bar-logo.betaalmethodes,
 .nm-footer-bar-logo.betaalmethodes img {
@@ -785,6 +777,15 @@ div.nm-feature.layout-centered {
 	button.nm-simple-add-to-cart-button {
 		max-width: 250px;
 	}
+
+	/* Maak de leeggoedicoontjes kleiner */
+	.shop_table.cart .product-thumbnail.empties {
+		padding: 20px;
+	}
+	.nm-cart-panel-thumbnail-wrap.empties {
+		/* Leeggoed wordt niet meer getoond in mini-cart! */
+		/* padding: 10px; */
+	}
 }
 
 @media (max-width: 1400px) {
@@ -803,23 +804,25 @@ div.nm-feature.layout-centered {
 	}
 }
 
-@media (max-width: 1024px) {
-	/* Reset naar standaard mobiele weergave */
+@media (max-width: 1200px) {
+	/* Reset naar standaard mobiele weergave (zonder menu centraal in menubalk) */
 	body:not(.portal) .nm-header.menu-centered {
 
 		.nm-header-logo {
 			width: 25%;
+
+			.winkelnaam {
+				display: none;
+			}
 		}
 	
-		.nm-header-logo .winkelnaam {
-			display: none;
-		}
-
 		.nm-main-menu {
 			left: 0;
 		}
 	}
+}
 
+@media (max-width: 1024px) {
 	body.portal .nm-header.menu-centered {
 		
 		.nm-header-logo .winkelnaam {
@@ -842,14 +845,17 @@ div.nm-feature.layout-centered {
 
 @media (max-width: 880px) {
 	/* Reset naar standaard mobiele weergave */
-	body:not(.portal) .nm-header.menu-centered .nm-header-logo {
-		width: 75%;
+	body:not(.portal) .nm-header.menu-centered {
+		
+		.nm-header-logo {
+			width: 80%;
 
-		.winkelnaam {
-			display: inline-block;
-			padding: 0.25em 1em;
-			font-size: 110%;
-			line-height: 110%;
+			.winkelnaam {
+				display: inline-block;
+				padding: 0.25em 1em;
+				font-size: 100%;
+				line-height: 100%;
+			}
 		}
 	}
 
@@ -918,6 +924,13 @@ div.nm-feature.layout-centered {
 }
 
 @media (max-width: 480px) {
+	body:not(.portal) .nm-header.menu-centered {
+		
+		.nm-header-logo .winkelnaam {
+			display: none;
+		}
+	}
+
 	body.portal .nm-header.menu-centered {
 
 		.nm-header-logo {
