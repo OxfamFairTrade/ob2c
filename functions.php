@@ -4572,7 +4572,10 @@
 	add_action( 'admin_head', 'show_only_oxfam_notices', 10000 );
 
 	function show_only_oxfam_notices() {
-		remove_all_actions('admin_notices');
+		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor niet inschakelen!
+		if ( ! current_user_can('create_sites') ) {
+			remove_all_actions('admin_notices');
+		}
 		add_action( 'admin_notices', 'oxfam_admin_notices' );
 	}
 
