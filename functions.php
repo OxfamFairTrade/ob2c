@@ -4569,7 +4569,7 @@
 	}
 	
 	// Voeg berichten toe bovenaan adminpagina's
-	add_action( 'wp_footer', 'show_only_oxfam_notices', 1000 );
+	add_action( 'admin_head', 'show_only_oxfam_notices', 10000 );
 
 	function show_only_oxfam_notices() {
 		remove_all_actions('admin_notices');
