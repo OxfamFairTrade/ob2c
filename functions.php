@@ -4568,8 +4568,13 @@
 		return 'https://track.bpost.be/btr/web/#/search?itemCode='.get_tracking_number( $order_id ).'&lang=nl';
 	}
 	
-	// Voeg een bericht toe bovenaan alle adminpagina's
-	add_action( 'admin_notices', 'oxfam_admin_notices' );
+	// Voeg berichten toe bovenaan adminpagina's
+	add_action( 'wp_footer', 'show_only_oxfam_notices', 1000 );
+
+	function show_only_oxfam_notices() {
+		remove_all_actions('admin_notices');
+		add_action( 'admin_notices', 'oxfam_admin_notices' );
+	}
 
 	function oxfam_admin_notices() {
 		global $pagenow, $post_type;
@@ -4583,10 +4588,10 @@
 			// echo '<div class="notice notice-warning">';
 			// 	echo '<p>Voor de eindejaarsfeesten zouden we graag verrassingspakketten aanbieden in de webshops. Zo kunnen de vrijwilligers voor een richtbedrag een origineel cadeautje samenstellen met zowel voeding als crafts. Om hiermee uit te pakken op de campagnesite <a href="https://www.fairefeesten.be" target="_blank">fairefeesten.be</a> moeten we echter zeker zijn dat (bij voorkeur) alle webshops deze service zullen aanbieden. Klik hier voor meer info over de werking, en om aan te geven of jouw wereldwinkel hieraan wenst mee te werken.</p>';
 			// echo '</div>';
-			echo '<div class="notice notice-info">';
-				echo '<p>Vanaf nu verschijnt ook de volledige ingrediëntenlijst op het tabblad \'Allergenen\' van de productdetailpagina! Dit komt bovenop de wettelijk verplichte (sporen van) allergenen, die we altijd al toonden. Bovendien worden deze gegevens sinds enkele maanden opgehaald via een API-koppeling met maximum 24 uur latentie, zodat de webshops niet langer afhankelijk zijn van de maandelijkse productupdates.</p>';
-			echo '</div>';
-			echo '<div class="notice notice-success is-dismissible">';
+			// echo '<div class="notice notice-info">';
+			// 	echo '<p>Vanaf nu verschijnt ook de volledige ingrediëntenlijst op het tabblad \'Allergenen\' van de productdetailpagina! Dit komt bovenop de wettelijk verplichte (sporen van) allergenen, die we altijd al toonden. Bovendien worden deze gegevens sinds enkele maanden opgehaald via een API-koppeling met maximum 24 uur latentie, zodat de webshops niet langer afhankelijk zijn van de maandelijkse productupdates.</p>';
+			// echo '</div>';
+			echo '<div class="notice notice-success">';
 				echo '<p>Er verschijnen alweer 4 nieuwe referenties aan de horizon:</p><ul style="margin-left: 2em;">';
 					$skus = array( '20263', '21011', '21108', '22209' );
 					foreach ( $skus as $sku ) {
