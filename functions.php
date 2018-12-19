@@ -2773,8 +2773,8 @@
 		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
 		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 
-		// Indien er geen lokale feestdagen gedefinieerd zijn, worden de globale geladen
-		foreach ( get_option('oxfam_holidays') as $holiday ) {
+		// Neem de wettelijke feestdagen indien er geen enkele lokale gedefinieerd is (of merge altijd?)
+		foreach ( get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) as $holiday ) {
 			// Enkel de feestdagen die niet in het weekend moeten we in beschouwing nemen!
 			if ( date_i18n( 'N', strtotime($holiday) ) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				$till = strtotime( '+1 weekday', $till );
@@ -3459,6 +3459,7 @@
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'sanitize_callback' => 'comma_string_to_array' ) );
+		// Deze defaultwaarde verschijnt in het invulveld indien de optie nog niet bestaat maar wordt niet automatisch geladen door get_option()!
 		register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'sanitize_callback' => 'comma_string_to_array', 'default' => get_site_option('oxfam_holidays') ) );
 	}
 
@@ -3481,12 +3482,7 @@
 				unset( $array[$key] );
 			}
 		}
-		sort( $array, SORT_STRING );
-		if ( count($array) > 0 ) {
-			return $array;
-		} else {
-			return false;
-		}
+		return $array;
 	}
 
 	function comma_string_to_numeric_array( $values ) {
