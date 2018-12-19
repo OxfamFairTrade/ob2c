@@ -2657,8 +2657,6 @@
 		}
 		
 		$timestamp = $from;
-		// write_log($shipping_id);
-		// write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
 		
 		switch ( $shipping_id ) {
 			// Alle instances van winkelafhalingen
@@ -2723,8 +2721,6 @@
 				// Check of de winkel op deze dag effectief nog geopend is na 12u
 				$timestamp = find_first_opening_hour( get_office_hours( $node ), $timestamp );
 
-				// write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );
-
 				break;
 
 			// Alle (gratis/betalende) instances van postpuntlevering en thuislevering
@@ -2741,7 +2737,6 @@
 				break;
 		}
 
-		// write_log( date_i18n( 'd/m/Y H:i', $timestamp ) );		
 		return $timestamp;
 	}
 
@@ -3261,7 +3256,6 @@
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 						if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
 							$main_product = wc_get_product($product_item['product_id']);
-							// write_log("We hebben een ".$plastic_sku."-krat gevonden dat gelinkt is aan SKU ".$main_product->get_sku()."!");
 							$plastic_in_cart = true;
 							break;
 						}
@@ -3269,8 +3263,7 @@
 
 					if ( ! $plastic_in_cart and floor( intval($product_item['quantity']) / $plastic_step ) >= 1 ) {
 						$main_product = wc_get_product($product_item['product_id']);
-						write_log("We voegen het eerste ".$plastic_sku."-krat handmatig toe aan SKU ".$main_product->get_sku()."!");
-						// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
+						// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
 						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_array['variation_id'], $empties_array['variation'], array( 'forced_by' => $product_item_key ) );
 					}
 					break;
@@ -3320,7 +3313,7 @@
 				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
 						$main_product = wc_get_product($product_item['product_id']);
-						// write_log("We hebben een ".$plastic_sku."-krat gevonden dat gelinkt is aan SKU ".$main_product->get_sku()."!");
+						// We hebben een krat gevonden dat gelinkt is aan de fles
 						$plastic_in_cart = true;
 						break;
 					}
@@ -3328,8 +3321,7 @@
 
 				if ( ! $plastic_in_cart and floor( intval($product_item['quantity']) / $plastic_step ) >= 1 ) {
 					$main_product = wc_get_product($product_item['product_id']);
-					write_log("We voegen het eerste ".$plastic_sku."-krat handmatig toe aan SKU ".$main_product->get_sku()."!");
-					// Zorg dat deze cart_item ook gelinkt is aan het product waaraan de fles al gelinkt was
+					// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
 					$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $empties_item['forced_by'] ) );
 				}
 
