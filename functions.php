@@ -2533,7 +2533,7 @@
 		// $logger->debug( wc_print_r( $object, true ), $context );
 		
 		$extra_recipients = array();
-		// $extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
+		$extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
 		
 		// We hernoemen de 'customer_new_account'-template maar het type blijft ongewijzigd!
 		if ( $type === 'customer_reset_password' ) {
@@ -2627,7 +2627,7 @@
 
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7!)
 	function get_office_hours( $node = 0 ) {
-		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
+		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
 		
 		if ( ! is_numeric( $node ) ) {
 			$hours = get_site_option( 'oxfam_opening_hours_'.$node );
@@ -4774,22 +4774,40 @@
 		return '<a href="'.get_site_url( get_current_blog_id(), '/contact/' ).'">'.get_company_name().' &copy; 2017-'.date_i18n('Y').'</a>';
 	}
 
-	function print_office_hours( $atts = [] ) {
+	function print_office_hours( $atts = [], $start_from_today = false ) {
 		// Overschrijf defaults met expliciete data van de gebruiker
 		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
 		
 		$output = '';
 		$days = get_office_hours( $atts['node'] );
-		foreach ( $days as $day_index => $hours ) {
+
+		if ( $start_from_today ) {
+			// Begin met de weekdag van vandaag
+			$start = intval(date('N'));
+		} else {
+			// Begin gewoon op maandag
+			$start = 1;
+		}
+
+		for ( $cnt = 0; $cnt < 7; $cnt++ ) {
+			// Fix voor zondagen
+			$index = ( ( $start + $cnt - 1 ) % 7 ) + 1;
+			
 			// Check of er voor deze dag wel openingsuren bestaan
-			if ( $hours ) {
-				foreach ( $hours as $part => $part_hours ) {
-					if ( ! isset( $$day_index ) ) {
-						$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$day_index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
-						$$day_index = true;
-					} else {
-						$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
+			if ( $days[$index] ) {
+				// echo date( 'Y-m-d', strtotime("+{$cnt} days") );
+				// Toon 'uitzonderlijk gesloten' indien sluitingsdag
+				if ( in_array( date( 'Y-m-d', strtotime("+{$cnt} days") ), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
+					foreach ( $days[$index] as $part => $part_hours ) {
+						if ( ! isset( $$day_index ) ) {
+							$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
+							$$day_index = true;
+						} else {
+							$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
+						}
 					}
+				} else {
+					$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": uitzonderlijk gesloten";
 				}
 			}
 		}
