@@ -4774,16 +4774,17 @@
 		return '<a href="'.get_site_url( get_current_blog_id(), '/contact/' ).'">'.get_company_name().' &copy; 2017-'.date_i18n('Y').'</a>';
 	}
 
-	function print_office_hours( $atts = [], $start_from_today = false ) {
+	function print_office_hours( $atts = [] ) {
 		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'node' => get_option( 'oxfam_shop_node' ) ), $atts );
+		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'start' => 'today' ), $atts );
 		
 		$output = '';
 		$days = get_office_hours( $atts['node'] );
+		$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
 
-		if ( $start_from_today ) {
+		if ( $atts['start'] === 'today' ) {
 			// Begin met de weekdag van vandaag
-			$start = intval(date('N'));
+			$start = intval( date('N') );
 		} else {
 			// Begin gewoon op maandag
 			$start = 1;
@@ -4795,9 +4796,8 @@
 			
 			// Check of er voor deze dag wel openingsuren bestaan
 			if ( $days[$index] ) {
-				// echo date( 'Y-m-d', strtotime("+{$cnt} days") );
-				// Toon 'uitzonderlijk gesloten' indien sluitingsdag
-				if ( in_array( date( 'Y-m-d', strtotime("+{$cnt} days") ), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
+				// Toon sluitingsdagen indien we de specifieke openingsuren voor de komende week tonen
+				if ( $atts['start'] === 'today' and in_array( date_i18n( 'Y-m-d', strtotime("+{$cnt} days") ), $holidays ) ) {
 					$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": uitzonderlijk gesloten";
 				} else {
 					foreach ( $days[$index] as $part => $part_hours ) {
