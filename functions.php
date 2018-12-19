@@ -197,12 +197,6 @@
 		wp_enqueue_style( 'jquery-ui' );
 	}
 
-	// Stop vervelende nag van Visual Composer
-	add_action( 'admin_init', function() {
-		setcookie('vchideactivationmsg', '1', strtotime('+3 years'), '/');
-		setcookie('vchideactivationmsg_vc11', ( defined('WPB_VC_VERSION') ? WPB_VC_VERSION : '1' ), strtotime('+3 years'), '/');
-	});
-
 	// Voeg custom styling toe aan de adminomgeving (voor Relevanssi en Voorraadbeheer)
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
@@ -224,10 +218,7 @@
 	if ( is_front_page() ) {
 		add_filter( 'jetpack_enable_open_graph', '__return_false' );
 	}
-	
-	// Beheer alle wettelijke feestdagen uit de testperiode centraal
-	$default_holidays = array( '2018-07-21', '2018-08-15', '2018-11-01', '2018-12-25', '2019-01-01' );
-	
+
 
 
 	####################
@@ -2772,8 +2763,6 @@
 	// Check of er feestdagen in een bepaalde periode liggen, en zo ja: tel die dagen bij de einddag
 	// Neemt een begin- en eindpunt en retourneert het nieuwe eindpunt (allemaal in timestamps)
 	function move_date_on_holidays( $from, $till ) {
-		global $default_holidays;
-
 		// Check of de startdag ook nog in beschouwing genomen moet worden
 		if ( date_i18n( 'N', $from ) < 6 and date_i18n( 'G', $from ) >= 12 ) {
 			$first = date_i18n( 'Y-m-d', strtotime( '+1 weekday', $from ) );
@@ -2784,10 +2773,8 @@
 		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
 		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 
-		// Vang het niet bestaan van de optie op
-		$holidays = get_option( 'oxfam_holidays', $default_holidays );
-		
-		foreach ( $holidays as $holiday ) {
+		// Indien er geen lokale feestdagen gedefinieerd zijn, worden de globale geladen
+		foreach ( get_option('oxfam_holidays') as $holiday ) {
 			// Enkel de feestdagen die niet in het weekend moeten we in beschouwing nemen!
 			if ( date_i18n( 'N', strtotime($holiday) ) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				$till = strtotime( '+1 weekday', $till );
@@ -3470,9 +3457,9 @@
 	function register_oxfam_settings() {
 		register_setting( 'oxfam-options-global', 'oxfam_shop_node', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', 'absint' );
-		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', 'comma_string_to_numeric_array' );
-		register_setting( 'oxfam-options-global', 'oxfam_member_shops', 'comma_string_to_array' );
-		register_setting( 'oxfam-options-local', 'oxfam_holidays', 'comma_string_to_array' );
+		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
+		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'sanitize_callback' => 'comma_string_to_array' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'sanitize_callback' => 'comma_string_to_array', 'default' => get_site_option('oxfam_holidays') ) );
 	}
 
 	// Zorg ervoor dat je lokale opties ook zonder 'manage_options'-rechten opgeslagen kunnen worden
@@ -3495,7 +3482,11 @@
 			}
 		}
 		sort( $array, SORT_STRING );
-		return $array;
+		if ( count($array) > 0 ) {
+			return $array;
+		} else {
+			return false;
+		}
 	}
 
 	function comma_string_to_numeric_array( $values ) {
