@@ -4798,6 +4798,8 @@
 				// echo date( 'Y-m-d', strtotime("+{$cnt} days") );
 				// Toon 'uitzonderlijk gesloten' indien sluitingsdag
 				if ( in_array( date( 'Y-m-d', strtotime("+{$cnt} days") ), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
+					$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": uitzonderlijk gesloten";
+				} else {
 					foreach ( $days[$index] as $part => $part_hours ) {
 						if ( ! isset( $$day_index ) ) {
 							$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
@@ -4806,8 +4808,6 @@
 							$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
 						}
 					}
-				} else {
-					$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": uitzonderlijk gesloten";
 				}
 			}
 		}
