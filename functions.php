@@ -4801,9 +4801,9 @@
 					$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": uitzonderlijk gesloten";
 				} else {
 					foreach ( $days[$index] as $part => $part_hours ) {
-						if ( ! isset( $$day_index ) ) {
+						if ( ! isset( $$index ) ) {
 							$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
-							$$day_index = true;
+							$$index = true;
 						} else {
 							$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
 						}
