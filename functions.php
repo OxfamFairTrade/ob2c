@@ -130,13 +130,11 @@
 
 	function add_google_tag_manager_js() {
 		?>
-		<!-- Google Tag Manager -->
 		<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 		new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 		j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 		'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 		})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
-		<!-- End Google Tag Manager -->
 		<?php
 	}
 
@@ -145,10 +143,42 @@
 
 	function add_google_tag_manager_no_js() {
 		?>
-		<!-- Google Tag Manager (noscript) -->
 		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
 		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-		<!-- End Google Tag Manager (noscript) -->
+		<noscript><img height="1" width="1" style="display:none"
+		src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
+		/></noscript>
+		<?php
+	}
+
+	// Activeer Facebook Pixel (JS)
+	add_action( 'wp_head', 'add_facebook_pixel_js', 100 );
+
+	function add_facebook_pixel_js() {
+		?>
+		<script>
+			!function(f,b,e,v,n,t,s)
+			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+			n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+			if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+			n.queue=[];t=b.createElement(e);t.async=!0;
+			t.src=v;s=b.getElementsByTagName(e)[0];
+			s.parentNode.insertBefore(t,s)}(window, document,'script',
+			'https://connect.facebook.net/en_US/fbevents.js');
+			fbq('init', '1964131620531187');
+			fbq('track', 'PageView');
+		</script>
+		<?php
+	}
+
+	// Activeer Facebook Pixel (no JS)
+	add_action( 'wp_footer', 'add_facebook_pixel_no_js', 100 );
+
+	function add_facebook_pixel_no_js() {
+		?>
+		<noscript><img height="1" width="1" style="display:none"
+		src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
+		/></noscript>
 		<?php
 	}
 
@@ -4570,25 +4600,25 @@
 			// echo '<div class="notice notice-warning">';
 			// 	echo '<p>Voor de eindejaarsfeesten zouden we graag verrassingspakketten aanbieden in de webshops. Zo kunnen de vrijwilligers voor een richtbedrag een origineel cadeautje samenstellen met zowel voeding als crafts. Om hiermee uit te pakken op de campagnesite <a href="https://www.fairefeesten.be" target="_blank">fairefeesten.be</a> moeten we echter zeker zijn dat (bij voorkeur) alle webshops deze service zullen aanbieden. Klik hier voor meer info over de werking, en om aan te geven of jouw wereldwinkel hieraan wenst mee te werken.</p>';
 			// echo '</div>';
-			// echo '<div class="notice notice-info">';
-			// 	echo '<p>Vanaf nu verschijnt ook de volledige ingrediëntenlijst op het tabblad \'Allergenen\' van de productdetailpagina! Dit komt bovenop de wettelijk verplichte (sporen van) allergenen, die we altijd al toonden. Bovendien worden deze gegevens sinds enkele maanden opgehaald via een API-koppeling met maximum 24 uur latentie, zodat de webshops niet langer afhankelijk zijn van de maandelijkse productupdates.</p>';
-			// echo '</div>';
-			echo '<div class="notice notice-success">';
-				echo '<p>Er verschijnen alweer 4 nieuwe referenties aan de horizon:</p><ul style="margin-left: 2em;">';
-					$skus = array( '20263', '21011', '21108', '22209' );
-					foreach ( $skus as $sku ) {
-						$product_id = wc_get_product_id_by_sku( $sku );
-						if ( $product_id ) {
-							$product = wc_get_product( $product_id );
-							echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
-						}
-					}
-				echo '</ul><p>';
-				if ( current_user_can('manage_network_users') ) {
-					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De Goldkoffie in bonen werd hernoemd naar Ethiopiakoffie en kreeg een bijbehorende foto van de nieuwe verpakking.</p>';
+			echo '<div class="notice notice-info">';
+			echo '<p>De wettelijke feestdagen voor 2019 werden ingesteld. Pas ze aan op de \'<a href="admin.php?page=oxfam-options">Winkelbeheer</a>\'-pagina. Het algoritme dat de uiterste leverdatum berekent houdt hier rekening mee. Bovendien tonen de openingsuren bij het afrekenen en in de bevestiginsmails nu de reële openingsuren voor de komenede 7 dagen. Indien de winkel dicht is, verschijnt er \'uitzondelijk gesloten\'.</p>';
 			echo '</div>';
+			// echo '<div class="notice notice-success">';
+			// 	echo '<p>Op de valraap spuide 2018 nog 5 nieuwe referenties:</p><ul style="margin-left: 2em;">';
+			// 		$skus = array( '20074', '20075', '21498', '21499', '25728' );
+			// 		foreach ( $skus as $sku ) {
+			// 			$product_id = wc_get_product_id_by_sku( $sku );
+			// 			if ( $product_id ) {
+			// 				$product = wc_get_product( $product_id );
+			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+			// 			}
+			// 		}
+			// 	echo '</ul><p>';
+			// 	if ( current_user_can('manage_network_users') ) {
+			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+			// 	}
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De 5-jarige Varadero-rum is terug van (in sommige winkels nooit) weggeweest.</p>';
+			// echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
