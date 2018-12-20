@@ -4820,7 +4820,7 @@
 			if ( $days[$index] ) {
 				$date = "";
 				if ( $atts['start'] === 'today' ) {
-					$date = " ".date( 'J/n', strtotime( "this ".date( 'l', strtotime("Sunday +{$index} days") ) ) );
+					$date = " ".date( 'j/n', strtotime( "this ".date( 'l', strtotime("Sunday +{$index} days") ) ) );
 				}
 				// Toon sluitingsdagen indien we de specifieke openingsuren voor de komende 7 dagen tonen
 				if ( $atts['start'] === 'today' and in_array( date_i18n( 'Y-m-d', strtotime("+{$cnt} days") ), $holidays ) ) {
