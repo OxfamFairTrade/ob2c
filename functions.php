@@ -4601,7 +4601,7 @@
 			// 	echo '<p>Voor de eindejaarsfeesten zouden we graag verrassingspakketten aanbieden in de webshops. Zo kunnen de vrijwilligers voor een richtbedrag een origineel cadeautje samenstellen met zowel voeding als crafts. Om hiermee uit te pakken op de campagnesite <a href="https://www.fairefeesten.be" target="_blank">fairefeesten.be</a> moeten we echter zeker zijn dat (bij voorkeur) alle webshops deze service zullen aanbieden. Klik hier voor meer info over de werking, en om aan te geven of jouw wereldwinkel hieraan wenst mee te werken.</p>';
 			// echo '</div>';
 			echo '<div class="notice notice-info">';
-			echo '<p>De wettelijke feestdagen voor 2019 werden ingesteld. Pas ze aan op de \'<a href="admin.php?page=oxfam-options">Winkelbeheer</a>\'-pagina. Het algoritme dat de uiterste leverdatum berekent houdt hier rekening mee. Bovendien tonen de openingsuren bij het afrekenen en in de bevestiginsmails nu de reële openingsuren voor de komenede 7 dagen. Indien de winkel dicht is, verschijnt er \'uitzondelijk gesloten\'.</p>';
+			echo '<p>De wettelijke feestdagen voor 2019 werden ingesteld. Pas ze indien nodig aan op de \'<a href="admin.php?page=oxfam-options">Winkelbeheer</a>\'-pagina. Het algoritme dat de uiterste leverdatum berekent, houdt hier rekening mee. Bovendien tonen de openingsuren bij het afrekenen en in de bevestiginsmails nu de reële situatie voor de komende 7 dagen. Indien de winkel dicht is, verschijnt er \'uitzondelijk gesloten\'.</p>';
 			echo '</div>';
 			// echo '<div class="notice notice-success">';
 			// 	echo '<p>Op de valraap spuide 2018 nog 5 nieuwe referenties:</p><ul style="margin-left: 2em;">';
@@ -4818,13 +4818,17 @@
 			
 			// Check of er voor deze dag wel openingsuren bestaan
 			if ( $days[$index] ) {
-				// Toon sluitingsdagen indien we de specifieke openingsuren voor de komende week tonen
+				$date = "";
+				if ( $atts['start'] === 'today' ) {
+					$date = date( 'd/m', strtotime( "this ".date( 'l', strtotime("Sunday +{$index} days") ) ) );
+				}
+				// Toon sluitingsdagen indien we de specifieke openingsuren voor de komende 7 dagen tonen
 				if ( $atts['start'] === 'today' and in_array( date_i18n( 'Y-m-d', strtotime("+{$cnt} days") ), $holidays ) ) {
-					$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": uitzonderlijk gesloten";
+					$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).$date.": uitzonderlijk gesloten";
 				} else {
 					foreach ( $days[$index] as $part => $part_hours ) {
 						if ( ! isset( $$index ) ) {
-							$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).": " . $part_hours['start'] . " - " . $part_hours['end'];
+							$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).$date.": " . $part_hours['start'] . " - " . $part_hours['end'];
 							$$index = true;
 						} else {
 							$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
