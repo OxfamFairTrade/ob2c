@@ -2452,7 +2452,7 @@
 
 	function show_b2b_account_hint() {
 		if ( ! is_b2b_customer() ) {
-			wc_print_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via <a href="mailto:'.get_company_email().'">'.get_company_email().'</a>.', 'notice' );
+			wc_print_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via <a href="mailto:'.get_company_email().'?subject=Aanvraag B2B-webshopaccount">'.get_company_email().'</a>.', 'notice' );
 		}
 	}
 	
@@ -2745,10 +2745,13 @@
 					}
 				}
 
-				// Tel feestdagen die in de verwerkingsperiode vallen erbij
+				// Check of de winkel op deze dag effectief nog geopend is na 12u (tel er indien nodig dagen bij)
+				$timestamp = find_first_opening_hour( get_office_hours( $node ), $timestamp );
+
+				// Tel alle sluitingsdagen die in de verwerkingsperiode vallen (inclusief de eerstkomende openingsdag!) erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 
-				// Check of de winkel op deze dag effectief nog geopend is na 12u
+				// Check of de winkel ook op de nieuwe dag effectief nog geopend is na 12u
 				$timestamp = find_first_opening_hour( get_office_hours( $node ), $timestamp );
 
 				break;
@@ -2797,7 +2800,7 @@
 		// In dit formaat zijn datum- en tekstsortering equivalent!
 		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
 		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
-
+		
 		// Neem de wettelijke feestdagen indien er geen enkele lokale gedefinieerd is (of merge altijd?)
 		foreach ( get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) as $holiday ) {
 			// Enkel de feestdagen die niet in het weekend moeten we in beschouwing nemen!
@@ -2806,7 +2809,7 @@
 				$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 			}
 		}
-
+		
 		return $till;
 	}
 
