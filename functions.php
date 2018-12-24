@@ -4607,8 +4607,8 @@
 			echo '<p>De wettelijke feestdagen voor 2019 werden ingesteld. Pas ze indien nodig aan op de \'<a href="admin.php?page=oxfam-options">Winkelbeheer</a>\'-pagina. Het algoritme dat de uiterste leverdatum berekent, houdt hier rekening mee. Bovendien tonen de openingsuren bij het afrekenen en in de bevestiginsmails nu de reële situatie voor de komende 7 dagen. Indien de winkel dicht is, verschijnt er \'uitzondelijk gesloten\'.</p>';
 			echo '</div>';
 			// echo '<div class="notice notice-success">';
-			// 	echo '<p>Op de valraap spuide 2018 nog 5 nieuwe referenties:</p><ul style="margin-left: 2em;">';
-			// 		$skus = array( '20074', '20075', '21498', '21499', '25728' );
+			// 	echo '<p>Op de valraap spuide 2018 nog 3 nieuwe referenties:</p><ul style="margin-left: 2em;">';
+			// 		$skus = array( '21498', '21499', '25728' );
 			// 		foreach ( $skus as $sku ) {
 			// 			$product_id = wc_get_product_id_by_sku( $sku );
 			// 			if ( $product_id ) {
@@ -4620,7 +4620,7 @@
 			// 	if ( current_user_can('manage_network_users') ) {
 			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De 5-jarige Varadero-rum is terug van (in sommige winkels nooit) weggeweest.</p>';
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast is de 5-jarige Varadero-rum terug van (nooit) weggeweest en werden een resem packshots bijgewerkt, vooral van Fairtrade Original. Faire feesten!</p>';
 			// echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
