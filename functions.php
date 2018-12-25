@@ -4606,22 +4606,22 @@
 			echo '<div class="notice notice-info">';
 			echo '<p>De wettelijke feestdagen voor 2019 werden ingesteld. Pas ze indien nodig aan op de \'<a href="admin.php?page=oxfam-options">Winkelbeheer</a>\'-pagina. Het algoritme dat de uiterste leverdatum berekent, houdt hier rekening mee. Bovendien tonen de openingsuren bij het afrekenen en in de bevestiginsmails nu de reële situatie voor de komende 7 dagen. Indien de winkel dicht is, verschijnt er \'uitzondelijk gesloten\'.</p>';
 			echo '</div>';
-			// echo '<div class="notice notice-success">';
-			// 	echo '<p>Op de valraap spuide 2018 nog 3 nieuwe referenties:</p><ul style="margin-left: 2em;">';
-			// 		$skus = array( '21498', '21499', '25728' );
-			// 		foreach ( $skus as $sku ) {
-			// 			$product_id = wc_get_product_id_by_sku( $sku );
-			// 			if ( $product_id ) {
-			// 				$product = wc_get_product( $product_id );
-			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
-			// 			}
-			// 		}
-			// 	echo '</ul><p>';
-			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast is de 5-jarige Varadero-rum terug van (nooit) weggeweest en werden een resem packshots bijgewerkt, vooral van Fairtrade Original. Faire feesten!</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-success">';
+				echo '<p>Op de valraap spuide 2018 nog 3 nieuwe referenties:</p><ul style="margin-left: 2em;">';
+					$skus = array( '21498', '21499', '25728' );
+					foreach ( $skus as $sku ) {
+						$product_id = wc_get_product_id_by_sku( $sku );
+						if ( $product_id ) {
+							$product = wc_get_product( $product_id );
+							echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute( 'pa_shopplus' ).')</li>';
+						}
+					}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Daarnaast is de 5-jarige Varadero-rum terug van (nooit) weggeweest en werd een resem packshots bijgewerkt, vooral van Fairtrade Original. Faire feesten!</p>';
+			echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';

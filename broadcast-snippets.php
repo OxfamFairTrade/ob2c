@@ -1,5 +1,7 @@
 <?php
 
+	if ( ! defined('ABSPATH') ) exit;
+
 	// Verwijder deprecated metadata op producten
 	global $wpdb;
 	$to_delete = array( 'fb_product_group_id', 'fb_product_item_id', 'fb_product_description', 'fb_visibility', 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean' );
@@ -167,7 +169,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '20263', '21011', '21108', '22209' );
+	$outofstocks = array( '21498', '21499', '25728' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
