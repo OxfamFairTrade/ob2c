@@ -4607,7 +4607,7 @@
 			echo '<p>De wettelijke feestdagen voor 2019 werden ingesteld. Pas ze indien nodig aan op de \'<a href="admin.php?page=oxfam-options">Winkelbeheer</a>\'-pagina. Het algoritme dat de uiterste leverdatum berekent, houdt hier rekening mee. Bovendien tonen de openingsuren bij het afrekenen en in de bevestiginsmails nu de reële situatie voor de komende 7 dagen. Indien de winkel dicht is, verschijnt er \'uitzondelijk gesloten\'.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-success">';
-				echo '<p>Op de valraap spuide 2018 nog 3 nieuwe referenties:</p><ul style="margin-left: 2em;">';
+				echo '<p>Op de valreep spuide 2018 nog 3 nieuwe referenties:</p><ul style="margin-left: 2em;">';
 					$skus = array( '21498', '21499', '25728' );
 					foreach ( $skus as $sku ) {
 						$product_id = wc_get_product_id_by_sku( $sku );
