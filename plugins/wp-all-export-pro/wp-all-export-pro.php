@@ -3,7 +3,7 @@
 Plugin Name: WP All Export Pro
 Plugin URI: http://www.wpallimport.com/export/
 Description: Export any post type to a CSV or XML file. Edit the exported data, and then re-import it later using WP All Import.
-Version: 1.5.2
+Version: 1.5.4
 Author: Soflyy
 */
 
@@ -47,7 +47,7 @@ else {
 	 */
 	define('PMXE_PREFIX', 'pmxe_');
 
-	define('PMXE_VERSION', '1.5.2');
+	define('PMXE_VERSION', '1.5.4');
 
 	define('PMXE_EDITION', 'paid');
 
@@ -393,7 +393,11 @@ else {
 							'is_user' => is_user_admin(),
 						);
 						add_filter('current_screen', array($this, 'getAdminCurrentScreen'));
-						add_filter('admin_body_class', create_function('', 'return "' . 'wpallexport-plugin";'));
+						add_filter('admin_body_class',
+                            function() {
+						        return 'wpallexport-plugin';
+						    }
+						);
 
 						$controller = new $controllerName();
 						if ( ! $controller instanceof PMXE_Controller_Admin) {
@@ -611,8 +615,18 @@ else {
 			$installer = new PMXE_Installer();
 			$installer->checkActivationConditions();
 
+            if(class_exists('PMXI_Plugin')) {
+                if(method_exists('PMXI_Plugin', 'getSchedulingName')) {
+                    $schedulingLicenseData = array();
+                    $schedulingLicenseData['scheduling_license'] = PMXI_Plugin::getInstance()->getOption('scheduling_license');
+                    $schedulingLicenseData['scheduling_license_status'] = PMXI_Plugin::getInstance()->getOption('scheduling_license_status');
+
+                    PMXE_Plugin::getInstance()->updateOption($schedulingLicenseData);
+                }
+            }
+
 			// uncaught exception doesn't prevent plugin from being activated, therefore replace it with fatal error so it does
-			set_exception_handler(create_function('$e', 'trigger_error($e->getMessage(), E_USER_ERROR);'));
+			set_exception_handler(function($e) {trigger_error($e->getMessage(), E_USER_ERROR); });
 
 			// create plugin options
 			$option_name = get_class($this) . '_Options';
