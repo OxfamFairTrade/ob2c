@@ -5254,15 +5254,24 @@
 		return $term;
 	}
 
-	// Plaats een zoeksuggestie net onder de titel van zoekpagina's als er minder dan 5 resultaten zijn NIET ZICHTBAAR IN SAVOY
-	add_action( 'woocommerce_archive_description', 'add_didyoumean' );
-	add_action( 'woocommerce_before_shop_loop', 'add_didyoumean' );
+	// Plaats een zoeksuggestie net onder de titel van zoekpagina's als er minder dan 5 resultaten zijn
+	// Probleem: de 'woocommerce_archive_description'-actie wordt niet uitgevoerd door Savoy bovenaan zoekresultaten!
+	add_action( 'woocommerce_archive_description', 'ob2c_add_didyoumean' );
 
-	function add_didyoumean() {
-		relevanssi_didyoumean(get_search_query(), "<p>Bedoelde je misschien <i>", "</i>?</p>", 5);
+	function ob2c_add_didyoumean() {
+		if ( is_search() ) {
+			relevanssi_didyoumean( get_search_query(), "<p>Bedoelde je misschien <i>", "</i> ?</p>", 5 );
+		}
 	}
 
-	// Verhinder dat termen die slechts één keer in de index voorkomen de automatische suggesties verstoren
+	// Zorg ervoor dat de zoeksuggestie opnieuw linkt naar de productenzoeker
+	add_filter( 'relevanssi_didyoumean_url', 'ob2c_modify_didyoumean_url', 10, 1 );
+	
+	function ob2c_modify_didyoumean_url( $url ) {
+		return add_query_arg( 'post_type', 'product', $url );
+	}
+
+	// Verhinder dat termen die slechts 1x in de index voorkomen de automatische suggesties verstoren
 	// add_filter( 'relevanssi_get_words_having', function() { return 2; } );
 
 	// Toon de bestsellers op zoekpagina's zonder resultaten MOET MEER NAAR BOVEN + VERSCHIJNT OOK ALS ER WEL RESULTATEN ZIJN
