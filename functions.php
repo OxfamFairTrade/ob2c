@@ -5256,7 +5256,7 @@
 
 	// Plaats een zoeksuggestie net onder de titel van zoekpagina's als er minder dan 5 resultaten zijn
 	// Probleem: de 'woocommerce_archive_description'-actie wordt niet uitgevoerd door Savoy bovenaan zoekresultaten!
-	add_action( 'woocommerce_archive_description', 'ob2c_add_didyoumean' );
+	// add_action( 'woocommerce_archive_description', 'ob2c_add_didyoumean' );
 
 	function ob2c_add_didyoumean() {
 		if ( is_search() ) {
@@ -5284,12 +5284,12 @@
 		}
 	}
 
-	// Zorg ervoor dat verborgen producten niet geïndexeerd worden (en dus niet opduiken in de zoekresultaten)
+	// Zorg ervoor dat verborgen producten niet geïndexeerd worden (en dus niet opduiken in de zoekresultaten) SOWIESO AL ONZICHTBAAR, ZIE OPTIE
 	add_filter( 'relevanssi_woocommerce_indexing', 'ob2c_exclude_hidden_products', 10, 1 );
 	
 	function ob2c_exclude_hidden_products( $blocks ) {
-		// $blocks['outofstock'] = true;
-		// $blocks['exclude-from-catalog'] = true;
+		$blocks['outofstock'] = false;
+		// $blocks['exclude-from-catalog'] = false;
 		$blocks['exclude-from-search'] = true;
 		return $blocks;
 	}
@@ -5306,10 +5306,9 @@
 				if ( ! empty( $category->parent ) ) {
 					$parent = get_term( $category->parent, 'product_cat' );
 					if ( array_key_exists( 'synonyms', $relevanssi_variables ) ) {
-						// Laat de synoniemenlijst eerst nog even inwerken
+						// Laat de synoniemenlijst eerst nog even inwerken, ook op de herkomst
 						$search = array_keys($relevanssi_variables['synonyms']);
 						$replace = array_values($relevanssi_variables['synonyms']);
-						// Ook op de herkomst
 						$content .= str_ireplace( $search, $replace, get_post_meta( $post->ID, '_herkomst_nl', true ).' '.$parent->name ).' ';
 					} else {
 						// Voeg direct toe, samen met herkomst
