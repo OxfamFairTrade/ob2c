@@ -5,6 +5,8 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
+
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
@@ -5252,20 +5254,16 @@
 		return $term;
 	}
 
-	// Plaats een zoeksuggestie net onder de titel van zoekpagina's als er minder dan 5 resultaten zijn
+	// Plaats een zoeksuggestie net onder de titel van zoekpagina's als er minder dan 5 resultaten zijn NIET ZICHTBAAR IN SAVOY
 	add_action( 'woocommerce_archive_description', 'add_didyoumean' );
+	add_action( 'woocommerce_before_shop_loop', 'add_didyoumean' );
 
 	function add_didyoumean() {
-		if ( is_search() ) relevanssi_didyoumean(get_search_query(), "<p>Bedoelde je misschien <i>", "</i>?</p>", 5);
+		relevanssi_didyoumean(get_search_query(), "<p>Bedoelde je misschien <i>", "</i>?</p>", 5);
 	}
 
-	// Verhinder dat zeer zeldzame zoektermen in de index de machine learning verstoren
-	add_filter( 'relevanssi_get_words_query', 'limit_suggestions' );
-	
-	function limit_suggestions( $query ) {
-		$query = $query." HAVING COUNT(term) > 1";
-		return $query;
-	}
+	// Verhinder dat termen die slechts één keer in de index voorkomen de automatische suggesties verstoren
+	// add_filter( 'relevanssi_get_words_having', function() { return 2; } );
 
 	// Toon de bestsellers op zoekpagina's zonder resultaten MOET MEER NAAR BOVEN + VERSCHIJNT OOK ALS ER WEL RESULTATEN ZIJN
 	// add_action( 'woocommerce_after_main_content', 'add_bestsellers' );
@@ -5277,12 +5275,14 @@
 		}
 	}
 
-	// Zorg ervoor dat verborgen producten niet geïndexeerd worden (en dus niet opduiken in de zoekresultaten, ook als we de filter 'post_type=product' weglaten)
-	add_filter( 'relevanssi_do_not_index', 'exclude_hidden_products', 10, 2 );
+	// Zorg ervoor dat verborgen producten niet geïndexeerd worden (en dus niet opduiken in de zoekresultaten)
+	add_filter( 'relevanssi_woocommerce_indexing', 'ob2c_exclude_hidden_products', 10, 1 );
 	
-	function exclude_hidden_products( $block, $post_id ) {
-		if ( has_term( 'exclude-from-search', 'product_visibility', $post_id ) ) $block = true;
-		return $block;
+	function ob2c_exclude_hidden_products( $blocks ) {
+		// $blocks['outofstock'] = true;
+		// $blocks['exclude-from-catalog'] = true;
+		$blocks['exclude-from-search'] = true;
+		return $blocks;
 	}
 
 	// Voeg ook het artikelnummer en de bovenliggende categorie toe aan de te indexeren content van een product
