@@ -6,7 +6,7 @@
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
-
+	
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
@@ -5295,11 +5295,10 @@
 	}
 
 	// Voeg ook het artikelnummer en de bovenliggende categorie toe aan de te indexeren content van een product
-	add_filter( 'relevanssi_content_to_index', 'add_sku_and_parent_category', 10, 2 );
+	add_filter( 'relevanssi_content_to_index', 'oftc_index_parent_category', 10, 2 );
 
-	function add_sku_and_parent_category( $content, $post ) {
+	function oftc_index_parent_category( $content, $post ) {
 		global $relevanssi_variables;
-		$content .= get_post_meta( $post->ID, '_sku', true ).' ';
 		$categories = get_the_terms( $post->ID, 'product_cat' );
 		if ( is_array( $categories ) ) {
 			foreach ( $categories as $category ) {
@@ -5308,6 +5307,7 @@
 					$parent = get_term( $category->parent, 'product_cat' );
 					if ( array_key_exists( 'synonyms', $relevanssi_variables ) ) {
 						// Laat de synoniemenlijst hier eerst nog op inwerken (indien gedefinieerd)
+						// Toe te voegen: get_post_meta( $post->ID, '_herkomst_nl', true )
 						$search = array_keys($relevanssi_variables['synonyms']);
 						$replace = array_values($relevanssi_variables['synonyms']);
 						$content .= str_ireplace( $search, $replace, $parent->name ).' ';
