@@ -5294,26 +5294,26 @@
 		return $blocks;
 	}
 
-	// Voeg ook het artikelnummer en de bovenliggende categorie toe aan de te indexeren content van een product
-	add_filter( 'relevanssi_content_to_index', 'oftc_index_parent_category', 10, 2 );
+	// Voeg de bovenliggende categorie en de herkomstlanden toe aan de te indexeren content van een product (inclusief synoniemen)
+	add_filter( 'relevanssi_content_to_index', 'oftc_index_parent_category_and_origin', 10, 2 );
 
-	function oftc_index_parent_category( $content, $post ) {
+	function oftc_index_parent_category_and_origin( $content, $post ) {
 		global $relevanssi_variables;
 		$categories = get_the_terms( $post->ID, 'product_cat' );
 		if ( is_array( $categories ) ) {
 			foreach ( $categories as $category ) {
+				// Check de bovenliggende cateogrie
 				if ( ! empty( $category->parent ) ) {
-					// Voeg de bovenliggende cateogrie toe
 					$parent = get_term( $category->parent, 'product_cat' );
 					if ( array_key_exists( 'synonyms', $relevanssi_variables ) ) {
-						// Laat de synoniemenlijst hier eerst nog op inwerken (indien gedefinieerd)
-						// Toe te voegen: get_post_meta( $post->ID, '_herkomst_nl', true )
+						// Laat de synoniemenlijst eerst nog even inwerken
 						$search = array_keys($relevanssi_variables['synonyms']);
 						$replace = array_values($relevanssi_variables['synonyms']);
-						$content .= str_ireplace( $search, $replace, $parent->name ).' ';
+						// Ook op de herkomst
+						$content .= str_ireplace( $search, $replace, get_post_meta( $post->ID, '_herkomst_nl', true ).' '.$parent->name ).' ';
 					} else {
-						// Voeg direct toe
-						$content .= $parent->name.' ';
+						// Voeg direct toe, samen met herkomst
+						$content .= get_post_meta( $post->ID, '_herkomst_nl', true ).' '.$parent->name.' ';
 					}
 				}
 			}
