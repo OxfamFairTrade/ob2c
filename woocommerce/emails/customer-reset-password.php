@@ -31,7 +31,7 @@ $customer = get_user_by( 'login', $user_login );
 
 <p>
 	<?php
-		printf( __( 'Iemand heeft verzocht om het wachtwoord van je account &laquo; %1$s &raquo; bij de webshop van %2$s opnieuw in te stellen.', 'oxfam-webshop' ), get_company_name(), $user_login );
+		printf( __( 'Iemand heeft verzocht om het wachtwoord van je account &laquo; %1$s &raquo; bij de webshop van %2$s opnieuw in te stellen.', 'oxfam-webshop' ), $user_login, get_company_name() );
 	?>
 </p>
 
