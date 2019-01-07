@@ -22,8 +22,8 @@
 		if ( $all_products->have_posts() ) {
 			while ( $all_products->have_posts() ) {
 				$all_products->the_post();
-				$productje = wc_get_product( get_the_ID() );
-				if ( $productje->get_catalog_visibility() !== 'hidden' ) {
+				$product = wc_get_product( get_the_ID() );
+				if ( $product->get_catalog_visibility() !== 'hidden' ) {
 					$total++;
 				}
 			}
@@ -37,36 +37,8 @@
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 
-			// $args = array(
-			// 	'post_type'			=> 'product',
-			// 	'post_status'		=> array( 'publish' ),
-			// 	'posts_per_page'	=> -1,
-			// );
-
-			// $all_products = new WP_Query( $args );
-
-			// $instock = 0;
-			// $outofstock = 0;
-
-			// if ( $all_products->have_posts() ) {
-			// 	while ( $all_products->have_posts() ) {
-			// 		$all_products->the_post();
-			// 		$productje = wc_get_product( get_the_ID() );
-			// 		if ( $productje->get_catalog_visibility() !== 'hidden' ) {
-			// 			if ( $productje->get_stock_status() === 'instock' ) {
-			// 				$instock++;
-			// 			} else {
-			// 				$outofstock++;
-			// 			}
-			// 		}
-			// 	}
-			// 	wp_reset_postdata();
-			// }
-
-			// echo $site->blogname.': '.$instock.' producten op voorraad, '.$outofstock.' producten uit voorraad.<br>';
-			
+			// Snelle manier om voorraden te tellen!
 			$term = get_term_by( 'slug', 'outofstock', 'product_visibility' ); 
-			
 			echo $site->blogname.': '.( $total - $term->count ).' producten op voorraad, '.$term->count.' producten uit voorraad.<br>';
 
 			echo 'Eerstvolgende winkelafhaling: '.date( 'd/m/Y H:i', estimate_delivery_date( 'local_pickup' ) ).'<br>';
