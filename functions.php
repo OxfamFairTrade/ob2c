@@ -97,11 +97,25 @@
 				// En als het nog niet in het winkelmandje zit (voorkomt ook opnieuw toevoegen bij terugnavigeren!)
 				if ( ! $found ) {
 					if ( WC()->cart->add_to_cart( $product_id, 1 ) === false ) {
-						// Notice over uitgeputte voorraad verschijnt automatisch!
-						// wc_add_notice( sprintf( __( 'Dit product is helaas niet voorradig in deze webshop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
 						// Ga naar de productdetailpagina indien de poging mislukte (wegens geen voorraad)
+						// Notice over uitgeputte voorraad verschijnt automatisch!
 						wp_safe_redirect( $product_to_add->get_permalink() );
 						exit();
+					} else {
+						// PHP-functie add_to_cart() veroorzaakt niet automatisch een GA-event!
+						// $parameters = array();
+						// $parameters['category'] = "'" . __( 'Products', 'woocommerce-google-analytics-integration' ) . "'";
+						// $parameters['action'] = "'" . __( 'Add to Cart', 'woocommerce-google-analytics-integration' ) . "'";
+						// $parameters['label'] = $product_to_add->get_sku();
+						// $code = "" . WC_Google_Analytics_JS::get_instance()->tracker_var() . "( 'ec:addProduct', {";
+						// $code .= "'id': ".$product_to_add->get_sku().",";
+						// $code .= "'quantity': 1,";
+						// $code .= "} );";
+						// $parameters['enhanced'] = $code;
+						// " . $parameters['enhanced'] . "
+						// " . self::tracker_var() . "( 'ec:setAction', 'add' );
+						// " . self::tracker_var() . "( 'send', 'event', 'UX', 'click', 'add to cart' );
+						// Makkelijker om gewoon klik op 'add_to_cart'-button te simuleren?
 					}
 				}
 			} else {
