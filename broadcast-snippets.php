@@ -9,6 +9,30 @@
 		$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => $meta_key ) );
 	}
 
+	// Verwijder deprecated productattributen
+	global $wpdb;	
+	$to_delete = array( 'choavl', 'ener', 'famscis', 'fapucis', 'fasat', 'fat', 'fibtg', 'polyl', 'pro', 'salteq', 'starch', 'sugar' );
+	foreach ($to_delete as $slug ) {
+		$attribute_id = absint( wc_attribute_taxonomy_id_by_name($slug) );
+		// wc_delete_attribute($id) bestaat pas vanaf WC3.2+ dus code letterlijk overnemen (zonder check_admin_referer)
+		$attribute_name = $wpdb->get_var( "SELECT attribute_name FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_id = $attribute_id" );
+		$taxonomy = wc_attribute_taxonomy_name( $attribute_name );
+		do_action( 'woocommerce_before_attribute_delete', $attribute_id, $attribute_name, $taxonomy );
+		if ( $attribute_name && $wpdb->query( "DELETE FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_id = $attribute_id" ) ) {
+			if ( taxonomy_exists( $taxonomy ) ) {
+				$terms = get_terms( $taxonomy, 'orderby=name&hide_empty=0' );
+				foreach ( $terms as $term ) {
+					wp_delete_term( $term->term_id, $taxonomy );
+				}
+			}
+			do_action( 'woocommerce_attribute_deleted', $attribute_id, $attribute_name, $taxonomy );
+			delete_transient( 'wc_attribute_taxonomies' );
+			write_log("DELETED ".$attribute_name." (".$attribute_id.")<br/>");
+		} else {
+			write_log("COULD NOT DELETE ".$attribute_name." (".$attribute_id.")<br/>");
+		}	
+	}
+
 	// Subsites afschermen en verbergen op kaart
 	$oxfam_blocked_sites = array();
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );

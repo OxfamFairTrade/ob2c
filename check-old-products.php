@@ -26,7 +26,7 @@
 			
 			if ( $main_product->get_catalog_visibility() !== 'hidden' ) {
 				$sku = $main_product->get_sku();
-				echo '<b>'.$main_product->get_name().'</b><br/>';
+				echo '<b>'.$main_product->get_name().' ('.$main_product->get_sku().')</b><br/>';
 
 				foreach ( $sites as $site ) {
 					switch_to_blog( $site->blog_id );
