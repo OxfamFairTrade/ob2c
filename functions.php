@@ -11,20 +11,20 @@
 	add_action( 'init', 'force_user_login' );
 	
 	function force_user_login() {
-		update_site_option( 'oxfam_blocked_sites', array( 40, 41, 42, 43, 44, 45 ) );
+		// update_site_option( 'oxfam_blocked_sites', array( 40, 41, 42, 43, 44, 45 ) );
 
 		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
 			if ( ! is_user_logged_in() ) {
 				$url = get_current_url();
-				// Enkel redirecten op LIVE-omgeving
-				if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+				// Nooit redirecten op LIVE-omgeving
+				// if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 					// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
 					if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
 						// Stuur gebruiker na inloggen terug naar huidige pagina
 						wp_safe_redirect( wp_login_url($url) );
 						exit();
 					}
-				}
+				// }
 			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) ) {
 				// Toon tijdelijke boodschap, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
 				wp_safe_redirect( network_site_url('/wp-content/blog-suspended.php') );
