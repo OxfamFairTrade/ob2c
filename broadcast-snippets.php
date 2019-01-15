@@ -12,7 +12,7 @@
 	// Verwijder deprecated productattributen
 	global $wpdb;	
 	$to_delete = array( 'choavl', 'ener', 'famscis', 'fapucis', 'fasat', 'fat', 'fibtg', 'polyl', 'pro', 'salteq', 'starch', 'sugar' );
-	foreach ($to_delete as $slug ) {
+	foreach ( $to_delete as $slug ) {
 		$attribute_id = absint( wc_attribute_taxonomy_id_by_name($slug) );
 		// wc_delete_attribute($id) bestaat pas vanaf WC3.2+ dus code letterlijk overnemen (zonder check_admin_referer)
 		$attribute_name = $wpdb->get_var( "SELECT attribute_name FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_id = $attribute_id" );
@@ -31,6 +31,18 @@
 		} else {
 			write_log("COULD NOT DELETE ".$attribute_name." (".$attribute_id.")<br/>");
 		}	
+	}
+
+	// Verwijder individuele productterm
+	$taxonomy = 'pa_merk';
+	if ( taxonomy_exists( $taxonomy ) ) {
+		$term = 'fair-trade-original';
+		$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
+		if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+			write_log("DELETED ".$term_to_delete->name);
+		} else {
+			write_log("COULD NOT DELETE ".$term_to_delete->name);
+		}
 	}
 
 	// Subsites afschermen en verbergen op kaart
