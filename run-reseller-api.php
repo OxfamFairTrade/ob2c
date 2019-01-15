@@ -8,7 +8,7 @@
 	 * @copyright   Copyright © 2012 Mollie B.V.
 	 * @link        https://www.mollie.com
 	 * @category    Mollie
-	 * @version     1.9
+	 * @version     1.10.4
 	 *
 	 */
 
@@ -26,7 +26,7 @@
 	// Instantiate Mollie class
 	$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 	
-	switch_to_blog( 39 );
+	switch_to_blog( 40 );
 
 	try {
 		// Parameters op te halen uit site
@@ -49,12 +49,12 @@
 		$url = get_bloginfo('url');
 		
 		// Parameters handmatig in te vullen
-		$login = 'owwhoogstraten';
+		$login = 'owwmechelen';
 		$name = '';
 		$representative = '';
-		$bic = 'NICABEBB';
+		// $bic = 'NICABEBB';
 		// $bic = 'AXABBE22';
-		// $bic = 'GEBABEBB';
+		$bic = 'GEBABEBB';
 		// $bic = 'GKCCBEBB';
 		// $bic = 'HBKABE22';
 		// $bic = 'KREDBEBB';
