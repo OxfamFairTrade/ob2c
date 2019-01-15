@@ -6,7 +6,7 @@
 
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Nog even geduld &#124; Webshop Oxfam-Wereldwinkels</title>
+	<title>Niets is voor de eeuwigheid &#124; Webshop Oxfam-Wereldwinkels</title>
 	<link rel="stylesheet" type="text/css" href="https://www.lecouperet.net/hcb/styles/style-normal.css">
 	
 	<script type="text/javascript" src="https://www.lecouperet.net/hcb/scripts/typewriter.js"></script>
@@ -43,9 +43,8 @@
 			</a>
 			<div style="height: 60%; box-sizing: border-box;" class="padding-fix">
 				<div id="typewriter" class="tikken-404" style="margin: 0 auto; text-align: center;">
-					Deze webshop is <span id="rood">nog niet actief</span>
-					op dit moment. Je wordt doorgestuurd naar
-					<span id="rood">de portaalpagina</span>.
+					Deze webshop is <span id="rood">niet langer actief</span>.
+					Je wordt doorgestuurd naar <span id="rood">de portaalpagina</span>.
 				</div>
 			</div>
 		</div>
