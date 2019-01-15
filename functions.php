@@ -4538,11 +4538,12 @@
 	
 	// Stel de inhoud van de widget op
 	function dashboard_pilot_news_widget_function() {
-		echo "<div class='rss-widget'>";
-		echo "<p>De <a href='https://github.com/OxfamFairTrade/ob2c/wiki' target='_blank'>online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Daarnaast kun je nog altijd <a href='https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 1ste opleidingssessie</a> raadplegen voor een overzicht van alle afspraken, en de <a href='https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-2de-opleiding-B2C-webshop.pdf' target='_blank'>de slides van de 2de opleidingssessie</a> voor meer praktische details.</p>";
-		// echo "<p>Voor onderling overleg (en met ons) kun je vanaf nu ook terecht op <a href='https://oxfamfairtrade.slack.com' target='_blank'>Slack</a>. Iedere webshopvrijwilliger kreeg hiervoor op 22/05/2017 een uitnodigingsmail. Dit is optioneel, alle belangwekkende mededelingen blijven we op dit dashboard plaatsen. In de handleiding vind je steeds de meest uitgebreide informatie, gebruik eventueel de zoekfunctie bovenaan rechts. Op <a href='https://copain.oww.be/webshop' target='_blank'>Copain</a> vind je ook een overzicht van de belangrijkste documenten.</p>";
-		echo "<p>Voor dringende problemen bel je gewoon naar de Klantendienst, die een opleiding kreeg om jullie bij te staan bij het beheer.</p>";
-		echo "</div>";
+		echo '<div class="rss-widget">';
+		echo '<p>De <a href="https://github.com/OxfamFairTrade/ob2c/wiki" target="_blank">online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Gebruik eventueel de zoekfunctie bovenaan rechts.</p>';
+		echo '<p>Daarnaast kun je nog altijd <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-1ste-opleiding-B2C-webshop.pdf" target="_blank">de slides van de 1ste opleidingssessie</a> raadplegen voor een overzicht van alle afspraken, en de <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-2de-opleiding-B2C-webshop.pdf" target="_blank">de slides van de 2de opleidingssessie</a> voor meer praktische details. Op <a href="https://copain.oww.be/webshop" target="_blank">Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
+		// echo '<p>Voor onderling overleg (en met ons) kun je vanaf nu ook terecht op <a href="https://oxfamfairtrade.slack.com" target="_blank">Slack</a>. Iedere webshopvrijwilliger kreeg hiervoor op 22/05/2017 een uitnodigingsmail. Dit is optioneel, alle belangwekkende mededelingen blijven we op dit dashboard plaatsen. In de handleiding vind je steeds de meest uitgebreide informatie.</p>';
+		echo '<p>Stuur een mailtje naar <a href="mailto:e-commerce@oft.be?">e-commerce@oft.be</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Voor dringende problemen mag je ook telefonisch contact opnemen met Frederik Neirynck via <a href="tel:+3292188863">09/218.88.63</a>.</p>';
+		echo '</div>';
 		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
 	}
 
@@ -4616,15 +4617,15 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			// echo '<div class="notice notice-warning">';
-			// 	echo '<p>Voor de eindejaarsfeesten zouden we graag verrassingspakketten aanbieden in de webshops. Zo kunnen de vrijwilligers voor een richtbedrag een origineel cadeautje samenstellen met zowel voeding als crafts. Om hiermee uit te pakken op de campagnesite <a href="https://www.fairefeesten.be" target="_blank">fairefeesten.be</a> moeten we echter zeker zijn dat (bij voorkeur) alle webshops deze service zullen aanbieden. Klik hier voor meer info over de werking, en om aan te geven of jouw wereldwinkel hieraan wenst mee te werken.</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-warning">';
+				echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20057 Fuego Sagrado, 20153 BIO La Posada Malbec Rosé, 20259 Fuego Sagrado Chardonnay, 22720 BIO Koffiecaps lungo (oude verpakking met 50 g koffie), 22721 BIO Koffiecaps dark roast (oude verpakking met 50 g koffie), 24199 BIO Maya melkchocolade met speculoos, 24293 BIO Melkchocolade gepofte rijst, 25613 BIO Dadels (uit Tunesië), 26091 BIO Agave (donkere versie) en 27108 Parboiled rijst in builtjes. De sintfiguren zijn verborgen, tot de goedheilige man ons land weer aandoet.</p>';
+			echo '</div>';
 			echo '<div class="notice notice-info">';
 			echo '<p>De wettelijke feestdagen voor 2019 werden ingesteld. Pas ze indien nodig aan op de \'<a href="admin.php?page=oxfam-options">Winkelbeheer</a>\'-pagina. Het algoritme dat de uiterste leverdatum berekent, houdt hier rekening mee. Bovendien tonen de openingsuren bij het afrekenen en in de bevestiginsmails nu de reële situatie voor de komende 7 dagen. Indien de winkel dicht is, verschijnt er \'uitzondelijk gesloten\'.</p>';
 			echo '</div>';
 			echo '<div class="notice notice-success">';
-				echo '<p>Op de valreep spuide 2018 nog 3 nieuwe referenties:</p><ul style="margin-left: 2em;">';
-					$skus = array( '21498', '21499', '25728' );
+				echo '<p>2019 gaat van start met 2 nieuwe wijnen en 5 paasfiguren die terug van weggeweest zijn:</p><ul style="margin-left: 2em;">';
+					$skus = array( '20074', '20075', '24631' );
 					foreach ( $skus as $sku ) {
 						$product_id = wc_get_product_id_by_sku( $sku );
 						if ( $product_id ) {
