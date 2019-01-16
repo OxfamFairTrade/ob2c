@@ -334,13 +334,26 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		unset($local_settings);
 	}
 
-	// Instellingen van WP Mail Log kopieren naar subsites
+	// Instellingen van WP Mail Log kopiëren naar subsites
 	switch_to_blog(1);
 	$wpml_settings = get_option('wpml_settings');
 	restore_current_blog();
 	if ( is_array($wpml_settings) ) {
 		update_option( 'wpml_settings', $wpml_settings );
 		delete_option('wpml_settings-transients');
+	}
+
+	// Instellingen van Jetpack kopiëren naar zustersites
+	switch_to_blog(8);
+	// Zie /wp-admin/admin.php?page=jetpack_modules
+	$jetpack_modules = get_option('jetpack_active_modules');
+	$jetpack_stats_settings = get_option('stats_options');
+	restore_current_blog();
+	if ( is_array($jetpack_modules) ) {
+		update_option( 'jetpack_active_modules', $jetpack_modules );
+	}
+	if ( is_array($jetpack_stats_settings) ) {
+		update_option( 'stats_options', $jetpack_stats_settings );
 	}
 
 	// Verzendzones wijzigen
