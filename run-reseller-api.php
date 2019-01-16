@@ -16,7 +16,7 @@
 	require_once '../../../wp-load.php';
 
 	if ( $_GET['import_key'] !== IMPORT_KEY ) {
-		die("Access prohibited!");
+		die( "Access prohibited!" );
 	}
 
 	// Register autoloader
@@ -60,7 +60,6 @@
 		// $bic = 'KREDBEBB';
 		// $bic = 'VDSPBE91';
 
-		// Lijken toch niet noodzakelijk te zijn: 'bankaccount_bankname' => 'BNP Paribas Fortis', 'bankaccount_location' => 'Brussel'
 		$parameters = array( 
 			'name' => $name, 
 			'company_name' => $company, 
@@ -81,60 +80,67 @@
 			'bankaccount_bic' => $bic, 
 		);
 
-		echo '<pre>'.var_export($parameters, true).'</pre>';
+		echo '<pre>'.var_export( $parameters, true ).'</pre>';
 
 		// UITSCHAKELEN INDIEN VOOR ECHT!
 		$parameters['testmode'] = 1;
 		$accountxml = $mollie->accountCreate( $login, $parameters );
 
-		$partner_id_customer = '3171444';
+		$partner_id_customer = '5271984';
 		$edit_parameters = array( 
 			'registration_number' => str_replace( 'BE', '', $btw ),
 			'vat_number' => $btw,
 		);
 		// $accountxml = $mollie->accountEditByPartnerId( $partner_id_customer, $edit_parameters );
 	} catch (Mollie_Exception $e) {
-		die('An error occurred: '.$e->getMessage());
+		die( "An error occurred: ".$e->getMessage() );
 	}
 
 	if ( $accountxml->resultcode == '10' ) {
 		echo "<p>".$accountxml->resultmessage."</p>";
-		echo "<p>Partner-ID: ".$accountxml->partner_id."</p>";
-		echo "<p>Wachtwoord: ".$accountxml->password."</p>";
-		echo "<p>Telefoon: ".$phone."</p>";
 		
-		// WERKT ALLEMAAL NIET, DOE HANDMATIG
-		// update_option( 'oxfam_mollie_partner_id', $accountxml->partner_id );
-		// echo "<p>Partner-ID gewijzigd in webshop!</p>";
-		// $user = get_user_by( 'email', $email );
-		// if ( $user ) {
-		// 	wp_set_password( $accountxml->password, $user->ID );
-		// 	echo "<p>Wachtwoord gekopieerd naar lokale beheerder!</p>";
-		// }
+		echo "Partner-ID: ".$accountxml->partner_id."<br/>";
+		// Let op dat we de SimpleXML-node converteren naar een string!
+		if ( update_option( 'oxfam_mollie_partner_id', $accountxml->partner_id->__toString() ) ) {
+			echo "Partner-ID gewijzigd in webshop!<br/>";
+		}
+		
+		echo "Wachtwoord: ".$accountxml->password."<br/>";
+		$user = get_user_by( 'email', $email );
+		if ( $user ) {
+			wp_set_password( $accountxml->password->__toString(), $user->ID );
+			echo "Wachtwoord gekopieerd naar lokale beheerder!<br/>";
+		}
 
-		echo "<p></p>";
+		if ( update_option( 'woocommerce_email_from_name', $company ) ) {
+			echo "Afzender gewijzigd naar ".$company."!<br/>";
+		}
+
+		if ( update_option( 'woocommerce_email_from_address', $email ) ) {
+			echo "Afzendadres gewijzigd naar ".$email."!<br/>";
+		}
+
+		echo "<p>&nbsp;</p>";
 
 		$profilexml = $mollie->profileCreateByPartnerId( $accountxml->partner_id, $blog, $url, $email, $phone, 5499 );
 		
 		if ( $profilexml->resultcode == '10' ) {
 			echo "<p>".$profilexml->resultmessage."</p>";
-			echo "<p>LIVE API: ".$profilexml->profile->api_keys->live."</p>";
-			echo "<p>TEST API: ".$profilexml->profile->api_keys->test."</p>";
 			
-			// WERKT ALLEMAAL NIET, DOE HANDMATIG
-			// update_option( 'mollie-payments-for-woocommerce_live_api_key', $profilexml->profile->api_keys->live );
-			// echo "<p>Live API-key gewijzigd in webshop!</p>";
-			// update_option( 'mollie-payments-for-woocommerce_test_api_key', $profilexml->profile->api_keys->test );
-			// echo "<p>Test API-key gewijzigd in webshop!</p>";
-			// update_option( 'mollie-payments-for-woocommerce_test_mode_enabled', 'no' );
-			// echo "<p>Testbetalingen uitgeschakeld!</p>";
-			
-			echo "<p></p>";
+			echo "LIVE API: ".$profilexml->profile->api_keys->live."<br/>";
+			if ( update_option( 'mollie-payments-for-woocommerce_live_api_key', $profilexml->profile->api_keys->live->__toString() ) ) {
+				echo "Live API-key gewijzigd in webshop!<br/>";	
+			}
+
+			echo "TEST API: ".$profilexml->profile->api_keys->test."<br/>";
+			if ( update_option( 'mollie-payments-for-woocommerce_test_api_key', $profilexml->profile->api_keys->test->__toString() ) ) {
+				echo "Test API-key gewijzigd in webshop!<br/>";
+			}
 		} else {
-			echo '<pre>'.var_export($profilexml, true).'</pre>';
+			echo '<pre>'.var_export( $profilexml, true ).'</pre>';
 		}
 	} else {
-		echo '<pre>'.var_export($accountxml, true).'</pre>';
+		echo '<pre>'.var_export( $accountxml, true ).'</pre>';
 	}
 
 	restore_current_blog();
