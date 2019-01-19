@@ -34,7 +34,7 @@
 					if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 						$login_link = $mollie->getLoginLink( $partner_id_customer );
 						$href = $login_link->redirect_url;
-					} else {
+					} else {
 						$href = 'https://www.mollie.com/dashboard/';
 					}
 					echo "<tr>";
