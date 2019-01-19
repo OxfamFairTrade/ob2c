@@ -30,9 +30,15 @@
 				
 				// Check of we niet op de hoofdaccount zitten, want anders fatale API-error
 				if ( $partner_id_customer != 2485891 and $partner_id_customer > 2000000 ) {
-					$login_link = $mollie->getLoginLink( $partner_id_customer );
+					// Verhinder doorklikken naar echte account op demosites
+					if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+						$login_link = $mollie->getLoginLink( $partner_id_customer );
+						$href = $login_link->redirect_url;
+					} else {
+						$href = 'https://www.mollie.com/dashboard/';
+					}
 					echo "<tr>";
-						echo "<th class='left'><a href='".$login_link->redirect_url."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
+						echo "<th class='left'><a href='".$href."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
 						echo "<td class='right'>Opgelet: deze link is slechts 60 seconden geldig! Herlaad desnoods even deze pagina.</td>";
 					echo "</tr>";
 
