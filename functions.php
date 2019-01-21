@@ -2577,7 +2577,7 @@
 		$extra_recipients = array();
 		// $extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
 		
-		// We hernoemedn de 'customer_new_account'-template maar het type blijft ongewijzigd!
+		// We hernoemden de 'customer_new_account'-template maar het type blijft ongewijzigd!
 		if ( $type === 'customer_reset_password' ) {
 			// Bij dit type mogen we ervan uit gaan dat $oject een WP_User bevat met de property ID
 			if ( is_b2b_customer( $object->ID ) ) {
