@@ -2573,12 +2573,11 @@
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'WooCommerce' );
 		$logger->debug( 'Mail van type '.$type.' getriggerd', $context );
-		// $logger->debug( wc_print_r( $object, true ), $context );
 		
 		$extra_recipients = array();
-		$extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
+		// $extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
 		
-		// We hernoemen de 'customer_new_account'-template maar het type blijft ongewijzigd!
+		// We hernoemedn de 'customer_new_account'-template maar het type blijft ongewijzigd!
 		if ( $type === 'customer_reset_password' ) {
 			// Bij dit type mogen we ervan uit gaan dat $oject een WP_User bevat met de property ID
 			if ( is_b2b_customer( $object->ID ) ) {
