@@ -36,7 +36,7 @@
 		$zip = get_oxfam_shop_data('zipcode');
 		$city = get_oxfam_shop_data('city');
 		$phone = '32'.str_replace( '/', '', str_replace( '.', '', substr( get_oxfam_shop_data('telephone'), 1 ) ) );
-		$email = get_bloginfo('admin_email');
+		$email = get_option('admin_email');
 		$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
 		$headquarter = get_oxfam_shop_data('headquarter');
 		$lines = explode( ', ', $headquarter, 2 );
