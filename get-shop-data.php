@@ -22,7 +22,7 @@
 		$results = $wpdb->get_results( "SELECT nid, title FROM node WHERE type = 'sellpoint' AND status = 1", OBJECT );
 		
 		// Print de header die InDesign begrijpt
-		$header = array( 'naam', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag', 'straat', 'stad', 'email', 'rekeningnummer', 'btw', 'telefoon', 'fax' );
+		$header = array( 'naam', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag', 'straat', 'stad', 'email', 'rekeningnummer', 'btw', 'telefoon', 'fax', 'uren per week' );
 		echo implode( ';', $header ).'<br/>';
 
 		foreach ( $results as $sellpoint ) {
@@ -37,14 +37,19 @@
 
 	function get_data_for_sellpoint( $node ) {
 		$data = array();
+		$total_hours = 0;
 		
 		$office_hours = get_office_hours($node);
-		foreach( $office_hours as $day ) {
+		foreach ( $office_hours as $day ) {
 			if ( $day === false ) {
 				$data[] = 'Gesloten';
 			} else {
 				$parts = array();
-				foreach( $day as $hours ) {
+				foreach ( $day as $hours ) {
+					$begin_hour = explode( ':', $hours['start'] );
+					$end_hour = explode( ':', $hours['end'] );
+					$total_hours += ( intval($end_hour[0]) - intval($begin_hour[0]) );
+					$total_hours += ( intval($end_hour[1]) / 60 - intval($begin_hour[1]) / 60 );
 					$parts[] = implode( ' - ', $hours );
 				}
 				$data[] = implode( ' en ', $parts );
@@ -60,6 +65,7 @@
 		$data[] = get_oxfam_shop_data( 'tax', $node, true );
 		$data[] = get_oxfam_shop_data( 'telephone', $node, true );
 		$data[] = get_oxfam_shop_data( 'fax', $node, true );
+		$data[] = number_format( $total_hours, 1, ',', '' );
 
 		return $data;
 	}
