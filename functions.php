@@ -4620,7 +4620,7 @@
 			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20057 Fuego Sagrado, 20153 BIO La Posada Malbec Rosé, 20259 Fuego Sagrado Chardonnay, 22720 BIO Koffiecaps lungo (oude verpakking met 50 g koffie), 22721 BIO Koffiecaps dark roast (oude verpakking met 50 g koffie), 24199 BIO Maya melkchocolade met speculoos, 24293 BIO Melkchocolade gepofte rijst, 25613 BIO Dadels (uit Tunesië), 26091 BIO Agave (donkere versie) en 27108 Parboiled rijst in builtjes. De sintfiguren zijn verborgen, tot de goedheilige man ons land weer aandoet.</p>';
 			// echo '</div>';
 			echo '<div class="notice notice-success">';
-				echo '<p>2019 gaat van start met 2 nieuwe wijnen, 3 nieuwe thees, 1 nieuw superfood, 1 gewijzigde notenverpakking en 5 terugkerende paasfiguren:</p><ul style="margin-left: 2em;">';
+				echo '<p>2019 gaat van start met 2 nieuwe wijnen, 3 nieuwe thees, 5 terugkerende paasfiguren, 1 gewijzigde notenverpakking en 1 nieuw superfood:</p><ul style="margin-left: 2em;">';
 					$skus = array( '20074', '20075', '23697', '23698', '23699', '24529', '24631', '24634', '24641', '24642', '25727', '27054' );
 					foreach ( $skus as $sku ) {
 						$product_id = wc_get_product_id_by_sku($sku);
