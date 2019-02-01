@@ -673,6 +673,15 @@ div.nm-single-product.pa_bio-ja.product_tag-promotie figure.woocommerce-product-
 	top: 2.5em;
 }
 
+/* Indien 'afhalen'-klasse actief is: plaats de 'nieuw'- en/of 'promo'-klasse lager om overlap te vermijden */
+li.product.product_shipping_class-breekbaar.newbee::after,
+li.product.product_shipping_class-breekbaar.product_tag-promotie::after,
+div.nm-single-product.product_shipping_class-breekbaar.newbee figure.woocommerce-product-gallery__wrapper::after,
+div.nm-single-product.product_shipping_class-breekbaar.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
+	top: 2.5em;
+}
+
+/* Animeer lichtjes on hover */
 li.product.pa_bio-ja:hover::before,
 li.product.newbee:hover::after,
 li.product.product_shipping_class-breekbaar:hover::after,
