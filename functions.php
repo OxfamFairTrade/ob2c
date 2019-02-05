@@ -1473,7 +1473,7 @@
 			$address_fields['last_name'],
 			array(
 				'label' => 'Familienaam',
-				'placeholder' => 'Van Haute',
+				'placeholder' => 'Willems',
 				'class' => array('form-row-last'),
 				'clear' => true,
 				'priority' => 11,
@@ -1618,7 +1618,9 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_last_name', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_company', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_company', 'trim_and_uppercase', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_vat', 'format_tax', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_vat', 'format_tax', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'format_place', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_address_1', 'format_place', 10, 1 );
@@ -1629,6 +1631,7 @@
 	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_telephone', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_telephone', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_email', 'format_mail', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_email', 'format_mail', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_last_name', 'trim_and_uppercase', 10, 1 );
