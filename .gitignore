@@ -1,3 +1,4 @@
 *.codekit3
 *.htaccess
 wp-content/
+*/config.php
