@@ -104,61 +104,78 @@
 		$MailChimp = new MailChimp($api_key);
 		$retrieve = $MailChimp->get( 'lists/'.$list_id.'/members/'.$member_hash );
 		if ( $retrieve['id'] !== $member_hash ) {
+			// Voor ShopPlus is de kous wel af, maar eigenlijk moeten wij nu een queue beginnen met probleemgevallen ...
 			$debug[] = $retrieve;
-		}
-		$points = intval( $retrieve['merge_fields']['POINTS'] );
-		$client_number = $retrieve['merge_fields']['CLIENT'];
-		$ticket_number = $ticket->header->ticketNumber->__toString();
+		} else {
+			$points = intval( $retrieve['merge_fields']['POINTS'] );
+			$client_number = $retrieve['merge_fields']['CLIENT'];
+			$ticket_number = $ticket->header->ticketNumber->__toString();
 
-		$i = 1;
-		$lines = array();
-		foreach ( $ticket->items->children() as $item ) {
-			$shopplus = $item->sku->__toString();
-			$quantity = intval( $item->quantity->__toString() );
-			$price = floatval( $item->total->__toString() );
-			$lines[] = array(
-				'id' => $ticket_number.'-'.$i,
-				'product_id' => $shopplus,
-				'product_variant_id' => $shopplus,
-				'quantity' => $quantity,
-				'price' => $price,
+			$i = 1;
+			$lines = array();
+			foreach ( $ticket->items->children() as $item ) {
+				$shopplus = $item->sku->__toString();
+				$quantity = intval( $item->quantity->__toString() );
+				$price = floatval( $item->total->__toString() );
+				$lines[] = array(
+					'id' => $ticket_number.'-'.$i,
+					'product_id' => $shopplus,
+					'product_variant_id' => $shopplus,
+					'quantity' => $quantity,
+					'price' => $price,
+				);
+				$i++;
+
+				// Toch liever in een database stoppen met tabellen verwerkt / in de wachtrij / ...
+				$str = date('d/m/Y H:i:s')."\t".$_SERVER['REMOTE_ADDR']."\t".$shopplus." - ".$quantity." ex. - ".$price." EUR\n";
+				file_put_contents( "items.csv", $str, FILE_APPEND );
+			}
+
+			$total = floatval( $ticket->header->orderTotal->__toString() );
+			$extra_points = intval( floor( $total / 10 ) );
+			
+			// Tel de punten er al bij vòòr we eventuele mails verzenden
+			$update_args = array(
+				'merge_fields' => array( 'POINTS' => $points + $extra_points ),
 			);
-			$i++;
+			$update = $MailChimp->patch( 'lists/'.$list_id.'/members/'.$member_hash, $update_args );
+			if ( $update['id'] !== $member_hash ) {
+				$debug[] = $update;
+			} else {
+				$note = $MailChimp->post( 'lists/'.$list_id.'/members/'.$member_hash.'/notes', array( 'note' => 'Je spaarde '.$extra_points.' punten in OWW '.$location.'.' ) );
+				if ( isset( $note['status'] ) ) {
+					$debug[] = $note;
+				} 
+			}
 
-			$str = date('d/m/Y H:i:s')."\t".$_SERVER['REMOTE_ADDR']."\t".$shopplus." - ".$quantity." ex. - ".$price." EUR\n";
-			file_put_contents( "items.csv", $str, FILE_APPEND );
-		}
+			$create_args = array(
+				'id' => $ticket_number,
+				// Dit zal nog wat opzoekwerk vergen ...
+				'customer' => array( 'id' => 'test2' ),
+				// Dit is de campagne 'Order Notifictions for Wereldwinkelnetwerk'
+				'campaign_id' => '0d65a3f02f',
+				'currency_code' => 'EUR',
+				'order_total' => $total,
+				// 'landing_site' => 'https://www.oxfamwereldwinkels.be/'.strtolower($location),
+				'financial_status' => 'pending',
+				// Tijdstip in ISO 8601, bv. 2019-02-19T10:02:47+01:00
+				'processed_at_foreign' => $ticket->header->orderDate->__toString(),
+				'lines' => $lines,
+			);
+			$create = $MailChimp->post( 'ecommerce/stores/'.$store_id.'/orders', $create_args );
+			if ( $create['id'] !== $ticket_number ) {
+				$debug[] = $create;
+			} else {
+				$products_added = array();
+				foreach ( $create['lines'] as $line ) {
+					$products_added[] = $line['quantity'].'x '.$line['product_title'];
+				}
 
-		$total = floatval( $ticket->header->orderTotal->__toString() );
-		$create_args = array(
-			'id' => $ticket_number,
-			// Dit zal nog wat opzoekwerk vergen ...
-			'customer' => array( 'id' => 'test2' ),
-			'currency_code' => 'EUR',
-			'order_total' => $total,
-			// 'landing_site' => 'https://www.oxfamwereldwinkels.be/'.strtolower($location),
-			'financial_status' => 'paid',
-			// Tijdstip in ISO 8601, bv. 2019-02-19T10:02:47+01:00
-			'processed_at_foreign' => $ticket->header->orderDate->__toString(),
-			'lines' => $lines,
-		);
-		$create = $MailChimp->post( 'ecommerce/stores/'.$store_id.'/orders', $create_args );
-		if ( $create['status'] !== 200 ) {
-			$debug[] = $create;
-		}
-
-		$products_added = array();
-		foreach ( $create['lines'] as $line ) {
-			$products_added[] = $line['quantity'].'x '.$line['product_title'];
-		}
-		
-		$extra_points = intval( floor( $total / 10 ) );
-		$update_args = array(
-			'merge_fields' => array( 'POINTS' => $points + $extra_points ),
-		);
-		$update = $MailChimp->patch( 'lists/'.$list_id.'/members/'.$member_hash, $update_args );
-		if ( $update['id'] !== $member_hash ) {
-			$debug[] = $update;
+				// Als de klant een bevestiging wil ontvangen migreren we het order nu naar 'paid'
+				// $migrate = $MailChimp->patch( 'ecommerce/stores/'.$store_id.'/orders/'.$ticket_number, array( 'financial_status' => 'paid' ) );
+				// Probleem: besteloverzicht kan niet vertaald/gewijzigd worden, dus probeer het met een custom automatisatie
+				$notify = $MailChimp->post( 'automations/c0cce767e6/emails/e291a22309/queue', array( 'email_address' => $retrieve['email_address'] ) );
+			}
 		}
 
 		$code = 202;

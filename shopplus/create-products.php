@@ -86,6 +86,8 @@
 						$shopplus_index = $key;
 					} elseif ( mb_strtolower($value) === 'merk' ) {
 						$brand_index = $key;
+					} elseif ( mb_strtolower($value) === 'categorie' ) {
+						$category_index = $key;
 					} elseif ( mb_strtolower($value) === 'productnaam' ) {
 						$title_index = $key;
 					} elseif ( mb_strtolower($value) === 'lange beschrijving' ) {
@@ -102,6 +104,7 @@
 				$sku = $row[0];
 				$shopplus = $row[$shopplus_index];
 				$brand = $row[$brand_index];
+				$category = $row[$category_index];
 				$title = $row[$title_index];
 				$description = $row[$description_index];
 				$price = floatval( $row[$price_index] );
@@ -114,8 +117,8 @@
 					'title' => $title,
 					'url' => 'https://shop.oxfamwereldwinkels.be/?addSku='.$sku,
 					'description' => $description,
-					'type' => 'Food',
-					'vendor' => $brand,
+					'type' => $brand,
+					'vendor' => $category,
 					'image_url' => $image_url,
 					'variants' => array( array(
 						'id' => $shopplus,
