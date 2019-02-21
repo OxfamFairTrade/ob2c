@@ -1,7 +1,7 @@
 <?php
 
-	include('config.php');
-	include('mailchimp.php');
+	include('../config.php');
+	include('../mailchimp.php');
 	use \DrewM\MailChimp\MailChimp;
 
 	// BELANGRIJK: zorgt ervoor dat enters uit Mac-files correct geïnterpreteerd worden!
@@ -13,6 +13,14 @@
 	// - Als product-URL wordt de (niet-publieke) link naar het hoofdniveau ingesteld 
 	// - Producten die verwijderd werden uit WooCommerce worden niet verwijderd uit MailChimp
 	// WELLICHT GEBRUIKEN WE DUS TOCH BETER ONS EIGEN CUSTOM SCRIPT
+
+	// MAAK OOK ENKELE GENERISCHE PRODUCTEN AAN ZONDER PRIJS / FOTO
+	// - W-prefix (OWW)
+	// - F-prefix (OFTC)
+	// - M-prefix (MDM)
+	// - P-prefix (PUUR)
+	// - X-prefix (EXT)
+	// - Geschenkencheques = WGC02 / WGC05 / WGC15 / WGC25 + YYYY
 	
 	$cnt = 0;
 	$created = 0;
@@ -125,6 +133,8 @@
 						'title' => $title,
 						'sku' => $sku,
 						'price' => $price,
+						// Want anders duiken ze niet op bij productaanbevelingen
+						'inventory_quantity' => 9999,
 						'image_url' => $image_url,
 					) ),
 					'published_at_foreign' => $publish_date,
