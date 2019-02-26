@@ -380,22 +380,6 @@
 		return $str;
 	}
 
-	// Verberg startlocatie VOORZIE GEWOON MOOIER ICOONTJE
-	// add_filter( 'wpsl_js_settings', 'custom_js_settings' );
-
-	function custom_js_settings( $settings ) {
-		$settings['startMarker'] = '';
-		return $settings;
-	}
-
-	// Selecteer 'Afhaling in de winkel' als default WERKT ALLEEN BIJ DROPDOWNS
-	// add_filter( 'wpsl_dropdown_category_args', 'custom_dropdown_category_args' );
-
-	function custom_dropdown_category_args( $args ) {
-		$args['selected'] = 5689;
-		return $args;
-	}
-
 
 
 	############
@@ -462,7 +446,7 @@
 		add_filter( 'manage_edit-shop_order_sortable_columns', 'make_claimed_by_column_sortable' );
 
 		// Toon de data van elk order in de kolom
-		add_action( 'manage_shop_order_posts_custom_column' , 'get_claimed_by_value', 10, 2 );
+		add_action( 'manage_shop_order_posts_custom_column', 'get_claimed_by_value', 10, 2 );
 
 		// Laat de custom statusfilter verschijnen volgens de normale flow van de verwerking
 		add_filter( 'views_edit-shop_order', 'put_claimed_after_processing' );
@@ -1154,6 +1138,8 @@
 	
 	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
 	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_sku_sorting' );
+	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
+	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
 
 	function add_sku_sorting( $args ) {
 		$orderby_value = isset( $_GET['orderby'] ) ? wc_clean( $_GET['orderby'] ) : apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
@@ -1171,9 +1157,6 @@
 		return $args;
 	}
 	
-	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
-	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
-
 	function sku_sorting_orderby( $sortby ) {
 		unset( $sortby['menu_order'] );
 		unset( $sortby['rating'] );
@@ -1186,6 +1169,78 @@
 		// $sortby['sku'] = 'Stijgend artikelnummer';
 		// $sortby['reverse_sku'] = 'Dalend artikelnummer';
 		return $sortby;
+	}
+
+	// Maak B2B-producten enkel zichtbaar voor B2B-klanten (cataloguspagina's)
+	add_action( 'woocommerce_product_query', 'ob2c_limit_assortment_for_client_type' );
+	
+	function ob2c_limit_assortment_for_client_type( $query ) {
+		if ( ! is_b2b_customer() ) {
+			$tax_query = (array) $query->get('tax_query');
+			// Voeg query toe die alle producten met de 'B2B'-tag uitsluit
+			$tax_query[] = array(
+				'taxonomy' => 'product_tag',
+				'field' => 'name',
+				'terms' => array( 'B2B' ),
+				'operator' => 'NOT IN',
+			);
+			$query->set( 'tax_query', $tax_query );
+		}
+	}
+
+	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje
+	add_filter( 'woocommerce_is_purchasable', 'ob2c_disable_products_not_in_assortment', 10, 2 );
+
+	function ob2c_disable_products_not_in_assortment( $purchasable, $product ) {
+		return apply_filters( 'ob2c_product_is_available', $product->get_id(), is_b2b_customer(), $purchasable );
+	}
+
+	// Filter wordt enkel doorlopen bij de 1ste toevoeging van een product!
+	add_filter( 'woocommerce_add_to_cart_validation', 'ob2c_disallow_products_not_in_assortment', 10, 2 );
+
+	function ob2c_disallow_products_not_in_assortment( $passed, $product_id ) {
+		$passed_extra_conditions = apply_filters( 'ob2c_product_is_available', $product_id, is_b2b_customer(), $passed );
+
+		if ( $passed and ! $passed_extra_conditions ) {
+			wc_add_notice( sprintf( __( 'Foutmelding indien een gewone klant een B2B-product probeert te bestellen.', 'ob2c' ), is_b2b_customer() ), 'error' );
+		}
+		
+		return $passed_extra_conditions;
+	}
+
+	// Maak de detailpagina van verboden producten volledig onbereikbaar
+	add_action( 'template_redirect', 'ob2c_prevent_access_to_product_page' );
+	
+	function ob2c_prevent_access_to_product_page() {
+		if ( is_product() ) {
+			$available = apply_filters( 'ob2c_product_is_available', get_the_ID(), is_b2b_customer(), true );
+			
+			if ( ! $available ) {
+				wc_add_notice( sprintf( __( 'Foutmelding indien een gewone klant het B2B-product %s probeert te bekijken.', 'ob2c' ), get_the_title() ), 'error' );
+				if ( wp_get_referer() ) {
+					// Keer terug naar de vorige pagina
+					wp_safe_redirect( wp_get_referer() );
+				} else {
+					// Ga naar de hoofdpagina van de winkel
+					wp_safe_redirect( get_permalink( woocommerce_get_page_id('shop') ) );
+				}
+				exit;
+			}
+		}
+	}
+
+	// Definieer een eigen filter zodat we de voorwaarden slecht één keer centraal hoeven in te geven
+	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_client', 10, 3 );
+
+	function ob2c_check_product_availability_for_client( $product_id, $is_b2b_customer, $available ) {
+		if ( ! $is_b2b_customer ) {
+			if ( has_term( 'B2B', 'product_tag', $product_id ) ) {
+				write_log( "MADE PRODUCT ".$product_id." UNAVAILABLE FOR NON B2B CLIENT WITH ID ".get_current_user_id() );
+				$available = false;
+			}
+		}
+
+		return $available;
 	}
 
 	// Herlaad winkelmandje automatisch na aanpassing en zorg dat postcode altijd gecheckt wordt (en activeer live search indien plugin geactiveerd)
@@ -2569,7 +2624,7 @@
 		}
 	}
 
-	// Zet webshopbeheerder in BCC bij versturen uitnodiginsmails
+	// Zet webshopbeheerder in BCC bij versturen uitnodigingsmails
 	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 3 );
 
 	function put_administrator_in_bcc( $headers, $type, $object ) {
@@ -4616,28 +4671,28 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			echo '<div class="notice notice-info">';
-			echo '<p>De wettelijke feestdagen voor 2019 werden ingesteld. Pas ze indien nodig aan op de \'<a href="admin.php?page=oxfam-options">Winkelbeheer</a>\'-pagina. Het algoritme dat de uiterste leverdatum berekent, houdt hier rekening mee. Bovendien tonen de openingsuren bij het afrekenen en in de bevestiginsmails nu de reële situatie voor de komende 7 dagen. Indien de winkel dicht is, verschijnt er \'uitzondelijk gesloten\'.</p>';
-			echo '</div>';
+			// echo '<div class="notice notice-info">';
+			// echo '<p>De wettelijke feestdagen voor 2019 werden ingesteld. Pas ze indien nodig aan op de \'<a href="admin.php?page=oxfam-options">Winkelbeheer</a>\'-pagina. Het algoritme dat de uiterste leverdatum berekent, houdt hier rekening mee. Bovendien tonen de openingsuren bij het afrekenen en in de bevestiginsmails nu de reële situatie voor de komende 7 dagen. Indien de winkel dicht is, verschijnt er \'uitzondelijk gesloten\'.</p>';
+			// echo '</div>';
 			// echo '<div class="notice notice-warning">';
 			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20057 Fuego Sagrado, 20153 BIO La Posada Malbec Rosé, 20259 Fuego Sagrado Chardonnay, 22720 BIO Koffiecaps lungo (oude verpakking met 50 g koffie), 22721 BIO Koffiecaps dark roast (oude verpakking met 50 g koffie), 24199 BIO Maya melkchocolade met speculoos, 24293 BIO Melkchocolade gepofte rijst, 25613 BIO Dadels (uit Tunesië), 26091 BIO Agave (donkere versie) en 27108 Parboiled rijst in builtjes. De sintfiguren zijn verborgen, tot de goedheilige man ons land weer aandoet.</p>';
 			// echo '</div>';
-			echo '<div class="notice notice-success">';
-				echo '<p>2019 gaat van start met 2 nieuwe wijnen, 3 nieuwe thees, 5 terugkerende paasfiguren, 1 gewijzigde notenverpakking en 1 nieuw superfood:</p><ul style="margin-left: 2em;">';
-					$skus = array( '20074', '20075', '23697', '23698', '23699', '24529', '24631', '24634', '24641', '24642', '25727', '27054' );
-					foreach ( $skus as $sku ) {
-						$product_id = wc_get_product_id_by_sku($sku);
-						if ( $product_id ) {
-							$product = wc_get_product($product_id);
-							echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-						}
-					}
-				echo '</ul><p>';
-				if ( current_user_can('manage_network_users') ) {
-					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Twee specerijen van Ethiquable kregen een nieuw packshot, en de partners die bijdragen aan de koffiemélanges werden geüpdatet.</p>';
-			echo '</div>';
+			// echo '<div class="notice notice-success">';
+			// 	echo '<p>De eerste lentekriebels vertalen zich in 2 (ver)nieuw(d)e chocolades en 2 gewijzigde notenverpakkingen:</p><ul style="margin-left: 2em;">';
+			// 		$skus = array( '24221', '24545', '25726', '25727' );
+			// 		foreach ( $skus as $sku ) {
+			// 			$product_id = wc_get_product_id_by_sku($sku);
+			// 			if ( $product_id ) {
+			// 				$product = wc_get_product($product_id);
+			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+			// 			}
+			// 		}
+			// 	echo '</ul><p>';
+			// 	if ( current_user_can('manage_network_users') ) {
+			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+			// 	}
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd.</p>';
+			// echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
@@ -5309,9 +5364,9 @@
 	}
 
 	// Voeg de bovenliggende categorie en de herkomstlanden toe aan de te indexeren content van een product (inclusief synoniemen)
-	add_filter( 'relevanssi_content_to_index', 'oftc_index_parent_category_and_origin', 10, 2 );
+	add_filter( 'relevanssi_content_to_index', 'ob2c_index_parent_category_and_origin', 10, 2 );
 
-	function oftc_index_parent_category_and_origin( $content, $post ) {
+	function ob2c_index_parent_category_and_origin( $content, $post ) {
 		global $relevanssi_variables;
 		$categories = get_the_terms( $post->ID, 'product_cat' );
 		if ( is_array( $categories ) ) {
