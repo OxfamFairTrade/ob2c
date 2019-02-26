@@ -4597,32 +4597,6 @@
 		echo '<p>Daarnaast kun je nog altijd <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop.pdf" target="_blank">de slides van de opleidingssessies</a> raadplegen voor een overzicht van alle afspraken en praktische details. Op <a href="https://copain.oww.be/webshop" target="_blank">Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
 		echo '<p>Stuur een mailtje naar <a href="mailto:e-commerce@oft.be?">e-commerce@oft.be</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Voor dringende problemen mag je ook telefonisch contact opnemen met Frederik Neirynck via <a href="tel:+3292188863">09/218.88.63</a>.</p>';
 		echo '</div>';
-		echo '<div class="rss-widget"><ul>'.get_latest_mailings().'</ul></div>';
-	}
-
-	function get_latest_mailings() {
-		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
-		$list_id = '53ee397c8b';
-		$folder_id = '2a64174067';
-
-		$args = array(
-			'headers' => array(
-				'Authorization' => 'Basic '.base64_encode( 'user:'.MAILCHIMP_APIKEY ),
-			),
-		);
-
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-18 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
-		
-		$mailings = "";
-		if ( $response['response']['code'] == 200 ) {
-			$body = json_decode($response['body']);
-			
-			foreach ( array_reverse($body->campaigns) as $campaign ) {
-				$mailings .= '<li><a class="rsswidget" href="'.$campaign->long_archive_url.'" target="_blank">'.str_replace( '*|FNAME|*: ', '', $campaign->settings->subject_line ).'</a> ('.date_i18n( 'j F Y', strtotime($campaign->send_time) ).')</li>';
-			}
-		}		
-
-		return $mailings;
 	}
 
 	function get_tracking_number( $order_id ) {
