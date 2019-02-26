@@ -37,8 +37,6 @@
 			if ( $is_endpoint && ! is_admin() && is_main_query() && in_the_loop() && is_account_page() ) {
 				if ( self::$endpoint === 'nieuwsbrief' ) {
 					$title = 'Beheer je abonnement op ons Digizine';
-				} else {
-					$title = 'Ook deze site is future proof!';
 				}
 				remove_filter( 'the_title', array( $this, 'endpoint_title' ) );
 			}
@@ -57,10 +55,10 @@
 
 		public function endpoint_content() {
 			if ( self::$endpoint === 'nieuwsbrief' ) {
-				echo get_latest_newsletters();
-				echo get_mailchimp_status();
-			} else {
-				echo 'In de toekomst leuke andere dingen?';
+				echo get_latest_newsletters_in_folder();
+				echo get_mailchimp_status_in_list();
+				// Abonnement op andere nieuwsbrieven tonen?
+				// Klantenkaart linken?
 			}
 		}
 
@@ -70,7 +68,7 @@
 		}
 	}
 
-	new Custom_My_Account_Endpoint( 'nieuwsbrief' );
+	new Custom_My_Account_Endpoint('nieuwsbrief');
 	
 	register_activation_hook( __FILE__, array( 'Custom_My_Account_Endpoint', 'install' ) );
 	register_deactivation_hook( __FILE__, array( 'Custom_My_Account_Endpoint', 'install' ) );

@@ -4709,10 +4709,8 @@
 		return $args;
 	};
 
-	function get_latest_newsletters() {
+	function get_latest_newsletters_in_folder( $list_id = '5cce3040aa', $folder_id = 'bbc1d65c43' ) {
 		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
-		$list_id = '5cce3040aa';
-		$folder_id = 'bbc1d65c43';
 
 		$args = array(
 			'headers' => array(
@@ -4738,11 +4736,10 @@
 		return $mailings;
 	}
 
-	function get_mailchimp_status() {
-		$cur_user = wp_get_current_user();
+	function get_mailchimp_status_in_list( $list_id = '5cce3040aa' ) {
+		$current_user = wp_get_current_user();
 		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
-		$list_id = '5cce3040aa';
-		$email = $cur_user->user_email;
+		$email = $current_user->user_email;
 		$member = md5( format_mail($email) );
 
 		$args = array(
@@ -4758,12 +4755,12 @@
 			$body = json_decode($response['body']);
 
 			if ( $body->status === "subscribed" ) {
-				$msg .= "al geabonneerd op het Digizine. Aan het begin van elke maand ontvang je dus een (h)eerlijke mail boordevol fairtradenieuws. (Even checken of je dit al nagelezen hebt, Griet!)";
+				$msg .= "al geabonneerd op het Digizine. Aan het begin van elke maand ontvang je dus een (h)eerlijke mail boordevol fairtradenieuws.";
 			} else {
-				$msg .= "helaas niet langer geabonneerd op het Digizine. Vul <a href='http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$cur_user->user_firstname."&LNAME=".$cur_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>het formulier</a> in om op je stappen terug te keren!";
+				$msg .= "helaas niet langer geabonneerd op het Digizine. Vul <a href='https://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$current_user->user_firstname."&LNAME=".$current_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>het formulier</a> in om op je stappen terug te keren!";
 			}
 		} else {
-			$msg .= "nog nooit geabonneerd geweest op het Digzine. Vul <a href='http://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$cur_user->user_firstname."&LNAME=".$cur_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>het formulier</a> in om daar verandering in te brengen!";
+			$msg .= "nog nooit geabonneerd geweest op het Digzine. Vul <a href='https://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$current_user->user_firstname."&LNAME=".$current_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>het formulier</a> in om daar verandering in te brengen!";
 		}
 
 		return "<p>Je bent met het e-mailadres <a href='mailto:".$email."' target='_blank'>".$email."</a> ".$msg."</p>";
