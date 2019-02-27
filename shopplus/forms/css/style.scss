@@ -1,0 +1,182 @@
+$shadow-grey: rgba(0, 0, 0, 0.25);
+$oxfam-green: rgb(97, 165, 52);
+$valid-green: rgb(40, 167, 69);
+$invalid-red: rgb(220, 53, 69);
+
+html {
+	background-image: url('../images/background-boterham.jpg');
+	background-repeat: no-repeat;
+	background-position: 20% 0%;
+	background-size: cover;
+	min-height: 100%;
+	min-height: 100vh;
+	margin: 0;
+}
+
+body {
+	background-color: transparent;
+}
+
+.green {
+	color: $oxfam-green;
+}
+
+@font-face {
+	font-family: Oxfam;
+	src: url('../images/oxfam.ttf');
+}
+
+.jumbotron {
+	background: transparent;
+	min-height: 95%;
+	min-height: 95vh;
+	margin: 0;
+
+	.container {
+		max-width: 900px;
+	}
+}
+
+.seethrough {
+	background-color: rgba(255, 255, 255, 0.9);
+	box-shadow: 1px 1px 1px $shadow-grey;
+}
+
+.title {
+	font-family: Oxfam;
+}
+
+.logo {
+	max-width: 250px;
+}
+
+.navbar {
+	min-height: 3em;
+}
+
+.nav-item .flipper {
+	transform: rotate(0deg);
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	display: inline-block;
+}
+
+.nav-item:hover .flipper {
+	transform: rotate(-810deg);
+}
+
+.navbar-right li a {
+  text-align: right;
+}
+
+.link-style {
+	cursor: pointer;
+	text-shadow: 1px 1px 1px $shadow-grey;
+}
+
+.navbar.bg-dark {
+	a.text-primary:focus, a.text-primary:hover,
+	a.text-success:focus, a.text-success:hover,
+	a.text-danger:focus, a.text-danger:hover {
+		color: lightgrey !important;
+	}
+}
+
+.form-check-inline {
+	// Laat de checkboxes uitlijnen ten opzichte van deze parent
+	position: relative;
+	// Extra marge links ter compensatie van uitspringende checkbox
+	margin-left: 2em;
+}
+
+.feedback {
+	margin-top: .25rem;
+	margin-left: .25rem;
+	font-size: .875rem;
+	color: $invalid-red;
+}
+
+.btn {
+	border: 0px solid transparent;
+}
+
+.btn-primary:disabled {
+	background-color: black;
+}
+
+input[type=radio],
+input[type=checkbox] {
+	display: none; 
+}
+
+label {
+	cursor: pointer;
+	padding: 15px;
+}
+
+label:before {
+	content: "";
+	display: inline-block;
+	background-color: white;
+	border: 1px solid $shadow-grey;
+	border-radius: 25px;
+	width: 25px;
+	height: 25px;
+	position: absolute;
+	left: -18px;
+	top: 14px;
+}
+
+input[type=radio]:checked + label:after,
+input[type=checkbox]:checked + label:after {
+	position: absolute;
+	left: -19px;
+	top: 2px;
+	content: "";
+	background-image: url('../images/vinkje.png');
+	background-repeat: no-repeat;
+	background-position: right top;
+	background-size: 100% 100%;
+	width: 28px;
+	height: 33px;
+	z-index: 100;
+}
+
+input[type=radio]:checked + label:before,
+input[type=checkbox]:checked + label:before {
+	border-color: $valid-green;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+	transition: all 1s ease-out;
+	max-height: 200px;
+}
+
+.slide-fade-enter,
+.slide-fade-leave-to {
+	opacity: 0;
+	max-height: 0px;
+}
+
+[v-cloak] {
+	display: none;
+}
+
+@media (max-width: 1024px) {
+	.logo {
+		max-width: 200px;
+	}
+}
+
+@media (max-width: 768px) {
+	body {
+		font-size: 90%;
+	}
+}
+
+@media (max-width: 480px) {
+	.logo {
+		max-width: 175px;
+	}
+}
