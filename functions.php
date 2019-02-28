@@ -1175,7 +1175,8 @@
 	add_action( 'woocommerce_product_query', 'ob2c_limit_assortment_for_client_type' );
 	
 	function ob2c_limit_assortment_for_client_type( $query ) {
-		if ( ! is_b2b_customer() ) {
+		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
+		if ( ! is_b2b_customer() and ! current_user_can('manage_woocommerce') ) {
 			$tax_query = (array) $query->get('tax_query');
 			// Voeg query toe die alle producten uit de 'Grootverbruik'-categorie uitsluit
 			$tax_query[] = array(
@@ -1216,7 +1217,12 @@
 			$available = apply_filters( 'ob2c_product_is_available', get_the_ID(), is_b2b_customer(), true );
 			
 			if ( ! $available ) {
+				// Als de klant nog niets in het winkelmandje zitten heeft, is er nog geen sessie om notices aan toe te voegen!
+				if ( ! WC()->session->has_session() ) {
+					WC()->session->set_customer_session_cookie(true);
+				}
 				wc_add_notice( sprintf( __( 'Foutmelding indien een gewone klant het B2B-product %s probeert te bekijken.', 'ob2c' ), get_the_title() ), 'error' );
+				
 				if ( wp_get_referer() ) {
 					// Keer terug naar de vorige pagina
 					wp_safe_redirect( wp_get_referer() );
@@ -1233,7 +1239,8 @@
 	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_client', 10, 3 );
 
 	function ob2c_check_product_availability_for_client( $product_id, $is_b2b_customer, $available ) {
-		if ( ! $is_b2b_customer ) {
+		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
+		if ( ! $is_b2b_customer and ! current_user_can('manage_woocommerce') ) {
 			if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
 				write_log( "DISABLED PRODUCT ".$product_id." VIEW / PURCHASE / ADD TO CART FOR NON B2B CLIENT" );
 				$available = false;
@@ -4651,8 +4658,8 @@
 			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20057 Fuego Sagrado, 20153 BIO La Posada Malbec Rosé, 20259 Fuego Sagrado Chardonnay, 22720 BIO Koffiecaps lungo (oude verpakking met 50 g koffie), 22721 BIO Koffiecaps dark roast (oude verpakking met 50 g koffie), 24199 BIO Maya melkchocolade met speculoos, 24293 BIO Melkchocolade gepofte rijst, 25613 BIO Dadels (uit Tunesië), 26091 BIO Agave (donkere versie) en 27108 Parboiled rijst in builtjes. De sintfiguren zijn verborgen, tot de goedheilige man ons land weer aandoet.</p>';
 			// echo '</div>';
 			// echo '<div class="notice notice-success">';
-			// 	echo '<p>De eerste lentekriebels vertalen zich in 2 (ver)nieuw(d)e chocolades, 1 grotere chipsverpakking en 1 gewijzigde notenverpakking:</p><ul style="margin-left: 2em;">';
-			// 		$skus = array( '24221', '24545', '25452', '25726' );
+			// 	echo '<p>De eerste lentekriebels vertalen zich in 2 (ver)nieuw(d)e chocolades, 1 grotere chipsverpakking, 1 gewijzigde notenverpakking en 5 serviceproducten voor grootverbuik:</p><ul style="margin-left: 2em;">';
+			// 		$skus = array( '24221', '24545', '25452', '25726', '05246', '08808', '08809', '29297', '29298' );
 			// 		foreach ( $skus as $sku ) {
 			// 			$product_id = wc_get_product_id_by_sku($sku);
 			// 			if ( $product_id ) {
@@ -4664,7 +4671,7 @@
 			// 	if ( current_user_can('manage_network_users') ) {
 			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd. De packshots van beide chocolades liggen momenteel bij onze fotograaf en volgen dinsdag.</p>';
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd. De packshots van de chocolades liggen momenteel bij onze fotograaf en volgen dinsdag. Opgelet: de grootverbruikproducten zijn enkel beschikbaar voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">geregistreerde B2B-klanten</a>.</p>';
 			// echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
