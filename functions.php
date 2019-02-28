@@ -55,7 +55,7 @@
 				} else {
 					// Vermijd dubbele output (door heen-en-weer navigeren?)
 					wc_clear_notices();
-					wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen. We bewaren je keuze in deze browser maar via de knop rechtsboven kun je steeds een andere webshop selecteren.', 'ob2c' ), 'error' );
+					wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen. We bewaren je keuze in deze browser maar via de knop rechtsboven kun je steeds een andere webshop selecteren.', 'oxfam-webshop' ), 'error' );
 				}
 			}
 		} else {
@@ -116,7 +116,7 @@
 					}
 				}
 			} else {
-				wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop.', 'ob2c' ), $_GET['addSku'] ), 'error' );
+				wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop.', 'oxfam-webshop' ), $_GET['addSku'] ), 'error' );
 				wp_safe_redirect( get_permalink( woocommerce_get_page_id('shop') ) );
 				exit();
 			}
@@ -1203,7 +1203,7 @@
 		$passed_extra_conditions = apply_filters( 'ob2c_product_is_available', $product_id, is_b2b_customer(), $passed );
 
 		if ( $passed and ! $passed_extra_conditions ) {
-			wc_add_notice( sprintf( __( 'Foutmelding indien een gewone klant een B2B-product probeert te bestellen.', 'ob2c' ), is_b2b_customer() ), 'error' );
+			wc_add_notice( sprintf( __( 'Foutmelding indien een gewone klant een B2B-product probeert te bestellen.', 'oxfam-webshop' ), is_b2b_customer() ), 'error' );
 		}
 		
 		return $passed_extra_conditions;
@@ -1221,7 +1221,7 @@
 				if ( ! WC()->session->has_session() ) {
 					WC()->session->set_customer_session_cookie(true);
 				}
-				wc_add_notice( sprintf( __( 'Foutmelding indien een gewone klant het B2B-product %s probeert te bekijken.', 'ob2c' ), get_the_title() ), 'error' );
+				wc_add_notice( sprintf( __( 'Foutmelding indien een gewone klant het B2B-product %s probeert te bekijken.', 'oxfam-webshop' ), get_the_title() ), 'error' );
 				
 				if ( wp_get_referer() ) {
 					// Keer terug naar de vorige pagina
@@ -3051,7 +3051,7 @@
 		class WC_B2B_Home_Delivery_Method extends WC_Shipping_Method {
 			public function __construct() {
 				$this->id = 'b2b_home_delivery';
-				$this->method_title = __( 'B2B-leveringen', 'ob2c' );
+				$this->method_title = __( 'B2B-leveringen', 'oxfam-webshop' );
 				$this->init_form_fields();
 				$this->init_settings();
 				$this->enabled = $this->get_option('enabled');
