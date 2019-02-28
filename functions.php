@@ -1177,11 +1177,11 @@
 	function ob2c_limit_assortment_for_client_type( $query ) {
 		if ( ! is_b2b_customer() ) {
 			$tax_query = (array) $query->get('tax_query');
-			// Voeg query toe die alle producten met de 'B2B'-tag uitsluit
+			// Voeg query toe die alle producten uit de 'Grootverbruik'-categorie uitsluit
 			$tax_query[] = array(
-				'taxonomy' => 'product_tag',
+				'taxonomy' => 'product_cat',
 				'field' => 'name',
-				'terms' => array( 'B2B' ),
+				'terms' => array( 'Grootverbruik' ),
 				'operator' => 'NOT IN',
 			);
 			$query->set( 'tax_query', $tax_query );
@@ -1222,7 +1222,7 @@
 					wp_safe_redirect( wp_get_referer() );
 				} else {
 					// Ga naar de hoofdpagina van de winkel
-					wp_safe_redirect( get_permalink( woocommerce_get_page_id('shop') ) );
+					wp_safe_redirect( get_permalink( wc_get_page_id('shop') ) );
 				}
 				exit;
 			}
@@ -1234,8 +1234,8 @@
 
 	function ob2c_check_product_availability_for_client( $product_id, $is_b2b_customer, $available ) {
 		if ( ! $is_b2b_customer ) {
-			if ( has_term( 'B2B', 'product_tag', $product_id ) ) {
-				write_log( "MADE PRODUCT ".$product_id." UNAVAILABLE FOR NON B2B CLIENT WITH ID ".get_current_user_id() );
+			if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
+				write_log( "DISABLED PRODUCT ".$product_id." VIEW / PURCHASE / ADD TO CART FOR NON B2B CLIENT" );
 				$available = false;
 			}
 		}
@@ -4651,8 +4651,8 @@
 			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20057 Fuego Sagrado, 20153 BIO La Posada Malbec Rosé, 20259 Fuego Sagrado Chardonnay, 22720 BIO Koffiecaps lungo (oude verpakking met 50 g koffie), 22721 BIO Koffiecaps dark roast (oude verpakking met 50 g koffie), 24199 BIO Maya melkchocolade met speculoos, 24293 BIO Melkchocolade gepofte rijst, 25613 BIO Dadels (uit Tunesië), 26091 BIO Agave (donkere versie) en 27108 Parboiled rijst in builtjes. De sintfiguren zijn verborgen, tot de goedheilige man ons land weer aandoet.</p>';
 			// echo '</div>';
 			// echo '<div class="notice notice-success">';
-			// 	echo '<p>De eerste lentekriebels vertalen zich in 2 (ver)nieuw(d)e chocolades en 2 gewijzigde notenverpakkingen:</p><ul style="margin-left: 2em;">';
-			// 		$skus = array( '24221', '24545', '25726', '25727' );
+			// 	echo '<p>De eerste lentekriebels vertalen zich in 2 (ver)nieuw(d)e chocolades, 1 grotere chipsverpakking en 1 gewijzigde notenverpakking:</p><ul style="margin-left: 2em;">';
+			// 		$skus = array( '24221', '24545', '25452', '25726' );
 			// 		foreach ( $skus as $sku ) {
 			// 			$product_id = wc_get_product_id_by_sku($sku);
 			// 			if ( $product_id ) {
@@ -4664,7 +4664,7 @@
 			// 	if ( current_user_can('manage_network_users') ) {
 			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd.</p>';
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd. De packshots van beide chocolades liggen momenteel bij onze fotograaf en volgen dinsdag.</p>';
 			// echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
