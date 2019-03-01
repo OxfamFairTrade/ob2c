@@ -1173,8 +1173,8 @@
 		return $sortby;
 	}
 
-	// Maak B2B-producten enkel zichtbaar voor B2B-klanten (cataloguspagina's)
-	add_action( 'woocommerce_product_query', 'ob2c_limit_assortment_for_client_type' );
+	// Maak B2B-producten enkel zichtbaar voor B2B-klanten (cataloguspagina's) UITSCHAKELEN
+	// add_action( 'woocommerce_product_query', 'ob2c_limit_assortment_for_client_type' );
 	
 	function ob2c_limit_assortment_for_client_type( $query ) {
 		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
@@ -1191,15 +1191,15 @@
 		}
 	}
 
-	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje
-	add_filter( 'woocommerce_is_purchasable', 'ob2c_disable_products_not_in_assortment', 10, 2 );
+	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje UITSCHAKELEN
+	// add_filter( 'woocommerce_is_purchasable', 'ob2c_disable_products_not_in_assortment', 10, 2 );
 
 	function ob2c_disable_products_not_in_assortment( $purchasable, $product ) {
 		return apply_filters( 'ob2c_product_is_available', $product->get_id(), is_b2b_customer(), $purchasable );
 	}
 
-	// Filter wordt enkel doorlopen bij de 1ste toevoeging van een product!
-	add_filter( 'woocommerce_add_to_cart_validation', 'ob2c_disallow_products_not_in_assortment', 10, 2 );
+	// Filter wordt enkel doorlopen bij de 1ste toevoeging van een product! UITSCHAKELEN
+	// add_filter( 'woocommerce_add_to_cart_validation', 'ob2c_disallow_products_not_in_assortment', 10, 2 );
 
 	function ob2c_disallow_products_not_in_assortment( $passed, $product_id ) {
 		$passed_extra_conditions = apply_filters( 'ob2c_product_is_available', $product_id, is_b2b_customer(), $passed );
@@ -1211,8 +1211,8 @@
 		return $passed_extra_conditions;
 	}
 
-	// Maak de detailpagina van verboden producten volledig onbereikbaar
-	add_action( 'template_redirect', 'ob2c_prevent_access_to_product_page' );
+	// Maak de detailpagina van verboden producten volledig onbereikbaar UITSCHAKELEN
+	// add_action( 'template_redirect', 'ob2c_prevent_access_to_product_page' );
 	
 	function ob2c_prevent_access_to_product_page() {
 		if ( is_product() ) {
@@ -4673,7 +4673,8 @@
 				if ( current_user_can('manage_network_users') ) {
 					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd. Het packshot van de B2B-chocolaatjes volgt in de loop van de week. Opgelet: de grootverbruikproducten zijn enkel zichtbaar voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">geregistreerde B2B-klanten</a>.</p>';
+				// Opgelet: de grootverbruikproducten zijn enkel zichtbaar voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">geregistreerde B2B-klanten</a>.
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd. Het packshot van de B2B-chocolaatjes volgt in de loop van de week.</p>';
 			echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
