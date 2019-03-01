@@ -982,13 +982,15 @@
 	add_filter( 'woocommerce_get_price_html' , 'no_orders_on_main', 10, 2 );
 	
 	function no_orders_on_main( $price, $product ) {
-		if ( is_main_site() and ! is_admin() ) {
-			remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
-			remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
-			return "<i>Geen verkoop vanuit nationaal</i>";
-		}
-		if ( is_b2b_customer() ) {
-			$price .= ' per stuk';
+		if ( ! is_admin() ) {
+			if ( is_main_site() ) {
+				remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
+				remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+				return "<i>Geen verkoop vanuit nationaal</i>";
+			}
+			if ( is_b2b_customer() ) {
+				$price .= ' per stuk';
+			}
 		}
 		return $price;
 	}
@@ -2436,7 +2438,7 @@
 	add_action( 'init', 'activate_b2b_functions' );
 
 	function activate_b2b_functions() {
-		if ( is_b2b_customer() ) {
+		if ( ! is_admin() and is_b2b_customer() ) {
 			// Zorg ervoor dat de spinners overal per ompak omhoog/omlaag gaan
 			add_filter( 'woocommerce_quantity_input_args', 'suggest_order_unit_multiple', 10, 2 );
 	
@@ -4601,7 +4603,7 @@
 	function dashboard_pilot_news_widget_function() {
 		echo '<div class="rss-widget">';
 		echo '<p>De <a href="https://github.com/OxfamFairTrade/ob2c/wiki" target="_blank">online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Gebruik eventueel de zoekfunctie bovenaan rechts.</p>';
-		echo '<p>Daarnaast kun je nog altijd <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop.pdf" target="_blank">de slides van de opleidingssessies</a> raadplegen voor een overzicht van alle afspraken en praktische details. Op <a href="https://copain.oww.be/webshop" target="_blank">Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
+		echo '<p>Daarnaast kun je nog altijd <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop.pdf" target="_blank">de slides van de opleidingssessies</a> raadplegen voor een overzicht van alle afspraken en praktische details. Op <a href="https://copain.oww.be/webshop" target="_blank">de webshoppagina op Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
 		echo '<p>Stuur een mailtje naar <a href="mailto:e-commerce@oft.be?">e-commerce@oft.be</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Voor dringende problemen mag je ook telefonisch contact opnemen met Frederik Neirynck via <a href="tel:+3292188863">09/218.88.63</a>.</p>';
 		echo '</div>';
 	}

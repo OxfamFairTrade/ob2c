@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2019-02-28 14:35+0100\n"
-"PO-Revision-Date: 2019-02-28 14:37+0100\n"
+"PO-Revision-Date: 2019-02-28 18:01+0100\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: nl_NL\n"
@@ -120,7 +120,7 @@ msgstr ""
 #, php-format
 msgid ""
 "Foutmelding indien een gewone klant het B2B-product %s probeert te bekijken."
-msgstr "&laquo; %s &raquo; kan enkel door B2B-klanten besteld worden."
+msgstr "%s kan enkel door B2B-klanten besteld worden."
 
 #: functions.php:1309
 msgid ""
