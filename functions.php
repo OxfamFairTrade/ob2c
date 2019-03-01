@@ -4659,22 +4659,22 @@
 			// echo '<div class="notice notice-warning">';
 			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20057 Fuego Sagrado, 20153 BIO La Posada Malbec Rosé, 20259 Fuego Sagrado Chardonnay, 22720 BIO Koffiecaps lungo (oude verpakking met 50 g koffie), 22721 BIO Koffiecaps dark roast (oude verpakking met 50 g koffie), 24199 BIO Maya melkchocolade met speculoos, 24293 BIO Melkchocolade gepofte rijst, 25613 BIO Dadels (uit Tunesië), 26091 BIO Agave (donkere versie) en 27108 Parboiled rijst in builtjes. De sintfiguren zijn verborgen, tot de goedheilige man ons land weer aandoet.</p>';
 			// echo '</div>';
-			// echo '<div class="notice notice-success">';
-			// 	echo '<p>De eerste lentekriebels vertalen zich in 2 (ver)nieuw(d)e chocolades, 1 grotere chipsverpakking, 1 gewijzigde notenverpakking en 5 serviceproducten voor grootverbuik:</p><ul style="margin-left: 2em;">';
-			// 		$skus = array( '24221', '24545', '25452', '25726', '05246', '08808', '08809', '29297', '29298' );
-			// 		foreach ( $skus as $sku ) {
-			// 			$product_id = wc_get_product_id_by_sku($sku);
-			// 			if ( $product_id ) {
-			// 				$product = wc_get_product($product_id);
-			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-			// 			}
-			// 		}
-			// 	echo '</ul><p>';
-			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd. De packshots van de chocolades liggen momenteel bij onze fotograaf en volgen dinsdag. Opgelet: de grootverbruikproducten zijn enkel beschikbaar voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">geregistreerde B2B-klanten</a>.</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-success">';
+				echo '<p>De eerste lentekriebels vertalen zich in 2 (ver)nieuw(d)e chocolades, 1 grotere chipsverpakking, 1 gewijzigde notenverpakking en 5 serviceproducten voor grootverbuik:</p><ul style="margin-left: 2em;">';
+					$skus = array( '24221', '24545', '25452', '25726', '05246', '08808', '08809', '29297', '29298' );
+					foreach ( $skus as $sku ) {
+						$product_id = wc_get_product_id_by_sku($sku);
+						if ( $product_id ) {
+							$product = wc_get_product($product_id);
+							echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+						}
+					}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd. Het packshot van de B2B-chocolaatjes volgt in de loop van de week. Opgelet: de grootverbruikproducten zijn enkel zichtbaar voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">geregistreerde B2B-klanten</a>.</p>';
+			echo '</div>';
 			if ( does_home_delivery() ) {
 				// echo '<div class="notice notice-info">';
 				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
