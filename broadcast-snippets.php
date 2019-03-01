@@ -127,7 +127,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> array( 'publish' ),
-		'title'			=> 'b2b-wereldwinkel',
+		'title'			=> 'tht-mango',
 	);
 
 	$all_coupons = new WP_Query( $args );
@@ -205,7 +205,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '20074', '20075', '23697', '23698', '23699', '24529', '24631', '24634', '24641', '24642', '25727', '27054' );
+	$outofstocks = array( '24221', '24545', '25452', '25726', '05246', '08808', '08809', '29297', '29298' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -216,10 +216,10 @@
 	}
 
 	// Werk de datum van een product bij
-	$product_id = wc_get_product_id_by_sku( '24631' );
+	$product_id = wc_get_product_id_by_sku( '29297' );
 	if ( $product_id ) {
 		$product = wc_get_product( $product_id );
-		$product->set_date_created( '2019-02-01T00:08:00Z' );
+		$product->set_date_created( '2019-03-01T12:31:00Z' );
 		$product->save();
 	}
 
