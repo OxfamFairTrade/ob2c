@@ -3929,12 +3929,14 @@
 	
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
-		// Voeg tabje met herkomstinfo toe
-		$tabs['partner_info'] = array(
-			'title' 	=> 'Partnerinfo',
-			'priority' 	=> 12,
-			'callback' 	=> function() { output_tab_content('partner'); },
-		);
+		// Voeg tabje met herkomstinfo toe (indien niet leeg)
+		if ( get_tab_content('partner') !== false ) {
+			$tabs['partner_info'] = array(
+				'title' 	=> 'Partnerinfo',
+				'priority' 	=> 12,
+				'callback' 	=> function() { output_tab_content('partner'); },
+			);
+		}
 
 		// Voeg tabje met voedingswaarde toe (indien niet leeg)
 		if ( get_tab_content('food') !== false ) {
@@ -3951,7 +3953,7 @@
 			);
 		}
 
-		// Voeg tabje met allergenen toe
+		// Voeg tabje met allergenen toe VERBERGEN INDIEN LEEG?
 		$tabs['allergen_info'] = array(
 			'title' 	=> 'Allergenen',
 			'priority' 	=> 16,
@@ -4009,12 +4011,12 @@
 		echo '<table class="shop_attributes">';
 
 		if ( $type === 'partner' ) {
-			// Partnertab altijd tonen!
-			$has_row = true;
 			$str = 'partners';
 
 			$partners = get_partner_terms_by_product( $product );
 			if ( count($partners) > 0 ) {
+				$has_row = true;
+
 				if ( count($partners) === 1 ) $str = 'een partner';
 				?>
 					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
