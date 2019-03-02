@@ -3929,14 +3929,12 @@
 	
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
-		// Voeg tabje met herkomstinfo toe (indien niet leeg)
-		if ( get_tab_content('partner') !== false ) {
-			$tabs['partner_info'] = array(
-				'title' 	=> 'Partnerinfo',
-				'priority' 	=> 12,
-				'callback' 	=> function() { output_tab_content('partner'); },
-			);
-		}
+		// Voeg altijd tabje met herkomstinfo toe
+		$tabs['partner_info'] = array(
+			'title' 	=> 'Partnerinfo',
+			'priority' 	=> 12,
+			'callback' 	=> function() { output_tab_content('partner'); },
+		);
 
 		// Voeg tabje met voedingswaarde toe (indien niet leeg)
 		if ( get_tab_content('food') !== false ) {
@@ -3953,12 +3951,14 @@
 			);
 		}
 
-		// Voeg tabje met allergenen toe VERBERGEN INDIEN LEEG?
-		$tabs['allergen_info'] = array(
-			'title' 	=> 'Allergenen',
-			'priority' 	=> 16,
-			'callback' 	=> function() { output_tab_content('allergen'); },
-		);
+		// Voeg tabje met allergenen toe (indien niet leeg)
+		if ( get_tab_content('allergen') !== false ) {
+			$tabs['allergen_info'] = array(
+				'title' 	=> 'Allergenen',
+				'priority' 	=> 16,
+				'callback' 	=> function() { output_tab_content('allergen'); },
+			);
+		}
 
 		// Titel wijzigen van standaardtabs kan maar prioriteit niet! (description = 10, additional_information = 20)
 		$tabs['additional_information']['title'] = 'Technische fiche';
@@ -4178,12 +4178,11 @@
 
 				} elseif ( $type === 'allergen' ) {
 
-					// Allergenen altijd tonen!
-					$has_row = true;
-
 					if ( array_key_exists( 'food', $oft_quality_data ) and array_key_exists( '_ingredients', $oft_quality_data['food'] ) ) {
 						$ingredients = $oft_quality_data['food']['_ingredients'];
 						if ( strlen($ingredients) > 3 ) {
+							// Ingrediënteninfo beschikbaar, dus tabje tonen
+							$has_row = true;
 							?>
 							<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 								<th><?php echo 'Ingrediënten'; ?></th>
@@ -4202,6 +4201,8 @@
 					$traces = array();
 					$no_allergens = false;
 					if ( array_key_exists( 'allergen', $oft_quality_data ) ) {
+						// Allergeneninfo beschikbaar, dus tabje tonen
+						$has_row = true;
 						foreach ( $oft_quality_data['allergen'] as $slug => $name ) {
 							$parts = explode( '-', $slug );
 							if ( $parts[0] === 'c' ) {
