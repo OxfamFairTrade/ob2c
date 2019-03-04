@@ -1174,9 +1174,9 @@
 	}
 
 	// Maak B2B-producten enkel zichtbaar voor B2B-klanten (cataloguspagina's) UITSCHAKELEN
-	// add_action( 'woocommerce_product_query', 'ob2c_limit_assortment_for_client_type' );
+	// add_action( 'woocommerce_product_query', 'ob2c_constrain_assortment_to_b2b' );
 	
-	function ob2c_limit_assortment_for_client_type( $query ) {
+	function ob2c_constrain_assortment_to_b2b( $query ) {
 		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
 		if ( ! is_b2b_customer() and ! current_user_can('manage_woocommerce') ) {
 			$tax_query = (array) $query->get('tax_query');
@@ -1189,6 +1189,25 @@
 			);
 			$query->set( 'tax_query', $tax_query );
 		}
+	}
+
+	// Maak B2B-producten enkel zichtbaar voor B2B-klanten (shortcodes)
+	add_filter( 'woocommerce_shortcode_products_query', 'ob2c_shortcode_constrain_assortment_to_b2b' );
+	
+	function ob2c_shortcode_constrain_assortment_to_b2b( $query_args ) {
+		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
+		if ( ! is_b2b_customer() and ! current_user_can('manage_woocommerce') ) {
+			$tax_query = $query_args['tax_query'];
+			// Voeg query toe die alle producten uit de 'Grootverbruik'-categorie uitsluit
+			$tax_query[] = array(
+				'taxonomy' => 'product_cat',
+				'field' => 'name',
+				'terms' => array( 'Grootverbruik' ),
+				'operator' => 'NOT IN',
+			);
+			$query_args['tax_query'] = $tax_query;
+		}
+		return $query_args;
 	}
 
 	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje UITSCHAKELEN
@@ -1238,9 +1257,9 @@
 	}
 
 	// Definieer een eigen filter zodat we de voorwaarden slecht één keer centraal hoeven in te geven
-	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_client', 10, 3 );
+	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_customer', 10, 3 );
 
-	function ob2c_check_product_availability_for_client( $product_id, $is_b2b_customer, $available ) {
+	function ob2c_check_product_availability_for_customer( $product_id, $is_b2b_customer, $available ) {
 		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
 		if ( ! $is_b2b_customer and ! current_user_can('manage_woocommerce') ) {
 			if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
