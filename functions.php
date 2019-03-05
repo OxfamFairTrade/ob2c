@@ -5072,12 +5072,9 @@
 	}
 
 	function is_regional_webshop() {
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			// Antwerpen, Leuven, Mechelen en Vilvoorde
-			$regions = array( 24, 28, 34, 40 );
-		} else {
-			$regions = array( 9 );
-		}
+		// Eventueel variëren volgens domein: if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' )
+		// Antwerpen, Leuven, Mechelen en Vilvoorde
+		$regions = array( 24, 28, 34, 40 );
 		return in_array( get_current_blog_id(), $regions );
 	}
 
