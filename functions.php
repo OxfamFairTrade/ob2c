@@ -861,6 +861,9 @@
 
 	function change_processing_order_subject( $subject, $order ) {
 		$subject = sprintf( __( 'Onderwerp van de 1ste bevestigingsmail inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
+		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
+			$subject = 'DEMO '.$subject;
+		}
 		return $subject;
 	}
 
@@ -870,16 +873,25 @@
 		} else {
 			$subject = sprintf( __( 'Onderwerp van de 2de bevestigingsmail (indien thuislevering) inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
 		}
+		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
+			$subject = 'DEMO '.$subject;
+		}
 		return $subject;
 	}
 
 	function change_refunded_order_subject( $subject, $order ) {
 		$subject = sprintf( __( 'Onderwerp van de terugbetalingsmail inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
+		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
+			$subject = 'DEMO '.$subject;
+		}
 		return $subject;
 	}
 
 	function change_note_subject( $subject, $order ) {
 		$subject = sprintf( __( 'Onderwerp van de opmerkingenmail inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
+		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
+			$subject = 'DEMO '.$subject;
+		}
 		return $subject;
 	}
 
