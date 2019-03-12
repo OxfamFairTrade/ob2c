@@ -16,8 +16,8 @@
 
 		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) or get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 			if ( ! is_user_logged_in() ) {
-				// Nooit redirecten: inlogpagina, activatiepagina en WC API-calls
-				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and ! strpos( $url, '.php' ) and ! strpos( $url, 'wc-api' ) ) {
+				// Nooit redirecten: inlog-, reset-, activatiepagina en WC API calls
+				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wc_lostpassword_url() ) and ! strpos( $url, 'activate.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					// Stuur gebruiker na inloggen terug naar huidige pagina
 					wp_safe_redirect( wp_login_url($url) );
 					exit();
