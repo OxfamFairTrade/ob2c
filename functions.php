@@ -12,7 +12,7 @@
 	
 	function force_user_login() {
 		$url = get_current_url();
-		// update_site_option( 'oxfam_blocked_sites', array( 40, 41, 42, 43, 44, 45, 46, 47, 48, 49 ) );
+		// update_site_option( 'oxfam_blocked_sites', array( 41, 42, 43, 44, 45, 46, 47, 48, 49, 50 ) );
 
 		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) or get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 			if ( ! is_user_logged_in() ) {
