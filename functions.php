@@ -4705,17 +4705,13 @@
 				if ( current_user_can('manage_network_users') ) {
 					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd. Het packshot van de B2B-chocolaatjes volgt in de loop van de week. Opgelet: de grootverbruikproducten zijn enkel zichtbaar voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">geregistreerde B2B-klanten</a>.</p>';
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De prijswijzigingen vanaf 01/03/2019 bij 8 Ethiquable-producten werden doorgevoerd. Opgelet: de grootverbruikproducten zijn enkel zichtbaar voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">geregistreerde B2B-klanten</a>.</p>';
 			echo '</div>';
 			if ( does_home_delivery() ) {
-				// echo '<div class="notice notice-info">';
-				// echo '<p>In de ShopPlus-update van juni zijn twee webleveringscodes aangemaakt waarmee je de thuislevering boekhoudkundig kunt verwerken. Op <a href="http://apps.oxfamwereldwinkels.be/shopplus/Nuttige-Barcodes-2017.pdf" target="_blank">het blad met nuttige barcodes</a> kun je doorgaans de bovenste code scannen (6% BTW). Indien je verplicht bent om 21% BTW toe te passen (omdat de bestellingen enkel producten aan 21% BTW bevat) verschijnt er een grote rode boodschap bovenaan de bevestigingsmail in de webshopmailbox.</p>';
-				// echo '</div>';
+				// Boodschappen voor winkels die thuislevering doen 
 			}
 			if ( does_sendcloud_delivery() ) {
-				// echo '<div class="notice notice-error">';
-				// echo '<p>De domiciliëringsopdracht van de Nederlandse betaalprovider Adyen die eind juni geactiveerd werd op jullie winkelrekening, dient voor de betaling van verzendingen die je via SendCloud regelt. (Dit is sinds de kort de enige methode waarmee je deze facturen kunt voldoen.) Het staat jullie vrij om de incasso in je SendCloud-account weer te annuleren onder \'<a href="https://panel.sendcloud.sc/#/settings/financial/payments/direct-debit" target="_blank">Financieel</a>\' maar dan kun je geen verzendlabels meer aanmaken voor Bpost en dien je zelf (fors duurdere) etiketten aan te schaffen in een postpunt.</p>';
-				// echo '</div>';
+				// Boodschappen voor winkels die verzenden met SendCloud
 			}
 		}
 	}
