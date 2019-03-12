@@ -34,20 +34,6 @@
 					
 					// Sluit hoofdsite uit
 					if ( ! is_main_site() ) {
-						// NIET MEER NODIG
-						// $str .= "<Placemark>";
-						// $str .= "<name><![CDATA[".get_company_name()."]]></name>";
-						// if ( does_home_delivery() ) {
-						// 	$str .= "<styleUrl>#shipping</styleUrl>";
-						// 	$extra_text = 'Deze webshop voorziet afhalingen én thuisleveringen.';
-						// } else {
-						// 	$str .= "<styleUrl>#pickup</styleUrl>";
-						// 	$extra_text = 'Deze webshop voorziet enkel afhalingen in de winkel.';
-						// }
-						// $str .= "<description><![CDATA[<p><a href='".get_site_url()."/'>".get_company_address()."</a></p><p style='text-align: center;'>".$extra_text."<br><a href='".get_site_url()."/'>Ga naar de webshop »</a></p>]]></description>";
-						// $str .= "<Point><coordinates>".get_oxfam_shop_data('ll')."</coordinates></Point>";
-						// $str .= "</Placemark>";
-
 						// Maak de lokale kaart aan met alle deelnemende winkelpunten, inclusief externen
 						if ( $locations = get_option( 'woocommerce_pickup_locations' ) ) {
 							$local_file = fopen("../../maps/site-".$site->blog_id.".kml", "w");
@@ -115,7 +101,7 @@
 								'wpsl_country' => 'België',
 								'wpsl_lat' => $ll[1],
 								'wpsl_lng' => $ll[0],
-								'wpsl_url' => get_site_url(),
+								'wpsl_url' => get_site_url().'/',
 								'wpsl_email' => get_company_email(),
 								'wpsl_phone' => get_oxfam_shop_data('telephone'),
 							),
