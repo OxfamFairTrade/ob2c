@@ -5138,12 +5138,7 @@
 					}
 				} else {
 					if ( $raw === false ) {
-						if ( $key === 'telephone' and $node === '765' ) {
-							// Uitzondering voor Assenede
-							return call_user_func( 'format_telephone', '0472799358', '.' );
-						} else {
-							return "(niet gevonden)";
-						}
+						return "(niet gevonden)";
 					} else {
 						return "";
 					}
