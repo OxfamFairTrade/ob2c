@@ -73,15 +73,14 @@
 	);
 
 	$all_products = new WP_Query( $args );
-
 	if ( $all_products->have_posts() ) {
 		while ( $all_products->have_posts() ) {
 			$all_products->the_post();
-			$productje = wc_get_product( get_the_ID() );
-			if ( ! is_numeric( $productje->get_sku() ) ) {
-				$productje->set_stock_status( 'instock' );
-				$productje->set_catalog_visibility( 'hidden' );
-				$productje->save();
+			$product = wc_get_product( get_the_ID() );
+			if ( $product !== false and strpos( $product->get_sku(), 'W' ) === 0 ) {
+				$product->set_stock_status( 'instock' );
+				$product->set_catalog_visibility( 'hidden' );
+				$product->save();
 			}
 		}
 		wp_reset_postdata();
