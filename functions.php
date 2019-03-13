@@ -5084,9 +5084,9 @@
 	}
 
 	function is_regional_webshop() {
-		// Eventueel variëren volgens domein: if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' )
-		// Antwerpen, Leuven, Mechelen en Vilvoorde
+		// Antwerpen, Leuven, Vilvoorde en Mechelen
 		$regions = array( 24, 28, 34, 40 );
+		// Opgelet: vergeet de custom orderstatus 'claimed' niet te publiceren naar deze subsites!
 		return in_array( get_current_blog_id(), $regions );
 	}
 
