@@ -1220,7 +1220,7 @@
 		return $query_args;
 	}
 
-	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje
+	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje DUS NIET GEBRUIKEN OM HANDMATIG TOEVOEGEN VAN LEEGGOED TE VERHINDEREN
 	add_filter( 'woocommerce_is_purchasable', 'ob2c_disable_products_not_in_assortment', 10, 2 );
 
 	function ob2c_disable_products_not_in_assortment( $purchasable, $product ) {
@@ -1245,13 +1245,16 @@
 	
 	function ob2c_prevent_access_to_product_page() {
 		if ( is_product() ) {
+			$product = wc_get_product( get_the_ID() );
 			$available = apply_filters( 'ob2c_product_is_available', get_the_ID(), is_b2b_customer(), true );
 			
-			if ( ! $available ) {
+			if ( ! $available or strpos( $product->get_sku(), 'W' ) === 0 ) {
 				// Als de klant nog niets in het winkelmandje zitten heeft, is er nog geen sessie om notices aan toe te voegen!
 				if ( ! WC()->session->has_session() ) {
 					WC()->session->set_customer_session_cookie(true);
 				}
+
+				// Gebruik deze boodschap voorlopig ook als foutmelding bij leeggoed
 				wc_add_notice( sprintf( __( 'Foutmelding indien een gewone klant het B2B-product %s probeert te bekijken.', 'oxfam-webshop' ), get_the_title() ), 'error' );
 				
 				if ( wp_get_referer() ) {
@@ -1273,7 +1276,8 @@
 		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
 		if ( ! $is_b2b_customer and ! current_user_can('manage_woocommerce') ) {
 			if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
-				write_log( "DISABLED PRODUCT ".$product_id." VIEW / PURCHASE / ADD TO CART FOR NON B2B CLIENT" );
+				$product = wc_get_product( $product_id );
+				write_log( "DISABLED PRODUCT ".$product->get_sku()." VIEW / PURCHASE / ADD TO CART FOR NON B2B CLIENT" );
 				$available = false;
 			}
 		}
