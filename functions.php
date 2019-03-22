@@ -398,6 +398,28 @@
 		}
 	}
 
+	// Fix probleem waarbij wc_modify_editable_roles() in wc-user-functions.php admins en speciale rollen enkel nog toegang geeft tot gewone klanten
+	// Zie o.a. https://github.com/woocommerce/woocommerce/pull/21555
+	add_filter( 'woocommerce_shop_manager_editable_roles', 'give_custom_user_roles_access_to_role_edit_capabilities' );
+
+	function give_custom_user_roles_access_to_role_edit_capabilities( $roles ) {
+		// Toestaan dat lokale beheerders ook lokale assistenten bewerken
+		if ( current_user_can('manage_network_users') ) {
+			$roles[] = 'local_helper';
+		}
+
+		// Superadmins toegang geven tot alle rollen uit het netwerk
+		if ( current_user_can('create_sites') ) {
+			global $wp_roles;
+			if ( ! isset( $wp_roles ) ) {
+				$wp_roles = new WP_Roles();
+			}
+			$roles = array_keys( $wp_roles->role_names );
+		}
+		
+		return $roles;
+	}
+
 	// Zorg ervoor dat lokale beheerders toch al hun gearchiveerde site kunnen bekijken HEEFT DIT NOG ZIN?
 	add_filter( 'ms_site_check', 'allow_local_manager_on_archived' );
 
