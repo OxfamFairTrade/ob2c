@@ -3119,6 +3119,18 @@
 						),
 						'default' => '0',
 					),
+					// TO DO: Verificatie toevoegen op bereiken van bestelminimum (ofwel in woocommerce_package_rates, ofwel in woocommerce_checkout_process)
+					'limit' => array(
+						'title' => 'Bestelminimum?',
+						'type' => 'number',
+						'description' => 'De verzendmethode is enkel beschikbaar indien er voor minimum dit bedrag besteld wordt.',
+						'custom_attributes' => array(
+							'step' => '1',
+							'min' => '10',
+							'max' => '1000',
+						),
+						'default' => '100',
+					),
 				);
 			}
 
