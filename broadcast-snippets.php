@@ -33,7 +33,7 @@
 		}	
 	}
 
-	// Verwijder individuele productterm
+	// Verwijder individuele productterm TO DO: Fruittiland in 'product_partner' verwijderen?
 	$taxonomy = 'pa_merk';
 	if ( taxonomy_exists( $taxonomy ) ) {
 		$term = 'fair-trade-original';
@@ -166,7 +166,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '24221', '24525', '24545', '28810' );
+	$photos_to_delete = array( '24626', '24635', '24637', '24639', '24640', '24626-1', '24635-1', '24637-1', '24639-1', '24640-1' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
@@ -204,7 +204,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '24221', '24545', '25452', '25726', '05246', '08808', '08809', '29297', '29298' );
+	$outofstocks = array( '20180', '20181', '25725', '27114', '17105' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
