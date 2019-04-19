@@ -2937,8 +2937,9 @@
 		
 		// Neem de wettelijke feestdagen indien er geen enkele lokale gedefinieerd is (of merge altijd?)
 		foreach ( get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) as $holiday ) {
-			// Enkel de feestdagen die niet in het weekend moeten we in beschouwing nemen!
+			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
 			if ( date_i18n( 'N', strtotime($holiday) ) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
+				// TO DO: Enkel werkdag bijtellen indien de winkel niet sowieso al gesloten is op deze weekdag?
 				$till = strtotime( '+1 weekday', $till );
 				$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 			}
