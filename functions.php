@@ -158,9 +158,6 @@
 		?>
 		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
 		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-		<noscript><img height="1" width="1" style="display:none"
-		src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
-		/></noscript>
 		<?php
 	}
 

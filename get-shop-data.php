@@ -22,7 +22,7 @@
 		$results = $wpdb->get_results( "SELECT nid, title FROM node WHERE type = 'sellpoint' AND status = 1", OBJECT );
 		
 		// Print de header die InDesign begrijpt
-		$header = array( 'naam', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag', 'straat', 'stad', 'email', 'rekeningnummer', 'btw', 'telefoon', 'fax', 'uren per week' );
+		$header = array( 'naam', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag', 'straat', 'stad', 'email', 'rekeningnummer', 'btw', 'telefoon', 'fax', 'uren per week', '_drupal_nid', 'wpsl_hours' );
 		echo implode( ';', $header ).'<br/>';
 
 		foreach ( $results as $sellpoint ) {
@@ -66,6 +66,8 @@
 		$data[] = get_oxfam_shop_data( 'telephone', $node, true );
 		$data[] = get_oxfam_shop_data( 'fax', $node, true );
 		$data[] = number_format( $total_hours, 1, ',', '' );
+		$data[] = $node;
+		$data[] = serialize($office_hours);
 
 		return $data;
 	}
