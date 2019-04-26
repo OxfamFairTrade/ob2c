@@ -23,7 +23,7 @@
 		
 		// Print de header die InDesign begrijpt
 		$header = array( 'naam', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag', 'straat', 'stad', 'email', 'rekeningnummer', 'btw', 'telefoon', 'fax', 'uren per week', '_drupal_nid', 'wpsl_hours' );
-		echo implode( ';', $header ).'<br/>';
+		echo implode( '|', $header ).'<br/>';
 
 		foreach ( $results as $sellpoint ) {
 			// Bij numerieke keys voegt array_merge() de elementen gewoon achteraan toe!
@@ -56,7 +56,17 @@
 				unset($parts);
 			}
 		}
-
+		
+		// Vraag steeds de 'raw'-info op (zonder webshopcorrecties) door als 3de parameter 'true' mee te geven 
+		$data[] = get_oxfam_shop_data( 'place', $node, true );
+		$data[] = get_oxfam_shop_data( 'zipcode', $node, true ).' '.get_oxfam_shop_data( 'city', $node, true );
+		$data[] = get_oxfam_shop_data( 'mail', $node, true );
+		$data[] = get_oxfam_shop_data( 'account', $node, true );
+		$data[] = get_oxfam_shop_data( 'tax', $node, true );
+		$data[] = get_oxfam_shop_data( 'telephone', $node, true );
+		$data[] = get_oxfam_shop_data( 'fax', $node, true );
+		$data[] = number_format( $total_hours, 1, ',', '' );
+		
 		$wpsl_hours = array();
 		$labels = array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' );
 		foreach ( $office_hours as $day_index => $day ) {
@@ -71,18 +81,8 @@
 			}
 			$wpsl_hours[$labels[$day_index-1]] = $info;
 		}
-		
-		// Vraag steeds de 'raw'-info op (zonder webshopcorrecties) door als 3de parameter 'true' mee te geven 
-		$data[] = get_oxfam_shop_data( 'place', $node, true );
-		$data[] = get_oxfam_shop_data( 'zipcode', $node, true ).' '.get_oxfam_shop_data( 'city', $node, true );
-		$data[] = get_oxfam_shop_data( 'mail', $node, true );
-		$data[] = get_oxfam_shop_data( 'account', $node, true );
-		$data[] = get_oxfam_shop_data( 'tax', $node, true );
-		$data[] = get_oxfam_shop_data( 'telephone', $node, true );
-		$data[] = get_oxfam_shop_data( 'fax', $node, true );
-		$data[] = number_format( $total_hours, 1, ',', '' );
+
 		$data[] = $node;
-		// $data[] = serialize($office_hours);
 		$data[] = serialize($wpsl_hours);
 
 		return $data;
