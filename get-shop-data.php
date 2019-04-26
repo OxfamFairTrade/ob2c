@@ -56,6 +56,21 @@
 				unset($parts);
 			}
 		}
+
+		$wpsl_hours = array();
+		$labels = array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' );
+		foreach ( $office_hours as $day_index => $day ) {
+			if ( $day === false ) {
+				$info = array();
+			} else {
+				$info = array();
+				foreach ( $day as $hours ) {
+					$info[] = $hours['start'].','.$hours['end'];
+				}
+				
+			}
+			$wpsl_hours[$labels[$day_index-1]] = $info;
+		}
 		
 		// Vraag steeds de 'raw'-info op (zonder webshopcorrecties) door als 3de parameter 'true' mee te geven 
 		$data[] = get_oxfam_shop_data( 'place', $node, true );
@@ -67,7 +82,8 @@
 		$data[] = get_oxfam_shop_data( 'fax', $node, true );
 		$data[] = number_format( $total_hours, 1, ',', '' );
 		$data[] = $node;
-		$data[] = serialize($office_hours);
+		// $data[] = serialize($office_hours);
+		$data[] = serialize($wpsl_hours);
 
 		return $data;
 	}
