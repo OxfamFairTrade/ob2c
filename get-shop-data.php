@@ -28,7 +28,7 @@
 		foreach ( $results as $sellpoint ) {
 			// Bij numerieke keys voegt array_merge() de elementen gewoon achteraan toe!
 			$data = array_merge( array( $sellpoint->title ), get_data_for_sellpoint( $sellpoint->nid ) );
-			echo implode( ';', $data ).'<br/>';
+			echo implode( '|', $data ).'<br/>';
 		}
 
 		echo '</body></html>';
