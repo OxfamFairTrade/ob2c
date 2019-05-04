@@ -126,7 +126,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> array( 'publish' ),
-		'title'			=> 'tht-mango',
+		'title'			=> 'tht-couscous',
 	);
 
 	$all_coupons = new WP_Query( $args );
