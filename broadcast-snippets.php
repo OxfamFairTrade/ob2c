@@ -33,10 +33,10 @@
 		}	
 	}
 
-	// Verwijder individuele productterm TO DO: Fruittiland in 'product_partner' verwijderen?
-	$taxonomy = 'pa_merk';
+	// Verwijder individuele productterm
+	$taxonomy = 'product_partner';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$term = 'fair-trade-original';
+		$term = 'fruittiland';
 		$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 		if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
 			write_log("DELETED ".$term_to_delete->name);
