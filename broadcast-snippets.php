@@ -355,6 +355,16 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		update_option( 'stats_options', $jetpack_stats_settings );
 	}
 
+	// Instellingen van WP Mail SMTP kopiëren naar subsites
+	switch_to_blog(1);
+	$wp_mail_smtp = get_option('wp_mail_smtp');
+	restore_current_blog();
+	if ( is_array($wp_mail_smtp) ) {
+		$wp_mail_smtp['mail']['from_email'] = get_option('admin_email');
+		$wp_mail_smtp['mail']['from_name'] = get_bloginfo('name');
+		update_option( 'wp_mail_smtp', $wp_mail_smtp );
+	}
+
 	// Verzendzones wijzigen
 
 	// Tabel met stopwoorden kopiëren

@@ -866,7 +866,7 @@
 	add_filter( 'woocommerce_email_footer_text', 'do_shortcode' );
 
 	// Zorg ervoor dat het Return-Path gelijk is aan de afzender (= webshop.gemeente@oxfamwereldwinkels.be, met correct ingesteld MX-record)
-	add_action( 'phpmailer_init', 'fix_bounce_address' );
+	// add_action( 'phpmailer_init', 'fix_bounce_address' );
 
 	function fix_bounce_address( $phpmailer ) {
 		$phpmailer->Sender = $phpmailer->From;
