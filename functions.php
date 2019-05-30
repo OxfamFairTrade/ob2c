@@ -346,6 +346,9 @@
 			'oxfam_shop_node' => array(
 				'label' => 'Node OWW-site'
 			),
+			'oxfam_shop_post_id' => array(
+				'label' => 'Post-ID in OWW-site'
+			),
 			'alternate_marker_url' => array(
             	'label' => 'Afwijkende marker (indien enkel afhaling)'
         	)
@@ -358,14 +361,9 @@
 	add_filter( 'wpsl_frontend_meta_fields', 'custom_frontend_meta_fields' );
 
 	function custom_frontend_meta_fields( $store_fields ) {
-		$store_fields['wpsl_oxfam_shop_node'] = array( 
-			'name' => 'oxfam_shop_node'
-		);
-
-		$store_fields['wpsl_alternate_marker_url'] = array(
-			'name' => 'alternateMarkerUrl'
-		);
-
+		$store_fields['wpsl_oxfam_shop_node'] = array( 'name' => 'oxfam_shop_node' );
+		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
+		$store_fields['wpsl_alternate_marker_url'] = array( 'name' => 'alternateMarkerUrl' );
 		return $store_fields;
 	}
 
@@ -2772,6 +2770,7 @@
 	function get_office_hours_for_day( $day, $node = 0 ) {
 		global $wpdb;
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
+		// TE VERVANGEN DOOR TRANSIENT DIE GEGEVENS OPHALEN UIT OWW-SITE VIA WP API
 		$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.$node.' AND field_sellpoint_office_hours_day = '.$day.' ORDER BY delta ASC' );
 		if ( count($rows) > 0 ) {
 			$i = 0;
@@ -3625,6 +3624,7 @@
 	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
 		register_setting( 'oxfam-options-global', 'oxfam_shop_node', 'absint' );
+		register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'sanitize_callback' => 'comma_string_to_array' ) );
@@ -5124,6 +5124,7 @@
 		global $wpdb;
 		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
 		if ( ! is_main_site() ) {
+			// TE VERVANGEN DOOR TRANSIENT DIE GEGEVENS OPHALEN UIT OWW-SITE VIA WP API
 			if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
 				// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen 
 				if ( $raw === false and $node === '857' ) {
@@ -5430,6 +5431,54 @@
 	#############
 	# DEBUGGING #
 	#############
+
+	// Verhinder het lekken van gegevens via de WP API
+	add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
+
+	function only_allow_administrator_rest_access( $access ) {
+		if( ! is_user_logged_in() or ! current_user_can('update_core') ) {
+			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
+		}
+		return $access;
+	}
+
+	// Add REST API support to an already registered post type WPSL VOEGT ZICHZELF PAS AUTOMATISCH TOE VANAF WP5.0+
+	add_filter( 'register_post_type_args', 'add_wpsl_stores_to_rest_api', 10, 2 );
+
+	function add_wpsl_stores_to_rest_api( $args, $post_type ) {
+		if ( 'wpsl_stores' === $post_type ) {
+			$args['show_in_rest'] = true;
+			$args['rest_base'] = 'wpsl_stores';
+			$args['rest_controller_class'] = 'WP_REST_Posts_Controller';
+		}
+
+		return $args;
+	}
+
+	// Voeg extra velden toe aan de API response van winkels
+	add_action( 'rest_api_init', 'add_opening_hours_to_wpsl_stores_rest_api_response' );
+
+	function add_opening_hours_to_wpsl_stores_rest_api_response() {
+		register_rest_field( 'wpsl_stores', 'opening_hours',
+			array(
+				'get_callback' => function( $params ) {
+					return get_post_meta( $params['id'], 'wpsl_hours', true );
+				},
+			)
+		);
+
+		// Kan ook op deze manier ...
+		$api_args = array(
+			'type' => 'string',
+			'single' => true,
+			'show_in_rest' => true,
+		);
+		register_meta( 'wpsl_stores', 'wpsl_address', $api_args );
+		register_meta( 'wpsl_stores', 'wpsl_city', $api_args );
+		register_meta( 'wpsl_stores', 'wpsl_zip', $api_args );
+		register_meta( 'wpsl_stores', 'wpsl_mail', $api_args );
+		register_meta( 'wpsl_stores', 'wpsl_phone', $api_args );
+	}
 
 	// Handig filtertje om het JavaScript-conflict op de checkout te debuggen
 	// add_filter( 'woocommerce_ship_to_different_address_checked', '__return_false' );

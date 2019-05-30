@@ -116,10 +116,18 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Nodenummer OWW-site:</label>
+					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Nodenummer oude OWW-site:</label>
 				</th>
 		  		<td class="right">
 		  			<input type="text" name="oxfam_shop_node" class="text-input" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
+		  		</td>
+			</tr>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_shop_post_id" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Post-ID nieuwe OWW-site:</label>
+				</th>
+		  		<td class="right">
+		  			<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?php echo esc_attr( get_option('oxfam_shop_post_id') ); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
 		  		</td>
 			</tr>
 			<tr valign="top">
