@@ -5432,33 +5432,20 @@
 	# DEBUGGING #
 	#############
 
-	// Verhinder het lekken van gegevens via de WP API
+	// Verhinder het lekken van gegevens uit de API aan niet-ingelogde gebruikers
 	add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
 
 	function only_allow_administrator_rest_access( $access ) {
-		if( ! is_user_logged_in() or ! current_user_can('update_core') ) {
+		if ( ! is_user_logged_in() or ! current_user_can('manage_options') ) {
 			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
 		}
 		return $access;
 	}
 
-	// Add REST API support to an already registered post type WPSL VOEGT ZICHZELF PAS AUTOMATISCH TOE VANAF WP5.0+
-	add_filter( 'register_post_type_args', 'add_wpsl_stores_to_rest_api', 10, 2 );
+	// Voeg extra velden toe aan de API response van 'wpsl_stores' zodat we dit kunnen aanspreken in de B2C-webshops en de Bpost API
+	// add_action( 'rest_api_init', 'add_extra_fields_to_wpsl_stores_rest_api_response' );
 
-	function add_wpsl_stores_to_rest_api( $args, $post_type ) {
-		if ( 'wpsl_stores' === $post_type ) {
-			$args['show_in_rest'] = true;
-			$args['rest_base'] = 'wpsl_stores';
-			$args['rest_controller_class'] = 'WP_REST_Posts_Controller';
-		}
-
-		return $args;
-	}
-
-	// Voeg extra velden toe aan de API response van winkels
-	add_action( 'rest_api_init', 'add_opening_hours_to_wpsl_stores_rest_api_response' );
-
-	function add_opening_hours_to_wpsl_stores_rest_api_response() {
+	function add_extra_fields_to_wpsl_stores_rest_api_response() {
 		register_rest_field( 'wpsl_stores', 'opening_hours',
 			array(
 				'get_callback' => function( $params ) {
@@ -5466,18 +5453,23 @@
 				},
 			)
 		);
-
-		// Kan ook op deze manier ...
-		$api_args = array(
-			'type' => 'string',
-			'single' => true,
-			'show_in_rest' => true,
+		register_rest_field( 'wpsl_stores', 'location',
+			array(
+				'get_callback' => function( $params ) {
+					return array(
+						'place' => get_post_meta( $params['id'], 'wpsl_address', true ),
+						'zipcode' => get_post_meta( $params['id'], 'wpsl_zip', true ),
+						'city' => get_post_meta( $params['id'], 'wpsl_city', true ),
+						'tax' => get_post_meta( $params['id'], 'vat_number', true ),
+						'account' => get_post_meta( $params['id'], 'iban_number', true ),
+						// Doe een look-up o.b.v. BTW-nummer in het KBO
+						// 'headquarter' => array( 'place' => '', 'zipcode' => '', 'city' => '' ),
+						'email' => get_post_meta( $params['id'], 'wpsl_email', true ),
+						'telephone' => get_post_meta( $params['id'], 'wpsl_phone', true ),
+					);
+				},
+			)
 		);
-		register_meta( 'wpsl_stores', 'wpsl_address', $api_args );
-		register_meta( 'wpsl_stores', 'wpsl_city', $api_args );
-		register_meta( 'wpsl_stores', 'wpsl_zip', $api_args );
-		register_meta( 'wpsl_stores', 'wpsl_mail', $api_args );
-		register_meta( 'wpsl_stores', 'wpsl_phone', $api_args );
 	}
 
 	// Handig filtertje om het JavaScript-conflict op de checkout te debuggen
