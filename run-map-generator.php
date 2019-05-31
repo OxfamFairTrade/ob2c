@@ -107,6 +107,9 @@
 							),
 						);
 
+						// Neem de extra sluitingsdagen over van de OWW-site
+						// update_option( 'oxfam_holidays', implode( ', ', get_oxfam_shop_data('closing_days') ) );
+
 						if ( ! does_home_delivery() ) {
 							// Alternatieve marker indien enkel afhaling
 							$store_args['meta_input']['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';

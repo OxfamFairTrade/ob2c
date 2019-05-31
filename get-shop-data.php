@@ -64,7 +64,7 @@
 		$data[] = get_oxfam_shop_data( 'account', $node, true );
 		$data[] = get_oxfam_shop_data( 'tax', $node, true );
 		$data[] = get_oxfam_shop_data( 'telephone', $node, true );
-		$data[] = get_oxfam_shop_data( 'fax', $node, true );
+		// $data[] = get_oxfam_shop_data( 'fax', $node, true );
 		$data[] = number_format( $total_hours, 1, ',', '' );
 		
 		$wpsl_hours = array();

@@ -545,7 +545,7 @@
 
 		if ( ! $owner ) {
 			// Koppel als laatste redmiddel aan de hoofdwinkel (op basis van het nodenummer) 
-			$owner = mb_strtolower( get_oxfam_shop_data( 'city' ) );
+			$owner = mb_strtolower( get_oxfam_shop_data('city') );
 		}
 
 		update_post_meta( $order_id, 'claimed_by', $owner );
@@ -1671,7 +1671,7 @@
 				break;
 		}
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
-		$fields['order']['order_comments']['description'] = sprintf( __( 'Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer van de hoofdwinkel (%s).', 'oxfam-webshop' ), get_oxfam_shop_data( 'telephone' ) );
+		$fields['order']['order_comments']['description'] = sprintf( __( 'Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer van de hoofdwinkel (%s).', 'oxfam-webshop' ), get_oxfam_shop_data('telephone') );
 
 		return $fields;
 	}
@@ -4169,7 +4169,6 @@
 
 							if ( $oft_product !== false ) {	
 								
-								// WC PHP API 2.0+ (objecten i.p.v. arrays)
 								// Stop voedingswaarden én ingrediënten in een array met als keys de namen van de eigenschappen
 								foreach ( $oft_product->meta_data as $meta_data ) {
 									if ( array_key_exists( $meta_data->key, $food_api_labels ) ) {
@@ -4403,18 +4402,24 @@
 		if ( strlen( $partner->description ) > 20 ) {
 			// Knip bij het woord 'node/'
 			$url = explode( 'node/', $partner->description );
-			$parts = explode( '" ', $url[1] );
-			$partner_info['node'] = $parts[0];
-			$partner_info['url'] = 'https://www.oxfamwereldwinkels.be/node/'.$partner_info['node'];
-			
-			$quote = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
-			if ( isset( $quote->field_manufacturer_quote_value ) and strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
-				$partner_info['quote'] = trim($quote->field_manufacturer_quote_value);
-				$quote_by = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_hero_name WHERE entity_id = '.$partner_info['node'] );
-				if ( isset( $quote_by->field_manufacturer_hero_name_value ) ) {
-					$partner_info['quote_by'] = trim($quote_by->field_manufacturer_hero_name_value);
+			if ( count($url) < 1 ) {
+				// Debug 'Undefined offset: 1'
+				write_log($partner_info['name'].": NO LINK IN DESCRIPTION > 20 CHARACTERS");
+			} else {
+				$parts = explode( '" ', $url[1] );
+				$partner_info['node'] = $parts[0];
+				$partner_info['url'] = 'https://www.oxfamwereldwinkels.be/node/'.$partner_info['node'];
+				
+				$quote = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
+				if ( isset( $quote->field_manufacturer_quote_value ) and strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
+					$partner_info['quote'] = trim($quote->field_manufacturer_quote_value);
+					$quote_by = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_hero_name WHERE entity_id = '.$partner_info['node'] );
+					if ( isset( $quote_by->field_manufacturer_hero_name_value ) ) {
+						$partner_info['quote_by'] = trim($quote_by->field_manufacturer_hero_name_value);
+					}
 				}
 			}
+			
 		}
 
 		return $partner_info;
@@ -4724,8 +4729,7 @@
 			// echo '<div class="notice notice-warning">';
 			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20057 Fuego Sagrado, 20153 BIO La Posada Malbec Rosé, 20259 Fuego Sagrado Chardonnay, 22720 BIO Koffiecaps lungo (oude verpakking met 50 g koffie), 22721 BIO Koffiecaps dark roast (oude verpakking met 50 g koffie), 24199 BIO Maya melkchocolade met speculoos, 24293 BIO Melkchocolade gepofte rijst, 25613 BIO Dadels (uit Tunesië), 26091 BIO Agave (donkere versie) en 27108 Parboiled rijst in builtjes. De sintfiguren zijn verborgen, tot de goedheilige man ons land weer aandoet.</p>';
 			// echo '</div>';
-			echo '<div class="notice notice-success">';
-			echo '<p>De promotie van de maand mei op couscous en dadels werd geactiveerd in alle webshops!</p>';
+			// echo '<div class="notice notice-success">';
 			// 	echo '<p>Deze maand slechts 3 nieuwe producten:</p><ul style="margin-left: 2em;">';
 			// 		$skus = array( '20076', '27117', '27151' );
 			// 		foreach ( $skus as $sku ) {
@@ -4740,7 +4744,7 @@
 			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 			// 	}
 			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De rijstwafels zijn een verderzetting van artikel 27150 maar hebben een licht hoger nettogewicht (en dus kiloprijs). Daardoor konden we de oude referentie niet gewoon aanpassen.</p>';
-			echo '</div>';
+			// echo '</div>';
 			if ( does_home_delivery() ) {
 				// Boodschappen voor winkels die thuislevering doen 
 			}
@@ -5120,78 +5124,171 @@
 		return in_array( get_current_blog_id(), $regions );
 	}
 
+	function get_external_wpsl_store( $post_id = 3673, $domain = 'www.oxfamwereldwinkels.be' ) {
+		if ( false === ( $oww_store_data = get_site_transient( $post_id.'_store_data' ) ) ) {
+			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
+			$args = array(
+				'headers' => array(
+					'Authorization' => 'Basic '.base64_encode( OWW_USER.':'.OWW_PASSWORD ),
+				),
+			);
+			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$post_id, $args );
+			
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'WordPress API' );
+			if ( $response['response']['code'] == 200 ) {
+				$logger->debug( 'Shop data saved in transient for ID '.$post_id, $context );
+				// Bewaar als een array i.p.v. een object
+				$oww_store_data = json_decode( $response['body'], true );
+				set_site_transient( $post_id.'_store_data', $oww_store_data, DAY_IN_SECONDS );
+			} else {
+				$logger->notice( 'Could not retrieve shop data for ID '.$post_id, $context );
+				$oww_store_data = false;
+			}
+		}
+
+		return $oww_store_data;
+	}
+
 	function get_oxfam_shop_data( $key, $node = 0, $raw = false ) {
 		global $wpdb;
-		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
+		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
+
 		if ( ! is_main_site() ) {
-			// TE VERVANGEN DOOR TRANSIENT DIE GEGEVENS OPHALEN UIT OWW-SITE VIA WP API
-			if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
-				// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen 
-				if ( $raw === false and $node === '857' ) {
-					// Uitzonderingen voor Regio Leuven vzw
-					switch ($key) {
-						case 'tax':
-							return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
-						case 'account':
-							return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
-						case 'headquarter':
-							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
-					};
-				} elseif ( $raw === false and $node === '795' and $key === 'account' ) {
-					// Uitzondering voor Regio Antwerpen vzw
-					return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
-				} else {
-					$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop', $node ) );
-					if ( $row ) {
-						return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
-					} else {
-						return "UNKNOWN";
-					}
-				}
-			} else {
-				$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.intval($node) );
-				if ( $row ) {
-					switch ($key) {
-						case 'shop':
-							return $row->field_sellpoint_shop_nid;
-						case 'mail':
-							return format_mail($row->field_sellpoint_mail_email);
-						case 'll':
-							// Voor KML-file moet longitude voor latitude komen!
-							return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
-						case 'telephone':
-						case 'fax':
-							if ( $raw === false and $node === '857' ) {
-								// Uitzondering voor Regio Leuven
-								return call_user_func( 'format_telephone', '0486762195', '.' );
-							} else {	
-								// Geef alternatieve delimiter mee
-								return call_user_func( 'format_telephone', $row->{'field_sellpoint_'.$key.'_value'}, '.' );
-							}
-						default:
-							return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
-					}
-				} else {
+
+			// Nieuwe werkwijze uittesten op Oostende
+			if ( $node === '23' ) {
+
+				$post_id = intval( get_option('oxfam_shop_post_id') );
+				$oww_store_data = get_external_wpsl_store( $post_id );
+
+				if ( $oww_store_data !== false ) {
+					// Bestaat in principe altijd
+					$location_data = $oww_store_data['location'];
+					
+					// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen (kan verdwijnen van zodra logomateriaal uit OWW-site getrokken wordt)
 					if ( $raw === false ) {
-						return "(niet gevonden)";
-					} else {
-						return "";
+						if ( $post_id === 3598 ) {
+							// Uitzonderingen voor Regio Leuven vzw
+							switch ($key) {
+								case 'tax':
+									return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
+								case 'account':
+									return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
+								case 'headquarter':
+									return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
+								case 'telephone':
+									return call_user_func( 'format_'.$key, '0486762195', '.' );
+							}
+						} elseif ( $post_id === 3226 ) {
+							// Uitzonderingen voor Regio Antwerpen vzw
+							switch ($key) {
+								case 'account':
+									return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
+							}
+						}
 					}
+					
+					if ( array_key_exists( $key, $location_data ) and $location_data[$key] !== '' ) {
+						
+						switch ($key) {
+							case 'telephone':
+								// Geef alternatieve delimiter mee
+								return call_user_func( 'format_'.$key, $location_data[$key], '.' );
+							case 'headquarter':
+								// PLAK DE ADRESGEGEVENS AAN ELKAAR
+								return call_user_func( 'format_place', $location_data[$key]['place'] ).', '.call_user_func( 'format_zipcode', $location_data[$key]['zipcode'] ).' '.call_user_func( 'format_city', $location_data[$key]['city'] );
+							case 'll':
+								// LON/LAT NIET FORMATTEREN
+								return $location_data[$key];
+						}
+
+						return call_user_func( 'format_'.$key, $location_data[$key] );
+
+					} else {
+						return "API ERROR";
+					}
+
 				}
-			}		
+
+			} else {
+				
+				if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
+					
+					// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen 
+					if ( $raw === false and $node === '857' ) {
+						// Uitzonderingen voor Regio Leuven vzw
+						switch ($key) {
+							case 'tax':
+								return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
+							case 'account':
+								return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
+							case 'headquarter':
+								return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
+						};
+					} elseif ( $raw === false and $node === '795' and $key === 'account' ) {
+						// Uitzondering voor Regio Antwerpen vzw
+						return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
+					} else {
+						$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop', $node ) );
+						if ( $row ) {
+							return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
+						} else {
+							return "UNKNOWN";
+						}
+					}
+
+				} else {
+					
+					$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.intval($node) );
+					if ( $row ) {
+						switch ($key) {
+							case 'shop':
+								return $row->field_sellpoint_shop_nid;
+							case 'mail':
+								return format_mail($row->field_sellpoint_mail_email);
+							case 'll':
+								// Voor KML-file moet longitude voor latitude komen!
+								return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
+							case 'telephone':
+							case 'fax':
+								if ( $raw === false and $node === '857' ) {
+									// Uitzondering voor Regio Leuven
+									return call_user_func( 'format_telephone', '0486762195', '.' );
+								} else {	
+									// Geef alternatieve delimiter mee
+									return call_user_func( 'format_telephone', $row->{'field_sellpoint_'.$key.'_value'}, '.' );
+								}
+							default:
+								return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
+						}
+					} else {
+						if ( $raw === false ) {
+							return "(niet gevonden)";
+						} else {
+							return "";
+						}
+					}
+
+				}
+
+			}
+
 		} else {
+
 			switch ($key) {
 				case 'place':
-					return call_user_func( 'format_place', 'Ververijstraat 15', '.' );
+					return call_user_func( 'format_place', 'Ververijstraat 15' );
 				case 'zipcode':
-					return call_user_func( 'format_zipcode', '9000', '.' );
+					return call_user_func( 'format_zipcode', '9000' );
 				case 'city':
-					return call_user_func( 'format_city', 'Gent', '.' );
+					return call_user_func( 'format_city', 'Gent' );
 				case 'telephone':
 					return call_user_func( 'format_telephone', '092188899', '.' );
 				default:
 					return "(gegevens cvba)";
 			}
+
 		}
 	}
 

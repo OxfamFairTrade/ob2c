@@ -70,7 +70,7 @@
 							$name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
 						// Fix voor winkels met twee nummers (bv. Mariakerke)
-						$phones = explode( ' of ', get_oxfam_shop_data( 'telephone' ) );
+						$phones = explode( ' of ', get_oxfam_shop_data('telephone') );
 						$warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
 						if ( $phones[0] != format_telephone( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
 							if ( count($phones) === 2 ) {
@@ -88,7 +88,7 @@
 
 					$accounts = $mollie->bankAccountsByPartnerId( $partner_id_customer );
 					if ( $accounts->resultcode == '10' ) {
-						if ( get_oxfam_shop_data( 'account' ) !== format_account( $accounts->items->bankaccount->iban_number ) ) {
+						if ( get_oxfam_shop_data('account') !== format_account( $accounts->items->bankaccount->iban_number ) ) {
 							$account_warning = "<br/><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geverifieerd!</small>";
 						}
 					}
@@ -127,7 +127,7 @@
 					<label for="oxfam_shop_post_id" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Post-ID nieuwe OWW-site:</label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?php echo esc_attr( get_option('oxfam_shop_post_id') ); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?php echo get_option('oxfam_shop_post_id'); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -161,10 +161,10 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op de contactpagina een rode banner verschijnen zodat het voor de klanten duidelijk is dat jullie gesloten zijn. Initieel zijn alle wettelijke feestdagen voor 2017 al ingevuld, maar voel je vrij om dit nog aan te passen.">Uitzonderlijke sluitingsdagen:<br/><small>Typ alle datums waarop de webshop 'gesloten' is in het formaat JJJJ-MM-DD en scheid ze met een komma. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor <u>alle</u> levermethodes en afhaalpunten.</small></label>
+					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden vanaf nu overgenomen uit <a href="https://www.oxfamwereldwinkels.be/?p=<?php echo get_option('oxfam_shop_post_id'); ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor <u>alle</u> levermethodes en afhaalpunten.</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_holidays" rows="3" class="text-input" placeholder="Bijvoorbeeld: <?php echo implode( ', ', get_site_option('oxfam_holidays') ); ?>" <?php if ( current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option('oxfam_holidays') ) ); ?></textarea>
+		  			<textarea name="oxfam_holidays" rows="3" class="text-input" readonly></textarea>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -193,10 +193,10 @@
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database!-->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: <?php if ( isset($tax_warning) ) echo $tax_warning; ?><br/><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data( 'tax' ) ); ?>&actionlu=zoek" target="_blank">Kloppen jullie gegevens in de KBO-databank nog?</a></small></label>
+					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: <?php if ( isset($tax_warning) ) echo $tax_warning; ?><br/><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data('tax') ); ?>&actionlu=zoek" target="_blank">Kloppen jullie gegevens in de KBO-databank nog?</a></small></label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_tax" class="text-input" value="<?php echo get_oxfam_shop_data( 'tax' ); ?>" readonly>
+		  			<input type="text" name="oxfam_tax" class="text-input" value="<?php echo get_oxfam_shop_data('tax'); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -204,7 +204,7 @@
 					<label for="oxfam_account" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">IBAN-rekeningnummer: <?php if ( isset($account_warning) ) echo $account_warning; ?></label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_account" class="text-input" value="<?php echo get_oxfam_shop_data( 'account' ); ?>" readonly>
+		  			<input type="text" name="oxfam_account" class="text-input" value="<?php echo get_oxfam_shop_data('account'); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -220,7 +220,7 @@
 					<label for="oxfam_place" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Straat en huisnummer:</label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_place" class="text-input" value="<?php echo get_oxfam_shop_data( 'place' ); ?>" readonly>
+		  			<input type="text" name="oxfam_place" class="text-input" value="<?php echo get_oxfam_shop_data('place'); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -228,7 +228,7 @@
 					<label for="oxfam_zipcode" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Postcode:</label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_zipcode" class="text-input" value="<?php echo get_oxfam_shop_data( 'zipcode' ); ?>" readonly>
+		  			<input type="text" name="oxfam_zipcode" class="text-input" value="<?php echo get_oxfam_shop_data('zipcode'); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -236,7 +236,7 @@
 					<label for="oxfam_city" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Gemeente:</label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_city" class="text-input" value="<?php echo get_oxfam_shop_data( 'city' ); ?>" readonly>
+		  			<input type="text" name="oxfam_city" class="text-input" value="<?php echo get_oxfam_shop_data('city'); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -244,7 +244,7 @@
 					<label for="oxfam_city" title="Zie je een fout staan? Werk je telefoonnummer bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Telefoonnummer: <?php if ( isset($phone_warning) ) echo $phone_warning; ?></label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_telephone" class="text-input" value="<?php echo get_oxfam_shop_data( 'telephone' ); ?>" readonly>
+		  			<input type="text" name="oxfam_telephone" class="text-input" value="<?php echo get_oxfam_shop_data('telephone'); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
