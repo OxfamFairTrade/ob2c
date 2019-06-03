@@ -2775,7 +2775,7 @@
 		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
 
 		// Nieuwe werkwijze uittesten op Oostende
-		if ( $node == '23' ) {
+		if ( get_current_blog_id() === 23 ) {
 
 			$post_id = intval( get_option('oxfam_shop_post_id') );
 			$oww_store_data = get_external_wpsl_store( $post_id );
@@ -5188,7 +5188,7 @@
 		if ( ! is_main_site() ) {
 
 			// Nieuwe werkwijze uittesten op Oostende
-			if ( $node == '23' ) {
+			if ( get_current_blog_id() === 23 ) {
 
 				$post_id = intval( get_option('oxfam_shop_post_id') );
 				$oww_store_data = get_external_wpsl_store( $post_id );
