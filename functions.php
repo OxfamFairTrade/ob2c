@@ -1890,11 +1890,14 @@
 	}
 
 	function format_hour( $value ) {
-		// Is al behoorlijk clean bij XIO (ingesteld via selects)
-		if ( strlen($value) === 4 ) {
+		if ( strlen($value) === 5 ) {
+			// Wordpress: geen wijzigingen meer nodig!
+			return $value;
+		} elseif ( strlen($value) === 4 ) {
+			// Drupal: voeg dubbele punt toe in het midden
 			return substr( $value, 0, 2 ) . ':' . substr( $value, 2, 2 );
 		} else {
-			// Hou rekening met ochtenduren!
+			// Drupal: voeg nul toe vooraan bij ochtenduren
 			return '0'.substr( $value, 0, 1 ) . ':' . substr( $value, 1, 2 );
 		}
 	}
@@ -2766,23 +2769,51 @@
 		}
 	}
 
-	// Haal de openingsuren van de node voor een bepaalde dag op (werkt met dagindexes van 0 tot 6!)
+	// Haal de openingsuren van de node voor een bepaalde dag op (werkt met dagindexes van 0 tot 6)
 	function get_office_hours_for_day( $day, $node = 0 ) {
 		global $wpdb;
-		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
-		// TE VERVANGEN DOOR TRANSIENT DIE GEGEVENS OPHALEN UIT OWW-SITE VIA WP API
-		$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.$node.' AND field_sellpoint_office_hours_day = '.$day.' ORDER BY delta ASC' );
-		if ( count($rows) > 0 ) {
-			$i = 0;
-			foreach ( $rows as $row ) {
-				$hours[$i]['start'] = format_hour( $row->field_sellpoint_office_hours_starthours );
-				$hours[$i]['end'] = format_hour( $row->field_sellpoint_office_hours_endhours );
-				$i++;
+		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
+
+		// Nieuwe werkwijze uittesten op Oostende
+		if ( $node == '23' ) {
+
+			$post_id = intval( get_option('oxfam_shop_post_id') );
+			$oww_store_data = get_external_wpsl_store( $post_id );
+
+			if ( $oww_store_data !== false ) {
+				// Bestaat in principe altijd
+				$opening_hours = $oww_store_data['opening_hours'];
+				
+				$i = 0;
+				$hours = array();
+				$weekdays = array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' );
+				
+				foreach ( $opening_hours[ $weekdays[$day] ] as $block ) {
+					$parts = explode( ',', $block );
+					$hours[$i]['start'] = format_hour( $parts[0] );
+					$hours[$i]['end'] = format_hour( $parts[1] );
+					$i++;
+				} 
+
+				return $hours;
 			}
+
 		} else {
-			$hours = false;
+			
+			$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.$node.' AND field_sellpoint_office_hours_day = '.$day.' ORDER BY delta ASC' );
+			if ( count($rows) > 0 ) {
+				$i = 0;
+				foreach ( $rows as $row ) {
+					$hours[$i]['start'] = format_hour( $row->field_sellpoint_office_hours_starthours );
+					$hours[$i]['end'] = format_hour( $row->field_sellpoint_office_hours_endhours );
+					$i++;
+				}
+				return $hours;
+			}
+
 		}
-		return $hours;
+
+		return false;
 	}
 
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7!)
@@ -5157,7 +5188,7 @@
 		if ( ! is_main_site() ) {
 
 			// Nieuwe werkwijze uittesten op Oostende
-			if ( $node === '23' ) {
+			if ( $node == '23' ) {
 
 				$post_id = intval( get_option('oxfam_shop_post_id') );
 				$oww_store_data = get_external_wpsl_store( $post_id );
@@ -5310,7 +5341,7 @@
 	}
 
 	function get_company_address( $node = 0 ) {
-		if ( $node === 0 ) $node = get_option( 'oxfam_shop_node' );
+		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
 		return get_oxfam_shop_data( 'place', $node )."<br/>".get_oxfam_shop_data( 'zipcode', $node )." ".get_oxfam_shop_data( 'city', $node );
 	}
 
