@@ -4949,7 +4949,7 @@
 
 	function print_office_hours( $atts = [] ) {
 		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), array( 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
+		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
 		
 		$output = '';
 		$days = get_office_hours( $atts['node'], intval( $atts['id'] ) );
