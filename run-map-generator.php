@@ -42,19 +42,27 @@
 							$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 							
 							foreach ( $locations as $location ) {
-								$parts = explode( 'node=', $location['note'] );
-								if ( isset($parts[1]) ) {
-									$node = str_replace( ']', '', $parts[1] );
+								$id_parts = explode( 'id=', $location['note'] );
+								if ( isset($id_parts[1]) ) {
+									$post_id = intval( str_replace( ']', '', $id_parts[1] ) );
+								} else {
+									$post_id = intval( get_option('oxfam_shop_post_id') );
+								}
+
+								$node_parts = explode( 'node=', $location['note'] );
+								if ( isset($node_parts[1]) ) {
+									$node = str_replace( ']', '', $node_parts[1] );
 								} else {
 									$node = get_option('oxfam_shop_node');
 								}
-								// Want get_company_address() en get_oxfam_shop_data('ll') nog niet gedefinieerd voor niet-wereldwinkels
-								if ( is_numeric($node) ) {
+								
+								// Want get_company_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
+								if ( $post_id > 0 ) {
 									$txt .= "<Placemark>";
 									$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
 									$txt .= "<styleUrl>#pickup</styleUrl>";
-									$txt .= "<description><![CDATA[<p>".get_company_address($node)."</p><p><a href=https://www.oxfamwereldwinkels.be/node/".$node." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
-									$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $node )."</coordinates></Point>";
+									$txt .= "<description><![CDATA[<p>".get_company_address( $node, $post_id )."</p><p><a href=https://www.oxfamwereldwinkels.be/?p=".$post_id." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
+									$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $node, false, $post_id )."</coordinates></Point>";
 									$txt .= "</Placemark>";
 								}
 							}
@@ -65,17 +73,18 @@
 						}
 
 						$shop_node = get_option('oxfam_shop_node');
-						$node_args = array(
+						$shop_post_id = intval( get_option('oxfam_shop_post_id') );
+						$post_args = array(
 							'post_type'	=> 'wpsl_stores',
 							'post_status' => 'trash',
 							'posts_per_page' => 1,
-							'meta_key' => 'wpsl_oxfam_shop_node',
-							'meta_value' => $shop_node,
+							'meta_key' => 'wpsl_oxfam_shop_post_id',
+							'meta_value' => $shop_post_id,
 						);
 
 						// Zoek op de hoofdsite de zonet verwijderde WP Store op die past bij de OWW-node
 						switch_to_blog(1);
-						$stores = new WP_Query($node_args);
+						$stores = new WP_Query( $post_args );
 						switch_to_blog( $site->blog_id );
 
 						if ( $stores->have_posts() ) {
@@ -95,6 +104,7 @@
 							'post_type' => 'wpsl_stores',
 							'meta_input' => array(
 								'wpsl_oxfam_shop_node' => $shop_node,
+								'wpsl_oxfam_shop_post_id' => $shop_post_id,
 								'wpsl_address' => get_oxfam_shop_data('place'),
 								'wpsl_city' => get_oxfam_shop_data('city'),
 								'wpsl_zip' => get_oxfam_shop_data('zipcode'),
@@ -117,7 +127,7 @@
 
 						// Maak aan op hoofdsite
 						switch_to_blog(1);
-						$result = wp_insert_post($store_args);
+						$result = wp_insert_post( $store_args );
 						// Winkelcategorie op deze manier instellen, 'tax_input'-argument bij wp_insert_post() werkt niet
 						wp_set_object_terms( $result, 'afhaling', 'wpsl_store_category', false );
 						if ( ! array_key_exists( 'wpsl_alternate_marker_url', $store_args['meta_input'] ) ) {
