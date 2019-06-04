@@ -27,7 +27,6 @@
 
 			// Sluit afgeschermde en gearchiveerde webshops uit
 			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
-			// $sites = get_sites( array( 'public' => 1, ) );
 			
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
@@ -43,14 +42,14 @@
 							
 							foreach ( $locations as $location ) {
 								$id_parts = explode( 'id=', $location['note'] );
-								if ( isset($id_parts[1]) ) {
+								if ( isset( $id_parts[1] ) ) {
 									$post_id = intval( str_replace( ']', '', $id_parts[1] ) );
 								} else {
 									$post_id = intval( get_option('oxfam_shop_post_id') );
 								}
 
 								$node_parts = explode( 'node=', $location['note'] );
-								if ( isset($node_parts[1]) ) {
+								if ( isset( $node_parts[1] ) ) {
 									$node = str_replace( ']', '', $node_parts[1] );
 								} else {
 									$node = get_option('oxfam_shop_node');
@@ -72,14 +71,14 @@
 							fclose($local_file);
 						}
 
+						// Vraag oude winkel voorlopig op via node
 						$shop_node = get_option('oxfam_shop_node');
-						$shop_post_id = intval( get_option('oxfam_shop_post_id') );
 						$post_args = array(
 							'post_type'	=> 'wpsl_stores',
 							'post_status' => 'trash',
 							'posts_per_page' => 1,
-							'meta_key' => 'wpsl_oxfam_shop_post_id',
-							'meta_value' => $shop_post_id,
+							'meta_key' => 'wpsl_oxfam_shop_node',
+							'meta_value' => $shop_node,
 						);
 
 						// Zoek op de hoofdsite de zonet verwijderde WP Store op die past bij de OWW-node
@@ -101,10 +100,11 @@
 							'ID' =>	$store_id,
 							'post_title' => get_company_name(),
 							'post_status' => 'publish',
+							'post_author' => 1,
 							'post_type' => 'wpsl_stores',
 							'meta_input' => array(
 								'wpsl_oxfam_shop_node' => $shop_node,
-								'wpsl_oxfam_shop_post_id' => $shop_post_id,
+								'wpsl_oxfam_shop_post_id' => get_option('oxfam_shop_post_id'),
 								'wpsl_address' => get_oxfam_shop_data('place'),
 								'wpsl_city' => get_oxfam_shop_data('city'),
 								'wpsl_zip' => get_oxfam_shop_data('zipcode'),
