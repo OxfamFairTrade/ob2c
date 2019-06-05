@@ -2777,7 +2777,7 @@
 
 		// Overschakelen op nieuwe werkwijze indien beschikbaar
 		if ( $post_id > 0 ) {
-
+			
 			$oww_store_data = get_external_wpsl_store( $post_id );
 			if ( $oww_store_data !== false ) {
 				// Bestaat in principe altijd
@@ -2789,16 +2789,19 @@
 				
 				foreach ( $opening_hours[ $weekdays[$day] ] as $block ) {
 					$parts = explode( ',', $block );
-					$hours[$i]['start'] = format_hour( $parts[0] );
-					$hours[$i]['end'] = format_hour( $parts[1] );
+					if ( count($parts) === 2 ) {
+						$hours[$i]['start'] = format_hour( $parts[0] );
+						$hours[$i]['end'] = format_hour( $parts[1] );
+					}
 					$i++;
-				} 
-
+				}
 				return $hours;
 			}
 
 		} else {
 			
+			write_log("USING OLD METHOD FOR NODE ".$node);
+
 			$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.$node.' AND field_sellpoint_office_hours_day = '.$day.' ORDER BY delta ASC' );
 			if ( count($rows) > 0 ) {
 				$i = 0;
@@ -2824,11 +2827,9 @@
 			$hours = get_site_option( 'oxfam_opening_hours_'.$post_id );
 		} else {
 			for ( $day = 0; $day <= 6; $day++ ) {
-				$hours[$day] = get_office_hours_for_day( $day, $node, $post_id );
+				// Forceer 'natuurlijke' nummering
+				$hours[$day+1] = get_office_hours_for_day( $day, $node, $post_id );
 			}
-			// Forceer 'natuurlijke' nummering
-			$hours[7] = $hours[0];
-			unset( $hours[0] );
 		}
 
 		return $hours;
