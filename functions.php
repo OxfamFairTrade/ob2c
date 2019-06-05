@@ -2771,7 +2771,6 @@
 
 	// Haal de openingsuren van de node voor een bepaalde dag op (werkt met dagindexes van 0 tot 6)
 	function get_office_hours_for_day( $day, $node = 0, $post_id = 0 ) {
-		global $wpdb;
 		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
 		if ( $post_id === 0 ) $post_id = intval( get_option('oxfam_shop_post_id') );
 
@@ -2800,8 +2799,9 @@
 
 		} else {
 			
-			write_log("USING OLD METHOD FOR NODE ".$node);
+			write_log( "USING OLD METHOD FOR NODE ".$node." AND POST-ID ".$post_id." ON BLOG-ID ".get_current_blog_id() );
 
+			global $wpdb;
 			$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.$node.' AND field_sellpoint_office_hours_day = '.$day.' ORDER BY delta ASC' );
 			if ( count($rows) > 0 ) {
 				$i = 0;
@@ -2833,6 +2833,27 @@
 		}
 
 		return $hours;
+	}
+
+	// Stop de uitzonderlijke sluitingsdagen in een array 
+	function get_closing_days( $post_id = 0 ) {
+		if ( $post_id === 0 ) $post_id = intval( get_option('oxfam_shop_post_id') );
+		
+		if ( ! is_numeric( $post_id ) ) {
+			// Retourneert ook false indien onbestaande
+			return get_site_option( 'oxfam_closing_days_'.$post_id );
+		} elseif ( $post_id > 0 ) {
+			$oww_store_data = get_external_wpsl_store( $post_id );
+			if ( $oww_store_data !== false ) {
+				// Bevat datums in 'Y-m-d'-formaat
+				$closing_days = $oww_store_data['closing_days'];
+				if ( count( $closing_days ) > 0 ) {
+					return $closing_days;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	// Bereken de eerst mogelijke leverdatum voor de opgegeven verzendmethode (retourneert een timestamp) 
@@ -2964,7 +2985,7 @@
 		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
 		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 		
-		// Neem de wettelijke feestdagen indien er geen enkele lokale gedefinieerd is (of merge altijd?)
+		// Neem de wettelijke feestdagen indien er geen enkele gedefinieerd zijn
 		foreach ( get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) as $holiday ) {
 			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
 			if ( date_i18n( 'N', strtotime($holiday) ) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
@@ -3661,8 +3682,7 @@
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'sanitize_callback' => 'comma_string_to_array' ) );
-		// Deze defaultwaarde verschijnt in het invulveld indien de optie nog niet bestaat maar wordt niet automatisch geladen door get_option()!
-		register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'sanitize_callback' => 'comma_string_to_array', 'default' => get_site_option('oxfam_holidays') ) );
+		register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'sanitize_callback' => 'comma_string_to_array' ) );
 	}
 
 	// Zorg ervoor dat je lokale opties ook zonder 'manage_options'-rechten opgeslagen kunnen worden
@@ -4427,7 +4447,6 @@
 
 	// Retourneert zo veel mogelijk beschikbare info bij een partner (enkel naam en land steeds ingesteld!)
 	function get_info_by_partner( $partner ) {
-		global $wpdb;
 		$partner_info['name'] = $partner->name;
 		$partner_info['country'] = get_term_by( 'id', $partner->parent, 'product_partner' )->name;
 		$partner_info['archive'] = get_term_link( $partner->term_id );
@@ -4453,6 +4472,7 @@
 				$partner_info['node'] = $parts[0];
 				$partner_info['url'] = 'https://www.oxfamwereldwinkels.be/node/'.$partner_info['node'];
 				
+				global $wpdb;
 				$quote = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
 				if ( isset( $quote->field_manufacturer_quote_value ) and strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
 					$partner_info['quote'] = trim($quote->field_manufacturer_quote_value);
@@ -4767,6 +4787,12 @@
 			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
 				echo '<div class="notice notice-success">';
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
+				echo '</div>';
+			}
+			if ( intval( get_option('oxfam_shop_post_id') ) > 0 ) {
+				$oww_store_data = get_external_wpsl_store( get_option('oxfam_shop_post_id') );
+				echo '<div class="notice notice-success">';
+				echo '<p>Contactgegevens, openingsuren én uitzonderlijke sluitingsdagen worden vanaf nu elk nacht overgenomen uit <a href="'.$oww_store_data['link'].'" target="_blank">jullie vernieuwde winkelpagina op oxfamwereldwinkels.be</a>.</p>';
 				echo '</div>';
 			}
 			// echo '<div class="notice notice-warning">';
@@ -5167,7 +5193,7 @@
 		return in_array( get_current_blog_id(), $regions );
 	}
 
-	function get_external_wpsl_store( $post_id = 3673, $domain = 'www.oxfamwereldwinkels.be' ) {
+	function get_external_wpsl_store( $post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
 		if ( false === ( $store_data = get_site_transient( $post_id.'_store_data' ) ) ) {
 			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
 			$args = array(
@@ -5219,7 +5245,6 @@
 
 	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen (mag verdwijnen van zodra logomateriaal uit OWW-site komt)
 	function get_oxfam_shop_data( $key, $node = 0, $raw = false, $post_id = 0 ) {
-		global $wpdb;
 		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
 		if ( $post_id === 0 ) $post_id = intval( get_option('oxfam_shop_post_id') );
 
@@ -5277,6 +5302,9 @@
 
 			} else {
 				
+				global $wpdb;
+				write_log( "USING OLD METHOD FOR NODE ".$node." AND POST-ID ".$post_id." ON BLOG-ID ".get_current_blog_id() );
+
 				if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
 					
 					// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen 

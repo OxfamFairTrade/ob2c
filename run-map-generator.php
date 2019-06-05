@@ -117,8 +117,13 @@
 							),
 						);
 
-						// Neem de extra sluitingsdagen over van de OWW-site
-						// update_option( 'oxfam_holidays', implode( ', ', get_oxfam_shop_data('closing_days') ) );
+						if ( get_closing_days() !== false ) {
+							// Neem de ingestelde sluitingsdagen over uit de OWW-site
+							update_option( 'oxfam_holidays', get_closing_days() );
+						} else {
+							// Zorg dat we geen lege array achterlaten die de default waardes blokkeert
+							delete_option('oxfam_holidays');
+						}
 
 						if ( ! does_home_delivery() ) {
 							// Alternatieve marker indien enkel afhaling

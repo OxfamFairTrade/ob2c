@@ -161,10 +161,10 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden vanaf nu overgenomen uit <a href="https://www.oxfamwereldwinkels.be/?p=<?php echo get_option('oxfam_shop_post_id'); ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor <u>alle</u> levermethodes en afhaalpunten.</small></label>
+					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden vanaf nu overgenomen uit <a href="https://www.oxfamwereldwinkels.be/?p=<?php echo get_option('oxfam_shop_post_id'); ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor <u>alle levermethodes en afhaalpunten</u>.</small></label>
 				</th>
 		  		<td class="right">
-		  			<textarea name="oxfam_holidays" rows="3" class="text-input" readonly></textarea>
+		  			<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ); ?></textarea>
 		  		</td>
 			</tr>
 			<tr valign="top">
