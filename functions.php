@@ -343,9 +343,6 @@
 			'url' => array(
 				'label' => 'Webshop-URL'
 			),
-			'oxfam_shop_node' => array(
-				'label' => 'Node OWW-site'
-			),
 			'oxfam_shop_post_id' => array(
 				'label' => 'Post-ID in OWW-site'
 			),
@@ -361,7 +358,6 @@
 	add_filter( 'wpsl_frontend_meta_fields', 'custom_frontend_meta_fields' );
 
 	function custom_frontend_meta_fields( $store_fields ) {
-		$store_fields['wpsl_oxfam_shop_node'] = array( 'name' => 'oxfam_shop_node' );
 		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
 		$store_fields['wpsl_alternate_marker_url'] = array( 'name' => 'alternateMarkerUrl' );
 		return $store_fields;
@@ -5449,6 +5445,7 @@
 	}
 
 	function get_local_logo_url() {
+		// TO DO: Logo's hernummeren naar post-ID's
 		return get_stylesheet_directory_uri().'/logo/'.get_option('oxfam_shop_node').'.png';
 	}
 
@@ -5630,36 +5627,6 @@
 			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
 		}
 		return $access;
-	}
-
-	// Voeg extra velden toe aan de API response van 'wpsl_stores' zodat we dit kunnen aanspreken in de B2C-webshops en de Bpost API
-	// add_action( 'rest_api_init', 'add_extra_fields_to_wpsl_stores_rest_api_response' );
-
-	function add_extra_fields_to_wpsl_stores_rest_api_response() {
-		register_rest_field( 'wpsl_stores', 'opening_hours',
-			array(
-				'get_callback' => function( $params ) {
-					return get_post_meta( $params['id'], 'wpsl_hours', true );
-				},
-			)
-		);
-		register_rest_field( 'wpsl_stores', 'location',
-			array(
-				'get_callback' => function( $params ) {
-					return array(
-						'place' => get_post_meta( $params['id'], 'wpsl_address', true ),
-						'zipcode' => get_post_meta( $params['id'], 'wpsl_zip', true ),
-						'city' => get_post_meta( $params['id'], 'wpsl_city', true ),
-						'tax' => get_post_meta( $params['id'], 'vat_number', true ),
-						'account' => get_post_meta( $params['id'], 'iban_number', true ),
-						// Doe een look-up o.b.v. BTW-nummer in het KBO
-						// 'headquarter' => array( 'place' => '', 'zipcode' => '', 'city' => '' ),
-						'email' => get_post_meta( $params['id'], 'wpsl_email', true ),
-						'telephone' => get_post_meta( $params['id'], 'wpsl_phone', true ),
-					);
-				},
-			)
-		);
 	}
 
 	// Handig filtertje om het JavaScript-conflict op de checkout te debuggen

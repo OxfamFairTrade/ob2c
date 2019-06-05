@@ -60,7 +60,8 @@
 									$txt .= "<Placemark>";
 									$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
 									$txt .= "<styleUrl>#pickup</styleUrl>";
-									$txt .= "<description><![CDATA[<p>".get_company_address( $node, $post_id )."</p><p><a href=https://www.oxfamwereldwinkels.be/?p=".$post_id." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
+									$oww_store_data = get_external_wpsl_store( $post_id );
+									$txt .= "<description><![CDATA[<p>".get_company_address( $node, $post_id )."</p><p><a href=".$oww_store_data['link']." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
 									$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $node, false, $post_id )."</coordinates></Point>";
 									$txt .= "</Placemark>";
 								}
@@ -71,14 +72,13 @@
 							fclose($local_file);
 						}
 
-						// Vraag oude winkel voorlopig op via node
-						$shop_node = get_option('oxfam_shop_node');
+						// Vraag de bestaande winkel op
 						$post_args = array(
 							'post_type'	=> 'wpsl_stores',
 							'post_status' => 'trash',
 							'posts_per_page' => 1,
-							'meta_key' => 'wpsl_oxfam_shop_node',
-							'meta_value' => $shop_node,
+							'meta_key' => 'wpsl_oxfam_shop_post_id',
+							'meta_value' => get_option('oxfam_shop_post_id'),
 						);
 
 						// Zoek op de hoofdsite de zonet verwijderde WP Store op die past bij de OWW-node
@@ -103,7 +103,6 @@
 							'post_author' => 1,
 							'post_type' => 'wpsl_stores',
 							'meta_input' => array(
-								'wpsl_oxfam_shop_node' => $shop_node,
 								'wpsl_oxfam_shop_post_id' => get_option('oxfam_shop_post_id'),
 								'wpsl_address' => get_oxfam_shop_data('place'),
 								'wpsl_city' => get_oxfam_shop_data('city'),
