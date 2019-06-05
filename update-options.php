@@ -119,7 +119,7 @@
 					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Nodenummer oude OWW-site:</label>
 				</th>
 		  		<td class="right">
-		  			<input type="text" name="oxfam_shop_node" class="text-input" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
+		  			<input type="text" name="oxfam_shop_node" class="text-input" value="<?php echo esc_attr( get_option('oxfam_shop_node') ); ?>" readonly>
 		  		</td>
 			</tr>
 			<tr valign="top">
@@ -150,6 +150,7 @@
 					echo "</tr>";
 				}
 				$b2b_shipping_options = get_option('woocommerce_b2b_home_delivery_settings');
+				$oww_store_data = get_external_wpsl_store( intval( get_option('oxfam_shop_post_id') ) );
 			?>
 			<tr valign="top">
 				<th class="left">
@@ -161,7 +162,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden vanaf nu overgenomen uit <a href="https://www.oxfamwereldwinkels.be/?p=<?php echo get_option('oxfam_shop_post_id'); ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor <u>alle levermethodes en afhaalpunten</u>.</small></label>
+					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden vanaf nu overgenomen uit <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor <u>alle levermethodes en afhaalpunten</u>.</small></label>
 				</th>
 		  		<td class="right">
 		  			<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ); ?></textarea>

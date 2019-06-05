@@ -4790,7 +4790,7 @@
 				echo '</div>';
 			}
 			if ( intval( get_option('oxfam_shop_post_id') ) > 0 ) {
-				$oww_store_data = get_external_wpsl_store( get_option('oxfam_shop_post_id') );
+				$oww_store_data = get_external_wpsl_store( intval( get_option('oxfam_shop_post_id') ) );
 				echo '<div class="notice notice-success">';
 				echo '<p>Contactgegevens, openingsuren én uitzonderlijke sluitingsdagen worden vanaf nu elk nacht overgenomen uit <a href="'.$oww_store_data['link'].'" target="_blank">jullie vernieuwde winkelpagina op oxfamwereldwinkels.be</a>.</p>';
 				echo '</div>';
