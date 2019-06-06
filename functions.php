@@ -2795,7 +2795,7 @@
 
 		} else {
 			
-			write_log( "USING OLD METHOD FOR NODE ".$node." AND POST-ID ".$post_id." ON BLOG-ID ".get_current_blog_id() );
+			write_log( "USING OLD METHOD FOR NODE ".$node." / POST-ID ".$post_id." ON BLOG-ID ".get_current_blog_id()." WITH URL ".$_SERVER['REQUEST_URI'] );
 
 			global $wpdb;
 			$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.$node.' AND field_sellpoint_office_hours_day = '.$day.' ORDER BY delta ASC' );
@@ -5299,7 +5299,7 @@
 			} else {
 				
 				global $wpdb;
-				write_log( "USING OLD METHOD FOR NODE ".$node." AND POST-ID ".$post_id." ON BLOG-ID ".get_current_blog_id() );
+				write_log( "USING OLD METHOD FOR NODE ".$node." / POST-ID ".$post_id." / KEY ".$key." ON BLOG-ID ".get_current_blog_id()." WITH URL ".$_SERVER['REQUEST_URI'] );
 
 				if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
 					
