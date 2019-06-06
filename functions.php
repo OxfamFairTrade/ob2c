@@ -117,7 +117,7 @@
 				}
 			} else {
 				wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop.', 'oxfam-webshop' ), $_GET['addSku'] ), 'error' );
-				wp_safe_redirect( get_permalink( woocommerce_get_page_id('shop') ) );
+				wp_safe_redirect( wc_get_page_permalink('shop') );
 				exit();
 			}
 		}
