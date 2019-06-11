@@ -2793,23 +2793,7 @@
 				return $hours;
 			}
 
-		} else {
-			
-			write_log( "USING OLD METHOD FOR NODE ".$node." / POST-ID ".$post_id." ON BLOG-ID ".get_current_blog_id()." WITH URL ".$_SERVER['REQUEST_URI'] );
-
-			global $wpdb;
-			$rows = $wpdb->get_results( 'SELECT * FROM field_data_field_sellpoint_office_hours WHERE entity_id = '.$node.' AND field_sellpoint_office_hours_day = '.$day.' ORDER BY delta ASC' );
-			if ( count($rows) > 0 ) {
-				$i = 0;
-				foreach ( $rows as $row ) {
-					$hours[$i]['start'] = format_hour( $row->field_sellpoint_office_hours_starthours );
-					$hours[$i]['end'] = format_hour( $row->field_sellpoint_office_hours_endhours );
-					$i++;
-				}
-				return $hours;
-			}
-
-		}
+		} 
 
 		return false;
 	}
@@ -5308,27 +5292,11 @@
 
 				if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
 					
-					// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen 
-					if ( $raw === false and $node === '857' ) {
-						// Uitzonderingen voor Regio Leuven vzw
-						switch ($key) {
-							case 'tax':
-								return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
-							case 'account':
-								return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
-							case 'headquarter':
-								return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
-						};
-					} elseif ( $raw === false and $node === '795' and $key === 'account' ) {
-						// Uitzondering voor Regio Antwerpen vzw
-						return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
+					$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop', $node ) );
+					if ( $row ) {
+						return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
 					} else {
-						$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop', $node ) );
-						if ( $row ) {
-							return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
-						} else {
-							return "UNKNOWN";
-						}
+						return "UNKNOWN";
 					}
 
 				} else {
@@ -5345,13 +5313,8 @@
 								return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
 							case 'telephone':
 							case 'fax':
-								if ( $raw === false and $node === '857' ) {
-									// Uitzondering voor Regio Leuven
-									return call_user_func( 'format_telephone', '0486762195', '.' );
-								} else {	
-									// Geef alternatieve delimiter mee
-									return call_user_func( 'format_telephone', $row->{'field_sellpoint_'.$key.'_value'}, '.' );
-								}
+								// Geef alternatieve delimiter mee
+								return call_user_func( 'format_telephone', $row->{'field_sellpoint_'.$key.'_value'}, '.' );
 							default:
 								return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 						}
@@ -5371,13 +5334,15 @@
 
 			switch ($key) {
 				case 'place':
-					return call_user_func( 'format_place', 'Ververijstraat 15' );
+					return call_user_func( 'format_place', 'Ververijstraat 17' );
 				case 'zipcode':
 					return call_user_func( 'format_zipcode', '9000' );
 				case 'city':
 					return call_user_func( 'format_city', 'Gent' );
 				case 'telephone':
 					return call_user_func( 'format_telephone', '092188899', '.' );
+				case 'tax':
+					return call_user_func( 'format_tax', 'BE 0415.365.777' );
 				default:
 					return "(gegevens cvba)";
 			}
