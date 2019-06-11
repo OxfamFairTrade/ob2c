@@ -365,6 +365,15 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		update_option( 'wp_mail_smtp', $wp_mail_smtp );
 	}
 
+	// Instellingen van Savoy kopiëren naar subsites
+	switch_to_blog(1);
+	$savoy_settings = get_option('nm_theme_options');
+	restore_current_blog();
+	if ( is_array($savoy_settings) ) {
+		// Alle dynamische gegevens voor lokale winkels zijn in shortcodes gestopt, dus ik denk dat dit veilig is ...
+		update_option( 'nm_theme_options', $savoy_settings );
+	}
+
 	// Verzendzones wijzigen
 
 	// Tabel met stopwoorden kopiëren
