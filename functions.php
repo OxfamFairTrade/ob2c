@@ -4977,7 +4977,12 @@
 	}
 
 	function print_copyright() {
-		return '<a href="'.get_site_url( get_current_blog_id(), '/contact/' ).'">'.get_company_name().' &copy; 2017-'.date_i18n('Y').'</a>';
+		$text = get_company_name().' &copy; 2017-'.date_i18n('Y');
+		if ( ! is_main_site() ) {
+			// Contactpagina niet linken op portaalpagina
+			$text = '<a href="'.get_site_url( get_current_blog_id(), '/contact/' ).'">'.$text.'</a>';
+		}
+		return $text;
 	}
 
 	function print_office_hours( $atts = [] ) {
