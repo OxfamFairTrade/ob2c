@@ -4776,24 +4776,24 @@
 				echo '</div>';
 			}
 			// echo '<div class="notice notice-warning">';
-			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20057 Fuego Sagrado, 20153 BIO La Posada Malbec Rosé, 20259 Fuego Sagrado Chardonnay, 22720 BIO Koffiecaps lungo (oude verpakking met 50 g koffie), 22721 BIO Koffiecaps dark roast (oude verpakking met 50 g koffie), 24199 BIO Maya melkchocolade met speculoos, 24293 BIO Melkchocolade gepofte rijst, 25613 BIO Dadels (uit Tunesië), 26091 BIO Agave (donkere versie) en 27108 Parboiled rijst in builtjes. De sintfiguren zijn verborgen, tot de goedheilige man ons land weer aandoet.</p>';
+			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20065 Equality Cabernet Sauvignon, 21009 Appelsap 1 l (Chinese versie), 21104 Appelsap 20 cl (Chinese versie), 24531 BIO Pralines, 24614 Chocoladehart, 24631 Chocoladeschaapjes 3 x 25 g en 27814 Sambal Oelek. De paasfiguren zijn verborgen tot de klokken terugzijn uit Rome.</p>';
 			// echo '</div>';
-			// echo '<div class="notice notice-success">';
-			// 	echo '<p>Deze maand slechts 3 nieuwe producten:</p><ul style="margin-left: 2em;">';
-			// 		$skus = array( '20076', '27117', '27151' );
-			// 		foreach ( $skus as $sku ) {
-			// 			$product_id = wc_get_product_id_by_sku($sku);
-			// 			if ( $product_id ) {
-			// 				$product = wc_get_product($product_id);
-			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-			// 			}
-			// 		}
-			// 	echo '</ul><p>';
-			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De rijstwafels zijn een verderzetting van artikel 27150 maar hebben een licht hoger nettogewicht (en dus kiloprijs). Daardoor konden we de oude referentie niet gewoon aanpassen.</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-success">';
+				echo '<p>Voor de maanden mei-juni slechts 4 nieuwe producten:</p><ul style="margin-left: 2em;">';
+					$skus = array( '20076', '26713', '27117', '27151' );
+					foreach ( $skus as $sku ) {
+						$product_id = wc_get_product_id_by_sku($sku);
+						if ( $product_id ) {
+							$product = wc_get_product($product_id);
+							echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+						}
+					}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De rijstwafels zijn een verderzetting van artikel 27150 maar hebben een licht hoger nettogewicht (en dus kiloprijs). Daardoor konden we de oude referentie niet gewoon aanpassen.</p>';
+			echo '</div>';
 			if ( does_home_delivery() ) {
 				// Boodschappen voor winkels die thuislevering doen 
 			}
