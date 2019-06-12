@@ -4779,7 +4779,7 @@
 			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20065 Equality Cabernet Sauvignon, 21009 Appelsap 1 l (Chinese versie), 21104 Appelsap 20 cl (Chinese versie), 24531 BIO Pralines, 24614 Chocoladehart, 24631 Chocoladeschaapjes 3 x 25 g en 27814 Sambal Oelek. De paasfiguren zijn verborgen tot de klokken terugzijn uit Rome.</p>';
 			// echo '</div>';
 			echo '<div class="notice notice-success">';
-				echo '<p>Voor de maanden mei-juni slechts 4 nieuwe producten:</p><ul style="margin-left: 2em;">';
+				echo '<p>In de maanden mei-juni verschijnen slechts 4 nieuwe producten:</p><ul style="margin-left: 2em;">';
 					$skus = array( '20076', '26713', '27117', '27151' );
 					foreach ( $skus as $sku ) {
 						$product_id = wc_get_product_id_by_sku($sku);
@@ -4792,7 +4792,7 @@
 				if ( current_user_can('manage_network_users') ) {
 					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De rijstwafels zijn een verderzetting van artikel 27150 maar hebben een licht hoger nettogewicht (en dus kiloprijs). Daardoor konden we de oude referentie niet gewoon aanpassen.</p>';
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De rijstwafels zijn een verderzetting van artikel 27150 maar hebben een licht hoger nettogewicht (en dus lagere kiloprijs). Daardoor konden we de oude referentie niet gewoon aanpassen.</p>';
 			echo '</div>';
 			if ( does_home_delivery() ) {
 				// Boodschappen voor winkels die thuislevering doen 
