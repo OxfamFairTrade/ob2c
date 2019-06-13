@@ -2683,7 +2683,7 @@
 	}
 
 	// Zet webshopbeheerder in BCC bij versturen uitnodigingsmails
-	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 3 );
+	// add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 3 );
 
 	function put_administrator_in_bcc( $headers, $type, $object ) {
 		$logger = wc_get_logger();
