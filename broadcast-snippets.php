@@ -36,7 +36,7 @@
 	// Verwijder individuele productterm
 	$taxonomy = 'product_partner';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$term = 'fruittiland';
+		$term = 'miel-maya';
 		$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 		if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
 			write_log("DELETED ".$term_to_delete->name);
@@ -166,7 +166,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '17105', '20249', '20413', '28018' );
+	$photos_to_delete = array( '20065', '24614', '24631', '24637', '24638', '25002', '25296', '25298', '25316', '25612', '25712', '25713', '25714', '25717', '25718', '25720', '26093', '26094', '26095', '26099', '27812', '27814', '27815' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {

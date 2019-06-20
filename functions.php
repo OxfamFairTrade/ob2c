@@ -4775,9 +4775,15 @@
 				echo '<p>Contactgegevens, openingsuren én uitzonderlijke sluitingsdagen worden vanaf nu elk nacht overgenomen uit <a href="'.$oww_store_data['link'].'" target="_blank">jullie vernieuwde winkelpagina op oxfamwereldwinkels.be</a>.</p>';
 				echo '</div>';
 			}
-			// echo '<div class="notice notice-warning">';
-			// 	echo '<p>Goede voornemens! Tien oude producten werden uit de database verwijderd omdat de houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop (20065 Equality Cabernet Sauvignon, 21009 Appelsap 1 l (Chinese versie), 21104 Appelsap 20 cl (Chinese versie), 24531 BIO Pralines, 24614 Chocoladehart, 24631 Chocoladeschaapjes 3 x 25 g en 27814 Sambal Oelek. De paasfiguren zijn verborgen tot de klokken terugzijn uit Rome.</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-warning">';
+			echo '<p>23 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop. Het gaat om 20065 Equality Cabernet Sauvignon, 24614 Chocoladehart, 24631 Chocoladeschaapjes 3 x 25 g, 24637 Minichocolaatjes, 24638 Aapje in melkchocolade, 25002 Maya speculoos 5 g x 200, 25296 BIO Nougat Maya, 25298 Maya nougat 8 g, 25316 BIO Choco Amandel-citroenreep, 25612 BIO Gedroogde ananas, 25712 BIO Amazonenoten, 25713 BIO Cashew zout, 25714 BIO Cashew curry, 25717 BIO Pindanoten zout, 25718 Amandelnoten natuur, 25720 BIO Fruit- en nootmix, 26093 BIO Honing crème, 26094 Honing crème Chili 500 g, 26095 Honing crème Chili 1 kg, 26099 Maya honing crème 500 g, 27812 Woksaus teriyaki, 27814 Sambal Oelek, 27815 Woksaus soja-gember.</p><p>Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen. Verder zijn de paasfiguren verborgen tot de klokken terugzijn uit Rome.</p>';
+			echo '</div>';
+			// TE VERWIJDEREN OP 1 SEPTEMBER
+			// 21009 Appelsap 1 l (Chinese versie)
+			// 21104 Appelsap 20 cl (Chinese versie)
+			// 24531 BIO Pralines
+			// 24532 BIO Truffels
+			// 28330 BIO Vanillestokjes premium
 			echo '<div class="notice notice-success">';
 				echo '<p>In de maanden mei-juni verschijnen slechts 4 nieuwe producten:</p><ul style="margin-left: 2em;">';
 					$skus = array( '20076', '26713', '27117', '27151' );
@@ -4975,6 +4981,7 @@
 		
 		$output = '';
 		$days = get_office_hours( $atts['node'], intval( $atts['id'] ) );
+		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
 		$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
 
 		if ( $atts['start'] === 'today' ) {
