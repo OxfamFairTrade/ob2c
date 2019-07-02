@@ -3269,7 +3269,7 @@
 					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
 						$glass_cnt += intval($item_value['quantity']);
 					}
-					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29916') ) {
+					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29917') ) {
 						$plastic_cnt += intval($item_value['quantity']);
 					}
 				} 
@@ -3292,7 +3292,7 @@
 						} elseif ( $glass_cnt > 0 ) {
 							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d grote fles', '%d grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
 						} elseif ( $plastic_cnt > 0 ) {
-							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Dit is te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verminder het aantal kleine flesjes fruitsap in je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Dit is te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verminder het aantal kleine flesjes in je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
 						}
 						// wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $glass_cnt, $plastic_cnt ), 'error' );
 						WC()->session->set( 'no_home_delivery', 'SHOWN' );
@@ -3463,6 +3463,7 @@
 
 				case 'WLBS24':
 				case 'W29917':
+					// Eventueel aanpassen naar round( $float, 0, PHP_ROUND_HALF_DOWN ), zodat we automatisch een bak toevoegen indien > 12 flesjes?
 					$empties_array['quantity'] = floor( intval( $product_item['quantity'] ) / 24 );
 					break;
 
@@ -3560,6 +3561,7 @@
 
 				case 'WLBS24':
 				case 'W29917':
+					// Eventueel aanpassen naar round( $float, 0, PHP_ROUND_HALF_DOWN ), zodat we automatisch een bak toevoegen indien > 12 flesjes?
 					$quantity = floor( intval( $product_item['quantity'] ) / 24 );
 					break;
 
