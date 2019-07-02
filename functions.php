@@ -3269,7 +3269,7 @@
 					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
 						$glass_cnt += intval($item_value['quantity']);
 					}
-					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') ) {
+					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29916') ) {
 						$plastic_cnt += intval($item_value['quantity']);
 					}
 				} 
@@ -3436,6 +3436,25 @@
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
 			write_log( "FORCE SELL ADD TO CART PRODUCT: ".$empties_sku );
+
+			if ( $empties_sku === 'W19916' or $empties_sku === 'W29917' ) {
+				// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
+				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voro W29917 deze gemanipuleerde hoeveelheden nodig heeft
+				$product = wc_get_product( $product_item['product_id'] );
+				if ( $product !== false ) {
+					write_log( $product->get_sku() );
+					switch ( $product->get_sku() ) {
+						case '20807':
+						case '20809':
+						case '20811':
+							// Voeg 4 flesjes leeggoed toe bij clips
+							$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
+							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
+							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+							break;
+					}
+				}
+			}
 			
 			switch ( $empties_sku ) {
 				case 'WLBS6':
@@ -3468,22 +3487,6 @@
 							break;
 					}
 
-					// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
-					$product = wc_get_product( $product_item['product_id'] );
-					if ( $product !== false ) {
-						write_log( $product->get_sku() );
-						switch ( $product->get_sku() ) {
-							case '20807':
-							case '20809':
-							case '20811':
-								// Voeg 4 flesjes leeggoed toe bij clips
-								// $empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
-								// OVERRULE PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-								$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
-								break;
-						}
-					}
-
 					$plastic_in_cart = false;
 					$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
 					
@@ -3509,6 +3512,8 @@
 					}
 					break;
 			}
+
+			write_log($empties_array);
 		}
 
 		return $empties_array;
@@ -3527,7 +3532,26 @@
 
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
-			write_log( "FORCE SELL UPDATE QUANTITY:".$empties_sku );
+			write_log( "FORCE SELL UPDATE QUANTITY: ".$empties_sku );
+
+			if ( $empties_sku === 'W19916' or $empties_sku === 'W29917' ) {
+				// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
+				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voro W29917 deze gemanipuleerde hoeveelheden nodig heeft
+				$product = wc_get_product( $product_item['product_id'] );
+				if ( $product !== false ) {
+					write_log( $product->get_sku() );
+					switch ( $product->get_sku() ) {
+						case '20807':
+						case '20809':
+						case '20811':
+							// Voeg 4 flesjes leeggoed toe bij clips
+							$quantity = 4 * intval( $product_item['quantity'] );
+							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
+							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+							break;
+					}
+				}
+			}
 			
 			switch ( $empties_sku ) {
 				case 'WLBS6':
@@ -3560,22 +3584,6 @@
 							break;
 					}
 
-					// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
-					$product = wc_get_product( $product_item['product_id'] );
-					if ( $product !== false ) {
-						write_log( $product->get_sku() );
-						switch ( $product->get_sku() ) {
-							case '20807':
-							case '20809':
-							case '20811':
-								// Voeg 4 flesjes leeggoed toe bij clips
-								// $quantity = 4 * intval( $product_item['quantity'] );
-								// OVERRULE PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-								$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
-								break;
-						}
-					}
-
 					$plastic_in_cart = false;
 					$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
 					
@@ -3602,9 +3610,11 @@
 
 					// Geen idee waarom $quantity naar 1 terugvalt ... dus reset met het aantal van het hoofdproduct!
 					// DREIGT UITZONDERING VOOR CLIPS TE OVERSCHRIJVEN, EVENTUEEL PROBEREN UITSCHAKELEN
-					$quantity = $product_item['quantity'];
+					// $quantity = $product_item['quantity'];
 					break;
 			}
+
+			write_log($quantity);
 		}
 
 		return $quantity;
@@ -3614,25 +3624,30 @@
 	add_filter( 'woocommerce_cart_item_quantity', 'add_bottles_to_quantity', 10, 3 );
 	
 	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
-		$productje = wc_get_product( $cart_item['product_id'] );
-		$product_sku = $productje->get_sku();
-		if ( $productje->is_visible() ) {
-			return $product_quantity;
-		} elseif ( $product_sku === 'GIFT' ) {
-			return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
-		} else {
-			$qty = intval($product_quantity);
-			switch ( $product_sku ) {
-				case 'WLFSK':
-					return sprintf( _n( '%d flesje', '%d flesjes', $qty ), $qty );
-				case 'WLBS6':
-					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 6 flessen)';
-				case 'WLBS24':
-					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 24 flesjes)';
-				default:
-					return sprintf( _n( '%d fles', '%d flessen', $qty ), $qty );
+		$product = wc_get_product( $cart_item['product_id'] );
+		if ( $product !== false ) {
+			if ( $product->get_sku() === 'GIFT' ) {
+				return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
+			}
+
+			if ( strpos( $product->get_sku(), 'W' ) === 0 ) {
+				$qty = intval( $product_quantity );
+				switch ( $product->get_sku() ) {
+					case 'WLFSK':
+					case 'W19916':
+						return sprintf( _n( '%d flesje', '%d flesjes', $qty ), $qty );
+					case 'WLBS6':
+						return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 6 flessen)';
+					case 'WLBS24':
+					case 'W29917':
+						return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 24 flesjes)';
+					default:
+						return sprintf( _n( '%d fles', '%d flessen', $qty ), $qty );
+				}
 			}
 		}
+
+		return $product_quantity;
 	}
 
 	// Zet leeggoed en cadeauverpakking onderaan
@@ -3655,12 +3670,12 @@
 				unset($cart_sorted[$cart_item_key]);
 			}
 
-			if ( strpos( $cart_item['data']->get_sku(), 'WLF' ) !== false ) {
+			if ( strpos( $cart_item['data']->get_sku(), 'WLF' ) === 0 or $cart_item['data']->get_sku() === 'W19916' ) {
 				$glass_items[$cart_item_key] = $cart_item;
 				unset($cart_sorted[$cart_item_key]);
 			}
 
-			if ( strpos( $cart_item['data']->get_sku(), 'WLB' ) !== false ) {
+			if ( strpos( $cart_item['data']->get_sku(), 'WLB' ) === 0 or $cart_item['data']->get_sku() === 'W29917' ) {
 				$plastic_items[$cart_item_key] = $cart_item;
 				unset($cart_sorted[$cart_item_key]);
 			}
