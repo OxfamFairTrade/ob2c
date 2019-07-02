@@ -68,7 +68,7 @@
 	// Leeggoed verbergen en op voorraad zetten
 	$args = array(
 		'post_type'			=> 'product',
-		'post_status'		=> array( 'publish' ),
+		'post_status'		=> array('publish'),
 		'posts_per_page'	=> -1,
 	);
 
@@ -78,8 +78,8 @@
 			$all_products->the_post();
 			$product = wc_get_product( get_the_ID() );
 			if ( $product !== false and strpos( $product->get_sku(), 'W' ) === 0 ) {
-				$product->set_stock_status( 'instock' );
-				$product->set_catalog_visibility( 'hidden' );
+				$product->set_stock_status('instock');
+				$product->set_catalog_visibility('hidden');
 				$product->save();
 			}
 		}
@@ -89,7 +89,7 @@
 	// Unassigned producten opnieuw aan hoofdsite koppelen
 	$args = array(
 		'post_type'			=> 'product',
-		'post_status'		=> array( 'publish' ),
+		'post_status'		=> array('publish'),
 		'posts_per_page'	=> 100,
 		'paged'				=> 1,
 	);

@@ -3466,7 +3466,7 @@
 
 					// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
 					write_log( serialize( $product_item ) );
-					$product = wc_get_product( $product_item->get_product_id() );
+					$product = wc_get_product( $product_item['product_id'] );
 					if ( $product !== false ) {
 						switch ( $product->get_sku() ) {
 							case '20807':
@@ -3506,7 +3506,7 @@
 					break;
 			}
 		}
-		
+
 		return $empties_array;
 	}
 
@@ -3556,7 +3556,8 @@
 					}
 
 					// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
-					$product = wc_get_product( $product_item->get_product_id() );
+					write_log( serialize( $product_item ) );
+					$product = wc_get_product( $product_item['product_id'] );
 					if ( $product !== false ) {
 						switch ( $product->get_sku() ) {
 							case '20807':
