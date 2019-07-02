@@ -125,8 +125,8 @@
 	// Product-ID's in kortingsbon lokaal maken
 	$args = array(
 		'post_type'		=> 'shop_coupon',
-		'post_status'	=> array( 'publish' ),
-		'title'			=> 'tht-couscous',
+		'post_status'	=> array('publish'),
+		'title'			=> 'zomerwijn',
 	);
 
 	$all_coupons = new WP_Query( $args );
@@ -151,7 +151,7 @@
 	// Wijziging aan een orderstatus doorvoeren
 	$args = array(
 		'post_type'		=> 'wc_order_status',
-		'post_status'	=> array( 'publish' ),
+		'post_status'	=> array('publish'),
 		'name'			=> 'on-hold',
 	);
 

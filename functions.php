@@ -3269,7 +3269,7 @@
 					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
 						$glass_cnt += intval($item_value['quantity']);
 					}
-					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6M') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24M') ) {
+					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') ) {
 						$plastic_cnt += intval($item_value['quantity']);
 					}
 				} 
@@ -3432,29 +3432,56 @@
 	function check_plastic_empties_quantity( $empties_array, $product_item ) {
 		// $empties_array bevat geen volwaardig cart_item, enkel array met de keys id / quantity / variation_id / variation!
 		$empties_product = wc_get_product( $empties_array['id'] );
-		// Zou niet mogen, maar toch even checken
+
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
 			
 			switch ( $empties_sku ) {
-				case 'WLBS6M':
-				case 'WLBS24M':
-					$empties_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $empties_sku ) ) );
-					$empties_array['quantity'] = floor( intval($product_item['quantity']) / $empties_step );
+				case 'WLBS6':
+				case 'WLBS24':
+					$empties_step = intval( str_replace( 'WLBS', '', $empties_sku ) );
+					$empties_array['quantity'] = floor( intval( $product_item['quantity'] ) / $empties_step );
 					break;
 
 				case 'WLFSG':
 				case 'WLFSK':
-					// Definieer de koppeling tussen glas en plastic
-					if ( $empties_sku === 'WLFSG' ) {
-						$plastic_sku = 'WLBS6M';
-					} elseif ( $empties_sku === 'WLFSK' ) {
-						$plastic_sku = 'WLBS24M';
+				case 'W19916':
+					// Definieer de koppelingen tussen glas en plastic
+					switch ( $empties_sku ) {
+						case 'WLFSG':
+							$plastic_sku = 'WLBS6';
+							$plastic_step = 6;
+							break;
+
+						case 'WLFSK':
+							$plastic_sku = 'WLBS24';
+							$plastic_step = 24;
+							break;
+
+						case 'W19916':
+							$plastic_sku = 'W29917';
+							$plastic_step = 24;
+							break;
+					}
+
+					// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
+					write_log( serialize( $product_item ) );
+					$product = wc_get_product( $product_item->get_product_id() );
+					if ( $product !== false ) {
+						switch ( $product->get_sku() ) {
+							case '20807':
+							case '20809':
+							case '20811':
+								// Voeg 4 flesjes leeggoed toe bij clips
+								// $empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
+								// OVERRULE PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
+								$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+								break;
+						}
 					}
 
 					$plastic_in_cart = false;
-					$plastic_product_id = wc_get_product_id_by_sku($plastic_sku);
-					$plastic_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $plastic_sku ) ) );
+					$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
 					
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 						if ( $values['product_id'] == $product_item['product_id'] ) {
@@ -3464,21 +3491,22 @@
 					}
 
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-						if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
-							$main_product = wc_get_product($product_item['product_id']);
+						if ( intval( $values['product_id'] ) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
+							$main_product = wc_get_product( $product_item['product_id'] );
 							$plastic_in_cart = true;
 							break;
 						}
 					}
 
-					if ( ! $plastic_in_cart and floor( intval($product_item['quantity']) / $plastic_step ) >= 1 ) {
-						$main_product = wc_get_product($product_item['product_id']);
+					if ( ! $plastic_in_cart and floor( intval( $product_item['quantity'] ) / $plastic_step ) >= 1 ) {
+						$main_product = wc_get_product( $product_item['product_id'] );
 						// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
-						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_array['variation_id'], $empties_array['variation'], array( 'forced_by' => $product_item_key ) );
+						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval( $product_item['quantity'] ) / $plastic_step ), $empties_array['variation_id'], $empties_array['variation'], array( 'forced_by' => $product_item_key ) );
 					}
 					break;
 			}
 		}
+		
 		return $empties_array;
 	}
 
@@ -3492,56 +3520,88 @@
 		// Filter wordt per definitie enkel doorlopen bij het updaten van leeggoed
 		$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
 		$empties_product = wc_get_product( $empties_item['product_id'] );
-		$empties_sku = $empties_product->get_sku();
-		
-		switch ( $empties_sku ) {
-			case 'WLBS6M':
-			case 'WLBS24M':
-				$empties_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $empties_sku ) ) );
-				$quantity = floor( intval($product_item['quantity']) / $empties_step );
-				return $quantity;
 
-			case 'WLFSG':
-			case 'WLFSK':
-				// Definieer de koppeling tussen glas en plastic
-				if ( $empties_sku === 'WLFSG' ) {
-					$plastic_sku = 'WLBS6M';
-				} elseif ( $empties_sku === 'WLFSK' ) {
-					$plastic_sku = 'WLBS24M';
-				}
+		if ( $empties_product !== false ) {
+			$empties_sku = $empties_product->get_sku();
+			
+			switch ( $empties_sku ) {
+				case 'WLBS6':
+					$quantity = floor( intval( $product_item['quantity'] ) / 6 );
+					break;
 
-				$plastic_in_cart = false;
-				$plastic_product_id = wc_get_product_id_by_sku($plastic_sku);
-				$plastic_step = intval( str_replace( 'M', '', str_replace( 'WLBS', '', $plastic_sku ) ) );
-				
-				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-					if ( $values['product_id'] == $product_item['product_id'] ) {
-						$product_item_key = $cart_item_key;
-						break;
+				case 'WLBS24':
+				case 'W29917':
+					$quantity = floor( intval( $product_item['quantity'] ) / 24 );
+					break;
+
+				case 'WLFSG':
+				case 'WLFSK':
+				case 'W19916':
+					// Definieer de koppelingen tussen glas en plastic
+					switch ( $empties_sku ) {
+						case 'WLFSG':
+							$plastic_sku = 'WLBS6';
+							$plastic_step = 6;
+							break;
+
+						case 'WLFSK':
+							$plastic_sku = 'WLBS24';
+							$plastic_step = 24;
+							break;
+
+						case 'W19916':
+							$plastic_sku = 'W29917';
+							$plastic_step = 24;
+							break;
 					}
-				}
-				foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-					if ( intval($values['product_id']) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
-						$main_product = wc_get_product($product_item['product_id']);
-						// We hebben een krat gevonden dat gelinkt is aan de fles
-						$plastic_in_cart = true;
-						break;
+
+					// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
+					$product = wc_get_product( $product_item->get_product_id() );
+					if ( $product !== false ) {
+						switch ( $product->get_sku() ) {
+							case '20807':
+							case '20809':
+							case '20811':
+								// Voeg 4 flesjes leeggoed toe bij clips
+								// $quantity = 4 * intval( $product_item['quantity'] );
+								// OVERRULE PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
+								$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+								break;
+						}
 					}
-				}
 
-				if ( ! $plastic_in_cart and floor( intval($product_item['quantity']) / $plastic_step ) >= 1 ) {
-					$main_product = wc_get_product($product_item['product_id']);
-					// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
-					$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval($product_item['quantity']) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $empties_item['forced_by'] ) );
-				}
+					$plastic_in_cart = false;
+					$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
+					
+					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+						if ( $values['product_id'] == $product_item['product_id'] ) {
+							$product_item_key = $cart_item_key;
+							break;
+						}
+					}
+					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+						if ( intval( $values['product_id'] ) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
+							$main_product = wc_get_product( $product_item['product_id'] );
+							// We hebben een krat gevonden dat gelinkt is aan de fles
+							$plastic_in_cart = true;
+							break;
+						}
+					}
 
-				// Geen idee waarom $quantity naar 1 terugvalt ... dus reset met het aantal van het hoofdproduct!
-				$quantity = $product_item['quantity'];
-				return $quantity;
+					if ( ! $plastic_in_cart and floor( intval( $product_item['quantity'] ) / $plastic_step ) >= 1 ) {
+						$main_product = wc_get_product( $product_item['product_id'] );
+						// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
+						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval( $product_item['quantity'] ) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $empties_item['forced_by'] ) );
+					}
 
-			default:
-				return $quantity;
+					// Geen idee waarom $quantity naar 1 terugvalt ... dus reset met het aantal van het hoofdproduct!
+					// DREIGT UITZONDERING VOOR CLIPS TE OVERSCHRIJVEN, EVENTUEEL PROBEREN UITSCHAKELEN
+					$quantity = $product_item['quantity'];
+					break;
+			}
 		}
+
+		return $quantity;
 	}
 
 	// Toon bij onzichtbaar leeggoed het woord 'flessen' na het productaantal
@@ -3559,9 +3619,9 @@
 			switch ( $product_sku ) {
 				case 'WLFSK':
 					return sprintf( _n( '%d flesje', '%d flesjes', $qty ), $qty );
-				case 'WLBS6M':
+				case 'WLBS6':
 					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 6 flessen)';
-				case 'WLBS24M':
+				case 'WLBS24':
 					return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 24 flesjes)';
 				default:
 					return sprintf( _n( '%d fles', '%d flessen', $qty ), $qty );
