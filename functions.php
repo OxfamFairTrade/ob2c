@@ -3435,7 +3435,7 @@
 
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
-			write_log( $empties_sku );
+			write_log( "FORCE SELL ADD TO CART PRODUCT: ".$empties_sku );
 			
 			switch ( $empties_sku ) {
 				case 'WLBS6':
@@ -3469,9 +3469,9 @@
 					}
 
 					// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
-					// write_log( serialize( $product_item ) );
 					$product = wc_get_product( $product_item['product_id'] );
 					if ( $product !== false ) {
+						write_log( $product->get_sku() );
 						switch ( $product->get_sku() ) {
 							case '20807':
 							case '20809':
@@ -3527,7 +3527,7 @@
 
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
-			write_log( $empties_sku );
+			write_log( "FORCE SELL UPDATE QUANTITY:".$empties_sku );
 			
 			switch ( $empties_sku ) {
 				case 'WLBS6':
@@ -3561,9 +3561,9 @@
 					}
 
 					// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
-					// write_log( serialize( $product_item ) );
 					$product = wc_get_product( $product_item['product_id'] );
 					if ( $product !== false ) {
+						write_log( $product->get_sku() );
 						switch ( $product->get_sku() ) {
 							case '20807':
 							case '20809':

@@ -141,7 +141,8 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
             <strong><?php
                 $empties = false;
                 foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
-                    if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
+                    // Verzendklasse 'breekbaar' is niet op alle leeggoed geactiveerd, dus check of het ompaknummer met een 'W' begint
+                    if ( strpos( $item_value['data']->get_sku(), 'W' ) === 0 ) {
                         $empties = true;
                         break;
                     } 
