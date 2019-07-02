@@ -306,12 +306,15 @@ if ( ! class_exists( 'WC_Force_Sells' ) ) :
 				foreach ( $product_ids as $product_id ) {
 					// GEWIJZIGD: Prijs toevoegen
 					$product = wc_get_product( $product_id );
-					if ( $product ) {
+					if ( $product !== false ) {
 						// GEWIJZIGD: Uitzondering voor clips toevoegen
 						$extra = '';
-						$clips = array( '20807', '20809', '20811' );
-						if ( in_array( $product->get_sku(), $clips ) ) {
-							$extra = '4 x ';
+						$main_product = wc_get_product( $post->ID );
+						if ( $main_product !== false ) {
+							$clips = array( '20807', '20809', '20811' );
+							if ( in_array( $main_product->get_sku(), $clips ) ) {
+								$extra = '4 x ';
+							}
 						}
 						echo '<li>' . $extra . $product->get_title() . ' (' . wc_price( $product->get_price() ) . ')</li>';
 					}
