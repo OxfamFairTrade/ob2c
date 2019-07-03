@@ -3254,7 +3254,7 @@
 				// Verberg alle gratis methodes die geen afhaling zijn
 				foreach ( $rates as $rate_key => $rate ) {
 					if ( $rate->method_id !== 'local_pickup_plus' and floatval( $rate->cost ) === 0.0 ) {
-						// IS DIT WEL NODIG, ZIJ WORDEN TOCH AL VERBORGEN DOOR WOOCOMMERCE?
+						// IS DIT WEL NODIG, WORDEN TOCH AL VERBORGEN DOOR WOOCOMMERCE?
 						// unset( $rates[$rate_key] );
 					}
 				}
@@ -3294,7 +3294,6 @@
 						} elseif ( $plastic_cnt > 0 ) {
 							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Dit is te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verminder het aantal kleine flesjes in je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
 						}
-						// wc_add_notice( sprintf( __( 'Foutmelding bij aanwezigheid van meerdere producten die niet thuisgeleverd worden, inclusief het aantal flessen (%1$d) en bakken (%2$d).', 'oxfam-webshop' ), $glass_cnt, $plastic_cnt ), 'error' );
 						WC()->session->set( 'no_home_delivery', 'SHOWN' );
 					}
 				}
@@ -4847,15 +4846,6 @@
 				// echo '<p>Contactgegevens, openingsuren én uitzonderlijke sluitingsdagen worden vanaf nu elke nacht overgenomen uit <a href="'.$oww_store_data['link'].'" target="_blank">jullie vernieuwde winkelpagina op oxfamwereldwinkels.be</a>.</p>';
 				// echo '</div>';
 			}
-			echo '<div class="notice notice-warning">';
-			echo '<p>23 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen.</p><p>Het gaat om 20065 Equality Cabernet Sauvignon, 24614 Chocoladehart, 24631 Chocoladeschaapjes 3 x 25 g, 24637 Minichocolaatjes, 24638 Aapje in melkchocolade, 25002 Maya speculoos 5 g x 200, 25296 BIO Nougat Maya, 25298 Maya nougat 8 g, 25316 BIO Choco Amandel-citroenreep, 25612 BIO Gedroogde ananas, 25712 BIO Amazonenoten, 25713 BIO Cashew zout, 25714 BIO Cashew curry, 25717 BIO Pindanoten zout, 25718 Amandelnoten natuur, 25720 BIO Fruit- en nootmix, 26093 BIO Honing crème, 26094 Honing crème Chili 500 g, 26095 Honing crème Chili 1 kg, 26099 Maya honing crème 500 g, 27812 Woksaus teriyaki, 27814 Sambal Oelek en 27815 Woksaus soja-gember.</p>';
-			echo '</div>';
-			// TE VERWIJDEREN OP 1 SEPTEMBER
-			// 21009 Appelsap 1 l (Chinese versie)
-			// 21104 Appelsap 20 cl (Chinese versie)
-			// 24531 BIO Pralines
-			// 24532 BIO Truffels
-			// 28330 BIO Vanillestokjes premium
 			echo '<div class="notice notice-success">';
 				echo '<p>Bier hier! We zetten de grote vakantie in met ons langverwachte JUSTE-trio (zowel los als in clips):</p><ul style="margin-left: 2em;">';
 					$skus = array( '20807', '20808', '20809', '20810', '20811', '20812' );
@@ -4872,6 +4862,15 @@
 				}
 				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De grootschalige communicatiecampagne begint pas vanaf september.</p><p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Thuislevering is niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor B2B-klanten. Indien de klant retourleeggoed meebrengt naar de winkel, die je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
 			echo '</div>';
+			echo '<div class="notice notice-warning">';
+			echo '<p>23 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen.</p><p>Het gaat om 20065 Equality Cabernet Sauvignon, 24614 Chocoladehart, 24631 Chocoladeschaapjes 3 x 25 g, 24637 Minichocolaatjes, 24638 Aapje in melkchocolade, 25002 Maya speculoos 5 g x 200, 25296 BIO Nougat Maya, 25298 Maya nougat 8 g, 25316 BIO Choco Amandel-citroenreep, 25612 BIO Gedroogde ananas, 25712 BIO Amazonenoten, 25713 BIO Cashew zout, 25714 BIO Cashew curry, 25717 BIO Pindanoten zout, 25718 Amandelnoten natuur, 25720 BIO Fruit- en nootmix, 26093 BIO Honing crème, 26094 Honing crème Chili 500 g, 26095 Honing crème Chili 1 kg, 26099 Maya honing crème 500 g, 27812 Woksaus teriyaki, 27814 Sambal Oelek en 27815 Woksaus soja-gember.</p>';
+			echo '</div>';
+			// TE VERWIJDEREN OP 1 SEPTEMBER
+			// 21009 Appelsap 1 l (Chinese versie)
+			// 21104 Appelsap 20 cl (Chinese versie)
+			// 24531 BIO Pralines
+			// 24532 BIO Truffels
+			// 28330 BIO Vanillestokjes premium
 			if ( does_home_delivery() ) {
 				// Boodschappen voor winkels die thuislevering doen 
 			}
