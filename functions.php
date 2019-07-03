@@ -3435,14 +3435,11 @@
 
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
-			write_log( "FORCE SELL ADD TO CART PRODUCT: ".$empties_sku );
-
 			if ( $empties_sku === 'W19916' or $empties_sku === 'W29917' ) {
 				// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
 				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voro W29917 deze gemanipuleerde hoeveelheden nodig heeft
 				$product = wc_get_product( $product_item['product_id'] );
 				if ( $product !== false ) {
-					write_log( $product->get_sku() );
 					switch ( $product->get_sku() ) {
 						case '20807':
 						case '20809':
@@ -3513,8 +3510,6 @@
 					}
 					break;
 			}
-
-			write_log($empties_array);
 		}
 
 		return $empties_array;
@@ -3533,14 +3528,11 @@
 
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
-			write_log( "FORCE SELL UPDATE QUANTITY: ".$empties_sku );
-
 			if ( $empties_sku === 'W19916' or $empties_sku === 'W29917' ) {
 				// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
 				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voro W29917 deze gemanipuleerde hoeveelheden nodig heeft
 				$product = wc_get_product( $product_item['product_id'] );
 				if ( $product !== false ) {
-					write_log( $product->get_sku() );
 					switch ( $product->get_sku() ) {
 						case '20807':
 						case '20809':
@@ -3610,13 +3602,10 @@
 						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval( $product_item['quantity'] ) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $empties_item['forced_by'] ) );
 					}
 
-					// Geen idee waarom $quantity naar 1 terugvalt ... dus reset met het aantal van het hoofdproduct!
-					// DREIGT UITZONDERING VOOR CLIPS TE OVERSCHRIJVEN, EVENTUEEL PROBEREN UITSCHAKELEN
+					// Reset eventueel met het aantal van het hoofdproduct indien $quantity naar 1 zou terugvallen
 					// $quantity = $product_item['quantity'];
 					break;
 			}
-
-			write_log($quantity);
 		}
 
 		return $quantity;
