@@ -4854,9 +4854,9 @@
 			}
 			if ( intval( get_option('oxfam_shop_post_id') ) > 0 ) {
 				$oww_store_data = get_external_wpsl_store( intval( get_option('oxfam_shop_post_id') ) );
-				echo '<div class="notice notice-success">';
-				echo '<p>Contactgegevens, openingsuren én uitzonderlijke sluitingsdagen worden vanaf nu elk nacht overgenomen uit <a href="'.$oww_store_data['link'].'" target="_blank">jullie vernieuwde winkelpagina op oxfamwereldwinkels.be</a>.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// echo '<p>Contactgegevens, openingsuren én uitzonderlijke sluitingsdagen worden vanaf nu elke nacht overgenomen uit <a href="'.$oww_store_data['link'].'" target="_blank">jullie vernieuwde winkelpagina op oxfamwereldwinkels.be</a>.</p>';
+				// echo '</div>';
 			}
 			echo '<div class="notice notice-warning">';
 			echo '<p>23 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is, of omdat de wijn niet langer geschikt is voor verkoop. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen.</p><p>Het gaat om 20065 Equality Cabernet Sauvignon, 24614 Chocoladehart, 24631 Chocoladeschaapjes 3 x 25 g, 24637 Minichocolaatjes, 24638 Aapje in melkchocolade, 25002 Maya speculoos 5 g x 200, 25296 BIO Nougat Maya, 25298 Maya nougat 8 g, 25316 BIO Choco Amandel-citroenreep, 25612 BIO Gedroogde ananas, 25712 BIO Amazonenoten, 25713 BIO Cashew zout, 25714 BIO Cashew curry, 25717 BIO Pindanoten zout, 25718 Amandelnoten natuur, 25720 BIO Fruit- en nootmix, 26093 BIO Honing crème, 26094 Honing crème Chili 500 g, 26095 Honing crème Chili 1 kg, 26099 Maya honing crème 500 g, 27812 Woksaus teriyaki, 27814 Sambal Oelek en 27815 Woksaus soja-gember.</p>';
@@ -4868,8 +4868,8 @@
 			// 24532 BIO Truffels
 			// 28330 BIO Vanillestokjes premium
 			echo '<div class="notice notice-success">';
-				echo '<p>In de maanden mei-juni verschijnen slechts 4 nieuwe producten:</p><ul style="margin-left: 2em;">';
-					$skus = array( '20076', '26713', '27117', '27151' );
+				echo '<p>Bier hier! We zetten de grote vakantie in met ons langverwachte JUSTE-trio (zowel los als in clips):</p><ul style="margin-left: 2em;">';
+					$skus = array( '20807', '20808', '20809', '20810', '20811', '20812' );
 					foreach ( $skus as $sku ) {
 						$product_id = wc_get_product_id_by_sku($sku);
 						if ( $product_id ) {
@@ -4881,7 +4881,7 @@
 				if ( current_user_can('manage_network_users') ) {
 					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De rijstwafels zijn een verderzetting van artikel 27150 maar hebben een licht hoger nettogewicht (en dus lagere kiloprijs). Daardoor konden we de oude referentie niet gewoon aanpassen.</p>';
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De grootschalige communicatiecampagne begint pas vanaf september.</p><p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Thuislevering is niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor B2B-klanten. Indien de klant retourleeggoed meebrengt naar de winkel, die je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
 			echo '</div>';
 			if ( does_home_delivery() ) {
 				// Boodschappen voor winkels die thuislevering doen 
