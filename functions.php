@@ -5358,7 +5358,7 @@
 						return call_user_func( 'format_'.$key, $location_data[$key] );
 
 					} else {
-						return "(niet gevonden)";
+						return "";
 					}
 
 				}
@@ -5397,7 +5397,7 @@
 								return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 						}
 					} else {
-						return "";
+						return "(niet gevonden)";
 					}
 
 				}
