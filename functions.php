@@ -5358,7 +5358,7 @@
 						return call_user_func( 'format_'.$key, $location_data[$key] );
 
 					} else {
-						return "API ERROR";
+						return "(niet gevonden)";
 					}
 
 				}
@@ -5397,11 +5397,7 @@
 								return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
 						}
 					} else {
-						if ( $raw === false ) {
-							return "(niet gevonden)";
-						} else {
-							return "";
-						}
+						return "";
 					}
 
 				}
