@@ -53,13 +53,16 @@
 				
 				foreach ( $unfinished_orders as $order ) {
 					if ( $order->get_date_created()->getTimestamp() < strtotime('-3 weekdays') ) {
-						// Door deze check sluiten we ook B2B-orders (die een langere doorlooptijd kunnen hebben) meteen uit
-						if ( $order->get_meta('estimated_delivery') !== '' ) {
+						// Sluiten B2B-orders (die een langere doorlooptijd kunnen hebben) uit en verstuur meldingen slechts om de 2 werkdagen
+						if ( $order->get_meta('estimated_delivery') !== '' and $order->update_meta_data('_overdue_reminder_sent') < strtotime('-2 weekdays') ) {
 							$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$order->get_meta('_excel_file_name');
 							// Functie $order->get_edit_order_url() pas beschikbaar vanaf WC3.3+
 							$body = '<html><p>Opgelet: bestelling '.$order->get_order_number().' zou tegen '.date_i18n( 'd/m/Y H:i', $order->get_meta('estimated_delivery') ).' geleverd worden maar het order is nog niet als afgerond gemarkeerd in de webshop! Hierdoor blijft de klant online in het ongewisse. Gelieve actie te ondernemen.</p><p><a href="'.get_admin_url( null, 'post.php?post='.$order->get_id().'&action=edit' ).'" target="_blank">Bekijk het order in de back-end (inloggen vereist) &raquo;</a></p><p>&nbsp;</p><p><i>Dit is een automatisch bericht.</i></p></html>';
 							if ( wp_mail( get_option('admin_email'), $order->get_order_number().' wacht op verwerking', $body, $headers, $attachments ) ) {
 								$logger->warning( $order->get_order_number().": waarschuwing verstuurd over laattijdige afwerking", $context );
+								$order->add_order_note( 'Bestelling nog niet afgewerkt! Automatische herinnering verstuurd naar webshopmailbox.' );
+								$order->update_meta_data( '_overdue_reminder_sent', current_time('timestamp') );
+								$order->save();
 							} else {
 								$logger->warning( $order->get_order_number().": waarschuwing versturen mislukt", $context );
 							}
