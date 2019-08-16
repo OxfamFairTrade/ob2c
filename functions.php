@@ -4860,14 +4860,11 @@
 				if ( current_user_can('manage_network_users') ) {
 					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De grootschalige communicatiecampagne begint pas vanaf september.</p><p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Thuislevering is niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor B2B-klanten. Indien de klant retourleeggoed meebrengt naar de winkel, dien je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De grootschalige communicatiecampagne begint pas vanaf september.</p><p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Zoals gewoonlijk is thuislevering niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">B2B-klanten</a>. Indien de klant retourleeggoed meebrengt naar de winkel, dien je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
 			echo '</div>';
 			// echo '<div class="notice notice-warning">';
-			// echo '<p>3 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen.</p><p>Het gaat om 21009 Appelsap 1 l (Chinese versie), 21104 Appelsap 20 cl (Chinese versie) en 28330 BIO Vanillestokjes premium.</p>';
+			// echo '<p>3 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen. Het gaat om 21009 Appelsap 1 l (Chinese versie), 21104 Appelsap 20 cl (Chinese versie) en 28330 BIO Vanillestokjes premium.</p>';
 			// echo '</div>';
-			// TERUGKOMENDE PRODUCTEN, TOCH NIET VERWIJDEREN OP 1 SEPTEMBER
-			// 24531 BIO Pralines
-			// 24532 BIO Truffels
 			if ( does_home_delivery() ) {
 				// Boodschappen voor winkels die thuislevering doen 
 			}
