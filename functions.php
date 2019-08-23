@@ -2766,49 +2766,42 @@
 	}
 
 	// Haal de openingsuren van de node voor een bepaalde dag op (werkt met dagindexes van 0 tot 6)
-	function get_office_hours_for_day( $day, $node = 0, $post_id = 0 ) {
-		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
-		if ( $post_id === 0 ) $post_id = intval( get_option('oxfam_shop_post_id') );
+	function get_office_hours_for_day( $day, $node = 0, $shop_post_id = 0 ) {
+		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
 
-		// Overschakelen op nieuwe werkwijze indien beschikbaar
-		if ( $post_id > 0 ) {
+		$oww_store_data = get_external_wpsl_store( $shop_post_id );
+		if ( $oww_store_data !== false ) {
+			// Bestaat in principe altijd
+			$opening_hours = $oww_store_data['opening_hours'];
 			
-			$oww_store_data = get_external_wpsl_store( $post_id );
-			if ( $oww_store_data !== false ) {
-				// Bestaat in principe altijd
-				$opening_hours = $oww_store_data['opening_hours'];
-				
-				$i = 0;
-				$hours = array();
-				$weekdays = array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' );
-				
-				foreach ( $opening_hours[ $weekdays[$day] ] as $block ) {
-					$parts = explode( ',', $block );
-					if ( count($parts) === 2 ) {
-						$hours[$i]['start'] = format_hour( $parts[0] );
-						$hours[$i]['end'] = format_hour( $parts[1] );
-					}
-					$i++;
+			$i = 0;
+			$hours = array();
+			$weekdays = array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' );
+			
+			foreach ( $opening_hours[ $weekdays[$day] ] as $block ) {
+				$parts = explode( ',', $block );
+				if ( count($parts) === 2 ) {
+					$hours[$i]['start'] = format_hour( $parts[0] );
+					$hours[$i]['end'] = format_hour( $parts[1] );
 				}
-				return $hours;
+				$i++;
 			}
-
-		} 
+			return $hours;
+		}
 
 		return false;
 	}
 
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7)
-	function get_office_hours( $node = 0, $post_id = 0 ) {
-		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
-		if ( $post_id === 0 ) $post_id = intval( get_option('oxfam_shop_post_id') );
+	function get_office_hours( $node = 0, $shop_post_id = 0 ) {
+		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
 		
-		if ( ! is_numeric( $post_id ) ) {
-			$hours = get_site_option( 'oxfam_opening_hours_'.$post_id );
+		if ( ! is_numeric( $shop_post_id ) ) {
+			$hours = get_site_option( 'oxfam_opening_hours_'.$shop_post_id );
 		} else {
 			for ( $day = 0; $day <= 6; $day++ ) {
 				// Forceer 'natuurlijke' nummering
-				$hours[$day+1] = get_office_hours_for_day( $day, $node, $post_id );
+				$hours[$day+1] = get_office_hours_for_day( $day, $node, $shop_post_id );
 			}
 		}
 
@@ -2816,14 +2809,14 @@
 	}
 
 	// Stop de uitzonderlijke sluitingsdagen in een array 
-	function get_closing_days( $post_id = 0 ) {
-		if ( $post_id === 0 ) $post_id = intval( get_option('oxfam_shop_post_id') );
+	function get_closing_days( $shop_post_id = 0 ) {
+		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
 		
-		if ( ! is_numeric( $post_id ) ) {
+		if ( ! is_numeric( $shop_post_id ) ) {
 			// Retourneert ook false indien onbestaande
-			return get_site_option( 'oxfam_closing_days_'.$post_id );
-		} elseif ( $post_id > 0 ) {
-			$oww_store_data = get_external_wpsl_store( $post_id );
+			return get_site_option( 'oxfam_closing_days_'.$shop_post_id );
+		} elseif ( intval( $shop_post_id ) > 0 ) {
+			$oww_store_data = get_external_wpsl_store( $shop_post_id );
 			if ( $oww_store_data !== false ) {
 				// Bevat datums in 'Y-m-d'-formaat
 				$closing_days = $oww_store_data['closing_days'];
@@ -2855,7 +2848,7 @@
 			// Alle instances van winkelafhalingen
 			case stristr( $shipping_id, 'local_pickup' ):
 				// Standaard: bereken a.d.h.v. de hoofdwinkel
-				$post_id = intval( get_option('oxfam_shop_post_id') );
+				$shop_post_id = get_option('oxfam_shop_post_id');
 				
 				if ( $locations = get_option('woocommerce_pickup_locations') ) {
 					if ( $order_id === false ) {
@@ -2876,14 +2869,14 @@
 							$parts = explode( 'id=', $location['note'] );
 							if ( isset( $parts[1] ) ) {
 								// Afwijkend punt geselecteerd: bereken a.d.h.v. de post-ID in de openingsuren
-								$post_id = str_replace( ']', '', $parts[1] );
+								$shop_post_id = str_replace( ']', '', $parts[1] );
 							}
 							break;
 						}
 					}
 				}
 
-				if ( $post_id === 'fruithoekje' ) {
+				if ( $shop_post_id === 'fruithoekje' ) {
 					if ( date_i18n( 'N', $from ) > 4 or ( date_i18n( 'N', $from ) == 4 and date_i18n( 'G', $from ) >= 12 ) ) {
 						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
@@ -2891,7 +2884,7 @@
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
-				} elseif ( intval( $post_id ) === 3478 ) {
+				} elseif ( intval( $shop_post_id ) === 3478 ) {
 					// Meer marge voor Hoogstraten
 					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
 						// Na de deadline van zondag 22u00: begin pas bij vierde werkdag, kwestie van zeker op volgende week uit te komen
@@ -2904,19 +2897,19 @@
 					$timestamp = get_first_working_day( $from );
 
 					// Geef nog twee extra werkdagen voor afhaling in niet-OWW-punten
-					if ( ! is_numeric( $post_id ) ) {
+					if ( ! is_numeric( $shop_post_id ) ) {
 						$timestamp = strtotime( '+2 weekdays', $timestamp );
 					}
 				}
 
 				// Check of de winkel op deze dag effectief nog geopend is na 12u (tel er indien nodig dagen bij)
-				$timestamp = find_first_opening_hour( get_office_hours( NULL, $post_id ), $timestamp );
+				$timestamp = find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
 
 				// Tel alle sluitingsdagen die in de verwerkingsperiode vallen (inclusief de eerstkomende openingsdag!) erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 
 				// Check of de winkel ook op de nieuwe dag effectief nog geopend is na 12u
-				$timestamp = find_first_opening_hour( get_office_hours( NULL, $post_id ), $timestamp );
+				$timestamp = find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
 
 				break;
 
@@ -4841,7 +4834,7 @@
 				echo '</div>';
 			}
 			if ( intval( get_option('oxfam_shop_post_id') ) > 0 ) {
-				$oww_store_data = get_external_wpsl_store( intval( get_option('oxfam_shop_post_id') ) );
+				$oww_store_data = get_external_wpsl_store( get_option('oxfam_shop_post_id') );
 				// echo '<div class="notice notice-success">';
 				// echo '<p>Contactgegevens, openingsuren én uitzonderlijke sluitingsdagen worden vanaf nu elke nacht overgenomen uit <a href="'.$oww_store_data['link'].'" target="_blank">jullie vernieuwde winkelpagina op oxfamwereldwinkels.be</a>.</p>';
 				// echo '</div>';
@@ -5045,7 +5038,7 @@
 		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
 		
 		$output = '';
-		$days = get_office_hours( $atts['node'], intval( $atts['id'] ) );
+		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
 		$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
 
@@ -5090,7 +5083,7 @@
 	function print_oxfam_shop_data( $key, $atts ) {
 		// Overschrijf defaults door opgegeven attributen
 		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'id' => get_option('oxfam_shop_post_id') ), $atts );
-		return get_oxfam_shop_data( $key, $atts['node'], false, intval( $atts['id'] ) );
+		return get_oxfam_shop_data( $key, $atts['node'], false, $atts['id'] );
 	}
 
 	function print_mail() {
@@ -5250,25 +5243,26 @@
 		return in_array( get_current_blog_id(), $regions );
 	}
 
-	function get_external_wpsl_store( $post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
-		if ( false === ( $store_data = get_site_transient( $post_id.'_store_data' ) ) ) {
+	function get_external_wpsl_store( $shop_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
+		$shop_post_id = intval( $shop_post_id );
+		if ( false === ( $store_data = get_site_transient( $shop_post_id.'_store_data' ) ) ) {
 			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
 			$args = array(
 				'headers' => array(
 					'Authorization' => 'Basic '.base64_encode( OWW_USER.':'.OWW_PASSWORD ),
 				),
 			);
-			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$post_id, $args );
+			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id, $args );
 			
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'WordPress API' );
 			if ( $response['response']['code'] == 200 ) {
-				$logger->debug( 'Shop data saved in transient for ID '.$post_id, $context );
+				$logger->debug( 'Shop data saved in transient for ID '.$shop_post_id, $context );
 				// Bewaar als een array i.p.v. een object
 				$store_data = json_decode( $response['body'], true );
-				set_site_transient( $post_id.'_store_data', $store_data, DAY_IN_SECONDS );
+				set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
 			} else {
-				$logger->notice( 'Could not retrieve shop data for ID '.$post_id, $context );
+				$logger->notice( 'Could not retrieve shop data for ID '.$shop_post_id, $context );
 				$store_data = false;
 			}
 		}
@@ -5276,21 +5270,21 @@
 		return $store_data;
 	}
 
-	function get_external_partner( $post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
+	function get_external_partner( $partner_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
 		// API voorlopig nog niet aanspreken
-		if ( false !== ( $partner_data = get_site_transient( $post_id.'_partner_data' ) ) ) {
+		if ( false !== ( $partner_data = get_site_transient( $partner_post_id.'_partner_data' ) ) ) {
 			// Deze route is nog niet beschikbaar!
-			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/'.$post_id );
+			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/'.$partner_post_id );
 			
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'WordPress API' );
 			if ( $response['response']['code'] == 200 ) {
-				$logger->debug( 'Partner data saved in transient for ID '.$post_id, $context );
+				$logger->debug( 'Partner data saved in transient for ID '.$partner_post_id, $context );
 				// Bewaar als een array i.p.v. een object
 				$partner_data = json_decode( $response['body'], true );
-				set_site_transient( $post_id.'_partner_data', $partner_data, DAY_IN_SECONDS );
+				set_site_transient( $partner_post_id.'_partner_data', $partner_data, DAY_IN_SECONDS );
 			} else {
-				$logger->notice( 'Could not retrieve partner data for ID '.$post_id, $context );
+				$logger->notice( 'Could not retrieve partner data for ID '.$partner_post_id, $context );
 				$partner_data = false;
 			}
 		} else {
@@ -5301,101 +5295,55 @@
 	}
 
 	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen (mag verdwijnen van zodra logomateriaal uit OWW-site komt)
-	function get_oxfam_shop_data( $key, $node = 0, $raw = false, $post_id = 0 ) {
-		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
-		if ( $post_id === 0 ) $post_id = intval( get_option('oxfam_shop_post_id') );
+	function get_oxfam_shop_data( $key, $node = 0, $raw = false, $shop_post_id = 0 ) {
+		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
 
 		if ( ! is_main_site() ) {
 
-			// Overschakelen op nieuwe werkwijze indien beschikbaar
-			if ( $post_id > 0 ) {
-
-				$oww_store_data = get_external_wpsl_store( $post_id );
-				if ( $oww_store_data !== false ) {
-					// Bestaat in principe altijd
-					$location_data = $oww_store_data['location'];
-					
-					if ( $post_id === 3598 ) {
-						// Uitzonderingen voor Regio Leuven vzw
-						switch ($key) {
-							case 'tax':
-								return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
-							case 'account':
-								return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
-							case 'headquarter':
-								return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
-							case 'telephone':
-								return call_user_func( 'format_'.$key, '0486762195', '.' );
-						}
-					} elseif ( $post_id === 3226 ) {
-						// Uitzonderingen voor Regio Antwerpen vzw
-						switch ($key) {
-							case 'account':
-								return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
-						}
-					}
-					
-					if ( array_key_exists( $key, $location_data ) and $location_data[$key] !== '' ) {
-						
-						switch ($key) {
-							case 'telephone':
-								// Geef alternatieve delimiter mee
-								return call_user_func( 'format_'.$key, $location_data[$key], '.' );
-							case 'headquarter':
-								// Plak de adresgegevens van de vzw aan elkaar
-								return call_user_func( 'format_place', $location_data[$key]['place'] ).', '.call_user_func( 'format_zipcode', $location_data[$key]['zipcode'] ).' '.call_user_func( 'format_city', $location_data[$key]['city'] );
-							case 'll':
-								// Er bestaat geen formatteerfunctie voor coördinaten
-								return $location_data[$key];
-						}
-
-						return call_user_func( 'format_'.$key, $location_data[$key] );
-
-					} else {
-						return "";
-					}
-
-				}
-
-			} else {
+			$oww_store_data = get_external_wpsl_store( $shop_post_id );
+			if ( $oww_store_data !== false ) {
+				// Bestaat in principe altijd
+				$location_data = $oww_store_data['location'];
 				
-				global $wpdb;
-				write_log( "USING OLD METHOD FOR NODE ".$node." / POST-ID ".$post_id." / KEY ".$key." ON BLOG-ID ".get_current_blog_id()." WITH URL ".$_SERVER['REQUEST_URI'] );
-
-				if ( $key === 'tax' or $key === 'account' or $key === 'headquarter' ) {
-					
-					$row = $wpdb->get_row( 'SELECT * FROM field_data_field_shop_'.$key.' WHERE entity_id = '.get_oxfam_shop_data( 'shop', $node ) );
-					if ( $row ) {
-						return call_user_func( 'format_'.$key, $row->{'field_shop_'.$key.'_value'} );
-					} else {
-						return "UNKNOWN";
+				if ( intval( $shop_post_id ) === 3598 ) {
+					// Uitzonderingen voor Regio Leuven vzw
+					switch ($key) {
+						case 'tax':
+							return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
+						case 'account':
+							return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
+						case 'headquarter':
+							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0486762195', '.' );
 					}
+				} elseif ( intval( $shop_post_id ) === 3226 ) {
+					// Uitzonderingen voor Regio Antwerpen vzw
+					switch ($key) {
+						case 'account':
+							return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
+					}
+				}
+				
+				if ( array_key_exists( $key, $location_data ) and $location_data[$key] !== '' ) {
+					
+					switch ($key) {
+						case 'telephone':
+							// Geef alternatieve delimiter mee
+							return call_user_func( 'format_'.$key, $location_data[$key], '.' );
+						case 'headquarter':
+							// Plak de adresgegevens van de vzw aan elkaar
+							return call_user_func( 'format_place', $location_data[$key]['place'] ).', '.call_user_func( 'format_zipcode', $location_data[$key]['zipcode'] ).' '.call_user_func( 'format_city', $location_data[$key]['city'] );
+						case 'll':
+							// Er bestaat geen formatteerfunctie voor coördinaten
+							return $location_data[$key];
+					}
+
+					return call_user_func( 'format_'.$key, $location_data[$key] );
 
 				} else {
-					
-					$row = $wpdb->get_row( 'SELECT * FROM field_data_field_sellpoint_'.$key.' WHERE entity_id = '.intval($node) );
-					if ( $row ) {
-						switch ($key) {
-							case 'shop':
-								return $row->field_sellpoint_shop_nid;
-							case 'mail':
-								return format_mail($row->field_sellpoint_mail_email);
-							case 'll':
-								// Voor KML-file moet longitude voor latitude komen!
-								return $row->field_sellpoint_ll_lon.",".$row->field_sellpoint_ll_lat;
-							case 'telephone':
-							case 'fax':
-								// Geef alternatieve delimiter mee
-								return call_user_func( 'format_telephone', $row->{'field_sellpoint_'.$key.'_value'}, '.' );
-							default:
-								return call_user_func( 'format_'.$key, $row->{'field_sellpoint_'.$key.'_value'} );
-						}
-					} else {
-						return "(niet gevonden)";
-					}
-
+					return "";
 				}
-
 			}
 
 		} else {
@@ -5435,10 +5383,9 @@
 		return get_company_address()."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data('telephone')."<br/>".get_oxfam_shop_data('tax');
 	}
 
-	function get_company_address( $node = 0, $post_id = 0 ) {
-		if ( $node === 0 ) $node = get_option('oxfam_shop_node');
-		if ( $post_id === 0 ) $post_id = intval( get_option('oxfam_shop_post_id') );
-		return get_oxfam_shop_data( 'place', $node, false, $post_id )."<br/>".get_oxfam_shop_data( 'zipcode', $node, false, $post_id )." ".get_oxfam_shop_data( 'city', $node, false, $post_id );
+	function get_company_address( $node = 0, $shop_post_id = 0 ) {
+		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
+		return get_oxfam_shop_data( 'place', $node, false, $shop_post_id )."<br/>".get_oxfam_shop_data( 'zipcode', $node, false, $shop_post_id )." ".get_oxfam_shop_data( 'city', $node, false, $shop_post_id );
 	}
 
 	function get_full_company() {

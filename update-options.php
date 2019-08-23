@@ -67,7 +67,7 @@
 					$profiles = $mollie->profilesByPartnerId( $partner_id_customer );
 					if ( $profiles->resultcode == '10' ) {
 						if ( get_company_name() != trim_and_uppercase($profiles->items->profile->name) ) {
-							$name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
+							// $name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
 						// Fix voor winkels met twee nummers (bv. Mariakerke)
 						$phones = explode( ' of ', get_oxfam_shop_data('telephone') );
