@@ -4834,27 +4834,25 @@
 				echo '</div>';
 			}
 			echo '<div class="notice notice-success">';
-				echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/19027/12894/prijswijzigingen-vanaf-1-september.html" target="_blank">prijswijzigingen van 1 september 2019</a> zullen in de loop van zondagochtend automatisch doorgevoerd worden in jullie webshop.</p>';
+				echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/19027/12894/prijswijzigingen-vanaf-1-september.html" target="_blank">prijswijzigingen van 1 september 2019</a> werden doorgevoerd in jullie webshop. Daarnaast verschenen er ook twee nieuwe producten:</p><ul style="margin-left: 2em;">';
+					$skus = array( '22605', '24302' );
+					foreach ( $skus as $sku ) {
+						$product_id = wc_get_product_id_by_sku($sku);
+						if ( $product_id ) {
+							$product = wc_get_product($product_id);
+							echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+						}
+					}
+				echo '</ul><p>';
+				if ( current_user_can('manage_network_users') ) {
+					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				}
+				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
 			echo '</div>';
-			// echo '<div class="notice notice-success">';
-			// 	echo '<p>Bier hier! We zetten de grote vakantie in met ons langverwachte JUSTE-trio (zowel los als in clips):</p><ul style="margin-left: 2em;">';
-			// 		$skus = array( '20807', '20808', '20809', '20810', '20811', '20812' );
-			// 		foreach ( $skus as $sku ) {
-			// 			$product_id = wc_get_product_id_by_sku($sku);
-			// 			if ( $product_id ) {
-			// 				$product = wc_get_product($product_id);
-			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-			// 			}
-			// 		}
-			// 	echo '</ul><p>';
-			// 	if ( current_user_can('manage_network_users') ) {
-			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-			// 	}
-			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De grootschalige communicatiecampagne begint pas vanaf september.</p><p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Zoals gewoonlijk is thuislevering niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">B2B-klanten</a>. Indien de klant retourleeggoed meebrengt naar de winkel, dien je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
-			// echo '</div>';
-			// echo '<div class="notice notice-warning">';
-			// echo '<p>3 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen. Het gaat om 21009 Appelsap 1 l (Chinese versie), 21104 Appelsap 20 cl (Chinese versie) en 28330 BIO Vanillestokjes premium.</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-warning">';
+			echo '<p>3 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen. Het gaat om 21009 Appelsap 1 l (Chinese versie), 21104 Appelsap 20 cl (Chinese versie) en 28330 BIO Vanillestokjes premium.</p>';
+			echo '</div>';
+			// echo '<p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Zoals gewoonlijk is thuislevering niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">B2B-klanten</a>. Indien de klant retourleeggoed meebrengt naar de winkel, dien je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
 			if ( does_home_delivery() ) {
 				// Boodschappen voor winkels die thuislevering doen 
 			}
