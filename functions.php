@@ -2580,7 +2580,8 @@
 	add_action( 'woocommerce_just_before_checkout_form', 'show_b2b_account_hint', 10 );
 
 	function show_b2b_account_hint() {
-		if ( ! is_b2b_customer() ) {
+		// Niet tonen bij Brugge
+		if ( ! is_b2b_customer() and get_current_blog_id() != 25 ) {
 			wc_print_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via <a href="mailto:'.get_company_email().'?subject=Aanvraag B2B-webshopaccount">'.get_company_email().'</a>.', 'notice' );
 		}
 	}
