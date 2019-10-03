@@ -4836,7 +4836,7 @@
 			}
 			echo '<div class="notice notice-success">';
 				echo '<p>Oktober is chocolademaand! De pralines en zeevruchten zijn terug van (lang) weggeweest en ook de sintfiguren staan al te popelen om zich te smijten voor de Week van de Fair Trade:</p><ul style="margin-left: 2em;">';
-					$skus = array( '22605', '24302' );
+					$skus = array( '24547', '24635', '24640', '24643', '24644', '24645', '24646', '26014', '26491' );
 					foreach ( $skus as $sku ) {
 						$product_id = wc_get_product_id_by_sku($sku);
 						if ( $product_id ) {

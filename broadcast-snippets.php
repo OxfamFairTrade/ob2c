@@ -166,7 +166,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '21061', '28319', '28318', '26314', '26311', '26315', '26312', '26419', '25006', '27205', '27204', '27201', '25727', '25725', '25220', '21499', '26493', '28018', '24101', '24303', '24300', '24102', '24100', '24103' );
+	$photos_to_delete = array( '21061', '24547', '24635', '24640', '24643', '24644', '24645', '24646', '26014', '26491', '28318', '28319' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
@@ -204,7 +204,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '22605', '24302' );
+	$outofstocks = array( '24547', '24635', '24640', '24643', '24644', '24645', '24646', '26014', '26491' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -215,10 +215,10 @@
 	}
 
 	// Werk de datum van een product bij
-	$product_id = wc_get_product_id_by_sku('29297');
+	$product_id = wc_get_product_id_by_sku('24640');
 	if ( $product_id ) {
 		$product = wc_get_product( $product_id );
-		$product->set_date_created('2019-03-01T12:31:00Z');
+		$product->set_date_created('2019-10-03T07:31:00Z');
 		$product->save();
 	}
 
