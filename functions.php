@@ -536,6 +536,8 @@
 			if ( in_array( $city, get_option( 'oxfam_member_shops' ) ) ) {
 				// Dubbelcheck of deze stad wel tussen de deelnemende winkels zit
 				$owner = $city;
+			} elseif ( strpos( $city, 'boortmeerbeek' ) !== false ) {
+				$owner = 'boortmeerbeek';
 			}
 		}
 

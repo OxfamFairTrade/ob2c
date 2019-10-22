@@ -33,15 +33,16 @@
 		}	
 	}
 
-	// Verwijder individuele productterm
-	$taxonomy = 'product_partner';
+	// Verwijder producttermen
+	$taxonomy = 'product_tag';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$term = 'surin-ricefund';
-		$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
-		if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
-			write_log("DELETED ".$term_to_delete->name);
-		} else {
-			write_log("COULD NOT DELETE ".$term_to_delete->name);
+		$terms = array( 'gift-alcohol', 'gift-apero', 'gift-fris', 'gift-italiaans', 'gift-koffie', 'gift-oosters', 'gift-sterk', 'gift-thee', 'gift-tussendoor', 'gift-warm', 'gift-wereldkeuken', 'gift-wijn', 'gift-zoet' );
+		foreach ( $terms as $term ) {
+			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
+			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+			} else {
+				write_log("COULD NOT DELETE ".$term_to_delete->name);
+			}
 		}
 	}
 
