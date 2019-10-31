@@ -21,7 +21,8 @@
 					settings_fields( 'oxfam-options-global' );
 				} else {
 					// Er lijkt slechts één groep per keer opgeslagen te kunnen worden!
-					settings_fields( 'oxfam-options-local' );
+					// BEVAT GEEN OPTIES MEER
+					// settings_fields( 'oxfam-options-local' );
 				}
 
 				Mollie_Autoloader::register();
