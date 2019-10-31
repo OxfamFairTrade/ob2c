@@ -21,7 +21,7 @@
 					settings_fields( 'oxfam-options-global' );
 				} else {
 					// Er lijkt slechts één groep per keer opgeslagen te kunnen worden!
-					// BEVAT GEEN OPTIES MEER
+					// BEVAT GEEN OPTIES MEER, LAAT STAAN VOOR DE TOEKOMST
 					// settings_fields( 'oxfam-options-local' );
 				}
 
@@ -179,7 +179,7 @@
 		  		</td>
 			</tr>
 			<?php
-				if ( current_user_can( 'manage_woocommerce' ) ) {
+				if ( current_user_can( 'create_sites' ) ) {
 					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
