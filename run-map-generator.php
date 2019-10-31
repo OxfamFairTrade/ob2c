@@ -25,6 +25,10 @@
 				wp_reset_postdata();
 			}
 
+			// Leeg de 'store data'-cache zodat openingsuren onmiddellijk bijgewerkt worden, ook als er nog een transient bestaat van vòòr de wijzigingen
+			global $wpdb;
+			$wpdb->query( "DELETE FROM `$wpdb->sitemeta` WHERE `meta_key` LIKE ('%_store_data')" );
+
 			// Sluit afgeschermde en gearchiveerde webshops uit
 			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
 			

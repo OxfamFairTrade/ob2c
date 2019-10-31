@@ -4836,22 +4836,22 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			echo '<div class="notice notice-success">';
-				echo '<p>Oktober is chocolademaand! De pralines en zeevruchten zijn terug van (lang) weggeweest en ook de sintfiguren staan al te popelen om zich te smijten voor de Week van de Fair Trade:</p><ul style="margin-left: 2em;">';
-					$skus = array( '24547', '24635', '24640', '24643', '24644', '24645', '24646', '26014', '26491' );
-					foreach ( $skus as $sku ) {
-						$product_id = wc_get_product_id_by_sku($sku);
-						if ( $product_id ) {
-							$product = wc_get_product($product_id);
-							echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-						}
-					}
-				echo '</ul><p>';
-				if ( current_user_can('manage_network_users') ) {
-					echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				}
-				echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-			echo '</div>';
+			// echo '<div class="notice notice-success">';
+			// 	echo '<p>Oktober is chocolademaand! De pralines en zeevruchten zijn terug van (lang) weggeweest en ook de sintfiguren staan al te popelen om zich te smijten voor de Week van de Fair Trade:</p><ul style="margin-left: 2em;">';
+			// 		$skus = array( '24547', '24635', '24640', '24643', '24644', '24645', '24646', '26014', '26491' );
+			// 		foreach ( $skus as $sku ) {
+			// 			$product_id = wc_get_product_id_by_sku($sku);
+			// 			if ( $product_id ) {
+			// 				$product = wc_get_product($product_id);
+			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+			// 			}
+			// 		}
+			// 	echo '</ul><p>';
+			// 	if ( current_user_can('manage_network_users') ) {
+			// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+			// 	}
+			// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+			// echo '</div>';
 			// echo '<div class="notice notice-warning">';
 			// echo '<p>3 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen. Het gaat om 21009 Appelsap 1 l (Chinese versie), 21104 Appelsap 20 cl (Chinese versie) en 28330 BIO Vanillestokjes premium.</p>';
 			// echo '</div>';

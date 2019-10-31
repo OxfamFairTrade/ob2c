@@ -50,6 +50,10 @@
 	$oxfam_blocked_sites = array();
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
+	// Default feestdagen bijwerken
+	$default_holidays = array( '2019-11-01', '2019-11-11', '2019-12-25', '2020-01-01' );
+	update_site_option( 'oxfam_holidays', $default_holidays );
+
 	// Startpagina instellen
 	$homepage = get_page_by_title( 'Startpagina' );
 	if ( $homepage ) {
