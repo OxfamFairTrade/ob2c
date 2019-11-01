@@ -209,7 +209,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '24547', '24635', '24640', '24643', '24644', '24645', '24646', '26014', '26491' );
+	$outofstocks = array( '23403' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -300,7 +300,7 @@
 	update_site_option( 'oxfam_opening_hours_'.$node , $hours );
 
 	// Fix de BestelWeb-parameter indien de ERP-import herstart moest worden (of we de B2B-producten vergeten waren)
-	$erp_skus = array( '29297', '29298', '05246', '08808', '08809' );
+	$erp_skus = array( '29297', '29298', '05246', '08808', '08809', '17105' );
 	foreach ( $erp_skus as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
