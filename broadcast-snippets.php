@@ -33,10 +33,23 @@
 		}	
 	}
 
-	// Verwijder producttermen
+	// Verwijder producttags
 	$taxonomy = 'product_tag';
 	if ( taxonomy_exists( $taxonomy ) ) {
 		$terms = array( 'gift-alcohol', 'gift-apero', 'gift-fris', 'gift-italiaans', 'gift-koffie', 'gift-oosters', 'gift-sterk', 'gift-thee', 'gift-tussendoor', 'gift-warm', 'gift-wereldkeuken', 'gift-wijn', 'gift-zoet' );
+		foreach ( $terms as $term ) {
+			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
+			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+			} else {
+				write_log("COULD NOT DELETE ".$term_to_delete->name);
+			}
+		}
+	}
+
+	// Verwijder productcategorieën UIT TE VOEREN VOOR DE UPDATE VAN 1 DECEMBER
+	$taxonomy = 'product_cat';
+	if ( taxonomy_exists( $taxonomy ) ) {
+		$terms = array( 'builtjes-thee', 'los-thee', 'repen-chocolade', 'tabletten-chocolade' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
