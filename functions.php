@@ -3725,7 +3725,6 @@
 
 	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
-		register_setting( 'oxfam-options-global', 'oxfam_shop_node', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', 'absint' );
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
