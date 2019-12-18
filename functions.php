@@ -2880,15 +2880,7 @@
 					}
 				}
 
-				if ( $shop_post_id === 'fruithoekje' ) {
-					if ( date_i18n( 'N', $from ) > 4 or ( date_i18n( 'N', $from ) == 4 and date_i18n( 'G', $from ) >= 12 ) ) {
-						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
-						$from = strtotime( '+1 weekday', $from );
-					}
-
-					// Zoek de eerste vrijdag na de volgende middagdeadline
-					$timestamp = strtotime( 'next Friday', $from );
-				} elseif ( intval( $shop_post_id ) === 3478 ) {
+				if ( intval( $shop_post_id ) === 3478 ) {
 					// Meer marge voor Hoogstraten
 					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
 						// Na de deadline van zondag 22u00: begin pas bij vierde werkdag, kwestie van zeker op volgende week uit te komen
@@ -4824,7 +4816,7 @@
 		if ( ! current_user_can('create_sites') ) {
 			remove_all_actions('admin_notices');
 		}
-		add_action( 'admin_notices', 'oxfam_admin_notices' );
+		// add_action( 'admin_notices', 'oxfam_admin_notices' );
 	}
 
 	function oxfam_admin_notices() {
@@ -4838,11 +4830,8 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De wijnduoactie voor eindejaar werd geactiveerd in jullie webshop. Op de homepage verschijnt eerstdaags een sinterklaasbanner, dus vergeet zeker niet jullie sintproducten op voorraad te zetten!</p>';
-				echo '</div>';
-				echo '<div class="notice notice-success">';
 					echo '<p>Slechts één nieuw product deze maand:</p><ul style="margin-left: 2em;">';
-						$skus = array( '23403' );
+						$skus = array( '20248', '20262', '20416', '26714', '28804' );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku($sku);
 							if ( $product_id ) {
@@ -4858,7 +4847,7 @@
 				echo '</div>';
 			}
 			// echo '<div class="notice notice-warning">';
-			// echo '<p>3 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen. Het gaat om 21009 Appelsap 1 l (Chinese versie), 21104 Appelsap 20 cl (Chinese versie) en 28330 BIO Vanillestokjes premium.</p>';
+			// echo '<p>3 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';
 			// echo '</div>';
 			// echo '<p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Zoals gewoonlijk is thuislevering niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">B2B-klanten</a>. Indien de klant retourleeggoed meebrengt naar de winkel, dien je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
 			if ( does_home_delivery() ) {
