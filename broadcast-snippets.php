@@ -250,18 +250,18 @@
 	}
 
 	// Stel de openingsuren in van een niet-OWW-afhaalpunt
-	$node = 'griffel';
+	$node = 'tuincentrum';
 	$hours = array(
 		1 => array(
 			array(
-				'start' => '7:00',
-				'end' => '12:30',
+				'start' => '13:30',
+				'end' => '18:00',
 			),
 		),
 		2 => array(
 			array(
-				'start' => '7:00',
-				'end' => '12:30',
+				'start' => '8:30',
+				'end' => '12:00',
 			),
 			array(
 				'start' => '13:30',
@@ -270,8 +270,8 @@
 		),
 		3 => array(
 			array(
-				'start' => '7:00',
-				'end' => '12:30',
+				'start' => '8:30',
+				'end' => '12:00',
 			),
 			array(
 				'start' => '13:30',
@@ -280,8 +280,8 @@
 		),
 		4 => array(
 			array(
-				'start' => '7:00',
-				'end' => '12:30'
+				'start' => '8:30',
+				'end' => '12:00',
 			),
 			array(
 				'start' => '13:30',
@@ -290,8 +290,8 @@
 		),
 		5 => array(
 			array(
-				'start' => '7:00',
-				'end' => '12:30'
+				'start' => '8:30',
+				'end' => '12:00',
 			),
 			array(
 				'start' => '13:30',
@@ -300,12 +300,8 @@
 		),
 		6 => array(
 			array(
-				'start' => '7:00',
-				'end' => '12:30'
-			),
-			array(
-				'start' => '13:30',
-				'end' => '18:00'
+				'start' => '9:00',
+				'end' => '17:00'
 			),
 		),
 		7 => false,

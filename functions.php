@@ -2880,7 +2880,15 @@
 					}
 				}
 
-				if ( intval( $shop_post_id ) === 3478 ) {
+				if ( $shop_post_id === 'tuincentrum' ) {
+					if ( date_i18n( 'N', $from ) > 4 or ( date_i18n( 'N', $from ) == 4 and date_i18n( 'G', $from ) >= 12 ) ) {
+						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+1 weekday', $from );
+					}
+
+					// Zoek de eerste vrijdag na de volgende middagdeadline
+					$timestamp = strtotime( 'next Friday 1pm', $from );
+				} elseif ( intval( $shop_post_id ) === 3478 ) {
 					// Meer marge voor Hoogstraten
 					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
 						// Na de deadline van zondag 22u00: begin pas bij vierde werkdag, kwestie van zeker op volgende week uit te komen
