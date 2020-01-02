@@ -144,7 +144,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> array('publish'),
-		'title'			=> 'zomerwijn',
+		'title'			=> 'koffie',
 	);
 
 	$all_coupons = new WP_Query( $args );
@@ -161,6 +161,11 @@
 			if ( $exclude_ids !== '' ) {
 				$exclude_global_ids = explode( ',', $exclude_ids );
 				translate_main_to_local_ids( get_the_ID(), 'exclude_product_ids', $exclude_global_ids );
+			}
+			$free_product_ids = get_post_meta( get_the_ID(), '_wjecf_free_product_ids', true );
+			if ( $free_product_ids !== '' ) {
+				$free_product_global_ids = explode( ',', $free_product_ids );
+				translate_main_to_local_ids( get_the_ID(), '_wjecf_free_product_ids', $free_product_global_ids );
 			}
 		}
 		wp_reset_postdata();

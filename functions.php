@@ -2798,6 +2798,10 @@
 
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7)
 	function get_office_hours( $node = 0, $shop_post_id = 0 ) {
+		if ( $node !== 0 ) {
+			write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
+		}
+
 		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
 		
 		if ( ! is_numeric( $shop_post_id ) ) {
@@ -2887,7 +2891,23 @@
 					}
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline
-					$timestamp = strtotime( 'next Friday 1pm', $from );
+					$timestamp = strtotime( 'next Friday', $from );
+				} elseif ( $shop_post_id === 'vorselaar' ) {
+					// Leveringen beginnen pas vanaf 18/01/2020!
+					if ( $from < 1579046400 ) {
+						$from = 1579046400;
+					}
+
+					if ( date_i18n( 'N', $from ) > 4 ) {
+						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+1 weekday', $from );
+					}
+
+					// Zoek de eerste vrijdag na de volgende middagdeadline (wordt wegens openingsuren automatisch zaterdagochtend)
+					$timestamp = strtotime( 'next Friday', $from );
+
+					// Skip check op uitzonderlijke sluitingsdagen
+					return find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
 				} elseif ( intval( $shop_post_id ) === 3478 ) {
 					// Meer marge voor Hoogstraten
 					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
@@ -4745,7 +4765,8 @@
 				$local_product_ids[] = wc_get_product_id_by_sku( $main_product->get_sku() );
 			}
 			// Niet serialiseren voor coupons
-			if ( $meta_key === 'product_ids' or $meta_key === 'exclude_product_ids' ) {
+			$coupon_keys = array( 'product_ids', 'exclude_product_ids', '_wjecf_free_product_ids' );
+			if ( in_array( $meta_key, $coupon_keys ) ) {
 				$local_product_ids = implode( ',', $local_product_ids );
 			}
 			update_post_meta( $local_product_id, $meta_key, $local_product_ids );
@@ -5620,12 +5641,11 @@
 	// Print variabelen op een overzichtelijke manier naar debug.log
 	if ( ! function_exists( 'write_log' ) ) {
 		function write_log( $log )  {
-			if ( true === WP_DEBUG ) {
-				if ( is_array( $log ) || is_object( $log ) ) {
-					error_log( print_r( $log, true ) );
-				} else {
-					error_log( $log );
+			if ( defined('WP_DEBUG_LOG') and WP_DEBUG_LOG ) {
+				if ( is_array( $log ) or is_object( $log ) ) {
+					$log = serialize( $log );
 				}
+				error_log( "[".date_i18n('d/m/Y H:i:s')."] ".$log."\n", 3, WP_CONTENT_DIR.'/activity.log' );
 			}
 		}
 	}
