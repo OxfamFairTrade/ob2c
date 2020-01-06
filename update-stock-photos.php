@@ -70,8 +70,8 @@
 									$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 								$content .= '</select></p>';
 								$content .= '<p class="output">&nbsp;</p>';
-								if ( $bestelweb === 'ja' ) {
-									$content .= '<p>Bestel dit product op <a href="http://bestelweb.be/ecommerce-oxfam/catalog/search/'.$product->get_sku().'/index.html" target="_blank">bestelweb.be</a></p>';
+								if ( $bestelweb === 'ja' and intval( $product->get_meta('oft_product_id') ) > 0 ) {
+									$content .= '<p>Bestel dit product op <a href="https://www.oxfamfairtrade.be/?p='.$product->get_meta('oft_product_id').'" target="_blank">BestelWeb</a></p>';
 								}
 							$content .= '</div>';
 							

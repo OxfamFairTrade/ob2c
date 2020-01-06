@@ -4573,7 +4573,14 @@
 			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
 			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
 				echo '<p class="promotie">';
-					echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'. Niet van toepassing bij verkoop op factuur.';
+					// Check of de noussines voor de koffieactie wel op voorraad zijn
+					$product_id = wc_get_product_id_by_sku('24501');
+					$noussines = wc_get_product( $product_id );
+					if ( date_i18n('Y-m-d') < '2020-02-16' and $noussines !== false and ! $noussines->is_in_stock() ) {
+						echo 'De koffieactie is momenteel helaas niet beschikbaar omdat onze voorraad noussines uitgeput is.';
+					} else {
+						echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'. Niet van toepassing bij verkoop op factuur.';
+					}
 				echo '</p>';
 			}
 		}
@@ -4859,8 +4866,12 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>Slechts één nieuw product deze maand:</p><ul style="margin-left: 2em;">';
-						$skus = array( '20248', '20262', '20416', '26714', '28804' );
+					echo '<p>De koffieactie is geactiveerd in alle webshops. Van zodra een klant 4 pakjes kofie van 250 gram in zijn/haar winkelmandje legt, wordt automatisch een gratis doos noussines toegevoegd. Opgelet: deze actie werkt <u>enkel indien de noussines voorradig zijn</u> in je webshop! Als dat niet het geval is, tonen we een bericht dat de actie helaas niet meer beschikbaar is in jullie webshop.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Het nieuwe jaar brengt 4 producten die in de loop van december bestelbaar werden:</p><ul style="margin-left: 2em;">';
+						// Volgende maand: '20262', '20416', '28021'
+						$skus = array( '20248', '25618', '26714', '28804' );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku($sku);
 							if ( $product_id ) {
@@ -4873,11 +4884,22 @@
 						echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+					echo '<p>Bovendien voegen we ook enkele non-food referenties toe:</p><ul style="margin-left: 2em;">';
+						$skus = array( '19073', '19074', '19075', '19235', '19266' );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku($sku);
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+							}
+						}
+					echo '</ul>';
+					echo '<p>Opgelet: het versturen van cadeaubonnen met de post gebeurt op eigen risico! Bij verlies kun je geen beroep doen op de optionele verzekering van Bpost/Sendcloud, aangezien het hier om waardepapieren gaat die nooit gedekt worden door dergelijke clausules.</p>';
 				echo '</div>';
 			}
-			// echo '<div class="notice notice-warning">';
-			// echo '<p>3 oude producten werden uit de database verwijderd omdat de uiterste houdbaarheidsdatum van de laatst uitgeleverde loten inmiddels verstreken is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad en de online voorraadstatus van de nieuwe producten die deze referenties vervangen. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';
-			// echo '</div>';
+			echo '<div class="notice notice-warning">';
+				echo '<p>3 oude producten werden uit de database verwijderd omdat de wijntabel aangeeft dat de drinkbaarheid van deze wijnen niet meer optimaal is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';
+			echo '</div>';
 			// echo '<p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Zoals gewoonlijk is thuislevering niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">B2B-klanten</a>. Indien de klant retourleeggoed meebrengt naar de winkel, dien je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
 			if ( does_home_delivery() ) {
 				// Boodschappen voor winkels die thuislevering doen 
