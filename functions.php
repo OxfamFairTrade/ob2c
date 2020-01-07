@@ -78,47 +78,71 @@
 
 	function add_product_to_cart_by_get_parameter() {
 		if ( ! is_admin() ) {
-			// Check of het product al in het winkelmandje zit
-			$product_id = wc_get_product_id_by_sku( $_GET['addSku'] );
-			$found = false;
-			if ( count( WC()->cart->get_cart() ) > 0 ) {
-				foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
-					$productje = $values['data'];
-					if ( $productje->get_id() == $product_id ) {
-						$found = true;
+			$skus = explode( ',', $_GET['addSku'] );
+			$already_added = 0;
+
+			foreach ( $skus as $sku ) {
+				$product_to_add = wc_get_product( wc_get_product_id_by_sku( $sku ) );
+				
+				// Enkel proberen toevoegen indien het artikelnummer bestaat
+				if ( $product_to_add !== false ) {
+					// Voorkom opnieuw toevoegen bij het terugkeren!
+					
+					// VIA WINKELMANDJE
+					$found = false;
+					if ( WC()->session->has_session() ) {
+						foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
+							$product_in_cart = $values['data'];
+							if ( $product_in_cart->get_id() == $product_to_add->get_id() ) {
+								$found = true;
+								break;
+							}
+						}
 					}
+
+					// VIA SESSIEPARAMETER
+					// WC()->session->set( 'addsku_action_'.$_GET['addSku'].'_executed', 0 );
+					// if ( WC()->session->has_session() ) {
+					// 	$already_added = WC()->session->get( 'addsku_action_'.$_GET['addSku'].'_executed', 0 );
+					// } else {
+					// 	$already_added = 0;
+					// }
+					
+					if ( ! $found ) {
+						if ( WC()->cart->add_to_cart( $product_to_add->get_id(), 1 ) === false ) {
+							// Ga naar de productdetailpagina indien de poging mislukte (wegens geen voorraad)
+							// Notice over uitgeputte voorraad verschijnt automatisch!
+							wp_safe_redirect( $product_to_add->get_permalink() );
+							exit();
+						} else {
+							$already_added++;
+
+							// PHP-functie add_to_cart() veroorzaakt niet automatisch een GA-event!
+							// $parameters = array();
+							// $parameters['category'] = "'" . __( 'Products', 'woocommerce-google-analytics-integration' ) . "'";
+							// $parameters['action'] = "'" . __( 'Add to Cart', 'woocommerce-google-analytics-integration' ) . "'";
+							// $parameters['label'] = $product_to_add->get_sku();
+							// $code = "" . WC_Google_Analytics_JS::get_instance()->tracker_var() . "( 'ec:addProduct', {";
+							// $code .= "'id': ".$product_to_add->get_sku().",";
+							// $code .= "'quantity': 1,";
+							// $code .= "} );";
+							// $parameters['enhanced'] = $code;
+							// " . $parameters['enhanced'] . "
+							// " . self::tracker_var() . "( 'ec:setAction', 'add' );
+							// " . self::tracker_var() . "( 'send', 'event', 'UX', 'click', 'add to cart' );
+							// Makkelijker om gewoon klik op 'add_to_cart'-button te simuleren?
+						}
+					}
+				} else {
+					wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop.', 'oxfam-webshop' ), $sku ), 'error' );
+					wp_safe_redirect( wc_get_page_permalink('shop') );
+					exit();
 				}
 			}
-			$product_to_add = wc_get_product($product_id);
-			// Enkel proberen toevoegen indien het artikelnummer bestaat
-			if ( $product_to_add !== false ) {
-				// En als het nog niet in het winkelmandje zit (voorkomt ook opnieuw toevoegen bij terugnavigeren!)
-				if ( ! $found ) {
-					if ( WC()->cart->add_to_cart( $product_id, 1 ) === false ) {
-						// Ga naar de productdetailpagina indien de poging mislukte (wegens geen voorraad)
-						// Notice over uitgeputte voorraad verschijnt automatisch!
-						wp_safe_redirect( $product_to_add->get_permalink() );
-						exit();
-					} else {
-						// PHP-functie add_to_cart() veroorzaakt niet automatisch een GA-event!
-						// $parameters = array();
-						// $parameters['category'] = "'" . __( 'Products', 'woocommerce-google-analytics-integration' ) . "'";
-						// $parameters['action'] = "'" . __( 'Add to Cart', 'woocommerce-google-analytics-integration' ) . "'";
-						// $parameters['label'] = $product_to_add->get_sku();
-						// $code = "" . WC_Google_Analytics_JS::get_instance()->tracker_var() . "( 'ec:addProduct', {";
-						// $code .= "'id': ".$product_to_add->get_sku().",";
-						// $code .= "'quantity': 1,";
-						// $code .= "} );";
-						// $parameters['enhanced'] = $code;
-						// " . $parameters['enhanced'] . "
-						// " . self::tracker_var() . "( 'ec:setAction', 'add' );
-						// " . self::tracker_var() . "( 'send', 'event', 'UX', 'click', 'add to cart' );
-						// Makkelijker om gewoon klik op 'add_to_cart'-button te simuleren?
-					}
-				}
-			} else {
-				wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop.', 'oxfam-webshop' ), $_GET['addSku'] ), 'error' );
-				wp_safe_redirect( wc_get_page_permalink('shop') );
+
+			if ( $already_added === count( $skus ) and $already_added > 1 ) {
+				// Redirect naar het winkelmandje, zodat kortingsbonnen op combinatiepromo's zeker verschijnen
+				wp_safe_redirect( wc_get_cart_url() );
 				exit();
 			}
 		}
@@ -2798,8 +2822,8 @@
 
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7)
 	function get_office_hours( $node = 0, $shop_post_id = 0 ) {
-		if ( $node !== 0 ) {
-			write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
+		if ( intval( $node ) > 0 ) {
+			write_log("deprecated node parameter passed to get_office_hours()! (value: ".$node.")");
 		}
 
 		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
@@ -4852,7 +4876,7 @@
 		if ( ! current_user_can('create_sites') ) {
 			remove_all_actions('admin_notices');
 		}
-		// add_action( 'admin_notices', 'oxfam_admin_notices' );
+		add_action( 'admin_notices', 'oxfam_admin_notices' );
 	}
 
 	function oxfam_admin_notices() {
@@ -4866,7 +4890,7 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De koffieactie is geactiveerd in alle webshops. Van zodra een klant 4 pakjes kofie van 250 gram in zijn/haar winkelmandje legt, wordt automatisch een gratis doos noussines toegevoegd. Opgelet: deze actie werkt <u>enkel indien de noussines voorradig zijn</u> in je webshop! Als dat niet het geval is, tonen we een bericht dat de actie helaas niet meer beschikbaar is in jullie webshop.</p>';
+					echo '<p>De koffieactie is geactiveerd in alle webshops. Van zodra een klant 4 pakjes kofie van 250 gram in zijn/haar winkelmandje legt (= willekeurige combinatie van <a href="../tag/promotie/" target="_blank">de referenties vermeld op jullie promopagina</a>) wordt automatisch een gratis doos noussines toegevoegd. Voor elk bijkomend veelvoud van 4 wordt een extra gratis doos toegevoegd. Opgelet: deze actie werkt <u>enkel indien de noussines voorradig zijn</u> in je webshop! Als dat niet het geval is, tonen we een bericht dat de actie momenteel helaas niet beschikbaar is in jullie winkel.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>Het nieuwe jaar brengt 4 producten die in de loop van december bestelbaar werden:</p><ul style="margin-left: 2em;">';
@@ -4884,7 +4908,7 @@
 						echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-					echo '<p>Bovendien voegen we ook enkele non-food referenties toe:</p><ul style="margin-left: 2em;">';
+					echo '<p>Bovendien voegen we op jullie verzoek enkele non-food referenties toe die je optioneel kunt opnemen in het online assortiment:</p><ul style="margin-left: 2em;">';
 						$skus = array( '19073', '19074', '19075', '19235', '19266' );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku($sku);
@@ -4894,7 +4918,7 @@
 							}
 						}
 					echo '</ul>';
-					echo '<p>Opgelet: het versturen van cadeaubonnen met de post gebeurt op eigen risico! Bij verlies kun je geen beroep doen op de optionele verzekering van Bpost/Sendcloud, aangezien het hier om waardepapieren gaat die nooit gedekt worden door dergelijke clausules.</p>';
+					echo '<p>Opgelet: bij thuislevering via een koerierdienst gebeurt het versturen van cadeaubonnen op eigen risico! Bij verlies kun je geen beroep doen op de (optionele) verzekering van Bpost/Sendcloud, aangezien het hier om waardepapieren gaat die nooit gedekt worden door dergelijke clausules.</p>';
 				echo '</div>';
 			}
 			echo '<div class="notice notice-warning">';
@@ -5078,10 +5102,14 @@
 
 	function print_office_hours( $atts = [] ) {
 		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
+
+		if ( isset( $atts['node'] ) ) {
+			write_log("deprecated node parameter passed to print_office_hours()! (value: ".$atts['node'].")");
+		}
 		
 		$output = '';
-		$days = get_office_hours( $atts['node'], $atts['id'] );
+		$days = get_office_hours( NULL, $atts['id'] );
 		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
 		$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
 

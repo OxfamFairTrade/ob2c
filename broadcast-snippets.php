@@ -40,19 +40,35 @@
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+				// OK
 			} else {
 				write_log("COULD NOT DELETE ".$term_to_delete->name);
 			}
 		}
 	}
 
-	// Verwijder productcategorieën UIT TE VOEREN VOOR DE UPDATE VAN 1 DECEMBER
+	// Verwijder productcategorieën UIT TE VOEREN VOOR DE UPDATE VAN 15 FEBRUARI
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
 		$terms = array( 'builtjes-thee', 'los-thee', 'repen-chocolade', 'tabletten-chocolade' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+				// OK
+			} else {
+				write_log("COULD NOT DELETE ".$term_to_delete->name);
+			}
+		}
+	}
+
+	// Verwijder partners
+	$taxonomy = 'product_partner';
+	if ( taxonomy_exists( $taxonomy ) ) {
+		$terms = array( 'beni-ghreb', 'terrespoir', 'altertrade', 'anap', 'burke-agro', 'consorcio-vinicola', 'lomas-de-cauquenes', 'koman' );
+		foreach ( $terms as $term ) {
+			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
+			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+				// OK
 			} else {
 				write_log("COULD NOT DELETE ".$term_to_delete->name);
 			}
