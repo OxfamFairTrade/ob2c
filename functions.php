@@ -4555,9 +4555,6 @@
 				// Fallback: zet de naam van de partner om in een slug
 				$partner_info = array_merge( $partner_info, get_external_partner( $partner->name ) );
 			}
-		} else {
-			// Fallback: zet de naam van de partner om in een slug
-			$partner_info = array_merge( $partner_info, get_external_partner( $partner->name ) );
 		}
 
 		return $partner_info;
@@ -4612,12 +4609,12 @@
 			// Toon een random quote
 			if ( count( $partners_with_quote ) > 0 ) {
 				$i = random_int( 0, count($partners_with_quote) - 1 );
-				if ( isset( $partners_with_quote[$i]['quote_by'] ) ) {
+				if ( strlen( $partner_info['quote_by'] ) > 2 ) {
 					$signature = $partners_with_quote[$i]['quote_by'];
 				} else {
 					$signature = $partners_with_quote[$i]['name'].', '.$partners_with_quote[$i]['country'];
 				}
-				echo nm_shortcode_nm_testimonial( array( 'signature' => $signature, 'image_url' => $partners_with_quote[$i]['quote_photo'] ), $partners_with_quote[$i]['quote'] );
+				echo nm_shortcode_nm_testimonial( array( 'signature' => $signature, 'image_url' => $partners_with_quote[$i]['quote_photo'], 'link' => $partners_with_quote[$i]['url'] ), $partners_with_quote[$i]['quote'] );
 			}
 		}
 	}

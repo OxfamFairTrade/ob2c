@@ -3,10 +3,11 @@
 	// Shortcode: nm_testimonial
 	function nm_shortcode_nm_testimonial( $atts, $content = NULL ) {
 		extract( shortcode_atts( array(
-			'image_url'		=> '',
 			'image_id'		=> '',
 			'signature'		=> '',
 			'company'		=> '',
+			'image_url'		=> '',
+			'link'			=> '',
 		), $atts ) );
 
 		$image_class = $image_output = '';
@@ -21,8 +22,8 @@
 		// External image
 		if ( strlen( $image_url ) > 0 ) {
 			$image_class = ' has-image';
-			$image = '<img src="'.$image_url.'">';
-			$image_output = '<div class="nm-testimonial-image">' . $image . '</div>';
+			$image = '<img src="'.esc_url( $image_url ).'">';
+			$image_output = '<div class="nm-testimonial-image"><a href="'.esc_url( $link ).'">' . $image . '</a></div>';
 		}
 
 		// Signature
