@@ -12,7 +12,7 @@
 	<script type="text/javascript" src="https://www.lecouperet.net/hcb/scripts/typewriter.js"></script>
 	<script type="text/javascript">
 		function delayedRedirect(){
-			location.replace("https://shop.oxfamwereldwinkels.be/");
+			location.replace("https://shop.oxfamwereldwinkels.be");
 		}	
 	</script>
 
@@ -36,7 +36,7 @@
 
 	<div class="main" style="height: 100%;">
 		<div class="wrapper" style="max-width: 900px; height: 100%;">
-			<a href="https://shop.oxfamwereldwinkels.be/" title="Bezoek onze webshops">
+			<a href="https://shop.oxfamwereldwinkels.be" title="Bezoek onze webshops">
 			<div style="height: 40%; background-image: url('https://www.lecouperet.net/hcb/images/403.png'); background-size: 100%; background-position: bottom; background-repeat: no-repeat;">
 				<span class="helper"></span>
 			</div>
@@ -52,7 +52,7 @@
 	</div>
 
 	<div style="width: 100%; height: 15%; max-height: 70px; position: absolute; bottom: 5%; text-align: center;">
-		<a href="https://www.oxfamwereldwinkels.be/nl" title="Bezoek onze website">
+		<a href="https://www.oxfamwereldwinkels.be" title="Bezoek onze website">
 		<div style="background-image: url('https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/images/oww-webshop-groen-140px.png'); background-size: contain; background-position: center bottom; background-repeat: no-repeat; height: 100%; width: 100%;"></div>
 		</a>
 	</div>

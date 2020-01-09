@@ -2822,8 +2822,8 @@
 
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7)
 	function get_office_hours( $node = 0, $shop_post_id = 0 ) {
-		if ( intval( $node ) > 0 ) {
-			write_log("deprecated node parameter passed to get_office_hours()! (value: ".$node.")");
+		if ( $node !== 0 ) {
+			write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
 		}
 
 		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
@@ -4259,7 +4259,7 @@
 			?>
 				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
 					<th><?php echo 'Fairtradepercentage'; ?></th>
-					<td><?php echo 'Dit product is voor '.number_format( $product->get_attribute( 'pa_fairtrade' ), 0 ).' % afkomstig van '.$str.' waarmee Oxfam-Wereldwinkels een eerlijke handelsrelatie onderhoudt. <a href="https://www.oxfamwereldwinkels.be/nl/certificering" target="_blank">Lees meer over deze certificering op onze website.</a>'; ?></td>
+					<td><?php echo 'Dit product is voor '.number_format( $product->get_attribute( 'pa_fairtrade' ), 0 ).' % afkomstig van '.$str.' waarmee Oxfam-Wereldwinkels een eerlijke handelsrelatie onderhoudt. <a href="https://www.oxfamwereldwinkels.be/expertise/labels/" target="_blank">Lees meer over deze certificering op onze website.</a>'; ?></td>
 				</tr>
 			<?php	
 			}
@@ -4543,37 +4543,21 @@
 		$partner_info['archive'] = get_term_link( $partner->term_id );
 		
 		if ( strlen( $partner->description ) > 20 ) {
-			// Knip bij het woord 'node/'
-			$url = explode( '/node/', $partner->description );
-			if ( count($url) < 2 ) {
-				write_log($partner_info['name'].": NO NODE IN DESCRIPTION, TRY WORDPRESS API");
-				// Nieuwe URL, knip bij het woord 'partners/'
-				$title = explode( '/partners/', $partner->description );
-				if ( count($title) >= 2 ) {
-					$partner_info = get_external_partner( $title[1] );
-				} else {
-					// Of toch via ID blijven werken?
-					$post_id = explode( '/?p=', $partner->description );
-					if ( count($post_id) >= 2 ) {
-						$partner_info = get_external_partner( $post_id[1] );
-					}
-				}
+			// Check of er een link naar een partnerpagina aanwezig is
+			$parts = explode( '/partners/', $partner->description );
+			if ( count( $parts ) >= 2 ) {
+				// Knip alles weg na de eindslash van de URL
+				$slugs = explode( '/', $parts[1] );
+				// Fallback: knip alles weg na de afsluitende dubbele quote van het href-attribuut
+				$slugs = explode( '"', $slugs[0] );
+				$partner_info = array_merge( $partner_info, get_external_partner( $slugs[0] ) );
 			} else {
-				$parts = explode( '" ', $url[1] );
-				$partner_info['node'] = $parts[0];
-				$partner_info['url'] = 'https://www.oxfamwereldwinkels.be/node/'.$partner_info['node'];
-				
-				global $wpdb;
-				$quote = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_quote WHERE entity_id = '.$partner_info['node'] );
-				if ( isset( $quote->field_manufacturer_quote_value ) and strlen( $quote->field_manufacturer_quote_value ) > 20 ) {
-					$partner_info['quote'] = trim($quote->field_manufacturer_quote_value);
-					$quote_by = $wpdb->get_row( 'SELECT * FROM field_data_field_manufacturer_hero_name WHERE entity_id = '.$partner_info['node'] );
-					if ( isset( $quote_by->field_manufacturer_hero_name_value ) ) {
-						$partner_info['quote_by'] = trim($quote_by->field_manufacturer_hero_name_value);
-					}
-				}
+				// Fallback: zet de naam van de partner om in een slug
+				$partner_info = array_merge( $partner_info, get_external_partner( $partner->name ) );
 			}
-			
+		} else {
+			// Fallback: zet de naam van de partner om in een slug
+			$partner_info = array_merge( $partner_info, get_external_partner( $partner->name ) );
 		}
 
 		return $partner_info;
@@ -4621,7 +4605,7 @@
 			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
 			foreach ( $partners as $term_id => $partner_name ) {
 				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-				if ( isset( $partner_info['quote'] ) ) {
+				if ( strlen( $partner_info['quote'] ) > 20 ) {
 					$partners_with_quote[] = $partner_info;
 				}
 			}
@@ -4633,7 +4617,7 @@
 				} else {
 					$signature = $partners_with_quote[$i]['name'].', '.$partners_with_quote[$i]['country'];
 				}
-				echo nm_shortcode_nm_testimonial( array( 'signature' => $signature ), $partners_with_quote[$i]['quote'] );
+				echo nm_shortcode_nm_testimonial( array( 'signature' => $signature, 'image_url' => $partners_with_quote[$i]['quote_photo'] ), $partners_with_quote[$i]['quote'] );
 			}
 		}
 	}
@@ -5102,14 +5086,10 @@
 
 	function print_office_hours( $atts = [] ) {
 		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
-
-		if ( isset( $atts['node'] ) ) {
-			write_log("deprecated node parameter passed to print_office_hours()! (value: ".$atts['node'].")");
-		}
+		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
 		
 		$output = '';
-		$days = get_office_hours( NULL, $atts['id'] );
+		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
 		$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
 
@@ -5315,7 +5295,9 @@
 	}
 
 	function get_external_wpsl_store( $shop_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
+		$store_data = false;
 		$shop_post_id = intval( $shop_post_id );
+
 		if ( false === ( $store_data = get_site_transient( $shop_post_id.'_store_data' ) ) ) {
 			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
 			$args = array(
@@ -5323,10 +5305,11 @@
 					'Authorization' => 'Basic '.base64_encode( OWW_USER.':'.OWW_PASSWORD ),
 				),
 			);
-			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id, $args );
+			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id );
 			
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'WordPress API' );
+			
 			if ( $response['response']['code'] == 200 ) {
 				$logger->debug( 'Shop data saved in transient for ID '.$shop_post_id, $context );
 				// Bewaar als een array i.p.v. een object
@@ -5334,35 +5317,54 @@
 				set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
 			} else {
 				$logger->notice( 'Could not retrieve shop data for ID '.$shop_post_id, $context );
-				$store_data = false;
 			}
 		}
 
 		return $store_data;
 	}
 
-	function get_external_partner( $partner_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
-		// API voorlopig nog niet aanspreken
-		if ( false !== ( $partner_data = get_site_transient( $partner_post_id.'_partner_data' ) ) ) {
-			// Deze route is nog niet beschikbaar!
-			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/'.$partner_post_id );
+	function get_external_partner( $partner_name, $domain = 'www.oxfamwereldwinkels.be' ) {
+		$partner_info = array();
+		$partner_slug = sanitize_title( $partner_name );
+
+		if ( false === ( $partner_info = get_site_transient( $partner_slug.'_partner_data' ) ) ) {
+			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
+			$args = array(
+				'headers' => array(
+					'Authorization' => 'Basic '.base64_encode( OWW_USER.':'.OWW_PASSWORD ),
+				),
+			);
+
+			// Dit levert een array met (in principe) één element
+			// Zoekt default enkel naar objecten met de status 'publish'
+			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/?slug='.$partner_slug );
 			
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'WordPress API' );
+			
 			if ( $response['response']['code'] == 200 ) {
-				$logger->debug( 'Partner data saved in transient for ID '.$partner_post_id, $context );
-				// Bewaar als een array i.p.v. een object
-				$partner_data = json_decode( $response['body'], true );
-				set_site_transient( $partner_post_id.'_partner_data', $partner_data, DAY_IN_SECONDS );
+				// Zet het JSON-object om in een array
+				$matching_partners = json_decode( $response['body'], true );
+				
+				if ( count( $matching_partners ) === 1 ) {
+					$partner_data = $matching_partners[0];
+					$partner_info['url'] = $partner_data['link'];
+					$partner_info['quote'] = $partner_data['quote']['content'];
+					$partner_info['quote_by'] = $partner_data['quote']['speaker'];
+					$partner_info['quote_photo'] = $partner_data['quote']['image'];
+					set_site_transient( $partner_slug.'_partner_data', $partner_info, DAY_IN_SECONDS );
+					$logger->debug( 'Partner data saved in transient for '.$partner_slug, $context );
+				} elseif ( count( $matching_partners ) > 1 ) {
+					$logger->notice( 'Multiple partners found for '.$partner_slug, $context );
+				} else {
+					$logger->notice( 'No partner found for '.$partner_slug, $context );
+				}
 			} else {
-				$logger->notice( 'Could not retrieve partner data for ID '.$partner_post_id, $context );
-				$partner_data = false;
+				$logger->notice( 'Could not retrieve partner for '.$partner_slug, $context );
 			}
-		} else {
-			$partner_data = false;
 		}
 
-		return $partner_data;
+		return $partner_info;
 	}
 
 	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen (mag verdwijnen van zodra logomateriaal uit OWW-site komt)
