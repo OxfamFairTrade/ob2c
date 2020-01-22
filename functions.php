@@ -1065,6 +1065,9 @@
 			'report',
 			'range',
 			'claimed_by',
+			'start_date',
+			'end_date',
+			'wc_reports_nonce',
 		);
 		$args['admin.php']['oxfam-options'] = array(
 			'page',
