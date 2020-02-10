@@ -156,7 +156,8 @@
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
 		// Parameter $type bevat het soort GA-tracking
-		if ( current_user_can('manage_woocommerce') ) {
+		if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() ) {
+			write_log("GA UITGESCHAKELD");
 			return true;
 		} else {
 			return false;
@@ -164,57 +165,69 @@
 	}
 
 	// Activeer Google Tag Manager (JS)
-	add_action( 'wp_head', 'add_google_tag_manager_js', 100 );
+	add_action( 'wp_footer', 'add_google_tag_manager_js', 100 );
 
 	function add_google_tag_manager_js() {
-		?>
-		<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-		new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-		j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-		'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-		})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
-		<?php
+		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+			?>
+			<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
+			<?php
+		} else {
+			write_log("GTM UITGESCHAKELD");
+		}
 	}
 
 	// Activeer Google Tag Manager (no JS)
 	add_action( 'wp_footer', 'add_google_tag_manager_no_js', 100 );
 
 	function add_google_tag_manager_no_js() {
-		?>
-		<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
-		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-		<?php
+		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+			?>
+			<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
+			height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+			<?php
+		}
 	}
 
 	// Activeer Facebook Pixel (JS)
-	add_action( 'wp_head', 'add_facebook_pixel_js', 100 );
+	add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
 
 	function add_facebook_pixel_js() {
-		?>
-		<script>
-			!function(f,b,e,v,n,t,s)
-			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-			n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-			if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-			n.queue=[];t=b.createElement(e);t.async=!0;
-			t.src=v;s=b.getElementsByTagName(e)[0];
-			s.parentNode.insertBefore(t,s)}(window, document,'script',
-			'https://connect.facebook.net/en_US/fbevents.js');
-			fbq('init', '1964131620531187');
-			fbq('track', 'PageView');
-		</script>
-		<?php
+		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+			?>
+			<script>
+				!function(f,b,e,v,n,t,s)
+				{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+				n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+				if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+				n.queue=[];t=b.createElement(e);t.async=!0;
+				t.src=v;s=b.getElementsByTagName(e)[0];
+				s.parentNode.insertBefore(t,s)}(window, document,'script',
+				'https://connect.facebook.net/en_US/fbevents.js');
+				fbq('init', '1964131620531187');
+				fbq('track', 'PageView');
+			</script>
+			<?php
+		} else {
+			write_log("FBP UITGESCHAKELD");
+		}
 	}
 
 	// Activeer Facebook Pixel (no JS)
-	add_action( 'wp_footer', 'add_facebook_pixel_no_js', 100 );
+	add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
 
 	function add_facebook_pixel_no_js() {
-		?>
-		<noscript><img height="1" width="1" style="display:none"
-		src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
-		/></noscript>
-		<?php
+		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+			?>
+			<noscript><img height="1" width="1" style="display:none"
+			src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
+			/></noscript>
+			<?php
+		}
 	}
 
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
