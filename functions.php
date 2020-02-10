@@ -157,7 +157,7 @@
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
 		// Parameter $type bevat het soort GA-tracking
 		if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() ) {
-			write_log("GA UITGESCHAKELD");
+			write_log( "GA UITGESCHAKELD VOOR IP ".$_SERVER['SERVER_ADDR'] );
 			return true;
 		} else {
 			return false;
@@ -177,7 +177,7 @@
 			})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
 			<?php
 		} else {
-			write_log("GTM UITGESCHAKELD");
+			write_log( "GTM UITGESCHAKELD VOOR IP ".$_SERVER['SERVER_ADDR'] );
 		}
 	}
 
@@ -199,21 +199,19 @@
 	function add_facebook_pixel_js() {
 		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
 			?>
-			<script>
-				!function(f,b,e,v,n,t,s)
-				{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-				n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-				if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-				n.queue=[];t=b.createElement(e);t.async=!0;
-				t.src=v;s=b.getElementsByTagName(e)[0];
-				s.parentNode.insertBefore(t,s)}(window, document,'script',
-				'https://connect.facebook.net/en_US/fbevents.js');
-				fbq('init', '1964131620531187');
-				fbq('track', 'PageView');
-			</script>
+			<script>!function(f,b,e,v,n,t,s)
+			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+			n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+			if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+			n.queue=[];t=b.createElement(e);t.async=!0;
+			t.src=v;s=b.getElementsByTagName(e)[0];
+			s.parentNode.insertBefore(t,s)}(window, document,'script',
+			'https://connect.facebook.net/en_US/fbevents.js');
+			fbq('init', '1964131620531187');
+			fbq('track', 'PageView');</script>
 			<?php
 		} else {
-			write_log("FBP UITGESCHAKELD");
+			write_log( "FBP UITGESCHAKELD VOOR IP ".$_SERVER['SERVER_ADDR'] );
 		}
 	}
 
@@ -4618,14 +4616,14 @@
 			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
 			foreach ( $partners as $term_id => $partner_name ) {
 				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-				if ( strlen( $partner_info['quote'] ) > 20 ) {
+				if ( isset( $partner_info['quote'] ) and strlen( $partner_info['quote'] ) > 5 ) {
 					$partners_with_quote[] = $partner_info;
 				}
 			}
 			// Toon een random quote
 			if ( count( $partners_with_quote ) > 0 ) {
 				$i = random_int( 0, count($partners_with_quote) - 1 );
-				if ( strlen( $partner_info['quote_by'] ) > 2 ) {
+				if ( isset( $partner_info['quote_by'] ) and strlen( $partner_info['quote_by'] ) > 5 ) {
 					$signature = $partners_with_quote[$i]['quote_by'];
 				} else {
 					$signature = $partners_with_quote[$i]['name'].', '.$partners_with_quote[$i]['country'];
