@@ -165,7 +165,7 @@
 	}
 
 	// Activeer Google Tag Manager (JS)
-	add_action( 'wp_footer', 'add_google_tag_manager_js', 100 );
+	add_action( 'wp_header', 'add_google_tag_manager_js', 100 );
 
 	function add_google_tag_manager_js() {
 		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
@@ -182,7 +182,7 @@
 	}
 
 	// Activeer Google Tag Manager (no JS)
-	add_action( 'wp_footer', 'add_google_tag_manager_no_js', 100 );
+	add_action( 'wp_header', 'add_google_tag_manager_no_js', 100 );
 
 	function add_google_tag_manager_no_js() {
 		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
@@ -194,7 +194,7 @@
 	}
 
 	// Activeer Facebook Pixel (JS)
-	add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
+	// add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
 
 	function add_facebook_pixel_js() {
 		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
@@ -216,7 +216,7 @@
 	}
 
 	// Activeer Facebook Pixel (no JS)
-	add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
+	// add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
 
 	function add_facebook_pixel_no_js() {
 		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
