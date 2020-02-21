@@ -4871,7 +4871,7 @@
 		if ( ! current_user_can('create_sites') ) {
 			remove_all_actions('admin_notices');
 		}
-		add_action( 'admin_notices', 'oxfam_admin_notices' );
+		// add_action( 'admin_notices', 'oxfam_admin_notices' );
 	}
 
 	function oxfam_admin_notices() {
