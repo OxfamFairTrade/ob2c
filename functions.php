@@ -165,7 +165,7 @@
 	}
 
 	// Activeer Google Tag Manager (JS)
-	add_action( 'wp_header', 'add_google_tag_manager_js', 100 );
+	add_action( 'wp_head', 'add_google_tag_manager_js', 100 );
 
 	function add_google_tag_manager_js() {
 		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
@@ -182,7 +182,7 @@
 	}
 
 	// Activeer Google Tag Manager (no JS)
-	add_action( 'wp_header', 'add_google_tag_manager_no_js', 100 );
+	add_action( 'wp_head', 'add_google_tag_manager_no_js', 100 );
 
 	function add_google_tag_manager_no_js() {
 		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
