@@ -157,7 +157,6 @@
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
 		// Parameter $type bevat het soort GA-tracking
 		if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() ) {
-			write_log( "GA UITGESCHAKELD VOOR IP ".$_SERVER['SERVER_ADDR'] );
 			return true;
 		} else {
 			return false;
@@ -176,8 +175,6 @@
 			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 			})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
 			<?php
-		} else {
-			write_log( "GTM UITGESCHAKELD VOOR IP ".$_SERVER['SERVER_ADDR'] );
 		}
 	}
 
@@ -210,8 +207,6 @@
 			fbq('init', '1964131620531187');
 			fbq('track', 'PageView');</script>
 			<?php
-		} else {
-			write_log( "FBP UITGESCHAKELD VOOR IP ".$_SERVER['SERVER_ADDR'] );
 		}
 	}
 
@@ -4871,7 +4866,7 @@
 		if ( ! current_user_can('create_sites') ) {
 			remove_all_actions('admin_notices');
 		}
-		// add_action( 'admin_notices', 'oxfam_admin_notices' );
+		add_action( 'admin_notices', 'oxfam_admin_notices' );
 	}
 
 	function oxfam_admin_notices() {
@@ -4885,12 +4880,9 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De koffieactie is geactiveerd in alle webshops. Van zodra een klant 4 pakjes kofie van 250 gram in zijn/haar winkelmandje legt (= willekeurige combinatie van <a href="../tag/promotie/" target="_blank">de referenties vermeld op jullie promopagina</a>) wordt automatisch een gratis doos noussines toegevoegd. Voor elk bijkomend veelvoud van 4 wordt een extra gratis doos toegevoegd. Opgelet: deze actie werkt <u>enkel indien de noussines voorradig zijn</u> in je webshop! Als dat niet het geval is, tonen we een bericht dat de actie momenteel helaas niet beschikbaar is in jullie winkel.</p>';
-				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>Het nieuwe jaar brengt 4 producten die in de loop van december bestelbaar werden:</p><ul style="margin-left: 2em;">';
-						// Volgende maand: '20262', '20416', '28021'
-						$skus = array( '20248', '25618', '26714', '28804' );
+					echo '<p>Er werden 7 nieuwe producten gepubliceerd die in de loop van februari in de winkels arriveerden:</p><ul style="margin-left: 2em;">';
+						// Volgende keer: '26424', '27012', '27110'
+						$skus = array( '20182', '20262', '20416', '27516', '27517', '27518', '28021' );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku($sku);
 							if ( $product_id ) {
@@ -4903,8 +4895,8 @@
 						echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-					echo '<p>Bovendien voegen we op jullie verzoek enkele non-food referenties toe die je optioneel kunt opnemen in het online assortiment:</p><ul style="margin-left: 2em;">';
-						$skus = array( '19073', '19074', '19075', '19235', '19266' );
+					echo '<p>Daarnaast werd het paasassortiment voor 2020 klaargezet (o.a. nieuwe packshots en prijsverhoging grote paashaas):</p><ul style="margin-left: 2em;">';
+						$skus = array( '24529', '24634', '24647', '24648' );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku($sku);
 							if ( $product_id ) {
@@ -4913,12 +4905,12 @@
 							}
 						}
 					echo '</ul>';
-					echo '<p>Opgelet: bij thuislevering via een koerierdienst gebeurt het versturen van cadeaubonnen op eigen risico! Bij verlies kun je geen beroep doen op de (optionele) verzekering van Bpost/Sendcloud, aangezien het hier om waardepapieren gaat die nooit gedekt worden door dergelijke clausules.</p>';
+					echo '<p>Sinterklaas verdween dan weer in de kast. De prijswijzigingen vanaf 01/03/2020 van 3 Ethiquable-producten zullen zaterdagnacht doorgevoerd worden.</p>';
 				echo '</div>';
 			}
-			echo '<div class="notice notice-warning">';
-				echo '<p>3 oude producten werden uit de database verwijderd omdat de wijntabel aangeeft dat de drinkbaarheid van deze wijnen niet meer optimaal is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';
-			echo '</div>';
+			// echo '<div class="notice notice-warning">';
+			// 	echo '<p>3 oude producten werden uit de database verwijderd omdat de wijntabel aangeeft dat de drinkbaarheid van deze wijnen niet meer optimaal is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';
+			// echo '</div>';
 			// echo '<p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Zoals gewoonlijk is thuislevering niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">B2B-klanten</a>. Indien de klant retourleeggoed meebrengt naar de winkel, dien je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
 			if ( does_home_delivery() ) {
 				// Boodschappen voor winkels die thuislevering doen 
