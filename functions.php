@@ -4905,7 +4905,7 @@
 							}
 						}
 					echo '</ul>';
-					echo '<p>Sinterklaas verdween dan weer in de kast. De prijswijzigingen vanaf 01/03/2020 van 3 Ethiquable-producten zullen zaterdagnacht doorgevoerd worden.</p>';
+					echo '<p>Sinterklaas verdween dan weer in de kast. De prijswijzigingen op 01/03/2020 van 3 Ethiquable-producten werden doorgevoerd.</p>';
 				echo '</div>';
 			}
 			// echo '<div class="notice notice-warning">';
@@ -5390,8 +5390,6 @@
 							return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
 						case 'headquarter':
 							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
-						case 'telephone':
-							return call_user_func( 'format_'.$key, '0486762195', '.' );
 					}
 				} elseif ( intval( $shop_post_id ) === 3226 ) {
 					// Uitzonderingen voor Regio Antwerpen vzw
