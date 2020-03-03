@@ -5390,6 +5390,8 @@
 							return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
 						case 'headquarter':
 							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0468113033', '.' );
 					}
 				} elseif ( intval( $shop_post_id ) === 3226 ) {
 					// Uitzonderingen voor Regio Antwerpen vzw
