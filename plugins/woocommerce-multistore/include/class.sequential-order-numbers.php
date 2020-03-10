@@ -14,8 +14,9 @@
                     // retrieve _order_number
                     add_filter( 'woocommerce_order_number',                         'WOO_SON::get_order_number' , 10, 2 );
 
-                    add_filter( 'woocommerce_shortcode_order_tracking_order_id',    'WOO_SON::woocommerce_shortcode_order_tracking_order_id' );   
-                    
+                    add_filter( 'woocommerce_shortcode_order_tracking_order_id',    'WOO_SON::woocommerce_shortcode_order_tracking_order_id' );
+
+                    add_filter( 'woocommerce_shop_order_search_fields',             'WOO_SON::add_sequential_shop_order_search_fields' );
                 }
                 
                 
@@ -25,20 +26,20 @@
                     
                     $orders_to_process      =   200;
                     $highest_order_number   =   1;
-                    
-                    $network_sites  =   get_sites(array('limit'  =>  999));
-                    foreach($network_sites as $network_site)
+
+                    $network_site_ids = WOO_MSTORE_functions::get_active_woocommerce_blog_ids();
+                    foreach($network_site_ids as $network_site_id)
                         {
-                            switch_to_blog( $network_site->blog_id );
-                                                
-                            if( ! $WOO_MSTORE->functions->is_plugin_active('woocommerce/woocommerce.php') )
-                                {
-                                    restore_current_blog();
-                                    continue;   
-                                }
+                            switch_to_blog( $network_site_id );
+
+//                            if( ! $WOO_MSTORE->functions->is_plugin_active('woocommerce/woocommerce.php') )
+//                                {
+//                                    restore_current_blog();
+//                                    continue;
+//                                }
 
                             restore_current_blog();
-   
+
                             do {
                                     
                                     $mysql_query    =   "SELECT DISTINCT ID FROM "   .   $wpdb->posts    .   " as P
@@ -168,13 +169,34 @@
             static function get_order_number($order_number, $order)
                 {
                     
-                    // GEWIJZIGD: Voeg prefix en leading zero's toe (+ fix voor het oproepen van $order->order_number: query '_order_number' rechtstreeks)
-                    return "OWW".sprintf( '%05d', get_post_meta( $order->get_id(), '_order_number', true ) ); 
+                    $_order_number  =   get_post_meta( $order_number, '_order_number', TRUE );
+                    if ( $_order_number > 0 )
+                        // GEWIJZIGD: Voeg prefix en leading zero's toe (+ fix voor het oproepen van $order->order_number: query '_order_number' rechtstreeks)
+                        return "OWW".sprintf( '%05d', $_order_number );
+                    
+                    remove_filter( 'woocommerce_order_number',                          'WOO_SON::get_order_number' , 10, 2 );
+                    $_order_nubmer  =   $order->get_order_number();
+                    add_filter( 'woocommerce_order_number',                             'WOO_SON::get_order_number' , 10, 2 );
+                    
+                    
+                    //if set the order number, return
+                    if ( !empty( $_order_nubmer )) 
+                        {
+                            return $_order_nubmer;
+                        }
+
+                    
+                    return $order_number;   
                     
                 }
-                   
-             
-        }
+
+
+            static function add_sequential_shop_order_search_fields( $search_fields ) {
+                $search_fields[] = '_order_number';
+
+                return $search_fields;
+            }
+    }
 
 
 
