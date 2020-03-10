@@ -21,7 +21,7 @@ if ( ! $product_attributes ) {
 		// Kan eventueel vervangen worden door 'woocommerce_display_product_attributes'-filter
 		$forbidden_attributes = array( 'eenheid', 'shopplus' );
 		foreach ( $forbidden_attributes as $name ) {
-			if ( array_key_exists( $name, $product_attributes ) ) {
+			if ( array_key_exists( 'attribute_pa_'.$name, $product_attributes ) ) {
 				unset( $product_attributes[ 'attribute_pa_'.$name ] );
 			}
 		}
