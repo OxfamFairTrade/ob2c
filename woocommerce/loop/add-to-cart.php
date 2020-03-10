@@ -2,11 +2,11 @@
 /**
  * Loop Add to Cart
  *
- * @see 		https://docs.woocommerce.com/document/template-structure/
+ * @see 	    https://docs.woocommerce.com/document/template-structure/
  * @author 		WooThemes
  * @package 	WooCommerce/Templates
- * @version 	3.0.0
- */
+ * @version     3.3.0
+ NM: Modified - Added page-include */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -16,6 +16,7 @@ global $product, $nm_page_includes;
 
 $nm_page_includes['products'] = true; // Required for the "Add to cart" element/shortcode
 
+// GEWIJZIGD: Voeg product standaard per ompak toe bij B2B-klanten
 if ( is_b2b_customer() ) {
 	$multiple = intval( $product->get_attribute('ompak') );
 	if ( $multiple < 2 ) {
@@ -23,15 +24,17 @@ if ( is_b2b_customer() ) {
 	}
 }
 
-// write_log('ADD TO CART '.$product->get_sku().': '.$quantity.' quantity - '.$multiple.' multiple');
-
-echo apply_filters( 'woocommerce_loop_add_to_cart_link',
-	sprintf( '<a rel="nofollow" href="%s" data-quantity="%s" data-product_id="%s" data-product_sku="%s" class="%s">%s</a>',
-		esc_url( $product->add_to_cart_url() ),
-		esc_attr( isset( $multiple ) ? $multiple : ( isset( $quantity ) ? $quantity : 1 ) ),
-		esc_attr( $product->get_id() ),
-		esc_attr( $product->get_sku() ),
-		esc_attr( isset( $class ) ? $class : 'button' ),
-		esc_html( $product->add_to_cart_text() )
-	),
-$product );
+// GEWIJZIGD: Knop niet tonen bij voorraadstatus 'onbackorder'
+if ( $product->is_on_backorder() ) {
+	echo 'Dit product is tijdelijk niet beschikbaar.';
+} else {
+	echo apply_filters( 'woocommerce_loop_add_to_cart_link', // WPCS: XSS ok.
+		sprintf( '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',
+			esc_url( $product->add_to_cart_url() ),
+			esc_attr( isset( $multiple ) ? $multiple : ( isset( $args['quantity'] ) ? $args['quantity'] : 1 ) ),
+			esc_attr( isset( $args['class'] ) ? $args['class'] : 'button' ),
+			isset( $args['attributes'] ) ? wc_implode_html_attributes( $args['attributes'] ) : '',
+			esc_html( $product->add_to_cart_text() )
+		),
+	$product, $args );
+}
