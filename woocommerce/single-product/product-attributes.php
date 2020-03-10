@@ -18,10 +18,11 @@ if ( ! $product_attributes ) {
 <table class="woocommerce-product-attributes shop_attributes">
 	<?php
 		// Sluit bepaalde zichtbare taxonomiëen toch nog uit
-		$forbidden_attributes = array( 'pa_eenheid', 'pa_shopplus' );
+		// Kan eventueel vervangen worden door 'woocommerce_display_product_attributes'-filter
+		$forbidden_attributes = array( 'eenheid', 'shopplus' );
 		foreach ( $forbidden_attributes as $name ) {
 			if ( array_key_exists( $name, $product_attributes ) ) {
-				unset( $product_attributes[$name] );
+				unset( $product_attributes[ 'attribute_pa_'.$name ] );
 			}
 		}
 	?>
@@ -32,7 +33,7 @@ if ( ! $product_attributes ) {
 		</tr>
 	<?php endforeach; ?>
 
-	<!-- GEWIJZIGD: Gewicht en dimensies altijd onderaan weergeven -->
+	<!-- GEWIJZIGD: Gewicht en dimensies onderaan weergeven -->
 	<?php if ( $product->has_weight() ) : $has_row = true; ?>
 		<tr>
 			<th>Brutogewicht</th>
