@@ -156,7 +156,7 @@
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
 		// Parameter $type bevat het soort GA-tracking
-		if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() ) {
+		if ( current_user_can('manage_woocommerce') or ( function_exists('cn_cookies_accepted') and ! cn_cookies_accepted() ) ) {
 			return true;
 		} else {
 			return false;
@@ -167,7 +167,7 @@
 	add_action( 'wp_head', 'add_google_tag_manager_js', 100 );
 
 	function add_google_tag_manager_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+		if ( ! current_user_can('manage_woocommerce') and ( function_exists('cn_cookies_accepted') and cn_cookies_accepted() ) ) {
 			?>
 			<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -182,7 +182,7 @@
 	add_action( 'wp_head', 'add_google_tag_manager_no_js', 100 );
 
 	function add_google_tag_manager_no_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+		if ( ! current_user_can('manage_woocommerce') and ( function_exists('cn_cookies_accepted') and cn_cookies_accepted() ) ) {
 			?>
 			<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
 			height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -194,7 +194,7 @@
 	// add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
 
 	function add_facebook_pixel_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+		if ( ! current_user_can('manage_woocommerce') and ( function_exists('cn_cookies_accepted') and cn_cookies_accepted() ) ) {
 			?>
 			<script>!function(f,b,e,v,n,t,s)
 			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -214,7 +214,7 @@
 	// add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
 
 	function add_facebook_pixel_no_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+		if ( ! current_user_can('manage_woocommerce') and ( function_exists('cn_cookies_accepted') and cn_cookies_accepted() ) ) {
 			?>
 			<noscript><img height="1" width="1" style="display:none"
 			src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
