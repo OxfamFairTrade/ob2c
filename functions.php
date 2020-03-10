@@ -11,6 +11,14 @@
 	add_filter( 'use_block_editor_for_post', '__return_false', 100 );
 	add_filter( 'use_block_editor_for_post_type', '__return_false', 100 );
 	add_filter( 'wc_product_enable_dimensions_display', '__return_false' );
+	add_filter( 'woocommerce_get_availability_text', 'modify_backorder_text', 10, 2 );
+
+	function modify_backorder_text( $availability, $product ) {
+		if ( $availability === __( 'Available on backorder', 'woocommerce' ) ) {
+			$availability = 'Tijdelijk niet beschikbaar';
+		}
+		return $availability;
+	}
 
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
@@ -4081,7 +4089,7 @@
 
 	function show_delivery_warning() {
 		global $product;
-		if ( ! is_b2b_customer() and $product->get_shipping_class() === 'breekbaar' ) {
+		if ( $product->is_in_stock() and ! $product->is_on_backorder() and ! is_b2b_customer() and $product->get_shipping_class() === 'breekbaar' ) {
 			echo "<p>Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.</p>";
 		}
 
