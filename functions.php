@@ -11,10 +11,6 @@
 	add_filter( 'use_block_editor_for_post', '__return_false', 10 );
 	add_filter( 'use_block_editor_for_post_type', '__return_false', 10 );
 
-	// Producten in backorder nooit bestelbaar maken HEEFT ENKEL EFFECT INDIEN VOORRAADBEHEER INGESCHAKELD IS
-	// Beter regelen door extra check toe te voegen in add-to-cart.php
-	add_filter( 'woocommerce_product_backorders_allowed', '__return_false', 10 );
-
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	

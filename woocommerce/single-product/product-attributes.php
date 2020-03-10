@@ -4,54 +4,31 @@
  *
  * Used by list_attributes() in the products class.
  *
- * @see 	    https://docs.woocommerce.com/document/template-structure/
- * @author 		WooThemes
- * @package 	WooCommerce/Templates
- * @version     3.0.0
-*/
+ * @see https://docs.woocommerce.com/document/template-structure/
+ * @package WooCommerce/Templates
+ * @version 3.6.0
+ */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+defined( 'ABSPATH' ) || exit;
+
+if ( ! $product_attributes ) {
+	return;
 }
 ?>
-<table class="shop_attributes">
+<table class="woocommerce-product-attributes shop_attributes">
 	<?php
-	// Sluit bepaalde zichtbare taxonomiëen toch nog uit
-	$forbidden_attributes = array( 'pa_eenheid', 'pa_shopplus' );
-	foreach ( $forbidden_attributes as $name ) {
-		if ( array_key_exists( $name, $attributes ) ) {
-			unset( $attributes[$name] );
+		// Sluit bepaalde zichtbare taxonomiëen toch nog uit
+		$forbidden_attributes = array( 'pa_eenheid', 'pa_shopplus' );
+		foreach ( $forbidden_attributes as $name ) {
+			if ( array_key_exists( $name, $product_attributes ) ) {
+				unset( $product_attributes[$name] );
+			}
 		}
-	}
-	foreach ( $attributes as $attribute ) : ?>
-		<tr>
-			<th><?php echo wc_attribute_label( $attribute->get_name() ); ?></th>
-			<td><?php
-				$values = array();
-
-				if ( $attribute->is_taxonomy() ) {
-					$attribute_taxonomy = $attribute->get_taxonomy_object();
-					$attribute_values = wc_get_product_terms( $product->get_id(), $attribute->get_name(), array( 'fields' => 'all' ) );
-
-					foreach ( $attribute_values as $attribute_value ) {
-						$value_name = esc_html( $attribute_value->name );
-
-						if ( $attribute_taxonomy->attribute_public ) {
-							$values[] = '<a href="' . esc_url( get_term_link( $attribute_value->term_id, $attribute->get_name() ) ) . '" rel="tag">' . $value_name . '</a>';
-						} else {
-							$values[] = $value_name;
-						}
-					}
-				} else {
-					$values = $attribute->get_options();
-
-					foreach ( $values as &$value ) {
-						$value = esc_html( $value );
-					}
-				}
-
-				echo apply_filters( 'woocommerce_attribute', wpautop( wptexturize( implode( ', ', $values ) ) ), $attribute, $values );
-			?></td>
+	?>
+	<?php foreach ( $product_attributes as $product_attribute_key => $product_attribute ) : ?>
+		<tr class="woocommerce-product-attributes-item woocommerce-product-attributes-item--<?php echo esc_attr( $product_attribute_key ); ?>">
+			<th class="woocommerce-product-attributes-item__label"><?php echo wp_kses_post( $product_attribute['label'] ); ?></th>
+			<td class="woocommerce-product-attributes-item__value"><?php echo wp_kses_post( $product_attribute['value'] ); ?></td>
 		</tr>
 	<?php endforeach; ?>
 
@@ -69,5 +46,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<td class="product_dimensions"><?php echo wc_format_dimensions( $product->get_dimensions(false) ); ?></td>
 		</tr>
 	<?php endif; ?>
-
 </table>
