@@ -105,6 +105,7 @@
 								ajaxCall(id, meta, jQuery(this).is(":checked"));
 							}
 							if ( meta == 'stockstatus' ) {
+								// TO DO: Validatie toevoegen op geldigheid waarde (kan gemanipuleerd worden in HTML)
 								var value = jQuery(this).find(":selected").val();
 								ajaxCall( id, meta, value );
 							}
@@ -134,11 +135,11 @@
 									
 									// Pas de gekleurde rand aan na een succesvolle voorraadwijziging
 									if ( value == 'onbackorder' ) {
-										jQuery("#"+id).find('.border').removeClass().addClass('border color-orange');
+										jQuery("#"+id).find('.border').removeClass('color-red color-green').addClass('color-orange');
 									} else if ( value == 'outofstock' ) {
-										jQuery("#"+id).find('.border').removeClass().addClass('border color-red');
+										jQuery("#"+id).find('.border').removeClass('color-green color-orange').addClass('color-red');
 									} else if ( value == 'instock' ) {
-										jQuery("#"+id).find('.border').removeClass().addClass('border color-green');
+										jQuery("#"+id).find('.border').removeClass('color-red color-orange').addClass('color-green');
 									}
 
 									// Werk de tellers bij
