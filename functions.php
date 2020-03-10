@@ -11,6 +11,9 @@
 	add_filter( 'use_block_editor_for_post', '__return_false', 10 );
 	add_filter( 'use_block_editor_for_post_type', '__return_false', 10 );
 
+	// Producten in backorder nooit bestelbaar maken
+	add_filter( 'woocommerce_product_backorders_allowed', '__return_false', 10 );
+
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
@@ -3397,7 +3400,7 @@
 					switch ( $rate_key ) {
 						case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method' ) ):
 							$rate->cost = $cost;
-							// Unset i.p.v. op nul te zetten
+							// Unset i.p.v. op nul te zetten ZORGT VOOR ERROR I.V.M. OVERLOADED PROPERTY
 							unset($rate->taxes[$tax_id_free]);
 							$rate->taxes[$tax_id_cost] = $taxes;
 							break;

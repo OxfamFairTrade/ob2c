@@ -20,7 +20,7 @@
 <div class="nm-footer-bar">
     <div class="nm-footer-bar-inner">
         <div class="nm-row">
-            <div class="nm-footer-bar-left col-md-8 col-xs-12">
+            <div class="nm-footer-bar-left col-md-6 col-xs-12">
                 <ul id="nm-footer-bar-menu" class="menu">
                     <?php
                         // Footer menu
@@ -48,12 +48,12 @@
                 <?php endif; ?>
             </div>
 
-            <div class="nm-footer-bar-right col-md-4 col-xs-12">
+            <div class="nm-footer-bar-right col-md-6 col-xs-12">
                 <!-- GEWIJZIGD: Voeg betaallogo's toe -->
                 <div class="nm-footer-bar-logo betaalmethodes">
                     <a href="https://www.mollie.com/be/consumers" target="_blank">
                         <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/bancontact.svg' ); ?>">
-                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/creditcard.svg' ); ?>">
+                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/creditcards.svg' ); ?>">
                         <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/kbc.svg' ); ?>">
                         <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/belfius.svg' ); ?>">
                         <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/ing.svg' ); ?>">
