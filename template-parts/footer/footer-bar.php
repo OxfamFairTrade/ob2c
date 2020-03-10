@@ -52,11 +52,13 @@
                 <!-- GEWIJZIGD: Voeg betaallogo's toe -->
                 <div class="nm-footer-bar-logo betaalmethodes">
                     <a href="https://www.mollie.com/be/consumers" target="_blank">
-                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/mistercash@2x.png' ); ?>">
-                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/creditcard@2x.png' ); ?>">
-                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/kbc@2x.png' ); ?>">
-                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/belfius@2x.png' ); ?>">
-                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/ideal@2x.png' ); ?>">
+                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/bancontact.svg' ); ?>">
+                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/creditcard.svg' ); ?>">
+                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/kbc.svg' ); ?>">
+                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/belfius.svg' ); ?>">
+                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/ing.svg' ); ?>">
+                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/applepay.svg' ); ?>">
+                        <img src="<?php echo plugins_url( 'mollie-payments-for-woocommerce/assets/images/ideal.svg' ); ?>">
                     </a>
                 </div>
                 
