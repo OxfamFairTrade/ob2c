@@ -5540,6 +5540,13 @@
 	// Verander capability van 'edit_pages' naar 'manage_woocommerce' zodat ook lokale beheerders de logs kunnen bekijken
 	add_filter( 'relevanssi_user_searches_capability', function( $capability ) { return 'manage_woocommerce'; } );
 		
+	// Laat logs rechtstreeks doorlinken naar specifieke product search in een nieuw venster
+	add_filter( 'relevanssi_user_searches_query_url', 'redirect_relevanissi_search_terms_to_products', 10, 1 );
+
+	function redirect_relevanissi_search_terms_to_products( $query_url ) {
+		return $query_url.'&post_type=product';
+	}
+
 	// Probeert reguliere meervouden en verkleinwoorden automatisch weg te laten uit zoektermen (én index)
 	add_filter( 'relevanssi_stemmer', 'relevanssi_dutch_stemmer' );
 
