@@ -26,7 +26,7 @@ if ( is_b2b_customer() ) {
 
 // GEWIJZIGD: Knop niet tonen bij voorraadstatus 'onbackorder'
 if ( $product->is_on_backorder() ) {
-	echo 'Dit product is tijdelijk niet beschikbaar.';
+	echo 'Tijdelijk niet beschikbaar';
 } else {
 	echo apply_filters( 'woocommerce_loop_add_to_cart_link', // WPCS: XSS ok.
 		sprintf( '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',

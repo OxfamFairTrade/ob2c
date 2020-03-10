@@ -67,6 +67,8 @@
 							$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().' ('.$product->get_attribute('pa_shopplus').')</span></div>';
 							$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
 								$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
+								// Nieuwe voorraadstatus!
+								$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>Tijdelijk uit voorraad</option>';
 								$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 							$content .= '</select></div>';
 							$content .= '<div class="cell"><input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
