@@ -38,11 +38,13 @@
 					// Verhinder dat leeggoed ook opduikt
 					if ( is_numeric( $product->get_sku() ) ) {
 						// Kleur de randen en tel de initiële waarde voor de tellers
-						if ( $product->is_in_stock() ) {
-							$class = 'border-color-green';
+						if ( $product->is_on_backorder() ) {
+							$class = 'border color-orange';
+						} elseif ( $product->is_in_stock() ) {
+							$class = 'border color-green';
 							$instock_cnt++;
 						} else {
-							$class = 'border-color-red';
+							$class = 'border color-red';
 						}
 						if ( $product->is_featured() ) {
 							$featured_cnt++;
@@ -131,14 +133,16 @@
 							    	tries = 0;
 									
 									// Pas de gekleurde rand aan na een succesvolle voorraadwijziging
-									if ( value == 'outofstock' ) {
-										jQuery("#"+id).find('.border-color-green').addClass('border-color-red').removeClass('border-color-green');
+									if ( value == 'onbackorder' ) {
+										jQuery("#"+id).find('.border').removeClass().addClass('border color-orange');
+									} else if ( value == 'outofstock' ) {
+										jQuery("#"+id).find('.border').removeClass().addClass('border color-red');
 									} else if ( value == 'instock' ) {
-										jQuery("#"+id).find('.border-color-red').addClass('border-color-green').removeClass('border-color-red');
+										jQuery("#"+id).find('.border').removeClass().addClass('border color-green');
 									}
 
 									// Werk de tellers bij
-									jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border-color-green").length);
+									jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border.color-green").length);
 									jQuery(".featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
 							    	
 							    	jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(5000).animate({
@@ -175,11 +179,11 @@
 
 						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
 							if ( jQuery(this).find(":selected").val() == 'instock' ) {
-								var to_change = jQuery("#oxfam-products").find(".border-color-red").length; 
+								var to_change = jQuery("#oxfam-products").find(".border.color-red").length; 
 								var go = confirm("Ben je zeker dat je "+to_change+" producten in voorraad wil zetten?");
 								if ( go == true ) {
 									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
-									jQuery("#oxfam-products").find(".border-color-red").parent().find("select.toggle").val('instock').each( function() {
+									jQuery("#oxfam-products").find(".border.color-red").parent().find("select.toggle").val('instock').each( function() {
 										jQuery(this).delay(25).trigger('change');	
 									});
 									// SUCCESBOODSCHAP TONEN NA AFLOOP
@@ -193,11 +197,11 @@
 									jQuery(this).val('');
 								}
 							} else if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
-								var to_change = jQuery("#oxfam-products").find(".border-color-green").length; 
+								var to_change = jQuery("#oxfam-products").find(".border.color-green").length; 
 								var go = confirm("Ben je zeker dat je "+to_change+" producten op uitverkocht wil zetten?");
 								if ( go == true ) {
 									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
-									jQuery("#oxfam-products").find(".border-color-green").parent().find("select.toggle").val('outofstock').each( function() {
+									jQuery("#oxfam-products").find(".border.color-green").parent().find("select.toggle").val('outofstock').each( function() {
 										jQuery(this).delay(25).trigger('change');	
 									});
 									// SUCCESBOODSCHAP TONEN NA AFLOOP
