@@ -7,6 +7,10 @@
 
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	
+	// Schakel Gutenberg uit
+	add_filter( 'use_block_editor_for_post', '__return_false', 10 );
+	add_filter( 'use_block_editor_for_post_type', '__return_false', 10 );
+
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
