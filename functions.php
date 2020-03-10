@@ -4623,7 +4623,10 @@
 				} else {
 					$signature = $partners_with_quote[$i]['name'].', '.$partners_with_quote[$i]['country'];
 				}
-				echo nm_shortcode_nm_testimonial( array( 'signature' => $signature, 'image_url' => $partners_with_quote[$i]['quote_photo'], 'link' => $partners_with_quote[$i]['url'] ), $partners_with_quote[$i]['quote'] );
+				// SHORTCODE BESTAAT NIET MEER, TE VERVANGEN
+				if ( function_exists('nm_shortcode_nm_testimonial') ) {
+					echo nm_shortcode_nm_testimonial( array( 'signature' => $signature, 'image_url' => $partners_with_quote[$i]['quote_photo'], 'link' => $partners_with_quote[$i]['url'] ), $partners_with_quote[$i]['quote'] );
+				}
 			}
 		}
 	}
