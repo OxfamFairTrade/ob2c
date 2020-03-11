@@ -21,13 +21,22 @@
 		return $availability;
 	}
 
+	// Enkel admins mogen producten dupliceren
+	add_filter( 'woocommerce_duplicate_product_capability', 'define_wc_duplicate_product_capability', 10, 1 );
+
+	function define_wc_duplicate_product_capability( $cap ) {
+		return 'update_core';
+	}
+
 	// Verberg acties op orders (ook in bulk en preview)
-	add_filter( 'bulk_actions-edit-shop_order', 'remove_dangerous_bulk_actions', 1000, 1 );
-	add_filter( 'woocommerce_admin_order_actions', 'remove_dangerous_preview_actions', 1000, 2 );
-	add_filter( 'woocommerce_admin_order_preview_actions', 'remove_dangerous_preview_actions', 1000, 2 );
-	add_filter( 'woocommerce_order_actions', 'remove_dangerous_singular_actions', 1000, 1 );
+	add_filter( 'bulk_actions-edit-shop_order', 'remove_dangerous_bulk_actions', 10000, 1 );
+	add_filter( 'woocommerce_admin_order_actions', 'remove_dangerous_preview_actions', 100, 2 );
+	add_filter( 'woocommerce_admin_order_preview_actions', 'remove_dangerous_preview_actions', 100, 2 );
+	add_filter( 'woocommerce_order_actions', 'remove_dangerous_singular_actions', 100, 1 );
 
 	function remove_dangerous_bulk_actions( $actions ) {
+		// WERKT NIET, WELLICHT MOET WOOCOMMERCE ORDER STATUSES NOG BIJGEWERKT WORDEN (INJECTEERT STATUSSEN NOG VIA JAVASCRIPT?)
+		// var_dump_pre( $actions);
 		unset( $actions['mark_processing'] );
 		unset( $actions['mark_completed'] );
 		return $actions;
