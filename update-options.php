@@ -164,7 +164,7 @@ require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_b2b_show_banner" title="">Toon banner om B2B-klant te worden op afrekenpagina<br/><small>Als je geen reclame wenst te maken voor de B2B-functies, kun je dit beter verbergen.</small></label>
+					<label for="oxfam_b2b_show_banner" title="">Toon banner om B2B-klant te worden op afrekenpagina<br/><small>Als je geen reclame wenst te maken voor de B2B-functies, kun je dit best uitschakelen. (Indien voldoende interesse voorzien we een registratieformulier voor bedrijfsklanten, dat ook enkel verschijnt indien deze optie ingeschakeld is.)</small></label>
 				</th>
 				<td class="right">
 					<input type="checkbox" name="oxfam_b2b_show_banner" value="yes" <?php checked( get_option( 'oxfam_b2b_show_banner', '' ) ); ?> disabled>
@@ -172,7 +172,7 @@ require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_b2b_delivery_enabled" title="">B2B-levering beschikbaar?<br/><small>Standaard is levering op locatie beschikbaar voor alle B2B-klanten (ongeacht de postcode in hun verzendadres), maar op termijn kun je dit hier uitschakelen.</small></label>
+					<label for="oxfam_b2b_delivery_enabled" title="">B2B-levering beschikbaar?<br/><small>Standaard is levering op locatie beschikbaar voor alle B2B-klanten (ongeacht de postcode in hun verzendadres) maar indien jullie winkel dit niet aanbiedt, kun je dit hier uitschakelen.</small></label>
 				</th>
 				<td class="right">
 					<input type="checkbox" name="oxfam_b2b_delivery_enabled" value="yes" <?php checked( $b2b_shipping_options['enabled'], 'yes' ); ?> disabled>
@@ -180,7 +180,7 @@ require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_b2b_delivery_cost" title="">Kostprijs voor B2B-levering:<br/><small>Indien ingeschakeld verschijnt de levering op locatie voor alle B2B-klanten als gratis, maar op termijn kun je hier een uniform tarief instellen (indien gewenst).</small></label>
+					<label for="oxfam_b2b_delivery_cost" title="">Kostprijs voor B2B-levering:<br/><small>Indien ingeschakeld verschijnt de levering op locatie voor alle B2B-klanten standaard als gratis maar je kunt zelf een hoger (uniform) tarief instellen. Tenzij iedereen dit liever op klantniveau instelt?</small></label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_b2b_delivery_cost" class="text-input" value="<?php echo strip_tags( wc_price( $b2b_shipping_options['cost'] ) ).' excl. BTW'; ?>" readonly>
