@@ -1147,13 +1147,13 @@
 
 	function ure_allow_args_for_oxfam_options( $args ) {
 		$args['edit.php'][''][] = 'claimed_by';
-		$args['edit.php'][''][] = 'action';
 		$args['edit.php'][''][] = 'stock_status';
-		$args['edit.php'][''][] = 'filter_action';
-		$args['edit.php'][''][] = 'action2';
-		$args['edit.php'][''][] = 'paged';
-		$args['edit.php'][''][] = 'parent_child';
-		$args['edit.php'][''][] = 'product_cat';
+		// Deze argumenten zijn reeds automatisch voorzien ...
+		// $args['edit.php'][''][] = 'product_cat';
+		// $args['edit.php'][''][] = 'filter_action';
+		// $args['edit.php'][''][] = 'action';
+		// $args['edit.php'][''][] = 'action2';
+		// $args['edit.php'][''][] = 'paged';
 		$args['admin.php']['wc-reports'] = array(
 			'tab',
 			'report',
