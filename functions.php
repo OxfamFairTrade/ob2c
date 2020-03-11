@@ -95,8 +95,8 @@
 		$url = get_current_url();
 		// update_site_option( 'oxfam_blocked_sites', array( 41, 42, 43, 44, 45, 46, 47, 48, 49, 50 ) );
 
-		// Demosite tijdelijk openstellen: or get_current_site()->domain !== 'shop.oxfamwereldwinkels.be'
-		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
+		// Demosite afschermen
+		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) or get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 			if ( ! is_user_logged_in() ) {
 				// Nooit redirecten: inlog-, reset-, activatiepagina en WC API calls
 				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wc_lostpassword_url() ) and ! strpos( $url, 'activate.php' ) and ! strpos( $url, 'wc-api' ) ) {
