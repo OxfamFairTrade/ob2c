@@ -10,6 +10,7 @@
 	// Schakel Gutenberg uit
 	add_filter( 'use_block_editor_for_post', '__return_false', 100 );
 	add_filter( 'use_block_editor_for_post_type', '__return_false', 100 );
+	
 	add_filter( 'wc_product_enable_dimensions_display', '__return_false' );
 	add_filter( 'woocommerce_get_availability_text', 'modify_backorder_text', 10, 2 );
 
@@ -18,6 +19,26 @@
 			$availability = 'Tijdelijk niet beschikbaar';
 		}
 		return $availability;
+	}
+
+	add_filter( 'wc_order_statuses', 'limit_status_possibilities_on_edit_order_screen', 10 );
+	
+	function limit_status_possibilities_on_edit_order_screen( $order_statuses ) {
+		if ( is_admin() ) {
+			global $pagenow, $post_type;
+			if ( $pagenow === 'post.php' and $post_type === 'shop_order' ) {
+				if ( ! current_user_can('update_core') ) {
+					// Cancelled misschien wel toestaan?
+					$forbidden_statuses = array( 'wc-pending', 'wc-on-hold', 'wc-failed', 'wc-cancelled' );
+					foreach ( $forbidden_statuses as $name ) {
+						if ( array_key_exists( $name, $order_statuses ) ) {
+							unset( $order_statuses[ $name ] );
+						}
+					}
+				}
+			}
+		}
+		return $order_statuses;
 	}
 
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
@@ -1541,8 +1562,8 @@
 		if ( ! current_user_can('manage_options') ) {
 			?>
 			<script>
-				/* Orderstatus vastzetten */
-				jQuery( '#order_data' ).find( '#order_status' ).prop( 'disabled', true );
+				/* Orderstatus vastzetten NIET LANGER NODIG */
+				// jQuery( '#order_data' ).find( '#order_status' ).prop( 'disabled', true );
 			</script>
 			<?php
 		}
