@@ -22,10 +22,10 @@
 	}
 
 	// Verberg acties op orders (ook in bulk en preview)
-	add_filter( 'bulk_actions-edit-shop_order', 'remove_dangerous_bulk_actions', 100, 1 );
-	add_filter( 'woocommerce_admin_order_actions', 'remove_dangerous_preview_actions', 100, 2 );
-	add_filter( 'woocommerce_admin_order_preview_actions', 'remove_dangerous_preview_actions', 100, 2 );
-	add_filter( 'woocommerce_order_actions', 'remove_dangerous_singular_actions', 100, 1 );
+	add_filter( 'bulk_actions-edit-shop_order', 'remove_dangerous_bulk_actions', 1000, 1 );
+	add_filter( 'woocommerce_admin_order_actions', 'remove_dangerous_preview_actions', 1000, 2 );
+	add_filter( 'woocommerce_admin_order_preview_actions', 'remove_dangerous_preview_actions', 1000, 2 );
+	add_filter( 'woocommerce_order_actions', 'remove_dangerous_singular_actions', 1000, 1 );
 
 	function remove_dangerous_bulk_actions( $actions ) {
 		unset( $actions['mark_processing'] );
