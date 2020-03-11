@@ -21,18 +21,48 @@
 		return $availability;
 	}
 
-	add_filter( 'wc_order_statuses', 'limit_status_possibilities_on_edit_order_screen', 10 );
+	// Verberg acties op orders (ook in bulk en preview)
+	add_filter( 'bulk_actions-edit-shop_order', 'remove_dangerous_bulk_actions', 1000, 1 );
+	add_filter( 'woocommerce_admin_order_actions', 'remove_dangerous_preview_actions', 10, 2 );
+	add_filter( 'woocommerce_admin_order_preview_actions', 'remove_dangerous_preview_actions', 10, 2 );
+
+	function remove_dangerous_bulk_actions( $actions ) {
+		unset( $actions['mark_processing'] );
+		unset( $actions['mark_completed'] );
+		return $actions;
+	}
+
+	function remove_dangerous_preview_actions( $actions, $order ) {
+		// Voorlopig volledig verbergen, later misschien flow voorzien?
+		unset( $actions['status'] );
+		return $actions;
+	}
+
+	// Verwijder bepaalde filters boven het productoverzicht in de back-end (beschikbaar vanaf WC3.5+)
+	add_filter( 'woocommerce_products_admin_list_table_filters', 'oft_remove_product_filters', 10, 1 );
+
+	function oft_remove_product_filters( $filters ) {
+		unset($filters['product_type']);
+		return $filters;
+	}
+
+	// Beperk de beschikbare statussen op het orderdetail voor lokale beheerders 
+	add_filter( 'wc_order_statuses', 'limit_status_possibilities_on_edit_order_screen', 1000 );
 	
 	function limit_status_possibilities_on_edit_order_screen( $order_statuses ) {
 		if ( is_admin() ) {
 			global $pagenow, $post_type;
 			if ( $pagenow === 'post.php' and $post_type === 'shop_order' ) {
 				if ( ! current_user_can('update_core') ) {
-					// Cancelled misschien wel toestaan?
-					$forbidden_statuses = array( 'wc-pending', 'wc-on-hold', 'wc-failed', 'wc-cancelled' );
-					foreach ( $forbidden_statuses as $name ) {
-						if ( array_key_exists( $name, $order_statuses ) ) {
-							unset( $order_statuses[ $name ] );
+					global $post;
+					$order = wc_get_order( $post->ID );
+					// Cancelled misschien wel toestaan bij B2B-bestellingen?
+					// Ook volledige terugbetaling altijd handmatig registreren met opgave van reden!
+					$forbidden_statuses = array( 'wc-pending', 'wc-on-hold', 'wc-failed', 'wc-refunded', 'wc-cancelled' );
+					foreach ( $forbidden_statuses as $key ) {
+						// Verhinder dat we de huidige status van het order verwijderen
+						if ( array_key_exists( $key, $order_statuses ) and $order->get_status() !== str_replace( 'wc-', '', $key ) ) {
+							unset( $order_statuses[ $key ] );
 						}
 					}
 				}
