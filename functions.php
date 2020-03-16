@@ -2715,10 +2715,13 @@
 
 	function b2b_restrict_to_bank_transfer( $gateways ) {
 		if ( is_b2b_customer() ) {
-			unset( $gateways['mollie_wc_gateway_mistercash'] );
+			// write_log( print_r( $gateways, true ) );
+			unset( $gateways['mollie_wc_gateway_bancontact'] );
 			unset( $gateways['mollie_wc_gateway_creditcard'] );
 			unset( $gateways['mollie_wc_gateway_kbc'] );
 			unset( $gateways['mollie_wc_gateway_belfius'] );
+			unset( $gateways['mollie_wc_gateway_inghomepay'] );
+			unset( $gateways['mollie_wc_gateway_applepay'] );
 			unset( $gateways['mollie_wc_gateway_ideal'] );
 		} else {
 			unset( $gateways['cod'] );
@@ -3506,6 +3509,7 @@
 			}
 		}
 		
+		// write_log( print_r( $rates, true ) );
 		return $rates;
 	}
 
