@@ -426,7 +426,47 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		update_option( 'cookie_notice_options', $cookie_settings );
 	}
 
-	// Verzendzones wijzigen
+	// Verzendkosten wijzigen
+	$shipping_methods = array( 'free_delivery_by_shop' => 'free_shipping_1', 'delivery_by_shop' => 'flat_rate_2', 'free_delivery_by_eco' => 'free_shipping_3', 'delivery_by_eco' => 'flat_rate_4', 'free_delivery_by_bpost' => 'free_shipping_5', 'delivery_by_bpost' => 'flat_rate_6', 'bpack_delivery_by_bpost' => 'flat_rate_7' );
+
+	foreach ( $shipping_methods as $name => $key ) {
+		// Laad de juiste optie
+		if ( $name === 'bpack_delivery_by_bpost' ) {
+			$option_key = 'sendcloudshipping_service_point_shipping_method_7_settings';
+		} else {
+			$option_key = 'woocommerce_'.$key.'_settings';
+		}
+		
+		$settings = get_option( $option_key );
+
+		if ( is_array( $settings ) ) {
+			// Betalende methodes goedkoper maken
+			if ( in_array( $name, array( 'delivery_by_shop', 'delivery_by_eco', 'delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
+				if ( array_key_exists( 'cost', $settings ) ) {
+					// $settings['cost'] = '6,5566';
+					$settings['cost'] = '4,6698';
+				}
+			}
+
+			if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
+				if ( $name === 'bpack_delivery_by_bpost' ) {
+					if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
+						// $settings['free_shipping_min_amount'] = '100';
+						$settings['free_shipping_min_amount'] = '50';
+					}
+				} else {
+					if ( array_key_exists( 'min_amount', $settings ) ) {
+						// $settings['min_amount'] = '100';
+						$settings['min_amount'] = '50';
+					}
+				}
+			}
+
+			if ( update_option( $option_key, $settings ) ) {
+				write_log( print_r( $settings, true ) );
+			}
+		}
+	}
 
 	// Tabel met stopwoorden kopiëren
 

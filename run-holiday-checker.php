@@ -26,7 +26,7 @@
 							// Stel de afwezigheidsboodschap in, op voorwaarde dat er momenteel geen andere boodschap getoond wordt
 							if ( get_option('woocommerce_demo_store') === 'no' ) {
 								// PERSONALISEERBAAR MAKEN? EERSTE WERKDAG ZOEKEN NA VAKANTIE?
-								update_option( 'woocommerce_demo_store_notice', 'We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening. Faire feesten gewenst!' );
+								update_option( 'woocommerce_demo_store_notice', 'We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening.' );
 								if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
 									write_log("Vakantiebanner geactiveerd op ".$site->blogname."!");
 								}

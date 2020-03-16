@@ -162,9 +162,17 @@
 		  			<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ); ?></textarea>
 		  		</td>
 			</tr>
+			<!-- tr valign="top">
+				<th class="left">
+					<label for="woocommerce_local_pickup_plus_enabled">Afhaling in de winkel tijdelijk volledig uitschakelen?<br/><small>Wereldwinkels die in het kader van de maatregelen tegen de verspreiding van het coronavirus hun winkel sluiten, kunnen voor alle duidelijkheid afhaling in de winkel volledig uitschakelen in hun webshop. Opgelet: indien je slechts enkele dagen sluit en/of beperktere openingsuren hanteert, dien je deze aanpassingen gewoon door te geven via je winkelpagina op oxfamwereldwinkels.be!</small></label>
+				</th>
+		  		<td class="right">
+		  			<input type="checkbox" name="woocommerce_local_pickup_plus_enabled" value="yes" <?php // checked( get_option('woocommerce_local_pickup_plus_enabled'), 'yes' ); ?>>
+		  		</td>
+			</tr -->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_b2b_delivery_enabled" title="">B2B-levering beschikbaar?<br/><small>Standaard is levering op locatie beschikbaar voor alle B2B-klanten (ongeacht de postcode in hun verzendadres), maar op termijn kun je dit hier uitschakelen.</small></label>
+					<label for="oxfam_b2b_delivery_enabled">B2B-levering beschikbaar?<br/><small>Standaard is levering op locatie beschikbaar voor alle B2B-klanten (ongeacht de postcode in hun verzendadres), maar op termijn kun je dit hier uitschakelen.</small></label>
 				</th>
 		  		<td class="right">
 		  			<input type="checkbox" name="oxfam_b2b_delivery_enabled" value="yes" <?php checked( $b2b_shipping_options['enabled'], 'yes' ); ?> disabled>
