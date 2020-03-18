@@ -3391,6 +3391,7 @@
 			}
 			
 			// Overschrijf alle verzendprijzen (dus niet enkel in 'uitsluitend 21%'-geval -> te onzeker) indien betalende thuislevering
+			// DIT VOLSTAAT OM ALLE PRIJZEN DYNAMISCH TE WIJZIGEN
 			if ( ! $free_home_available ) {
 				foreach ( $rates as $rate_key => $rate ) {
 					switch ( $rate_key ) {
@@ -4882,42 +4883,47 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-success">';
-					echo '<p>Er werden 7 nieuwe producten gepubliceerd die in de loop van februari in de winkels arriveerden:</p><ul style="margin-left: 2em;">';
-						// Volgende keer: '26424', '27012', '27110'
-						$skus = array( '20182', '20262', '20416', '27516', '27517', '27518', '28021' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku($sku);
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-					echo '<p>Daarnaast werd het paasassortiment voor 2020 klaargezet (o.a. nieuwe packshots en prijsverhoging grote paashaas):</p><ul style="margin-left: 2em;">';
-						$skus = array( '24529', '24634', '24647', '24648' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku($sku);
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-							}
-						}
-					echo '</ul>';
-					echo '<p>Sinterklaas verdween dan weer in de kast. De prijswijzigingen op 01/03/2020 van 3 Ethiquable-producten werden doorgevoerd.</p>';
+				echo '<div class="notice notice-warning">';
+					echo '<p>In het kader van de coronacrisis en de sluiting van alle wereldwinkels werden de verzendkosten verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling mét gratis levering vanaf 50 i.p.v. 100 euro. Contacteer ons indien je afhalingen in de winkel (op afspraak) volledig wil uitschakelen.</p>';
 				echo '</div>';
+				if ( does_home_delivery() ) {
+					// Boodschappen voor winkels die thuislevering doen
+					echo '<div class="notice notice-success">';
+						echo '<p>In het kader van de coronacrisis en de sluiting van alle wereldwinkels werden de verzendkosten verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én gratis levering vanaf 50 i.p.v. 100 euro.</p>';
+					echo '</div>';
+				}
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Er werden 7 nieuwe producten gepubliceerd die in de loop van februari in de winkels arriveerden:</p><ul style="margin-left: 2em;">';
+				// 		// Volgende keer: '26424', '27012', '27110'
+				// 		$skus = array( '20182', '20262', '20416', '27516', '27517', '27518', '28021' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku($sku);
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+				// 	echo '<p>Daarnaast werd het paasassortiment voor 2020 klaargezet (o.a. nieuwe packshots en prijsverhoging grote paashaas):</p><ul style="margin-left: 2em;">';
+				// 		$skus = array( '24529', '24634', '24647', '24648' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku($sku);
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul>';
+				// 	echo '<p>Sinterklaas verdween dan weer in de kast. De prijswijzigingen op 01/03/2020 van 3 Ethiquable-producten werden doorgevoerd.</p>';
+				// echo '</div>';
 			}
 			// echo '<div class="notice notice-warning">';
 			// 	echo '<p>3 oude producten werden uit de database verwijderd omdat de wijntabel aangeeft dat de drinkbaarheid van deze wijnen niet meer optimaal is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';
 			// echo '</div>';
-			// echo '<p>Net zoals bij de fruitsappen wordt het leeggoed automatisch toegevoegd: 1 flesje bij losse aankoop, 4 flesjes bij aankoop van een clip. Van zodra er 24 flesjes <u>van dezelfde soort</u> toegevoegd worden, wordt er ook een krat aangerekend. Zoals gewoonlijk is thuislevering niet langer mogelijk van zodra er een krat in het winkelmandje zit, behalve voor <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">B2B-klanten</a>. Indien de klant retourleeggoed meebrengt naar de winkel, dien je dat bij afhaling apart af te rekenen (= geld teruggeven).</p>';
-			if ( does_home_delivery() ) {
-				// Boodschappen voor winkels die thuislevering doen 
-			}
 			if ( does_sendcloud_delivery() ) {
 				// Boodschappen voor winkels die verzenden met SendCloud
 			}
