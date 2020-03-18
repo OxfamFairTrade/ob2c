@@ -3159,7 +3159,7 @@
 			$threshold = 50;
 			// Subtotaal = winkelmandje inclusief belasting, exclusief verzending
 			$current = WC()->cart->subtotal;
-			if ( $current > ( 0.7 * $treshold ) ) {
+			if ( $current > ( 0.7 * $threshold ) ) {
 				if ( $current < $threshold ) {
 					// Probeer de boodschap slechts af en toe te tonen via sessiedata
 					$cnt = WC()->session->get( 'go_to_100_message_count', 0 );
