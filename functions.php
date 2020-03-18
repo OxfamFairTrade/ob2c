@@ -191,7 +191,7 @@
 	}
 
 	// Activeer Facebook Pixel (JS)
-	// add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
+	add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
 
 	function add_facebook_pixel_js() {
 		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
@@ -211,7 +211,7 @@
 	}
 
 	// Activeer Facebook Pixel (no JS)
-	// add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
+	add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
 
 	function add_facebook_pixel_no_js() {
 		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
