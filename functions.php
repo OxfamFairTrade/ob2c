@@ -4884,12 +4884,12 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-warning">';
-					echo '<p><a href="https://copain.oww.be/l/mailing2/link/a556087c-f98a-4728-a516-f892ff77cc01/4423">Lees de nieuwsbrief van 18 maart rond de promotie van onze webshops tijdens de coronacrisis.</a> Indien je dat nog niet deed: stuur een mailtje naar <a href="mailto:e-commerce@oft.be?subject=Werking webshop '.get_current_site()->site_name.' tijdens coronasluiting">e-commerce@oft.be</a> om even te laten weten hoe jullie de komende weken willen verdergaan met jullie webshop (afhaling <u>op afspraak</u> en/of ruimere thuislevering).</p>';
+					echo '<p><a href="https://copain.oww.be/l/mailing2/link/a556087c-f98a-4728-a516-f892ff77cc01/4423" target="_blank">Lees de nieuwsbrief van 18 maart rond de promotie van onze webshops tijdens de coronacrisis.</a> Indien je dat nog niet deed: stuur een mailtje naar <a href="mailto:e-commerce@oft.be?subject=Werking webshop '.get_current_site()->site_name.' tijdens coronasluiting">e-commerce@oft.be</a> om even te laten weten hoe jullie de komende weken willen verdergaan met jullie webshop (afhaling <u>op afspraak</u> en/of ruimere thuislevering).</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					echo '<div class="notice notice-success">';
-						echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro. We bekijken de komende dagen hoe het NS dit kan ondersteunen.</p>';
+						echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro. We bekijken de komende dagen hoe/of het NS dit verder kan ondersteunen.</p>';
 					echo '</div>';
 				}
 				// echo '<div class="notice notice-success">';
