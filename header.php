@@ -157,4 +157,8 @@
                         } else {
                             get_header( 'default' );
                         }
+
+                        if ( is_woocommerce() and 1 === 0 ) {
+                            echo '<div class="general-store-notice" style="text-align: center; padding: 1em 1em 0 1em; font-size: 1.2em; width: 100%; color: blue;">Nu gratis verzending vanaf 50 euro!</div>';
+                        }
                     ?>
