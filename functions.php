@@ -3155,10 +3155,11 @@
 
 	function show_almost_free_shipping_notice() {
 		if ( is_cart() and ! is_b2b_customer() ) {
-			$threshold = 100;
+			// $threshold = 100;
+			$threshold = 50;
 			// Subtotaal = winkelmandje inclusief belasting, exclusief verzending
 			$current = WC()->cart->subtotal;
-			if ( $current > 80 ) {
+			if ( $current > ( 0.7 * $treshold ) ) {
 				if ( $current < $threshold ) {
 					// Probeer de boodschap slechts af en toe te tonen via sessiedata
 					$cnt = WC()->session->get( 'go_to_100_message_count', 0 );
@@ -3374,13 +3375,15 @@
 			$tax_classes = WC()->cart->get_cart_item_tax_classes();
 			if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
 				// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
-				$cost = 5.7438;
+				// $cost = 5.7438;
+				$cost = 4.0909;
 				// Ook belastingen expliciet herberekenen!
 				$taxes = $cost*0.21;
 				$tax_id_free = $low_vat_rate->tax_rate_id;
 				$tax_id_cost = $standard_vat_rate->tax_rate_id;
 			} else {
-				$cost = 6.5566;
+				// $cost = 6.5566;
+				$cost = 4.6698;
 				// Deze stap doen we vooral omwille van het wispelturige gedrag van deze tax
 				$taxes = $cost*0.06;
 				$tax_id_free = $standard_vat_rate->tax_rate_id;
