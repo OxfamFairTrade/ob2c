@@ -5103,10 +5103,11 @@
 		$output = '';
 		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
-		if ( get_current_blog_id() !== 12 ) {
-			$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
-		} else {
+		// Uitzondering voor Dilbeek en Ledeberg
+		if ( $atts['id'] == 3387 or $atts['id'] == 3425 ) {
 			$holidays = array();
+		} else {
+			$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
 		}
 
 		if ( $atts['start'] === 'today' ) {
