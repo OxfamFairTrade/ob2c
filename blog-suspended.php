@@ -32,7 +32,7 @@
 
 </head>
 
-<body onLoad="setTimeout('delayedRedirect()', 10000)">
+<body onLoad="setTimeout('delayedRedirect()', 30000)">
 
 	<div class="main" style="height: 100%;">
 		<div class="wrapper" style="max-width: 900px; height: 100%;">
@@ -43,9 +43,11 @@
 			</a>
 			<div style="height: 60%; box-sizing: border-box;" class="padding-fix">
 				<div id="typewriter" class="tikken-404" style="margin: 0 auto; text-align: center;">
-					Deze lokale webshop is <span id="rood">tijdelijk gesloten</span>. Door de coronamaatregelen
-					is het voor ons niet langer mogelijk om bestellingen tijdig klaar te zetten. We sturen je door naar
-					<span id="rood">de portaalpagina</span> waar je de webshops vindt die wel nog actief zijn.
+					Deze lokale webshop is <span id="rood">tijdelijk gesloten</span>.
+					Door de <span id="rood">coronamaatregelen</span> is het voor ons niet langer mogelijk
+					om bestellingen tijdig klaar te zetten.
+					We sturen je door naar de portaalpagina
+					waar je de webshops vindt die <span id="rood">wel nog actief</span> zijn.
 				</div>
 			</div>
 		</div>
