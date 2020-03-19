@@ -5104,7 +5104,7 @@
 		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
 		// Uitzondering voor Dilbeek en Ledeberg
-		if ( $atts['id'] == 3387 or $atts['id'] == 3425 ) {
+		if ( $atts['id'] === 'dilbeek' or $atts['id'] === 'ledeberg' ) {
 			$holidays = array();
 		} else {
 			$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
@@ -5412,6 +5412,12 @@
 					switch ($key) {
 						case 'account':
 							return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
+					}
+				} elseif ( intval( $shop_post_id ) === 3226 ) {
+					// Uitzonderingen voor Deinze
+					switch ($key) {
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0493082695', '.'	 );
 					}
 				}
 				
