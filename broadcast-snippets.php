@@ -76,7 +76,7 @@
 	}
 
 	// Subsites afschermen en verbergen op kaart
-	$oxfam_blocked_sites = array();
+	$oxfam_blocked_sites = array( 13, 29 );
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
@@ -271,58 +271,22 @@
 	}
 
 	// Stel de openingsuren in van een niet-OWW-afhaalpunt
-	$node = 'tuincentrum';
+	$node = 'dilbeek';
 	$hours = array(
-		1 => array(
-			array(
-				'start' => '13:30',
-				'end' => '18:00',
-			),
-		),
-		2 => array(
-			array(
-				'start' => '8:30',
-				'end' => '12:00',
-			),
-			array(
-				'start' => '13:30',
-				'end' => '18:00',
-			),
-		),
+		1 => false,
+		2 => false,
 		3 => array(
 			array(
-				'start' => '8:30',
-				'end' => '12:00',
-			),
-			array(
-				'start' => '13:30',
-				'end' => '18:00',
-			),
+				'start' => '10:00',
+				'end' => '11:00',
+			)
 		),
-		4 => array(
-			array(
-				'start' => '8:30',
-				'end' => '12:00',
-			),
-			array(
-				'start' => '13:30',
-				'end' => '18:00'
-			),
-		),
-		5 => array(
-			array(
-				'start' => '8:30',
-				'end' => '12:00',
-			),
-			array(
-				'start' => '13:30',
-				'end' => '18:00'
-			),
-		),
+		4 => false,
+		5 => false,
 		6 => array(
 			array(
-				'start' => '9:00',
-				'end' => '17:00'
+				'start' => '10:00',
+				'end' => '11:00'
 			),
 		),
 		7 => false,

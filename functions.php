@@ -5103,7 +5103,11 @@
 		$output = '';
 		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
-		$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
+		if ( get_current_blog_id() !== 12 ) {
+			$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
+		} else {
+			$holidays = array();
+		}
 
 		if ( $atts['start'] === 'today' ) {
 			// Begin met de weekdag van vandaag
