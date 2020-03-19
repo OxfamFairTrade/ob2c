@@ -2612,8 +2612,8 @@
 		return $tax_class;
 	}
 
-	// Geef hint om B2B-klant te worden
-	add_action( 'woocommerce_just_before_checkout_form', 'show_b2b_account_hint', 10 );
+	// Geef hint om B2B-klant te worden TIJDELIJK UITSCHAKELEN
+	// add_action( 'woocommerce_just_before_checkout_form', 'show_b2b_account_hint', 10 );
 
 	function show_b2b_account_hint() {
 		// Niet tonen bij Brugge en Antwerpen
@@ -5413,7 +5413,7 @@
 						case 'account':
 							return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
 					}
-				} elseif ( intval( $shop_post_id ) === 3226 ) {
+				} elseif ( intval( $shop_post_id ) === 3362 ) {
 					// Uitzonderingen voor Deinze
 					switch ($key) {
 						case 'telephone':
