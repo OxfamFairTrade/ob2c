@@ -159,10 +159,10 @@
                         }
 
                         // if ( is_woocommerce() ) {
-                            if ( does_home_delivery() ) {
+                            if ( is_main_site() or does_home_delivery() ) {
                                 echo '<div class="general-store-notice"><p class="free-shipping">Nu <b><u>gratis verzending</u></b> vanaf 50 euro!</p></div>';
                             } else {
-                               //  echo '<div class="general-store-notice"><p class="local-pickup">Door de coronamaatregelen gebeuren alle afhalingen in de winkel enkel nog op afspraak.<br/>Onze vrijwilligers contacteren je na het plaatsen van je bestelling!</p></div>';
+                                // echo '<div class="general-store-notice"><p class="local-pickup">Door de coronamaatregelen gebeuren alle afhalingen in de winkel enkel nog op afspraak.<br/>Onze vrijwilligers contacteren je na het plaatsen van je bestelling!</p></div>';
                             }
                         // }
                     ?>
