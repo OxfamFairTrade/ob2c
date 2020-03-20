@@ -23,6 +23,7 @@ $shop-grey: #707070;
 $brown-grey: rgba(133, 107, 95, 0.5);
 $fluo-green: #57cc82;
 $oxfam-green: #61a534;
+$bright-red: #ff2e2e;
 $pickup: rgb(0, 175, 233);
 $delivery: rgb(255, 99, 133);
 $black: #2c2c2c;
@@ -273,7 +274,7 @@ body.portal.home {
 	padding: 1em;
 	width: 100%;
 	color: white;
-	background-color: #FF2E2E;
+	background-color: $bright-red;
 
 	p {
 		font-size: 1.2em;
@@ -281,16 +282,19 @@ body.portal.home {
 		text-align: center;
 		max-width: 750px;
 		margin: 0 auto;
-		position: relative
+		position: relative;
 
 		&.free-shipping:after {
 			content: '';
 			display: inline-block;
-			position: absolute;
-			top: -1em;
 			background-image: url('images/shipping-icon.svg');
+			background-size: contain;
+			background-repeat: no-repeat;
 			width: 2em;
 			height: 2em;
+			margin-left: 0.5em;
+			margin-top: -0.5em;
+			position: absolute;
 		}
 	}
 }
