@@ -734,13 +734,15 @@ body.is_b2b_customer {
 }
 
 #cookie-notice {
+	/* Wordt overruled door instellingen plugin */
 	background-color: $cookie-grey;
+	/* Wordt overruled door instellingen plugin */
 	color: $cookie-black;
 	max-width: 500px;
 	min-width: initial;
 	left: auto;
-	right: 1em;
-	bottom: 1em;	
+	right: 2em;
+	bottom: 2em;	
 
 	#cn-notice-text:before {
 		content: '';
@@ -756,25 +758,29 @@ body.is_b2b_customer {
 
 	}
 	
-	#cn-accept-cookie {
-		background-color: $cookie-green;
-		color: white;
-		border-radius: 1em;
-	}
+	.cn-button.wp-default.cookie {
+		border: none;
 
-	#cn-refuse-cookie {
-		background-color: white;
-		color: #696969;
-		color: $cookie-black;
-		border-radius: 1em;
-	}
+		&#cn-accept-cookie {
+			background-color: $cookie-green;
+			color: white;
+			border-radius: 1em;
+		}
 
-	#cn-more-info {
-		background-color: transparent;
-		color: $cookie-black;
-		font-size: 0.75em;
-		display: block;
-		margin: 0 auto;
+		&#cn-refuse-cookie {
+			background-color: white;
+			color: #696969;
+			color: $cookie-black;
+			border-radius: 1em;
+		}
+
+		&#cn-more-info {
+			background-color: transparent;
+			color: $cookie-black;
+			font-size: 0.75em;
+			display: block;
+			margin: 0 auto;
+		}
 	}
 }
 
