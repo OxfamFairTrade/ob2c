@@ -20,7 +20,7 @@
 
 	<div class="nm-header-logo">
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>">
-			<!-- // GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites -->
+			<!-- GEWIJZIGD: Vermeld logo en winkelnaam enkel op lokale sites -->
 			<?php if ( ! is_main_site() ) : ?>
 				<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/oww-webshop-groen-60px@2x.png" class="nm-logo">
 				<?php if ( $has_alt_logo ) : ?>
