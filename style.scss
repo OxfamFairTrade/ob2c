@@ -24,6 +24,7 @@ $brown-grey: rgba(133, 107, 95, 0.5);
 $fluo-green: #57cc82;
 $oxfam-green: #61a534;
 $bright-red: #ff2e2e;
+$bright-blue: #60aafd;
 $cookie-grey: #efefef;
 $cookie-black: #4d4d4d;
 $cookie-green: #0abe71;
@@ -301,6 +302,16 @@ body.portal.home {
 		}
 	}
 }
+
+.nm-shop-header {
+	background-color: $bright-blue;
+
+	.nm-shop-menu ul li a {
+		color: white;
+	}
+}
+
+
 
 /**************/
 /*  ALGEMEEN  */
@@ -750,16 +761,14 @@ body.is_b2b_customer {
 		background-image: url('images/cookie-icon.svg');
 		background-size: contain;
 		background-repeat: no-repeat;
-		width: 2em;
-		height: 2em;
-		margin-top: 1em;
-		margin-bottom: 1em;
-		position: absolute;
-
+		width: 4em;
+		height: 4em;
+		margin: 0 auto 2em auto;
 	}
 	
 	.cn-button.wp-default.cookie {
 		border: none;
+		background: initial;
 
 		&#cn-accept-cookie {
 			background-color: $cookie-green;
