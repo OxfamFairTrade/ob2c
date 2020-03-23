@@ -24,6 +24,9 @@ $brown-grey: rgba(133, 107, 95, 0.5);
 $fluo-green: #57cc82;
 $oxfam-green: #61a534;
 $bright-red: #ff2e2e;
+$cookie-grey: #efefef;
+$cookie-black: #4d4d4d;
+$cookie-green: #0abe71;
 $pickup: rgb(0, 175, 233);
 $delivery: rgb(255, 99, 133);
 $black: #2c2c2c;
@@ -622,26 +625,26 @@ li.widget.widget_text:not(:last-child) {
 	color: $oxfam-green !important;
 }
 
-@mixin icon( $image: 'wereld' ) {
+@mixin icon( $image: 'always-open' ) {
 	/* Zorg ervoor dat het originele icoontje in ::before onzichtbaar wordt */
 	color: transparent !important;
 	font-size: 64px;
-	background-image: url('images/#{$image}.png');
+	background-image: url('images/#{$image}-icon.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center center;
 }
 
 i.pe-7s-timer {
-	@include icon( 'klok' );
+	@include icon('always-open');
 }
 
 i.pe-7s-global {
-	@include icon( 'wereld');
+	@include icon('global-products');
 }
 
 i.pe-7s-comment {
-	@include icon( 'handen' );
+	@include icon('hands-together');
 }
 
 
@@ -727,6 +730,51 @@ body.is_b2b_customer {
 	li.product.product_tag-promotie::after,
 	div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
 		display: none !important;
+	}
+}
+
+#cookie-notice {
+	background-color: $cookie-grey;
+	color: $cookie-black;
+	max-width: 500px;
+	min-width: initial;
+	left: auto;
+	right: 1em;
+	bottom: 1em;	
+
+	#cn-notice-text:before {
+		content: '';
+		display: block;
+		background-image: url('images/cookie-icon.svg');
+		background-size: contain;
+		background-repeat: no-repeat;
+		width: 2em;
+		height: 2em;
+		margin-top: 1em;
+		margin-bottom: 1em;
+		position: absolute;
+
+	}
+	
+	#cn-accept-cookie {
+		background-color: $cookie-green;
+		color: white;
+		border-radius: 1em;
+	}
+
+	#cn-refuse-cookie {
+		background-color: white;
+		color: #696969;
+		color: $cookie-black;
+		border-radius: 1em;
+	}
+
+	#cn-more-info {
+		background-color: transparent;
+		color: $cookie-black;
+		font-size: 0.75em;
+		display: block;
+		margin: 0 auto;
 	}
 }
 
