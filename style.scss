@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.5.17
+	Version:		1.5.18
 	Text Domain:	oxfam-webshop
 */
 
@@ -763,33 +763,34 @@ body.is_b2b_customer {
 		background-repeat: no-repeat;
 		width: 4em;
 		height: 4em;
-		margin: 0 auto 2em auto;
+		margin: 0 auto 1em auto;
 	}
 	
 	.cn-button.wp-default.cookie {
 		border: none;
 		background: initial;
+		text-shadow: none;
+		padding: 1em;
+		border-radius: 1em;
+	}
 
-		&#cn-accept-cookie {
-			background-color: $cookie-green;
-			color: white;
-			border-radius: 1em;
-		}
+	a#cn-accept-cookie {
+		background-color: $cookie-green;
+		color: white;
+	}
 
-		&#cn-refuse-cookie {
-			background-color: white;
-			color: #696969;
-			color: $cookie-black;
-			border-radius: 1em;
-		}
+	a#cn-refuse-cookie {
+		background-color: white;
+		color: $cookie-black;
+	}
 
-		&#cn-more-info {
-			background-color: transparent;
-			color: $cookie-black;
-			font-size: 0.75em;
-			display: block;
-			margin: 0 auto;
-		}
+	a#cn-more-info {
+		background-color: transparent;
+		color: $cookie-black;
+		font-size: 0.8em;
+		display: block;
+		padding: 0;
+		margin: 0 auto;
 	}
 }
 
@@ -1024,6 +1025,14 @@ div.nm-feature.layout-centered {
 		h3.thuislevering {
 			max-width: 370px;
 		}
+	}
+
+	#cookie-notice {
+		max-width: initial;
+		width: 100%;
+		left: 0;
+		right: 0;
+		bottom: 0;
 	}
 }
 
