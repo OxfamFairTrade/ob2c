@@ -2794,8 +2794,8 @@
 				break;
 		}
 		$descr .= '</small>';
-		// Geen schattingen tonen aan B2B-klanten
-		if ( ! is_b2b_customer() ) {
+		// Geen schattingen tonen aan B2B-klanten EN AFHALINGEN TIJDENS CORONAMAATREGELEN
+		if ( ! is_b2b_customer() and ! stristr( $method->id, 'local_pickup' ) ) {
 			return $label.'<br/>'.$descr;
 		} else {
 			return $label;
@@ -5144,7 +5144,8 @@
 			}
 		}
 		
-		// Coronaboodschap toevoegen indien hele week gesloten (behalve bij Kortrijk)
+		// Coronaboodschap toevoegen indien hele week gesloten
+		// Uitzondering voor Kortrijk
 		if ( strpos( $output, ' - ' ) === false and get_current_blog_id() !== 18 ) {
 			$locations = get_option('woocommerce_pickup_locations');
 			if ( count( $locations ) > 1 ) {

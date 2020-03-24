@@ -158,11 +158,16 @@
                             get_header( 'default' );
                         }
 
-                        // if ( is_woocommerce() ) {
-                            if ( is_main_site() or does_home_delivery() ) {
-                                echo '<div class="general-store-notice"><p class="free-shipping">Nu <b><u>gratis verzending</u></b> vanaf 50 euro!</p></div>';
+                        if ( is_main_site() or does_home_delivery() ) {
+                            echo '<div class="general-store-notice"><p class="free-shipping">';
+                            // Uitzondering voor Gentbrugge
+                            if ( get_current_blog_id() === 15 ) ) {
+                                echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
                             } else {
-                                // echo '<div class="general-store-notice"><p class="local-pickup">Door de coronamaatregelen gebeuren alle afhalingen in de winkel enkel nog op afspraak.<br/>Onze vrijwilligers contacteren je na het plaatsen van je bestelling!</p></div>';
+                                echo 'Nu met <b><u>gratis</u></b> verzending vanaf 50 euro!';
                             }
-                        // }
+                            echo '</p></div>';
+                        } elseif ( ! is_main_site() and ! does_home_delivery() ) {
+                            echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kan afhalen enkel nog <b><u>op afspraak</u></b>. We contacteren je na het plaatsen van je bestelling!</p></div>';
+                        }
                     ?>
