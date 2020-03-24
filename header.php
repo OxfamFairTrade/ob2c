@@ -168,6 +168,9 @@
                             }
                             echo '</p></div>';
                         } elseif ( ! is_main_site() and ! does_home_delivery() ) {
-                            echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus gebeuren alle afhalingen <b><u>op afspraak</u></b>.<br/>We contacteren je na het plaatsen van je bestelling!</p></div>';
+                            // Uitzondering voor Dilbeek en Hoogstraten
+                            if ( get_current_blog_id() !== 12 and get_current_blog_id() !== 39 ) {
+                                echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus gebeuren alle afhalingen <b><u>op afspraak</u></b>.<br/>We contacteren je na het plaatsen van je bestelling!</p></div>';
+                            }
                         }
                     ?>

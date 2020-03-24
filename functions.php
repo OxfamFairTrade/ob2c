@@ -5144,7 +5144,7 @@
 			}
 		}
 		
-		// Coronaboodschap toevoegen indien hele week gesloten
+		// Boodschap over afhaling op afspraak enkel toevoegen indien hele week gesloten
 		// Uitzondering voor Kortrijk
 		if ( strpos( $output, ' - ' ) === false and get_current_blog_id() !== 18 ) {
 			$locations = get_option('woocommerce_pickup_locations');
