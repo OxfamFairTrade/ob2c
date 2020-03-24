@@ -249,8 +249,15 @@ body.portal.home {
 			text-align: center;
 		}
 
-		#wpsl-search-input {
-			height: 31px;
+		.wpsl-input {
+			label {
+				width: initial;
+				color: white;
+			}
+
+			#wpsl-search-input {
+				height: 31px;
+			}
 		}
 
 		#wpsl-search-btn {
@@ -914,7 +921,6 @@ div.nm-feature.layout-centered {
 
 @media (max-width: 1400px) {
 	body.portal .nm-header.menu-centered {
-
 		.nm-main-menu .hoofdtitel {
 			max-width: 500px;
 			line-height: 125%;
@@ -931,7 +937,6 @@ div.nm-feature.layout-centered {
 @media (max-width: 1200px) {
 	/* Reset naar standaard mobiele weergave (zonder menu centraal in menubalk) */
 	body:not(.portal) .nm-header.menu-centered {
-
 		.nm-header-logo {
 			width: 25%;
 
@@ -947,8 +952,7 @@ div.nm-feature.layout-centered {
 }
 
 @media (max-width: 1024px) {
-	body.portal .nm-header.menu-centered {
-		
+	body.portal .nm-header.menu-centered {	
 		.nm-header-logo .winkelnaam {
 			display: none;
 		}
@@ -970,7 +974,6 @@ div.nm-feature.layout-centered {
 @media (max-width: 880px) {
 	/* Reset naar standaard mobiele weergave */
 	body:not(.portal) .nm-header.menu-centered {
-		
 		.nm-header-logo {
 			width: 80%;
 
@@ -984,7 +987,6 @@ div.nm-feature.layout-centered {
 	}
 
 	body.portal .nm-header.menu-centered {
-
 		.nm-header-logo {
 			line-height: 90px;
 			top: -5px;
@@ -1011,7 +1013,6 @@ div.nm-feature.layout-centered {
 	}
 
 	body.portal.home {
-
 		.nm_column:not(:last-child) {
 			border-right: none;
 		}
@@ -1024,7 +1025,6 @@ div.nm-feature.layout-centered {
 
 @media (max-width: 600px) {
 	body.portal .nm-header.menu-centered {
-		
 		.nm-header-logo .winkelnaam {
 			display: inline-block;
 		}
@@ -1035,7 +1035,6 @@ div.nm-feature.layout-centered {
 	}
 
 	body.portal.home {
-
 		.nm_column:not(:first-child) {
 			margin-top: 3em;
 		}
@@ -1058,27 +1057,17 @@ div.nm-feature.layout-centered {
 			left: 1em;
 			bottom: 0.5em;
 		}
-
-		.cn-buttons-container {
-			text-align: right;
-
-			.cn-more-info {
-				text-align: center;
-			}
-		}
 	}
 }
 
 @media (max-width: 480px) {
 	body:not(.portal) .nm-header.menu-centered {
-		
 		.nm-header-logo .winkelnaam {
 			display: none;
 		}
 	}
 
 	body.portal .nm-header.menu-centered {
-
 		.nm-header-logo {
 			width: 100%;
 			text-align: center;
@@ -1092,7 +1081,6 @@ div.nm-feature.layout-centered {
 
 @media (max-width: 360px) {
 	body.portal .nm-header.menu-centered {
-		
 		.nm-header-logo {
 			line-height: 60px;
 			top: 5px;
@@ -1105,10 +1093,19 @@ div.nm-feature.layout-centered {
 		}
 	}
 
-	body.portal {
-		
+	body.portal {	
 		#oxfam-zip-user {
 			width: 175px;
+		}
+	}
+
+	#cookie-notice {
+		.cn-buttons-container {
+			text-align: right;
+
+			.cn-more-info {
+				text-align: center;
+			}
 		}
 	}
 }
