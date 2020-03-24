@@ -769,7 +769,8 @@ body.is_b2b_customer {
 	padding: 0;
 	left: auto;
 	right: 2em;
-	bottom: 1em;	
+	bottom: 2em;
+	box-shadow: 1px 1px 5px 1px rgba(77,77,77,0.5);
 
 	#cn-notice-text {
 		margin-bottom: 1em;
