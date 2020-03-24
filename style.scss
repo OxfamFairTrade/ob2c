@@ -302,10 +302,21 @@ body.portal.home {
 	}
 }
 
-.nm-shop-header {
+/* Experiment met aangepast categoriebalk */
+.nm-shop-headerDISABLE {
 	background-color: $bright-blue;
+	padding: 2em 0;
+	margin-bottom: 3em;
 
 	.nm-shop-menu ul li a {
+		color: white;
+
+		&:hover {
+			color: black;
+		}
+	}
+
+	.nm-shop-menu ul li.current-cat a {
 		color: white;
 	}
 }
