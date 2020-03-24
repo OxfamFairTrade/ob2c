@@ -289,6 +289,7 @@ body.portal.home {
 		position: relative;
 
 		&.free-shipping:after {
+			content: '';
 			display: inline-block;
 			background-image: url('images/shipping-icon.svg');
 			background-size: contain;
@@ -761,7 +762,7 @@ body.is_b2b_customer {
 	color: $cookie-black;
 	max-width: 500px;
 	min-width: initial;
-	padding: 1em;
+	padding: 0;
 	left: auto;
 	right: 2em;
 	bottom: 2em;	
@@ -770,6 +771,7 @@ body.is_b2b_customer {
 		margin-bottom: 1em;
 
 		&:before {
+			content: '';
 			display: block;
 			background-image: url('images/cookie-icon.svg');
 			background-size: contain;
@@ -781,6 +783,7 @@ body.is_b2b_customer {
 	}
 	
 	.cn-buttons-container {
+		display: block;
 		margin-top: 1em;
 
 		.cn-button.wp-default.cookie {
