@@ -21,13 +21,12 @@ $see-through-white: rgba(255, 255, 255, 0.5);
 $light-grey: #cccccc;
 $shop-grey: #707070;
 $brown-grey: rgba(133, 107, 95, 0.5);
-$fluo-green: #57cc82;
+$fluo-green: #0abe71;
 $oxfam-green: #61a534;
 $bright-red: #ff2e2e;
-$bright-blue: #60aafd;
+$pale-blue: #60aafd;
 $cookie-grey: #efefef;
 $cookie-black: #4d4d4d;
-$cookie-green: #0abe71;
 $pickup: rgb(0, 175, 233);
 $delivery: rgb(255, 99, 133);
 $black: #2c2c2c;
@@ -254,17 +253,15 @@ body.portal.home {
 			height: 31px;
 		}
 
-		.wpsl-search-btn-wrap {
-			float: right !important;
+		#wpsl-search-btn {
+			height: 31px;
+			padding: 2px 10px;
+			font-size: 0.95em;
+			background: white;
+			color: $cookie-black;
+			border: none;
+			border-radius: 2em;
 		}
-	}
-
-	#wpsl-result-list {
-		width: 25%;
-	}
-
-	#wpsl-gmap {
-		width: 74%;
 	}
 
 	.wpsl-infobox {
@@ -305,7 +302,7 @@ body.portal.home {
 
 /* Experiment met aangepast categoriebalk */
 .nm-shop-headerDISABLE {
-	background-color: $bright-blue;
+	background-color: $pale-blue;
 	padding: 2em 0;
 	margin-bottom: 3em;
 
@@ -765,7 +762,7 @@ body.is_b2b_customer {
 	padding: 0;
 	left: auto;
 	right: 2em;
-	bottom: 2em;	
+	bottom: 1em;	
 
 	#cn-notice-text {
 		margin-bottom: 1em;
@@ -795,7 +792,7 @@ body.is_b2b_customer {
 			border-radius: 2em;
 
 			&.cn-set-cookie:nth-of-type(1) {
-				background-color: $cookie-green;
+				background-color: $fluo-green;
 				color: white;
 			}
 
@@ -1055,6 +1052,20 @@ div.nm-feature.layout-centered {
 		left: 0;
 		right: 0;
 		bottom: 0;
+
+		#cn-notice-text:before {
+			position: absolute;
+			left: 1em;
+			bottom: 0.5em;
+		}
+
+		.cn-buttons-container {
+			text-align: right;
+
+			.cn-more-info {
+				text-align: center;
+			}
+		}
 	}
 }
 
