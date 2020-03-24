@@ -5103,8 +5103,8 @@
 		$output = '';
 		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
-		// Uitzondering voor Dilbeek
-		if ( $atts['id'] === 'dilbeek' ) {
+		// Uitzondering voor Dilbeek en Hoogstraten
+		if ( $atts['id'] === 'dilbeek' or $atts['id'] === 'hoogstraten' ) {
 			$holidays = array();
 		} else {
 			$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
