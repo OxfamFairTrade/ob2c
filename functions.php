@@ -5143,9 +5143,14 @@
 				}
 			}
 		}
+		
+		// Coronaboodschap toevoegen indien hele week gesloten (behalve bij Kortrijk)
+		if ( strpos( $output, ' - ' ) === false and get_current_blog_id() !== 18 ) {
+			$output .= '<p class="corona-notice">Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken!</p>';
+		}
+		
 		// Knip de eerste <br/> er weer af
-		$output = substr( $output, 5 );
-		return $output;
+		return substr( $output, 5 );
 	}
 
 	function print_oxfam_shop_data( $key, $atts ) {
