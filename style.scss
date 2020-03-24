@@ -766,31 +766,35 @@ body.is_b2b_customer {
 		margin: 0 auto 1em auto;
 	}
 	
-	.cn-button.wp-default.cookie {
-		border: none;
-		background: initial;
-		text-shadow: none;
-		padding: 1em;
-		border-radius: 1em;
-	}
+	.cn-button-container {
+		margin-top: 1em;
 
-	a#cn-accept-cookie {
-		background-color: $cookie-green;
-		color: white;
-	}
+		.cn-button.wp-default.cookie {
+			border: none;
+			background: initial;
+			text-shadow: none;
+			padding: 1em;
+			border-radius: 2em;
 
-	a#cn-refuse-cookie {
-		background-color: white;
-		color: $cookie-black;
-	}
+			&.cn-set-cookie:nth-of-type(1) {
+				background-color: $cookie-green;
+				color: white;
+			}
 
-	a#cn-more-info {
-		background-color: transparent;
-		color: $cookie-black;
-		font-size: 0.8em;
-		display: block;
-		padding: 0;
-		margin: 0 auto;
+			&.cn-set-cookie:nth-of-type(2) {
+				background-color: white;
+				color: $cookie-black;
+			}
+
+			&.cn-more-info {
+				background-color: transparent;
+				color: $cookie-black;
+				font-size: 0.8em;
+				display: block;
+				padding: 0;
+				margin: 0 auto;
+			}
+		}
 	}
 }
 
