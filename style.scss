@@ -289,7 +289,6 @@ body.portal.home {
 		position: relative;
 
 		&.free-shipping:after {
-			content: '';
 			display: inline-block;
 			background-image: url('images/shipping-icon.svg');
 			background-size: contain;
@@ -751,19 +750,23 @@ body.is_b2b_customer {
 	color: $cookie-black;
 	max-width: 500px;
 	min-width: initial;
+	padding: 1em;
 	left: auto;
 	right: 2em;
 	bottom: 2em;	
 
-	#cn-notice-text:before {
-		content: '';
-		display: block;
-		background-image: url('images/cookie-icon.svg');
-		background-size: contain;
-		background-repeat: no-repeat;
-		width: 4em;
-		height: 4em;
-		margin: 0 auto 1em auto;
+	#cn-notice-text {
+		margin-bottom: 1em;
+
+		&:before {
+			display: block;
+			background-image: url('images/cookie-icon.svg');
+			background-size: contain;
+			background-repeat: no-repeat;
+			width: 4em;
+			height: 4em;
+			margin: 0 auto 0.5em auto;
+		}
 	}
 	
 	.cn-buttons-container {
@@ -773,6 +776,7 @@ body.is_b2b_customer {
 			border: none;
 			background: initial;
 			text-shadow: none;
+			line-height: 1em;
 			padding: 1em;
 			border-radius: 2em;
 
@@ -792,7 +796,7 @@ body.is_b2b_customer {
 				font-size: 0.8em;
 				display: block;
 				padding: 0;
-				margin: 0 auto;
+				margin: 0.5em auto 0 auto;
 			}
 		}
 	}
