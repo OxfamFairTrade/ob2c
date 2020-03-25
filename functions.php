@@ -1555,7 +1555,8 @@
 			'id' => 'datepicker',
 			'label' => 'Geboortedatum',
 			'placeholder' => '16/03/1988',
-			// 'description' => 'Omdat we ook alcoholische dranken verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken dit niet voor andere doeleinden.',
+			// Gebruik eventueel add_filter( 'woocommerce_form_field', 'put_description_in_icon' ) om beschrijving anders weer te geven (verdwijnt achter datepicker)
+			// 'description' => 'Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.',
 			'class' => array('form-row-last'),
 			'clear' => true,
 			'required' => true,
@@ -1724,21 +1725,22 @@
 			wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );
 		}
 
-		// Ook checken op billing_address_1 want indien verzendadres niet afwijkt is dit het enige veld dat op dit ogenblik in $_POST voorkomt 
-		if ( isset( $_POST['shipping_address_1'] ) and strlen( $_POST['shipping_address_1'] ) > 3 ) {
-			$street_to_check = $_POST['shipping_address_1'];
-		} else {
-			$street_to_check = $_POST['billing_address_1'];
-		}
+		// Check of het huisnummer wel ingevuld is (behalve bij afhalingen)
+		if ( isset( $_POST['shipping_method'][0] ) and $_POST['shipping_method'][0] !== 'local_pickup_plus' ) {
+			if ( isset( $_POST['shipping_address_1'] ) and strlen( $_POST['shipping_address_1'] ) > 3 ) {
+				$street_to_check = $_POST['shipping_address_1'];
+			} else {
+				// Indien geen afwijkend verzendadres ingevuld werd is 'shipping_address_1' leeg, check in dat geval 'billing_address_1'
+				$street_to_check = $_POST['billing_address_1'];
+			}
 
-		if ( preg_match( '/([0-9]+|Z(\/)?N)/i', $street_to_check ) === 0 ) {
-			$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$street_to_check."'\n";
-			// DEFINITIEF UITSCHAKELEN, BLIJFT SOMS PROBLEMEN GEVEN
-			// wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
-		} else {
-			$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer aanwezig in '".$street_to_check."'\n";
+			// Indien er echt geen huisnummer is, moet Z/N ingevuld worden
+			if ( preg_match( '/([0-9]+|Z(\/)?N)/i', $street_to_check ) === 0 ) {
+				$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$street_to_check."'\n";
+				file_put_contents( "housenumber_errors.csv", $str, FILE_APPEND );
+				wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+			}
 		}
-		file_put_contents( "housenumber_errors.csv", $str, FILE_APPEND );
 	}
 
 	// Registreer NA UITCHECKEN of het een B2B-verkoop is of niet
