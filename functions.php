@@ -5157,12 +5157,22 @@
 		// Boodschap over afhaling op afspraak enkel toevoegen indien hele week gesloten
 		// Uitzondering voor Kortrijk
 		if ( strpos( $output, ' - ' ) === false and get_current_blog_id() !== 18 ) {
-			$locations = get_option('woocommerce_pickup_locations');
-			if ( count( $locations ) > 1 ) {
-				$output = '<p class="corona-notice">Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.</p>';
+			// Uitzondering voor Brugge
+			if ( get_current_blog_id() === 25 ) {
+				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen in de Cash & Carry kan in principe van maandag tot vrijdag tussen 9 en 16 uur, maar <b>bij voorkeur op dinsdag of vrijdag tussen 10 en 12 uur</b>. Gelieve een afspraak te maken via <a href="tel:+3250331168">050/33.11.68</a> indien afhaling niet mogelijk is tijdens de voorkeursuren.';
+				// Extra tekst in de mail
+				if ( ! is_woocommerce() ) {
+					$text .= 'Opgelet: de poort is gesloten, bel aan bij de deur links! Omwille van het coronavirus nemen we steeds de nodige hygiënische maatregelen. Alvast bedankt voor je begrip!';
+				}
 			} else {
-				$output = '<p class="corona-notice">Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.</p>';
+				$locations = get_option('woocommerce_pickup_locations');
+				if ( count( $locations ) > 1 ) {
+					$text = 'Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
+				} else {
+					$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
+				}
 			}
+			$output = '<p class="corona-notice">'.$text.'</p>';
 		} else {
 			// Knip de eerste <br/> er weer af
 			$output = substr( $output, 5 );
