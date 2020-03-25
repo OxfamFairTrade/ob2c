@@ -1008,7 +1008,7 @@
 			// Schrijf weg in log per weeknummer (zonder leading zero's)
 			$user = wp_get_current_user();
 			$str = date_i18n('d/m/Y H:i:s') . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . $user->user_firstname . "\t" . $meta_key . " gewijzigd in " . serialize($new_meta_value) . "\t" . get_the_title( $post_id ) . "\n";
-			file_put_contents(WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND);
+			file_put_contents( WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND );
 		}
 	}
 
@@ -1725,10 +1725,20 @@
 		}
 
 		// Ook checken op billing_address_1 want indien verzendadres niet afwijkt is dit het enige veld dat op dit ogenblik in $_POST voorkomt 
-		if ( ( isset($_POST['billing_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['billing_address_1'] ) === 0 ) or ( isset($_POST['shipping_address_1']) and preg_match( '/([0-9]+|Z(\/)?N)/i', $_POST['shipping_address_1'] ) === 0 ) ) {
+		if ( isset( $_POST['shipping_address_1'] ) ) {
+			$street_to_check = $_POST['shipping_address_1'];
+		} else {
+			$street_to_check = $_POST['billing_address_1'];
+		}
+
+		if ( preg_match( '/([0-9]+|Z(\/)?N)/i', $street_to_check ) === 0 ) {
+			$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$street_to_check."'\n";
 			// DEFINITIEF UITSCHAKELEN, BLIJFT SOMS PROBLEMEN GEVEN
 			// wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+		} else {
+			$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer aanwezig in '".$street_to_check."'\n";
 		}
+		file_put_contents( "housenumber_errors.csv", $str, FILE_APPEND );
 	}
 
 	// Registreer NA UITCHECKEN of het een B2B-verkoop is of niet
@@ -3114,7 +3124,7 @@
 				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
-					file_put_contents("shipping_errors.csv", $str, FILE_APPEND);
+					file_put_contents( "shipping_errors.csv", $str, FILE_APPEND );
 					
 					if ( WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
 						// Zet de verzendpostcode gelijk aan de factuurpostcode BETER LETTERLIJK IN FRONTEND DOEN?
