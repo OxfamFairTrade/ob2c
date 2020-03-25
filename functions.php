@@ -1725,7 +1725,7 @@
 		}
 
 		// Ook checken op billing_address_1 want indien verzendadres niet afwijkt is dit het enige veld dat op dit ogenblik in $_POST voorkomt 
-		if ( isset( $_POST['shipping_address_1'] ) ) {
+		if ( isset( $_POST['shipping_address_1'] ) and strlen( $_POST['shipping_address_1'] ) > 3 ) {
 			$street_to_check = $_POST['shipping_address_1'];
 		} else {
 			$street_to_check = $_POST['billing_address_1'];
