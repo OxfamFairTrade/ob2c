@@ -160,9 +160,12 @@
 
                         if ( is_main_site() or does_home_delivery() ) {
                             echo '<div class="general-store-notice"><p class="free-shipping">';
-                            // Uitzondering voor Gentbrugge
                             if ( get_current_blog_id() === 15 ) {
+                                // Uitzondering voor Gentbrugge
                                 echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
+                            } elseif ( get_current_blog_id() === 15 ) {
+                                // Uitzondering voor Wuustwezel
+                                echo 'Nu met <b><u>gratis</u></b> verzending vanaf 30 euro!';
                             } else {
                                 echo 'Nu met <b><u>gratis</u></b> verzending vanaf 50 euro!';
                             }

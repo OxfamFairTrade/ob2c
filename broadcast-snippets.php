@@ -402,26 +402,34 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		}
 		
 		$settings = get_option( $option_key );
+		// $new_cost = '6,5566';
+		$new_cost = '4,6698';
+		$new_min_amount = '50';
 
 		if ( is_array( $settings ) ) {
 			// Betalende methodes goedkoper maken
 			if ( in_array( $name, array( 'delivery_by_shop', 'delivery_by_eco', 'delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
 				if ( array_key_exists( 'cost', $settings ) ) {
-					// $settings['cost'] = '6,5566';
-					$settings['cost'] = '4,6698';
+					$settings['cost'] = $new_cost;
 				}
 			}
 
 			if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
 				if ( $name === 'bpack_delivery_by_bpost' ) {
 					if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
-						// $settings['free_shipping_min_amount'] = '100';
-						$settings['free_shipping_min_amount'] = '50';
+						if ( intval( $settings['free_shipping_min_amount'] ) !== 0 ) {
+							$settings['free_shipping_min_amount'] = $new_min_amount;
+						} else {
+							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' cost because free delivery");
+						}
 					}
 				} else {
 					if ( array_key_exists( 'min_amount', $settings ) ) {
-						// $settings['min_amount'] = '100';
-						$settings['min_amount'] = '50';
+						if ( intval( $settings['min_amount'] ) !== 0 ) {
+							$settings['min_amount'] = $new_min_amount;
+						} else {
+							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because free delivery");
+						}
 					}
 				}
 			}
