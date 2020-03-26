@@ -5161,10 +5161,10 @@
 		if ( strpos( $output, ' - ' ) === false and get_current_blog_id() !== 18 ) {
 			// Uitzondering voor Brugge
 			if ( get_current_blog_id() === 25 ) {
-				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen in de Cash & Carry kan enkel <b>op dinsdag of vrijdag tussen 10u en 12u</b>.';
+				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen in de Cash & Carry kan enkel <b>op dinsdag of vrijdag tussen 10 en 12 uur</b>.';
 				// Extra tekst in de mail
 				// if ( ! is_checkout() ) {
-					$text .= '<br/>Opgelet: de poort is gesloten, bel aan bij de deur links. Omwille van het coronavirus nemen we steeds de nodige hygiënische maatregelen. Alvast bedankt voor je begrip!';
+					$text .= '<br/>Opgelet: de poort is gesloten, bel aan bij de deur links. We nemen steeds de nodige hygiënische maatregelen. Alvast bedankt voor je begrip!';
 				// }
 			} else {
 				$locations = get_option('woocommerce_pickup_locations');
