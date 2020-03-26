@@ -160,10 +160,13 @@
 
                         if ( is_main_site() or does_home_delivery() ) {
                             echo '<div class="general-store-notice"><p class="free-shipping">';
-                            if ( get_current_blog_id() === 15 ) {
+                            if ( get_current_blog_id() === 9 ) {
+                                // Uitzondering voor De Pinte
+                                echo 'Nu met <b><u>gratis</u></b> thuislevering in De Pinte (elders vanaf 50 euro)!';
+                            } elseif ( get_current_blog_id() === 15 ) {
                                 // Uitzondering voor Gentbrugge
                                 echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
-                            } elseif ( get_current_blog_id() === 15 ) {
+                            } elseif ( get_current_blog_id() === 37 ) {
                                 // Uitzondering voor Wuustwezel
                                 echo 'Nu met <b><u>gratis</u></b> verzending vanaf 30 euro!';
                             } else {
