@@ -420,7 +420,7 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 						if ( intval( $settings['free_shipping_min_amount'] ) !== 0 ) {
 							$settings['free_shipping_min_amount'] = $new_min_amount;
 						} else {
-							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' cost because free delivery");
+							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because free delivery");
 						}
 					}
 				} else {

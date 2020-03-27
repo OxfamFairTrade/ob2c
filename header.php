@@ -160,11 +160,8 @@
 
                         if ( is_main_site() or does_home_delivery() ) {
                             echo '<div class="general-store-notice"><p class="free-shipping">';
-                            if ( get_current_blog_id() === 9 ) {
-                                // Uitzondering voor De Pinte
-                                echo 'Nu met <b><u>gratis</u></b> thuislevering in De Pinte (elders vanaf 50 euro)!';
-                            } elseif ( get_current_blog_id() === 15 ) {
-                                // Uitzondering voor Gentbrugge
+                            if ( get_current_blog_id() === 9 or get_current_blog_id() === 15 ) {
+                                // Uitzondering voor De Pinte en Gentbrugge
                                 echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
                             } elseif ( get_current_blog_id() === 37 ) {
                                 // Uitzondering voor Wuustwezel
