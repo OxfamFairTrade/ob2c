@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2020-03-25 18:41+0100\n"
-"PO-Revision-Date: 2020-03-25 18:43+0100\n"
+"PO-Revision-Date: 2020-03-28 15:58+0100\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: nl_NL\n"
@@ -356,7 +356,8 @@ msgstr "De grootste keuze aan eerlijke voedingsproducten"
 #: functions.php:5229
 msgid "Blokje uitleg bij store selector op basis van postcode."
 msgstr ""
-"Levering aan huis kan ook!<br>Vul je postcode in en we sturen je meteen door."
+"Levering aan huis kan ook!<br/>(Tijdelijk niet in het Brussels Gewest.)<br/"
+">Vul je postcode in en we sturen je meteen door."
 
 #: functions.php:5298
 msgid "Tekst die verschijnt bovenaan de hoofdpagina met producten."

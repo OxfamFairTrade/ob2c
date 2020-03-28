@@ -80,8 +80,12 @@
 		<?php if ( is_front_page() ) : ?>
 			<meta property="og:title" content="<?php echo get_bloginfo('title'); ?>">
         	<meta property="og:url" content="<?php echo get_bloginfo('url') . "/"; ?>">
-        	<meta property="og:description" content="Shop online in jouw wereldwinkel. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze plaatselijke vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten van het land!">
-        	<meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook.png">
+            <meta property="og:description" content="Shop online in jouw wereldwinkel. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze plaatselijke vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten van het land!">
+            <?php if ( does_home_delivery() ) : ?>
+        	   <meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook.png">
+            <?php else : ?>
+               <meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook-afhaling.png">
+            <?php endif; ?>
         <?php endif; ?>
         	
 		<?php wp_head(); ?>

@@ -2011,6 +2011,7 @@
 					$line_total += $item['line_subtotal_tax'];
 				}
 				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total );
+				// Barcode toevoegen (zit momenteel niet meer in de data!): ->setCellValue( 'H'.$i, $product->get_attribute('shopplus') )
 				$i++;
 			}
 
@@ -2030,6 +2031,9 @@
 			if ( strlen( $order->get_customer_note() ) > 5 ) {
 				$i++;
 				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $order->get_customer_note() );
+				// Merge resterende kolommen en wrap tekst in opmerkingenvak 
+				$objPHPExcel->getActiveSheet()->mergeCells('B'.$i.':G'.$i);
+				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setWrapText(true);
 			}
 
 			$pickup_text = 'Afhaling in winkel';
