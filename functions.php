@@ -1983,7 +1983,7 @@
 			$objPHPExcel->getActiveSheet()->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
 
 			// Factuuradres invullen
-			$objPHPExcel->getActiveSheet()->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
+			$objPHPExcel->getActiveSheet()->setCellValue( 'A2', $order->get_billing_phone() )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
 			$i = 8;
 			// Vul de artikeldata item per item in vanaf rij 8
@@ -2034,6 +2034,7 @@
 				// Merge resterende kolommen en wrap tekst in opmerkingenvak 
 				$objPHPExcel->getActiveSheet()->mergeCells('B'.$i.':G'.$i);
 				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setWrapText(true);
+				$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(-1);
 			}
 
 			$pickup_text = 'Afhaling in winkel';
@@ -2060,7 +2061,7 @@
 						$total_excl_tax = floatval( $shipping->get_total() );
 						// Enkel printen indien nodig
 						if ( $total_tax > 0.01 ) {
-							// TE VERALGEMENEN
+							// TE VERALGEMENEN MAAR WERKT OOK BIJ VERZENDKOST VAN 4,95 EURO
 							if ( $total_tax < 1.00 ) {
 								$tax = 0.06;
 							} else {
