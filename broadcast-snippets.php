@@ -440,7 +440,8 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		}
 	}
 
-	// Mollie-instellingen wijzigen
+	// Individuele Mollie-instelling wijzigen
+	// Tip: volgorde van betaalmethodes wordt bewaard in 'woocommerce_gateway_order'
 	$bancontact = get_option('mollie_wc_gateway_mistercash_settings');
 	if ( is_array( $bancontact ) ) {
 		$bancontact['description'] = 'Betaal snel en veilig met je Belgische bankkaart. Hou je kaartlezer klaar, of scan de QR-code met je Payconiq-app!';
