@@ -2030,11 +2030,21 @@
 			// Druk eventuele opmerkingen af
 			if ( strlen( $order->get_customer_note() ) > 5 ) {
 				$i++;
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $order->get_customer_note() );
+				$customer_text = $order->get_customer_note();
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $customer_text );
 				// Merge resterende kolommen en wrap tekst in opmerkingenvak 
 				$objPHPExcel->getActiveSheet()->mergeCells('B'.$i.':G'.$i);
 				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setWrapText(true);
-				$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(-1);
+
+				// setRowHeight(-1) voor autoheight werkt niet, dus probeer goeie hoogte te berekenen bij lange teksten
+				// if ( strlen( $customer_text ) > 125 ) {
+				// 	$row_padding = 4;
+				// 	$row_height = $objPHPExcel->getActiveSheet()->getRowDimension($i)->getRowHeight() - $row_padding;
+				// 	$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight( ceil( strlen( $customer_text ) / 120 ) * $row_height + $row_padding );
+				// }
+
+				// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
+				$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
 			}
 
 			$pickup_text = 'Afhaling in winkel';
