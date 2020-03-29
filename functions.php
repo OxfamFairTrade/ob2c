@@ -2032,6 +2032,8 @@
 				$i++;
 				$customer_text = $order->get_customer_note();
 				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $customer_text );
+				$objPHPExcel->getActiveSheet()->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 				// Merge resterende kolommen en wrap tekst in opmerkingenvak 
 				$objPHPExcel->getActiveSheet()->mergeCells('B'.$i.':G'.$i);
 				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setWrapText(true);
@@ -2044,7 +2046,7 @@
 				// }
 
 				// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
-				$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(100);
+				$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(80);
 			}
 
 			$pickup_text = 'Afhaling in winkel';
