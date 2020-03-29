@@ -396,6 +396,7 @@
 		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
 		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template('listing'), 'addSku' ) . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<a href="'.append_get_parameter_to_href( wpsl_store_header_template('listing'), 'addSku' ).'"><button style="float: right;">Naar de webshop</button></a>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %></span>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<% if ( address2 ) { %>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address2 %></span>' . "\r\n";
@@ -476,6 +477,7 @@
 	}
 
 	function append_get_parameter_to_href( $str, $get_param ) {
+		write_log($str);
 		if ( isset( $_GET[$get_param] ) ) {
 			// Check inbouwen op reeds aanwezige parameters in $2-fragment? 
 			$str = preg_replace( '/<a(.*)href="([^"]*)"(.*)>/','<a$1href="$2?'.$get_param.'='.$_GET[$get_param].'"$3>', $str );
