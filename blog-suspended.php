@@ -32,7 +32,7 @@
 
 </head>
 
-<body onLoad="setTimeout('delayedRedirect()', 30000)">
+<body onLoad="setTimeout('delayedRedirect()', 25000)">
 
 	<div class="main" style="height: 100%;">
 		<div class="wrapper" style="max-width: 900px; height: 100%;">
