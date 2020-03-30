@@ -3143,7 +3143,9 @@
 				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
-					file_put_contents( "shipping_errors.csv", $str, FILE_APPEND );
+					if ( current_user_can('update_core') ) {
+						file_put_contents( "shipping_errors.csv", $str, FILE_APPEND );
+					}
 					
 					if ( WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
 						// Zet de verzendpostcode gelijk aan de factuurpostcode BETER LETTERLIJK IN FRONTEND DOEN?
