@@ -3143,7 +3143,7 @@
 				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
-					if ( current_user_can('update_core') ) {
+					if ( ! current_user_can('update_core') ) {
 						file_put_contents( "shipping_errors.csv", $str, FILE_APPEND );
 					}
 					
