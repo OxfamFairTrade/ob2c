@@ -4869,10 +4869,10 @@
 		echo '</div>';
 	}
 
-	function get_tracking_number( $order_id ) {
+	function get_tracking_number( $order ) {
 		$tracking_number = false;
 		// Query alle order comments waarin het over Bpost gaat en zet de oudste bovenaan
-		$args = array( 'post_id' => $order_id, 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'ASC', 'search' => 'bpost' );
+		$args = array( 'post_id' => $order->get_id(), 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'ASC', 'search' => 'bpost' );
 		// Want anders zien we de private opmerkingen niet!
 		remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
 		$comments = get_comments( $args );
@@ -4890,8 +4890,8 @@
 		return $tracking_number;
 	}
 
-	function get_tracking_link( $order_id ) {
-		return 'https://track.bpost.be/btr/web/#/search?itemCode='.get_tracking_number( $order_id ).'&lang=nl';
+	function get_tracking_link( $tracking_number, $order ) {
+		return 'https://track.bpost.cloud/btr/web/#/search?itemCode='.$tracking_number.'&postalCode='.$order->get_shipping_postcode().'&lang=nl';
 	}
 	
 	// Voeg berichten toe bovenaan adminpagina's
@@ -4915,9 +4915,10 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p><a href="https://copain.oww.be/l/mailing2/link/a556087c-f98a-4728-a516-f892ff77cc01/4423" target="_blank">Lees de nieuwsbrief van 18 maart rond de promotie van onze webshops tijdens de coronacrisis.</a> Indien je dat nog niet deed: stuur een mailtje naar <a href="mailto:e-commerce@oft.be?subject=Werking webshop '.get_current_site()->site_name.' tijdens coronasluiting">e-commerce@oft.be</a> om even te laten weten hoe jullie de komende weken willen verdergaan met jullie webshop (afhaling <u>op afspraak</u> en/of ruimere thuislevering).</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>Vergeet ook niet om goed je voorraad van het paasassortiment op te volgen voor de 1+1 actie!</p>';
+					// <a href="https://copain.oww.be/l/mailing2/link/a556087c-f98a-4728-a516-f892ff77cc01/4423" target="_blank">Lees de nieuwsbrief van 2 april rond de werking van onze webshops tijdens de coronacrisis.</a>
+				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>Er werden 3 nieuwe producten toegevoegd aan de database (al kan het nog even duren voor ze in alle winkels arriveren):</p><ul style="margin-left: 2em;">';
 						$skus = array( '26424', '27012', '27110' );
@@ -4930,9 +4931,9 @@
 						}
 					echo '</ul><p>';
 					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Vergeet ook niet om goed je voorraad van het paasassortiment op te volgen voor de 1+1 actie!</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
