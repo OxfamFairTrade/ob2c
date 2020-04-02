@@ -1735,7 +1735,8 @@
 			}
 
 			// Indien er echt geen huisnummer is, moet Z/N ingevuld worden
-			if ( preg_match( '/([0-9]+|Z(\/)?N)/i', $street_to_check ) === 0 ) {
+			// Busnummers na een slash lijken soms problemen te veroorzaken, dus strip slashes!
+			if ( preg_match( '/([0-9]+|ZN)/i', str_replace( '/', '', $street_to_check ) ) === 0 ) {
 				$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$street_to_check."'\n";
 				file_put_contents( "housenumber_errors.csv", $str, FILE_APPEND );
 				wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
@@ -4914,49 +4915,37 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-warning">';
-					echo '<p><a href="https://copain.oww.be/l/mailing2/link/a556087c-f98a-4728-a516-f892ff77cc01/4423" target="_blank">Lees de nieuwsbrief van 18 maart rond de promotie van onze webshops tijdens de coronacrisis.</a> Indien je dat nog niet deed: stuur een mailtje naar <a href="mailto:e-commerce@oft.be?subject=Werking webshop '.get_current_site()->site_name.' tijdens coronasluiting">e-commerce@oft.be</a> om even te laten weten hoe jullie de komende weken willen verdergaan met jullie webshop (afhaling <u>op afspraak</u> en/of ruimere thuislevering).</p>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p><a href="https://copain.oww.be/l/mailing2/link/a556087c-f98a-4728-a516-f892ff77cc01/4423" target="_blank">Lees de nieuwsbrief van 18 maart rond de promotie van onze webshops tijdens de coronacrisis.</a> Indien je dat nog niet deed: stuur een mailtje naar <a href="mailto:e-commerce@oft.be?subject=Werking webshop '.get_current_site()->site_name.' tijdens coronasluiting">e-commerce@oft.be</a> om even te laten weten hoe jullie de komende weken willen verdergaan met jullie webshop (afhaling <u>op afspraak</u> en/of ruimere thuislevering).</p>';
+				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Er werden 3 nieuwe producten toegevoegd aan de database (al kan het nog even duren voor ze in alle winkels arriveren):</p><ul style="margin-left: 2em;">';
+						$skus = array( '26424', '27012', '27110' );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku($sku);
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. Vergeet ook niet om goed je voorraad van het paasassortiment op te volgen voor de 1+1 actie!</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					echo '<div class="notice notice-success">';
-						echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro. We bekijken de komende dagen hoe/of het NS dit verder kan ondersteunen.</p>';
+						echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
 					echo '</div>';
 				}
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Er werden 7 nieuwe producten gepubliceerd die in de loop van februari in de winkels arriveerden:</p><ul style="margin-left: 2em;">';
-				// 		// Volgende keer: '26424', '27012', '27110'
-				// 		$skus = array( '20182', '20262', '20416', '27516', '27517', '27518', '28021' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku($sku);
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent al deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-				// 	echo '<p>Daarnaast werd het paasassortiment voor 2020 klaargezet (o.a. nieuwe packshots en prijsverhoging grote paashaas):</p><ul style="margin-left: 2em;">';
-				// 		$skus = array( '24529', '24634', '24647', '24648' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku($sku);
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul>';
-				// 	echo '<p>Sinterklaas verdween dan weer in de kast. De prijswijzigingen op 01/03/2020 van 3 Ethiquable-producten werden doorgevoerd.</p>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>3 oude producten werden uit de database verwijderd omdat de wijntabel aangeeft dat de drinkbaarheid van deze wijnen niet meer optimaal is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';
 				// echo '</div>';
-			}
-			// echo '<div class="notice notice-warning">';
-			// 	echo '<p>3 oude producten werden uit de database verwijderd omdat de wijntabel aangeeft dat de drinkbaarheid van deze wijnen niet meer optimaal is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';
-			// echo '</div>';
-			if ( does_sendcloud_delivery() ) {
-				// Boodschappen voor winkels die verzenden met SendCloud
+				if ( does_sendcloud_delivery() ) {
+					// Boodschappen voor winkels die verzenden met SendCloud
+				}
 			}
 		}
 	}
