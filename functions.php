@@ -2750,9 +2750,9 @@
 	}
 
 	// Zet webshopbeheerder in BCC bij versturen uitnodigingsmails
-	// add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 3 );
+	// add_filter( 'woocommerce_email_headers', 'put_shop_manager_in_bcc', 10, 3 );
 
-	function put_administrator_in_bcc( $headers, $type, $object ) {
+	function put_shop_manager_in_bcc( $headers, $type, $object ) {
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'WooCommerce' );
 		$logger->debug( 'Mail van type '.$type.' getriggerd', $context );
@@ -2770,6 +2770,16 @@
 		}
 
 		$headers .= 'BCC: '.implode( ',', $extra_recipients ).'\r\n';
+		return $headers;
+	}
+
+	// Check tijdelijk de verstuurde bevestigingsmails door mezelf in BCC te zetten
+	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
+
+	function put_administrator_in_bcc( $headers, $object ) {
+		if ( $object === 'customer_processing_order' or $object === 'customer_completed_order' ) {
+			$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>\r\n';
+		}
 		return $headers;
 	}
 
