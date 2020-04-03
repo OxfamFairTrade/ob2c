@@ -4695,7 +4695,7 @@
 	#############
 
 	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke update
-	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2);
+	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2 );
 
 	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
 		$ignored_fields[] = 'total_sales';
@@ -5118,12 +5118,17 @@
 		
 		$output = '';
 		$days = get_office_hours( $atts['node'], $atts['id'] );
-		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
 		// Uitzondering voor Dilbeek en Hoogstraten
 		if ( $atts['id'] === 'dilbeek' or $atts['id'] === 'hoogstraten' or $atts['id'] === 'leuven' ) {
 			$holidays = array();
 		} else {
-			$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
+			// Uitzondering voor Borgerhout en Merksem
+			if ( $atts['id'] == 3316 or $atts['id'] == 3646 ) {
+				$holidays = get_site_option('oxfam_holidays');
+			} else {
+				// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
+				$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
+			}
 		}
 
 		if ( $atts['start'] === 'today' ) {

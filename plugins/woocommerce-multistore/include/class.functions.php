@@ -280,6 +280,7 @@
                                         $_woonet_child_inherit_updates      =   get_post_meta($child_post->ID , '_woonet_child_inherit_updates', TRUE);
                                         $_woonet_child_stock_synchronize    =   get_post_meta($child_post->ID , '_woonet_child_stock_synchronize', TRUE);
                                         
+                                        // MOGELIJKE BUG: Moeten hier geen OR's staan? Typisch $options['synchronize-stock'] == 'yes' EN $_woonet_child_stock_synchronize == empty MAAR $_woonet_child_inherit_updates == 'yes'
                                         //check if there's a syncronize require for this
                                         if($options['synchronize-stock']    !=  'yes'   &&  ($_woonet_child_inherit_updates    !=  'yes' &&  $_woonet_child_stock_synchronize    !=  'yes'))
                                             {
