@@ -1440,29 +1440,6 @@
 			}
 		}
 
-		// Facebook-pixel voor Regio Leuven 
-		if ( get_current_blog_id() === 28 ) {
-			?>
-				<script type="text/javascript">
-					!function(f,b,e,v,n,t,s)
-					{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-					n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-					if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-					n.queue=[];t=b.createElement(e);t.async=!0;
-					t.src=v;s=b.getElementsByTagName(e)[0];
-					s.parentNode.insertBefore(t,s)}(window,document,'script',
-					'https://connect.facebook.net/nl_NL/fbevents.js');
-					fbq('init', '421231331671214'); 
-					fbq('track', 'PageView');
-				</script>
-				<noscript>
-					 <img height="1" width="1" 
-					src="https://www.facebook.com/tr?id=421231331671214&ev=PageView
-					&noscript=1"/>
-				</noscript>
-			<?php
-		}
-
 		?>
 			<script type="text/javascript">
 				jQuery(document).ready( function() {
@@ -5135,7 +5112,7 @@
 		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
 		// Uitzondering voor Dilbeek en Hoogstraten
-		if ( $atts['id'] === 'dilbeek' or $atts['id'] === 'hoogstraten' ) {
+		if ( $atts['id'] === 'dilbeek' or $atts['id'] === 'hoogstraten' or $atts['id'] === 'leuven' ) {
 			$holidays = array();
 		} else {
 			$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
@@ -5178,12 +5155,19 @@
 		// Boodschap over afhaling op afspraak enkel toevoegen indien hele week gesloten
 		// Uitzondering voor Kortrijk
 		if ( strpos( $output, ' - ' ) === false and get_current_blog_id() !== 18 ) {
-			// Uitzondering voor Brugge
 			if ( get_current_blog_id() === 25 ) {
+				// Uitzondering voor Brugge
 				$text = 'Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen kan enkel in de Cash & Carry <b>op dinsdag of vrijdag tussen 10 en 12 uur</b>.';
 				// Extra tekst in de mail
 				if ( ! is_checkout() ) {
 					$text .= '<br/>Opgelet: de poort is gesloten, bel aan bij de deur links. We nemen steeds de nodige hygiënische maatregelen. Alvast bedankt voor je begrip!';
+				}
+			} elseif ( $atts['id'] === 'leuven' ) {
+				// Uitzondering voor Leuven-Centrum
+				$text = 'Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen in de Oxfam-Wereldwinkel in de Parijsstraat kan <b>op maandag, woensdag en vrijdag tussen 10 en 12 uur</b>.';
+				// Extra tekst in de mail
+				if ( ! is_checkout() ) {
+					$text .= '<br/>Bel even naar 016/22.01.35 als je voor de deur staat en je onze aandacht niet weet te vangen. Als het je echt niet lukt om tijdens bovenstaande uren/dagen te komen, laat het ons dan zo vlug mogelijk weten. Dan maken we graag met jou een afspraak op maat.';
 				}
 			} else {
 				$locations = get_option('woocommerce_pickup_locations');
