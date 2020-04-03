@@ -926,7 +926,11 @@
 	}
 
 	function change_refunded_order_subject( $subject, $order ) {
-		$subject = sprintf( __( 'Onderwerp van de terugbetalingsmail inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
+		if ( $order->get_total_refunded() == $order->get_total() ) {
+			$subject = sprintf( __( 'Onderwerp van de terugbetalingsmail (volledig) inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
+		} else {
+			$subject = sprintf( __( 'Onderwerp van de terugbetalingsmail (gedeeltelijk) inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
+		}
 		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
 			$subject = 'DEMO '.$subject;
 		}
@@ -969,7 +973,11 @@
 	}
 
 	function change_refunded_email_heading( $email_heading, $order ) {
-		$email_heading = __( 'Heading van de terugbetalingsmail', 'oxfam-webshop' );
+		if ( $order->get_total_refunded() == $order->get_total() ) {
+			$email_heading = __( 'Heading van de terugbetalingsmail (volledig)', 'oxfam-webshop' );
+		} else {
+			$email_heading = __( 'Heading van de terugbetalingsmail (gedeeltelijk)', 'oxfam-webshop' );
+		}
 		return $email_heading;
 	}
 
