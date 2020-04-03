@@ -5162,13 +5162,6 @@
 				if ( ! is_checkout() ) {
 					$text .= '<br/>Opgelet: de poort is gesloten, bel aan bij de deur links. We nemen steeds de nodige hygiënische maatregelen. Alvast bedankt voor je begrip!';
 				}
-			} elseif ( $atts['id'] === 'leuven' ) {
-				// Uitzondering voor Leuven-Centrum
-				$text = 'Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen in de Oxfam-Wereldwinkel in de Parijsstraat kan <b>op maandag, woensdag en vrijdag tussen 10 en 12 uur</b>.';
-				// Extra tekst in de mail
-				if ( ! is_checkout() ) {
-					$text .= '<br/>Bel even naar 016/22.01.35 als je voor de deur staat en je onze aandacht niet weet te vangen. Als het je echt niet lukt om tijdens bovenstaande uren/dagen te komen, laat het ons dan zo vlug mogelijk weten. Dan maken we graag met jou een afspraak op maat.';
-				}
 			} else {
 				$locations = get_option('woocommerce_pickup_locations');
 				if ( count( $locations ) > 1 ) {
@@ -5179,6 +5172,16 @@
 			}
 			$output = '<p class="corona-notice">'.$text.'</p>';
 		} else {
+			if ( $atts['id'] === 'leuven' ) {
+				// Uitzondering voor Leuven-Centrum
+				$text = 'Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen in de Oxfam-Wereldwinkel in de Parijsstraat kan <b>op maandag, woensdag en vrijdag tussen 10 en 12 uur</b>.';
+				// Extra tekst in de mail
+				if ( ! is_checkout() ) {
+					$text .= '<br/>Bel even naar 016/22.01.35 als je voor de deur staat en je onze aandacht niet weet te vangen. Als het je echt niet lukt om tijdens bovenstaande uren/dagen te komen, laat het ons dan zo vlug mogelijk weten. Dan maken we graag met jou een afspraak op maat.';
+				}
+				$output .= '<p class="corona-notice">'.$text.'</p>';
+			}
+
 			// Knip de eerste <br/> er weer af
 			$output = substr( $output, 5 );
 		}
