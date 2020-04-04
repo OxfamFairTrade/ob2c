@@ -4915,7 +4915,7 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
-					echo '<p>Vergeet niet om de voorraad van het paasassortiment goed op te volgen voor de 1+1 actie! <a href="'.get_stylesheet_directory_uri().'/paaschocolade.php" target="_blank">Bekijk een overzicht van de voorradigheid in welke webshop &raquo;</a> (langere laadtijd mogelijk)</p>';
+					echo '<p>Vergeet niet om de voorraad van het paasassortiment goed op te volgen voor de 1+1 actie! <a href="'.get_stylesheet_directory_uri().'/paaschocolade.php" target="_blank">Bekijk een overzicht van de voorradigheid in elke webshop &raquo;</a> (langere laadtijd mogelijk)</p>';
 					// <a href="https://copain.oww.be/l/mailing2/link/a556087c-f98a-4728-a516-f892ff77cc01/4423" target="_blank">Lees de nieuwsbrief van 2 april rond de werking van onze webshops tijdens de coronacrisis.</a>
 				echo '</div>';
 				echo '<div class="notice notice-success">';
