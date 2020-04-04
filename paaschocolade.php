@@ -12,8 +12,8 @@
 
 		require_once '../../../wp-load.php';
 
-		$skus = array( '24529', '24634', '24648' );
-		$extra_skus = array( '24644', '24645', '24647' );
+		$skus = array('24634', '24648', '24647' );
+		$extra_skus = array( '24529', '24644', '24645' );
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'path__not_in' => array('/') ) );
 
 		foreach ( $sites as $site ) {
@@ -48,10 +48,10 @@
 			}
 
 			if ( count( $in_stock ) === 0 ) {
-				echo '<span style="color: red;">Geen enkel paasproduct op voorraad, zelfs geen enkele holfiguur!</span><br/>';
+				echo '<span style="color: red;">Geen enkel paaspromoproduct op voorraad!</span><br/>';
 			} else {
 				if ( ! $easter_products ) {
-					echo '<span style="color: orange;">Geen enkel paasproduct op voorraad, wel holfiguren '.implode( ' / ', $in_stock ).'</span><br/>';
+					echo '<span style="color: orange;">Geen enkel paaspromoproduct op voorraad, wel '.implode( ' / ', $in_stock ).'</span><br/>';
 				} else {
 					echo '<span style="color: green;">'.implode( ' / ', $in_stock ).'</span><br/>';
 				}
