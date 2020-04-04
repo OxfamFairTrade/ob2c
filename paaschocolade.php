@@ -53,7 +53,7 @@
 				if ( ! $easter_products ) {
 					echo '<span style="color: orange;">Geen enkel paasproduct op voorraad, wel holfiguren '.implode( ' / ', $in_stock ).'</span><br/>';
 				} else {
-					echo '<span style="color: green;">Paasassortiment bevat '.implode( ' / ', $in_stock ).'</span><br/>';
+					echo '<span style="color: green;">'.implode( ' / ', $in_stock ).'</span><br/>';
 				}
 			}
 		}
