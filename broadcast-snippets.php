@@ -76,7 +76,7 @@
 	}
 
 	// Subsites afschermen en verbergen op kaart
-	$oxfam_blocked_sites = array( 13, 29 );
+	$oxfam_blocked_sites = array( 13, 26 );
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
