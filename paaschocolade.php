@@ -14,7 +14,7 @@
 
 		$skus = array( '24529', '24634', '24648' );
 		$extra_skus = array( '24644', '24645', '24647' );
-		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'path__not_in' => array('/') ) );
+		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'path__not_in' => array('/') ) );
 
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
