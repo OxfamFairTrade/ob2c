@@ -12,8 +12,7 @@
 	
 	function force_user_login() {
 		$url = get_current_url();
-		// update_site_option( 'oxfam_blocked_sites', array( 41, 42, 43, 44, 45, 46, 47, 48, 49, 50 ) );
-
+		
 		// Demosite tijdelijk openstellen: or get_current_site()->domain !== 'shop.oxfamwereldwinkels.be'
 		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
 			if ( ! is_user_logged_in() ) {
@@ -4904,14 +4903,19 @@
 		global $pagenow, $post_type;
 		$screen = get_current_screen();
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
-			if ( get_option( 'mollie-payments-for-woocommerce_test_mode_enabled' ) === 'yes' ) {
+			if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
+				echo '<div class="notice notice-error">';
+					echo '<p>Deze site is momentaal afgeschermd voor het grote publiek (inloggen verplicht) en verschijnt niet op de kaart!</p>';
+				echo '</div>';
+			}
+			if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
 				echo '<div class="notice notice-success">';
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
-					echo '<p>Vergeet ook niet om goed je voorraad van het paasassortiment op te volgen voor de 1+1 actie!</p>';
+					echo '<p>Vergeet niet om de voorraad van het paasassortiment goed op te volgen voor de 1+1 actie! <a href="'.get_stylesheet_directory_uri('paaschocolade.php').'" target="_blank">Bekijk een overzicht van de voorradigheid in welke webshop &raquo;</a> (opgelet: lange laadtijd!)</p>';
 					// <a href="https://copain.oww.be/l/mailing2/link/a556087c-f98a-4728-a516-f892ff77cc01/4423" target="_blank">Lees de nieuwsbrief van 2 april rond de werking van onze webshops tijdens de coronacrisis.</a>
 				echo '</div>';
 				echo '<div class="notice notice-success">';
