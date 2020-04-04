@@ -32,11 +32,11 @@ if ( $nm_theme_options['shop_infinite_load'] !== '0' ) {
 	$infload_class = '';
 }
 
-// GEWIJZIGD: Wijzig laadmodus indien het een categoriepagina met meer dan 2 pagina's is
+// GEWIJZIGD: Wijzig laadmodus indien het een categoriepagina met meer dan 3 pagina's is
 $mode = 'scroll';
-if ( is_product_category() and intval($wp_query->max_num_pages) > 2 ) {
+if ( is_product_category() and intval( $wp_query->max_num_pages ) > 3 ) {
 	$mode = 'button';
-	$infload_class = '';
+	// $infload_class = '';
 }
 
 ?>
