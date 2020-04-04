@@ -2896,8 +2896,6 @@
 
 	// Bereken de eerst mogelijke leverdatum voor de opgegeven verzendmethode (retourneert een timestamp) 
 	function estimate_delivery_date( $shipping_id, $order_id = false ) {
-		$deadline = get_office_hours();
-		
 		// We gebruiken het geregistreerde besteltijdstip OF het live tijdstip voor schattingen van de leverdatum
 		if ( $order_id === false ) {
 			$from = current_time('timestamp');
