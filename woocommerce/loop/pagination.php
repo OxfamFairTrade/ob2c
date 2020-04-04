@@ -34,8 +34,9 @@ if ( $nm_theme_options['shop_infinite_load'] !== '0' ) {
 
 // GEWIJZIGD: Wijzig laadmodus indien het een categoriepagina met meer dan 2 pagina's is
 $mode = 'scroll';
-if ( is_archive() and intval($wp_query->max_num_pages) > 2 ) {
+if ( is_product_category() and intval($wp_query->max_num_pages) > 2 ) {
 	$mode = 'button';
+	$infload_class = '';
 }
 
 ?>
