@@ -34,7 +34,9 @@ if ( $nm_theme_options['shop_infinite_load'] !== '0' ) {
 
 // GEWIJZIGD: Wijzig laadmodus indien het een categoriepagina met meer dan 2 pagina's is
 $mode = 'scroll';
-write_log( "MAX NUM PAGES: ".$wp_query->max_num_pages );
+if ( current_user_can('update_core') ) {
+	write_log( "MAX NUM PAGES: ".$wp_query->max_num_pages );
+}
 if ( is_archive() and intval( $wp_query->max_num_pages ) > 2 ) {
 	// Probleem: de query van de oorspronkelijk geladen pagina bepaalt de scrollmodus ...
 	// URL wordt door AJAX-acties wel bijgewerkt, maar eigenlijk blijf je op de originale pagina zitten

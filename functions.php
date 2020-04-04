@@ -5115,7 +5115,7 @@
 	}
 
 	function print_office_hours( $atts = [] ) {
-		// Overschrijf defaults met expliciete data van de gebruiker
+		// Overschrijf defaults met expliciete data van de gebruiker MAG VOORZICHTIG UITGEFASEERD WORDEN
 		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
 		
 		$output = '';
