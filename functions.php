@@ -1996,42 +1996,8 @@
 					$line_total += $item['line_subtotal_tax'];
 				}
 				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total );
-				// Barcode toevoegen (zit momenteel niet meer in de data!): ->setCellValue( 'H'.$i, $product->get_attribute('shopplus') )
+				// Barcode toevoegen (zit enkel nog op de data op het hoofdniveau!): ->setCellValue( 'H'.$i, $main_product->get_meta('_barcode') )
 				$i++;
-			}
-
-			// Vermeld de totale korting (inclusief/exclusief BTW)
-			// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
-			$used_coupons = $order->get_used_coupons();
-			if ( count($used_coupons) >= 1 ) {
-				$discount = $order->get_discount_total();
-				if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
-					$discount += $order->get_discount_tax();
-				}
-				$i++;
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Korting' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
-			}
-
-			// Druk eventuele opmerkingen af
-			if ( strlen( $order->get_customer_note() ) > 5 ) {
-				$i++;
-				$customer_text = $order->get_customer_note();
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $customer_text );
-				$objPHPExcel->getActiveSheet()->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
-				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-				// Merge resterende kolommen en wrap tekst in opmerkingenvak 
-				$objPHPExcel->getActiveSheet()->mergeCells('B'.$i.':G'.$i);
-				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setWrapText(true);
-
-				// setRowHeight(-1) voor autoheight werkt niet, dus probeer goeie hoogte te berekenen bij lange teksten
-				// if ( strlen( $customer_text ) > 125 ) {
-				// 	$row_padding = 4;
-				// 	$row_height = $objPHPExcel->getActiveSheet()->getRowDimension($i)->getRowHeight() - $row_padding;
-				// 	$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight( ceil( strlen( $customer_text ) / 120 ) * $row_height + $row_padding );
-				// }
-
-				// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
-				$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(80);
 			}
 
 			$pickup_text = 'Afhaling in winkel';
@@ -2090,7 +2056,7 @@
 						$total_excl_tax = floatval( $shipping->get_total() );
 						// Enkel printen indien nodig
 						if ( $total_tax > 0.01 ) {
-							// TE VERALGEMENEN
+							// TE VERALGEMENEN MAAR WERKT OOK BIJ VERZENDKOST VAN 4,95 EURO
 							if ( $total_tax < 1.00 ) {
 								$tax = 0.06;
 							} else {
@@ -2109,6 +2075,42 @@
 
 			// Bereken en selecteer het totaalbedrag
 			$objPHPExcel->getActiveSheet()->setSelectedCell('F5')->setCellValue( 'F5', $objPHPExcel->getActiveSheet()->getCell('F5')->getCalculatedValue() );
+
+			// Vermeld de totale korting (inclusief/exclusief BTW)
+			// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
+			$used_coupons = $order->get_used_coupons();
+			if ( count($used_coupons) >= 1 ) {
+				$discount = $order->get_discount_total();
+				if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
+					$discount += $order->get_discount_tax();
+				}
+				$i++;
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Korting' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
+				$i++;
+			}
+
+			// Druk eventuele opmerkingen af
+			if ( strlen( $order->get_customer_note() ) > 5 ) {
+				$i++;
+				$customer_text = $order->get_customer_note();
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $customer_text );
+				$objPHPExcel->getActiveSheet()->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+				// Merge resterende kolommen en wrap tekst in opmerkingenvak 
+				$objPHPExcel->getActiveSheet()->mergeCells('B'.$i.':G'.$i);
+				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setWrapText(true);
+
+				// setRowHeight(-1) voor autoheight werkt niet, dus probeer goeie hoogte te berekenen bij lange teksten
+				// if ( strlen( $customer_text ) > 125 ) {
+				// 	$row_padding = 4;
+				// 	$row_height = $objPHPExcel->getActiveSheet()->getRowDimension($i)->getRowHeight() - $row_padding;
+				// 	$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight( ceil( strlen( $customer_text ) / 120 ) * $row_height + $row_padding );
+				// }
+
+				// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
+				$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(80);
+				$i++;
+			}
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
 			$filename = $order->get_meta('_excel_file_name');
