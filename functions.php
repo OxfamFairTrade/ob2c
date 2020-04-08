@@ -222,6 +222,24 @@
 		}
 	}
 
+	// Activeer Facebook Messenger
+	add_action( 'wp_footer', 'add_facebook_messenger', 300 );
+
+	function add_facebook_messenger() {
+		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+			?>
+			<div id='fb-root'></div>
+			<script>(function(d, s, id) {
+				var js, fjs = d.getElementsByTagName(s)[0];
+				js = d.createElement(s); js.id = id;
+				js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js#xfbml=1&version=v2.12&autoLogAppEvents=1';
+				fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));</script>
+			<div class='fb-customerchat' attribution="wordpress" page_id='116000561802704' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!'logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
+			<?php
+		}
+	}
+
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
 	add_action( 'init', 'allow_target_tag', 20 );
 
