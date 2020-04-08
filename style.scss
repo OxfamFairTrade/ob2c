@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.5.18
+	Version:		1.5.19
 	Text Domain:	oxfam-webshop
 */
 
@@ -30,6 +30,99 @@ $cookie-black: #4d4d4d;
 $pickup: rgb(0, 175, 233);
 $delivery: rgb(255, 99, 133);
 $black: #2c2c2c;
+
+
+
+.ob2c-home-row > .nm_column:first-child {
+	position: relative;
+	left: -2em;
+}
+
+.ob2c-home-row > .nm_column:last-child {
+	position: relative;
+	left: 2em;
+}
+
+.ob2c-home-row .ob2c-grey-filter:before {
+	content: '';
+	position: absolute;
+	background-color: rgba(0,0,0,0.05);
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+.ob2c-home-row .ob2c-grey-filter .nm-feature,
+.ob2c-home-row .ob2c-grey-filter .nm-feature .wpb_text_column p a {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	top: 0;
+	right: 0;
+}
+
+.ob2c-home-row .ob2c-grey-filter .nm-feature .wpb_text_column p a > span {
+	position: absolute;
+	bottom: 1em;
+	left: 0;
+	right: 0;
+}
+
+.ob2c-home-row .ob2c-grey-filter .nm-feature a {
+	color: white;
+	font-size: 1.5em;
+	line-height: 1.25em;
+	text-shadow: 1px 1px 3px black;
+}
+
+.nm-product-slider .slick-prev i,
+.nm-product-slider .slick-next i {
+	font-size: 60px;
+}
+
+.nm-product-slider .slick-dots {
+	padding: 0;
+}
+
+.slick-slider {
+	position: relative;
+}
+
+.slick-dots li.slick-active button {
+	border-color: black;
+}
+
+.ob2c-category-title {
+	margin: 1em 0 2em 0;
+}
+
+.ob2c-category-title h2 {
+	font-size: 2em;
+	line-height: 1.5em;
+	font-weight: bold;
+}
+
+@media (min-width: 1200px) {
+	/* Fix voor verspringen van rijhoogte door nog niet ingeladen packshots achteraan de slider */
+	.ob2c-home-row .nm-shop-loop-thumbnail img {
+		max-height: 274px;
+	}
+}
+	
+@media (max-width: 1199px) {
+	.ob2c-home-row > .nm_column:first-child,
+	.ob2c-home-row > .nm_column:last-child {
+		left: 0;
+	}
+	
+	.ob2c-home-row .ob2c-grey-filter {
+		top: 2em;
+		min-height: 75px;
+		background-image: none !important;
+		background-color: black;
+	}
+}
 
 
 
