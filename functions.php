@@ -2091,19 +2091,16 @@
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
 			}
 
-			// Bereken en selecteer het totaalbedrag
-			$objPHPExcel->getActiveSheet()->setSelectedCell('F5')->setCellValue( 'F5', $objPHPExcel->getActiveSheet()->getCell('F5')->getCalculatedValue() );
-
 			// Vermeld de totale korting (inclusief/exclusief BTW)
 			// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
 			$used_coupons = $order->get_used_coupons();
-			if ( count($used_coupons) >= 1 ) {
+			if ( count( $used_coupons ) >= 1 ) {
 				$discount = $order->get_discount_total();
 				if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
 					$discount += $order->get_discount_tax();
 				}
 				$i++;
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Korting' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Kortingen' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
 				$i++;
 			}
 
@@ -2129,6 +2126,9 @@
 				$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(80);
 				$i++;
 			}
+
+			// Bereken en selecteer het totaalbedrag
+			$objPHPExcel->getActiveSheet()->setSelectedCell('F5')->setCellValue( 'F5', $objPHPExcel->getActiveSheet()->getCell('F5')->getCalculatedValue() );
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
 			$filename = $order->get_meta('_excel_file_name');
