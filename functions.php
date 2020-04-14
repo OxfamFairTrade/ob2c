@@ -1732,19 +1732,24 @@
 
 		// Check of het huisnummer wel ingevuld is (behalve bij afhalingen)
 		if ( isset( $_POST['shipping_method'][0] ) and $_POST['shipping_method'][0] !== 'local_pickup_plus' ) {
-			if ( isset( $_POST['shipping_address_1'] ) and strlen( $_POST['shipping_address_1'] ) > 3 ) {
-				$street_to_check = $_POST['shipping_address_1'];
+			// write_log( print_r( $_POST, true ) );
+
+			if ( isset( $_POST['ship_to_different_address'] ) and $_POST['ship_to_different_address'] == 1 ) {
+				// Er werd een afwijkend verzendadres ingevuld, check die waarde
+				$key_to_check = 'shipping_address_1';
 			} else {
-				// Indien geen afwijkend verzendadres ingevuld werd is 'shipping_address_1' leeg, check in dat geval 'billing_address_1'
-				$street_to_check = $_POST['billing_address_1'];
+				// Check enkel 'billing_address_1' want de gegevens die in 'shipping_address_1' doorgegeven worden zijn niet altijd up-to-date!
+				// Indien je een wijziging doet aan 'billing_address_1' wordt dit pas na een page refresh gekopieerd naar 'shipping_address_1'
+				$key_to_check = 'billing_address_1';
 			}
 
-			// Indien er echt geen huisnummer is, moet Z/N ingevuld worden
-			// Busnummers na een slash lijken soms problemen te veroorzaken, dus strip slashes!
-			if ( preg_match( '/([0-9]+|ZN)/i', str_replace( '/', '', $street_to_check ) ) === 0 ) {
-				$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$street_to_check."'\n";
-				file_put_contents( "housenumber_errors.csv", $str, FILE_APPEND );
-				wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+			if ( isset( $_POST[ $key_to_check ] ) and strlen( $_POST[ $key_to_check ] ) > 3 ) {
+				// Indien er echt geen huisnummer is, moet Z/N ingevuld worden
+				if ( preg_match( '/([0-9]+|ZN)/i', $_POST[ $key_to_check ] ) === 0 ) {
+					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$_POST[ $key_to_check ]."'\n";
+					file_put_contents( "housenumber_errors.csv", $str, FILE_APPEND );
+					wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+				}
 			}
 		}
 	}
