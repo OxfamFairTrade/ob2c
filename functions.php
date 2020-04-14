@@ -7,6 +7,9 @@
 
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	
+	// Sitemap van afbeeldingen uitschakelen
+	add_filter( 'jetpack_sitemap_image_skip_post', '__return_true' );
+
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
 	
