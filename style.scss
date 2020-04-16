@@ -834,7 +834,7 @@ li.product.product_tag-promotie.fifty_percent_off::after {
 	content: "Promo 2de -50%";
 }
 div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
-	@include banner( $see-through-red, 95% );
+	@include banner( $see-through-red, 125% );
 	content: "In promotie";
 }
 div.nm-single-product.product_tag-promotie.one_plus_one figure.woocommerce-product-gallery__wrapper::after {
