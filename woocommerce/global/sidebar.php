@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="nm-shop-sidebar-col col-md-3 col-sm-12">
 	<div id="nm-shop-sidebar" class="nm-shop-sidebar" data-sidebar-layout="default">
 		<?php
+			// GEWIJZIGD: Link naar promoties toevoegen
 			if ( ! is_product_tag('promotie') ) {
 				$args = array(
 					'stock_status' => 'instock',
