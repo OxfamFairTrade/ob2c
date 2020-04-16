@@ -1101,7 +1101,7 @@
 	}
 
 	// Doorstreepte adviesprijs en badge uitschakelen (meestal geen rechtsreekse productkorting)
-	add_filter( 'woocommerce_sale_flash', '__return_false' );
+	// add_filter( 'woocommerce_sale_flash', '__return_false' );
 	add_filter( 'woocommerce_format_sale_price', 'format_sale_as_regular_price', 10, 3 );
 
 	function format_sale_as_regular_price( $price, $regular_price, $sale_price ) {
