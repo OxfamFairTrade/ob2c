@@ -24,10 +24,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 				_e( 'No products were found matching your selection.', 'woocommerce' );
 				// GEWIJZIGD: Expliciet automatische suggestie toevoegen
 				relevanssi_didyoumean( get_search_query(), "<p>Bedoelde je misschien <i>", "</i> ?</p>", 5 );
-
-				// GEWIJZIGD: Toon best sellers
-				echo '<p>&nbsp;</p><h3>Mogen we je wat inspiratie geven? Dit kochten andere klanten vaak:</h3><br/>'.do_shortcode('[best_selling_products per_page="8" columns="4" orderby="rand"]');
 			}
 		?>
 	</h3>
+	<?php
+		// GEWIJZIGD: Toon best sellers
+		echo '<p>&nbsp;</p><h3>Mogen we je wat inspiratie geven? Dit kochten andere klanten vaak:</h3><br/>'.do_shortcode('[best_selling_products per_page="8" columns="4" orderby="rand"]');
+	?>
 </div>
