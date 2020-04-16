@@ -827,9 +827,21 @@ li.product.product_tag-promotie::after {
 	@include banner( $see-through-red );
 	content: "Promo";
 }
+li.product.product_tag-promotie.one_plus_one::after {
+	content: "Promo 1+1";
+}
+li.product.product_tag-promotie.fifty_percent_off::after {
+	content: "Promo 2de -50%";
+}
 div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
 	@include banner( $see-through-red, 95% );
 	content: "In promotie";
+}
+div.nm-single-product.product_tag-promotie.one_plus_one figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: 1+1 gratis";
+}
+div.nm-single-product.product_tag-promotie.fifty_percent_off figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: 2de aan -50%";
 }
 
 /* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'-, 'promo'- en/of 'afhalen'-klasse lager om overlap te vermijden */
@@ -939,7 +951,8 @@ body.is_b2b_customer {
 .checkout-subscribe-action,
 .products li.outofstock .nm-shop-loop-thumbnail > a:after,
 .ui-helper-hidden-accessible,
-.widget_product_tag_cloud {
+.widget_product_tag_cloud,
+.nm_widget_price_filter {
 	display: none !important;
 }
 

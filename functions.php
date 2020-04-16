@@ -269,9 +269,28 @@
 
 	function add_recent_product_class( $classes ) {
 		global $post;
+		
 		if ( get_the_date( 'Y-m-d', $post->ID ) > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
 			$classes[] = 'newbee';
 		}
+		
+		// Label producten met 1+1 promotie
+		$one_plus_one_products = array( '24531', '25724', '25726' );
+		foreach ( $one_plus_one_products as $sku ) {
+			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
+				$classes[] = 'one_plus_one';
+			}	
+		}
+		
+		// Label producten met 2de -50% promotie
+		$fifty_percent_off_second_products = array( '20180', '20181', '20182' );
+		foreach ( $fifty_percent_off_second_products as $sku ) {
+			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
+				// KIJK EERST OF WE MET SALE-FLASH.PHP KUNNEN WERKEN
+				// $classes[] = 'fifty_percent_off';
+			}
+		}
+		
 		return $classes;
 	}
 
@@ -4939,12 +4958,14 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
+					echo '<p>De THT-promotie op noten en pralines werden geactiveerd (zie <a href="https://copain.oww.be/k/n111/news/view/20135/1429/online-promo-s-1-1-gratis.html" target="_blank">Copain</a>).</p>';
+				echo '</div>';
+				echo '<div class="notice notice-info">';
 					echo '<p><a href="https://copain.oww.be/l/mailing2/browserview/a3d5bc0a-cfc2-487e-92c6-4b8af0425e72" target="_blank">Lees de nieuwsbrief van 9 april</a> met tips voor lokale promotie van je webshop bij o.a. Mediahuis.</p>';
-					// echo '<p>Vergeet niet om de voorraad van het paasassortiment goed op te volgen voor de 1+1 actie! <a href="'.get_stylesheet_directory_uri().'/paaschocolade.php" target="_blank">Bekijk een overzicht van de voorradigheid in elke webshop &raquo;</a> (langere laadtijd mogelijk)</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>Er werden 3 nieuwe producten toegevoegd aan de database (al kan het nog even duren voor ze in alle winkels arriveren):</p><ul style="margin-left: 2em;">';
-						$skus = array( '26424', '27012', '27110' );
+					echo '<p>Er werden 4 nieuwe producten toegevoegd aan de database (al kan het nog even duren voor ze in alle winkels arriveren):</p><ul style="margin-left: 2em;">';
+						$skus = array( '26424', '27012', '27110', '28605' );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku($sku);
 							if ( $product_id ) {
@@ -4960,9 +4981,9 @@
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
-					echo '<div class="notice notice-success">';
-						echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
-					echo '</div>';
+					// echo '<div class="notice notice-success">';
+					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
+					// echo '</div>';
 				}
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>3 oude producten werden uit de database verwijderd omdat de wijntabel aangeeft dat de drinkbaarheid van deze wijnen niet meer optimaal is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';

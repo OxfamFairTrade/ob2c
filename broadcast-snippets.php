@@ -160,7 +160,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> array('publish'),
-		'title'			=> 'rosé-25',
+		'title'			=> 'tht-divers',
 	);
 
 	$all_coupons = new WP_Query( $args );
@@ -243,7 +243,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '26424', '27012', '27110' );
+	$outofstocks = array( '28605' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
