@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			}
 
 			// GEWIJZIGD: Toon best sellers
-			echo '<h2>Dit kochten andere klanten vaak:</h2><br/>'.do_shortcode('[best_selling_products limit="8" columns="4" orderby="rand"]');
+			echo '<h2>Dit kochten andere klanten vaak:</h2><br/>'.do_shortcode('[best_selling_products per_page="8" columns="4" orderby="rand"]');
 		?>
 	</h3>
 </div>
