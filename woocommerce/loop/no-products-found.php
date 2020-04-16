@@ -16,17 +16,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="nm-shop-no-products">
 	<h3 class="woocommerce-info">
 		<?php
-			_e( 'No products were found matching your selection.', 'woocommerce' );
-			// GEWIJZIGD: Expliciet automatische suggestie toevoegen
-			relevanssi_didyoumean( get_search_query(), "<p>Bedoelde je misschien <i>", "</i> ?</p>", 5 );
-
 			// GEWIJZIGD: Verwijs naar fysieke winkel indien er duidelijk naar crafts gezocht werd
 			if ( get_search_query() == 'agenda' or get_search_query() == 'dopper' ) {
 				echo '<p>Crafts- en solidariteitsproducten verkopen we helaas nog niet online. Spring zeker eens binnen in je wereldwinkel om het volledige assortiment te ontdekken!</p>';
+			} else {
+				_e( 'No products were found matching your selection.', 'woocommerce' );
+				// GEWIJZIGD: Expliciet automatische suggestie toevoegen
+				relevanssi_didyoumean( get_search_query(), "<p>Bedoelde je misschien <i>", "</i> ?</p>", 5 );
 			}
 
 			// GEWIJZIGD: Toon best sellers
-			echo '<h2>Dit kochten andere klanten vaak:</h2><br/>'.do_shortcode('[products best_selling="true" limit="6" columns="3" orderby="rand"]');
+			echo '<h2>Dit kochten andere klanten vaak:</h2><br/>'.do_shortcode('[best_selling_products limit="8" columns="4" orderby="rand"]');
 		?>
 	</h3>
 </div>
