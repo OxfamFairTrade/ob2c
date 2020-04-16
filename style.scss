@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.5.19
+	Version:		1.5.20
 	Text Domain:	oxfam-webshop
 */
 
@@ -375,7 +375,7 @@ body.portal.home {
 	padding: 1em;
 	width: 100%;
 	color: white;
-	background-color: $bright-red;
+	background-color: $pale-blue;
 
 	p {
 		font-size: 1.2em;
@@ -614,9 +614,19 @@ p.herkomst {
 }
 p.promotie {
 	margin-bottom: 1em;
-	color: red;
-	font-style: italic;
 	line-height: 1.25em;
+	padding: 1em;
+	border: 2px solid $see-through-red;
+
+	&:before {
+		content: 'Promo!';
+		position: absolute;
+		color: black;
+		font-family: 'Pacifico', cursive;
+		top: 0em;
+		left: 0.25em;
+		z-index: 50;
+	}
 }
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
@@ -701,6 +711,21 @@ tr.shipping .woocommerce-Price-amount {
 	small.ingredients {
 		display: block;
 		text-align: right;
+	}
+}
+
+
+/*************/
+/*  SIDEBAR  */
+/*************/
+
+.nm-shop-sidebar {
+	.ob2c-sale-banner {
+		padding: 1em;
+		font-weight: bold;
+		border: 2px solid $see-through-red;
+		border-radius: 3px;
+		margin-bottom: 2em;
 	}
 }
 
@@ -828,20 +853,20 @@ li.product.product_tag-promotie::after {
 	content: "Promo";
 }
 li.product.product_tag-promotie.one_plus_one::after {
-	content: "Promo 1+1";
+	content: "Promo 1+1 gratis";
 }
 li.product.product_tag-promotie.fifty_percent_off::after {
 	content: "Promo 2de -50%";
 }
 div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
-	@include banner( $see-through-red, 125% );
+	@include banner( $see-through-red, 95% );
 	content: "In promotie";
 }
 div.nm-single-product.product_tag-promotie.one_plus_one figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: 1+1 gratis";
 }
 div.nm-single-product.product_tag-promotie.fifty_percent_off figure.woocommerce-product-gallery__wrapper::after {
-	content: "In promotie: 2de aan -50%";
+	content: "In promotie: 2de stuk aan -50%";
 }
 
 /* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'-, 'promo'- en/of 'afhalen'-klasse lager om overlap te vermijden */
