@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.5.21
+	Version:		1.5.22
 	Text Domain:	oxfam-webshop
 */
 
@@ -43,37 +43,46 @@ $black: #2c2c2c;
 	left: 2em;
 }
 
-.ob2c-home-row .ob2c-grey-filter:before {
-	content: '';
-	position: absolute;
-	background-color: rgba(0,0,0,0.05);
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
-}
+.ob2c-home-row .ob2c-grey-filter {
+	&:before {
+		content: '';
+		position: absolute;
+		background-color: rgba(0,0,0,0.05);
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
 
-.ob2c-home-row .ob2c-grey-filter .nm-feature,
-.ob2c-home-row .ob2c-grey-filter .nm-feature .wpb_text_column p a {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	top: 0;
-	right: 0;
-}
+	.nm-feature,
+	.nm-feature .wpb_text_column p a {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
 
-.ob2c-home-row .ob2c-grey-filter .nm-feature .wpb_text_column p a > span {
-	position: absolute;
-	bottom: 1em;
-	left: 0;
-	right: 0;
-}
+	.nm-feature {
+		.wpb_text_column {
+			margin: 0;
 
-.ob2c-home-row .ob2c-grey-filter .nm-feature a {
-	color: white;
-	font-size: 1.5em;
-	line-height: 1.25em;
-	text-shadow: 1px 1px 3px black;
+			p a > span {
+				position: absolute;
+				padding: 1em;
+				left: 0;
+				right: 0;
+				bottom: 0;
+			}
+		}
+
+		a {
+			color: white;
+			font-size: 1.4em;
+			line-height: 1.2em;
+			text-shadow: 1px 1px 3px black;
+		}
+	}
 }
 
 .nm-product-slider .slick-prev i,
@@ -95,12 +104,12 @@ $black: #2c2c2c;
 
 .ob2c-category-title.wpb_content_element {
 	margin: 1em 0 2em 0;
-}
 
-.ob2c-category-title.wpb_content_element h2 {
-	font-size: 2em;
-	line-height: 1.5em;
-	font-weight: bold;
+	h2 {
+		font-size: 2em;
+		line-height: 1.5em;
+		font-weight: bold;
+	}
 }
 
 @media (min-width: 1200px) {
@@ -117,10 +126,27 @@ $black: #2c2c2c;
 	}
 	
 	.ob2c-home-row .ob2c-grey-filter {
+		&:before {
+			display: none;
+		}
+
 		top: 2em;
-		min-height: 75px;
 		background-image: none !important;
-		background-color: black;
+		background-color: white;
+		border: 2px solid black;
+		border-radius: 3px;
+
+		.nm-feature {
+			&.layout-centered {
+				max-width: initial;
+			}
+
+			.wpb_text_column p a {
+				position: relative;
+				color: black;
+				text-shadow: none;
+			}
+		}
 	}
 }
 
@@ -413,7 +439,7 @@ body.portal.home {
 }
 
 body.portal.home .general-store-notice {
-	color: $bright-red
+	background-color: $bright-red;
 }
 
 .corona-notice {

@@ -299,7 +299,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.21' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.5.22' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -5115,6 +5115,20 @@
 	add_shortcode( 'map_address', 'get_company_address' );
 	add_shortcode( 'email_footer', 'get_company_and_year' );
 	add_shortcode( 'email_header', 'get_local_logo_url' );
+	add_shortcode( 'toon_eventueel_promos', 'show_conditional_promo_row' );
+
+	function show_conditional_promo_row() {
+		$args = array(
+			'stock_status' => 'instock',
+			'include' => wc_get_product_ids_on_sale(),
+		);
+		$sale_products = wc_get_products( $args );
+		if ( count( $sale_products ) > 2 ) {
+			return do_shortcode('[vc_row type="boxed" max_width="1200" content_placement="middle" css=".vc_custom_1587019432822{padding-bottom: 3em !important;}"][vc_column][vc_column_text el_class="ob2c-category-title"]<h2 style="text-align: center;">Promoties</h2>[/vc_column_text][nm_product_slider shortcode="sale_products" per_page="-1" columns="4" orderby="rand" order="DESC" columns_mobile="1" arrows="1"][/vc_column][/vc_row]');
+		} else {
+			return '';
+		}
+	}
 
 	function print_widget_usp() {
 		return do_shortcode('[nm_feature icon="pe-7s-timer" layout="centered" title="'.__( 'Titel van unique selling point in footer', 'oxfam-webshop' ).'"]'.__( 'Inhoud van unique selling point in footer.', 'oxfam-webshop' ).'[/nm_feature]');
