@@ -616,7 +616,10 @@ p.promotie {
 	margin-bottom: 1em;
 	line-height: 1.25em;
 	padding: 1em;
+	color: $see-through-red;
 	border: 2px solid $see-through-red;
+	border-radius: 3px;
+	position: relative;
 
 	&:before {
 		content: 'Promo!';
@@ -721,11 +724,12 @@ tr.shipping .woocommerce-Price-amount {
 
 .nm-shop-sidebar {
 	.ob2c-sale-banner {
-		padding: 1em;
+		padding: 0.5em 1em;
 		font-weight: bold;
-		border: 2px solid $see-through-red;
-		border-radius: 3px;
+		color: white;
+		background-color: $see-through-red;
 		margin-bottom: 2em;
+		transform: skewX(-3deg);
 	}
 }
 
