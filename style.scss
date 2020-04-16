@@ -613,7 +613,7 @@ p.herkomst {
 	font-weight: bold;
 }
 p.promotie {
-	margin-bottom: 1em;
+	margin: 2em 0;
 	line-height: 1.25em;
 	padding: 1em;
 	color: $see-through-red;
@@ -626,8 +626,10 @@ p.promotie {
 		position: absolute;
 		color: black;
 		font-family: 'Pacifico', cursive;
-		top: 0em;
-		left: 0.25em;
+		font-size: 1.25em;
+		top: -1.5em;
+		right: 0.5em;
+		transform: rotate(-5deg);
 		z-index: 50;
 	}
 }
