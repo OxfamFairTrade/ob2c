@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			);
 			$sale_products = wc_get_products( $args );
 			if ( count( $sale_products ) > 0 ) {
-				echo '<a href="'.get_site_url().'/tag/promotie/"><p class="ob2c-sale-banner" style="padding: 1em; background-color: black; color: white; margin-bottom: 1em;">PROMOTIES</p></a>';
+				echo '<a href="'.get_site_url().'/tag/promotie/#shop"><p class="ob2c-sale-banner" style="padding: 1em; background-color: black; color: white; margin-bottom: 2em; font-weight: bold;">PROMOTIES</p></a>';
 			}
 		?>
 		<ul id="nm-shop-widgets-ul">

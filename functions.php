@@ -286,8 +286,8 @@
 		$fifty_percent_off_second_products = array( '20180', '20181', '20182' );
 		foreach ( $fifty_percent_off_second_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
-				// KIJK EERST OF WE MET SALE-FLASH.PHP KUNNEN WERKEN
-				// $classes[] = 'fifty_percent_off';
+				// Zou eventueel ook via template sale-flash.php kunnen maar dit blijkt toch handiger
+				$classes[] = 'fifty_percent_off';
 			}
 		}
 		
@@ -1101,7 +1101,7 @@
 	}
 
 	// Doorstreepte adviesprijs en badge uitschakelen (meestal geen rechtsreekse productkorting)
-	// add_filter( 'woocommerce_sale_flash', '__return_false' );
+	add_filter( 'woocommerce_sale_flash', '__return_false' );
 	add_filter( 'woocommerce_format_sale_price', 'format_sale_as_regular_price', 10, 3 );
 
 	function format_sale_as_regular_price( $price, $regular_price, $sale_price ) {
