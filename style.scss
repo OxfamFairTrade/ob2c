@@ -67,7 +67,7 @@ $black: #2c2c2c;
 		.wpb_text_column {
 			margin: 0;
 
-			p a > span {
+			p a > span.fix-to-bottom {
 				position: absolute;
 				padding: 1em;
 				left: 0;
@@ -137,14 +137,21 @@ $black: #2c2c2c;
 		border-radius: 3px;
 
 		.nm-feature {
+			position: initial;
+
 			&.layout-centered {
 				max-width: initial;
+				padding: initial;
 			}
 
 			.wpb_text_column p a {
 				position: initial;
 				color: black;
 				text-shadow: none;
+			}
+
+			.vc_btn.vc_btn_link {
+				display: none;
 			}
 		}
 	}
