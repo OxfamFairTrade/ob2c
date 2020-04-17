@@ -81,6 +81,11 @@ $black: #2c2c2c;
 					left: 0;
 					right: 0;
 					bottom: 0;
+
+					@media (max-width: 1199px) {
+						position: initial;
+						display: block;
+					}
 				}
 			}
 		}
@@ -139,7 +144,7 @@ $black: #2c2c2c;
 		top: 2em;
 		background-image: none !important;
 		background-color: black;
-		border: 2px solid black;
+		// border: 2px solid black;
 		border-radius: 3px;
 
 		.nm-feature {
@@ -147,17 +152,13 @@ $black: #2c2c2c;
 
 			&.layout-centered {
 				max-width: initial;
-				padding: 1em;
+				padding: 0;
 			}
 
-			.wpb_text_column > p > a {
-				position: initial;
-				// color: black;
-				text-shadow: none;
-
-				& > span {
+			.wpb_text_column {
+				& > p > a {
 					position: initial;
-					display: block;
+					text-shadow: none;
 				}
 			}
 		}
