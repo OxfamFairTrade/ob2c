@@ -67,7 +67,7 @@ $black: #2c2c2c;
 		.wpb_text_column {
 			margin: 0;
 
-			p a > span.fix-to-bottom {
+			span.fix-to-bottom {
 				position: absolute;
 				padding: 1em;
 				left: 0;
@@ -81,6 +81,10 @@ $black: #2c2c2c;
 			font-size: 1.4em;
 			line-height: 1.2em;
 			text-shadow: 1px 1px 3px black;
+		}
+
+		.vc_btn.vc_btn_link {
+			display: none;
 		}
 	}
 }
@@ -132,7 +136,7 @@ $black: #2c2c2c;
 
 		top: 2em;
 		background-image: none !important;
-		background-color: white;
+		background-color: black;
 		border: 2px solid black;
 		border-radius: 3px;
 
@@ -141,17 +145,13 @@ $black: #2c2c2c;
 
 			&.layout-centered {
 				max-width: initial;
-				padding: initial;
+				padding: 1em;
 			}
 
 			.wpb_text_column p a {
 				position: initial;
-				color: black;
+				// color: black;
 				text-shadow: none;
-			}
-
-			.vc_btn.vc_btn_link {
-				display: none;
 			}
 		}
 	}
