@@ -4960,10 +4960,7 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
-					echo '<p>De THT-promotie op noten en pralines werden geactiveerd (zie <a href="https://copain.oww.be/k/n111/news/view/20135/1429/online-promo-s-1-1-gratis.html" target="_blank">Copain</a>).</p>';
-				echo '</div>';
-				echo '<div class="notice notice-info">';
-					echo '<p><a href="https://copain.oww.be/l/mailing2/browserview/a3d5bc0a-cfc2-487e-92c6-4b8af0425e72" target="_blank">Lees de nieuwsbrief van 9 april</a> met tips voor lokale promotie van je webshop bij o.a. Mediahuis.</p>';
+					echo '<p>De THT-promotie op noten en pralines werden geactiveerd (zie <a href="https://copain.oww.be/k/n111/news/view/20135/1429/online-promo-s-1-1-gratis.html" target="_blank">Copain</a>). Lees ook <a href="https://copain.oww.be/l/mailing2/browserview/a3d5bc0a-cfc2-487e-92c6-4b8af0425e72" target="_blank">de nieuwsbrief van 9 april</a> met tips voor lokale promotie van je webshop bij o.a. Mediahuis.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>Er werden 4 nieuwe producten toegevoegd aan de database (al kan het nog even duren voor ze in alle winkels arriveren):</p><ul style="margin-left: 2em;">';
@@ -4987,9 +4984,9 @@
 					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
 					// echo '</div>';
 				}
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>3 oude producten werden uit de database verwijderd omdat de wijntabel aangeeft dat de drinkbaarheid van deze wijnen niet meer optimaal is. Enkele webshops hadden deze producten nog op voorraad, dus controleer zeker eens je winkelvoorraad. Het gaat om 20061 Shiraz Gran Reserva, 20254 Chardonnay Equality en 20256 Groot Eiland Chardonnay Chenin.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-warning">';
+					echo '<p>7 aflopende producten werden uit de database verwijderd omdat ze inmiddels overal uitverkocht zijn. Het gaat om 21010 Guavashake 1 l, 21107 Guavashake 20 cl, 25397 Geosticks Peppery, 25398 Geosticks Herby, 25399 Geosticks Sweet Chilli, 26491 Maya BIO Sint van speculoos en 27011 BIO Cacaobeertjes ontbijtgranen.</p>';
+				echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}

@@ -205,7 +205,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '20257', '21050', '21052', '22750', '24016', '27516' );
+	$photos_to_delete = array( '21010', '21107', '25397', '25398', '25399', '27011' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
