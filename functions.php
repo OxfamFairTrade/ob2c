@@ -276,7 +276,7 @@
 		}
 		
 		// Label producten met 1+1 promotie
-		$one_plus_one_products = array( '24531', '25724', '25726' );
+		$one_plus_one_products = array( '24531', '24634', '24647', '24648', '25724', '25726' );
 		foreach ( $one_plus_one_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'one_plus_one';
@@ -514,9 +514,6 @@
 		// Laat succesvol betaalde afhalingen automatisch claimen door de gekozen winkel
 		add_action( 'woocommerce_thankyou', 'auto_claim_local_pickup' );
 		
-		// Maak zoeken op claimende winkel mogelijk?
-		add_filter( 'woocommerce_shop_order_search_fields', 'woocommerce_shop_order_search_order_fields' );
-
 		// Creëer bovenaan de orderlijst een dropdown met de deelnemende winkels uit de regio
 		add_action( 'restrict_manage_posts', 'add_claimed_by_filtering' );
 		
@@ -624,11 +621,6 @@
 		delete_post_meta( $order_id, 'claimed_by' );
 	}
 
-	function woocommerce_shop_order_search_order_fields( $search_fields ) {
-		$search_fields[] = 'claimed_by';
-		return $search_fields;
-	}
-
 	function add_claimed_by_filtering() {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' ) {
@@ -720,11 +712,12 @@
 	// Voer de sortering uit tijdens het bekijken van orders in de admin (voor alle zekerheid NA filteren uitvoeren)
 	add_action( 'pre_get_posts', 'sort_orders_on_custom_column', 20 );
 	
-	// Maak bestellingen vindbaar o.b.v. ordernummer
-	add_filter( 'woocommerce_shop_order_search_fields', 'add_order_number_to_admin_search' );
+	// Maak bestellingen vindbaar o.b.v. ordernummer en behandelende winkel
+	add_filter( 'woocommerce_shop_order_search_fields', 'ob2c_add_shop_order_search_fields' );
 
-	function add_order_number_to_admin_search( $fields ) {
-		$fields[] = '_order_number_formatted';
+	function ob2c_add_shop_order_search_fields( $fields ) {
+		$fields[] = '_order_number';
+		$fields[] = 'claimed_by';
 		return $fields;
 	}
 
