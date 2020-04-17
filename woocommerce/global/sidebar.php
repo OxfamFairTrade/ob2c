@@ -19,7 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			// GEWIJZIGD: Link naar promoties toevoegen
 			if ( ! is_product_tag('promotie') ) {
 				$args = array(
-					'stock_status' => 'instock',
+					// Parameter nog niet beschikbaar in WooCommerce 3.0!
+					// 'stock_status' => 'instock',
 					'include' => wc_get_product_ids_on_sale(),
 				);
 				$sale_products = wc_get_products( $args );

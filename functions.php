@@ -5119,12 +5119,13 @@
 
 	function show_conditional_promo_row() {
 		$args = array(
-			'stock_status' => 'instock',
+			// Parameter nog niet beschikbaar in WooCommerce 3.0!
+			// 'stock_status' => 'instock',
 			'include' => wc_get_product_ids_on_sale(),
 		);
 		$sale_products = wc_get_products( $args );
 		if ( count( $sale_products ) > 2 ) {
-			return do_shortcode('[vc_row type="boxed" max_width="1200" content_placement="middle" css=".vc_custom_1587019432822{padding-bottom: 3em !important;}"][vc_column][vc_column_text el_class="ob2c-category-title"]<h2 style="text-align: center;">Promoties</h2>[/vc_column_text][nm_product_slider shortcode="sale_products" per_page="-1" columns="4" orderby="rand" order="DESC" columns_mobile="1" arrows="1"][/vc_column][/vc_row]');
+			return do_shortcode('[vc_column][vc_column_text el_class="ob2c-category-title"]<h2 style="text-align: center;">Promoties</h2>[/vc_column_text][nm_product_slider shortcode="sale_products" per_page="-1" columns="4" orderby="rand" order="DESC" columns_mobile="1" arrows="1"][/vc_column]');
 		} else {
 			return '';
 		}
