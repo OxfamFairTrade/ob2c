@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.5.22
+	Version:		1.5.23
 	Text Domain:	oxfam-webshop
 */
 
@@ -76,7 +76,7 @@ $black: #2c2c2c;
 				text-shadow: 1px 1px 3px black;
 
 				& > span {
-					padding: 1em;
+					padding: 0.5em 1em;
 					position: absolute;
 					left: 0;
 					right: 0;
@@ -96,21 +96,52 @@ $black: #2c2c2c;
 	}
 }
 
-.nm-product-slider .slick-prev i,
-.nm-product-slider .slick-next i {
-	font-size: 60px;
-}
+.nm-product-slider {
+	.slick-dots {
+		padding: 1em;
 
-.nm-product-slider .slick-dots {
-	padding: 0;
-}
+		li.slick-active button {
+			border-color: black;
+		}
+	}
 
-.slick-slider {
-	position: relative;
-}
+	/* WERKT ENKEL BIJ RECENTE VERSIES VAN SAVOY */
+	.slick-prev i,
+	.slick-next i {
+		font-size: 60px;
+	}
 
-.slick-dots li.slick-active button {
-	border-color: black;
+	/* WERKT ENKEL BIJ OUDE VERSIES VAN SAVOY */
+	.slick-prev,
+	.slick-next {
+		/* Vuile truc om de labels 'Previous' en 'Next' onzichtbaar te maken (ook bij hover!) */
+		color: transparent !important;
+	}
+
+	.slick-prev:before,
+	.slick-next:before {
+		font-family: 'nm-font';
+		content: "\e600";
+		position: absolute;
+		font-size: 100px;
+		top: -50px;
+		right: 0;
+		color: black;
+	}
+	.slick-next:before {
+		content: "\e601";
+		left: 0;
+	}
+
+	.slick-slider:hover {
+		.slick-prev {
+			left: 0;
+		}
+
+		.slick-next {
+			right: 0;
+		}
+	}
 }
 
 .ob2c-category-title.wpb_content_element {
@@ -126,7 +157,7 @@ $black: #2c2c2c;
 @media (min-width: 1200px) {
 	/* Fix voor verspringen van rijhoogte door nog niet ingeladen packshots achteraan de slider */
 	.ob2c-home-row .nm-shop-loop-thumbnail img {
-		max-height: 274px;
+		// max-height: 274px;
 	}
 }
 	
@@ -788,7 +819,7 @@ tr.shipping .woocommerce-Price-amount {
 		color: white;
 		background-color: $see-through-red;
 		margin-bottom: 2em;
-		transform: skewX(-3deg);
+		border-radius: 3px;
 	}
 }
 

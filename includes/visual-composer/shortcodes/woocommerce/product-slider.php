@@ -71,8 +71,7 @@
 		}
 
 		if ( $arrows !== '' ) {
-			// Voorlopig uitschakelen, wordt niet mooi weergegeven in LIVE
-			$data_settings .= ' data-arrows="false"';
+			$data_settings .= ' data-arrows="true"';
 		}
 
 		$shortcode_string = '[' . $shortcode . ' per_page="' . intval( $per_page ) . '" columns="' . $columns_escaped . '" orderby="' . $orderby . '" order="' . $order . '"' . $category_param . ']';
