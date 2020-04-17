@@ -720,6 +720,14 @@
 	// Voer de sortering uit tijdens het bekijken van orders in de admin (voor alle zekerheid NA filteren uitvoeren)
 	add_action( 'pre_get_posts', 'sort_orders_on_custom_column', 20 );
 	
+	// Maak bestellingen vindbaar o.b.v. ordernummer
+	add_filter( 'woocommerce_shop_order_search_fields', 'add_order_number_to_admin_search' );
+
+	function add_order_number_to_admin_search( $fields ) {
+		$fields[] = '_order_number_formatted';
+		return $fields;
+	}
+
 	function sort_orders_on_custom_column( $query ) {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and $query->query['post_type'] === 'shop_order' ) {
