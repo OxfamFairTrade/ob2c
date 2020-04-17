@@ -54,33 +54,35 @@ $black: #2c2c2c;
 		bottom: 0;
 	}
 
-	.nm-feature,
-	.nm-feature .wpb_text_column p a {
+	.nm-feature {
 		position: absolute;
 		left: 0;
 		right: 0;
 		top: 0;
 		bottom: 0;
-	}
 
-	.nm-feature {
 		.wpb_text_column {
 			margin: 0;
 
-			span.fix-to-bottom {
+			& > p > a {
 				position: absolute;
-				padding: 1em;
 				left: 0;
 				right: 0;
+				top: 0;
 				bottom: 0;
-			}
-		}
+				color: white;
+				font-size: 1.4em;
+				line-height: 1.2em;
+				text-shadow: 1px 1px 3px black;
 
-		a {
-			color: white;
-			font-size: 1.4em;
-			line-height: 1.2em;
-			text-shadow: 1px 1px 3px black;
+				& > span {
+					padding: 1em;
+					position: absolute;
+					left: 0;
+					right: 0;
+					bottom: 0;
+				}
+			}
 		}
 
 		.vc_btn.vc_btn_link {
@@ -148,10 +150,15 @@ $black: #2c2c2c;
 				padding: 1em;
 			}
 
-			.wpb_text_column p a {
+			.wpb_text_column > p > a {
 				position: initial;
 				// color: black;
 				text-shadow: none;
+
+				& > span {
+					position: initial;
+					display: block;
+				}
 			}
 		}
 	}
