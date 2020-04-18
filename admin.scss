@@ -3,9 +3,15 @@
 	Author:			Frederik Neirynck
 	Author URI:		https://www.oxfamfairtrade.be
 	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
-	Version:		1.2.4
+	Version:		1.2.5
 	Text Domain:	oxfam-admin
 */
+
+// Veilige marges voor iPhone 10+
+#wpbody {
+	margin-left: env(safe-area-inset-left);
+	margin-right: env(safe-area-inset-right);
+}
 
 #woocommerce_dashboard_status .wc_status_list {
 	li.claimed-orders a::before {

@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.5.23
+	Version:		1.6
 	Text Domain:	oxfam-webshop
 */
 
@@ -496,36 +496,40 @@ body.portal.home .general-store-notice {
 
 .nm-shop-header {
 	// Verminder witruimte  
-	padding: 2em 0;
-	margin-bottom: 3em;
+	padding-top: 2em;
+	padding-bottom: 3em;
+
+	@media (max-width: 991px) {
+		// padding-top: 2em;
+		// padding-bottom: 2em;
+	}
 
 	// Voeg icoontjes toe aan hoofdcategorieën in balk 
 	.nm-shop-menu {
+		// Mobiele weergave
 		ul.nm-shop-filter-menu {
 			li.nm-shop-categories-btn-wrap > a:after {
-				content: '(tik om te tonen)';
+				content: '(tik om te openen)';
 				display: inline-block;
-				font-size: 90%;
+				font-size: 80%;
 				padding-left: 0.5em;
 			}
 
 			li.nm-shop-categories-btn-wrap.active > a:after {
-				content: '(tik om te verbergen)';
+				// Na het aanklikken van een categorie klapt het blok dicht maar blijft de 'active'-klasse staan, bij tappen gelukkig niet
+				content: '(tik om te sluiten)';
 			}
 		}
 		
 		ul.nm-shop-categories {
 			li {
-				margin: 0 1em;
-				padding: 0.5 0;
+				margin: 0;
+				padding: 0.5em;
 
 				& > a {
-					// Nodig voor autoscroll
-					margin-top: 1em;
-
 					&:before {
 						content: '';
-						margin: 1em;
+						margin: 0.25em 0.75em 0.25em 0;
 						width: 2em;
 						height: 2em;
 						display: inline-block;
@@ -562,8 +566,20 @@ body.portal.home .general-store-notice {
 			}
 
 			ul.nm-shop-sub-categories {
-				li > a:before {
-					display: none;
+				li {
+					padding: 0.5em 1em;
+
+					&.current-cat a {
+						padding-bottom: 0;
+					}
+				}
+
+				& > a {
+					margin: 0;
+
+					&:before {
+						display: none;
+					}
 				}
 			}
 		}
