@@ -28,7 +28,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		?>
 	</h3>
 	<?php
-		// GEWIJZIGD: Toon best sellers
-		echo '<p>&nbsp;</p><h3>Mogen we je wat inspiratie geven? Dit kochten andere klanten vaak:</h3><br/>'.do_shortcode('[best_selling_products per_page="8" columns="4" orderby="rand"]');
+		if ( get_search_query() !== '' ) {
+			// GEWIJZIGD: Toon best sellers
+			echo '<p>&nbsp;</p><h3>Mogen we je wat inspiratie geven? Dit kochten andere klanten vaak:</h3><p>&nbsp;</p>'.do_shortcode('[best_selling_products per_page="8" columns="4" orderby="rand"]');
+		}
 	?>
 </div>

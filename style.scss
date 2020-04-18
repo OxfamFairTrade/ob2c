@@ -196,71 +196,6 @@ $black: #2c2c2c;
 	}
 }
 
-.nm-shop-menu {
-	ul.nm-shop-filter-menu {
-		li.nm-shop-categories-btn-wrap > a:after {
-			content: '(tik om te tonen)';
-			display: inline-block;
-			font-size: 90%;
-			padding-left: 0.5em;
-		}
-
-		li.nm-shop-categories-btn-wrap.active > a:after {
-			content: '(tik om te verbergen)';
-		}
-	}
-	
-	ul.nm-shop-categories {
-		li {
-			margin: 0 1em;
-
-			& > span {
-				display: none;
-			}
-
-			& > a {
-				margin: 0;
-
-				&:before {
-					content: '';
-					position: relative;
-					top: 1em;
-					margin-right: 0.5em;
-					width: 3em;
-					height: 2.5em;
-					display: inline-block;
-					background-size: contain;
-					background-repeat: no-repeat;
-				}
-
-				&.koffie-thee:before {
-					background-image: url('images/cat-koffie-thee.svg');
-				}
-
-				&.wijn:before {
-					background-image: url('images/cat-wijn.svg');
-				}
-
-				&.snacks-drinks:before {
-					background-image: url('images/cat-snacks-drinks.svg');
-				}
-
-				&.ontbijt:before {
-					background-image: url('images/cat-ontbijt.svg');
-				}
-
-				&.wereldkeuken:before {
-					background-image: url('images/cat-wereldkeuken.svg');
-				}
-
-				&.cadeaubonnen:before {
-					background-image: url('images/cat-cadeaubonnen.svg');
-				}
-			}
-		}
-	}
-}
-
 
 
 /************/
@@ -559,22 +494,79 @@ body.portal.home .general-store-notice {
 	font-size: 0.9em;
 }
 
-/* Experiment met aangepast categoriebalk */
-.nm-shop-headerDISABLE {
-	background-color: $pale-blue;
+.nm-shop-header {
+	// Verminder witruimte  
 	padding: 2em 0;
 	margin-bottom: 3em;
 
-	.nm-shop-menu ul li a {
-		color: white;
+	// Voeg icoontjes toe aan hoofdcategorieën in balk 
+	.nm-shop-menu {
+		ul.nm-shop-filter-menu {
+			li.nm-shop-categories-btn-wrap > a:after {
+				content: '(tik om te tonen)';
+				display: inline-block;
+				font-size: 90%;
+				padding-left: 0.5em;
+			}
 
-		&:hover {
-			color: black;
+			li.nm-shop-categories-btn-wrap.active > a:after {
+				content: '(tik om te verbergen)';
+			}
 		}
-	}
+		
+		ul.nm-shop-categories {
+			li {
+				margin: 0 1em;
+				padding: 0.5 0;
 
-	.nm-shop-menu ul li.current-cat a {
-		color: white;
+				& > a {
+					// Nodig voor autoscroll
+					margin-top: 1em;
+
+					&:before {
+						content: '';
+						margin: 1em;
+						width: 2em;
+						height: 2em;
+						display: inline-block;
+						background-size: contain;
+						background-position: center center;
+						background-repeat: no-repeat;
+						vertical-align: middle;
+					}
+
+					&.koffie-thee:before {
+						background-image: url('images/cat-koffie-thee.svg');
+					}
+
+					&.wijn:before {
+						background-image: url('images/cat-wijn.svg');
+					}
+
+					&.snacks-drinks:before {
+						background-image: url('images/cat-snacks-drinks.svg');
+					}
+
+					&.ontbijt:before {
+						background-image: url('images/cat-ontbijt.svg');
+					}
+
+					&.wereldkeuken:before {
+						background-image: url('images/cat-wereldkeuken.svg');
+					}
+
+					&.cadeaubonnen:before {
+						background-image: url('images/cat-cadeaubonnen.svg');
+					}
+				}
+			}
+
+			ul.nm-shop-sub-categories {
+				li > a:before {
+					display: none;
+				}
+			}
+		}
 	}
 }
 
