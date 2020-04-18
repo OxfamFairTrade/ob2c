@@ -80,7 +80,8 @@
 	 */
 	if ( ! function_exists( 'nm_category_menu_create_list' ) ) {
         function nm_category_menu_create_list( $category, $current_cat_id, $categories_menu_divider, $current_top_cat_id = null ) {
-            $output = '<li class="cat-item-' . $category->term_id;
+            // GEWIJZIGD: Voeg ook categorieslug toe als klasse (voor icoontjes)
+            $output = '<li class="cat-item-' . $category->term_id . ' ' . $category->slug;
             
             // Is this the current category?
             if ( $current_cat_id == $category->term_id ) {

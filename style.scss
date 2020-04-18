@@ -196,6 +196,48 @@ $black: #2c2c2c;
 	}
 }
 
+.nm-shop-menu {
+	ul.nm-shop-filter-menu {
+		li.nm-shop-categories-btn-wrap > a:after {
+			content: '(tik om te openen)';
+			display: block;
+		}
+	}
+	
+	ul.nm-shop-categories {
+		li:before {
+			content: '';
+			position: absolute;
+			width: 1em;
+			height: 1em;
+		}
+
+		li.koffie-thee:before {
+			background-image: url('images/cat-koffie-thee.svg');
+		}
+
+		li.wijn:before {
+			background-image: url('images/cat-wijn.svg');
+		}
+
+		li.snacks-drinks:before {
+			background-image: url('images/cat-snacks-drinks.svg');
+		}
+
+		li.ontbijt:before {
+			background-image: url('images/cat-ontbijt.svg');
+		}
+
+		li.wereldkeuken:before {
+			background-image: url('images/cat-wereldkeuken.svg');
+		}
+
+		li.cadeaubonnen:before {
+			background-image: url('images/cat-cadeaubonnen.svg');
+		}
+	}
+}
+
 
 
 /************/
