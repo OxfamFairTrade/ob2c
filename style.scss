@@ -33,6 +33,15 @@ $black: #2c2c2c;
 
 
 
+// Veilige marges voor iPhone 10+
+@supports( padding: max(0px) ) {
+	.nm-row {
+		// Trucje om de SCSS-compiler niet te doen vastlopen
+		padding-left: unquote('max( 15px, env(safe-area-inset-left) )');
+		padding-right: unquote('max( 15px, env(safe-area-inset-right) )');
+	}
+}
+
 .ob2c-home-row > .nm_column:first-child {
 	position: relative;
 	left: -2em;
@@ -526,7 +535,8 @@ body.portal.home .general-store-notice {
 				margin: 0;
 				padding: 0.5em;
 
-				& > a {
+				// Niet toepassen op niet-categorielinks!
+				& > a[class^='cat-item-'] {
 					&:before {
 						content: '';
 						margin: 0.25em 0.75em 0.25em 0;

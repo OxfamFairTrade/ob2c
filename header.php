@@ -63,33 +63,33 @@
 <!DOCTYPE html>
 
 <html <?php language_attributes(); ?> class="<?php echo esc_attr( $sticky_footer_class ); ?>">
-	
-    <head>
-        <meta charset="<?php bloginfo( 'charset' ); ?>">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        
-        <link rel="profile" href="http://gmpg.org/xfn/11">
+
+	<head>
+		<meta charset="<?php bloginfo( 'charset' ); ?>">
+		<!-- iPhone 10+ -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+		<link rel="profile" href="http://gmpg.org/xfn/11">
 		<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
-        
-        <?php if ( $custom_favicon ) : ?>
-		<!-- Favicon -->
-		<link href="<?php echo esc_url( $favicon_url ); ?>" rel="shortcut icon">
-        <?php endif; ?>
-        
-        <!-- GEWIJZIGD: Handmatig toevoegen van Open Graph-tags op homepage (Jetpack uitgeschakeld) -->
+
+		<?php if ( $custom_favicon ) : ?>
+			<link href="<?php echo esc_url( $favicon_url ); ?>" rel="shortcut icon">
+		<?php endif; ?>
+
+		<!-- GEWIJZIGD: Handmatig toevoegen van Open Graph-tags op homepage (Jetpack uitgeschakeld) -->
 		<?php if ( is_front_page() ) : ?>
 			<meta property="og:title" content="<?php echo get_bloginfo('title'); ?>">
-        	<meta property="og:url" content="<?php echo get_bloginfo('url') . "/"; ?>">
-            <meta property="og:description" content="Shop online in jouw wereldwinkel. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze plaatselijke vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten van het land!">
-            <?php if ( does_home_delivery() ) : ?>
-        	   <meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook.png">
-            <?php else : ?>
-               <meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook-afhaling.png">
-            <?php endif; ?>
-        <?php endif; ?>
-        	
-		<?php wp_head(); ?>
-    </head>
+			<meta property="og:url" content="<?php echo get_bloginfo('url') . "/"; ?>">
+			<meta property="og:description" content="Shop online in jouw wereldwinkel. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze plaatselijke vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten van het land!">
+			<?php if ( does_home_delivery() ) : ?>
+				<meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook.png">
+				<?php else : ?>
+					<meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook-afhaling.png">
+				<?php endif; ?>
+			<?php endif; ?>
+
+			<?php wp_head(); ?>
+	</head>
     
 	<body <?php body_class( esc_attr( $nm_body_class ) ); ?>>
         
@@ -150,43 +150,43 @@
                 <!-- /top bar -->
                 <?php endif; ?>
                             
-                <div class="nm-page-wrap-inner">
-                
-                    <div id="nm-header-placeholder" class="nm-header-placeholder"></div>
-                            
-                    <?php
-                        // Include header layout
-                        if ( $nm_globals['header_layout'] == 'centered' ) {
-                            get_header( 'centered' );
-                        } else {
-                            get_header( 'default' );
-                        }
+				<div class="nm-page-wrap-inner">
 
-                        if ( is_main_site() or does_home_delivery() ) {
-                            echo '<div class="general-store-notice"><p class="free-shipping">';
-                            if ( get_current_blog_id() === 9 or get_current_blog_id() === 15 ) {
-                                // Uitzondering voor De Pinte en Gentbrugge
-                                echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
-                            } elseif ( get_current_blog_id() === 27 ) {
-                                // Uitzondering voor Hasselt
-                                echo '<b><u>Gratis</u></b> thuislevering in Hasselt! (elders vanaf 50 euro)</p>';
-                            } elseif ( get_current_blog_id() === 37 ) {
-                                // Uitzondering voor Wuustwezel
-                                echo 'Nu met <b><u>gratis</u></b> verzending vanaf 30 euro!';
-                            } elseif ( get_current_blog_id() === 38 ) {
-                                // Uitzondering voor Zele
-                                echo '<b><u>Gratis</u></b> thuislevering in Zele en Berlare! (elders vanaf 50 euro)</p>';
-                            } else {
-                                echo 'Nu met <b><u>gratis</u></b> verzending vanaf 50 euro!';
-                            }
-                            echo '</p></div>';
-                        } elseif ( ! is_main_site() and ! does_home_delivery() ) {
-                            if ( get_current_blog_id() === 29 ) {
-                                // Uitzondering voor Roeselare
-                                echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel <b><u>enkel afhalen in de winkel</u></b>, en dat op vrijdagen tussen 13u30 en 18u.</p></div>';
-                            } elseif ( get_current_blog_id() !== 12 ) {
-                                // Uitzondering voor Dilbeek
-                                echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus gebeuren alle afhalingen <b><u>op afspraak</u></b>.<br/>We contacteren je na het plaatsen van je bestelling!</p></div>';
-                            }
-                        }
-                    ?>
+					<div id="nm-header-placeholder" class="nm-header-placeholder"></div>
+
+					<?php
+						// Include header layout
+						if ( $nm_globals['header_layout'] == 'centered' ) {
+							get_header( 'centered' );
+						} else {
+							get_header( 'default' );
+						}
+
+						if ( is_main_site() or does_home_delivery() ) {
+							echo '<div class="general-store-notice"><p class="free-shipping">';
+							if ( get_current_blog_id() === 9 or get_current_blog_id() === 15 ) {
+								// Uitzondering voor De Pinte en Gentbrugge
+								echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
+							} elseif ( get_current_blog_id() === 27 ) {
+								// Uitzondering voor Hasselt
+								echo '<b><u>Gratis</u></b> thuislevering in Hasselt! (elders vanaf 50 euro)</p>';
+							} elseif ( get_current_blog_id() === 37 ) {
+								// Uitzondering voor Wuustwezel
+								echo 'Nu met <b><u>gratis</u></b> verzending vanaf 30 euro!';
+							} elseif ( get_current_blog_id() === 38 ) {
+								// Uitzondering voor Zele
+								echo '<b><u>Gratis</u></b> thuislevering in Zele en Berlare! (elders vanaf 50 euro)</p>';
+							} else {
+								echo 'Nu met <b><u>gratis</u></b> verzending vanaf 50 euro!';
+							}
+							echo '</p></div>';
+						} elseif ( ! is_main_site() and ! does_home_delivery() ) {
+							if ( get_current_blog_id() === 29 ) {
+								// Uitzondering voor Roeselare
+								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel <b><u>enkel afhalen in de winkel</u></b>, en dat op vrijdagen tussen 13u30 en 18u.</p></div>';
+							} elseif ( get_current_blog_id() !== 12 ) {
+								// Uitzondering voor Dilbeek
+								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus gebeuren alle afhalingen <b><u>op afspraak</u></b>.<br/>We contacteren je na het plaatsen van je bestelling!</p></div>';
+							}
+						}
+					?>
