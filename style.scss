@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.6.1
+	Version:		1.6.2
 	Text Domain:	oxfam-webshop
 */
 
@@ -92,7 +92,8 @@ $black: #2c2c2c;
 					bottom: 0;
 
 					@media (max-width: 1199px) {
-						position: initial;
+						// Super belangrijk, anders blijft de button absoluut gepositioneerd en krijgt ze geen hoogte
+						position: initial !important;
 						display: block;
 					}
 				}
@@ -532,11 +533,41 @@ body.portal.home .general-store-notice {
 		
 		ul.nm-shop-categories {
 			li {
-				margin: 0;
-				padding: 0.5em;
+				margin: 0 0.5em;
+				padding: 0.5em 0;
+				border: 2px solid transparent;
+				max-width: 90%;
+
+				&:hover {
+					border-bottom-color: black;
+				}
+
+				&.current-cat,
+				&.current-parent-cat {
+					border-color: black;
+
+					& > a {
+						color: black;
+					}
+				}
+
+				// Fix voor 'Alles'-knop
+				&:first-child > a {
+					margin: 0 0.5em;
+
+					&:hover {
+						color: initial;
+					}
+				}
 
 				// Niet toepassen op niet-categorielinks!
 				&[class^='cat-item-'] > a {
+					margin: 0 0.5em;
+
+					&:hover {
+						color: initial;
+					}
+
 					&:before {
 						content: '';
 						margin: 0.25em 0.75em 0.25em 0;
@@ -579,16 +610,20 @@ body.portal.home .general-store-notice {
 				li {
 					padding: 0.5em 1em;
 
+					&.current-cat {
+						border-color: transparent;
+					}
+
+					&[class^='cat-item-'] > a {
+						margin: 0;
+
+						&:before {
+							display: none;
+						}
+					}
+
 					&.current-cat a {
 						padding-bottom: 0;
-					}
-				}
-
-				& > a {
-					margin: 0;
-
-					&:before {
-						display: none;
 					}
 				}
 			}
@@ -902,7 +937,6 @@ tr.shipping .woocommerce-Price-amount {
 		color: white;
 		background-color: $see-through-red;
 		margin-bottom: 2em;
-		border-radius: 3px;
 	}
 }
 
