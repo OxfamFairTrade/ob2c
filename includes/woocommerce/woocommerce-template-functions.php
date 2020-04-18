@@ -80,8 +80,7 @@
 	 */
 	if ( ! function_exists( 'nm_category_menu_create_list' ) ) {
         function nm_category_menu_create_list( $category, $current_cat_id, $categories_menu_divider, $current_top_cat_id = null ) {
-            // GEWIJZIGD: Voeg ook categorieslug toe als klasse (voor icoontjes)
-            $output = '<li class="cat-item-' . $category->term_id . ' ' . $category->slug;
+            $output = '<li class="cat-item-' . $category->term_id;
             
             // Is this the current category?
             if ( $current_cat_id == $category->term_id ) {
@@ -92,7 +91,8 @@
                 $output .= ' current-parent-cat';
             }
 
-            $output .=  '">' . $categories_menu_divider . '<a href="' . esc_url( get_term_link( (int) $category->term_id, 'product_cat' ) ) . '">' . esc_attr( $category->name ) . '</a></li>';
+            // GEWIJZIGD: Verwijder divider en voeg categorieslug toe als klasse op link (voor icoontjes)
+            $output .=  '"><a href="' . esc_url( get_term_link( (int) $category->term_id, 'product_cat' ) ) . '" class="' . $category->slug . '">' . esc_attr( $category->name ) . '</a></li>';
 
             return $output;
         }

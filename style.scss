@@ -198,55 +198,65 @@ $black: #2c2c2c;
 
 .nm-shop-menu {
 	ul.nm-shop-filter-menu {
-		li.nm-shop-categories-btn-wrap:not(.active) > a:after {
-			content: '\2193 (tik om te openen)';
+		li.nm-shop-categories-btn-wrap > a:after {
+			content: '(tik om te tonen)';
 			display: inline-block;
+			font-size: 90%;
+			padding-left: 0.5em;
 		}
 
 		li.nm-shop-categories-btn-wrap.active > a:after {
-			content: '\2191 (tik om te sluiten)';
-			display: inline-block;
+			content: '(tik om te verbergen)';
 		}
 	}
 	
 	ul.nm-shop-categories {
-		li > span {
-			display: none;
-		}
-		
-		li:before {
-			content: '';
-			position: relative;
-			top: 50%;
-			width: 1.5em;
-			height: 1.5em;
-			display: inline-block;
-			background-size: contain;
-			background-repeat: no-repeat;
-		}
+		li {
+			margin: 0 1em;
 
-		li.koffie-thee:before {
-			background-image: url('images/cat-koffie-thee.svg');
-		}
+			& > span {
+				display: none;
+			}
 
-		li.wijn:before {
-			background-image: url('images/cat-wijn.svg');
-		}
+			& > a {
+				margin: 0;
 
-		li.snacks-drinks:before {
-			background-image: url('images/cat-snacks-drinks.svg');
-		}
+				&:before {
+					content: '';
+					position: relative;
+					top: 1em;
+					margin-right: 0.5em;
+					width: 3em;
+					height: 2.5em;
+					display: inline-block;
+					background-size: contain;
+					background-repeat: no-repeat;
+				}
 
-		li.ontbijt:before {
-			background-image: url('images/cat-ontbijt.svg');
-		}
+				&.koffie-thee:before {
+					background-image: url('images/cat-koffie-thee.svg');
+				}
 
-		li.wereldkeuken:before {
-			background-image: url('images/cat-wereldkeuken.svg');
-		}
+				&.wijn:before {
+					background-image: url('images/cat-wijn.svg');
+				}
 
-		li.cadeaubonnen:before {
-			background-image: url('images/cat-cadeaubonnen.svg');
+				&.snacks-drinks:before {
+					background-image: url('images/cat-snacks-drinks.svg');
+				}
+
+				&.ontbijt:before {
+					background-image: url('images/cat-ontbijt.svg');
+				}
+
+				&.wereldkeuken:before {
+					background-image: url('images/cat-wereldkeuken.svg');
+				}
+
+				&.cadeaubonnen:before {
+					background-image: url('images/cat-cadeaubonnen.svg');
+				}
+			}
 		}
 	}
 }
