@@ -198,18 +198,31 @@ $black: #2c2c2c;
 
 .nm-shop-menu {
 	ul.nm-shop-filter-menu {
-		li.nm-shop-categories-btn-wrap > a:after {
-			content: '(tik om te openen)';
-			display: block;
+		li.nm-shop-categories-btn-wrap:not(.active) > a:after {
+			content: '\2193 (tik om te openen)';
+			display: inline-block;
+		}
+
+		li.nm-shop-categories-btn-wrap.active > a:after {
+			content: '\2191 (tik om te sluiten)';
+			display: inline-block;
 		}
 	}
 	
 	ul.nm-shop-categories {
+		li > span {
+			display: none;
+		}
+		
 		li:before {
 			content: '';
-			position: absolute;
-			width: 1em;
-			height: 1em;
+			position: relative;
+			top: 50%;
+			width: 1.5em;
+			height: 1.5em;
+			display: inline-block;
+			background-size: contain;
+			background-repeat: no-repeat;
 		}
 
 		li.koffie-thee:before {
