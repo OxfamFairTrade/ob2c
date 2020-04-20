@@ -181,9 +181,12 @@
 							}
 							echo '</p></div>';
 						} elseif ( ! is_main_site() and ! does_home_delivery() ) {
-							if ( get_current_blog_id() === 29 ) {
+							if ( get_current_blog_id() === 26 ) {
+								// Uitzondering voor Brussel
+								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel enkel <b><u>op vrijdag afhalen</u></b> in de winkel.</p></div>';
+							} elseif ( get_current_blog_id() === 29 ) {
 								// Uitzondering voor Roeselare
-								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel <b><u>enkel afhalen in de winkel</u></b>, en dat op vrijdagen tussen 13u30 en 18u.</p></div>';
+								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel enkel <b><u>op vrijdag tussen 13u30 en 18u afhalen</u></b> in de winkel.</p></div>';
 							} elseif ( get_current_blog_id() !== 12 ) {
 								// Uitzondering voor Dilbeek
 								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus gebeuren alle afhalingen <b><u>op afspraak</u></b>.<br/>We contacteren je na het plaatsen van je bestelling!</p></div>';
