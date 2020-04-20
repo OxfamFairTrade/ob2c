@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.6.4
+	Version:		1.6.5
 	Text Domain:	oxfam-webshop
 */
 
@@ -135,7 +135,7 @@ $black: #2c2c2c;
 		position: absolute;
 		font-size: 100px;
 		top: -50px;
-		right: 0;
+		right: 0px;
 		color: black;
 	}
 	.slick-next:before {
@@ -145,11 +145,11 @@ $black: #2c2c2c;
 
 	.slick-slider:hover {
 		.slick-prev {
-			left: 0;
+			left: 10px;
 		}
 
 		.slick-next {
-			right: 0;
+			right: 10px;
 		}
 	}
 }
@@ -473,7 +473,6 @@ body.portal.home {
 		font-size: 1.2em;
 		line-height: 2em;
 		text-align: center;
-		max-width: 750px;
 		margin: 0 auto;
 		position: relative;
 
@@ -1084,20 +1083,20 @@ li.product.product_tag-promotie::after {
 	@include banner( $see-through-red );
 	content: "Promo";
 }
-li.product.product_tag-promotie.one_plus_one::after {
+li.product.product_tag-promotie.one-plus-one::after {
 	content: "Promo 1+1 gratis";
 }
-li.product.product_tag-promotie.fifty_percent_off::after {
+li.product.product_tag-promotie.fifty-percent-off::after {
 	content: "Promo 2de -50%";
 }
 div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
 	@include banner( $see-through-red, 95% );
 	content: "In promotie";
 }
-div.nm-single-product.product_tag-promotie.one_plus_one figure.woocommerce-product-gallery__wrapper::after {
+div.nm-single-product.product_tag-promotie.one-plus-one figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: 1+1 gratis";
 }
-div.nm-single-product.product_tag-promotie.fifty_percent_off figure.woocommerce-product-gallery__wrapper::after {
+div.nm-single-product.product_tag-promotie.fifty-percent-off figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: 2de stuk aan -50%";
 }
 

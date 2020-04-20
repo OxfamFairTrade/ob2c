@@ -266,6 +266,7 @@
 	}
 
 	// Voeg klasse toe indien recent product
+	// MIGREER NAAR add_filter( 'woocommerce_post_class', $classes, $product ) VANAF WC 3.6+
 	add_filter( 'post_class', 'add_recent_product_class' );
 
 	function add_recent_product_class( $classes ) {
@@ -275,20 +276,18 @@
 			$classes[] = 'newbee';
 		}
 		
-		// Label producten met 1+1 promotie
-		$one_plus_one_products = array( '24531', '24634', '24647', '24648', '25724', '25726' );
+		// Label producten met 1+1 / 2de -50% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
+		// Zou eventueel ook in template sale-flash.php kunnen, maar dit is - ondanks de omweg via product-ID - toch handiger
+		$one_plus_one_products = array( '24634', '24647', '24648', '24531', '25724', '25726', '24302', '24547', '25310' );
 		foreach ( $one_plus_one_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
-				$classes[] = 'one_plus_one';
+				$classes[] = 'one-plus-one';
 			}	
 		}
-		
-		// Label producten met 2de -50% promotie
 		$fifty_percent_off_second_products = array( '20180', '20181', '20182' );
 		foreach ( $fifty_percent_off_second_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
-				// Zou eventueel ook via template sale-flash.php kunnen maar dit blijkt toch handiger
-				$classes[] = 'fifty_percent_off';
+				$classes[] = 'fifty-percent-off';
 			}
 		}
 		
@@ -299,7 +298,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.6.4' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.6.5' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
