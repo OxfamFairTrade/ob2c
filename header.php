@@ -66,8 +66,8 @@
 
 	<head>
 		<meta charset="<?php bloginfo( 'charset' ); ?>">
-		<!-- GEWIJZIGD: Support voor iPhone 10+ -->
-		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+		<!-- GEWIJZIGD: Verhinder per ongelijk inzoomen en support voor iPhone 10+ -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
 		<link rel="profile" href="http://gmpg.org/xfn/11">
 		<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">

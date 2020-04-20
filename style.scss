@@ -466,14 +466,14 @@ body.portal.home {
 }
 
 .general-store-notice {
-	padding: 1em;
+	padding: 0.5em;
 	width: 100%;
 	color: white;
 	background-color: $pale-blue;
 
 	p {
 		font-size: 1.2em;
-		line-height: 1em;
+		line-height: 2em;
 		text-align: center;
 		max-width: 750px;
 		margin: 0 auto;
@@ -488,8 +488,7 @@ body.portal.home {
 			width: 2em;
 			height: 2em;
 			margin-left: 0.5em;
-			margin-top: -0.5em;
-			position: absolute;
+			vertical-align: middle;
 		}
 	}
 }
@@ -534,22 +533,11 @@ body.portal.home .general-store-notice {
 		ul.nm-shop-categories {
 			li {
 				margin: 0 0.5em;
-				padding: 0.5em 0;
-				border: 2px solid transparent;
+				// Fix voor het schuin afsnijden van border-bottom (geen border-left en border-right, maar padding om verschuiven te voorkomen)
+				padding: 0.5em 2px;
+				border-top: 2px solid transparent;
+				border-bottom: 2px solid transparent;
 				max-width: 90%;
-
-				&:hover {
-					border-bottom-color: black;
-				}
-
-				&.current-cat,
-				&.current-parent-cat {
-					border-color: black;
-
-					& > a {
-						color: black;
-					}
-				}
 
 				// Fix voor 'Alles'-knop
 				&:first-child > a {
@@ -560,17 +548,21 @@ body.portal.home .general-store-notice {
 					}
 				}
 
+				&:hover {
+					border-bottom-color: black;
+
+					& > a {
+						color: black !important;
+					}
+				}
+
 				// Niet toepassen op niet-categorielinks!
 				&[class^='cat-item-'] > a {
 					margin: 0 0.5em;
 
-					&:hover {
-						color: initial;
-					}
-
 					&:before {
 						content: '';
-						margin: 0.25em 0.75em 0.25em 0;
+						margin: 0.25em 0.5em 0.25em 0;
 						width: 2em;
 						height: 2em;
 						display: inline-block;
@@ -604,15 +596,24 @@ body.portal.home .general-store-notice {
 						background-image: url('images/cat-cadeaubonnen.svg');
 					}
 				}
+
+				&.current-cat,
+				&.current-parent-cat {
+					border-left: 2px solid;
+					border-right: 2px solid;
+					padding-left: 0;
+					padding-right: 0;
+					border-color: black;
+
+					& > a {
+						color: black;
+					}
+				}
 			}
 
 			ul.nm-shop-sub-categories {
 				li {
 					padding: 0.5em 1em;
-
-					&.current-cat {
-						border-color: transparent;
-					}
 
 					&[class^='cat-item-'] > a {
 						margin: 0;
@@ -622,8 +623,12 @@ body.portal.home .general-store-notice {
 						}
 					}
 
-					&.current-cat a {
-						padding-bottom: 0;
+					&.current-cat {
+						border-color: transparent;
+
+						& > a {
+							padding-bottom: 0;
+						}
 					}
 				}
 			}
