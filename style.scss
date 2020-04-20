@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.6.3
+	Version:		1.6.4
 	Text Domain:	oxfam-webshop
 */
 
@@ -541,65 +541,68 @@ body.portal.home .general-store-notice {
 					display: inline-block;
 				}
 
-				// Fix voor 'Alles'-knop
-				&:first-child > a {
-					margin: 0 0.5em;
-
-					&:hover {
-						color: initial;
-					}
-				}
-
-				// Niet toepassen op niet-categorielinks!
-				&[class^='cat-item-'] > a {
+				& > a {
 					margin: 0 0.5em;
 
 					&:before {
 						content: '';
-						margin: 0.25em 0.5em 0.25em 0;
-						width: 2em;
+						// Margin en breedte bewust nog niet instellen zodat niet-categorielinks er identiek uit zien zonder rare witruimte vooraan!
+						margin: 0;
 						height: 2em;
 						display: inline-block;
 						background-size: contain;
 						background-position: center center;
 						background-repeat: no-repeat;
 						vertical-align: middle;
-						filter: invert(26%) sepia(4%) saturate(20%) hue-rotate(314deg) brightness(89%) contrast(89%);
 					}
 
 					&.koffie-thee:before {
 						background-image: url('images/cat-koffie-thee.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
 					}
 
 					&.wijn:before {
 						background-image: url('images/cat-wijn.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
 					}
 
 					&.snacks-drinks:before {
 						background-image: url('images/cat-snacks-drinks.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
 					}
 
 					&.ontbijt:before {
 						background-image: url('images/cat-ontbijt.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
 					}
 
 					&.wereldkeuken:before {
 						background-image: url('images/cat-wereldkeuken.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
 					}
 
 					&.cadeaubonnen:before {
 						background-image: url('images/cat-cadeaubonnen.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
 					}
 				}
 
-				&:hover {
-					border-bottom-color: $pale-black;
+				&:hover,
+				&:focus,
+				&:active {
+					border-bottom-color: $black;
 
 					& > a {
-						color: $pale-black !important;
+						color: $black !important;
 
 						&:before {
-							filter: none;
+							filter: saturate(0%) brightness(0%);
 						}
 					}
 				}
@@ -610,10 +613,14 @@ body.portal.home .general-store-notice {
 					border-right: 2px solid;
 					padding-left: 0;
 					padding-right: 0;
-					border-color: $pale-black;
+					border-color: $black;
 
 					& > a {
-						color: $pale-black;
+						color: $black;
+
+						&:before {
+							filter: saturate(0%) brightness(0%);
+						}
 					}
 				}
 			}
@@ -622,7 +629,7 @@ body.portal.home .general-store-notice {
 				li {
 					padding: 0.5em 1em;
 
-					&[class^='cat-item-'] > a {
+					& > a {
 						margin: 0;
 
 						&:before {
