@@ -5184,7 +5184,7 @@
 		$output = '';
 		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// Uitzondering voor Dilbeek, Hoogstraten, Leuven en Roeselare
-		if ( $atts['id'] === 'dilbeek' or $atts['id'] === 'hoogstraten' or $atts['id'] === 'leuven' or $atts['id'] === 'roeselare' ) {
+		if ( $atts['id'] === 'dilbeek' or $atts['id'] === 'hoogstraten' or $atts['id'] === 'leuven' or $atts['id'] === 'roeselare' or $atts['id'] === 'brussel' ) {
 			$holidays = array();
 		} else {
 			// Uitzondering voor Borgerhout en Merksem
