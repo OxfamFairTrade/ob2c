@@ -5183,8 +5183,9 @@
 		
 		$output = '';
 		$days = get_office_hours( $atts['node'], $atts['id'] );
-		// Uitzondering voor Dilbeek, Hoogstraten, Leuven en Roeselare
-		if ( $atts['id'] === 'dilbeek' or $atts['id'] === 'hoogstraten' or $atts['id'] === 'leuven' or $atts['id'] === 'roeselare' or $atts['id'] === 'brussel' ) {
+		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
+		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brussel' );
+		if ( in_array( $atts['id'], $exceptions ) ) {
 			$holidays = array();
 		} else {
 			// Uitzondering voor Borgerhout en Merksem
