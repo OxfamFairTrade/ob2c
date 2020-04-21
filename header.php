@@ -66,7 +66,7 @@
 
 	<head>
 		<meta charset="<?php bloginfo( 'charset' ); ?>">
-		<!-- GEWIJZIGD: Verhinder per ongelijk inzoomen en support voor iPhone 10+ -->
+		<!-- GEWIJZIGD: Verhinder per ongeluk inzoomen en support voor iPhone 10+ -->
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
 		<link rel="profile" href="http://gmpg.org/xfn/11">
@@ -76,19 +76,29 @@
 			<link href="<?php echo esc_url( $favicon_url ); ?>" rel="shortcut icon">
 		<?php endif; ?>
 
-		<!-- GEWIJZIGD: Handmatig toevoegen van Open Graph-tags op homepage (Jetpack uitgeschakeld) -->
+		<!-- GEWIJZIGD: Open Graph-tags meta descriptions toevoegen op belangrijke pagina's -->
 		<?php if ( is_front_page() ) : ?>
 			<meta property="og:title" content="<?php echo get_bloginfo('title'); ?>">
 			<meta property="og:url" content="<?php echo get_bloginfo('url') . "/"; ?>">
 			<meta property="og:description" content="Shop online in jouw wereldwinkel. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze plaatselijke vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten van het land!">
 			<?php if ( does_home_delivery() ) : ?>
 				<meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook.png">
-				<?php else : ?>
-					<meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook-afhaling.png">
-				<?php endif; ?>
+			<?php else : ?>
+				<meta property="og:image" content="https://shop.oxfamwereldwinkels.be/wp-content/uploads/webshop-2020-facebook-afhaling.png">
 			<?php endif; ?>
+		<?php endif; ?>
 
-			<?php wp_head(); ?>
+		<?php if ( is_main_site() ) : ?>
+			<meta name="description" content="Shop online in jouw wereldwinkel. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze plaatselijke vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten van het land!">
+		<?php else : ?>
+			<?php if ( is_front_page() ) : ?>
+				<meta name="description" content="Shop online bij <?php get_shop_name(); ?>. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze plaatselijke vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten in jouw buurt!">
+			<?php elseif ( is_product_category( array( 'koffie', 'gemalen' ) ) ) : ?>
+				<meta name="description" content="Ontdek de grootste keuze aan fairtradekoffie in jouw buurt! Bestel online bij <?php get_shop_name(); ?> en wij zetten je boodschappen klaar. Oxfam-koffie: een opkikker voor jou én de koffieboer.">
+			<?php endif; ?>
+		<?php endif; ?>
+
+		<?php wp_head(); ?>
 	</head>
     
 	<body <?php body_class( esc_attr( $nm_body_class ) ); ?>>
