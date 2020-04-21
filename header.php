@@ -93,7 +93,7 @@
 		<?php else : ?>
 			<?php if ( is_front_page() ) : ?>
 				<meta name="description" content="Shop online bij <?php echo get_company_name(); ?>. Op je gemak. Wanneer het jou past. Jij kiest en betaalt online, onze vrijwilligers zetten je boodschappen klaar. De grootste keuze aan eerlijke voedingsproducten in jouw buurt!">
-			<?php elseif ( is_product_category( array( 'koffie', 'gemalen' ) ) ) : ?>
+			<?php elseif ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'pads', 'capsules', 'instant' ) ) ) : ?>
 				<meta name="description" content="Ontdek de grootste keuze aan fairtradekoffie in jouw buurt! Bestel online bij <?php echo get_company_name(); ?> en wij zetten je boodschappen klaar. Oxfam-koffie: een opkikker voor jou én de koffieboer.">
 			<?php endif; ?>
 		<?php endif; ?>
