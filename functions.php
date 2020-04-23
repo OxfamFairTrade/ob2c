@@ -725,7 +725,8 @@
 
 	function ob2c_add_starting_point_to_google_maps( $url, $order ) {
 		$shop_address = explode( '<br/>', get_company_address() );
-		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( implode( ', ', $shop_address ) ), str_replace( '&z=16', '', $url ) );
+		// Zet locatielink om in routelink, voeg landencode en eindslash toe en verwijder fixed zoomniveau
+		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( implode( ', ', $shop_address ) ) . ',+BE/', str_replace( '&z=16', '', $url ) );
 	}
 
 	// Maak bestellingen vindbaar o.b.v. ordernummer en behandelende winkel
