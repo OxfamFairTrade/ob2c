@@ -724,9 +724,14 @@
 	}
 
 	function ob2c_add_starting_point_to_google_maps( $url, $order ) {
-		$shop_address = explode( '<br/>', get_company_address() );
-		// Zet locatielink om in routelink, voeg landencode en eindslash toe en verwijder fixed zoomniveau
-		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( implode( ', ', $shop_address ) ) . ',+BE/', str_replace( '&z=16', '', $url ) );
+		// Zet locatielink om in routelink, voeg landencode en eindslash toe en vervang fixed zoomniveau door fietsnavigatie
+		// Tip: meerdere stops zijn mogelijk, blijf adressen gewoon chainen met slashes!
+		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( strreplace( '<br/>', ', ', get_company_address() ) ) . ',+BE/', str_replace( '&z=16', '/data=!4m2!4m1!3e1', $url ) );
+
+		// Overige dataparameters
+		// Car 			/data=!4m2!4m1!3e0
+		// Bicycling 	/data=!4m2!4m1!3e1
+		// Walking 		/data=!4m2!4m1!3e2
 	}
 
 	// Maak bestellingen vindbaar o.b.v. ordernummer en behandelende winkel
