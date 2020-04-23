@@ -713,6 +713,7 @@
 	
 	// Zorg ervoor dat links naar Google Maps meteen in het juiste formaat staan
 	add_filter( 'woocommerce_shipping_address_map_url_parts', 'ob2c_shuffle_google_maps_address', 10, 1 );
+	add_filter( 'woocommerce_shipping_address_map_url', 'ob2c_add_starting_point_to_google_maps', 10, 2 );
 
 	function ob2c_shuffle_google_maps_address( $address ) {
 		$address['city'] = $address['postcode'].' '.$address['city'];
@@ -720,6 +721,11 @@
 		unset($address['state']);
 		unset($address['postcode']);
 		return $address;
+	}
+
+	function ob2c_add_starting_point_to_google_maps( $url, $order ) {
+		$shop_address = explode( '<br/>', get_company_address() );
+		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( implode( ', ', $shop_address ) ), str_replace( '&z=16', '', $url ) );
 	}
 
 	// Maak bestellingen vindbaar o.b.v. ordernummer en behandelende winkel
@@ -1081,7 +1087,7 @@
 					switch_to_blog( $site->blog_id );
 					$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
 					if ( $local_product !== false and $local_product->is_in_stock() ) {
-						$shops_instock[] = get_bloginfo('name');
+						$shops_instock[] = get_company_name();
 					}
 					restore_current_blog();
 				}
