@@ -726,7 +726,7 @@
 	function ob2c_add_starting_point_to_google_maps( $url, $order ) {
 		// Zet locatielink om in routelink, voeg landencode en eindslash toe en vervang fixed zoomniveau door fietsnavigatie
 		// Tip: meerdere stops zijn mogelijk, blijf adressen gewoon chainen met slashes!
-		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( strreplace( '<br/>', ', ', get_company_address() ) ) . ',+BE/', str_replace( '&z=16', '/data=!4m2!4m1!3e1', $url ) );
+		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( str_replace( '<br/>', ', ', get_company_address() ) ) . ',+BE/', str_replace( '&z=16', '/data=!4m2!4m1!3e1', $url ) );
 
 		// Overige dataparameters
 		// Car 			/data=!4m2!4m1!3e0
