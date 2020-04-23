@@ -711,6 +711,17 @@
 	// Voer de sortering uit tijdens het bekijken van orders in de admin (voor alle zekerheid NA filteren uitvoeren)
 	add_action( 'pre_get_posts', 'sort_orders_on_custom_column', 20 );
 	
+	// Zorg ervoor dat links naar Google Maps meteen in het juiste formaat staan
+	add_filter( 'woocommerce_shipping_address_map_url_parts', 'ob2c_shuffle_google_maps_address', 10, 1 );
+
+	function ob2c_shuffle_google_maps_address( $address ) {
+		$address['city'] = $address['postcode'].' '.$address['city'];
+		unset($address['address_2']);
+		unset($address['state']);
+		unset($address['postcode']);
+		return $address;
+	}
+
 	// Maak bestellingen vindbaar o.b.v. ordernummer en behandelende winkel
 	add_filter( 'woocommerce_shop_order_search_fields', 'ob2c_add_shop_order_search_fields' );
 
