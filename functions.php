@@ -3028,7 +3028,8 @@
 					}
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline (wordt wegens openingsuren automatisch zaterdagochtend)
-					$timestamp = strtotime( 'next Friday', $from );
+					// TIJDELIJK AANGEPAST NAAR DONDERDAG VOOR FEEST VAN DE ARBEID
+					$timestamp = strtotime( 'next Thursday', $from );
 
 					// Skip check op uitzonderlijke sluitingsdagen
 					return find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
