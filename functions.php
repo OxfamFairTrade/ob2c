@@ -3021,7 +3021,7 @@
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
-				} elseif ( $shop_post_id === 'vorselaar' or $shop_post_id === 'roeselare' ) {
+				} elseif ( $shop_post_id === 'vorselaar' or $shop_post_id === 'roeselare' or $shop_post_id === 'brussel' ) {
 					if ( date_i18n( 'N', $from ) > 4 ) {
 						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
