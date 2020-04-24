@@ -689,8 +689,8 @@
 			} elseif ( $the_order->get_status() === 'cancelled' ) {
 				echo '<i>geannuleerd</i>';
 			} else {
-				if ( $the_order->get_meta( 'claimed_by', true ) ) {
-					echo 'OWW '.trim_and_uppercase( $the_order->get_meta( 'claimed_by', true ) );
+				if ( $the_order->get_meta('claimed_by') !== '' ) {
+					echo 'OWW '.trim_and_uppercase( $the_order->get_meta('claimed_by') );
 				} else {
 					// Reeds verderop in het verwerkingsproces maar geen winkel? Dat zou niet mogen zijn!
 					echo '<i>ERROR</i>';
@@ -724,9 +724,27 @@
 	}
 
 	function ob2c_add_starting_point_to_google_maps( $url, $order ) {
+		// Neem als default de hoofdwinkel
+		$shop_address = get_company_address();
+		
+		if ( $order->get_meta('claimed_by') !== '' ) {
+			if ( $locations = get_option('woocommerce_pickup_locations') ) {
+				foreach ( $locations as $location ) {
+					if ( stristr( $location['shipping_company'], $order->get_meta('claimed_by') ) ) {
+						$parts = explode( 'id=', $location['note'] );
+						if ( isset( $parts[1] ) ) {
+							// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de openingsuren
+							$shop_address = get_company_address( 0, str_replace( ']', '', $parts[1] ) );
+							break;
+						}
+					}
+				}
+			}
+		}
+
 		// Zet locatielink om in routelink, voeg landencode en eindslash toe en vervang fixed zoomniveau door fietsnavigatie
 		// Tip: meerdere stops zijn mogelijk, blijf adressen gewoon chainen met slashes!
-		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( str_replace( '<br/>', ', ', get_company_address() ) ) . ',+BE/', str_replace( '&z=16', '/data=!4m2!4m1!3e1', $url ) );
+		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( str_replace( '<br/>', ', ', $shop_address ) ) . ',+BE/', str_replace( '&z=16', '/data=!4m2!4m1!3e1', $url ) );
 
 		// Overige dataparameters
 		// Car 			/data=!4m2!4m1!3e0
