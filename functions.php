@@ -491,6 +491,15 @@
 		// Terug te plaatsen winkelboodschap: "We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening."
 	}
 
+	add_action( 'woocommerce_order_status_pending_to_completed', 'warn_if_completed_from_invalid_status' );
+	add_action( 'woocommerce_order_status_cancelled_to_completed', 'warn_if_completed_from_invalid_status' );
+	add_action( 'woocommerce_order_status_refunded_to_completed', 'warn_if_completed_from_invalid_status' );
+
+	function warn_if_completed_from_invalid_status( $order_id ) {
+		$order = wc_get_order( $order_id );
+		wp_mail( get_site_option('admin_email'), 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging', 'Gelieve te checken!' );
+	}
+
 	// Functie is niet gebaseerd op eigenschappen van gebruikers en dus al zeer vroeg al bepaald (geen 'init' nodig)
 	if ( is_regional_webshop() ) {
 		// Definieer een profielveld in de back-end waarin we kunnen bijhouden van welke winkel de gebruiker lid is
@@ -590,8 +599,17 @@
 
 	function register_claiming_member_shop( $order_id ) {
 		$order = wc_get_order( $order_id );
-		// Een gewone klant heeft deze eigenschap niet en retourneert dus sowieso 'false'
-		$owner = get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() );
+		
+		if ( get_current_user_id() > 1 ) {
+			// Een gewone klant heeft deze eigenschap niet en retourneert dus sowieso 'false'
+			$owner = get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() );
+		} else {
+			// Indien het order rechtstreeks afgerond wordt vanuit Sendcloud gebeurt het onder de user met ID 1 (= Frederik)
+			if ( get_current_blog_id() == 24 ) {
+				$owner = 'antwerpen';
+				wp_mail( get_site_option('admin_email'), 'Ongeclaimde bestelling '.$order->get_order_number().' afgewerkt vanuit Sendcloud', 'Dus automatisch geclaimd door Antwerpen!' );
+			}
+		}
 		
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
 			// Koppel automatisch aan de winkel waar de afhaling zal gebeuren
