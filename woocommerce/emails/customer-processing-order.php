@@ -44,7 +44,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 }
 
 // Tijdelijke waarschuwing
-echo '<p>Het is momenteel erg druk in onze webshop maar we doen onze uiterste best om je bestelling zo snel mogelijk rond te krijgen. Alvast bedankt voor je begrip!</p>';
+// echo '<p>Het is momenteel erg druk in onze webshop maar we doen onze uiterste best om je bestelling zo snel mogelijk rond te krijgen. Alvast bedankt voor je begrip!</p>';
 
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.

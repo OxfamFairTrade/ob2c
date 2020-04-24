@@ -3372,20 +3372,32 @@
 		}
 	}
 
+	// Handig filtertje om het JavaScript-conflict op de checkout te debuggen
+	// add_filter( 'woocommerce_ship_to_different_address_checked', '__return_true' );
+
 	// Fix voor verborgen verzendadressen die aanpassen leverpostcode verhinderen
 	// add_filter( 'woocommerce_package_rates', 'fix_shipping_postcode', 100, 2 );
 
 	function fix_shipping_postcode( $rates, $package ) {
-		// write_log( serialize($rates) );
-		
-		$current_user = wp_get_current_user();
-		write_log( "SHIPPING POSTCODE FOR CUSTOMER ".$current_user->user_login.": ".WC()->customer->get_shipping_postcode() );
-		if ( ! apply_filters( 'woocommerce_ship_to_different_address_checked', 'shipping' === get_option( 'woocommerce_ship_to_destination' ) ) and WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
-			// Zet de verzendpostcode gelijk aan de factuurpostcode
-			WC()->customer->set_shipping_postcode( WC()->customer->get_billing_postcode() );
-			write_log("SHIPPING POSTCODE FORCED TO BILLING (GENERAL)");
-			write_log( "SHIPPING POSTCODE FOR CUSTOMER ".$current_user->user_login." (GENERAL): ".WC()->customer->get_shipping_postcode() );
+		// GEWIJZIGD: Zorg dat er altijd al een postcode ingevuld is, zodat de verzendmethodes niet verdwijnen bij het uitklappen
+		if ( intval( WC()->customer->get_shipping_postcode() ) < 1000 ) {
+			if ( intval( WC()->customer->get_billing_postcode() ) >= 1000 ) {
+				// Initialiseer op factuurpostcode
+				WC()->customer->set_shipping_postcode( WC()->customer->get_billing_postcode() );
+			} else {
+				// Initialiseer op winkelpostcode
+				WC()->customer->set_shipping_postcode( get_oxfam_shop_data('zipcode') );
+			}
 		}
+
+		// $current_user = wp_get_current_user();
+		// write_log( "SHIPPING POSTCODE FOR CUSTOMER ".$current_user->user_login.": ".WC()->customer->get_shipping_postcode() );
+		// if ( ! apply_filters( 'woocommerce_ship_to_different_address_checked', 'shipping' === get_option( 'woocommerce_ship_to_destination' ) ) and WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
+		// 	// Zet de verzendpostcode gelijk aan de factuurpostcode
+		// 	WC()->customer->set_shipping_postcode( WC()->customer->get_billing_postcode() );
+		// 	write_log("SHIPPING POSTCODE FORCED TO BILLING (GENERAL)");
+		// 	write_log( "SHIPPING POSTCODE FOR CUSTOMER ".$current_user->user_login." (GENERAL): ".WC()->customer->get_shipping_postcode() );
+		// }
 
 		return $rates;
 	}
@@ -5867,9 +5879,6 @@
 		}
 		return $access;
 	}
-
-	// Handig filtertje om het JavaScript-conflict op de checkout te debuggen
-	// add_filter( 'woocommerce_ship_to_different_address_checked', '__return_false' );
 
 	// Print variabelen op een overzichtelijke manier naar debug.log
 	if ( ! function_exists( 'write_log' ) ) {
