@@ -1646,9 +1646,16 @@
 			// 'description' => 'Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.',
 			'class' => array('form-row-last'),
 			'clear' => true,
-			'required' => true,
+			'required' => false,
 			'priority' => 13,
 		);
+
+		write_log( print_r( WC()->cart->get_cart_item_tax_classes(), true ) );
+		if ( in_array( '', WC()->cart->get_cart_item_tax_classes() ) ) {
+			// Als er producten à 21% BTW in het mandje zitten (= standaardtarief) is het alcohol en moet het veld verplicht worden
+			// Met het oog op toevoegen non-food wellicht beter af te handelen via verzendklasses (maar get_shipping_class() moet loopen over alle cart_items)
+			$address_fields['billing_birthday']['required'] = true;	
+		}
 		
 		$address_fields['billing_phone'] = array_merge(
 			$address_fields['billing_phone'],
@@ -1662,6 +1669,24 @@
 			)
 		);
 
+		if ( current_user_can('update_core') ) {
+			// Verbergen indien reeds geabonneerd?
+			$address_fields['digizine'] = array(
+				'id' => 'digizine',
+				'type' => 'select',
+				'label' => 'Nieuwsbriefvoorkeuren',
+				'class' => array('form-row-wide'),
+				'clear' => true,
+				'required' => false,
+				'priority' => 40,
+				'options' => array(
+					'none' => '(selecteer)'
+					'yes' => 'Abonneer mij op de maandelijkse nieuwsbrief',
+					'all' => 'Stuur mij marketingsmails',
+				),
+			);
+		}
+
 		if ( is_b2b_customer() ) {
 			$address_fields['billing_vat'] = array(
 				'label' => 'BTW-nummer',
@@ -1672,7 +1697,7 @@
 				'priority' => 21,
 			);
 		} else {
-			unset($address_fields['billing_company']);
+			unset( $address_fields['billing_company'] );
 		}
 
 		return $address_fields;
@@ -1796,14 +1821,42 @@
 		return $fields;
 	}
 
-	// Valideer en formatteer VOOR UITCHECKEN het geboortedatumveld
-	add_action( 'woocommerce_checkout_process', 'verify_age' );
+	// ALTERNATIEVE MANIER OM ECHTE CHECKBOX TOE TE VOEGEN
+	// add_action( 'woocommerce_after_order_notes', 'add_digizine_checkbox' );
+ 
+	function add_digizine_checkbox( $checkout ) {
+		echo '<div id="mail-preferences">';
 
-	function verify_age() {
+		woocommerce_form_field( 'digizine', array(
+			'type' => 'checkbox',
+			'class' => array('input-checkbox'),
+			'label' => 'Ja, abonneer mij op de maandelijkse nieuwsbrief',
+			'required' => false,
+		), $checkout->get_value('digizine') );
+
+		echo '</div>';
+	}
+
+	// Acties om uit te voeren VOOR UITCHECKEN
+	add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
+
+	function verify_min_max_age_postcode_vat() {
+		// Stel een bestelminimum (en fictief -maximum) in
+		$min = 10;
+		$max = 10000;
+		// WC()->cart->get_cart_subtotal() geeft het subtotaal vòòr korting, verzending en (indien B2B) BTW
+		// WC()->cart->cart_contents_total geeft het subtotaal vòor BTW en verzending maar nà korting
+		if ( floatval( WC()->cart->cart_contents_total ) < $min ) {
+			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
+		} elseif ( floatval( WC()->cart->cart_contents_total ) > $max ) {
+			wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
+		}
+
+		// Check of de klant meerderjarig is
 		$birthday = format_date( $_POST['billing_birthday'] );
 		if ( $birthday ) {
 			// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
-			if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime( '-18 years' ) ) {
+			if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime('-18 years') ) {
 				wc_add_notice( __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ), 'error' );
 			} else {
 				$_POST['billing_birthday'] = $birthday;
@@ -1812,7 +1865,7 @@
 			wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );
 		}
 
-		// Check of het huisnummer wel ingevuld is (behalve bij afhalingen)
+		// Check of het huisnummer ingevuld is (behalve bij afhalingen)
 		if ( isset( $_POST['shipping_method'][0] ) and $_POST['shipping_method'][0] !== 'local_pickup_plus' ) {
 			// write_log( print_r( $_POST, true ) );
 
@@ -1834,12 +1887,28 @@
 				}
 			}
 		}
+
+		// Check of het BTW-nummer geldig is
+		if ( ! empty( $_POST['billing_vat'] ) ) {
+			if ( strpos( format_tax($_POST['billing_vat']), 'INVALID' ) !== false ) {
+				wc_add_notice( __( 'Foutmelding na het ingeven van een ongeldig BTW-nummer.', 'oxfam-webshop' ), 'error' );
+			}
+		}
 	}
 
-	// Registreer NA UITCHECKEN of het een B2B-verkoop is of niet
+	// Acties om uit te voeren NA UITCHECKEN 
 	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_order_fields' );
 
 	function save_b2b_order_fields( $order_id ) {
+		// Spreek met de MailChimp API
+		if ( ! empty( $_POST['digizine'] ) ) {
+			// $_POST['billing_email']
+			if ( $_POST['digizine'] !== 1 ) {
+				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
+			}
+		}
+
+		// Registreer of het een B2B-verkoop is of niet
 		if ( is_b2b_customer() ) {
 			$value = 'yes';
 			// Extra velden met 'billing'-prefix worden automatisch opgeslagen (maar niet getoond), geen actie nodig
@@ -3017,12 +3086,13 @@
 		
 		$timestamp = $from;
 		
+		// Standaard: bereken a.d.h.v. de hoofdwinkel
+		$shop_post_id = get_option('oxfam_shop_post_id');
+		
 		switch ( $shipping_id ) {
 			// Alle instances van winkelafhalingen
 			case stristr( $shipping_id, 'local_pickup' ):
-				// Standaard: bereken a.d.h.v. de hoofdwinkel
-				$shop_post_id = get_option('oxfam_shop_post_id');
-				
+
 				if ( $locations = get_option('woocommerce_pickup_locations') ) {
 					if ( $order_id === false ) {
 						$pickup_locations = WC()->session->get('chosen_pickup_locations');
@@ -3057,22 +3127,32 @@
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
-				} elseif ( $shop_post_id === 'vorselaar' or $shop_post_id === 'roeselare' or $shop_post_id === 'brussel' ) {
+				} elseif ( $shop_post_id === 'vorselaar' or $shop_post_id === 'roeselare' ) {
 					if ( date_i18n( 'N', $from ) > 4 ) {
 						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
 					}
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline (wordt wegens openingsuren automatisch zaterdagochtend)
-					// TIJDELIJK AANGEPAST NAAR DONDERDAG VOOR FEEST VAN DE ARBEID
-					$timestamp = strtotime( 'next Thursday', $from );
+					$timestamp = strtotime( 'next Friday', $from );
+
+					// Skip check op uitzonderlijke sluitingsdagen
+					return find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
+				} elseif ( $shop_post_id === 'evergem' ) {
+					if ( date_i18n( 'N', $from ) > 2 ) {
+						// Na de deadline van dinsdag 23u59: begin pas bij 3de werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+3 weekdays', $from );
+					}
+
+					// Zoek de eerste vrijdag na de volgende middagdeadline (wordt wegens openingsuren automatisch zaterdagochtend)
+					$timestamp = strtotime( 'next Friday', $from );
 
 					// Skip check op uitzonderlijke sluitingsdagen
 					return find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
 				} elseif ( intval( $shop_post_id ) === 3478 ) {
 					// Meer marge voor Hoogstraten
 					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
-						// Na de deadline van zondag 22u00: begin pas bij vierde werkdag, kwestie van zeker op volgende week uit te komen
+						// Na de deadline van zondag 22u00: begin pas bij 4de werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+4 weekdays', $from );
 					}
 
@@ -3100,16 +3180,34 @@
 
 			// Alle (gratis/betalende) instances van postpuntlevering en thuislevering
 			default:
-				// Zoek de eerste werkdag na de volgende middagdeadline
-				$timestamp = get_first_working_day( $from );
+				if ( intval( $shop_post_id ) === 3338 ) {
+					// Voorlopig enkel thuislevering op vrijdag bij Brussel 
+					if ( date_i18n( 'N', $from ) > 4 ) {
+						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+1 weekday', $from );
+					}
 
-				// Geef nog twee extra werkdagen voor de thuislevering
-				$timestamp = strtotime( '+2 weekdays', $timestamp );
+					// Zoek de eerste vrijdag
+					$timestamp = strtotime( 'next Friday', $from );
+				} elseif ( intval( $shop_post_id ) === 3409 ) {
+					// Voorlopig enkel thuislevering op vrijdag bij Evergem 
+					if ( date_i18n( 'N', $from ) > 2 ) {
+						// Na de deadline van dinsdag 23u59: begin pas bij 3de werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+3 weekdays', $from );
+					}
 
-				// Tel feestdagen die in de verwerkingsperiode vallen erbij
-				$timestamp = move_date_on_holidays( $from, $timestamp );
+					// Zoek de eerste vrijdag
+					$timestamp = strtotime( 'next Friday', $from );
+				} else {
+					// Zoek de eerste werkdag na de volgende middagdeadline
+					$timestamp = get_first_working_day( $from );
 
-				break;
+					// Geef nog twee extra werkdagen voor de thuislevering
+					$timestamp = strtotime( '+2 weekdays', $timestamp );
+
+					// Tel feestdagen die in de verwerkingsperiode vallen erbij
+					$timestamp = move_date_on_holidays( $from, $timestamp );
+				}
 		}
 
 		return $timestamp;
@@ -3581,34 +3679,6 @@
 	
 	function add_local_pickup_instructions() {
 		echo '<p>Je kunt kiezen uit deze winkels ...</p>';
-	}
-
-	// Check of de persoon moet worden ingeschreven op het digizine 
-	add_action( 'woocommerce_checkout_process', 'check_subscription_preference', 10, 1 );
-
-	function check_subscription_preference() {
-		if ( ! empty( $_POST['subscribe_digizine'] ) ) {
-			if ( $_POST['subscribe_digizine'] !== 1 ) {
-				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
-			}
-		}
-
-		if ( ! empty( $_POST['billing_vat'] ) ) {
-			if ( strpos( format_tax($_POST['billing_vat']), 'INVALID' ) !== false ) {
-				wc_add_notice( __( 'Foutmelding na het ingeven van een ongeldig BTW-nummer.', 'oxfam-webshop' ), 'error' );
-			}
-		}
-
-		// Stel een bestelminimum (en fictief -maximum) in
-		$min = 10;
-		$max = 10000;
-		// WC()->cart->get_cart_subtotal() geeft het subtotaal vòòr korting, verzending en (indien B2B) BTW
-		// WC()->cart->cart_contents_total geeft het subtotaal vòor BTW en verzending maar nà korting
-		if ( floatval( WC()->cart->cart_contents_total ) < $min ) {
-			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
-		} elseif ( floatval( WC()->cart->cart_contents_total ) > $max ) {
-			wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
-		}
 	}
 
 	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
@@ -5256,7 +5326,7 @@
 		$output = '';
 		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
-		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brussel', 'brugge', 'knokke', 'gistel' );
+		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brugge', 'knokke', 'gistel' );
 		if ( in_array( $atts['id'], $exceptions ) ) {
 			$holidays = array();
 		} else {
