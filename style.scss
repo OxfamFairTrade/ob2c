@@ -34,42 +34,42 @@ $black: #2c2c2c;
 
 
 // Tooltips bij checkout
-.tooltip {
-	position: relative;
-	display: inline-block;
-	text-align: center;
-	border-radius: 100%;
-	width: 1.5em;
-	height: 1.5em;
-	line-height: 1.5em;
-	margin-left: 0.5em;
+label {
+	.tooltip {
+		position: relative;
+		display: inline-block;
+		text-align: center;
 
-	.tooltiptext {
-		visibility: hidden;
-		width: 200px;
-		background-color: #777777;
-		color: white;
-		padding: 5px;
+		.tooltiptext {
+			visibility: hidden;
+			width: 200px;
+			background-color: #282828;
+			color: white;
+			font-size: 1em;
+			border-radius: 3px;
+			padding: 5px;
+			font-size: 0.75em;
 
-		position: absolute;
-		z-index: 1;
-		bottom: 125%;
-		left: 50%;
-		margin-left: -100px;
-	
-		opacity: 0;
-		transition: opacity 0.5s;
-
-		/* Puntje van tooltip */
-		&:after {
-			content: '';
 			position: absolute;
-			top: 100%;
+			z-index: 1;
+			bottom: 125%;
 			left: 50%;
-			margin-left: -5px;
-			border-width: 5px;
-			border-style: solid;
-			border-color: #777777 transparent transparent transparent;
+			margin-left: -100px;
+		
+			opacity: 0;
+			transition: opacity 0.5s;
+
+			/* Puntje van tooltip */
+			&:after {
+				content: '';
+				position: absolute;
+				top: 100%;
+				left: 50%;
+				margin-left: -5px;
+				border-width: 5px;
+				border-style: solid;
+				border-color: #282828 transparent transparent transparent;
+			}
 		}
 	}
 

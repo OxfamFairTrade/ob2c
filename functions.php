@@ -1825,7 +1825,7 @@
 	function put_description_in_icon_text( $field, $key, $args, $value ) {
 		if ( current_user_can('update_core') ) {
 			if ( $key === 'billing_birthday' ) {
-				$field = str_replace( '</label><input', '</label><span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span><input', $field );
+				$field = str_replace( '</label><input', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span></label><input', $field );
 			}
 		}
 		return $field;
@@ -1834,7 +1834,7 @@
 	function put_description_in_icon_tel( $field, $key, $args, $value ) {
 		if ( current_user_can('update_core') ) {
 			if ( $key === 'billing_phone' ) {
-				$field = str_replace( '</label><input', '</label><span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken je nummer nooit voor andere doeleinden.</span></span><input', $field );
+				$field = str_replace( '</label><input', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken je nummer nooit voor andere doeleinden.</span></span></label><input', $field );
 			}
 		}
 		return $field;
