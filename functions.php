@@ -298,7 +298,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.6.5' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.6.6' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -1679,7 +1679,7 @@
 				'options' => array(
 					'none' => '(selecteer)',
 					'yes' => 'Abonneer mij op de maandelijkse nieuwsbrief',
-					'all' => 'Stuur mij commerciële mails',
+					'all' => 'Stuur mij ook commerciële mails',
 				),
 			);
 		}
@@ -1823,19 +1823,15 @@
 	add_filter( 'woocommerce_form_field_tel', 'put_description_in_icon_tel', 10, 4 );
 
 	function put_description_in_icon_text( $field, $key, $args, $value ) {
-		if ( current_user_can('update_core') ) {
-			if ( $key === 'billing_birthday' ) {
-				$field = str_replace( '</label><input', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span></label><input', $field );
-			}
+		if ( $key === 'billing_birthday' ) {
+			$field = str_replace( '</label><input', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span></label><input', $field );
 		}
 		return $field;
 	}
 
 	function put_description_in_icon_tel( $field, $key, $args, $value ) {
-		if ( current_user_can('update_core') ) {
-			if ( $key === 'billing_phone' ) {
-				$field = str_replace( '</label><input', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken je nummer nooit voor andere doeleinden.</span></span></label><input', $field );
-			}
+		if ( $key === 'billing_phone' ) {
+			$field = str_replace( '</label><input', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken je nummer nooit voor andere doeleinden.</span></span></label><input', $field );
 		}
 		return $field;
 	}
@@ -1854,7 +1850,7 @@
 			woocommerce_form_field( 'marketing', array(
 				'type' => 'checkbox',
 				'class' => array('input-checkbox'),
-				'label' => 'Ja, stuur mij commerciële mails',
+				'label' => 'Ja, stuur mij ook commerciële mails',
 				'required' => false,
 			), $checkout->get_value('marketing') );
 		}
@@ -5353,7 +5349,7 @@
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brugge', 'knokke', 'gistel', 'evergem' );
 		if ( in_array( $atts['id'], $exceptions ) ) {
-			$holidays = array();
+			$holidays = array('2020-05-01');
 		} else {
 			// Uitzondering voor Borgerhout en Merksem
 			if ( $atts['id'] == 3316 or $atts['id'] == 3646 ) {
