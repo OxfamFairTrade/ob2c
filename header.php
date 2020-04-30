@@ -196,7 +196,7 @@
 								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel enkel <b><u>op vrijdag tussen 13u30 en 18u afhalen</u></b> in de winkel (niet op 1 mei wegens Feest van de Arbeid).</p></div>';
 							} elseif ( get_current_blog_id() !== 12 ) {
 								// Uitzondering voor Dilbeek
-								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus gebeuren alle afhalingen <b><u>op afspraak</u></b>.<br/>We contacteren je na het plaatsen van je bestelling!</p></div>';
+								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus gebeuren alle afhalingen <b><u>op afspraak</u></b>. We contacteren je na het plaatsen van je bestelling!</p></div>';
 							}
 						}
 					?>

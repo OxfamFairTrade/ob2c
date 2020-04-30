@@ -1624,7 +1624,7 @@
 
 	// Label en layout de factuurgegevens ENKEL GEBRUIKEN OM NON-CORE-FIELDS TE BEWERKEN OF VELDEN TE UNSETTEN
 	add_filter( 'woocommerce_billing_fields', 'format_checkout_billing', 10, 1 );
-	
+
 	function format_checkout_billing( $address_fields ) {
 		$address_fields['billing_email'] = array_merge(
 			$address_fields['billing_email'],
@@ -1642,18 +1642,15 @@
 			'id' => 'datepicker',
 			'label' => 'Geboortedatum',
 			'placeholder' => '16/03/1988',
-			// Gebruik eventueel add_filter( 'woocommerce_form_field', 'put_description_in_icon' ) om beschrijving anders weer te geven (verdwijnt achter datepicker)
-			// 'description' => 'Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.',
 			'class' => array('form-row-last'),
 			'clear' => true,
 			'required' => false,
 			'priority' => 13,
 		);
 
-		write_log( print_r( WC()->cart->get_cart_item_tax_classes(), true ) );
 		if ( in_array( '', WC()->cart->get_cart_item_tax_classes() ) ) {
 			// Als er producten à 21% BTW in het mandje zitten (= standaardtarief) is het alcohol en moet het veld verplicht worden
-			// Met het oog op toevoegen non-food wellicht beter af te handelen via verzendklasses (maar get_shipping_class() moet loopen over alle cart_items)
+			// Met het oog op toevoegen non-food wellicht beter af te handelen via verzendklasses (maar get_shipping_class() moet loopen over alle items ...)
 			$address_fields['billing_birthday']['required'] = true;	
 		}
 		
@@ -1669,7 +1666,7 @@
 			)
 		);
 
-		if ( current_user_can('update_core') ) {
+		if ( current_user_can('update_core') and 1 === 0 ) {
 			// Verbergen indien reeds geabonneerd?
 			$address_fields['digizine'] = array(
 				'id' => 'digizine',
@@ -1680,9 +1677,9 @@
 				'required' => false,
 				'priority' => 40,
 				'options' => array(
-					'none' => '(selecteer)'
+					'none' => '(selecteer)',
 					'yes' => 'Abonneer mij op de maandelijkse nieuwsbrief',
-					'all' => 'Stuur mij marketingsmails',
+					'all' => 'Stuur mij commerciële mails',
 				),
 			);
 		}
@@ -1821,26 +1818,54 @@
 		return $fields;
 	}
 
-	// ALTERNATIEVE MANIER OM ECHTE CHECKBOX TOE TE VOEGEN
-	// add_action( 'woocommerce_after_order_notes', 'add_digizine_checkbox' );
+	// Gebruik eventueel add_filter( 'woocommerce_form_field_text', 'put_description_in_icon' ) om beschrijving anders weer te geven (verdwijnt achter datepicker)
+	add_filter( 'woocommerce_form_field_text', 'put_description_in_icon_text', 10, 4 );
+	add_filter( 'woocommerce_form_field_tel', 'put_description_in_icon_tel', 10, 4 );
+
+	function put_description_in_icon_text( $field, $key, $args, $value ) {
+		if ( current_user_can('update_core') ) {
+			if ( $key === 'billing_birthday' ) {
+				$field = str_replace( '</label><input', '</label><span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span><input', $field );
+			}
+		}
+		return $field;
+	}
+
+	function put_description_in_icon_tel( $field, $key, $args, $value ) {
+		if ( current_user_can('update_core') ) {
+			if ( $key === 'billing_phone' ) {
+				$field = str_replace( '</label><input', '</label><span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken je nummer nooit voor andere doeleinden.</span></span><input', $field );
+			}
+		}
+		return $field;
+	}
+	
+	// ENIGE MANIER OM ECHTE CHECKBOX TOE TE VOEGEN
+	add_action( 'woocommerce_after_checkout_billing_form', 'add_digizine_checkbox' );
  
 	function add_digizine_checkbox( $checkout ) {
-		echo '<div id="mail-preferences">';
-
-		woocommerce_form_field( 'digizine', array(
-			'type' => 'checkbox',
-			'class' => array('input-checkbox'),
-			'label' => 'Ja, abonneer mij op de maandelijkse nieuwsbrief',
-			'required' => false,
-		), $checkout->get_value('digizine') );
-
-		echo '</div>';
+		if ( current_user_can('update_core') ) {
+			woocommerce_form_field( 'digizine', array(
+				'type' => 'checkbox',
+				'class' => array('input-checkbox'),
+				'label' => 'Ja, abonneer mij op de maandelijkse nieuwsbrief',
+				'required' => false,
+			), $checkout->get_value('digizine') );
+			woocommerce_form_field( 'marketing', array(
+				'type' => 'checkbox',
+				'class' => array('input-checkbox'),
+				'label' => 'Ja, stuur mij commerciële mails',
+				'required' => false,
+			), $checkout->get_value('marketing') );
+		}
 	}
 
 	// Acties om uit te voeren VOOR UITCHECKEN
 	add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
 
 	function verify_min_max_age_postcode_vat() {
+		// write_log( print_r( $_POST, true ) );
+
 		// Stel een bestelminimum (en fictief -maximum) in
 		$min = 10;
 		$max = 10000;
@@ -5326,7 +5351,7 @@
 		$output = '';
 		$days = get_office_hours( $atts['node'], $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
-		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brugge', 'knokke', 'gistel' );
+		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brugge', 'knokke', 'gistel', 'evergem' );
 		if ( in_array( $atts['id'], $exceptions ) ) {
 			$holidays = array();
 		} else {
