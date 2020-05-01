@@ -1644,14 +1644,14 @@
 			'placeholder' => '16/03/1988',
 			'class' => array('form-row-last'),
 			'clear' => true,
-			'required' => false,
+			'required' => true,
 			'priority' => 13,
 		);
 
-		if ( in_array( '', WC()->cart->get_cart_item_tax_classes() ) ) {
-			// Als er producten à 21% BTW in het mandje zitten (= standaardtarief) is het alcohol en moet het veld verplicht worden
+		if ( ! in_array( '', WC()->cart->get_cart_item_tax_classes() ) ) {
+			// Als er geen producten à 21% BTW in het mandje zitten (= standaardtarief) wordt er geen alcohol gekocht en wordt het veld optioneel
 			// Met het oog op toevoegen non-food wellicht beter af te handelen via verzendklasses (maar get_shipping_class() moet loopen over alle items ...)
-			$address_fields['billing_birthday']['required'] = true;	
+			$address_fields['billing_birthday']['required'] = false;	
 		}
 		
 		$address_fields['billing_phone'] = array_merge(
@@ -1666,11 +1666,11 @@
 			)
 		);
 
-		if ( current_user_can('update_core') and 1 === 0 ) {
+		if ( current_user_can('update_core') ) {
 			// Verbergen indien reeds geabonneerd?
 			$address_fields['digizine'] = array(
 				'id' => 'digizine',
-				'type' => 'select',
+				'type' => 'checkbox',
 				'label' => 'Nieuwsbriefvoorkeuren',
 				'class' => array('form-row-wide'),
 				'clear' => true,
@@ -1873,17 +1873,21 @@
 			wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
 		}
 
-		// Check of de klant meerderjarig is
-		$birthday = format_date( $_POST['billing_birthday'] );
-		if ( $birthday ) {
-			// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
-			if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime('-18 years') ) {
-				wc_add_notice( __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ), 'error' );
+		// Check op het invullen van verplichte velden gebeurt reeds eerder door WooCommerce
+		// Als er een waarde meegegeven wordt, checken we wel steeds de geldigheid
+		if ( ! empty( $_POST['billing_birthday'] ) ) {
+			// Check of de klant meerderjarig is
+			$birthday = format_date( $_POST['billing_birthday'] );
+			if ( $birthday ) {
+				// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
+				if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime('-18 years') ) {
+					wc_add_notice( __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ), 'error' );
+				} else {
+					$_POST['billing_birthday'] = $birthday;
+				}
 			} else {
-				$_POST['billing_birthday'] = $birthday;
+				wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );
 			}
-		} else {
-			wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );
 		}
 
 		// Check of het huisnummer ingevuld is (behalve bij afhalingen)
@@ -5125,33 +5129,33 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
-					echo '<p>De THT-promotie op noten en pralines werden geactiveerd (zie <a href="https://copain.oww.be/k/n111/news/view/20135/1429/online-promo-s-1-1-gratis.html" target="_blank">Copain</a>). Lees ook <a href="https://copain.oww.be/l/mailing2/browserview/a3d5bc0a-cfc2-487e-92c6-4b8af0425e72" target="_blank">de nieuwsbrief van 9 april</a> met tips voor lokale promotie van je webshop bij o.a. Mediahuis.</p>';
+					echo '<p>Ook de THT-promotie op notenchocolade, zeevruchten en nougatrepen is nu actief (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/nog-meer-online-promo-s-1-1-gratis.html" target="_blank">Copain</a>). Lees ook <a href="https://copain.oww.be/l/mailing2/browserview/a3d5bc0a-cfc2-487e-92c6-4b8af0425e72" target="_blank">de nieuwsbrief van 9 april</a> met tips voor lokale promotie van je webshop bij o.a. Mediahuis.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>Er werden 4 nieuwe producten toegevoegd aan de database (al kan het nog even duren voor ze in alle winkels arriveren):</p><ul style="margin-left: 2em;">';
-						$skus = array( '26424', '27012', '27110', '28605' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku($sku);
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Er werden 4 nieuwe producten toegevoegd aan de database (al kan het nog even duren voor ze in alle winkels arriveren):</p><ul style="margin-left: 2em;">';
+				// 		$skus = array( '26424', '27012', '27110', '28605' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku($sku);
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
 					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
 					// echo '</div>';
 				}
-				echo '<div class="notice notice-warning">';
-					echo '<p>7 aflopende producten werden uit de database verwijderd omdat ze inmiddels overal uitverkocht zijn. Het gaat om 21010 Guavashake 1 l, 21107 Guavashake 20 cl, 25397 Geosticks Peppery, 25398 Geosticks Herby, 25399 Geosticks Sweet Chilli, 26491 Maya BIO Sint van speculoos en 27011 BIO Cacaobeertjes ontbijtgranen.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>7 aflopende producten werden uit de database verwijderd omdat ze inmiddels overal uitverkocht zijn. Het gaat om 21010 Guavashake 1 l, 21107 Guavashake 20 cl, 25397 Geosticks Peppery, 25398 Geosticks Herby, 25399 Geosticks Sweet Chilli, 26491 Maya BIO Sint van speculoos en 27011 BIO Cacaobeertjes ontbijtgranen.</p>';
+				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}
