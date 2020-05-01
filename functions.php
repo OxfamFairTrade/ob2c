@@ -1910,10 +1910,14 @@
 	function save_b2b_order_fields( $order_id, $data ) {
 		write_log( print_r( $data, true ) );
 
-		// Spreek met de MailChimp API
 		if ( $data['digizine'] === 1 ) {
-			// $data['billing_email']
-			// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
+			// Check m.b.v. MailChimp API of $data['billing_email'] al in de lijst zit
+			// Zet marketing_permission_id 496c25fb49 aan (ID blijft bewaard is tekst wijzigt)
+		}
+
+		if ( $data['marketing'] === 1 ) {
+			// Check m.b.v. MailChimp API of $data['billing_email'] al in de lijst zit
+			// Zet marketing_permission_id c1cbf23458 aan (ID blijft bewaard is tekst wijzigt)
 		}
 
 		// Registreer of het een B2B-verkoop is of niet
@@ -3688,10 +3692,20 @@
 	}
 
 	// Voeg instructietekst toe boven de locaties
-	// add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' ) {
+	add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' );
+	// Eventueel kunnen we ook 'woocommerce_after_shipping_rate' gebruiken (na elke verzendmethode)
+	add_action( 'woocommerce_review_order_before_shipping', 'explain_why_shipping_option_is_lacking' );
 	
 	function add_local_pickup_instructions() {
-		echo '<p>Je kunt kiezen uit deze winkels ...</p>';
+		if ( current_user_can('update_core') ) {
+			echo '<p>Je kunt kiezen uit deze winkels ...</p>';
+		}
+	}
+
+	function explain_why_shipping_option_is_lacking() {
+		if ( current_user_can('update_core') ) {
+			echo 'Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omwille van niet-leverbare goederen / verkeerde webshop / postcode nog niet ingevuld.</span></span>';
+		}
 	}
 
 	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
