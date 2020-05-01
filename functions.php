@@ -1861,8 +1861,6 @@
 	add_action( 'woocommerce_after_checkout_validation', 'do_age_housenumber_vat_validation', 10, 2 );
 
 	function do_age_housenumber_vat_validation( $fields, $errors ) {
-		write_log( print_r( $fields, true ) );
-
 		// Check op het invullen van verplichte velden gebeurt reeds eerder door WooCommerce
 		// Als er een waarde meegegeven wordt, checken we wel steeds of de klant meerderjarig is
 		if ( ! empty( $fields['billing_birthday'] ) ) {
@@ -2127,7 +2125,7 @@
 			return '';
 		} else {
 			// Ongeldige datum (dit laat ons toe om het onderscheid te maken!)
-			return '31-12-2100';
+			return '31/12/2100';
 		}
 	}
 
