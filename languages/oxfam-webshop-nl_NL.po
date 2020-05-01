@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
 "POT-Creation-Date: 2020-05-02 00:55+0200\n"
-"PO-Revision-Date: 2020-05-02 00:56+0200\n"
+"PO-Revision-Date: 2020-05-02 01:09+0200\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: nl_NL\n"
@@ -185,7 +185,7 @@ msgstr ""
 
 #: functions.php:1868
 msgid "Foutmelding na het invullen van slecht geformatteerde datum."
-msgstr "Gelieve een geldige geboortedatum in te geven."
+msgstr "Gelieve een geldige datum te selecteren in de kalender."
 
 #: functions.php:1872
 msgid ""

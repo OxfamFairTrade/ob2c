@@ -80,6 +80,11 @@ label {
 	}
 }
 
+select.ui-datepicker-month,
+select.ui-datepicker-year {
+	padding: 0;
+}
+
 .form-row.no-margin-bottom {
 	margin-bottom: 0;
 }
