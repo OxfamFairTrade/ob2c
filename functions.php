@@ -1556,8 +1556,8 @@
 					function hidePlaceholder( dateText, inst ) {
 						// Placeholder onmiddellijk verwijderen
 						jQuery(this).attr('placeholder', '');
-						// Validatie voor alle zekerheid weer activeren
-						jQuery('#datepicker_field').addClass( 'validate-required' );
+						// Datum is sowieso geldig, verwijder de foutmelding
+						jQuery('#datepicker_field').removeClass('woocommerce-invalid woocommerce-invalid-required-field');
 					}
 
 					jQuery("#datepicker").datepicker({
@@ -1572,7 +1572,7 @@
 					});
 
 					// Overijverige validatie uitschakelen
-					jQuery('#datepicker_field').removeClass( 'validate-required' );
+					// jQuery('#datepicker_field').removeClass('validate-required');
 				});
 			</script>
 		<?php
@@ -1651,7 +1651,7 @@
 		if ( ! in_array( '', WC()->cart->get_cart_item_tax_classes() ) ) {
 			// Als er geen producten à 21% BTW in het mandje zitten (= standaardtarief) wordt er geen alcohol gekocht en wordt het veld optioneel
 			// Met het oog op toevoegen non-food wellicht beter af te handelen via verzendklasses (maar get_shipping_class() moet loopen over alle items ...)
-			$address_fields['billing_birthday']['required'] = false;	
+			$address_fields['billing_birthday']['required'] = false;
 		}
 		
 		$address_fields['billing_phone'] = array_merge(
@@ -1671,16 +1671,20 @@
 			$address_fields['digizine'] = array(
 				'id' => 'digizine',
 				'type' => 'checkbox',
-				'label' => 'Nieuwsbriefvoorkeuren',
+				'label' => 'Ja, abonneer mij op de maandelijkse nieuwsbrief',
 				'class' => array('form-row-wide'),
 				'clear' => true,
 				'required' => false,
-				'priority' => 40,
-				'options' => array(
-					'none' => '(selecteer)',
-					'yes' => 'Abonneer mij op de maandelijkse nieuwsbrief',
-					'all' => 'Stuur mij ook commerciële mails',
-				),
+				'priority' => 41,
+			);
+			$address_fields['marketing'] = array(
+				'id' => 'marketing',
+				'type' => 'checkbox',
+				'label' => 'Ja, stuur mij ook commerciële mails',
+				'class' => array('form-row-wide'),
+				'clear' => true,
+				'required' => false,
+				'priority' => 42,
 			);
 		}
 
@@ -1834,26 +1838,6 @@
 			$field = str_replace( '</label><input', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken je nummer nooit voor andere doeleinden.</span></span></label><input', $field );
 		}
 		return $field;
-	}
-	
-	// ENIGE MANIER OM ECHTE CHECKBOX TOE TE VOEGEN
-	add_action( 'woocommerce_after_checkout_billing_form', 'add_digizine_checkbox' );
- 
-	function add_digizine_checkbox( $checkout ) {
-		if ( current_user_can('update_core') ) {
-			woocommerce_form_field( 'digizine', array(
-				'type' => 'checkbox',
-				'class' => array('input-checkbox'),
-				'label' => 'Ja, abonneer mij op de maandelijkse nieuwsbrief',
-				'required' => false,
-			), $checkout->get_value('digizine') );
-			woocommerce_form_field( 'marketing', array(
-				'type' => 'checkbox',
-				'class' => array('input-checkbox'),
-				'label' => 'Ja, stuur mij ook commerciële mails',
-				'required' => false,
-			), $checkout->get_value('marketing') );
-		}
 	}
 
 	// Acties om uit te voeren VOOR UITCHECKEN
