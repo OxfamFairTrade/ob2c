@@ -1681,7 +1681,7 @@
 			$address_fields['digizine'] = array(
 				'id' => 'digizine',
 				'type' => 'checkbox',
-				'label' => 'Abonneer mij op de <a href="https://www.oxfamwereldwinkels.be" target="_blank">maandelijkse nieuwsbrief van Oxfam-Wereldwinkels</a>',
+				'label' => 'Abonneer mij op <a href="https://www.oxfamwereldwinkels.be/digizine" target="_blank">de maandelijkse nieuwsbrief van Oxfam-Wereldwinkels</a>',
 				'class' => array('form-row-wide no-margin-bottom'),
 				'clear' => true,
 				'required' => false,
@@ -1690,7 +1690,7 @@
 			$address_fields['marketing'] = array(
 				'id' => 'marketing',
 				'type' => 'checkbox',
-				'label' => 'Stuur mij promoties en aanbiedingen',
+				'label' => 'Stuur mij commerciële mails (promoties, nieuwigheden, ...)',
 				'class' => array('form-row-wide no-margin-bottom'),
 				'clear' => true,
 				'required' => false,
@@ -1835,7 +1835,7 @@
 		}
 
 		if ( $key === 'marketing' ) {
-			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Je kunt je voorkeuren op elk ogenblik weer aanpassen.</span></span></label>', $field );
+			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We mailen je hooguit 1x per week. Je kunt je voorkeuren op elk ogenblik aanpassen.</span></span></label>', $field );
 		}
 
 		return $field;
@@ -1850,6 +1850,7 @@
 		$max = 10000;
 		// WC()->cart->get_cart_subtotal() geeft het subtotaal vòòr korting, verzending en (indien B2B) BTW
 		// WC()->cart->cart_contents_total geeft het subtotaal vòor BTW en verzending maar nà korting
+		// Gebruik in de toekomst WC()->cart->get_total('edit') om het totaalbedrag als float op te vragen (WC3.2+)
 		if ( floatval( WC()->cart->cart_contents_total ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
 		} elseif ( floatval( WC()->cart->cart_contents_total ) > $max ) {
