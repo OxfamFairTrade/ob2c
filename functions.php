@@ -1556,7 +1556,7 @@
 					function hidePlaceholder( dateText, inst ) {
 						// Placeholder onmiddellijk verwijderen
 						jQuery(this).attr('placeholder', '');
-						// Datum is sowieso geldig, verwijder de foutmelding
+						// Datum is sowieso geldig, verwijder de eventuele foutmelding
 						jQuery('#datepicker_field').removeClass('woocommerce-invalid woocommerce-invalid-required-field');
 					}
 
@@ -1570,9 +1570,6 @@
 						maxDate: "-18y",
 						onSelect: hidePlaceholder,
 					});
-
-					// Overijverige validatie uitschakelen
-					// jQuery('#datepicker_field').removeClass('validate-required');
 				});
 			</script>
 		<?php
@@ -1654,6 +1651,19 @@
 			$address_fields['billing_birthday']['required'] = false;
 		}
 		
+		if ( is_b2b_customer() ) {
+			$address_fields['billing_vat'] = array(
+				'label' => 'BTW-nummer',
+				'placeholder' => 'BE 0453.066.016',
+				'class' => array('form-row-last'),
+				// Want verenigingen hebben niet noodzakelijk een BTW-nummer!
+				'required' => false,
+				'priority' => 21,
+			);
+		} else {
+			unset( $address_fields['billing_company'] );
+		}
+
 		$address_fields['billing_phone'] = array_merge(
 			$address_fields['billing_phone'],
 			array(
@@ -1671,34 +1681,21 @@
 			$address_fields['digizine'] = array(
 				'id' => 'digizine',
 				'type' => 'checkbox',
-				'label' => 'Ja, abonneer mij op de maandelijkse nieuwsbrief',
+				'label' => 'Abonneer mij op de <a href="https://www.oxfamwereldwinkels.be" target="_blank">maandelijkse nieuwsbrief van Oxfam-Wereldwinkels</a>',
 				'class' => array('form-row-wide'),
 				'clear' => true,
 				'required' => false,
-				'priority' => 41,
+				'priority' => 101,
 			);
 			$address_fields['marketing'] = array(
 				'id' => 'marketing',
 				'type' => 'checkbox',
-				'label' => 'Ja, stuur mij ook commerciële mails',
+				'label' => 'Stuur mij promoties en aanbiedingen',
 				'class' => array('form-row-wide'),
 				'clear' => true,
 				'required' => false,
-				'priority' => 42,
+				'priority' => 102,
 			);
-		}
-
-		if ( is_b2b_customer() ) {
-			$address_fields['billing_vat'] = array(
-				'label' => 'BTW-nummer',
-				'placeholder' => 'BE 0453.066.016',
-				'class' => array('form-row-last'),
-				// Want verenigingen hebben niet noodzakelijk een BTW-nummer!
-				'required' => false,
-				'priority' => 21,
-			);
-		} else {
-			unset( $address_fields['billing_company'] );
 		}
 
 		return $address_fields;
@@ -1822,29 +1819,32 @@
 		return $fields;
 	}
 
-	// Gebruik eventueel add_filter( 'woocommerce_form_field_text', 'put_description_in_icon' ) om beschrijving anders weer te geven (verdwijnt achter datepicker)
-	add_filter( 'woocommerce_form_field_text', 'put_description_in_icon_text', 10, 4 );
-	add_filter( 'woocommerce_form_field_tel', 'put_description_in_icon_tel', 10, 4 );
+	// Voeg tooltip toe achter het label van bepaalde velden
+	add_filter( 'woocommerce_form_field_text', 'add_tooltips_after_woocommerce_label', 10, 4 );
+	add_filter( 'woocommerce_form_field_tel', 'add_tooltips_after_woocommerce_label', 10, 4 );
+	add_filter( 'woocommerce_form_field_checkbox', 'add_tooltips_after_woocommerce_label', 10, 4 );
 
-	function put_description_in_icon_text( $field, $key, $args, $value ) {
+	function add_tooltips_after_woocommerce_label( $field, $key, $args, $value ) {
 		if ( $key === 'billing_birthday' ) {
-			$field = str_replace( '</label><input', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span></label><input', $field );
+			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span></label>', $field );
 		}
-		return $field;
-	}
 
-	function put_description_in_icon_tel( $field, $key, $args, $value ) {
 		if ( $key === 'billing_phone' ) {
-			$field = str_replace( '</label><input', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken je nummer nooit voor andere doeleinden.</span></span></label><input', $field );
+			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken het nummer nooit voor andere doeleinden.</span></span></label>', $field );
 		}
+
+		if ( $key === 'marketing' ) {
+			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Je kunt je voorkeuren op elk ogenblik weer aanpassen.</span></span></label>', $field );
+		}
+
 		return $field;
 	}
 
-	// Acties om uit te voeren VOOR UITCHECKEN
+	// Acties om uit te voeren AAN BEGIN VAN ELKE POGING TOT CHECKOUT
 	add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
 
 	function verify_min_max_age_postcode_vat() {
-		// write_log( print_r( $_POST, true ) );
+		write_log( print_r( $_POST, true ) );
 
 		// Stel een bestelminimum (en fictief -maximum) in
 		$min = 10;
@@ -1856,29 +1856,35 @@
 		} elseif ( floatval( WC()->cart->cart_contents_total ) > $max ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
 		}
+	}
+
+	// ALTERNATIEVE ACTIE, SPECIFIEK VOOR CUSTOM VALIDATIE, KOMT NET NA WOOCOMMERCE_CHECKOUT_PROCESS
+	add_action( 'woocommerce_after_checkout_validation', 'do_age_housenumber_vat_validation', 10, 2 );
+
+	function do_age_housenumber_vat_validation( $fields, $errors ) {
+		write_log( print_r( $fields, true ) );
 
 		// Check op het invullen van verplichte velden gebeurt reeds eerder door WooCommerce
 		// Als er een waarde meegegeven wordt, checken we wel steeds de geldigheid
-		if ( ! empty( $_POST['billing_birthday'] ) ) {
+		if ( ! empty( $fields['billing_birthday'] ) ) {
 			// Check of de klant meerderjarig is
-			$birthday = format_date( $_POST['billing_birthday'] );
+			$birthday = format_date( $fields['billing_birthday'] );
 			if ( $birthday ) {
 				// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
 				if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime('-18 years') ) {
-					wc_add_notice( __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ), 'error' );
+					$errors->add( 'validation', __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ) );
 				} else {
-					$_POST['billing_birthday'] = $birthday;
+					// Aangezien deze variabele passed by reference is, wijzigen we hierdoor ook de waarde die verderop opgeslagen zal worden
+					$fields['billing_birthday'] = $birthday;
 				}
 			} else {
-				wc_add_notice( __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ), 'error' );
+				$errors->add( 'validation', __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ) );
 			}
 		}
 
 		// Check of het huisnummer ingevuld is (behalve bij afhalingen)
-		if ( isset( $_POST['shipping_method'][0] ) and $_POST['shipping_method'][0] !== 'local_pickup_plus' ) {
-			// write_log( print_r( $_POST, true ) );
-
-			if ( isset( $_POST['ship_to_different_address'] ) and $_POST['ship_to_different_address'] == 1 ) {
+		if ( isset( $fields['shipping_method'][0] ) and $fields['shipping_method'][0] !== 'local_pickup_plus' ) {
+			if ( $fields['ship_to_different_address'] ) {
 				// Er werd een afwijkend verzendadres ingevuld, check die waarde
 				$key_to_check = 'shipping_address_1';
 			} else {
@@ -1887,34 +1893,34 @@
 				$key_to_check = 'billing_address_1';
 			}
 
-			if ( isset( $_POST[ $key_to_check ] ) and strlen( $_POST[ $key_to_check ] ) > 3 ) {
+			if ( isset( $fields[ $key_to_check ] ) and strlen( $fields[ $key_to_check ] ) > 3 ) {
 				// Indien er echt geen huisnummer is, moet Z/N ingevuld worden
-				if ( preg_match( '/([0-9]+|ZN)/i', $_POST[ $key_to_check ] ) === 0 ) {
-					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$_POST[ $key_to_check ]."'\n";
+				if ( preg_match( '/([0-9]+|ZN)/i', $fields[ $key_to_check ] ) === 0 ) {
+					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$fields[ $key_to_check ]."'\n";
 					file_put_contents( "housenumber_errors.csv", $str, FILE_APPEND );
-					wc_add_notice( __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ), 'error' );
+					$errors->add( 'validation', __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ) );
 				}
 			}
 		}
 
 		// Check of het BTW-nummer geldig is
-		if ( ! empty( $_POST['billing_vat'] ) ) {
-			if ( strpos( format_tax($_POST['billing_vat']), 'INVALID' ) !== false ) {
-				wc_add_notice( __( 'Foutmelding na het ingeven van een ongeldig BTW-nummer.', 'oxfam-webshop' ), 'error' );
+		if ( ! empty( $fields['billing_vat'] ) ) {
+			if ( strpos( format_tax( $fields['billing_vat'] ), 'INVALID' ) !== false ) {
+				$errors->add( 'validation', __( 'Foutmelding na het ingeven van een ongeldig BTW-nummer.', 'oxfam-webshop' ) );
 			}
 		}
 	}
 
-	// Acties om uit te voeren NA UITCHECKEN 
-	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_order_fields' );
+	// Acties om uit te voeren NA SUCCESVOLLE CHECKOUT (ORDER AANGEMAAKT) 
+	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_order_fields', 10, 2 );
 
-	function save_b2b_order_fields( $order_id ) {
+	function save_b2b_order_fields( $order_id, $data ) {
+		write_log( print_r( $data, true ) );
+
 		// Spreek met de MailChimp API
-		if ( ! empty( $_POST['digizine'] ) ) {
+		if ( $data['digizine'] === 1 ) {
 			// $_POST['billing_email']
-			if ( $_POST['digizine'] !== 1 ) {
-				// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
-			}
+			// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
 		}
 
 		// Registreer of het een B2B-verkoop is of niet
