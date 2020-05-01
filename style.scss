@@ -80,6 +80,12 @@ label {
 	}
 }
 
+.no-margin-bottom {
+	margin-bottom: 0;
+}
+
+
+
 // Veilige marges voor iPhone 10+
 @supports( padding: max(0px) ) {
 	.nm-row {

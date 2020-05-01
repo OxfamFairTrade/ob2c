@@ -1682,7 +1682,7 @@
 				'id' => 'digizine',
 				'type' => 'checkbox',
 				'label' => 'Abonneer mij op de <a href="https://www.oxfamwereldwinkels.be" target="_blank">maandelijkse nieuwsbrief van Oxfam-Wereldwinkels</a>',
-				'class' => array('form-row-wide'),
+				'class' => array('form-row-wide no-margin-bottom'),
 				'clear' => true,
 				'required' => false,
 				'priority' => 101,
@@ -1691,7 +1691,7 @@
 				'id' => 'marketing',
 				'type' => 'checkbox',
 				'label' => 'Stuur mij promoties en aanbiedingen',
-				'class' => array('form-row-wide'),
+				'class' => array('form-row-wide no-margin-bottom'),
 				'clear' => true,
 				'required' => false,
 				'priority' => 102,
@@ -1814,6 +1814,7 @@
 				break;
 		}
 		$fields['order']['order_comments']['placeholder'] = $placeholder;
+		// HTML wordt helaas niet uitgevoerd, dus link naar FAQ niet mogelijk!
 		$fields['order']['order_comments']['description'] = sprintf( __( 'Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer van de hoofdwinkel (%s).', 'oxfam-webshop' ), get_oxfam_shop_data('telephone') );
 
 		return $fields;
@@ -1844,8 +1845,6 @@
 	add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
 
 	function verify_min_max_age_postcode_vat() {
-		write_log( print_r( $_POST, true ) );
-
 		// Stel een bestelminimum (en fictief -maximum) in
 		$min = 10;
 		$max = 10000;
@@ -1858,27 +1857,22 @@
 		}
 	}
 
-	// ALTERNATIEVE ACTIE, SPECIFIEK VOOR CUSTOM VALIDATIE, KOMT NET NA WOOCOMMERCE_CHECKOUT_PROCESS
+	// Validaties om uit te voeren NA FORMATTERING DATA door 'woocommerce_process_checkout_field_...'-filters in get_posted_data()
 	add_action( 'woocommerce_after_checkout_validation', 'do_age_housenumber_vat_validation', 10, 2 );
 
 	function do_age_housenumber_vat_validation( $fields, $errors ) {
 		write_log( print_r( $fields, true ) );
 
 		// Check op het invullen van verplichte velden gebeurt reeds eerder door WooCommerce
-		// Als er een waarde meegegeven wordt, checken we wel steeds de geldigheid
+		// Als er een waarde meegegeven wordt, checken we wel steeds of de klant meerderjarig is
 		if ( ! empty( $fields['billing_birthday'] ) ) {
-			// Check of de klant meerderjarig is
-			$birthday = format_date( $fields['billing_birthday'] );
-			if ( $birthday ) {
-				// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
-				if ( strtotime( str_replace( '/', '-', $birthday ) ) > strtotime('-18 years') ) {
-					$errors->add( 'validation', __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ) );
-				} else {
-					// Aangezien deze variabele passed by reference is, wijzigen we hierdoor ook de waarde die verderop opgeslagen zal worden
-					$fields['billing_birthday'] = $birthday;
-				}
-			} else {
+			if ( $fields['billing_birthday'] === '31/12/2100' ) {
 				$errors->add( 'validation', __( 'Foutmelding na het invullen van slecht geformatteerde datum.', 'oxfam-webshop' ) );
+			} else {
+				// Opletten met de Amerikaanse interpretatie DD/MM/YYYY!
+				if ( strtotime( str_replace( '/', '-', $fields['billing_birthday'] ) ) > strtotime('-18 years') ) {
+					$errors->add( 'validation', __( 'Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in het verleden ligt.', 'oxfam-webshop' ) );
+				}
 			}
 		}
 
@@ -1893,7 +1887,7 @@
 				$key_to_check = 'billing_address_1';
 			}
 
-			if ( isset( $fields[ $key_to_check ] ) and strlen( $fields[ $key_to_check ] ) > 3 ) {
+			if ( ! empty( $fields[ $key_to_check ] ) ) {
 				// Indien er echt geen huisnummer is, moet Z/N ingevuld worden
 				if ( preg_match( '/([0-9]+|ZN)/i', $fields[ $key_to_check ] ) === 0 ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$fields[ $key_to_check ]."'\n";
@@ -1911,7 +1905,7 @@
 		}
 	}
 
-	// Acties om uit te voeren NA SUCCESVOLLE CHECKOUT (ORDER AANGEMAAKT) 
+	// Acties om uit te voeren NA SUCCESVOLLE CHECKOUT (order reeds aangemaakt) 
 	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_order_fields', 10, 2 );
 
 	function save_b2b_order_fields( $order_id, $data ) {
@@ -1919,7 +1913,7 @@
 
 		// Spreek met de MailChimp API
 		if ( $data['digizine'] === 1 ) {
-			// $_POST['billing_email']
+			// $data['billing_email']
 			// wc_add_notice( __( 'Oei, je hebt ervoor gekozen om je niet te abonneren op het Digizine. Ben je zeker van je stuk?', 'oxfam-webshop' ), 'error' );
 		}
 
@@ -1967,6 +1961,7 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_telephone', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_email', 'format_mail', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_email', 'format_mail', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_birthday', 'format_date', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_first_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_last_name', 'trim_and_uppercase', 10, 1 );
@@ -2127,8 +2122,12 @@
 		$new_value = preg_replace( '/[\s\-\.\/]/', '', $value );
 		if ( strlen($new_value) === 8 ) {
 			return substr( $new_value, 0, 2 ) . '/' . substr( $new_value, 2, 2 ) . '/' . substr( $new_value, 4, 4 );
+		} elseif ( strlen($new_value) === 0 ) {
+			// Ontbrekende datum
+			return '';
 		} else {
-			return false;
+			// Ongeldige datum (dit laat ons toe om het onderscheid te maken!)
+			return '31-12-2100';
 		}
 	}
 
