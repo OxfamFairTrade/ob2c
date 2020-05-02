@@ -1828,7 +1828,7 @@
 
 	function add_tooltips_after_woocommerce_label( $field, $key, $args, $value ) {
 		if ( $key === 'billing_birthday' ) {
-			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span></label>', $field );
+			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden. Als er geen alcoholische producten in je winkelmandje zitten, is dit veld niet verplicht.</span></span></label>', $field );
 		}
 
 		if ( $key === 'billing_phone' ) {
@@ -1909,16 +1909,24 @@
 	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_order_fields', 10, 2 );
 
 	function save_b2b_order_fields( $order_id, $data ) {
-		write_log( print_r( $data, true ) );
+		// write_log( print_r( $data, true ) );
 
-		if ( $data['digizine'] === 1 ) {
+		if ( $data['digizine'] === 1 or $data['marketing'] === 1 ) {
 			// Check m.b.v. MailChimp API of $data['billing_email'] al in de lijst zit
-			// Zet marketing_permission_id 496c25fb49 aan (ID blijft bewaard is tekst wijzigt)
-		}
+			$response = get_mailchimp_response_by_email( $data['billing_email'] );
+			if ( $response['response']['code'] == 200 ) {
+				$body = json_decode( $response['body'] );
 
-		if ( $data['marketing'] === 1 ) {
-			// Check m.b.v. MailChimp API of $data['billing_email'] al in de lijst zit
-			// Zet marketing_permission_id c1cbf23458 aan (ID blijft bewaard is tekst wijzigt)
+				if ( $body->status !== 'subscribed' ) {
+					// Subscribe member (kan dit ook indien unsubscribed/cleaned?)
+				}
+
+				if ( $data['marketing'] === 1 ) {
+					// Zet marketing_permission_id c1cbf23458 aan (ID blijft bewaard als tekst wijzigt)
+				} else {
+					// Zet marketing_permission_id 496c25fb49 aan (ID blijft bewaard als tekst wijzigt)
+				}
+			}
 		}
 
 		// Registreer of het een B2B-verkoop is of niet
@@ -2164,6 +2172,10 @@
 
 			// Factuuradres invullen
 			$objPHPExcel->getActiveSheet()->setCellValue( 'A2', $order->get_billing_phone() )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
+
+			// Logistieke gegevens invullen
+			// $values = get_logistic_params( $order );
+			// $objPHPExcel->getActiveSheet()->setCellValue( 'A5', number_format( $values['volume'], 1, ',', '.' ).' liter / '.number_format( $values['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$values['maximum'].' cm' );
 
 			$i = 8;
 			// Vul de artikeldata item per item in vanaf rij 8
@@ -5090,6 +5102,10 @@
 	}
 
 	function get_tracking_number( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
 		$tracking_number = false;
 		// Query alle order comments waarin het over Bpost gaat en zet de oudste bovenaan
 		$args = array( 'post_id' => $order->get_id(), 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'ASC', 'search' => 'bpost' );
@@ -5112,6 +5128,54 @@
 
 	function get_tracking_link( $tracking_number, $order ) {
 		return 'https://track.bpost.cloud/btr/web/#/search?itemCode='.$tracking_number.'&postalCode='.$order->get_shipping_postcode().'&lang=nl';
+	}
+
+	function get_logistic_params( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
+		$params = array();
+		$params['volume'] = 0.0;
+		$params['maximum'] = 0.0;
+		$params['weight'] = 0.0;
+		
+		foreach ( $order->get_items() as $line_item ) {
+			if ( false !== ( $product = $line_item->get_product() ) ) {
+				$volume = 1.0;
+				
+				if ( ( $length = floatval( $product->get_length() ) ) > 0 ) {
+					$volume *= $length;
+					if ( $length > $params['maximum'] ) {
+						$params['maximum'] = $length;
+					}
+				}
+				if ( ( $width = floatval( $product->get_width() ) ) > 0 ) {
+					$volume *= $width;
+					if ( $width > $params['maximum'] ) {
+						$params['maximum'] = $width;
+					}
+				}
+				if ( ( $height = floatval( $product->get_height() ) ) > 0 ) {
+					$volume *= $height;
+					if ( $height > $params['maximum'] ) {
+						$params['maximum'] = $height;
+					}
+				}
+
+				echo $product->get_name().': '.number_format( $volume / 1000000, 2, ',', '.' ).' liter (x'.$line_item->get_quantity().')<br/>';
+				$params['volume'] += $line_item->get_quantity() * $volume;
+				$params['weight'] += $line_item->get_quantity() * floatval( $product->get_weight() );
+			} 
+		}
+
+		// Volume omrekenen van kubieke millimeters naar liter
+		$values['volume'] = $values['volume'] / 1000000;
+		// Maximale afmeting omrekenen naar cm
+		$values['maximum'] = ceil( $values['maximum'] / 10 );
+		// Gewicht sowieso reeds in kilogram (maar check instellingen?)
+
+		return $params;
 	}
 	
 	// Voeg berichten toe bovenaan adminpagina's
@@ -5237,21 +5301,12 @@
 
 	function get_mailchimp_status_in_list( $list_id = '5cce3040aa' ) {
 		$current_user = wp_get_current_user();
-		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
 		$email = $current_user->user_email;
-		$member = md5( format_mail($email) );
-
-		$args = array(
-			'headers' => array(
-				'Authorization' => 'Basic '.base64_encode( 'user:'.MAILCHIMP_APIKEY ),
-			),
-		);
-
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member, $args );
+		$response = get_mailchimp_response_by_email( $email );
 		 
 		$msg = "";
 		if ( $response['response']['code'] == 200 ) {
-			$body = json_decode($response['body']);
+			$body = json_decode( $response['body'] );
 
 			if ( $body->status === "subscribed" ) {
 				$msg .= "al geabonneerd op het Digizine. Aan het begin van elke maand ontvang je dus een (h)eerlijke mail boordevol fairtradenieuws.";
@@ -5263,6 +5318,20 @@
 		}
 
 		return "<p>Je bent met het e-mailadres <a href='mailto:".$email."' target='_blank'>".$email."</a> ".$msg."</p>";
+	}
+
+	function get_mailchimp_response_by_email( $email, $list_id = '5cce3040aa' ) {
+		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
+		$member_id = md5( format_mail( $email ) );
+
+		$args = array(
+			'headers' => array(
+				'Authorization' => 'Basic '.base64_encode( 'user:'.MAILCHIMP_APIKEY ),
+			),
+		);
+
+		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/lists/'.$list_id.'/members/'.$member_id, $args );
+		return $response;
 	}
 
 
