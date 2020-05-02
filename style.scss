@@ -34,7 +34,8 @@ $black: #2c2c2c;
 
 
 // Tooltips bij checkout
-label {
+label,
+.shipping-explanation {
 	.tooltip {
 		position: relative;
 		display: inline-block;
@@ -43,7 +44,7 @@ label {
 
 		.tooltiptext {
 			visibility: hidden;
-			width: 250px;
+			width: 200px;
 			background-color: #282828;
 			color: white;
 			font-size: 0.6em;
@@ -54,8 +55,8 @@ label {
 			position: absolute;
 			z-index: 1;
 			bottom: 125%;
-			left: 50%;
-			margin-left: -200px;
+			// Vermijd dat het uit beeld gaat op mobiel
+			margin-left: -190px;
 		
 			opacity: 0;
 			transition: opacity 0.5s;
@@ -65,7 +66,7 @@ label {
 				content: '';
 				position: absolute;
 				top: 100%;
-				right: 25px;
+				right: 15px;
 				margin-left: -5px;
 				border-width: 5px;
 				border-style: solid;

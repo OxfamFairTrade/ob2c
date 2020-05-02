@@ -1828,7 +1828,7 @@
 
 	function add_tooltips_after_woocommerce_label( $field, $key, $args, $value ) {
 		if ( $key === 'billing_birthday' ) {
-			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden. Als er geen alcoholische producten in je winkelmandje zitten, is dit veld niet verplicht.</span></span></label>', $field );
+			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span></label>', $field );
 		}
 
 		if ( $key === 'billing_phone' ) {
@@ -3712,7 +3712,7 @@
 		if ( current_user_can('update_core') ) {
 			// Enkel BINNEN de template cart/cart-shipping.php kunnen we $available_methods aanspreken ...
 			if ( count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
-				echo '<tr><td colspan="2" class="shipping-explanation"><label>Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">';
+				echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">';
 				if ( ! does_home_delivery() ) {
 					echo 'Deze winkel organiseert geen thuislevering. Ga naar de webshop die voor jouw postcode aan huis levert.';
 				} elseif ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
@@ -3724,7 +3724,7 @@
 				} else {
 					echo 'Omdat deze webshop niet thuislevert in de huidige postcode.';
 				}
-				echo '</span></span></label></td></tr>';
+				echo '</span></span></td></tr>';
 			}
 		}
 	}
