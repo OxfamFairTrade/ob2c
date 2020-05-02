@@ -3706,6 +3706,7 @@
 
 	// Eventueel kunnen we ook 'woocommerce_after_shipping_rate' gebruiken (na elke verzendmethode) WORDT NETJES BIJGEWERKT BIJ AJAX-ACTIE UPDATE_SHIPPING
 	add_action( 'woocommerce_review_order_before_shipping', 'explain_why_shipping_option_is_lacking' );
+	add_action( 'woocommerce_cart_totals_before_shipping', 'explain_why_shipping_option_is_lacking' );
 	
 	function explain_why_shipping_option_is_lacking() {
 		if ( current_user_can('update_core') ) {
@@ -5170,9 +5171,9 @@
 		}
 
 		// Volume omrekenen van kubieke millimeters naar liter
-		$values['volume'] = $values['volume'] / 1000000;
+		$params['volume'] /= 1000000;
 		// Maximale afmeting omrekenen naar cm
-		$values['maximum'] = ceil( $values['maximum'] / 10 );
+		$params['maximum'] = ceil( $params['maximum'] / 10 );
 		// Gewicht sowieso reeds in kilogram (maar check instellingen?)
 
 		return $params;
