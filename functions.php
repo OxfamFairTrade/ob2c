@@ -2174,8 +2174,8 @@
 			$objPHPExcel->getActiveSheet()->setCellValue( 'A2', $order->get_billing_phone() )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
 			// Logistieke gegevens invullen
-			// $values = get_logistic_params( $order );
-			// $objPHPExcel->getActiveSheet()->setCellValue( 'A5', number_format( $values['volume'], 1, ',', '.' ).' liter / '.number_format( $values['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$values['maximum'].' cm' );
+			$values = get_logistic_params( $order );
+			$objPHPExcel->getActiveSheet()->setCellValue( 'A5', number_format( $values['volume'], 1, ',', '.' ).' liter / '.number_format( $values['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$values['maximum'].' cm' );
 
 			$i = 8;
 			// Vul de artikeldata item per item in vanaf rij 8
@@ -3710,11 +3710,13 @@
 	
 	function explain_why_shipping_option_is_lacking() {
 		if ( current_user_can('update_core') ) {
-			if ( count( $available_methods ) < 2 ) {
-				// Binnen template cart/cart-shipping.php bevat $available_methods gewoon WC()->shipping->packages[0]['rates']
+			// Enkel BINNEN de template cart/cart-shipping.php kunnen we $available_methods aanspreken ...
+			if ( count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
 				echo '<tr><td colspan="2" class="shipping-explanation"><label>Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">';
-				// Dit werkt enkel indien blokkage omwille van leeggoed
-				if ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
+				if ( ! does_home_delivery() ) {
+					echo 'Deze winkel organiseert geen thuislevering. Ga naar de webshop die voor jouw postcode aan huis levert.';
+				} elseif ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
+					// Dit werkt enkel indien blokkage omwille van leeggoed reeds getoond
 					echo 'Omwille van aanwezigheid goederen die niet beschikbaar zijn voor thuislevering.';
 				} elseif ( strlen( WC()->customer->get_shipping_postcode() ) < 4 ) {
 					// WC()->customer->has_calculated_shipping() werkt niet zoals verwacht
