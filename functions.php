@@ -298,11 +298,12 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.6.6' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.6.7' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
+		// WordPress 4.9 gebruikt nog jQuery UI 1.11.4
 		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css' );
 		wp_enqueue_style( 'jquery-ui' );
 	}
@@ -3691,21 +3692,32 @@
 		return 'local_pickup_plus';
 	}
 
-	// Voeg instructietekst toe boven de locaties
-	add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' );
-	// Eventueel kunnen we ook 'woocommerce_after_shipping_rate' gebruiken (na elke verzendmethode)
+	// Eventueel kunnen we ook 'woocommerce_after_shipping_rate' gebruiken (na elke verzendmethode) WORDT NETJES BIJGEWERKT BIJ AJAX-ACTIE UPDATE_SHIPPING
 	add_action( 'woocommerce_review_order_before_shipping', 'explain_why_shipping_option_is_lacking' );
 	
-	function add_local_pickup_instructions() {
+	function explain_why_shipping_option_is_lacking() {
 		if ( current_user_can('update_core') ) {
-			echo '<p>Je kunt kiezen uit deze winkels ...</p>';
+			// write_log( print_r( WC()->shipping->packages[0]['rates'], true ) );
+			if ( count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
+				echo '<tr><td colspan="2" class="shipping-explanation"><label>Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">';
+				// Dit werkt enkel indien blokkage omwille van leeggoed
+				if ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
+					echo 'Omwille van aanwezigheid goederen die niet beschikbaar zijn voor thuislevering.';
+				} elseif ( ! WC()->customer->has_calculated_shipping() ) {
+					echo 'Omdat de postcode nog niet ingevuld is.';
+				} else {
+					echo 'Omdat deze webshop niet thuislevert in de huidige postcode.';
+				}
+				echo '</span></span></label></td></tr>';
+			}
 		}
 	}
 
-	function explain_why_shipping_option_is_lacking() {
-		if ( current_user_can('update_core') ) {
-			echo 'Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omwille van niet-leverbare goederen / verkeerde webshop / postcode nog niet ingevuld.</span></span>';
-		}
+	// Voeg instructietekst toe boven de locaties
+	// add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' );
+	
+	function add_local_pickup_instructions() {
+		echo '<br/><p style="width: 350px; float: right;">Je kunt kiezen uit volgende winkels ...</p>';
 	}
 
 	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
