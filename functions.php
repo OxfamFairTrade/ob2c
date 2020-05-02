@@ -3697,13 +3697,14 @@
 	
 	function explain_why_shipping_option_is_lacking() {
 		if ( current_user_can('update_core') ) {
-			// write_log( print_r( WC()->shipping->packages[0]['rates'], true ) );
-			if ( count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
+			if ( count( $available_methods ) < 2 ) {
+				// Binnen template cart/cart-shipping.php bevat $available_methods gewoon WC()->shipping->packages[0]['rates']
 				echo '<tr><td colspan="2" class="shipping-explanation"><label>Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">';
 				// Dit werkt enkel indien blokkage omwille van leeggoed
 				if ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
 					echo 'Omwille van aanwezigheid goederen die niet beschikbaar zijn voor thuislevering.';
-				} elseif ( ! WC()->customer->has_calculated_shipping() ) {
+				} elseif ( strlen( WC()->customer->get_shipping_postcode() ) < 4 ) {
+					// WC()->customer->has_calculated_shipping() werkt niet zoals verwacht
 					echo 'Omdat de postcode nog niet ingevuld is.';
 				} else {
 					echo 'Omdat deze webshop niet thuislevert in de huidige postcode.';
