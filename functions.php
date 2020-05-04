@@ -942,7 +942,7 @@
 	add_action( 'woocommerce_admin_order_data_after_shipping_address', 'ob2c_add_logistic_parameters', 10, 1 );
 
 	function ob2c_add_logistic_parameters( $order ) {
-		echo '<p><strong>Logistieke gegevens:</strong><br/>';
+		echo '<p><strong>Logistieke info:</strong><br/>';
 		$logistics = get_logistic_params( $order );
 		echo number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg';
 		echo '</p>';
@@ -5148,7 +5148,7 @@
 		return 'https://track.bpost.cloud/btr/web/#/search?itemCode='.$tracking_number.'&postalCode='.$order->get_shipping_postcode().'&lang=nl';
 	}
 
-	function get_logistic_params( $order ) {
+	function get_logistic_params( $order, $echo = false ) {
 		if ( ! $order instanceof WC_Order ) {
 			return;
 		}
@@ -5181,7 +5181,9 @@
 					}
 				}
 
-				echo $product->get_name().': '.number_format( $volume / 1000000, 2, ',', '.' ).' liter (x'.$line_item->get_quantity().')<br/>';
+				if ( $echo ) {
+					echo $product->get_name().': '.number_format( $volume / 1000000, 2, ',', '.' ).' liter (x'.$line_item->get_quantity().')<br/>';
+				}
 				$params['volume'] += $line_item->get_quantity() * $volume;
 				$params['weight'] += $line_item->get_quantity() * floatval( $product->get_weight() );
 			} 
