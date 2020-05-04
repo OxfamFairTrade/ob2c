@@ -938,6 +938,16 @@
 		return $args;
 	}
 
+	// Voeg gewicht en volume toe op orderdetail
+	add_action( 'woocommerce_admin_order_data_after_shipping_address', 'ob2c_add_logistic_parameters', 10, 1 );
+
+	function ob2c_add_logistic_parameters( $order ) {
+		echo '<p><strong>Logistieke gegevens:</strong><br/>';
+		$logistics = get_logistic_params( $order );
+		echo number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg';
+		echo '</p>';
+	}
+
 	// Voeg acties toe op orderdetailscherm om status te wijzigen (want keuzemenu bestelstatus geblokkeerd!)
 	add_action( 'woocommerce_order_actions', 'add_order_status_changing_actions' );
 
@@ -1676,28 +1686,26 @@
 				'priority' => 31,
 			)
 		);
-
-		if ( current_user_can('update_core') ) {
-			// Verbergen indien reeds geabonneerd?
-			$address_fields['digizine'] = array(
-				'id' => 'digizine',
-				'type' => 'checkbox',
-				'label' => 'Abonneer mij op <a href="https://www.oxfamwereldwinkels.be/digizine" target="_blank">de maandelijkse nieuwsbrief van Oxfam-Wereldwinkels</a>',
-				'class' => array('form-row-wide no-margin-bottom'),
-				'clear' => true,
-				'required' => false,
-				'priority' => 101,
-			);
-			$address_fields['marketing'] = array(
-				'id' => 'marketing',
-				'type' => 'checkbox',
-				'label' => 'Stuur mij commerciële mails (promoties, nieuwigheden, ...)',
-				'class' => array('form-row-wide no-margin-bottom'),
-				'clear' => true,
-				'required' => false,
-				'priority' => 102,
-			);
-		}
+		
+		// Verbergen indien reeds geabonneerd?
+		$address_fields['digizine'] = array(
+			'id' => 'digizine',
+			'type' => 'checkbox',
+			'label' => 'Abonneer mij op <a href="https://us3.campaign-archive.com/home/?u=d66c099224e521aa1d87da403&id=5cce3040aa" target="_blank">de maandelijkse nieuwsbrief van Oxfam-Wereldwinkels</a>',
+			'class' => array('form-row-wide no-margin-bottom'),
+			'clear' => true,
+			'required' => false,
+			'priority' => 101,
+		);
+		$address_fields['marketing'] = array(
+			'id' => 'marketing',
+			'type' => 'checkbox',
+			'label' => 'Stuur mij commerciële mails (promoties, nieuwigheden, ...)',
+			'class' => array('form-row-wide no-margin-bottom'),
+			'clear' => true,
+			'required' => false,
+			'priority' => 102,
+		);
 
 		return $address_fields;
 	}
@@ -1913,18 +1921,25 @@
 
 		if ( $data['digizine'] === 1 or $data['marketing'] === 1 ) {
 			// Check m.b.v. MailChimp API of $data['billing_email'] al in de lijst zit
+			// BIJ VOORKEUR ASYNCHROON DOEN ZODAT HET CHECKOUT NIET VERTRAAGT
 			$response = get_mailchimp_response_by_email( $data['billing_email'] );
 			if ( $response['response']['code'] == 200 ) {
 				$body = json_decode( $response['body'] );
 
 				if ( $body->status !== 'subscribed' ) {
 					// Subscribe member (kan dit ook indien unsubscribed/cleaned?)
+					$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tAdd member to Digizine list\n";
+					file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
 				}
 
 				if ( $data['marketing'] === 1 ) {
 					// Zet marketing_permission_id c1cbf23458 aan (ID blijft bewaard als tekst wijzigt)
+					$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission c1cbf23458\n";
+					file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
 				} else {
 					// Zet marketing_permission_id 496c25fb49 aan (ID blijft bewaard als tekst wijzigt)
+					$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission 496c25fb49\n";
+					file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
 				}
 			}
 		}
@@ -2174,8 +2189,8 @@
 			$objPHPExcel->getActiveSheet()->setCellValue( 'A2', $order->get_billing_phone() )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
 			// Logistieke gegevens invullen
-			$values = get_logistic_params( $order );
-			$objPHPExcel->getActiveSheet()->setCellValue( 'A5', number_format( $values['volume'], 1, ',', '.' ).' liter / '.number_format( $values['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$values['maximum'].' cm' );
+			$logistics = get_logistic_params( $order );
+			$objPHPExcel->getActiveSheet()->setCellValue( 'A5', number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$logistics['maximum'].' cm' );
 
 			$i = 8;
 			// Vul de artikeldata item per item in vanaf rij 8
