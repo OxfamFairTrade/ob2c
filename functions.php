@@ -1703,7 +1703,8 @@
 		$address_fields['marketing'] = array(
 			'id' => 'marketing',
 			'type' => 'checkbox',
-			'label' => 'Stuur mij commerciële mails (promoties, nieuwigheden, ...)',
+			// <span> is nodig om lay-out van checkbox in overeenstemming te brengen met andere
+			'label' => '<span>Stuur mij commerciële mails (promoties, nieuwigheden, ...)</span>',
 			'class' => array('form-row-wide no-margin-bottom'),
 			'label_class' => array('woocommerce-form__label woocommerce-form__label-for-checkbox'),
 			'input_class' => array('woocommerce-form__input woocommerce-form__input-checkbox'),
@@ -1904,7 +1905,7 @@
 				// Indien er echt geen huisnummer is, moet Z/N ingevuld worden
 				if ( preg_match( '/([0-9]+|ZN)/i', $fields[ $key_to_check ] ) === 0 ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$fields[ $key_to_check ]."'\n";
-					file_put_contents( "housenumber_errors.csv", $str, FILE_APPEND );
+					file_put_contents( "../housenumber_errors.csv", $str, FILE_APPEND );
 					$errors->add( 'validation', __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ) );
 				}
 			}
@@ -3391,7 +3392,7 @@
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
 					if ( ! current_user_can('update_core') ) {
-						file_put_contents( "shipping_errors.csv", $str, FILE_APPEND );
+						file_put_contents( "../shipping_errors.csv", $str, FILE_APPEND );
 					}
 					
 					if ( WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
