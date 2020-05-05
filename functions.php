@@ -1850,7 +1850,7 @@
 		}
 
 		if ( $key === 'marketing' ) {
-			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We mailen je hooguit 1x per week. Je kunt je voorkeuren op elk ogenblik aanpassen.</span></span></label>', $field );
+			$field = str_replace( '</span></label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We mailen je hooguit 1x per week. Je kunt je voorkeuren op elk ogenblik aanpassen.</span></span></span></label>', $field );
 		}
 
 		return $field;
