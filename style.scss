@@ -125,9 +125,18 @@ body.portal .nm-header.menu-centered {
 }
 
 body.portal {
-	.input-group {
+	.portal-header {
+		background-image: url('https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/images/overzicht-producten@2x.png');
+		background-repeat: no-repeat;
+		background-color: #DEDFE4;
+		background-size: contain;
+		background-position: right center;
 		text-align: center;
+	}
+
+	.input-group {
 		font-size: 105%;
+		display: block;
 	}
 
 	.minimal {
@@ -201,14 +210,6 @@ body.portal {
 
 /* Enkel voor homepage van portaal! */ 
 body.portal.home {
-	.portal-header {
-		background-image: url('https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/images/overzicht-producten@2x.png');
-		background-repeat: no-repeat;
-		background-color: #DEDFE4;
-		background-size: contain;
-		background-position: right center;
-	}
-
 	/* Wijzig achtergrondkleur en hoogte */
 	div.nm-page-wrap-inner > #nm-header-placeholder {
 		background-color: $fluo-green;
@@ -251,11 +252,17 @@ body.portal.home {
 		.wpsl-input {
 			label {
 				width: initial;
-				color: white;
+				color: $black;
 			}
 
 			#wpsl-search-input {
 				height: 31px;
+				width: 215px;
+				border-top-left-radius: 25px;
+				border-bottom-left-radius: 25px;
+				border-right: none;
+				padding-right: 0.25em;
+				left: 5px;
 			}
 		}
 

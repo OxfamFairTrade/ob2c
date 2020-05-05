@@ -397,7 +397,7 @@
 		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template('listing'), 'addSku' ) . "\r\n";
 		// TO DO: Correcte link naar webshop toevoegen
-		$listing_template .= "\t\t\t\t" . '<a href="/?addSku='.$_GET['addSku'].'"><button class="button-go-to-webshop" style="float: right;">Naar de webshop</button></a>' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<a href="/?addSku='.$_GET['addSku'].'"><button class="button-go-to-webshop" style="float: right;">Bestel online en haal af</button></a>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %></span>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<% if ( address2 ) { %>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address2 %></span>' . "\r\n";
@@ -5279,10 +5279,10 @@
 		$msg .= '<h2>Shop online in 1 van onze '.($sites-1).' webshops</h2>';
 		$msg .= '<p>Ze zijn verbonden aan een lokale wereldwinkel. Thuislevering is mogelijk over heel Vlaanderen!</p>';
 		$msg .= '<p>'.__( 'Vul je postcode in en ontvang je bestelling aan huis:', 'oxfam-webshop' );
-		$msg .= '<div class="input-group">';
+		$msg .= '<span class="input-group">';
 		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
 		$msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
-		$msg .= '</div></p>';
+		$msg .= '</span></p>';
 		$msg .= '</div>';
 		foreach ( $all_zips as $zip => $city ) {
 			if ( isset( $global_zips[$zip] ) ) {
