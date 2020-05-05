@@ -109,18 +109,16 @@ body.portal .nm-header.menu-centered {
 		line-height: 110px;
 	}
 
-	.nm-main-menu .hoofdtitel {
-		color: black;
-		font-size: 2em;
-		font-weight: bold;
-		position: relative;
-		top: 50%;
-		transform: translateY(-50%);
-		margin: 0 auto;
-	}
-
 	.nm-right-menu .nm-logo {
-		height: 110px;
+		.hoofdtitel {
+			color: black;
+			font-size: 2em;
+			font-weight: bold;
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+			margin: 0 auto;
+		}
 	}
 }
 
@@ -219,11 +217,6 @@ body.portal.home {
 	/* Verstop placeholder */
 	div.nm-page-wrap-inner > #nm-header {
 		background-color: transparent;
-	}
-
-	/* Wijzig kleur centrale tekst */
-	.nm-header.menu-centered .nm-main-menu .hoofdtitel {
-		color: white;
 	}
 
 	img.placemarker {
@@ -857,14 +850,6 @@ div.nm-feature.layout-centered {
 
 @media (max-width: 1400px) {
 	body.portal .nm-header.menu-centered {
-
-		.nm-main-menu .hoofdtitel {
-			max-width: 500px;
-			line-height: 125%;
-			position: relative;
-			right: -3%;
-		}
-
 		.nm-header-logo {
 			width: 75%;
 		}
@@ -933,23 +918,8 @@ div.nm-feature.layout-centered {
 			top: -5px;
 		}
 
-		.nm-main-menu {
-			display: block;
-			max-width: 100%;
-			font-size: 70%;
-
-			.hoofdtitel {
-				max-width: 350px;
-				top: 55%;
-			}
-		}
-
-		.nm-right-menu {
-			line-height: 90px;
-
-			.nm-logo {
-				height: 90px;
-			}
+		.nm-right-menu .nm-logo {
+			// display: none;
 		}
 	}
 
@@ -1000,8 +970,8 @@ div.nm-feature.layout-centered {
 			text-align: center;
 		}
 
-		.nm-right-menu {
-			display: none;
+		.nm-right-menu .nm-logo {
+			// display: none;
 		}
 	}
 }

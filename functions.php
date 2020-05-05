@@ -5123,7 +5123,7 @@
 	add_shortcode( 'openingsuren', 'print_office_hours' );
 	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	add_shortcode( 'toon_inleiding', 'print_welcome' );
-	add_shortcode( 'toon_shops', 'print_store_selector' );
+	// add_shortcode( 'toon_shops', 'print_store_selector' );
 	// add_shortcode( 'toon_kaart', 'print_store_locator_map' );
 	add_shortcode( 'toon_thuislevering', 'print_delivery_snippet' );
 	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
