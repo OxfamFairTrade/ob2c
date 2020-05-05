@@ -146,6 +146,7 @@
                 }
 
                 // Get current category's direct children
+                // HOUDT GEEN REKENING MET VOORRAADSTATUS
                 $current_cat_direct_children = get_terms( 'product_cat',
                     array(
                         'fields'       	=> 'ids',
@@ -154,6 +155,21 @@
                         'hide_empty'   	=> $hide_empty
                     )
                 );
+
+                if ( 1 == 0 ) {
+                    $start = microtime(true);
+                    foreach ( $current_cat_direct_children as $key => $category_id ) {
+                        $products = wc_get_products( array(
+                            // MOET EEN SLUG ZIJN
+                            'category' => $category_id,
+                            // WERKT NOG NIET IN DEZE WC-VERSIE
+                            'stock_status' => 'instock',
+                        ) );
+                        unset( $current_cat_direct_children[ $key ] );
+                    }
+                    write_log( number_format( microtime(true)-$start, 4, ',', '.' )." s => EMPTY SUBCATEGORIES DITCHED" );
+                }
+
                 $category_has_children = ( empty( $current_cat_direct_children ) ) ? false : true;
             } else {
                 // No current category, set "All" as current (if not product tag archive or search)
