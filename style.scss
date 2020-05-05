@@ -21,8 +21,11 @@ $see-through-white: rgba(255, 255, 255, 0.5);
 $light-grey: #cccccc;
 $shop-grey: #707070;
 $brown-grey: rgba(133, 107, 95, 0.5);
+// Wijzigen naar #5ccb84?
 $fluo-green: #57cc82;
 $oxfam-green: #61a534;
+$bright-red: #ff2e2e;
+$pale-blue: #60aafd;
 $pickup: rgb(0, 175, 233);
 $delivery: rgb(255, 99, 133);
 $black: #2c2c2c;
@@ -200,8 +203,8 @@ body.portal.home {
 	.portal-header {
 		background-image: url('https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/images/overzicht-producten@2x.png');
 		background-repeat: no-repeat;
-		background-color: grey;
-		background-size: cover;
+		background-color: #DEDFE4;
+		background-size: contain;
 		background-position: right center;
 	}
 
@@ -223,15 +226,6 @@ body.portal.home {
 
 	img.placemarker {
 		max-height: 40px;
-	}
-
-	h3.afhaling,
-	h3.thuislevering {
-		text-align: center;
-		font-size: 140%;
-		color: $black;
-		max-width: 400px;
-		margin: 0 auto;
 	}
 
 	.nm_column:not(:last-child) {
@@ -270,11 +264,54 @@ body.portal.home {
 		width: 74%;
 	}
 
+	.button-go-to-webshop {
+		background-color: #5CCB84;
+		border-radius: 5px;
+		color: white;
+	}
+
 	.wpsl-infobox {
 		border-radius: 10px;
 		border-color: white;
 		border-width: 5px;
 	}
+}
+
+.general-store-notice {
+	padding: 0.5em;
+	width: 100%;
+	color: white;
+	background-color: $pale-blue;
+
+	p {
+		font-size: 1.2em;
+		line-height: 2em;
+		text-align: center;
+		margin: 0 auto;
+		position: relative;
+
+		&.free-shipping:after {
+			content: '';
+			display: inline-block;
+			background-image: url('images/shipping-icon.svg');
+			background-size: contain;
+			background-repeat: no-repeat;
+			width: 2em;
+			height: 2em;
+			margin-left: 0.5em;
+			vertical-align: middle;
+		}
+	}
+}
+
+body.portal.home .general-store-notice {
+	background-color: $bright-red;
+}
+
+.corona-notice {
+	color: $pale-blue;
+	font-style: initial;
+	font-size: 0.9em;
 }
 
 
@@ -922,11 +959,6 @@ div.nm-feature.layout-centered {
 
 		.nm_column:not(:first-child) {
 			margin-top: 3em;
-		}
-
-		h3.afhaling,
-		h3.thuislevering {
-			max-width: 370px;
 		}
 	}
 }
