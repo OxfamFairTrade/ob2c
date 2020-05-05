@@ -608,7 +608,7 @@
 			// Indien het order rechtstreeks afgerond wordt vanuit Sendcloud gebeurt het onder de user met ID 1 (= Frederik)
 			if ( get_current_blog_id() == 24 ) {
 				$owner = 'antwerpen';
-				wp_mail( get_site_option('admin_email'), 'Ongeclaimde bestelling '.$order->get_order_number().' afgewerkt vanuit Sendcloud', 'Dus automatisch geclaimd door Antwerpen!' );
+				// write_log("Ongeclaimde bestelling ".$order->get_order_number()." afgewerkt vanuit Sendcloud en gekoppeld aan Antwerpen!");
 			}
 		}
 		
@@ -1691,8 +1691,11 @@
 		$address_fields['digizine'] = array(
 			'id' => 'digizine',
 			'type' => 'checkbox',
-			'label' => 'Abonneer mij op <a href="https://us3.campaign-archive.com/home/?u=d66c099224e521aa1d87da403&id=5cce3040aa" target="_blank">de maandelijkse nieuwsbrief van Oxfam-Wereldwinkels</a>',
+			// <span> is nodig om lay-out van checkbox in overeenstemming te brengen met andere
+			'label' => '<span>Abonneer mij op <a href="https://us3.campaign-archive.com/home/?u=d66c099224e521aa1d87da403&id=5cce3040aa" target="_blank">de maandelijkse nieuwsbrief van Oxfam-Wereldwinkels</a></span>',
 			'class' => array('form-row-wide no-margin-bottom'),
+			'label_class' => array('woocommerce-form__label woocommerce-form__label-for-checkbox'),
+			'input_class' => array('woocommerce-form__input woocommerce-form__input-checkbox'),
 			'clear' => true,
 			'required' => false,
 			'priority' => 101,
@@ -1702,6 +1705,8 @@
 			'type' => 'checkbox',
 			'label' => 'Stuur mij commerciële mails (promoties, nieuwigheden, ...)',
 			'class' => array('form-row-wide no-margin-bottom'),
+			'label_class' => array('woocommerce-form__label woocommerce-form__label-for-checkbox'),
+			'input_class' => array('woocommerce-form__input woocommerce-form__input-checkbox'),
 			'clear' => true,
 			'required' => false,
 			'priority' => 102,
@@ -5457,7 +5462,7 @@
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brugge', 'knokke', 'gistel', 'evergem' );
 		if ( in_array( $atts['id'], $exceptions ) ) {
-			$holidays = array('2020-05-01');
+			$holidays = array('2020-05-21');
 		} else {
 			// Uitzondering voor Borgerhout en Merksem
 			if ( $atts['id'] == 3316 or $atts['id'] == 3646 ) {

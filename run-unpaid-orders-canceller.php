@@ -13,6 +13,11 @@
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'Clean & Tidy' );
 			
+			// Let op met SPF-verificatie nu dit een '@oft.be'-adres geworden is MAILGUN TO THE RESCUE
+			$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
+			$headers[] = 'Bcc: frederik.neirynck@oft.be';
+			$headers[] = 'Content-Type: text/html';
+				
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
 				
@@ -46,11 +51,6 @@
 				);
 				$unfinished_orders = wc_get_orders( $unfinished_args );
 
-				// Let op met SPF-verificatie nu dit een '@oft.be'-adres geworden is MAILGUN TO THE RESCUE
-				$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
-				$headers[] = 'Bcc: frederik.neirynck@oft.be';
-				$headers[] = 'Content-Type: text/html';
-				
 				foreach ( $unfinished_orders as $order ) {
 					// Sluit B2B-orders (die geen gegarandeerde doorlooptijd hebben) uit
 					if ( $order->get_meta('is_b2b_sale') !== 'yes' and $order->get_meta('estimated_delivery') !== '' ) {

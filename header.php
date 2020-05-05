@@ -177,8 +177,11 @@
 							if ( get_current_blog_id() === 9 or get_current_blog_id() === 15 ) {
 								// Uitzondering voor De Pinte en Gentbrugge
 								echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
+							} elseif ( get_current_blog_id() === 13 or get_current_blog_id() === 26 ) {
+								// Uitzondering voor Evergem en Regio Brussel
+								echo 'Nu met thuislevering <b><u>op vrijdag</u></b>, gratis vanaf 50 euro!';
 							} elseif ( get_current_blog_id() === 27 ) {
-								// Uitzondering voor Hasselt
+								// Uitzondering voor Regio Hasselt
 								echo '<b><u>Gratis</u></b> thuislevering in Hasselt! (elders vanaf 50 euro)</p>';
 							} elseif ( get_current_blog_id() === 37 ) {
 								// Uitzondering voor Wuustwezel
