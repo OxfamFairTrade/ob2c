@@ -400,7 +400,7 @@
 		return $info_window_template;
 	}
 
-	// Voeg nodenummer toe als extra metadata op winkel
+	// Voeg post-ID toe als extra metadata op winkel
 	add_filter( 'wpsl_meta_box_fields', 'custom_meta_box_fields' );
 
 	function custom_meta_box_fields( $meta_fields ) {
@@ -628,7 +628,7 @@
 		}
 
 		if ( ! $owner ) {
-			// Koppel als laatste redmiddel aan de hoofdwinkel (op basis van het nodenummer) 
+			// Koppel als laatste redmiddel aan de locatie van de hoofdwinkel
 			$owner = mb_strtolower( get_oxfam_shop_data('city') );
 		}
 
@@ -756,7 +756,7 @@
 							$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
 							if ( $shop_post_id > 0 ) {
 								// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de openingsuren
-								$shop_address = get_company_address( 0, $shop_post_id );
+								$shop_address = get_company_address( $shop_post_id );
 							}
 						}
 						break;
@@ -5460,10 +5460,10 @@
 
 	function print_office_hours( $atts = [] ) {
 		// Overschrijf defaults met expliciete data van de gebruiker MAG VOORZICHTIG UITGEFASEERD WORDEN
-		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
 		
 		$output = '';
-		$days = get_office_hours( $atts['node'], $atts['id'] );
+		$days = get_office_hours( NULL, $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brugge', 'knokke', 'gistel', 'evergem' );
 		if ( in_array( $atts['id'], $exceptions ) ) {
@@ -5543,8 +5543,8 @@
 
 	function print_oxfam_shop_data( $key, $atts ) {
 		// Overschrijf defaults door opgegeven attributen
-		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'id' => get_option('oxfam_shop_post_id') ), $atts );
-		return get_oxfam_shop_data( $key, $atts['node'], false, $atts['id'] );
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
+		return get_oxfam_shop_data( $key, 0, false, $atts['id'] );
 	}
 
 	function print_mail() {
@@ -5872,9 +5872,9 @@
 		return get_company_address()."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data('telephone')."<br/>".get_oxfam_shop_data('tax');
 	}
 
-	function get_company_address( $node = 0, $shop_post_id = 0 ) {
+	function get_company_address( $shop_post_id = 0 ) {
 		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
-		return get_oxfam_shop_data( 'place', $node, false, $shop_post_id )."<br/>".get_oxfam_shop_data( 'zipcode', $node, false, $shop_post_id )." ".get_oxfam_shop_data( 'city', $node, false, $shop_post_id );
+		return get_oxfam_shop_data( 'place', 0, false, $shop_post_id )."<br/>".get_oxfam_shop_data( 'zipcode', 0, false, $shop_post_id )." ".get_oxfam_shop_data( 'city', 0, false, $shop_post_id );
 	}
 
 	function get_full_company() {
