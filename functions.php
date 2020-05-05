@@ -5121,7 +5121,6 @@
 	add_shortcode( 'telefoon', 'print_telephone' );
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
-	add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	add_shortcode( 'toon_inleiding', 'print_welcome' );
 	add_shortcode( 'toon_shops', 'print_store_selector' );

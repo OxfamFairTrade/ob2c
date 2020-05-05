@@ -22,10 +22,8 @@
             <?php ubermenu( 'main', array( 'theme_location' => 'main-menu' ) ); ?>
         <?php else : ?>               
         <nav class="nm-main-menu">
-            <!-- GEWIJZIGD: Centrale titel toevoegen op portaal, en anders het centrale menu -->
-            <?php if ( is_main_site() ) : ?>
-                <p class="hoofdtitel"><?php echo print_portal_title(); ?></p>
-            <?php else : ?>
+            <!-- GEWIJZIGD: Centrale menu niet toevoegen op portaal -->
+            <?php if ( ! is_main_site() ) : ?>
                 <ul id="nm-main-menu-ul" class="nm-menu">
                     <?php
                         wp_nav_menu( array(
@@ -41,9 +39,9 @@
         <?php endif; ?>
 
         <nav class="nm-right-menu">
-            <!-- GEWIJZIGD: Rechterlogo toevoegen op portaal, en anders het rechtermenu -->
+            <!-- GEWIJZIGD: Slogan toevoegen op portaal, en anders het rechtermenu -->
             <?php if ( is_main_site() ) : ?>
-                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/tekstballon.png" class="nm-logo">
+                <p class="hoofdtitel"><?php echo print_portal_title(); ?></p>
             <?php else : ?>
                 <ul id="nm-right-menu-ul" class="nm-menu">
                     <?php
