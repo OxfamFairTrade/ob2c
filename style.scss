@@ -28,6 +28,7 @@ $bright-red: #ff2e2e;
 $pale-blue: #60aafd;
 $pickup: rgb(0, 175, 233);
 $delivery: rgb(255, 99, 133);
+// Wijzigen naar #434343?
 $black: #2c2c2c;
 
 
@@ -237,7 +238,7 @@ body.portal.home {
 	}
 
 	.wpsl-search {
-		background-color: $fluo-green;
+		background-color: transparent;
 		color: $black;
 	}
 
@@ -247,12 +248,25 @@ body.portal.home {
 			text-align: center;
 		}
 
-		#wpsl-search-input {
-			height: 31px;
+		.wpsl-input {
+			label {
+				width: initial;
+				color: white;
+			}
+
+			#wpsl-search-input {
+				height: 31px;
+			}
 		}
 
-		.wpsl-search-btn-wrap {
-			float: right !important;
+		#wpsl-search-btn {
+			height: 31px;
+			padding: 2px 10px;
+			font-size: 0.95em;
+			background: white;
+			color: $black;
+			border: none;
+			border-radius: 2em;
 		}
 	}
 
@@ -268,6 +282,7 @@ body.portal.home {
 		background-color: #5CCB84;
 		border-radius: 5px;
 		color: white;
+		border-width: 0;
 	}
 
 	.wpsl-infobox {
