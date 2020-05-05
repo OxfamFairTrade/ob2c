@@ -109,8 +109,7 @@ body.portal .nm-header.menu-centered {
 		line-height: 110px;
 	}
 
-	.nm-right-menu .nm-logo {
-		.hoofdtitel {
+	.nm-right-menu .hoofdtitel {
 			color: black;
 			font-size: 2em;
 			font-weight: bold;
@@ -134,7 +133,7 @@ body.portal {
 
 	.input-group {
 		font-size: 105%;
-		display: block;
+		display: inline-block;
 	}
 
 	.minimal {
@@ -918,7 +917,7 @@ div.nm-feature.layout-centered {
 			top: -5px;
 		}
 
-		.nm-right-menu .nm-logo {
+		.nm-right-menu .hoofdtitel {
 			// display: none;
 		}
 	}
@@ -970,7 +969,7 @@ div.nm-feature.layout-centered {
 			text-align: center;
 		}
 
-		.nm-right-menu .nm-logo {
+		.nm-right-menu .hoofdtitel {
 			// display: none;
 		}
 	}
