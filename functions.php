@@ -752,10 +752,14 @@
 					if ( stristr( $location['shipping_company'], $order->get_meta('claimed_by') ) ) {
 						$parts = explode( 'id=', $location['note'] );
 						if ( isset( $parts[1] ) ) {
-							// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de openingsuren
-							$shop_address = get_company_address( 0, str_replace( ']', '', $parts[1] ) );
-							break;
+							// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
+							$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
+							if ( $shop_post_id > 0 ) {
+								// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de openingsuren
+								$shop_address = get_company_address( 0, $shop_post_id );
+							}
 						}
+						break;
 					}
 				}
 			}
@@ -5806,7 +5810,7 @@
 					// Uitzonderingen voor Deinze
 					switch ($key) {
 						case 'telephone':
-							return call_user_func( 'format_'.$key, '0493082695', '.'	 );
+							return call_user_func( 'format_'.$key, '0493082695', '.' );
 					}
 				}
 				
