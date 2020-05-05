@@ -396,7 +396,8 @@
 		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
 		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template('listing'), 'addSku' ) . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<a href="'.append_get_parameter_to_href( wpsl_store_header_template('listing'), 'addSku' ).'"><button style="float: right;">Naar de webshop</button></a>' . "\r\n";
+		// TO DO: Correcte link naar webshop toevoegen
+		$listing_template .= "\t\t\t\t" . '<a href="/?addSku='.$_GET['addSku'].'"><button style="float: right;">Naar de webshop</button></a>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %></span>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<% if ( address2 ) { %>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address2 %></span>' . "\r\n";
@@ -5273,11 +5274,15 @@
 	function print_store_selector() {
 		$global_zips = get_shops();
 		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
-		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-levering.png" class="placemarker">';
-		$msg .= '<h3 class="thuislevering">'.__( 'Blokje uitleg bij store selector op basis van postcode.', 'oxfam-webshop' ).'</h3><br/>';
+		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
+		$msg = '<div class="portal-header">';
+		$msg .= '<h2>Shop online in 1 van onze '.($sites-1).' webshops</h2>';
+		$msg .= '<p>Ze zijn verbonden aan een lokale wereldwinkel. Thuislevering is mogelijk over heel Vlaanderen!</p>';
+		$msg .= '<h3 class="thuislevering">'.__( 'Vul je postcode in en ontvang je bestelling aan huis:', 'oxfam-webshop' ).'</h3><br/>';
 		$msg .= '<div class="input-group">';
 		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
 		$msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
+		$msg .= '</div>';
 		$msg .= '</div>';
 		foreach ( $all_zips as $zip => $city ) {
 			if ( isset( $global_zips[$zip] ) ) {

@@ -197,6 +197,14 @@ body.portal {
 
 /* Enkel voor homepage van portaal! */ 
 body.portal.home {
+	.portal-header {
+		background-image: url('https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/images/overzicht-producten@2x.png');
+		background-repeat: no-repeat;
+		background-color: grey;
+		background-size: cover;
+		background-position: right center;
+	}
+
 	/* Wijzig achtergrondkleur en hoogte */
 	div.nm-page-wrap-inner > #nm-header-placeholder {
 		background-color: $fluo-green;
