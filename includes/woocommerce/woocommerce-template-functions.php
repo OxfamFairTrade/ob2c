@@ -146,28 +146,33 @@
                 }
 
                 // Get current category's direct children
-                // HOUDT GEEN REKENING MET VOORRAADSTATUS
                 $current_cat_direct_children = get_terms( 'product_cat',
                     array(
-                        'fields'       	=> 'ids',
+                        // GEWIJZIGD: Retourneer ook slugs
+                        'fields'        => 'id=>slug',
                         'parent'       	=> $current_cat_id,
                         'hierarchical'	=> true,
                         'hide_empty'   	=> $hide_empty
                     )
                 );
 
+                // HOU REKENING MET VOORRAADSTATUS
                 if ( 1 == 0 ) {
                     $start = microtime(true);
-                    foreach ( $current_cat_direct_children as $key => $category_id ) {
+                    foreach ( $current_cat_direct_children as $category_id => $category_slug ) {
                         $products = wc_get_products( array(
-                            // MOET EEN SLUG ZIJN
-                            'category' => $category_id,
+                            'category' => $category_slug,
                             // WERKT NOG NIET IN DEZE WC-VERSIE
                             'stock_status' => 'instock',
+                            'visibility' => 'catalog',
+                            'return' => 'ids'
                         ) );
-                        unset( $current_cat_direct_children[ $key ] );
+                        if ( count( $products ) === 0 ) {
+                            unset( $current_cat_direct_children[ $category_id ] );
+                            write_log( number_format( microtime(true)-$start, 4, ',', '.' )." s => EMPTY SUBCATEGORY ".$category_slug." DITCHED" );
+                        }
                     }
-                    write_log( number_format( microtime(true)-$start, 4, ',', '.' )." s => EMPTY SUBCATEGORIES DITCHED" );
+                    write_log( number_format( microtime(true)-$start, 4, ',', '.' )." s => EMPTY SUBCATEGORIES CHECKED" );
                 }
 
                 $category_has_children = ( empty( $current_cat_direct_children ) ) ? false : true;

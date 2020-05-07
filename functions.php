@@ -62,7 +62,7 @@
 				}
 			}
 		} else {
-			// Dit update de cookie bij elke pageview!
+			// Dit updatet de cookie bij elke pageview!
 			setcookie( 'latest_subsite', get_current_blog_id(), time() + 30*DAY_IN_SECONDS, '/' );
 			if ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
 				add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
@@ -3199,8 +3199,8 @@
 						$from = strtotime( '+3 weekdays', $from );
 					}
 
-					// Zoek de eerste vrijdag na de volgende middagdeadline (wordt wegens openingsuren automatisch zaterdagochtend)
-					$timestamp = strtotime( 'next Friday', $from );
+					// Zoek de eerste donderdag na de volgende middagdeadline (wordt wegens openingsuren automatisch vrijdagochtend)
+					$timestamp = strtotime( 'next Thursday', $from );
 
 					// Skip check op uitzonderlijke sluitingsdagen
 					return find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
@@ -3412,6 +3412,17 @@
 						$global_zips = get_shops();
 						if ( isset( $global_zips[$zip] ) ) {
 							$url = $global_zips[$zip];
+							// TO DO: COMMANDO TOEVOEGEN OM WINKELMANDJE OVER TE ZETTEN
+							$skus = array();
+							if ( WC()->session->has_session() and current_user_can('update_core') ) {
+								foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
+									$product_in_cart = $values['data'];
+									$skus[] = $product_in_cart->get_sku();
+								}
+							}
+							if ( count( $skus ) > 0 ) {
+								$url .= '?addSku='.implode( ',', $skus );
+							}
 							// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices('error') retourneert te checken
 							wc_add_notice( sprintf( __('Foutmelding na het ingeven van postcode %1$s waar deze webshop geen thuislevering voor organiseert, inclusief URL %2$s van webshop die dat wel doet.', 'oxfam-webshop' ), $zip, $url ), 'error' );
 							WC()->session->set( 'no_zip_delivery_in_'.get_current_blog_id().'_for_'.$zip, 'SHOWN' );
