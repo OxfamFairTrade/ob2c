@@ -423,6 +423,21 @@
 		return $listing_template;
 	}
 
+	// Zet de winkels met webshop bovenaan, tot een maximum range van 30 kilometer
+	add_filter( 'wpsl_store_data', 'custom_result_sort' );
+
+	function custom_result_sort( $store_meta ) {
+		$custom_sort = array();
+		foreach ( $store_meta as $key => $row ) {
+			write_log( print_r( $row, true ) );
+			$custom_sort[$key] = $row['city'];
+		}
+
+		array_multisort( $custom_sort, SORT_DESC, SORT_REGULAR, $store_meta );
+
+		return $store_meta;
+	}
+
 	// Wijzig de weergave van het infovenster
 	add_filter( 'wpsl_info_window_template', 'custom_info_window_template' );
 
@@ -534,6 +549,23 @@
 			return true;
 		}
 		// Terug te plaatsen winkelboodschap: "We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening."
+	}
+
+	add_action( 'woocommerce_order_status_processing', 'warn_if_processing_from_invalid_status', 1, 2 );
+	add_action( 'woocommerce_order_status_completed', 'warn_if_completed_from_invalid_status', 1, 2 );
+	
+	function warn_if_processing_from_invalid_status( $order_id, $order ) {
+		if ( in_array( $order->get_status(), array( 'completed', 'cancelled', 'refunded' ) ) ) {
+			wp_mail( get_site_option('admin_email'), 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging', 'Gelieve te checken!' );
+			throw new Exception('Invalid status change!');
+		}
+	}
+
+	function warn_if_completed_from_invalid_status( $order_id, $order ) {
+		if ( in_array( $order->get_status(), array( 'pending', 'cancelled', 'refunded' ) ) ) {
+			wp_mail( get_site_option('admin_email'), 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging', 'Gelieve te checken!' );
+			throw new Exception('Invalid status change!');
+		}
 	}
 
 	// Functie is niet gebaseerd op eigenschappen van gebruikers en dus al zeer vroeg al bepaald (geen 'init' nodig)
