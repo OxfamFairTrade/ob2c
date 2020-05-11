@@ -21,16 +21,17 @@
 					settings_fields( 'oxfam-options-global' );
 				} else {
 					// Er lijkt slechts één groep per keer opgeslagen te kunnen worden!
-					// BEVAT GEEN OPTIES MEER, LAAT STAAN VOOR DE TOEKOMST
+					// BEVAT GEEN OPTIES MEER MAAR LATEN STAAN VOOR DE TOEKOMST
 					// settings_fields( 'oxfam-options-local' );
 				}
 
-				Mollie_Autoloader::register();
-				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
+				// IS NIET MEER BESCHIKBAAR
+				// Mollie_Autoloader::register();
+				// $mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 				$partner_id_customer = get_option( 'oxfam_mollie_partner_id', 2485891 );
 				
 				// Check of we niet op de hoofdaccount zitten, want anders fatale API-error
-				if ( $partner_id_customer != 2485891 and $partner_id_customer > 2000000 ) {
+				if ( $partner_id_customer != 2485891 and $partner_id_customer > 2000000 and 1 === 2 ) {
 					// Verhinder doorklikken naar echte account op demosites
 					if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 						$login_link = $mollie->getLoginLink( $partner_id_customer );
