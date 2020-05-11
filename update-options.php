@@ -96,8 +96,8 @@
 					}
 				} else {
 					echo "<tr>";
-						echo "<th class='left' style='color: red;'>API ERROR</th>";
-						echo "<td class='right'>Gelieve een geldige Mollie-ID op te geven!</td>";
+						echo "<th class='left' style='color: red;'>Reseller API Deprecated</th>";
+						echo "<td class='right'>Helaas kunnen we hier geen automatische inloglink naar jullie Mollie-account meer tonen. Gelieve handmatig in te loggen via <a href='https://www.mollie.com/dashboard/login' target='_blank'>mollie.com</a>. We bekijken of er alternatieve oplossingen zijn om deze functionaliteit terug te brengen.</td>";
 					echo "</tr>";
 				}
 				if ( does_sendcloud_delivery() ) {
