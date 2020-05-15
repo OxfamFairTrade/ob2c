@@ -608,7 +608,7 @@
 			// Indien het order rechtstreeks afgerond wordt vanuit Sendcloud gebeurt het onder de user met ID 1 (= Frederik)
 			if ( get_current_blog_id() == 24 ) {
 				$owner = 'antwerpen';
-				// write_log("Ongeclaimde bestelling ".$order->get_order_number()." afgewerkt vanuit Sendcloud en gekoppeld aan Antwerpen!");
+				write_log("Ongeclaimde bestelling ".$order->get_order_number()." afgewerkt vanuit Sendcloud en gekoppeld aan Antwerpen!");
 			}
 		}
 		
@@ -627,7 +627,8 @@
 			}
 		}
 
-		if ( ! $owner ) {
+		if ( ! isset( $owner ) ) {
+			write_log("Geen eigenaar gevonden voor ongeclaimde bestelling ".$order->get_order_number()."!");
 			// Koppel als laatste redmiddel aan de locatie van de hoofdwinkel
 			$owner = mb_strtolower( get_oxfam_shop_data('city') );
 		}
