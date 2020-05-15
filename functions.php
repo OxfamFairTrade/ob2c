@@ -492,13 +492,19 @@
 		// Terug te plaatsen winkelboodschap: "We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening."
 	}
 
-	add_action( 'woocommerce_order_status_pending_to_completed', 'warn_if_completed_from_invalid_status' );
-	add_action( 'woocommerce_order_status_cancelled_to_completed', 'warn_if_completed_from_invalid_status' );
-	add_action( 'woocommerce_order_status_refunded_to_completed', 'warn_if_completed_from_invalid_status' );
-
-	function warn_if_completed_from_invalid_status( $order_id ) {
-		$order = wc_get_order( $order_id );
-		wp_mail( get_site_option('admin_email'), 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging', 'Gelieve te checken!' );
+	add_action( 'woocommerce_order_status_pending_to_completed', 'warn_if_invalid_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_refunded_to_completed', 'warn_if_invalid_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_completed_to_processing', 'warn_if_invalid_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_completed_to_claimed', 'warn_if_invalid_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_cancelled_to_pending', 'warn_if_invalid_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_cancelled_to_processing', 'warn_if_invalid_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_cancelled_to_claimed', 'warn_if_invalid_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_cancelled_to_completed', 'warn_if_invalid_status_change', 10, 2 );
+	
+	function warn_if_invalid_status_change( $order_id, $order ) {
+		// TEGENHOUDEN VAN TRANSITIE M.B.V. EXCEPTION THROW IN 'WOOCOMMERCE_ORDER_STATUS_COMPLETED'-ACTIE KAN NOG NIET IN WC3.0
+		// $order->get_edit_order_url() pas beschikbaar vanaf WC3.3+
+		wp_mail( get_site_option('admin_email'), 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_order_status(), 'Gelieve te checken!' );
 	}
 
 	// Functie is niet gebaseerd op eigenschappen van gebruikers en dus al zeer vroeg al bepaald (geen 'init' nodig)
