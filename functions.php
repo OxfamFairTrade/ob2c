@@ -3097,7 +3097,7 @@
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7)
 	function get_office_hours( $node = 0, $shop_post_id = 0 ) {
 		if ( $node !== 0 ) {
-			write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
+			// write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
 		}
 
 		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
