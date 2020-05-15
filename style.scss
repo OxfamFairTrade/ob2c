@@ -80,18 +80,21 @@ body.portal .nm-header.menu-centered {
 	/* Volledige breedte laten innemen */
 	.nm-header-inner,
 	.nm-header-row,
-	.nm-header-col,
-	.nm-main-menu {
+	.nm-header-col {
 		height: 100%;
 		width: 100%;
+	}
+
+	.nm-main-menu {
+		display: none;
 	}
 
 	/* Forceer het rechterlogo NIET naar een nieuwe regel en centreer inhoud verticaal */
 	.nm-header-logo {
 		position: relative;
 		top: -5px;
-		line-height: 110px;
-		width: 35%;
+		line-height: 80px;
+		width: 30%;
 	}
 
 	.nm-header-logo .nm-logo {
@@ -106,8 +109,11 @@ body.portal .nm-header.menu-centered {
 	}
 
 	.nm-right-menu {
+		line-height: 80px;
 		width: 60%;
 		max-width: initial;
+		line-height: 80px;
+		float: right;
 
 		.hoofdtitel {
 			color: black;
@@ -126,10 +132,14 @@ body.portal {
 		background-image: url('https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/images/overzicht-producten@2x.png');
 		background-repeat: no-repeat;
 		background-color: #DEDFE4;
-		background-size: contain;
+		background-size: 30% auto;
 		background-position: right center;
 		text-align: center;
 		padding: 2em;
+
+		& > p {
+			font-size: 1.25em;
+		}
 	}
 
 	.input-group {
@@ -150,8 +160,8 @@ body.portal {
 	#oxfam-zip-user {
 		width: 215px;
 		height: 40px;
-		border-top-left-radius: 50%;
-		border-bottom-left-radius: 50%;
+		border-top-left-radius: 20px;
+		border-bottom-left-radius: 20px;
 		border-right: none;
 		padding-right: 0.25em;
 		left: 5px;
@@ -160,8 +170,8 @@ body.portal {
 	#do_oxfam_redirect {
 		height: 40px;
 		color: black;
-		border-top-right-radius: 50%;
-		border-bottom-right-radius: 50%;
+		border-top-right-radius: 20px;
+		border-bottom-right-radius: 20px;
 		border-left: none;
 		padding-left: 0.5em;
 		left: -5px;
@@ -253,8 +263,8 @@ body.portal.home {
 			#wpsl-search-input {
 				height: 40px;
 				width: 215px;
-				border-top-left-radius: 50%;
-				border-bottom-left-radius: 50%;
+				border-top-left-radius: 20px;
+				border-bottom-left-radius: 20px;
 				border-right: none;
 				padding-right: 0.25em;
 				left: 5px;
@@ -266,8 +276,8 @@ body.portal.home {
 			font-size: 0.95em;
 			background: white;
 			color: $black;
-			border-top-right-radius: 50%;
-			border-bottom-right-radius: 50%;
+			border-top-right-radius: 20px;
+			border-bottom-right-radius: 20px;
 			border-left: none;
 			padding-left: 0.5em;
 			left: -5px;
@@ -944,10 +954,6 @@ div.nm-feature.layout-centered {
 		
 		.nm-header-logo .winkelnaam {
 			display: inline-block;
-		}
-
-		.nm-main-menu {
-			display: none;
 		}
 	}
 
