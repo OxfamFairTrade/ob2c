@@ -90,7 +90,8 @@ body.portal .nm-header.menu-centered {
 	.nm-header-logo {
 		position: relative;
 		top: -5px;
-		line-height: 110px;	
+		line-height: 110px;
+		width: 35%;
 	}
 
 	.nm-header-logo .nm-logo {
@@ -104,12 +105,11 @@ body.portal .nm-header.menu-centered {
 		line-height: 40px;
 	}
 
-	.nm-main-menu {
-		position: absolute;
-		line-height: 110px;
-	}
+	.nm-right-menu {
+		width: 60%;
+		max-width: initial;
 
-	.nm-right-menu .hoofdtitel {
+		.hoofdtitel {
 			color: black;
 			font-size: 2em;
 			font-weight: bold;
@@ -129,6 +129,7 @@ body.portal {
 		background-size: contain;
 		background-position: right center;
 		text-align: center;
+		padding: 2em;
 	}
 
 	.input-group {
@@ -148,17 +149,19 @@ body.portal {
 
 	#oxfam-zip-user {
 		width: 215px;
-		border-top-left-radius: 25px;
-		border-bottom-left-radius: 25px;
+		height: 40px;
+		border-top-left-radius: 50%;
+		border-bottom-left-radius: 50%;
 		border-right: none;
 		padding-right: 0.25em;
 		left: 5px;
 	}
 
 	#do_oxfam_redirect {
+		height: 40px;
 		color: black;
-		border-top-right-radius: 25px;
-		border-bottom-right-radius: 25px;
+		border-top-right-radius: 50%;
+		border-bottom-right-radius: 50%;
 		border-left: none;
 		padding-left: 0.5em;
 		left: -5px;
@@ -210,7 +213,7 @@ body.portal.home {
 	/* Wijzig achtergrondkleur en hoogte */
 	div.nm-page-wrap-inner > #nm-header-placeholder {
 		background-color: $fluo-green;
-		height: 160px;
+		// height: 160px;
 	}
 
 	/* Verstop placeholder */
@@ -248,10 +251,10 @@ body.portal.home {
 			}
 
 			#wpsl-search-input {
-				height: 31px;
+				height: 40px;
 				width: 215px;
-				border-top-left-radius: 25px;
-				border-bottom-left-radius: 25px;
+				border-top-left-radius: 50%;
+				border-bottom-left-radius: 50%;
 				border-right: none;
 				padding-right: 0.25em;
 				left: 5px;
@@ -259,13 +262,15 @@ body.portal.home {
 		}
 
 		#wpsl-search-btn {
-			height: 31px;
-			padding: 2px 10px;
+			height: 40px;
 			font-size: 0.95em;
 			background: white;
 			color: $black;
-			border: none;
-			border-radius: 2em;
+			border-top-right-radius: 50%;
+			border-bottom-right-radius: 50%;
+			border-left: none;
+			padding-left: 0.5em;
+			left: -5px;
 		}
 	}
 
@@ -850,7 +855,7 @@ div.nm-feature.layout-centered {
 @media (max-width: 1400px) {
 	body.portal .nm-header.menu-centered {
 		.nm-header-logo {
-			width: 75%;
+			
 		}
 	}
 }
