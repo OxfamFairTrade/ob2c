@@ -94,7 +94,7 @@ body.portal .nm-header.menu-centered {
 		position: relative;
 		top: -5px;
 		line-height: 80px;
-		width: 30%;
+		width: 35%;
 	}
 
 	.nm-header-logo .nm-logo {
@@ -109,20 +109,18 @@ body.portal .nm-header.menu-centered {
 	}
 
 	.nm-right-menu {
-		line-height: 80px;
+		height: 80px;
 		width: 60%;
 		max-width: initial;
-		line-height: 80px;
 		float: right;
 
 		.hoofdtitel {
 			color: black;
-			font-size: 2em;
+			font-size: 1.75em;
 			font-weight: bold;
 			position: relative;
 			top: 50%;
 			transform: translateY(-50%);
-			margin: 0 auto;
 		}
 	}
 }
@@ -132,7 +130,7 @@ body.portal {
 		background-image: url('https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/images/overzicht-producten@2x.png');
 		background-repeat: no-repeat;
 		background-color: #DEDFE4;
-		background-size: 30% auto;
+		background-size: 30% 100%;
 		background-position: right center;
 		text-align: center;
 		padding: 2em;
@@ -155,6 +153,7 @@ body.portal {
 		position: relative;
 		padding: 0.5em 0.75em;
 		margin: 0;
+		vertical-align: middle;
 	}
 
 	#oxfam-zip-user {
@@ -180,7 +179,7 @@ body.portal {
 	i.pe-7s-search {
 		line-height: 100%;
 		position: relative;
-		top: 5px;
+		top: 3px;
 	}
 
 	i.pe-7s-search:before {	
@@ -926,12 +925,6 @@ div.nm-feature.layout-centered {
 	}
 
 	body.portal .nm-header.menu-centered {
-
-		.nm-header-logo {
-			line-height: 90px;
-			top: -5px;
-		}
-
 		.nm-right-menu .hoofdtitel {
 			// display: none;
 		}
@@ -978,10 +971,6 @@ div.nm-feature.layout-centered {
 		.nm-header-logo {
 			width: 100%;
 			text-align: center;
-		}
-
-		.nm-right-menu .hoofdtitel {
-			// display: none;
 		}
 	}
 }
