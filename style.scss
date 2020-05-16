@@ -121,6 +121,8 @@ body.portal .nm-header.menu-centered {
 			position: relative;
 			top: 50%;
 			transform: translateY(-50%);
+			text-align: right;
+			line-height: 1em;
 		}
 	}
 }
@@ -133,10 +135,17 @@ body.portal {
 		background-size: 30% 100%;
 		background-position: right center;
 		text-align: center;
-		padding: 2em;
+		padding: 3em 1em;
 
-		& > p {
-			font-size: 1.25em;
+		.wrapper {
+			max-width: 800px;
+			margin: 0 auto;
+			position: relative;
+			left: -20%;
+			
+			p {
+				font-size: 1.25em;
+			}
 		}
 	}
 
@@ -179,7 +188,7 @@ body.portal {
 	i.pe-7s-search {
 		line-height: 100%;
 		position: relative;
-		top: 3px;
+		top: -2px;
 	}
 
 	i.pe-7s-search:before {	

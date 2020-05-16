@@ -5306,7 +5306,7 @@
 		$global_zips = get_shops();
 		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
-		$msg = '<div class="portal-header">';
+		$msg = '<div class="portal-header"><div class="wrapper">';
 		$msg .= '<h2>Shop online in 1 van onze '.($sites-1).' webshops</h2>';
 		$msg .= '<p>Ze zijn verbonden aan een lokale wereldwinkel. Thuislevering is mogelijk over heel Vlaanderen!</p>';
 		$msg .= '<p>'.__( 'Vul je postcode in en ontvang je bestelling aan huis:', 'oxfam-webshop' );
@@ -5314,7 +5314,7 @@
 		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
 		$msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
 		$msg .= '</span></p>';
-		$msg .= '</div>';
+		$msg .= '</div></div>';
 		foreach ( $all_zips as $zip => $city ) {
 			if ( isset( $global_zips[$zip] ) ) {
 				$url = $global_zips[$zip];
