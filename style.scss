@@ -58,7 +58,6 @@ $black: #2c2c2c;
 
 /* SPECIFIEK VOOR LOKALE PAGINA'S */
 body:not(.portal) .nm-header.menu-centered {
-	
 	/* Zorg ervoor dat we de winkelnaam verticaal kunnen centereren */
 	.nm-header-logo {
 		display: table;
@@ -94,7 +93,7 @@ body.portal .nm-header.menu-centered {
 		position: relative;
 		top: -5px;
 		line-height: 80px;
-		width: 35%;
+		width: 40%;
 	}
 
 	.nm-header-logo .nm-logo {
@@ -141,7 +140,7 @@ body.portal {
 			max-width: 800px;
 			margin: 0 auto;
 			position: relative;
-			left: 2em;
+			left: -3em;
 
 			p {
 				font-size: 1.25em;
@@ -881,7 +880,6 @@ div.nm-feature.layout-centered {
 @media (max-width: 1200px) {
 	/* Reset naar standaard mobiele weergave (zonder menu centraal in menubalk) */
 	body:not(.portal) .nm-header.menu-centered {
-
 		.nm-header-logo {
 			width: 25%;
 
@@ -908,12 +906,17 @@ div.nm-feature.layout-centered {
 	.nm-footer-bar-logo.betaalmethodes img:last-child {
 		margin-right: 0;
 	}
+
+	body.portal .nm-header.menu-centered {
+		.nm-header-logo .winkelnaam {
+			display: none;
+		}
+	}
 }
 
 @media (max-width: 880px) {
 	/* Reset naar standaard mobiele weergave */
 	body:not(.portal) .nm-header.menu-centered {
-		
 		.nm-header-logo {
 			width: 80%;
 
@@ -926,18 +929,7 @@ div.nm-feature.layout-centered {
 		}
 	}
 
-	body.portal .nm-header.menu-centered {
-		.nm-header-logo .winkelnaam {
-			display: none;
-		}
-
-		.nm-right-menu .hoofdtitel {
-			// display: none;
-		}
-	}
-
 	body.portal.home {
-
 		.nm_column:not(:last-child) {
 			border-right: none;
 		}
