@@ -141,8 +141,8 @@ body.portal {
 			max-width: 800px;
 			margin: 0 auto;
 			position: relative;
-			left: -20%;
-			
+			left: 2em;
+
 			p {
 				font-size: 1.25em;
 			}
@@ -897,13 +897,6 @@ div.nm-feature.layout-centered {
 }
 
 @media (max-width: 1024px) {
-	body.portal .nm-header.menu-centered {
-		
-		.nm-header-logo .winkelnaam {
-			display: none;
-		}
-	}
-
 	li.widget.widget_text:nth-child(2n) {
 		border-right: none;
 	}
@@ -934,6 +927,10 @@ div.nm-feature.layout-centered {
 	}
 
 	body.portal .nm-header.menu-centered {
+		.nm-header-logo .winkelnaam {
+			display: none;
+		}
+
 		.nm-right-menu .hoofdtitel {
 			// display: none;
 		}
@@ -952,15 +949,7 @@ div.nm-feature.layout-centered {
 }
 
 @media (max-width: 600px) {
-	body.portal .nm-header.menu-centered {
-		
-		.nm-header-logo .winkelnaam {
-			display: inline-block;
-		}
-	}
-
 	body.portal.home {
-
 		.nm_column:not(:first-child) {
 			margin-top: 3em;
 		}
@@ -969,24 +958,29 @@ div.nm-feature.layout-centered {
 
 @media (max-width: 480px) {
 	body:not(.portal) .nm-header.menu-centered {
-		
 		.nm-header-logo .winkelnaam {
 			display: none;
 		}
 	}
 
 	body.portal .nm-header.menu-centered {
-
 		.nm-header-logo {
 			width: 100%;
 			text-align: center;
+
+			.winkelnaam {
+				display: inline-block;
+			}
+		}
+
+		.nm-right-menu {
+			display: none;
 		}
 	}
 }
 
 @media (max-width: 360px) {
 	body.portal .nm-header.menu-centered {
-		
 		.nm-header-logo {
 			line-height: 60px;
 			top: 5px;
@@ -1000,7 +994,6 @@ div.nm-feature.layout-centered {
 	}
 
 	body.portal {
-		
 		#oxfam-zip-user {
 			width: 175px;
 		}
