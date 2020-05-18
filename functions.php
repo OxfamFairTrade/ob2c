@@ -517,12 +517,12 @@
 		add_action( 'edit_user_profile_update', 'save_member_of_shop_user_field' );
 		
 		// Voeg de claimende winkel toe aan de ordermetadata van zodra iemand op het winkeltje klikt (en verwijder indien we teruggaan)
-		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop' );
+		add_action( 'woocommerce_order_status_processing_to_claimed', 'register_claiming_member_shop', 10, 2 );
 		// Veroorzaakt probleem indien volgorde niet 100% gerespecteerd wordt
 		// add_action( 'woocommerce_order_status_claimed_to_processing', 'delete_claiming_member_shop' );
 
 		// Deze transities zullen in principe niet voorkomen, maar voor alle zekerheid ...
-		add_action( 'woocommerce_order_status_on-hold_to_claimed', 'register_claiming_member_shop' );
+		add_action( 'woocommerce_order_status_on-hold_to_claimed', 'register_claiming_member_shop', 10, 2 );
 		// Veroorzaakt probleem indien volgorde niet 100% gerespecteerd wordt
 		// add_action( 'woocommerce_order_status_claimed_to_on-hold', 'delete_claiming_member_shop' );
 
@@ -604,9 +604,7 @@
 		}
 	}
 
-	function register_claiming_member_shop( $order_id ) {
-		$order = wc_get_order( $order_id );
-		
+	function register_claiming_member_shop( $order_id, $order ) {
 		if ( get_current_user_id() > 1 ) {
 			// Een gewone klant heeft deze eigenschap niet en retourneert dus sowieso 'false'
 			$owner = get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() );
@@ -634,7 +632,7 @@
 		}
 
 		if ( ! isset( $owner ) ) {
-			write_log("Geen eigenaar gevonden voor ongeclaimde bestelling ".$order->get_order_number()."!");
+			wp_mail( get_site_option('admin_email'), 'Geen eigenaar gevonden voor te claimen bestelling '.$order->get_order_number().'!', '' );
 			// Koppel als laatste redmiddel aan de locatie van de hoofdwinkel
 			$owner = mb_strtolower( get_oxfam_shop_data('city') );
 		}
