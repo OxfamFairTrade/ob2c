@@ -3821,7 +3821,7 @@
 
 				case 'WLBS24':
 				case 'W29917':
-					// Door round() voegen we automatisch een bak toe indien > 12 flesjes
+					// Door round() voegen we automatisch een bak toe vanaf 13 flesjes
 					$empties_array['quantity'] = round( intval( $product_item['quantity'] ) / 24, 0, PHP_ROUND_HALF_DOWN );
 					break;
 
@@ -3837,7 +3837,7 @@
 
 						case 'WLFSK':
 							$plastic_sku = 'WLBS24';
-							$plastic_step = 24;
+							$plastic_step = 13;
 							break;
 
 						case 'W19916':
@@ -3914,7 +3914,7 @@
 
 				case 'WLBS24':
 				case 'W29917':
-					// Door round() voegen we automatisch een bak toe indien > 12 flesjes
+					// Door round() voegen we automatisch een bak toe vanaf 13 flesjes
 					$quantity = round( intval( $product_item['quantity'] ) / 24, 0, PHP_ROUND_HALF_DOWN );
 					break;
 
@@ -3930,7 +3930,7 @@
 
 						case 'WLFSK':
 							$plastic_sku = 'WLBS24';
-							$plastic_step = 24;
+							$plastic_step = 13;
 							break;
 
 						case 'W19916':
