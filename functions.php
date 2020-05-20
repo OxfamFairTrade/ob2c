@@ -3821,8 +3821,8 @@
 
 				case 'WLBS24':
 				case 'W29917':
-					// Eventueel aanpassen naar round( $float, 0, PHP_ROUND_HALF_DOWN ), zodat we automatisch een bak toevoegen indien > 12 flesjes?
-					$empties_array['quantity'] = floor( intval( $product_item['quantity'] ) / 24 );
+					// Door round() voegen we automatisch een bak toe indien > 12 flesjes
+					$empties_array['quantity'] = round( intval( $product_item['quantity'] ) / 24, 0, PHP_ROUND_HALF_DOWN );
 					break;
 
 				case 'WLFSG':
@@ -3914,8 +3914,8 @@
 
 				case 'WLBS24':
 				case 'W29917':
-					// Eventueel aanpassen naar round( $float, 0, PHP_ROUND_HALF_DOWN ), zodat we automatisch een bak toevoegen indien > 12 flesjes?
-					$quantity = floor( intval( $product_item['quantity'] ) / 24 );
+					// Door round() voegen we automatisch een bak toe indien > 12 flesjes
+					$quantity = round( intval( $product_item['quantity'] ) / 24, 0, PHP_ROUND_HALF_DOWN );
 					break;
 
 				case 'WLFSG':
