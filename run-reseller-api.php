@@ -26,7 +26,7 @@
 	// Instantiate Mollie class
 	$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 	
-	switch_to_blog( 40 );
+	switch_to_blog( 41 );
 
 	try {
 		// Parameters op te halen uit site
@@ -38,20 +38,27 @@
 		$phone = '32'.str_replace( '/', '', str_replace( '.', '', substr( get_oxfam_shop_data('telephone'), 1 ) ) );
 		$email = get_option('admin_email');
 		$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
-		$headquarter = get_oxfam_shop_data('headquarter');
-		$lines = explode( ', ', $headquarter, 2 );
-		$billing_address = trim($lines[0]);
-		$parts = explode( ' ', $lines[1], 2 );
-		$billing_zip = trim($parts[0]);
-		$billing_city = trim($parts[1]);
+		
+		// HEADQUARTER IS LEEG SINDS NIEUWE OWW-SITE
+		// $headquarter = get_oxfam_shop_data('headquarter');
+		// $lines = explode( ', ', $headquarter, 2 );
+		// $billing_address = trim($lines[0]);
+		// $parts = explode( ' ', $lines[1], 2 );
+		// $billing_zip = trim($parts[0]);
+		// $billing_city = trim($parts[1]);
+		
 		$iban = str_replace( ' ', '', get_oxfam_shop_data('account') );
 		$blog = get_bloginfo('name');
 		$url = get_bloginfo('url');
 		
 		// Parameters handmatig in te vullen
-		$login = 'owwmechelen';
+		$login = 'owwbeerse';
 		$name = '';
 		$representative = '';
+		$billing_address = '';
+		$billing_zip = $zip;
+		$billing_city = $city;
+		
 		// $bic = 'NICABEBB';
 		// $bic = 'AXABBE22';
 		$bic = 'GEBABEBB';
@@ -85,6 +92,7 @@
 		// UITSCHAKELEN INDIEN VOOR ECHT!
 		$parameters['testmode'] = 1;
 		$accountxml = $mollie->accountCreate( $login, $parameters );
+		echo '<pre>'.var_export( $accountxml, true ).'</pre>';
 
 		$partner_id_customer = '5271984';
 		$edit_parameters = array( 
@@ -100,8 +108,8 @@
 		echo "<p>".$accountxml->resultmessage."</p>";
 		
 		echo "Partner-ID: ".$accountxml->partner_id."<br/>";
-		// Let op dat we de SimpleXML-node converteren naar een string!
-		if ( update_option( 'oxfam_mollie_partner_id', $accountxml->partner_id->__toString() ) ) {
+		// Let op dat we de SimpleXML-node casten naar een string!
+		if ( update_option( 'oxfam_mollie_partner_id', (string) $accountxml->partner_id ) ) {
 			echo "Partner-ID gewijzigd in webshop!<br/>";
 		}
 		
