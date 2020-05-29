@@ -4821,8 +4821,8 @@
 		return $ignored_fields;
 	}
 
-	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import (hoge prioriteit = helemaal op het einde)
-	add_action( 'pmxi_saved_post', 'run_product_sync', 50, 1 );
+	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import (hoge prioriteit = helemaal op het einde) BLOKKEERT IMPORT NA UPGRADE
+	// add_action( 'pmxi_saved_post', 'run_product_sync', 50, 1 );
 	
 	function run_product_sync( $post_id ) {
 		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
