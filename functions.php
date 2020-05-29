@@ -5253,9 +5253,9 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-info">';
-					echo '<p>Ook de THT-promotie op notenchocolade, zeevruchten en nougatrepen is nu actief (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/nog-meer-online-promo-s-1-1-gratis.html" target="_blank">Copain</a>). Lees ook <a href="https://copain.oww.be/l/mailing2/browserview/a3d5bc0a-cfc2-487e-92c6-4b8af0425e72" target="_blank">de nieuwsbrief van 9 april</a> met tips voor lokale promotie van je webshop bij o.a. Mediahuis.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>Ook de THT-promotie op notenchocolade, zeevruchten en nougatrepen is nu actief (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/nog-meer-online-promo-s-1-1-gratis.html" target="_blank">Copain</a>). Lees ook <a href="https://copain.oww.be/l/mailing2/browserview/a3d5bc0a-cfc2-487e-92c6-4b8af0425e72" target="_blank">de nieuwsbrief van 9 april</a> met tips voor lokale promotie van je webshop bij o.a. Mediahuis.</p>';
+				// echo '</div>';
 				// echo '<div class="notice notice-success">';
 				// 	echo '<p>Er werden 4 nieuwe producten toegevoegd aan de database (al kan het nog even duren voor ze in alle winkels arriveren):</p><ul style="margin-left: 2em;">';
 				// 		$skus = array( '26424', '27012', '27110', '28605' );
