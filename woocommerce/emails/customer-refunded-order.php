@@ -25,8 +25,6 @@ if ( $partial_refund ) {
 	echo '<p>' . __( 'Bericht bovenaan de mail van een volledig terugbetaalde bestelling.', 'oxfam-webshop' ) . '</p>';
 }
 
-echo '<p>&nbsp;</p>';
-
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.
  * @hooked WC_Structured_Data::generate_order_data() Generates structured data.
