@@ -5686,7 +5686,14 @@
 	}
 
 	function does_home_delivery() {
-		return get_option( 'oxfam_zip_codes' );
+		// Kijk in de testsites naar de geactiveerde verzendmethodes i.p.v. de toegekende poastcodes
+		// Zal misschien ook nodig zijn voor Gent-Sint-Pieters?
+		if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
+			// Klopt altijd, behalve voor Geraardsbergen
+			return true;
+		} else {
+			return get_option( 'oxfam_zip_codes' );
+		}
 	}
 
 	function does_sendcloud_delivery() {
