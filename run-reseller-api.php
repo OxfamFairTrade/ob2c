@@ -19,14 +19,68 @@
 		die( "Access prohibited!" );
 	}
 
-	$blog_id_not_wp = 44;
-	$login = 'diksmuide';
-	$email = 'webshop.diksmuide@oxfamwereldwinkels.be';
-	$shop_id = 3386;
-	$fname = 'Rik';
-	$lname = 'Maekelberg';
-	
+	$blog_id_not_wp = 52;
+	$login = '';
+	$email = '';
+	$shop_id = 3962;
+	$fname = '';
+	$lname = '';
+
 	switch_to_blog( $blog_id_not_wp );
+	$company = get_bloginfo('name');
+
+	$user_args = array(
+		'user_login' => $login,
+		'user_email' => $email,
+		'display_name' => $fname,
+		'first_name' => $fname,
+		'last_name' => $lname,
+		'role' => 'local_manager',
+	);
+	// Creër onmiddellijk user
+	var_dump_pre( wp_insert_user( $user_args ) );
+	
+	if ( update_option( 'admin_email', $email ) ) {
+		echo "Adminadres gewijzigd naar ".$email."!<br/>";
+	}
+	if ( update_option( 'oxfam_shop_post_id', $shop_id ) ) {
+		echo "Winkel-ID gewijzigd naar ".$shop_id."!<br/>";
+	}
+	if ( update_option( 'woocommerce_email_from_name', $company ) ) {
+		echo "Afzendnaam gewijzigd naar ".$company."!<br/>";
+	}
+	if ( update_option( 'woocommerce_email_from_address', $email ) ) {
+		echo "Algemeen afzendadres gewijzigd naar ".$email."!<br/>";
+	}
+	$new_order_settings = get_option('woocommerce_new_order_settings');
+	if ( is_array( $new_order_settings ) ) {
+		$new_order_settings['recipient'] = $email;
+		if ( update_option( 'woocommerce_new_order_settings', $new_order_settings ) ) {
+			echo "Afzendadres nieuwe bestelling gewijzigd naar ".$email."!<br/>";
+		}
+	}
+	$cancelled_order_settings = get_option('woocommerce_cancelled_order_settings');
+	if ( is_array( $cancelled_order_settings ) ) {
+		$cancelled_order_settings['recipient'] = $email;
+		if ( update_option( 'woocommerce_cancelled_order_settings', $cancelled_order_settings ) ) {
+			echo "Afzendadres geannuleerde bestelling gewijzigd naar ".$email."!<br/>";
+		}
+	}
+	$failed_order_settings = get_option('woocommerce_failed_order_settings');
+	if ( is_array( $failed_order_settings ) ) {
+		$failed_order_settings['recipient'] = $email;
+		if ( update_option( 'woocommerce_failed_order_settings', $failed_order_settings ) ) {
+			echo "Afzendadres mislukte bestelling gewijzigd naar ".$email."!<br/>";
+		}
+	}
+	$pickup_locations = get_option('woocommerce_pickup_locations');
+	if ( is_array( $pickup_locations ) ) {
+		// We wijzigen per definitie de eerste locatie
+		$pickup_locations[0]['shipping_company'] = $company;
+		if ( update_option( 'woocommerce_pickup_locations', $pickup_locations ) ) {
+			echo "Afhaalpunt hernoemd naar ".$company."!<br/>";
+		}
+	}
 
 	// Register autoloader
 	require_once WP_PLUGIN_DIR.'/mollie-reseller-api/autoloader.php';
@@ -45,7 +99,6 @@
 		$email = get_blog_option( $blog_id_not_wp, 'admin_email' );
 		$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
 		$iban = str_replace( ' ', '', get_oxfam_shop_data('account') );
-		$company = get_bloginfo('name');
 		$url = get_bloginfo('url');
 		
 		// HEADQUARTER IS LEEG SINDS NIEUWE OWW-SITE
@@ -65,16 +118,16 @@
 		// Check of we deze KBO-parameters niet handmatig moeten overrulen
 		// Moet in de praktijk toch opnieuw in Mollie, dus niet zo belangrijk
 		// $representative = '';
-		// $billing_address = '';
 		
 		// $bic = 'NICABEBB';
-		$bic = 'AXABBE22';
+		// $bic = 'AXABBE22';
 		// $bic = 'GEBABEBB';
 		// $bic = 'GKCCBEBB';
 		// $bic = 'HBKABE22';
 		// $bic = 'KREDBEBB';
 		// $bic = 'VDSPBE91';
 		// $bic = 'ARSPBE22';
+		$bic = 'TRIOBEBB';
 
 		$parameters = array( 
 			'name' => $representative,
@@ -89,10 +142,10 @@
 			'legal_form' => 'vzw-be',
 			'vat_number' => $btw,
 			'representative' => $representative,
-			'billing_address' => $billing_address,
-			'billing_zipcode' => $billing_zip,
-			'billing_city' => $billing_city,
-			'billing_country' => 'BE',
+			// 'billing_address' => $billing_address,
+			// 'billing_zipcode' => $billing_zip,
+			// 'billing_city' => $billing_city,
+			// 'billing_country' => 'BE',
 			'bankaccount_iban' => $iban,
 			'bankaccount_bic' => $bic,
 			'locale' => 'nl_BE',

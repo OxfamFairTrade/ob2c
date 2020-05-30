@@ -76,28 +76,28 @@
 	}
 
 	// Subsites afschermen en verbergen op kaart
-	$oxfam_blocked_sites = array( 13, 26 );
+	$oxfam_blocked_sites = array( 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52 );
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
 	$default_holidays = array( '2020-04-03', '2020-04-04', '2020-04-05', '2020-04-06', '2020-04-07', '2020-04-08', '2020-04-09', '2020-04-10', '2020-04-11', '2020-04-12', '2020-04-13', '2020-04-14', '2020-04-15', '2020-04-16', '2020-04-17', '2020-04-18', '2020-04-19', '2020-05-01', '2020-05-21', '2020-06-01', '2020-07-21', '2020-08-15', '2020-11-01', '2020-11-11', '2020-12-25', '2021-01-01' );
 	update_site_option( 'oxfam_holidays', $default_holidays );
 
+	// Handige truc om alle vinkjes aan te zetten op https://shop.oxfamwereldwinkels.be/wp-admin/edit.php?post_status=publish&post_type=product&orderby=sku&order=desc
+	// jQuery("#woocommerce-multistore-fields").find("input[name*='_child_inheir']").prop('checked',true);
+
 	// Startpagina instellen
 	$homepage = get_page_by_title( 'Startpagina' );
 	if ( $homepage ) {
-	    update_option( 'show_on_front', 'page' );
-	    update_option( 'page_on_front', $homepage->ID );
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $homepage->ID );
 	}
 
 	// Voorwaardenpagina opsnorren
 	$terms = get_page_by_title( 'Algemene voorwaarden' );
 	if ( $terms ) {
-	    update_option( 'woocommerce_terms_page_id', $terms->ID );
+		update_option( 'woocommerce_terms_page_id', $terms->ID );
 	}
-
-	// Relevanssi-index opbouwen
-	relevanssi_build_index();
 
 	// Leeggoed verbergen en op voorraad zetten
 	$args = array(
@@ -120,6 +120,9 @@
 		wp_reset_postdata();
 	}
 	
+	// Relevanssi-index opbouwen
+	relevanssi_build_index();
+
 	// Unassigned producten opnieuw aan hoofdsite koppelen
 	$args = array(
 		'post_type'			=> 'product',
