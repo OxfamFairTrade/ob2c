@@ -3057,8 +3057,8 @@
 				break;
 		}
 		$descr .= '</small>';
-		// Geen schattingen tonen aan B2B-klanten EN AFHALINGEN TIJDENS CORONAMAATREGELEN
-		if ( ! is_b2b_customer() and ! stristr( $method->id, 'local_pickup' ) ) {
+		// Geen schattingen tonen aan B2B-klanten
+		if ( ! is_b2b_customer() ) {
 			return $label.'<br/>'.$descr;
 		} else {
 			return $label;
@@ -3750,15 +3750,15 @@
 	add_action( 'woocommerce_cart_totals_before_shipping', 'explain_why_shipping_option_is_lacking' );
 	
 	function explain_why_shipping_option_is_lacking() {
-		if ( current_user_can('update_core') ) {
-			// Enkel BINNEN de template cart/cart-shipping.php kunnen we $available_methods aanspreken ...
+		// if ( current_user_can('update_core') ) {
+			// Als er slechts één methode beschikbaar is, moet het wel afhaling zijn!
 			if ( count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
 				echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">';
 				if ( ! does_home_delivery() ) {
 					echo 'Deze winkel organiseert geen thuislevering. Ga naar de webshop die voor jouw postcode aan huis levert.';
 				} elseif ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
 					// Dit werkt enkel indien blokkage omwille van leeggoed reeds getoond
-					echo 'Omwille van aanwezigheid goederen die niet beschikbaar zijn voor thuislevering.';
+					echo 'Omdat er producten in je winkelmandje zitten die niet beschikbaar zijn voor thuislevering.';
 				} elseif ( strlen( WC()->customer->get_shipping_postcode() ) < 4 ) {
 					// WC()->customer->has_calculated_shipping() werkt niet zoals verwacht
 					echo 'Omdat de postcode nog niet ingevuld is.';
@@ -3767,7 +3767,7 @@
 				}
 				echo '</span></span></td></tr>';
 			}
-		}
+		// }
 	}
 
 	// Voeg instructietekst toe boven de locaties
@@ -5539,11 +5539,7 @@
 			}
 			$output = '<p class="corona-notice">'.$text.'</p>';
 		} else {
-			if ( $atts['id'] === 'leuven' ) {
-				// Uitzondering voor Leuven-Centrum
-				$text = '<br/>Bel naar 016/22.01.35 als je voor de deur staat en je onze aandacht niet weet te vangen. Als het je echt niet lukt om tijdens bovenstaande uren/dagen te komen, laat het ons dan zo vlug mogelijk weten. Dan maken we graag met jou een afspraak op maat.';
-				$output .= '<p class="corona-notice">'.$text.'</p>';
-			} elseif ( $atts['id'] === 'brugge' ) {
+			if ( $atts['id'] === 'brugge' ) {
 				// Extra tekst in de mail
 				if ( ! is_checkout() ) {
 					$text .= '<br/>Opgelet: de poort is gesloten, bel aan bij de deur links. We nemen steeds de nodige hygiënische maatregelen. Alvast bedankt voor je begrip!';
@@ -5714,7 +5710,7 @@
 	}
 
 	function is_regional_webshop() {
-		// Antwerpen, Leuven en Mechelen
+		// Antwerpen, Leuven, Mechelen en Wetteren
 		$regions = array( 24, 28, 40 );
 		// Opgelet: vergeet de custom orderstatus 'claimed' niet te publiceren naar deze subsites!
 		return in_array( get_current_blog_id(), $regions );
