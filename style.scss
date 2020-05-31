@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.6.8
+	Version:		1.6.9
 	Text Domain:	oxfam-webshop
 */
 
@@ -1165,7 +1165,7 @@ li.product.product_tag-promotie.three-plus-one::after {
 li.product.product_tag-promotie.fifty-percent-off::after {
 	content: "Promo 2de -50%";
 }
-li.product.product_tag-promotie.twentyfive-percent-off::after {
+li.product.product_tag-promotie.twenty-five-percent-off::after {
 	content: "Promo -25%";
 }
 div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
@@ -1181,7 +1181,7 @@ div.nm-single-product.product_tag-promotie.three-plus-one figure.woocommerce-pro
 div.nm-single-product.product_tag-promotie.fifty-percent-off figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: 2de stuk aan -50%";
 }
-div.nm-single-product.product_tag-promotie.twentyfive-percent-off figure.woocommerce-product-gallery__wrapper::after {
+div.nm-single-product.product_tag-promotie.twenty-five-percent-off figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: -25%";
 }
 
