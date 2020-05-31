@@ -1159,8 +1159,14 @@ li.product.product_tag-promotie::after {
 li.product.product_tag-promotie.one-plus-one::after {
 	content: "Promo 1+1 gratis";
 }
+li.product.product_tag-promotie.three-plus-one::after {
+	content: "Promo 3+1 gratis";
+}
 li.product.product_tag-promotie.fifty-percent-off::after {
 	content: "Promo 2de -50%";
+}
+li.product.product_tag-promotie.twentyfive-percent-off::after {
+	content: "Promo -25%";
 }
 div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
 	@include banner( $see-through-red, 95% );
@@ -1169,8 +1175,14 @@ div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__w
 div.nm-single-product.product_tag-promotie.one-plus-one figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: 1+1 gratis";
 }
+div.nm-single-product.product_tag-promotie.three-plus-one figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: 3+1 gratis";
+}
 div.nm-single-product.product_tag-promotie.fifty-percent-off figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: 2de stuk aan -50%";
+}
+div.nm-single-product.product_tag-promotie.twentyfive-percent-off figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: -25%";
 }
 
 /* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'-, 'promo'- en/of 'afhalen'-klasse lager om overlap te vermijden */

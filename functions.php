@@ -276,18 +276,30 @@
 			$classes[] = 'newbee';
 		}
 		
-		// Label producten met 1+1 / 2de -50% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
+		// Label producten met 1+1 / 2de -50% / 3+1 / -25% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
 		// Zou eventueel ook in template sale-flash.php kunnen, maar dit is - ondanks de omweg via product-ID - toch handiger
-		$one_plus_one_products = array( '24634', '24647', '24648', '24531', '25724', '25726', '24302', '24547', '25310' );
+		$one_plus_one_products = array( '24531', '24302', '24547', '25310', '21003', '21011', '25010', '26014' );
 		foreach ( $one_plus_one_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'one-plus-one';
 			}	
 		}
-		$fifty_percent_off_second_products = array( '20180', '20181', '20182' );
+		$fifty_percent_off_second_products = array( '20070', '20076' );
 		foreach ( $fifty_percent_off_second_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'fifty-percent-off';
+			}
+		}
+		$three_plus_one_products = array( '20808', '20810', '20812' );
+		foreach ( $three_plus_one_products as $sku ) {
+			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
+				$classes[] = 'three-plus-one';
+			}
+		}
+		$twentyfive_percent_off_products = array( '20807', '20809', '20811' );
+		foreach ( $twentyfive_percent_off_products as $sku ) {
+			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
+				$classes[] = 'twenty-five-percent-off';
 			}
 		}
 		
