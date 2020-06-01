@@ -208,7 +208,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '21010', '21107', '25397', '25398', '25399', '27011' );
+	$photos_to_delete = array( '26424' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
@@ -246,7 +246,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '28605' );
+	$outofstocks = array( '25013', '19236', '19237', '19238', '19239', '24529', '24634', '24648' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -297,7 +297,7 @@
 	update_site_option( 'oxfam_opening_hours_'.$node , $hours );
 
 	// Fix de BestelWeb-parameter indien de ERP-import herstart moest worden (of we de B2B-producten vergeten waren)
-	$erp_skus = array( '29297', '29298', '05246', '08808', '08809' );
+	$erp_skus = array( '29297', '29298', '05246', '08808', '08809', '19236', '19237', '19238', '19239' );
 	foreach ( $erp_skus as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {

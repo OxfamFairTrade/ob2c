@@ -1141,7 +1141,7 @@
 
 	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
 		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
-		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_weight', '_length', '_width', '_height', '_thumbnail_id', '_force_sell_synced_ids', '_barcode', '_product_attributes' );
+		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_weight', '_length', '_width', '_height', '_thumbnail_id', '_force_sell_synced_ids', '_product_attributes' );
 		// Deze actie vuurt bij 'single value meta keys' enkel indien er een wezenlijke wijziging was, dus check hoeft niet meer
 		if ( get_post_type($post_id) === 'product' and in_array( $meta_key, $watched_metas ) ) {
 			// Schrijf weg in log per weeknummer (zonder leading zero's)
@@ -2244,8 +2244,7 @@
 					// BTW erbij tellen bij particulieren
 					$line_total += $item['line_subtotal_tax'];
 				}
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total );
-				// Barcode toevoegen (zit enkel nog op de data op het hoofdniveau!): ->setCellValue( 'H'.$i, $main_product->get_meta('_barcode') )
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
 				$i++;
 			}
 
@@ -3809,8 +3808,8 @@
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
 			if ( $empties_sku === 'W19916' or $empties_sku === 'W29917' ) {
-				// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
-				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voro W29917 deze gemanipuleerde hoeveelheden nodig heeft
+				// Vermenigvuldig de flesjes bij samengestelde producten (= eleganter dan een extra leeggoedartikel aan te maken)
+				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voor W29917 deze gemanipuleerde hoeveelheden nodig heeft
 				$product = wc_get_product( $product_item['product_id'] );
 				if ( $product !== false ) {
 					switch ( $product->get_sku() ) {
@@ -3821,6 +3820,17 @@
 							$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
 							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+							break;
+
+						case '19236':
+						case '19237':
+						case '19238':
+						case '19239':
+							// Voeg 3 flesjes leeggoed toe bij geschenksets
+							// Hoe sluiten we deze flesjes uit voor toevoeving van plastic bakken?
+							$empties_array['quantity'] = 3 * intval( $product_item['quantity'] );
+							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
+							$product_item['quantity'] = 3 * intval( $product_item['quantity'] );
 							break;
 					}
 				}
@@ -3854,7 +3864,7 @@
 
 						case 'W19916':
 							$plastic_sku = 'W29917';
-							$plastic_step = 24;
+							$plastic_step = 13;
 							break;
 					}
 
@@ -3902,8 +3912,8 @@
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
 			if ( $empties_sku === 'W19916' or $empties_sku === 'W29917' ) {
-				// Verviervoudig de flesjes bij clips (= eleganter dan een extra leeggoedartikel à 0,40 euro aan te maken)
-				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voro W29917 deze gemanipuleerde hoeveelheden nodig heeft
+				// Vermenigvuldig de flesjes bij samengestelde producten (= eleganter dan een extra leeggoedartikel aan te maken)
+				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voor W29917 deze gemanipuleerde hoeveelheden nodig heeft
 				$product = wc_get_product( $product_item['product_id'] );
 				if ( $product !== false ) {
 					switch ( $product->get_sku() ) {
@@ -3914,6 +3924,17 @@
 							$quantity = 4 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
 							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+							break;
+
+						case '19236':
+						case '19237':
+						case '19238':
+						case '19239':
+							// Voeg 3 flesjes leeggoed toe bij geschenksets
+							// Hoe sluiten we deze flesjes uit voor toevoeving van plastic bakken?
+							$quantity = 3 * intval( $product_item['quantity'] );
+							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
+							$product_item['quantity'] = 3 * intval( $product_item['quantity'] );
 							break;
 					}
 				}
@@ -3947,7 +3968,7 @@
 
 						case 'W19916':
 							$plastic_sku = 'W29917';
-							$plastic_step = 24;
+							$plastic_step = 13;
 							break;
 					}
 
@@ -4400,14 +4421,26 @@
 
 	function show_delivery_warning() {
 		global $product;
-		if ( ! is_b2b_customer() and $product->get_shipping_class() === 'breekbaar' ) {
-			echo "<p>Opgelet, dit product kan enkel afgehaald worden in de winkel! Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.</p>";
-		}
-
 		$cat_ids = $product->get_category_ids();
 		$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
+		$output = '';
+
 		if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-			echo "<p style='margin: 1em 0;'>Ons vakmanschap drink je met verstand. Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen.</p>";
+			$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
+		}
+
+		if ( ! is_b2b_customer() and $product->get_shipping_class() === 'breekbaar' ) {
+			$output .= 'Opgelet: dit product kan enkel afgehaald worden in de winkel! ';
+			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' ) {
+				$output .= 'Tip: losse bierflesjes zijn wel beschikbaar voor thuislevering.';
+			}
+			if ( get_term( $parent_id, 'product_cat' )->slug === 'fruitsap' ) {
+				$output .= 'Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.';
+			}
+		}
+
+		if ( $output !== '' ) {
+			echo '<p>'.$output.'</p>';
 		}
 	}
 
@@ -4835,7 +4868,7 @@
 			}
 			// Ontdubbel de landen en sorteer values alfabetisch
 			$countries = array_unique( $countries );
-			sort($countries, SORT_STRING);
+			sort( $countries, SORT_STRING );
 		} else {
 			// Fallback indien nog geen herkomstinfo bekend
 			$countries = false;
@@ -4997,20 +5030,7 @@
 		$ignored_fields[] = '_wc_review_count';
 		$ignored_fields[] = '_wc_rating_count';
 		$ignored_fields[] = '_wc_average_rating';
-		$ignored_fields[] = '_barcode';
 		$ignored_fields[] = '_in_bestelweb';
-
-		// TE VERWIJDEREN VELDEN
-		$ignored_fields[] = 'title_fr';
-		$ignored_fields[] = 'description_fr';
-		$ignored_fields[] = '_herkomst_fr';
-		$ignored_fields[] = 'title_en';
-		$ignored_fields[] = 'description_en';
-		$ignored_fields[] = '_herkomst_en';
-		$ignored_fields[] = 'pal_aantallagen';
-		$ignored_fields[] = 'pal_aantalperlaag';
-		$ignored_fields[] = 'steh_ean';
-		$ignored_fields[] = 'intrastat';
 
 		return $ignored_fields;
 	}
@@ -5268,25 +5288,25 @@
 				echo '<div class="notice notice-success">';
 					echo '<p>Automatische berichten vanuit de helpdeskmailbox gingen sinds enkele weken in de meeste gevallen rechtstreeks naar de spamfolder. Dit is nu verholpen.</p>';
 				echo '</div>';
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>Ook de THT-promotie op notenchocolade, zeevruchten en nougatrepen is nu actief (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/nog-meer-online-promo-s-1-1-gratis.html" target="_blank">Copain</a>). Lees ook <a href="https://copain.oww.be/l/mailing2/browserview/a3d5bc0a-cfc2-487e-92c6-4b8af0425e72" target="_blank">de nieuwsbrief van 9 april</a> met tips voor lokale promotie van je webshop bij o.a. Mediahuis.</p>';
-				// echo '</div>';
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Er werden 4 nieuwe producten toegevoegd aan de database (al kan het nog even duren voor ze in alle winkels arriveren):</p><ul style="margin-left: 2em;">';
-				// 		$skus = array( '26424', '27012', '27110', '28605' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku($sku);
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>De talrijke promoties voor de maand juni werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-1-1-online-winkel-juni-update-bier.html" target="_blank">Copain</a>). Opgelet: de 3+1 actie op de JUSTE bieren geldt zowel op clips (= rechtstreekse korting van 25%), op losse flesjes (= elk 4de flesje van dezelfde soort krijgt 100% korting) als op de nieuwe biercadeausets met één soort bier (= bij elke set wordt een extra los flesje gratis toegevoegd). Het leeggoed op alle gratis flesjes dient wel betaald te worden, en wordt dus automatisch aangerekend door de webshop. De kortingsregels in de webshop stemmen overeen met de instructies voor ShopPlus.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
+						$skus = array( '19236', '19237', '19238', '19239', '25013' );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku($sku);
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De paasfiguren werden verborgen.</p>';
+				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
@@ -5294,7 +5314,7 @@
 					// echo '</div>';
 				}
 				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>7 aflopende producten werden uit de database verwijderd omdat ze inmiddels overal uitverkocht zijn. Het gaat om 21010 Guavashake 1 l, 21107 Guavashake 20 cl, 25397 Geosticks Peppery, 25398 Geosticks Herby, 25399 Geosticks Sweet Chilli, 26491 Maya BIO Sint van speculoos en 27011 BIO Cacaobeertjes ontbijtgranen.</p>';
+				// 	echo '<p>3 aflopende producten werden uit de database verwijderd omdat ze eind juni vervielen. Het gaat om 24644 Hart melkchocolade, 24645 Minifiguurtjes melkchocolade 5 x 15 g en 24646 Beertje melkchocolade.</p>';
 				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
