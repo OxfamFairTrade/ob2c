@@ -310,7 +310,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.6.8' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.6.9' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 		wp_enqueue_script( 'jquery-ui-autocomplete' );
@@ -4440,7 +4440,7 @@
 		}
 
 		if ( $output !== '' ) {
-			echo '<p>'.$output.'</p>';
+			echo '<p style="margin: 1em 0;">'.$output.'</p>';
 		}
 	}
 
