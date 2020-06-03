@@ -5564,8 +5564,7 @@
 		}
 		
 		// Boodschap over afhaling op afspraak enkel toevoegen indien hele week gesloten
-		// Uitzondering voor Kortrijk
-		if ( strpos( $output, ' - ' ) === false and get_current_blog_id() !== 18 ) {
+		if ( strpos( $output, ' - ' ) === false ) {
 			$locations = get_option('woocommerce_pickup_locations');
 			if ( count( $locations ) > 1 ) {
 				$text = 'Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
@@ -5574,12 +5573,12 @@
 			}
 			$output = '<p class="corona-notice">'.$text.'</p>';
 		} else {
-			if ( $atts['id'] === 'brugge' ) {
-				// Extra tekst in de mail
-				if ( ! is_checkout() ) {
-					$text .= '<br/>Opgelet: de poort is gesloten, bel aan bij de deur links. We nemen steeds de nodige hygiënische maatregelen. Alvast bedankt voor je begrip!';
-				}
-			}
+			// if ( $atts['id'] === 'brugge' ) {
+			// 	// Extra tekst in de mail
+			// 	if ( ! is_checkout() ) {
+			// 		$text .= '<br/>Opgelet: de poort is gesloten, bel aan bij de deur links. We nemen steeds de nodige hygiënische maatregelen. Alvast bedankt voor je begrip!';
+			// 	}
+			// }
 
 			// Knip de eerste <br/> er weer af
 			$output = substr( $output, 5 );
