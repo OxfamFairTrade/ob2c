@@ -3806,10 +3806,11 @@
 		$empties_product = wc_get_product( $empties_array['id'] );
 
 		if ( $empties_product !== false ) {
-			write_log( $quantity );
+			$empties_sku = $empties_product->get_sku();
+			
+			write_log( $product_item['quantity'] );
 			write_log( print_r( $empties_sku, true ) );
 
-			$empties_sku = $empties_product->get_sku();
 			if ( $empties_sku === 'W19916' or $empties_sku === 'W29917' ) {
 				// Vermenigvuldig de flesjes bij samengestelde producten (= eleganter dan een extra leeggoedartikel aan te maken)
 				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voor W29917 deze gemanipuleerde hoeveelheden nodig heeft
@@ -3879,6 +3880,7 @@
 							$product_item_key = $cart_item_key;
 							// Probleem: indien er gratis producten toegevoegd worden, kan het product twee keer voorkomen in het winkelmandje!
 							// In dat geval blijven we doorgaan, in de veronderstelling dat het gratis product altijd verderop in de cart zit
+							write_log( $product_item_key );
 							write_log( $values['line_total'] );
 							if ( $values['line_total'] != 0 ) {
 								break;
@@ -3985,7 +3987,6 @@
 					
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 						if ( $values['product_id'] == $product_item['product_id'] ) {
-							write_log( $cart_item_key );
 							$product_item_key = $cart_item_key;
 							break;
 						}
