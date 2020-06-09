@@ -3808,9 +3808,6 @@
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
 			
-			write_log( $product_item['quantity'] );
-			write_log( $empties_sku );
-
 			if ( $empties_sku === 'W19916' or $empties_sku === 'W29917' ) {
 				// Vermenigvuldig de flesjes bij samengestelde producten (= eleganter dan een extra leeggoedartikel aan te maken)
 				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voor W29917 deze gemanipuleerde hoeveelheden nodig heeft
@@ -3823,7 +3820,7 @@
 							// Voeg 4 flesjes leeggoed toe bij clips
 							$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+							$product_item['quantity'] = $empties_array['quantity'];
 							break;
 
 						case '19236':
@@ -3834,7 +3831,7 @@
 							// Hoe sluiten we deze flesjes uit voor toevoeging van plastic bakken?
 							$empties_array['quantity'] = 3 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = 3 * intval( $product_item['quantity'] );
+							$product_item['quantity'] = $empties_array['quantity'];
 							break;
 					}
 				}
@@ -3872,31 +3869,13 @@
 							break;
 					}
 
-					$plastic_in_cart = false;
 					$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
-					
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 						if ( $values['product_id'] == $product_item['product_id'] ) {
 							$product_item_key = $cart_item_key;
-							// Probleem: indien er gratis producten toegevoegd worden, kan het product twee keer voorkomen in het winkelmandje!
-							// In dat geval blijven we doorgaan, in de veronderstelling dat het gratis product altijd verderop in de cart zit
-							write_log( $product_item_key );
-							// break;
+							// Indien er gratis producten toegevoegd worden, kan het product twee keer voorkomen in het winkelmandje!
+							add_matching_plastic_crate( $cart_item_key, $plastic_product_id, $product_item, $plastic_step, $empties_array );
 						}
-					}
-
-					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-						if ( intval( $values['product_id'] ) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
-							$main_product = wc_get_product( $product_item['product_id'] );
-							$plastic_in_cart = true;
-							break;
-						}
-					}
-
-					if ( ! $plastic_in_cart and floor( intval( $product_item['quantity'] ) / $plastic_step ) >= 1 ) {
-						$main_product = wc_get_product( $product_item['product_id'] );
-						// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
-						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval( $product_item['quantity'] ) / $plastic_step ), $empties_array['variation_id'], $empties_array['variation'], array( 'forced_by' => $product_item_key ) );
 					}
 					break;
 			}
@@ -3919,9 +3898,6 @@
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
 			
-			write_log( $quantity );
-			write_log( $empties_sku );
-
 			if ( $empties_sku === 'W19916' or $empties_sku === 'W29917' ) {
 				// Vermenigvuldig de flesjes bij samengestelde producten (= eleganter dan een extra leeggoedartikel aan te maken)
 				// We kunnen dit niet in de switch verderop doen, aangezien ook de berekening voor W29917 deze gemanipuleerde hoeveelheden nodig heeft
@@ -3934,7 +3910,7 @@
 							// Voeg 4 flesjes leeggoed toe bij clips
 							$quantity = 4 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+							$product_item['quantity'] = $quantity;
 							break;
 
 						case '19236':
@@ -3945,7 +3921,7 @@
 							// Hoe sluiten we deze flesjes uit voor toevoeging van plastic bakken?
 							$quantity = 3 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = 3 * intval( $product_item['quantity'] );
+							$product_item['quantity'] = $quantity;
 							break;
 					}
 				}
@@ -3983,31 +3959,12 @@
 							break;
 					}
 
-					$plastic_in_cart = false;
 					$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
-					
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
 						if ( $values['product_id'] == $product_item['product_id'] ) {
-							$product_item_key = $cart_item_key;
-							write_log( $product_item_key );
-							// break;
+							add_matching_plastic_crate( $cart_item_key, $plastic_product_id, $product_item, $plastic_step, $empties_item );
 						}
 					}
-					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-						if ( intval( $values['product_id'] ) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
-							$main_product = wc_get_product( $product_item['product_id'] );
-							// We hebben een krat gevonden dat gelinkt is aan de fles
-							$plastic_in_cart = true;
-							break;
-						}
-					}
-
-					if ( ! $plastic_in_cart and floor( intval( $product_item['quantity'] ) / $plastic_step ) >= 1 ) {
-						$main_product = wc_get_product( $product_item['product_id'] );
-						// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
-						$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval( $product_item['quantity'] ) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $empties_item['forced_by'] ) );
-					}
-
 					// Reset eventueel met het aantal van het hoofdproduct indien $quantity naar 1 zou terugvallen
 					// $quantity = $product_item['quantity'];
 					break;
@@ -4015,6 +3972,25 @@
 		}
 
 		return $quantity;
+	}
+
+	function add_matching_plastic_crate( $cart_item_key, $plastic_product_id, $product_item, $plastic_step, $empties_item ) {
+		write_log( $product_item['quantity'] );
+
+		$plastic_in_cart = false;
+		foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+			if ( intval( $values['product_id'] ) === $plastic_product_id and $values['forced_by'] === $cart_item_key ) {
+				// We hebben een krat gevonden dat gelinkt is aan de fles
+				$plastic_in_cart = true;
+				break;
+			}
+		}
+
+		if ( ! $plastic_in_cart and floor( intval( $product_item['quantity'] ) / $plastic_step ) >= 1 ) {
+			$main_product = wc_get_product( $product_item['product_id'] );
+			// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
+			$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval( $product_item['quantity'] ) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $cart_item_key ) );
+		}
 	}
 
 	// Toon bij onzichtbaar leeggoed het woord 'flessen' na het productaantal
