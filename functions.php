@@ -3881,9 +3881,7 @@
 							// Probleem: indien er gratis producten toegevoegd worden, kan het product twee keer voorkomen in het winkelmandje!
 							// In dat geval blijven we doorgaan, in de veronderstelling dat het gratis product altijd verderop in de cart zit
 							write_log( $product_item_key );
-							if ( intval( $values['line_total'] ) != 0 ) {
-								break;
-							}
+							// break;
 						}
 					}
 
@@ -3992,9 +3990,7 @@
 						if ( $values['product_id'] == $product_item['product_id'] ) {
 							$product_item_key = $cart_item_key;
 							write_log( $product_item_key );
-							if ( intval( $values['line_total'] ) != 0 ) {
-								break;
-							}
+							// break;
 						}
 					}
 					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
