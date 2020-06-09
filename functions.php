@@ -3633,45 +3633,47 @@
 				}
 			}
 
-			// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
-			$glass_cnt = 0;
-			$plastic_cnt = 0;
-			foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
-				if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
-					// Omwille van de icoontjes is niet alleen het leeggoed maar ook het product als breekbaar gemarkeerd!
-					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
-						$glass_cnt += intval($item_value['quantity']);
-					}
-					if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29917') ) {
-						$plastic_cnt += intval($item_value['quantity']);
-					}
-				} 
-			}
-			
-			if ( $glass_cnt + $plastic_cnt > 0 ) {
-				foreach ( $rates as $rate_key => $rate ) {
-					// Blokkeer alle methodes behalve afhalingen
-					if ( $rate->method_id !== 'local_pickup_plus' ) {
-						unset( $rates[$rate_key] );
-					}
-				}
-				// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
-				if ( does_home_delivery() ) {
-					$msg = WC()->session->get('no_home_delivery');
-					// Toon de foutmelding slechts één keer
-					if ( $msg !== 'SHOWN' ) {
-						if ( $glass_cnt > 0 and $plastic_cnt > 0 ) {
-							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d grote fles', '%d grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap en '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
-						} elseif ( $glass_cnt > 0 ) {
-							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d grote fles', '%d grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
-						} elseif ( $plastic_cnt > 0 ) {
-							wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Dit is te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verminder het aantal kleine flesjes in je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+			if ( ! does_risky_delivery() ) {
+				// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
+				$glass_cnt = 0;
+				$plastic_cnt = 0;
+				foreach ( WC()->cart->cart_contents as $item_key => $item_value ) {
+					if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
+						// Omwille van de icoontjes is niet alleen het leeggoed maar ook het product als breekbaar gemarkeerd!
+						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
+							$glass_cnt += intval($item_value['quantity']);
 						}
-						WC()->session->set( 'no_home_delivery', 'SHOWN' );
-					}
+						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29917') ) {
+							$plastic_cnt += intval($item_value['quantity']);
+						}
+					} 
 				}
-			} else {
-				WC()->session->set( 'no_home_delivery', 'RESET' );
+				
+				if ( $glass_cnt + $plastic_cnt > 0 ) {
+					foreach ( $rates as $rate_key => $rate ) {
+						// Blokkeer alle methodes behalve afhalingen
+						if ( $rate->method_id !== 'local_pickup_plus' ) {
+							unset( $rates[$rate_key] );
+						}
+					}
+					// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
+					if ( does_home_delivery() ) {
+						$msg = WC()->session->get('no_home_delivery');
+						// Toon de foutmelding slechts één keer
+						if ( $msg !== 'SHOWN' ) {
+							if ( $glass_cnt > 0 and $plastic_cnt > 0 ) {
+								wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d grote fles', '%d grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap en '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+							} elseif ( $glass_cnt > 0 ) {
+								wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d grote fles', '%d grote flessen', $glass_cnt, 'oxfam-webshop' ), $glass_cnt ).' fruitsap. Deze producten zijn te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verwijder ze uit je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+							} elseif ( $plastic_cnt > 0 ) {
+								wc_add_notice( 'Je winkelmandje bevat '.sprintf( _n( '%d krat', '%d kratten', $plastic_cnt, 'oxfam-webshop' ), $plastic_cnt ).' leeggoed. Dit is te onhandig om op te sturen. Kom je bestelling afhalen in de winkel, of verminder het aantal kleine flesjes in je winkelmandje om thuislevering weer mogelijk te maken.', 'error' );
+							}
+							WC()->session->set( 'no_home_delivery', 'SHOWN' );
+						}
+					}
+				} else {
+					WC()->session->set( 'no_home_delivery', 'RESET' );
+				}
 			}
 			
 			// Verhinder alle externe levermethodes indien totale brutogewicht > 29 kg (neem 1 kg marge voor verpakking)
@@ -3690,7 +3692,7 @@
 			$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
 			$low_vat_rate = reset( $low_vat_rates );
 			
-			// Slug voor de 'standard rate' is een lege string!
+			// Slug voor 'standard rate' is een lege string!
 			$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
 			$standard_vat_rate = reset( $standard_vat_rates );
 			
@@ -4417,7 +4419,7 @@
 			$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
 		}
 
-		if ( ! is_b2b_customer() and $product->get_shipping_class() === 'breekbaar' ) {
+		if ( ! is_b2b_customer() and ! does_risky_delivery() and $product->get_shipping_class() === 'breekbaar' ) {
 			$output .= 'Opgelet: dit product kan enkel afgehaald worden in de winkel! ';
 			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' ) {
 				$output .= 'Tip: losse bierflesjes zijn wel beschikbaar voor thuislevering.';
@@ -5705,6 +5707,11 @@
 			}
 		}
 		return $content;
+	}
+
+	function does_risky_delivery() {
+		// In de toekomst variabel maken
+		return false;
 	}
 
 	function does_home_delivery() {
