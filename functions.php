@@ -3827,7 +3827,7 @@
 						case '19238':
 						case '19239':
 							// Voeg 3 flesjes leeggoed toe bij geschenksets
-							// Hoe sluiten we deze flesjes uit voor toevoeving van plastic bakken?
+							// Hoe sluiten we deze flesjes uit voor toevoeging van plastic bakken?
 							$empties_array['quantity'] = 3 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
 							$product_item['quantity'] = 3 * intval( $product_item['quantity'] );
@@ -3905,6 +3905,9 @@
 	add_filter( 'wc_force_sell_update_quantity', 'update_plastic_empties_quantity', 10, 2 );
 
 	function update_plastic_empties_quantity( $quantity, $empties_item ) {
+		write_log( $quantity );
+		write_log( print_r( $empties_item, true ) );
+
 		// Filter wordt per definitie enkel doorlopen bij het updaten van leeggoed
 		$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
 		$empties_product = wc_get_product( $empties_item['product_id'] );
@@ -3931,7 +3934,7 @@
 						case '19238':
 						case '19239':
 							// Voeg 3 flesjes leeggoed toe bij geschenksets
-							// Hoe sluiten we deze flesjes uit voor toevoeving van plastic bakken?
+							// Hoe sluiten we deze flesjes uit voor toevoeging van plastic bakken?
 							$quantity = 3 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
 							$product_item['quantity'] = 3 * intval( $product_item['quantity'] );
