@@ -3881,8 +3881,8 @@
 							// Probleem: indien er gratis producten toegevoegd worden, kan het product twee keer voorkomen in het winkelmandje!
 							// In dat geval blijven we doorgaan, in de veronderstelling dat het gratis product altijd verderop in de cart zit
 							write_log( $product_item_key );
-							write_log( $values['line_total'] );
-							if ( $values['line_total'] != 0 ) {
+							write_log( print_r( $values, true ) );
+							if ( intval( $values['line_total'] ) != 0 ) {
 								break;
 							}
 						}
