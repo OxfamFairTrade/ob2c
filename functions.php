@@ -3806,6 +3806,7 @@
 	function check_plastic_empties_quantity( $empties_array, $product_item ) {
 		// $empties_array bevat geen volwaardig cart_item, enkel array met de keys id / quantity / variation_id / variation!
 		$empties_product = wc_get_product( $empties_array['id'] );
+		$do_not_count_for_crates = false;
 
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
@@ -3822,7 +3823,7 @@
 							// Voeg 4 flesjes leeggoed toe bij clips
 							$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = $empties_array['quantity'];
+							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
 							break;
 
 						case '19236':
@@ -3830,10 +3831,11 @@
 						case '19238':
 						case '19239':
 							// Voeg 3 flesjes leeggoed toe bij geschenksets
-							// Hoe sluiten we deze flesjes uit voor toevoeging van plastic bakken?
 							$empties_array['quantity'] = 3 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = $empties_array['quantity'];
+							$product_item['quantity'] = 3 * intval( $product_item['quantity'] );
+							// Hou met deze flesjes geen rekening bij berekenen van aantal plastic bakken
+							$do_not_count_for_crates = true;
 							break;
 					}
 				}
@@ -3871,14 +3873,16 @@
 							break;
 					}
 
-					$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
-					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-						if ( $values['product_id'] == $product_item['product_id'] ) {
-							$product_item_key = $cart_item_key;
-							// Indien er gratis producten toegevoegd worden, kan het product twee keer voorkomen in het winkelmandje!
-							add_matching_plastic_crate( $cart_item_key, $plastic_product_id, $product_item, $plastic_step, $empties_array );
+					if ( ! $do_not_count_for_crates ) {
+						$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
+						foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+							if ( $values['product_id'] == $product_item['product_id'] ) {
+								// Indien er gratis producten toegevoegd worden, kan het product twee keer voorkomen in het winkelmandje!
+								add_matching_plastic_crate( $cart_item_key, $plastic_product_id, $product_item, $plastic_step, $empties_array );
+							}
 						}
 					}
+
 					break;
 			}
 		}
@@ -3896,6 +3900,7 @@
 		// Filter wordt per definitie enkel doorlopen bij het updaten van leeggoed
 		$product_item = WC()->cart->get_cart_item( $empties_item['forced_by'] );
 		$empties_product = wc_get_product( $empties_item['product_id'] );
+		$do_not_count_for_crates = false;
 
 		if ( $empties_product !== false ) {
 			$empties_sku = $empties_product->get_sku();
@@ -3912,7 +3917,7 @@
 							// Voeg 4 flesjes leeggoed toe bij clips
 							$quantity = 4 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = $quantity;
+							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
 							break;
 
 						case '19236':
@@ -3920,10 +3925,11 @@
 						case '19238':
 						case '19239':
 							// Voeg 3 flesjes leeggoed toe bij geschenksets
-							// Hoe sluiten we deze flesjes uit voor toevoeging van plastic bakken?
 							$quantity = 3 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = $quantity;
+							$product_item['quantity'] = 3 * intval( $product_item['quantity'] );
+							// Hou met deze flesjes geen rekening bij berekenen van aantal plastic bakken
+							$do_not_count_for_crates = true;
 							break;
 					}
 				}
@@ -3961,12 +3967,15 @@
 							break;
 					}
 
-					$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
-					foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-						if ( $values['product_id'] == $product_item['product_id'] ) {
-							add_matching_plastic_crate( $cart_item_key, $plastic_product_id, $product_item, $plastic_step, $empties_item );
+					if ( ! $do_not_count_for_crates ) {
+						$plastic_product_id = wc_get_product_id_by_sku( $plastic_sku );
+						foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
+							if ( $values['product_id'] == $product_item['product_id'] ) {
+								add_matching_plastic_crate( $cart_item_key, $plastic_product_id, $product_item, $plastic_step, $empties_item );
+							}
 						}
 					}
+
 					// Reset eventueel met het aantal van het hoofdproduct indien $quantity naar 1 zou terugvallen
 					// $quantity = $product_item['quantity'];
 					break;
@@ -3976,12 +3985,10 @@
 		return $quantity;
 	}
 
-	function add_matching_plastic_crate( $cart_item_key, $plastic_product_id, $product_item, $plastic_step, $empties_item ) {
-		write_log( $product_item['quantity'] );
-
+	function add_matching_plastic_crate( $product_item_key, $plastic_product_id, $product_item, $plastic_step, $empties_item ) {
 		$plastic_in_cart = false;
 		foreach( WC()->cart->get_cart() as $cart_item_key => $values ) {
-			if ( intval( $values['product_id'] ) === $plastic_product_id and $values['forced_by'] === $cart_item_key ) {
+			if ( intval( $values['product_id'] ) === $plastic_product_id and $values['forced_by'] === $product_item_key ) {
 				// We hebben een krat gevonden dat gelinkt is aan de fles
 				$plastic_in_cart = true;
 				break;
@@ -3991,7 +3998,7 @@
 		if ( ! $plastic_in_cart and floor( intval( $product_item['quantity'] ) / $plastic_step ) >= 1 ) {
 			$main_product = wc_get_product( $product_item['product_id'] );
 			// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
-			$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval( $product_item['quantity'] ) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $cart_item_key ) );
+			$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval( $product_item['quantity'] ) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $product_item_key ) );
 		}
 	}
 
