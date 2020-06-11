@@ -1878,7 +1878,7 @@
 	}
 
 	// Acties om uit te voeren AAN BEGIN VAN ELKE POGING TOT CHECKOUT
-	add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
+	// add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
 
 	function verify_min_max_age_postcode_vat() {
 		// Stel een bestelminimum (en fictief -maximum) in
