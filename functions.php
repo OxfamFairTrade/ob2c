@@ -1963,7 +1963,7 @@
 					// Zet marketing_permission_id c1cbf23458 aan (ID blijft bewaard als tekst wijzigt)
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission c1cbf23458\n";
 					file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
-				} else {
+				} elseif ( $data['digizine'] === 1 ) {
 					// Zet marketing_permission_id 496c25fb49 aan (ID blijft bewaard als tekst wijzigt)
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission 496c25fb49\n";
 					file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
