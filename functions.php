@@ -1947,28 +1947,34 @@
 		// write_log( print_r( $data, true ) );
 
 		if ( $data['digizine'] === 1 or $data['marketing'] === 1 ) {
-			// Check m.b.v. MailChimp API of $data['billing_email'] al in de lijst zit
-			// BIJ VOORKEUR ASYNCHROON DOEN ZODAT HET CHECKOUT NIET VERTRAAGT
-			$response = get_mailchimp_response_by_email( $data['billing_email'] );
-			if ( $response['response']['code'] == 200 ) {
-				$body = json_decode( $response['body'] );
+			$post_data = array(
+				// Naam en e-mailadres zijn reeds geformatteerd!
+				'fname' => $data['billing_first_name'],
+				'lname' => $data['billing_last_name'],
+				'email' => $data['billing_email'],
+				'source' => 'webshop',
+				'newsletter' => 'yes',
+			);
 
-				if ( $body->status !== 'subscribed' ) {
-					// Subscribe member (kan dit ook indien unsubscribed/cleaned?)
-					$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tAdd member to Digizine list\n";
-					file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
-				}
-
-				if ( $data['marketing'] === 1 ) {
-					// Zet marketing_permission_id c1cbf23458 aan (ID blijft bewaard als tekst wijzigt)
-					$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission c1cbf23458\n";
-					file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
-				} elseif ( $data['digizine'] === 1 ) {
-					// Zet marketing_permission_id 496c25fb49 aan (ID blijft bewaard als tekst wijzigt)
-					$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission 496c25fb49\n";
-					file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
-				}
+			if ( $data['digizine'] === 1 ) {
+				// Zet marketing_permission_id 496c25fb49 aan (ID blijft bewaard als tekst wijzigt)
+				$post_data['digizine'] = 'yes';
+				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission 496c25fb49\n";
+				file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
 			}
+
+			if ( $data['marketing'] === 1 ) {
+				// Zet marketing_permission_id c1cbf23458 aan (ID blijft bewaard als tekst wijzigt)
+				$post_data['marketing'] = 'yes';
+				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission c1cbf23458\n";
+				file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
+			}
+
+			$settings = array(
+				'timeout' => 10,
+			);
+			// BIJ VOORKEUR ASYNCHROON DOEN ZODAT HET CHECKOUT NIET VERTRAAGT
+			wp_remote_post( add_query_arg( $post_data, 'https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php' ), $settings );
 		}
 
 		// Registreer of het een B2B-verkoop is of niet
