@@ -64,7 +64,11 @@
 
 						$content .= '">';
 							$content .= '<div class="cell" style="padding: 0.25em; width: 3%; text-align: center;"><a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'wc_order_status_icon', null, false ).'</a></div>';
-							$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().' ('.$product->get_attribute('pa_shopplus').')</span></div>';
+							$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().' ('.$product->get_attribute('pa_shopplus').')';
+							if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
+								$content .= ' <small>ENKEL ZICHTBAAR VOOR B2B-KLANTEN</small>';
+							}
+							$content .= '</span></div>';
 							$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
 								$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
 								$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
