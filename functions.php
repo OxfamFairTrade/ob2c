@@ -1961,6 +1961,8 @@
 				$post_data['digizine'] = 'yes';
 				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission 496c25fb49\n";
 				file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
+			} else {
+				$post_data['digizine'] = 'no';
 			}
 
 			if ( $data['marketing'] === 1 ) {
@@ -1974,7 +1976,8 @@
 				'timeout' => 10,
 			);
 			// BIJ VOORKEUR ASYNCHROON DOEN ZODAT HET CHECKOUT NIET VERTRAAGT
-			wp_remote_post( add_query_arg( $post_data, 'https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php' ), $settings );
+			$response = wp_remote_post( add_query_arg( $post_data, 'https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php' ), $settings );
+			file_put_contents( "../mailchimp_instructions.csv", wp_remote_retrieve_body( $response ), FILE_APPEND );
 		}
 
 		// Registreer of het een B2B-verkoop is of niet
