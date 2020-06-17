@@ -3877,12 +3877,12 @@
 
 						case 'WLFSK':
 							$plastic_sku = 'WLBS24';
-							$plastic_step = 13;
+							$plastic_step = 24;
 							break;
 
 						case 'W19916':
 							$plastic_sku = 'W29917';
-							$plastic_step = 13;
+							$plastic_step = 24;
 							break;
 					}
 
