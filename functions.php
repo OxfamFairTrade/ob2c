@@ -3971,12 +3971,12 @@
 
 						case 'WLFSK':
 							$plastic_sku = 'WLBS24';
-							$plastic_step = 13;
+							$plastic_step = 24;
 							break;
 
 						case 'W19916':
 							$plastic_sku = 'W29917';
-							$plastic_step = 13;
+							$plastic_step = 24;
 							break;
 					}
 
@@ -4008,10 +4008,10 @@
 			}
 		}
 
-		if ( ! $plastic_in_cart and floor( intval( $product_item['quantity'] ) / $plastic_step ) >= 1 ) {
+		if ( ! $plastic_in_cart and round( intval( $product_item['quantity'] ) / $plastic_step, 0, PHP_ROUND_HALF_DOWN ) >= 1 ) {
 			$main_product = wc_get_product( $product_item['product_id'] );
 			// Voeg het eerste krat handmatig toe en zorg ervoor dat deze cart_item gelinkt wordt aan het product waaraan de fles al gelinkt was
-			$result = WC()->cart->add_to_cart( $plastic_product_id, floor( intval( $product_item['quantity'] ) / $plastic_step ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $product_item_key ) );
+			$result = WC()->cart->add_to_cart( $plastic_product_id, round( intval( $product_item['quantity'] ) / $plastic_step, 0, PHP_ROUND_HALF_DOWN ), $empties_item['variation_id'], $empties_item['variation'], array( 'forced_by' => $product_item_key ) );
 		}
 	}
 
