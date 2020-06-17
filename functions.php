@@ -153,12 +153,13 @@
 	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
 	$content_width = 1500;
 
-	// Google Analytics wordt standaard uitgeschakeld voor users met de rechten 'manage_options' (= enkel superadmins)
+	// Schakel Google Analytics uit in bepaalde gevallen
 	add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
 		// Parameter $type bevat het soort GA-tracking
-		if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() ) {
+		// Wordt standaard enkel uitgeschakeld voor users met 'manage_options'-rechten (= superadmins)
+		if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
 			return true;
 		} else {
 			return false;
@@ -170,7 +171,7 @@
 
 	function add_google_tag_manager_js() {
 		echo '<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">';
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
 			?>
 			<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -185,7 +186,7 @@
 	add_action( 'wp_head', 'add_google_tag_manager_no_js', 100 );
 
 	function add_google_tag_manager_no_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
 			?>
 			<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
 			height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -197,7 +198,7 @@
 	add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
 
 	function add_facebook_pixel_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
 			?>
 			<script>!function(f,b,e,v,n,t,s)
 			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -217,7 +218,7 @@
 	add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
 
 	function add_facebook_pixel_no_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() ) {
+		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
 			?>
 			<noscript><img height="1" width="1" style="display:none"
 			src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
