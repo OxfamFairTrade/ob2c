@@ -185,7 +185,7 @@
 								echo 'Nu met thuislevering <b><u>op vrijdag</u></b>, gratis vanaf 50 euro!';
 							} elseif ( get_current_blog_id() === 26 ) {
 								// Uitzondering voor Regio Brussel
-								echo 'Nu met thuislevering <b><u>op woensdag</u></b>, gratis vanaf 50 euro!';
+								echo 'Nu met thuislevering <b><u>op woensdag</u></b> (gratis vanaf 50 euro) en cadeautje vanaf 20 euro!';
 							} elseif ( get_current_blog_id() === 27 ) {
 								// Uitzondering voor Regio Hasselt
 								echo '<b><u>Gratis</u></b> thuislevering in Hasselt! (elders vanaf 50 euro)</p>';
