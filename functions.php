@@ -3265,14 +3265,14 @@
 			// Alle (gratis/betalende) instances van postpuntlevering en thuislevering
 			default:
 				if ( intval( $shop_post_id ) === 3338 ) {
-					// Voorlopig enkel thuislevering op vrijdag bij Brussel 
-					if ( date_i18n( 'N', $from ) > 4 ) {
-						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
-						$from = strtotime( '+1 weekday', $from );
+					// Voorlopig enkel thuislevering op woensdag bij Brussel 
+					if ( date_i18n( 'N', $from ) > 1 and date_i18n( 'N', $from ) < 4 ) {
+						// Na de deadline van maandag 23u59: begin pas bij 2de werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+2 weekdays', $from );
 					}
 
-					// Zoek de eerste vrijdag
-					$timestamp = strtotime( 'next Friday', $from );
+					// Zoek de eerste woensdag
+					$timestamp = strtotime( 'next Wednesday', $from );
 				} elseif ( intval( $shop_post_id ) === 3409 ) {
 					// Voorlopig enkel thuislevering op vrijdag bij Evergem 
 					if ( date_i18n( 'N', $from ) > 2 ) {

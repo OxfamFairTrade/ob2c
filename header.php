@@ -180,9 +180,12 @@
 							} elseif ( get_current_blog_id() === 15 or get_current_blog_id() === 17 ) {
 								// Uitzondering voor Gentbrugge en Hoeilaart
 								echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
-							} elseif ( get_current_blog_id() === 13 or get_current_blog_id() === 26 ) {
-								// Uitzondering voor Evergem en Regio Brussel
+							} elseif ( get_current_blog_id() === 13 ) {
+								// Uitzondering voor Evergem
 								echo 'Nu met thuislevering <b><u>op vrijdag</u></b>, gratis vanaf 50 euro!';
+							} elseif ( get_current_blog_id() === 26 ) {
+								// Uitzondering voor Regio Brussel
+								echo 'Nu met thuislevering <b><u>op woensdag</u></b>, gratis vanaf 50 euro!';
 							} elseif ( get_current_blog_id() === 27 ) {
 								// Uitzondering voor Regio Hasselt
 								echo '<b><u>Gratis</u></b> thuislevering in Hasselt! (elders vanaf 50 euro)</p>';
