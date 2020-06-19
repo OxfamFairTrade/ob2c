@@ -5767,7 +5767,7 @@
 
 	function is_regional_webshop() {
 		// Antwerpen, Leuven, Mechelen en Wetteren
-		$regions = array( 24, 28, 40 );
+		$regions = array( 24, 28, 40, 53 );
 		// Opgelet: vergeet de custom orderstatus 'claimed' niet te publiceren naar deze subsites!
 		return in_array( get_current_blog_id(), $regions );
 	}
