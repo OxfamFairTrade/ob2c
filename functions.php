@@ -5296,27 +5296,27 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>Automatische berichten vanuit de helpdeskmailbox gingen sinds enkele weken in de meeste gevallen rechtstreeks naar de spamfolder. Dit is nu verholpen.</p>';
+					echo '<p>Door een blacklisting door Microsoft van onze mailserver raakten mails naar @hotmail.com, @outlook.be, ... addressen de voorbij week bovengemiddeld vaak in spam. We stelden een alternatieve mailserver in zodat we in de toekomst bij geliijkaardige voorvallen vlotter kunnen switchen tussen beide methodes.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-info">';
-					echo '<p>De talrijke promoties voor de maand juni werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-1-1-online-winkel-juni-update-bier.html" target="_blank">Copain</a>). Opgelet: de 3+1 actie op de JUSTE bieren geldt zowel op clips (= rechtstreekse korting van 25%), op losse flesjes (= elk 4de flesje van dezelfde soort krijgt 100% korting) als op de nieuwe biercadeausets met één soort bier (= per set wordt een gratis flesje toegevoegd). Het leeggoed op alle gratis flesjes dient wel betaald te worden en wordt dus automatisch aangerekend door de webshop. De kortingsregels in de webshop stemmen overeen met de instructies voor ShopPlus.</p>';
-				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
-						$skus = array( '19236', '19237', '19238', '19239', '25013' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku($sku);
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De paasfiguren werden verborgen.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>De talrijke promoties voor de maand juni werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-1-1-online-winkel-juni-update-bier.html" target="_blank">Copain</a>). Opgelet: de 3+1 actie op de JUSTE bieren geldt zowel op clips (= rechtstreekse korting van 25%), op losse flesjes (= elk 4de flesje van dezelfde soort krijgt 100% korting) als op de nieuwe biercadeausets met één soort bier (= per set wordt een gratis flesje toegevoegd). Het leeggoed op alle gratis flesjes dient wel betaald te worden en wordt dus automatisch aangerekend door de webshop. De kortingsregels in de webshop stemmen overeen met de instructies voor ShopPlus.</p>';
+				// echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
+				// 		$skus = array( '19236', '19237', '19238', '19239', '25013' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku($sku);
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De paasfiguren werden verborgen.</p>';
+				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
