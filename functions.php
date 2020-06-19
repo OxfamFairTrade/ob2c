@@ -1981,7 +1981,7 @@
 			// BIJ VOORKEUR ASYNCHROON DOEN ZODAT HET CHECKOUT NIET VERTRAAGT
 			$response = wp_remote_post( 'https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php', $settings );
 			$result = json_decode( wp_remote_retrieve_body( $response ) );
-			file_put_contents( "../mailchimp_instructions.csv", date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\t".$result['status'], FILE_APPEND );
+			file_put_contents( "../mailchimp_instructions.csv", date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\t".$result->status, FILE_APPEND );
 		}
 
 		// Registreer of het een B2B-verkoop is of niet
