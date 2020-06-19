@@ -1962,7 +1962,7 @@
 				// Zet marketing_permission_id 496c25fb49 aan (ID blijft bewaard als tekst wijzigt)
 				$post_data['digizine'] = 'yes';
 				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission 496c25fb49\n";
-				file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
+				file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", $str, FILE_APPEND );
 			} else {
 				$post_data['digizine'] = 'no';
 			}
@@ -1971,7 +1971,7 @@
 				// Zet marketing_permission_id c1cbf23458 aan (ID blijft bewaard als tekst wijzigt)
 				$post_data['marketing'] = 'yes';
 				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission c1cbf23458\n";
-				file_put_contents( "../mailchimp_instructions.csv", $str, FILE_APPEND );
+				file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", $str, FILE_APPEND );
 			}
 
 			$settings = array(
@@ -1981,7 +1981,7 @@
 			// BIJ VOORKEUR ASYNCHROON DOEN ZODAT HET CHECKOUT NIET VERTRAAGT
 			$response = wp_remote_post( 'https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php', $settings );
 			$result = json_decode( wp_remote_retrieve_body( $response ) );
-			file_put_contents( "../mailchimp_instructions.csv", date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\t".$result->status, FILE_APPEND );
+			file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\t".$result->status, FILE_APPEND );
 		}
 
 		// Registreer of het een B2B-verkoop is of niet
