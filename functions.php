@@ -5296,7 +5296,7 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>Door een blacklisting door Microsoft van onze mailserver raakten mails naar @hotmail.com, @outlook.be, ... addressen de voorbij week bovengemiddeld vaak in spam. We stelden een alternatieve mailserver in zodat we in de toekomst bij geliijkaardige voorvallen vlotter kunnen switchen tussen beide methodes.</p>';
+					echo '<p>Door een blacklisting van onze mailserver bij Microsoft belandden mails naar @hotmail.com, @outlook.be, ... addressen de voorbij week bovengemiddeld vaak in spam. We stelden een alternatieve mailserver in zodat we in de toekomst bij geliijkaardige voorvallen vlotter kunnen switchen tussen beide methodes.</p>';
 				echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>De talrijke promoties voor de maand juni werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-1-1-online-winkel-juni-update-bier.html" target="_blank">Copain</a>). Opgelet: de 3+1 actie op de JUSTE bieren geldt zowel op clips (= rechtstreekse korting van 25%), op losse flesjes (= elk 4de flesje van dezelfde soort krijgt 100% korting) als op de nieuwe biercadeausets met één soort bier (= per set wordt een gratis flesje toegevoegd). Het leeggoed op alle gratis flesjes dient wel betaald te worden en wordt dus automatisch aangerekend door de webshop. De kortingsregels in de webshop stemmen overeen met de instructies voor ShopPlus.</p>';
