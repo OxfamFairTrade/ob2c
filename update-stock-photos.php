@@ -61,7 +61,7 @@
 							
 							$content .= '">';
 								$content .= '<p class="title">'.$product->get_sku().': '.$product->get_title();
-								if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
+								if ( has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
 									$content .= '<br/><small>ENKEL ZICHTBAAR VOOR B2B-KLANTEN</small>';
 								}
 								$content .= '</p>';
