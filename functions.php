@@ -1959,7 +1959,6 @@
 			);
 
 			if ( $data['digizine'] === 1 ) {
-				// Zet marketing_permission_id 496c25fb49 aan (ID blijft bewaard als tekst wijzigt)
 				$post_data['digizine'] = 'yes';
 				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission 496c25fb49\n";
 				file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", $str, FILE_APPEND );
@@ -1968,7 +1967,6 @@
 			}
 
 			if ( $data['marketing'] === 1 ) {
-				// Zet marketing_permission_id c1cbf23458 aan (ID blijft bewaard als tekst wijzigt)
 				$post_data['marketing'] = 'yes';
 				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission c1cbf23458\n";
 				file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", $str, FILE_APPEND );
@@ -1981,7 +1979,7 @@
 			// BIJ VOORKEUR ASYNCHROON DOEN ZODAT HET CHECKOUT NIET VERTRAAGT
 			$response = wp_remote_post( 'https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php', $settings );
 			$result = json_decode( wp_remote_retrieve_body( $response ) );
-			file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\t".$result->status, FILE_APPEND );
+			file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\t".$result->status."\n", FILE_APPEND );
 		}
 
 		// Registreer of het een B2B-verkoop is of niet
@@ -5295,11 +5293,11 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-success">';
-					echo '<p>Door een blacklisting van onze mailserver bij Microsoft belandden mails naar @hotmail.com, @outlook.be, ... addressen de voorbij week bovengemiddeld vaak in spam. We voegden een alternatieve mailserver toe, zodat we in de toekomst bij gelijkaardige voorvallen vlotter kunnen afwisselen tussen beide methodes.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Door een blacklisting van onze mailserver bij Microsoft belandden mails naar @hotmail.com, @outlook.be, ... addressen de voorbij week bovengemiddeld vaak in spam. We voegden een alternatieve mailserver toe, zodat we in de toekomst bij gelijkaardige voorvallen vlotter kunnen afwisselen tussen beide methodes.</p>';
+				// echo '</div>';
 				// echo '<div class="notice notice-info">';
-				// 	echo '<p>De talrijke promoties voor de maand juni werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-1-1-online-winkel-juni-update-bier.html" target="_blank">Copain</a>). Opgelet: de 3+1 actie op de JUSTE bieren geldt zowel op clips (= rechtstreekse korting van 25%), op losse flesjes (= elk 4de flesje van dezelfde soort krijgt 100% korting) als op de nieuwe biercadeausets met één soort bier (= per set wordt een gratis flesje toegevoegd). Het leeggoed op alle gratis flesjes dient wel betaald te worden en wordt dus automatisch aangerekend door de webshop. De kortingsregels in de webshop stemmen overeen met de instructies voor ShopPlus.</p>';
+				// 	echo '<p>De promoties voor de maanden juli-augustus werden ingesteld (zie <a href="" target="_blank">Copain</a>).</p>';
 				// echo '</div>';
 				// echo '<div class="notice notice-success">';
 				// 	echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
