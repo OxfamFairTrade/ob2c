@@ -276,6 +276,11 @@
 		if ( get_the_date( 'Y-m-d', $post->ID ) > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
 			$classes[] = 'newbee';
 		}
+
+		if ( does_risky_delivery() ) {
+			// Zorg er voor dat de 'enkel afhaling'-labeltjes niet verschijnen (of voeg een extra klasse toe en pas CSS aan?)
+			unset( $classes['product_shipping_class-breekbaar'] );
+		}
 		
 		// Label producten met 1+1 / 2de -50% / 3+1 / -25% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
 		// Zou eventueel ook in template sale-flash.php kunnen, maar dit is - ondanks de omweg via product-ID - toch handiger
