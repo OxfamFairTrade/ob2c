@@ -268,7 +268,7 @@
 
 	// Voeg klasse toe indien recent product
 	// MIGREER NAAR add_filter( 'woocommerce_post_class', $classes, $product ) VANAF WC 3.6+
-	add_filter( 'post_class', 'add_recent_product_class' );
+	add_filter( 'post_class', 'add_recent_product_class', 1000, 1 );
 
 	function add_recent_product_class( $classes ) {
 		global $post;
@@ -278,13 +278,16 @@
 		}
 
 		if ( does_risky_delivery() ) {
-			// Zorg er voor dat de 'enkel afhaling'-labeltjes niet verschijnen (of voeg een extra klasse toe en pas CSS aan?)
-			unset( $classes['product_shipping_class-breekbaar'] );
+			$key = array_search( 'product_shipping_class-breekbaar', $classes );
+			if ( $key !== false ) {
+				// Zorg ervoor dat 'enkel afhaling'-labeltjes niet verschijnen (of voeg een extra klasse toe en pas CSS aan?)
+				unset( $classes[ $key ] );
+			}
 		}
-		
+
 		// Label producten met 1+1 / 2de -50% / 3+1 / -25% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
 		// Zou eventueel ook in template sale-flash.php kunnen, maar dit is - ondanks de omweg via product-ID - toch handiger
-		$one_plus_one_products = array( '24531', '24302', '24547', '25310', '21003', '21011', '25010', '26014' );
+		$one_plus_one_products = array( '24531', '24302', '24547', '25310', '21003', '21011', '25010', '26014', '25727', '27997' );
 		foreach ( $one_plus_one_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'one-plus-one';
@@ -296,7 +299,7 @@
 				$classes[] = 'fifty-percent-off';
 			}
 		}
-		$three_plus_one_products = array( '20808', '20810', '20812' );
+		$three_plus_one_products = array( '20808', '20810', '20812', '21108' );
 		foreach ( $three_plus_one_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'three-plus-one';
