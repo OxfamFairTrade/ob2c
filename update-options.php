@@ -147,7 +147,7 @@
 			?>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering (<?php echo count( get_option( 'oxfam_zip_codes', array() ) ); ?>):<br/><small>Dit kan omwille van databaseconsistentie enkel vanuit het NS gewijzigd worden.</small></label>
+					<label for="oxfam_zip_codes" title="Om tegenstrijdige data te vermijden toont deze optie in de toekomst best uit alle postcodes uit de ingeschakelde verzendzones op deze site, maar voorlopig stellen we dit handmatig in. (Heeft ook als voordeel dat we de postcodecheck bij het afrekenen minder rigide kunnen maken.)">Postcodes voor thuislevering waar deze webshop hoofdverantwoordelijke voor is (<?php echo count( get_option( 'oxfam_zip_codes', array() ) ); ?>):<br/><small>Dit bepaalt naar welke webshop een klant doorgestuurd wordt op het portaal als hij/zij een postcode invult. Omwille van databaseconsistentie kan dit enkel vanuit het NS gewijzigd worden. Dit kan licht afwijken van de lijst met postcodes waar deze webshop <u>kan</u> leveren: <?php echo implode( ', ', get_oxfam_covered_zips() ); ?>.</small></label>
 				</th>
 		  		<td class="right">
 		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo implode( ', ', get_oxfam_covered_zips() ); ?>" <?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_zip_codes', array() ) ) ); ?></textarea>
