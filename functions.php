@@ -287,13 +287,13 @@
 
 		// Label producten met 1+1 / 2de -50% / 3+1 / -25% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
 		// Zou eventueel ook in template sale-flash.php kunnen, maar dit is - ondanks de omweg via product-ID - toch handiger
-		$one_plus_one_products = array( '24531', '24302', '24547', '25310', '21003', '21011', '25010', '26014', '25727', '27997' );
+		$one_plus_one_products = array( '24531', '24302', '24547', '25310', '21003', '21011', '25010', '26014' );
 		foreach ( $one_plus_one_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'one-plus-one';
 			}	
 		}
-		$fifty_percent_off_second_products = array( '20070', '20076' );
+		$fifty_percent_off_second_products = array( '20070', '20076', '25727', '27997' );
 		foreach ( $fifty_percent_off_second_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'fifty-percent-off';
