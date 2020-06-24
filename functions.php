@@ -5728,8 +5728,9 @@
 	}
 
 	function does_risky_delivery() {
-		// In de toekomst variabel maken
-		return false;
+		// Begijnendijk CHECK OF DIT VOLSTAAT (NOTICES, FAQ, ...)
+		$full_deliverers = array( 42 );
+		return in_array( get_current_blog_id(), $full_deliverers );
 	}
 
 	function does_home_delivery() {
