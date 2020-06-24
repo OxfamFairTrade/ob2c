@@ -6019,7 +6019,8 @@
 			unset( $zips[ $key ] );
 		}
 		
-		return sort( $zips, SORT_NUMERIC );
+		sort( $zips, SORT_NUMERIC );
+		return $zips;
 	}
 
 
