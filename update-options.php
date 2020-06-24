@@ -149,7 +149,7 @@
 				<th class="left">
 					<?php
 						if ( does_home_delivery() ) {
-							$extra_info = 'Dit kan licht afwijken van de lijst met postcodes waar deze webshop <u>kan</u> leveren ('.implode( ', ', get_oxfam_covered_zips() ).'). ';
+							$extra_info = 'Deze lijst kan iets korter zijn dan de '.count( get_oxfam_covered_zips() ).' postcodes waar deze webshop thuislevering aanbiedt ('.implode( ', ', get_oxfam_covered_zips() ).'). ';
 						} else {
 							$extra_info = '';
 						} 
