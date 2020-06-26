@@ -629,10 +629,10 @@
 			// Een gewone klant heeft deze eigenschap niet en retourneert dus sowieso 'false'
 			$owner = get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() );
 		} else {
-			// Indien het order rechtstreeks afgerond wordt vanuit Sendcloud gebeurt het onder de user met ID 1 (= Frederik)
+			// Indien het order rechtstreeks afgerond wordt vanuit SendCloud gebeurt het onder de user met ID 1 (= Frederik)
 			if ( get_current_blog_id() == 24 ) {
 				$owner = 'antwerpen';
-				write_log("Ongeclaimde bestelling ".$order->get_order_number()." afgewerkt vanuit Sendcloud en gekoppeld aan Antwerpen!");
+				write_log("Ongeclaimde bestelling ".$order->get_order_number()." afgewerkt vanuit SendCloud en gekoppeld aan Antwerpen!");
 			}
 		}
 		
@@ -5192,33 +5192,45 @@
 		echo '</div>';
 	}
 
-	function get_tracking_number( $order ) {
+	function get_tracking_info( $order ) {
 		if ( ! $order instanceof WC_Order ) {
 			return;
 		}
 
-		$tracking_number = false;
-		// Query alle order comments waarin het over Bpost gaat en zet de oudste bovenaan
-		$args = array( 'post_id' => $order->get_id(), 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'ASC', 'search' => 'bpost' );
+		// Query alle order comments waarin het over SendCloud gaat en zet de oudste bovenaan
+		$args = array( 'post_id' => $order->get_id(), 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'ASC', 'search' => 'sendcloud' );
 		// Want anders zien we de private opmerkingen niet!
 		remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
 		$comments = get_comments( $args );
+		
+		$tracking_info = false;
 		if ( count($comments) > 0 ) {
-			foreach ( $comments as $bpost_note ) {
-				// Check of we een 24-cijferig tracking number kunnen terugvinden
-				if ( preg_match( '/[0-9]{24}/', $bpost_note->comment_content, $numbers ) === 1 ) {
-					// Waarde in meest recente comment zal geretourneerd worden!
-					$tracking_number = $numbers[0];
+			foreach ( $comments as $sendcloud_note ) {
+				// Enkel waarde in meest recente comment zal geretourneerd worden!
+				$tracking_info = array();
+
+				if ( preg_match( '/[0-9]{24}/', $sendcloud_note->comment_content, $numbers ) === 1 ) {
+					// We hebben 24-cijferig tracking number van Bpost gevonden
+					$tracking_info['carrier'] = 'Bpost';
+					$tracking_info['number'] = $numbers[0];
+				} elseif ( preg_match( '/[0-9]{14}/', $sendcloud_note->comment_content, $numbers ) === 1 ) {
+					// We hebben 14-cijferig tracking number van DPD gevonden
+					$tracking_info['carrier'] = 'DPD';
+					$tracking_info['number'] = $numbers[0];
+				}
+				
+				// Zeer gevoelig voor wijzigingen van SendCloud uit!
+				$parts = explode( 'traced at: ', $sendcloud_note->comment_content );
+				if ( count( $parts ) > 1 ) {
+					$tracking_info['link'] = esc_url( $parts[1] );
 				}
 			}
 		}
+		
 		// Reactiveer filter
 		add_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
-		return $tracking_number;
-	}
-
-	function get_tracking_link( $tracking_number, $order ) {
-		return 'https://track.bpost.cloud/btr/web/#/search?itemCode='.$tracking_number.'&postalCode='.$order->get_shipping_postcode().'&lang=nl';
+		
+		return $tracking_info;
 	}
 
 	function get_logistic_params( $order, $echo = false ) {

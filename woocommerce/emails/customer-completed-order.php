@@ -26,14 +26,17 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>';
 	if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
 		$text = __( 'Bericht bovenaan de 2de bevestigingsmail (indien thuislevering).', 'oxfam-webshop' );
-		if ( false !== ( $tracking_number = get_tracking_number( $order ) ) ) {
+		if ( false !== ( $tracking_info = get_tracking_info( $order ) ) ) {
 			if ( $order->has_shipping_method('service_point_shipping_method') ) {
 				echo str_replace( 'Een vrijwilliger komt er binnenkort mee langs.', 'Je kunt het binnenkort oppikken in het afhaalpunt dat je koos.', $text );
-			} else {
+			} elseif ( $tracking_info['carrier'] === 'Bpost' ) {
 				echo str_replace( 'Een vrijwilliger ', 'De postbode ', $text );
+			} elseif ( $tracking_info['carrier'] === 'DPD' ) {
+				echo str_replace( 'Een vrijwilliger ', 'De koerier ', $text );
 			}
 			echo ' ';
-			printf( __( 'Tracking bij Bpost, inclusief barcode (%1$s) en volglink (%2$s).', 'oxfam-webshop' ), $tracking_number, get_tracking_link( $tracking_number, $order ) );
+			// Mocht de link om één of andere reden ontbreken zal dit 'zacht' breken
+			printf( __( 'Tracking bij Bpost, inclusief barcode (%1$s) en volglink (%2$s).', 'oxfam-webshop' ), $tracking_info['number'], $tracking_info['link'] );
 		} else {
 			echo $text;
 		}
