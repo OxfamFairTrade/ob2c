@@ -36,7 +36,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 			}
 			echo ' ';
 			// Mocht de link om één of andere reden ontbreken zal dit 'zacht' breken
-			printf( __( 'Tracking bij Bpost, inclusief barcode (%1$s) en volglink (%2$s).', 'oxfam-webshop' ), $tracking_info['number'], $tracking_info['link'] );
+			printf( __( 'Trackinginfo, inclusief barcode (%1$s) en volglink (%2$s).', 'oxfam-webshop' ), $tracking_info['number'], $tracking_info['link'] );
 		} else {
 			echo $text;
 		}
