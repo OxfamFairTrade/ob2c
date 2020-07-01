@@ -5315,7 +5315,7 @@
 				echo '<div class="notice notice-info">';
 					echo '<p>De promoties voor de maand juli werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Later deze week verschijnen ook nog enkele nieuwe producten.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-success">';
+				// echo '<div class="notice notice-success">';
 				// 	echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
 				// 		$skus = array( '19236', '19237', '19238', '19239', '25013' );
 				// 		foreach ( $skus as $sku ) {
