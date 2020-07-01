@@ -163,7 +163,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> array('publish'),
-		'title'			=> 'tht-divers',
+		'title'			=> 'appelsap',
 	);
 
 	$all_coupons = new WP_Query( $args );

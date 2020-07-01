@@ -5312,13 +5312,10 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Door een blacklisting van onze mailserver bij Microsoft belandden mails naar @hotmail.com, @outlook.be, ... addressen de voorbij week bovengemiddeld vaak in spam. We voegden een alternatieve mailserver toe, zodat we in de toekomst bij gelijkaardige voorvallen vlotter kunnen afwisselen tussen beide methodes.</p>';
-				// echo '</div>';
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>De promoties voor de maanden juli-augustus werden ingesteld (zie <a href="" target="_blank">Copain</a>).</p>';
-				// echo '</div>';
-				// echo '<div class="notice notice-success">';
+				echo '<div class="notice notice-info">';
+					echo '<p>De promoties voor de maand juli werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Later deze week verschijnen ook nog enkele nieuwe producten.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-success">';
 				// 	echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
 				// 		$skus = array( '19236', '19237', '19238', '19239', '25013' );
 				// 		foreach ( $skus as $sku ) {
