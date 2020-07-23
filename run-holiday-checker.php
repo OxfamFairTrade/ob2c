@@ -18,11 +18,13 @@
 						// Stel de waarschuwingsbanner in
 						if ( in_array( $site->blog_id, get_site_option('oxfam_blocked_sites') ) ) {
 							update_option( 'woocommerce_demo_store_notice', 'Deze webshop is nog niet gepubliceerd. Bestellingen worden nog niet uitgeleverd.' );
+							$type = 'A';
 						} else {
 							update_option( 'woocommerce_demo_store_notice', 'Betalingen zijn nog niet geactiveerd. Bestellingen worden nog niet uitgeleverd.' );
+							$type = 'B';
 						}
 						if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
-							write_log("Waarschuwingsbanner geactiveerd op ".$site->blogname."!");
+							write_log("Waarschuwingsbanner type ".$type." geactiveerd op ".$site->blogname."!");
 						}
 					} else {
 						// Neem de wettelijke feestdagen indien er geen enkele lokale gedefinieerd is (of merge altijd?)
