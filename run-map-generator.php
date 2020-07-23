@@ -125,10 +125,13 @@
 
 						if ( does_home_delivery() ) {
 							$home_delivery = true;
+							$store_args['meta_input']['wpsl_alternate_marker_url'] = '';
 						} else {
 							$home_delivery = false;
-							// Alternatieve marker indien enkel afhaling LEGENDE ONTBREEKT, UITSCHAKELEN
-							// $store_args['meta_input']['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';
+							// Alternatieve marker indien enkel afhaling
+							$store_args['meta_input']['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';
+							// LEGENDE ONTBREEKT, OVERRULE OPNIEUW DOOR DEFAULT
+							$store_args['meta_input']['wpsl_alternate_marker_url'] = '';
 						}
 
 						// Maak aan op hoofdsite
