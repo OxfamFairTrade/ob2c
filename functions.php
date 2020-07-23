@@ -5742,7 +5742,7 @@
 	###########
 
 	function get_flemish_zips_and_cities() {
-		$zips = get_site_option( 'oxfam_flemish_zip_codes' );
+		$zips = get_site_option('oxfam_flemish_zip_codes');
 		foreach ( $zips as $zip => $cities ) {
 			$parts = explode( '/', $cities );
 			foreach ( $parts as $city ) {
@@ -5759,13 +5759,13 @@
 	}
 
 	function does_home_delivery() {
-		// Kijk in de testsites naar de geactiveerde verzendmethodes i.p.v. de toegekende poastcodes
-		// Zal misschien ook nodig zijn voor Gent-Sint-Pieters?
+		// Kijk in de testsites naar de geactiveerde verzendmethodes i.p.v. de toegekende postcodes
 		if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
 			// Klopt altijd, behalve voor Geraardsbergen
 			return true;
 		} else {
-			return get_option( 'oxfam_zip_codes' );
+			// Zal niet kloppen voor Gent-Sint-Pieters (= geen enkele hoofdpostcode)?
+			return get_option('oxfam_zip_codes');
 		}
 	}
 
@@ -5979,7 +5979,7 @@
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
-			$local_zips = get_option( 'oxfam_zip_codes' );
+			$local_zips = get_option('oxfam_zip_codes');
 			if ( $local_zips !== false ) {
 				foreach ( $local_zips as $zip ) {
 					if ( isset($global_zips[$zip]) ) {

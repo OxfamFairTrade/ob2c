@@ -124,8 +124,8 @@
 						}
 
 						if ( ! does_home_delivery() ) {
-							// Alternatieve marker indien enkel afhaling
-							$store_args['meta_input']['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';
+							// Alternatieve marker indien enkel afhaling UITSCHAKELEN, LEGENDE ONTBREEKT + DOET RAAR
+							// $store_args['meta_input']['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';
 						}
 
 						// Maak aan op hoofdsite
