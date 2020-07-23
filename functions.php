@@ -5589,14 +5589,22 @@
 		
 		// Boodschap over afhaling op afspraak enkel toevoegen indien hele week gesloten
 		if ( strpos( $output, ' - ' ) === false ) {
-			$locations = get_option('woocommerce_pickup_locations');
-			if ( count( $locations ) > 1 ) {
-				$text = 'Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
+			if ( get_current_blog_id() === 13 ) {
+				// Uitzondering voor Evergem
+				$output = '<p class="corona-notice">Wegens onze verhuis is de winkel momenteel gesloten, maar onze webshop blijft open! Na het plaatsen van je bestelling contacteren we je om een afspraak te maken voor afhaling.</p>';
+			} elseif ( get_current_blog_id() === 40 ) {
+				// Uitzondering voor Mechelen
+				$output = '<p class="corona-notice">Wegens onze jaarlijkse vakantie is de winkel momenteel gesloten, maar onze webshop blijft open! Na het plaatsen van je bestelling contacteren we je om een afspraak te maken voor afhaling.</p>';
 			} else {
-				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
+				// UITSCHAKELEN
+				// $locations = get_option('woocommerce_pickup_locations');
+				// if ( count( $locations ) > 1 ) {
+				// 	$text = 'Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
+				// } else {
+				// 	$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
+				// }
+				// $output = '<p class="corona-notice">'.$text.'</p>';
 			}
-			// UITSCHAKELEN
-			// $output = '<p class="corona-notice">'.$text.'</p>';
 		} else {
 			// if ( $atts['id'] === 'brugge' ) {
 			// 	// Extra tekst in de mail

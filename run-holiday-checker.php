@@ -28,7 +28,8 @@
 						}
 					} else {
 						// Neem de wettelijke feestdagen indien er geen enkele lokale gedefinieerd is (of merge altijd?)
-						if ( in_array( date_i18n('Y-m-d'), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
+						// Evergem en Mechelen zijn gesloten maar houden hun webshop wel open ...
+						if ( $site->blog_id != 13 and $site->blog_id != 40 and in_array( date_i18n('Y-m-d'), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
 							// Stel de afwezigheidsboodschap in, op voorwaarde dat er momenteel geen andere boodschap getoond wordt
 							if ( get_option('woocommerce_demo_store') === 'no' ) {
 								// PERSONALISEERBAAR MAKEN? EERSTE WERKDAG ZOEKEN NA VAKANTIE?
