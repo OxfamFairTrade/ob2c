@@ -28,8 +28,19 @@
 						}
 					} else {
 						// Neem de wettelijke feestdagen indien er geen enkele lokale gedefinieerd is (of merge altijd?)
-						// Evergem en Mechelen zijn gesloten maar houden hun webshop wel open ...
-						if ( $site->blog_id != 13 and $site->blog_id != 40 and in_array( date_i18n('Y-m-d'), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
+						if ( $site->blog_id == 13 and date_i18n('Y-m-d') <= '2020-08-31' ) {
+							// Evergem
+							update_option( 'woocommerce_demo_store_notice', 'Wegens onze verhuis is de winkel momenteel gesloten, maar onze webshop blijft open!' );
+							if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
+								write_log("Speciale banner geactiveerd op ".$site->blogname."!");
+							}
+						} elseif ( $site->blog_id == 40 and date_i18n('Y-m-d') <= '2020-07-31' ) {
+							// Mechelen
+							update_option( 'woocommerce_demo_store_notice', 'Wegens onze jaarlijkse vakantie is de winkel momenteel gesloten, maar onze webshop blijft open!' );
+							if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
+								write_log("Speciale banner geactiveerd op ".$site->blogname."!");
+							}
+						} elseif ( in_array( date_i18n('Y-m-d'), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
 							// Stel de afwezigheidsboodschap in, op voorwaarde dat er momenteel geen andere boodschap getoond wordt
 							if ( get_option('woocommerce_demo_store') === 'no' ) {
 								// PERSONALISEERBAAR MAKEN? EERSTE WERKDAG ZOEKEN NA VAKANTIE?

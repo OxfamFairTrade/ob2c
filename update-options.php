@@ -149,12 +149,12 @@
 				<th class="left">
 					<?php
 						if ( does_home_delivery() ) {
-							$extra_info = 'Deze lijst kan iets korter zijn dan de '.count( get_oxfam_covered_zips() ).' postcodes waar deze webshop thuislevering aanbiedt ('.implode( ', ', get_oxfam_covered_zips() ).'). ';
+							$extra_info = 'Deze lijst kan iets korter zijn dan de '.count( get_oxfam_covered_zips() ).' postcodes waar deze webshop <u>kan</u> thuisleveren ('.implode( ', ', get_oxfam_covered_zips() ).'). ';
 						} else {
 							$extra_info = '';
 						} 
 					?>
-					<label for="oxfam_zip_codes" title="">Postcodes waarvoor deze webshop hoofdverantwoordelijke is (<?php echo count( get_option( 'oxfam_zip_codes', array() ) ); ?>):<br/><small>Dit bepaalt naar welke webshop een klant doorgestuurd wordt op het portaal. <?php echo $extra_info; ?>Omwille van databaseconsistentie kan dit enkel vanuit het NS gewijzigd worden.</small></label>
+					<label for="oxfam_zip_codes" title="">Postcodes waarvoor deze webshop hoofdverantwoordelijke is (<?php echo count( get_option( 'oxfam_zip_codes', array() ) ); ?>):<br/><small>Dit houdt in dat een klant die één van deze postcodes invult op het portaal automatisch doorgestuurd zal worden naar deze webshop. <?php echo $extra_info; ?>Omwille van databaseconsistentie kan dit enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
 		  		<td class="right">
 		  			<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo implode( ', ', get_oxfam_covered_zips() ); ?>" <?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_zip_codes', array() ) ) ); ?></textarea>
