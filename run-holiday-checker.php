@@ -19,7 +19,7 @@
 						if ( in_array( $site->blog_id, get_site_option('oxfam_blocked_sites') ) ) {
 							update_option( 'woocommerce_demo_store_notice', 'Deze webshop is nog niet gepubliceerd. Bestellingen worden nog niet uitgeleverd.' );
 							$type = 'A';
-						} else {
+						} else {
 							update_option( 'woocommerce_demo_store_notice', 'Betalingen zijn nog niet geactiveerd. Bestellingen worden nog niet uitgeleverd.' );
 							$type = 'B';
 						}
