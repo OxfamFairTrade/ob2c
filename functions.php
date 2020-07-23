@@ -5313,7 +5313,7 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
-					echo '<p>De promoties voor de maand juli werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Later deze week verschijnen ook nog enkele nieuwe producten.</p>';
+					echo '<p>De promoties voor de maand juli werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Later deze maand verschijnen ook nog enkele nieuwe producten.</p>';
 				echo '</div>';
 				// echo '<div class="notice notice-success">';
 				// 	echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
@@ -5595,7 +5595,8 @@
 			} else {
 				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
 			}
-			$output = '<p class="corona-notice">'.$text.'</p>';
+			// UITSCHAKELEN
+			// $output = '<p class="corona-notice">'.$text.'</p>';
 		} else {
 			// if ( $atts['id'] === 'brugge' ) {
 			// 	// Extra tekst in de mail
