@@ -16,7 +16,11 @@
 
 					if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
 						// Stel de waarschuwingsbanner in
-						update_option( 'woocommerce_demo_store_notice', 'Opgelet: deze webshop is nog niet actief! De betalingen staan in testmodus.' );
+						if ( in_array( $site->blog_id, get_site_option('oxfam_blocked_sites') ) {
+							update_option( 'woocommerce_demo_store_notice', 'Deze webshop is nog niet gepubliceerd. Bestellingen worden nog niet uitgeleverd.' );
+						} else {
+							update_option( 'woocommerce_demo_store_notice', 'Betalingen zijn nog niet geactiveerd. Bestellingen worden nog niet uitgeleverd.' );
+						}
 						if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
 							write_log("Waarschuwingsbanner geactiveerd op ".$site->blogname."!");
 						}
