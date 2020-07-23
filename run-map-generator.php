@@ -123,15 +123,20 @@
 							delete_option('oxfam_holidays');
 						}
 
-						// Alternatieve marker indien enkel afhaling LEGENDE ONTBREEKT, NEEM ALTIJD DEFAULT
-						$store_args['meta_input']['wpsl_alternate_marker_url'] = '';
+						if ( does_home_delivery() ) {
+							$home_delivery = true;
+						} else {
+							$home_delivery = false;
+							// Alternatieve marker indien enkel afhaling LEGENDE ONTBREEKT, UITSCHAKELEN
+							// $store_args['meta_input']['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';
+						}
 
 						// Maak aan op hoofdsite
 						switch_to_blog(1);
 						$result = wp_insert_post( $store_args );
 						// Winkelcategorie op deze manier instellen, 'tax_input'-argument bij wp_insert_post() werkt niet
 						wp_set_object_terms( $result, 'afhaling', 'wpsl_store_category', false );
-						if ( does_home_delivery() ) {
+						if ( $home_delivery ) {
 							// Tweede categorie instellen indien niet enkel afhaling
 							wp_set_object_terms( $result, 'levering', 'wpsl_store_category', true );
 						}
