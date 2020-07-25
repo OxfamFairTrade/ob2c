@@ -153,7 +153,7 @@
 			<tr valign="top">
 				<th class="left">
 					<?php
-						if ( does_home_delivery() ) {
+						if ( does_home_delivery() and count( get_oxfam_covered_zips() ) > 0 ) {
 							$extra_info = 'Deze lijst kan iets korter zijn dan de '.count( get_oxfam_covered_zips() ).' postcodes waar deze webshop <u>kan</u> thuisleveren ('.implode( ', ', get_oxfam_covered_zips() ).'). ';
 						} else {
 							$extra_info = '';
@@ -201,7 +201,7 @@
 					<label for="oxfam_sitewide_banner_top">Afwijkende bannertekst<br/><small>Deze tekst verschijnt in de blauwe balk bovenaan elke pagina van de webshop en vervangt de standaardtekst. Hou het bondig en spelfoutenvrij! HTML-tags zijn niet toegestaan en zullen verwijderd worden. Wis alle tekst om opnieuw de standaardbanner te tonen.</small></label>
 				</th>
 				<td class="right">
-					<textarea name="oxfam_sitewide_banner_top" rows="2" class="text-input" placeholder="Gratis verzending vanaf <?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?> euro!" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_sitewide_banner_top') ); ?></textarea>
+					<textarea name="oxfam_sitewide_banner_top" rows="2" maxlength="200" class="text-input" placeholder="Gratis verzending vanaf <?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?> euro!" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_sitewide_banner_top') ); ?></textarea>
 				</td>
 			</tr>
 			<!-- tr valign="top">

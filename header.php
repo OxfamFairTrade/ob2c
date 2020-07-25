@@ -199,10 +199,8 @@
 
 						} elseif ( ! is_main_site() and ! does_home_delivery() ) {
 
-							if ( get_current_blog_id() === 29 ) {
-								// Uitzondering voor Roeselare
-								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel enkel <b><u>op vrijdag tussen 13u30 en 18u afhalen</u></b> in de winkel.</p></div>';
-							}
+							// Standaardboodschap voor winkels die geen thuislevering aanbieden
+							// echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel enkel <b><u>op afspraak</u></b> afhalen in de winkel.</p></div>';
 
 						}
 					?>
