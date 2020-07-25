@@ -178,10 +178,10 @@
 						</tr>
 						<tr valign="top">
 							<th class="left">
-								<label for="oxfam_does_risky_delivery">Schakel beperkingen op thuislevering uit:<br/><small>Als je dit aanvinkt, wordt de logica die de thuislevering van grote flessen fruitsap en volledige bakken fruitsap/bier verhindert uitgeschakeld (experimenteel).</small></label>
+								<label for="oxfam_does_risky_delivery">Schakel beperkingen op thuislevering uit:<br/><small>Als je dit aanvinkt, wordt de logica uitgeschakeld die de thuislevering van grote flessen fruitsap en volledige bakken fruitsap/bier verhindert in gewone bestellingen van particulieren (experimenteel).</small></label>
 							</th>
 							<td class="right">
-								<input type="checkbox" name="oxfam_does_risky_delivery" value="yes" <?php checked( get_option('oxfam_does_risky_delivery'), 'yes' ); ?> <?php if ( ! current_user_can('create_sites') ) echo ' disabled'; ?>>
+								<input type="checkbox" name="oxfam_does_risky_delivery" value="yes" <?php checked( get_option('oxfam_does_risky_delivery'), 'yes' ); ?> <?php if ( current_user_can('create_sites') ) echo ' disabled'; ?>>
 							</td>
 						</tr>
 					<?php
@@ -194,6 +194,14 @@
 				</th>
 				<td class="right">
 					<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ); ?></textarea>
+				</td>
+			</tr>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_sitewide_banner_top">Afwijkende bannertekst<br/><small>Deze tekst verschijnt in de blauwe balk bovenaan elke pagina van de webshop en vervangt de standaardtekst. Hou het bondig en spelfoutenvrij! HTML-tags zijn niet toegestaan en zullen verwijderd worden.</small></label>
+				</th>
+				<td class="right">
+					<textarea name="oxfam_sitewide_banner_top" rows="2" class="text-input" placeholder="Gratis verzending vanaf 50 euro!" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_sitewide_banner_top') ); ?></textarea>
 				</td>
 			</tr>
 			<!-- tr valign="top">

@@ -4138,15 +4138,16 @@
 
 	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
-		register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', array( 'sanitize_callback' => 'absint' ) );
-		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', array( 'sanitize_callback' => 'absint' ) );
-		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
-		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'sanitize_callback' => 'comma_string_to_array' ) );
-		// We gebruiken hier bewust geen defaultwaarde, aangezien die in de front-end toch niet geïnterpreteerd wordt (admin-hook)
+		register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
+		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
+		// We geven hier bewust geen defaultwaarde mee, aangezien die in de front-end toch niet geïnterpreteerd wordt ('admin_init')
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
-		register_setting( 'oxfam-options-global', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
+		register_setting( 'oxfam-options-global', 'oxfam_sitewide_banner_top', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
-		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'sanitize_callback' => 'comma_string_to_array' ) );
+		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 	}
 
 	// Zorg ervoor dat je lokale opties ook zonder 'manage_options'-rechten opgeslagen kunnen worden
@@ -4181,6 +4182,11 @@
 		}
 		sort( $array, SORT_NUMERIC );
 		return $array;
+	}
+
+	function clean_banner_text( $text ) {
+		// Verwijdert ook overtallige witruimte (2de parameter)
+		return wp_strip_all_tags( $text, true );
 	}
 
 	add_action( 'update_option_oxfam_minimum_free_delivery', 'update_shipping_methods_free_delivery', 10, 3 );
@@ -4244,6 +4250,12 @@
 			$body = 'Breekbare leveringen uitgeschakeld!';
 		}
 		wp_mail( get_site_option('admin_email'), get_company_name().' paste thuislevering van breekbare goederen aan', $body );
+	}
+
+	add_action( 'update_option_oxfam_sitewide_banner_top', 'sitewide_banner_top_was_updated', 10, 3 );
+
+	function sitewide_banner_top_was_updated( $old_text, $new_text, $option ) {
+		wp_mail( get_site_option('admin_email'), get_company_name().' paste bannertekst aan', '"'.$new_text.'"' );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties

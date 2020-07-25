@@ -172,7 +172,12 @@
 							get_header( 'default' );
 						}
 
-						if ( is_main_site() or does_home_delivery() ) {
+						if ( strlen( get_option('oxfam_sitewide_banner_top') ) > 0 ) {
+
+							echo '<div class="general-store-notice"><p>'.get_option('oxfam_sitewide_banner_top').'</p></div>';
+
+						} elseif ( is_main_site() or does_home_delivery() ) {
+
 							// Neem netwerkinstelling als defaultwaarde
 							$min_amount = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
 							
@@ -194,10 +199,13 @@
 								}
 							}
 							echo '</p></div>';
+
 						} elseif ( ! is_main_site() and ! does_home_delivery() ) {
+
 							if ( get_current_blog_id() === 29 ) {
 								// Uitzondering voor Roeselare
 								echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel enkel <b><u>op vrijdag tussen 13u30 en 18u afhalen</u></b> in de winkel.</p></div>';
 							}
+
 						}
 					?>
