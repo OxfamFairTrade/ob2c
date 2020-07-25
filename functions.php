@@ -4246,7 +4246,7 @@
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( $new_value == 'yes' ) {
 			$body = 'Breekbare leveringen ingeschakeld!';
-		} else {
+		} elseif ( $new_value == '' ) {
 			$body = 'Breekbare leveringen uitgeschakeld!';
 		}
 		wp_mail( get_site_option('admin_email'), get_company_name().' paste thuislevering van breekbare goederen aan', $body );
@@ -5839,7 +5839,7 @@
 	// CHECK OF DIT VOLSTAAT (NOTICES, FAQ, ...)
 	function does_risky_delivery() {
 		// Zet 'yes'-waarde om in een echte boolean!
-		return boolval( get_option('oxfam_does_risky_delivery') );
+		return ( get_option('oxfam_does_risky_delivery') === 'yes' );
 	}
 
 	function does_home_delivery() {
