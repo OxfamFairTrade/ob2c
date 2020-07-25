@@ -160,14 +160,16 @@
 				</td>
 			</tr>
 			<?php
-				if ( does_home_delivery() ) {
+				// Bij Regio Hasselt en Zele hangt het minimumbedrag af van de postcode
+				// Toon het veld daar niet, om te vermijden dat we de custom instellingen overschrijven met één universeel bedrag
+				if ( does_home_delivery() and ! in_array( get_current_blog_id(), array( 27, 38 ) ) ) {
 					?>
 						<tr valign="top">
 							<th class="left">
 								<label for="oxfam_minimum_free_delivery">Minimumbedrag voor gratis thuislevering:<br/><small>Dit bedrag verschijnt ook in de balk bovenaan je webshop, tenzij je een afwijkende boodschap liet plaatsen. Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau.</small></label>
 							</th>
 							<td class="right">
-								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?>" step="1" min="0" max="<?php echo get_site_option('oxfam_minimum_free_delivery'); ?>" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
+								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?>" step="5" min="0" max="<?php echo get_site_option('oxfam_minimum_free_delivery'); ?>" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
 							</td>
 						</tr>
 					<?php

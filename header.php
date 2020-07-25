@@ -173,19 +173,20 @@
 						}
 
 						if ( is_main_site() or does_home_delivery() ) {
+							// Neem netwerkinstelling als defaultwaarde
+							$min_amount = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
+							
 							echo '<div class="general-store-notice"><p class="free-shipping">';
 							if ( get_current_blog_id() === 26 ) {
 								// Uitzondering voor Regio Brussel
-								echo 'Nu met thuislevering <b><u>op woensdag</u></b> (gratis vanaf 50 euro) en cadeautje vanaf 20 euro!';
+								echo 'Nu met thuislevering <b><u>op woensdag</u></b> (gratis vanaf '.$min_amount.' euro) en cadeautje vanaf 20 euro!';
 							} elseif ( get_current_blog_id() === 27 ) {
 								// Uitzondering voor Regio Hasselt
-								echo '<b><u>Gratis</u></b> thuislevering in Hasselt! (elders vanaf 50 euro)</p>';
+								echo '<b><u>Gratis</u></b> thuislevering in Hasselt! (elders vanaf '.$min_amount.' euro)</p>';
 							} elseif ( get_current_blog_id() === 38 ) {
 								// Uitzondering voor Zele
-								echo '<b><u>Gratis</u></b> thuislevering in Zele en Berlare! (elders vanaf 50 euro)</p>';
+								echo '<b><u>Gratis</u></b> thuislevering in Zele en Berlare! (elders vanaf '.$min_amount.' euro)</p>';
 							} else {
-								// Neem als defaultwaarde de netwerkinstelling
-								$min_amount = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
 								if ( $min_amount > 0 ) {
 									echo '<b><u>Gratis</u></b> verzending vanaf '.$min_amount.' euro!';
 								} else {
