@@ -193,7 +193,8 @@
 								// Uitzondering voor Zele
 								echo '<b><u>Gratis</u></b> thuislevering in Zele en Berlare! (elders vanaf 50 euro)</p>';
 							} else {
-								$min_amount = get_option('oxfam_minimum_free_delivery');
+								// Neem als defaultwaarde de netwerkinstelling
+								$min_amount = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
 								if ( $min_amount > 0 ) {
 									echo '<b><u>Gratis</u></b> verzending vanaf '.$min_amount.' euro!';
 								} else {

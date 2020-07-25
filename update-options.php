@@ -119,7 +119,7 @@
 					<label for="oxfam_shop_post_id" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Post-ID OWW-site:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?php echo get_option('oxfam_shop_post_id'); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
+					<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?php echo get_option('oxfam_shop_post_id'); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -127,7 +127,7 @@
 					<label for="oxfam_mollie_partner_id" title="Je betaalaccount valt onder het contract dat Oxfam Fair Trade sloot met Mollie. Aan de hand van deze ID kunnen we de nodige API-keys invullen en in geval van nood inloggen op jullie lokale account.">Partner-ID Mollie:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_mollie_partner_id" class="text-input" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"<?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>>
+					<input type="text" name="oxfam_mollie_partner_id" class="text-input" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
 				</td>
 			</tr>
 			<?php
@@ -136,7 +136,7 @@
 						echo "<th class='left'><label for='oxfam_member_shops' title=''>Regiosamenwerking</label></th>";
 						echo "<td class='right'>";
 							echo "<input type='text' name='oxfam_member_shops' class='text-input' value='".esc_attr( trim_and_uppercase( implode( ', ', get_option('oxfam_member_shops') ) ) )."'";
-							if ( ! current_user_can( 'create_sites' ) ) echo " readonly";
+							if ( ! current_user_can('create_sites') ) echo " readonly";
 							echo ">";
 						echo "</td>";
 					echo "</tr>";
@@ -156,18 +156,18 @@
 					<label for="oxfam_zip_codes" title="">Postcodes waarvoor deze webshop hoofdverantwoordelijke is (<?php echo count( get_option( 'oxfam_zip_codes', array() ) ); ?>):<br/><small>Dit houdt in dat een klant die één van deze postcodes invult op het portaal automatisch doorgestuurd zal worden naar deze webshop. <?php echo $extra_info; ?>Omwille van databaseconsistentie kan dit enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
 				<td class="right">
-					<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo implode( ', ', get_oxfam_covered_zips() ); ?>" <?php if ( ! current_user_can( 'create_sites' ) ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_zip_codes', array() ) ) ); ?></textarea>
+					<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo implode( ', ', get_oxfam_covered_zips() ); ?>" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_zip_codes', array() ) ) ); ?></textarea>
 				</td>
 			</tr>
 			<?php
-				if ( does_home_delivery() and current_user_can('update_core') ) {
+				if ( does_home_delivery() ) {
 					?>
 						<tr valign="top">
 							<th class="left">
 								<label for="oxfam_minimum_free_delivery">Minimumbedrag voor gratis thuislevering:<br/><small>Dit bedrag verschijnt ook in de balk bovenaan je webshop, tenzij je een afwijkende boodschap liet plaatsen. Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau (momenteel: 50 euro).</small></label>
 							</th>
 							<td class="right">
-								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?php echo get_option('oxfam_minimum_free_delivery'); ?>" step="1" min="0" max="<?php echo get_site_option('oxfam_minimum_free_delivery'); ?>">
+								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?>" step="1" min="0" max="<?php echo get_site_option('oxfam_minimum_free_delivery'); ?>" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
 							</td>
 						</tr>
 					<?php
@@ -207,7 +207,7 @@
 				</td>
 			</tr>
 			<?php
-				if ( current_user_can( 'create_sites' ) ) {
+				if ( current_user_can('create_sites') ) {
 					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
