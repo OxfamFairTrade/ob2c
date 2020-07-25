@@ -4184,6 +4184,13 @@
 	add_action( 'update_option_oxfam_minimum_free_delivery', 'update_shipping_methods_free_delivery', 10, 3 );
 
 	function update_shipping_methods_free_delivery( $old_min_amount, $new_min_amount, $option ) {
+		// Bij Regio Hasselt en Zele hangt het minimumbedrag af van de postcode
+		// Ook als het veld verborgen is, wordt de waarde bijgewerkt!
+		// Custom instellingen niet overschrijven met één universeel bedrag
+		if ( in_array( get_current_blog_id(), array( 27, 38 ) ) ) {
+			return;
+		}
+
 		$shipping_methods = array(
 			'free_delivery_by_shop' => 'free_shipping_1',
 			'free_delivery_by_eco' => 'free_shipping_3',

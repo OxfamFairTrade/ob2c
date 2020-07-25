@@ -160,9 +160,7 @@
 				</td>
 			</tr>
 			<?php
-				// Bij Regio Hasselt en Zele hangt het minimumbedrag af van de postcode
-				// Toon het veld daar niet, om te vermijden dat we de custom instellingen overschrijven met één universeel bedrag
-				if ( does_home_delivery() and ! in_array( get_current_blog_id(), array( 27, 38 ) ) ) {
+				if ( does_home_delivery() ) {
 					?>
 						<tr valign="top">
 							<th class="left">
