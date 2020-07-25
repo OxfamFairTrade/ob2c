@@ -4193,6 +4193,7 @@
 			return;
 		}
 
+		$updated = false;
 		$shipping_methods = array(
 			'free_delivery_by_shop' => 'free_shipping_1',
 			'free_delivery_by_eco' => 'free_shipping_3',
@@ -4223,19 +4224,28 @@
 				}
 
 				if ( update_option( $option_key, $settings ) ) {
-					wp_mail( get_site_option('admin_email'), get_company_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
+					$updated = true;
 				}
 			}
 		}
+
+		if ( $updated ) {
+			wp_mail( get_site_option('admin_email'), get_company_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
+		} 
 	}
 
 	add_action( 'update_option_oxfam_does_risky_delivery', 'does_risky_delivery_was_updated', 10, 3 );
 
 	function does_risky_delivery_was_updated( $old_value, $new_value, $option ) {
-		if ( $new_value === 'yes' ) {
-			wp_mail( get_site_option('admin_email'), get_company_name().' schakelde thuislevering van breekbare goederen in', '' );
-		} else {
-			wp_mail( get_site_option('admin_email'), get_company_name().' schakelde thuislevering van breekbare goederen uit', '' );
+		write_log( print_r( $old_value, true ) );
+		write_log( print_r( $new_value, true ) );
+
+		if ( $old_value !== $new_value ) {
+			if ( $new_value === 'yes' ) {
+				wp_mail( get_site_option('admin_email'), get_company_name().' schakelde thuislevering van breekbare goederen in', '' );
+			} else {
+				wp_mail( get_site_option('admin_email'), get_company_name().' schakelde thuislevering van breekbare goederen uit', '' );
+			}
 		}
 	}
 
@@ -5812,12 +5822,10 @@
 		return $content;
 	}
 
+	// CHECK OF DIT VOLSTAAT (NOTICES, FAQ, ...)
 	function does_risky_delivery() {
-		// Begijnendijk en Diest
-		$full_deliverers = array( 42, 64 );
-		// CHECK OF DIT VOLSTAAT (NOTICES, FAQ, ...)
-		return in_array( get_current_blog_id(), $full_deliverers );
-		// return get_option('oxfam_does_risky_delivery');
+		// Zet 'yes'-waarde om in een echte boolean!
+		return boolval( get_option('oxfam_does_risky_delivery') );
 	}
 
 	function does_home_delivery() {
