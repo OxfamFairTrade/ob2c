@@ -4138,11 +4138,12 @@
 
 	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
-		register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', 'absint' );
-		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', 'absint' );
+		register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', array( 'sanitize_callback' => 'absint' ) );
+		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', array( 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'sanitize_callback' => 'comma_string_to_array' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'sanitize_callback' => 'comma_string_to_array' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint', 'default' => 50 ) );
 	}
 
 	// Zorg ervoor dat je lokale opties ook zonder 'manage_options'-rechten opgeslagen kunnen worden
@@ -4155,7 +4156,7 @@
 	function comma_string_to_array( $values ) {
 		$values = preg_replace( '/\s/', '', $values );
 		$values = preg_replace( '/\//', '-', $values );
-		$array = (array)preg_split( '/(,|;|&)/', $values, -1, PREG_SPLIT_NO_EMPTY );
+		$array = (array) preg_split( '/(,|;|&)/', $values, -1, PREG_SPLIT_NO_EMPTY );
 
 		foreach ( $array as $key => $value ) {
 			$array[$key] = mb_strtolower( trim($value) );
@@ -4170,13 +4171,73 @@
 	function comma_string_to_numeric_array( $values ) {
 		$values = preg_replace( '/\s/', '', $values );
 		$values = preg_replace( '/\//', '-', $values );
-		$array = (array)preg_split( '/(,|;|&)/', $values, -1, PREG_SPLIT_NO_EMPTY );
+		$array = (array) preg_split( '/(,|;|&)/', $values, -1, PREG_SPLIT_NO_EMPTY );
 
 		foreach ( $array as $key => $value ) {
-			$array[$key] = intval( $value );
+			$array[ $key ] = intval( $value );
 		}
 		sort( $array, SORT_NUMERIC );
 		return $array;
+	}
+
+	add_action( 'update_option_oxfam_minimum_free_delivery', 'update_shipping_methods_free_delivery', 10, 3 );
+
+	function update_shipping_methods_free_delivery( $old_min_amount, $new_min_amount, $option ) {
+		$shipping_methods = array(
+			'free_delivery_by_shop' => 'free_shipping_1',
+			'delivery_by_shop' => 'flat_rate_2',
+			'free_delivery_by_eco' => 'free_shipping_3',
+			'delivery_by_eco' => 'flat_rate_4',
+			'free_delivery_by_bpost' => 'free_shipping_5',
+			'delivery_by_bpost' => 'flat_rate_6',
+			'bpack_delivery_by_bpost' => 'flat_rate_7'
+		);
+
+		foreach ( $shipping_methods as $name => $key ) {
+			// Laad de juiste optie
+			if ( $name === 'bpack_delivery_by_bpost' ) {
+				$option_key = 'sendcloudshipping_service_point_shipping_method_7_settings';
+			} else {
+				$option_key = 'woocommerce_'.$key.'_settings';
+			}
+			
+			$settings = get_option( $option_key );
+			$new_cost = '4,6698';
+
+			if ( is_array( $settings ) ) {
+				// Betalende methodes goedkoper maken
+				if ( in_array( $name, array( 'delivery_by_shop', 'delivery_by_eco', 'delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
+					if ( array_key_exists( 'cost', $settings ) ) {
+						// Verzendkosten zelf niet aanpassen
+						// $settings['cost'] = $new_cost;
+					}
+				}
+
+				if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
+					if ( $name === 'bpack_delivery_by_bpost' ) {
+						if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
+							if ( intval( $settings['free_shipping_min_amount'] ) !== 0 ) {
+								$settings['free_shipping_min_amount'] = $new_min_amount;
+							} else {
+								write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because free delivery");
+							}
+						}
+					} else {
+						if ( array_key_exists( 'min_amount', $settings ) ) {
+							if ( intval( $settings['min_amount'] ) !== 0 ) {
+								$settings['min_amount'] = $new_min_amount;
+							} else {
+								write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because free delivery");
+							}
+						}
+					}
+				}
+
+				if ( update_option( $option_key, $settings ) ) {
+					write_log( print_r( $settings, true ) );
+				}
+			}
+		}
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties

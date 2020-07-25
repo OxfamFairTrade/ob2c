@@ -180,9 +180,6 @@
 							} elseif ( get_current_blog_id() === 15 or get_current_blog_id() === 17 ) {
 								// Uitzondering voor Gentbrugge en Hoeilaart
 								echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
-							} elseif ( get_current_blog_id() === 13 ) {
-								// Uitzondering voor Evergem
-								echo 'Nu met thuislevering <b><u>op vrijdag</u></b>, gratis vanaf 50 euro!';
 							} elseif ( get_current_blog_id() === 26 ) {
 								// Uitzondering voor Regio Brussel
 								echo 'Nu met thuislevering <b><u>op woensdag</u></b> (gratis vanaf 50 euro) en cadeautje vanaf 20 euro!';
@@ -196,7 +193,12 @@
 								// Uitzondering voor Zele
 								echo '<b><u>Gratis</u></b> thuislevering in Zele en Berlare! (elders vanaf 50 euro)</p>';
 							} else {
-								echo '<b><u>Gratis</u></b> verzending vanaf 50 euro!';
+								$min_amount = get_option('oxfam_minimum_free_delivery');
+								if ( $min_amount > 0 ) {
+									echo '<b><u>Gratis</u></b> verzending vanaf '.$min_amount.' euro!';
+								} else {
+									echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
+								}
 							}
 							echo '</p></div>';
 						} elseif ( ! is_main_site() and ! does_home_delivery() ) {
