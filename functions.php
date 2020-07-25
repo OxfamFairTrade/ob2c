@@ -3483,8 +3483,7 @@
 
 	function show_almost_free_shipping_notice() {
 		if ( is_cart() and ! is_b2b_customer() ) {
-			// $threshold = 100;
-			$threshold = 50;
+			$threshold = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
 			// Subtotaal = winkelmandje inclusief belasting, exclusief verzending
 			$current = WC()->cart->subtotal;
 			if ( $current > ( 0.7 * $threshold ) ) {
