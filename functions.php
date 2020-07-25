@@ -4306,20 +4306,28 @@
 			$sites = get_sites( array( 'public' => 1 ) );
 			// write_log( print_r( $wp_admin_bar->get_nodes(), true ) );
 			foreach ( $sites as $site ) {
+				$node_d = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-d');
+				if ( $node_d ) {
+					$new_node = $node_d;
+					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-d');
+					$new_node->title = 'Bestellingen';
+					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/edit.php?post_type=shop_order' );
+					$wp_admin_bar->add_node( $new_node );
+				}
 				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
 				if ( $node_n ) {
 					$new_node = $node_n;
 					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-n');
 					$new_node->title = 'Winkelgegevens';
-					$new_node->href = network_site_url( $site->path.'wp-admin/admin.php?page=oxfam-options' );
+					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-options' );
 					$wp_admin_bar->add_node( $new_node );
 				}
-				$node_c = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-c');
-				if ( $node_c ) {
-					$new_node = $node_c;
-					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-c');
+				$node_v = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-v');
+				if ( $node_v ) {
+					$new_node = $node_v;
+					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-v');
 					$new_node->title = 'Voorraadbeheer';
-					$new_node->href = network_site_url( $site->path.'wp-admin/admin.php?page=oxfam-products-list' );
+					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-products-list' );
 					$wp_admin_bar->add_node( $new_node );
 				}
 			}
@@ -4331,9 +4339,9 @@
 
 	function oxfam_sites_list_render( $actions, $blog_id, $blogname ) {
 		unset( $actions['visit'] );
+		$actions['orders'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/edit.php?post_type=shop_order' ).'">Bestellingen</a>';
 		$actions['settings'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-options' ).'">Winkelgegevens</a>';
 		$actions['stock'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-products-list' ).'">Voorraadbeheer</a>';
-		$actions['orders'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/edit.php?post_type=shop_order' ).'">Bestellingen</a>';
 		return $actions;
 	}
 
