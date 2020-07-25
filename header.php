@@ -182,10 +182,7 @@
 							$min_amount = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
 							
 							echo '<div class="general-store-notice"><p class="free-shipping">';
-							if ( get_current_blog_id() === 26 ) {
-								// Uitzondering voor Regio Brussel
-								echo 'Nu met thuislevering <b><u>op woensdag</u></b> (gratis vanaf '.$min_amount.' euro) en cadeautje vanaf 20 euro!';
-							} elseif ( get_current_blog_id() === 27 ) {
+							if ( get_current_blog_id() === 27 ) {
 								// Uitzondering voor Regio Hasselt
 								echo '<b><u>Gratis</u></b> thuislevering in Hasselt! (elders vanaf '.$min_amount.' euro)</p>';
 							} elseif ( get_current_blog_id() === 38 ) {

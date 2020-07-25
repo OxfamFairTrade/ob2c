@@ -4145,7 +4145,7 @@
 		// We geven hier bewust geen defaultwaarde mee, aangezien die in de front-end toch niet geïnterpreteerd wordt ('admin_init')
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
-		register_setting( 'oxfam-options-global', 'oxfam_sitewide_banner_top', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_sitewide_banner_top', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 	}
@@ -4255,7 +4255,12 @@
 	add_action( 'update_option_oxfam_sitewide_banner_top', 'sitewide_banner_top_was_updated', 10, 3 );
 
 	function sitewide_banner_top_was_updated( $old_text, $new_text, $option ) {
-		wp_mail( get_site_option('admin_email'), get_company_name().' paste bannertekst aan', '"'.$new_text.'"' );
+		if ( strlen( $new_text ) > 0 ) {
+			$body = '"'.$new_text.'"';
+		} else {
+			$body = 'Custom tekst gewist!';
+		}
+		wp_mail( get_site_option('admin_email'), get_company_name().' paste bannertekst aan', $body );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
