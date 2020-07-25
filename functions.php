@@ -4142,9 +4142,9 @@
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', array( 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'sanitize_callback' => 'comma_string_to_array' ) );
+		// We gebruiken hier bewust geen defaultwaarde, aangezien die in de front-end toch niet geïnterpreteerd wordt (admin-hook)
+		register_setting( 'oxfam-options-global', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'sanitize_callback' => 'comma_string_to_array' ) );
-		// We gebruiken hier bewust geen defaultwaarde, aangezien die in de front-end toch niet gerespecteerd wordt
-		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 	}
 
 	// Zorg ervoor dat je lokale opties ook zonder 'manage_options'-rechten opgeslagen kunnen worden
