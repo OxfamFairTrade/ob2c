@@ -4296,15 +4296,15 @@
 	function oxfam_products_list_callback() {
 		include get_stylesheet_directory().'/update-stock-list.php';
 	}
-	
+
 	// Vervang onnutige links in netwerkmenu door Oxfam-pagina's
 	add_action( 'wp_before_admin_bar_render', 'oxfam_admin_bar_render' );
 
 	function oxfam_admin_bar_render() {
 		global $wp_admin_bar;
 		if ( current_user_can('create_sites') ) {
-			$toolbar_nodes = $wp_admin_bar->get_nodes();
 			$sites = get_sites( array( 'public' => 1 ) );
+			write_log( print_r( $wp_admin_bar->get_nodes(), true ) );
 			foreach ( $sites as $site ) {
 				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
 				if ( $node_n ) {
@@ -4324,6 +4324,14 @@
 				}
 			}
 		}
+	}
+
+	// Voeg handige links toe aan sitelijst
+	add_filter( 'manage_sites_action_links', 'oxfam_sites_list_render', 10, 3 );
+
+	function oxfam_sites_list_render( $actions, $blog_id, $blogname ) {
+		$actions['test'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-options' ).'">Winkelgegevens</a>';
+		return $actions;
 	}
 
 	// Registreer de AJAX-acties
