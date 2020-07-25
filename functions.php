@@ -4243,13 +4243,18 @@
 	add_action( 'update_option_oxfam_does_risky_delivery', 'does_risky_delivery_was_updated', 10, 3 );
 
 	function does_risky_delivery_was_updated( $old_value, $new_value, $option ) {
+		$body = false;
+
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( $new_value == 'yes' ) {
 			$body = 'Breekbare leveringen ingeschakeld!';
 		} elseif ( $old_value !== 'no' and $new_value === '' ) {
 			$body = 'Breekbare leveringen uitgeschakeld!';
 		}
-		wp_mail( get_site_option('admin_email'), get_company_name().' paste thuislevering van breekbare goederen aan', $body );
+
+		if ( $body ) {
+			wp_mail( get_site_option('admin_email'), get_company_name().' paste thuislevering van breekbare goederen aan', $body );
+		}
 	}
 
 	add_action( 'update_option_oxfam_sitewide_banner_top', 'sitewide_banner_top_was_updated', 10, 3 );
