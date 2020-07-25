@@ -88,8 +88,14 @@
 
 					$accounts = $mollie->bankAccountsByPartnerId( $partner_id_customer );
 					if ( $accounts->resultcode == '10' ) {
-						if ( get_oxfam_shop_data('account') !== format_account( $accounts->items->bankaccount->iban_number ) ) {
-							$account_warning = "<br/><small style='color: red;'>Opgelet, dit rekeningnummer is (nog) niet bij Mollie geverifieerd!</small>";
+						// Er kunnen meerdere rekeningnummers in de account zitten!
+						foreach ( $accounts->items->bankaccount as $bankaccount ) {
+							if ( $bankaccount->selected == 'true' and get_oxfam_shop_data('account') !== format_account( $bankaccount->iban_number ) ) {
+								$account_warning = "<br/><small style='color: red;'>Opgelet, Mollie gebruikt een ander rekeningnummer voor de uitbetalingen!</small>";
+							}
+							if ( get_oxfam_shop_data('account') === format_account( $bankaccount->iban_number ) and $bankaccount->verified == 'false' ) {
+								$account_warning = "<br/><small style='color: red;'>Opgelet, dit rekeningnummer is bij Mollie (nog) niet geverifieerd!</small>";
+							}
 						}
 					}
 				} else {
