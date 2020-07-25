@@ -4246,7 +4246,7 @@
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( $new_value == 'yes' ) {
 			$body = 'Breekbare leveringen ingeschakeld!';
-		} elseif ( $new_value == '' ) {
+		} elseif ( $old_value !== 'no' and $new_value === '' ) {
 			$body = 'Breekbare leveringen uitgeschakeld!';
 		}
 		wp_mail( get_site_option('admin_email'), get_company_name().' paste thuislevering van breekbare goederen aan', $body );
