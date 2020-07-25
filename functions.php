@@ -4338,10 +4338,15 @@
 	add_filter( 'manage_sites_action_links', 'oxfam_sites_list_render', 10, 3 );
 
 	function oxfam_sites_list_render( $actions, $blog_id, $blogname ) {
+		unset( $actions['edit'] );
+		unset( $actions['spam'] );
 		unset( $actions['visit'] );
+		unset( $actions['clone'] );
+		
 		$actions['orders'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/edit.php?post_type=shop_order' ).'">Bestellingen</a>';
 		$actions['settings'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-options' ).'">Winkelgegevens</a>';
 		$actions['stock'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-products-list' ).'">Voorraadbeheer</a>';
+		
 		return $actions;
 	}
 
