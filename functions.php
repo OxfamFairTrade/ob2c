@@ -3478,28 +3478,29 @@
 		}
 	}
 
-	// Moedig aan om naar 100 euro te gaan (gratis thuislevering)
+	// Moedig aan om producten toe te voegen om gratis thuislevering te activeren
 	add_action( 'woocommerce_before_cart', 'show_almost_free_shipping_notice' );
 
 	function show_almost_free_shipping_notice() {
 		if ( is_cart() and ! is_b2b_customer() ) {
+			// Indien de threshold afhangt van de postcode zal dit niet helemaal kloppen ...
 			$threshold = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
 			// Subtotaal = winkelmandje inclusief belasting, exclusief verzending
 			$current = WC()->cart->subtotal;
 			if ( $current > ( 0.7 * $threshold ) ) {
 				if ( $current < $threshold ) {
 					// Probeer de boodschap slechts af en toe te tonen via sessiedata
-					$cnt = WC()->session->get( 'go_to_100_message_count', 0 );
+					$cnt = WC()->session->get( 'pursue_free_delivery_message_count', 0 );
 					// Opgelet: WooCoomerce moet actief zijn, we moeten in de front-end zitten én er moet al een winkelmandje aangemaakt zijn!
-					WC()->session->set( 'go_to_100_message_count', $cnt+1 );
-					$msg = WC()->session->get( 'no_home_delivery' );
+					WC()->session->set( 'pursue_free_delivery_message_count', $cnt+1 );
+					$msg = WC()->session->get('no_home_delivery');
 					// Enkel tonen indien thuislevering effectief beschikbaar is voor het huidige winkelmandje
 					if ( $cnt % 7 === 0 and $msg !== 'SHOWN' ) {
 						wc_print_notice( 'Tip: als je nog '.wc_price( $threshold - $current ).' toevoegt, kom je in aanmerking voor gratis thuislevering.', 'success' );
 					}
 				}
 			} else {
-				WC()->session->set( 'go_to_100_message_count', 0 );
+				WC()->session->set( 'pursue_free_delivery_message_count', 0 );
 			}
 		}
 	}
