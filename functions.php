@@ -4304,7 +4304,7 @@
 		global $wp_admin_bar;
 		if ( current_user_can('create_sites') ) {
 			$sites = get_sites( array( 'public' => 1 ) );
-			write_log( print_r( $wp_admin_bar->get_nodes(), true ) );
+			// write_log( print_r( $wp_admin_bar->get_nodes(), true ) );
 			foreach ( $sites as $site ) {
 				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
 				if ( $node_n ) {
@@ -4330,7 +4330,10 @@
 	add_filter( 'manage_sites_action_links', 'oxfam_sites_list_render', 10, 3 );
 
 	function oxfam_sites_list_render( $actions, $blog_id, $blogname ) {
-		$actions['test'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-options' ).'">Winkelgegevens</a>';
+		unset( $actions['visit'] );
+		$actions['settings'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-options' ).'">Winkelgegevens</a>';
+		$actions['stock'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-products-list' ).'">Voorraadbeheer</a>';
+		$actions['orders'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/edit.php?post_type=shop_order' ).'">Bestellingen</a>';
 		return $actions;
 	}
 
