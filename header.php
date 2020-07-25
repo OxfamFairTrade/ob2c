@@ -174,18 +174,12 @@
 
 						if ( is_main_site() or does_home_delivery() ) {
 							echo '<div class="general-store-notice"><p class="free-shipping">';
-							if ( get_current_blog_id() === 15 or get_current_blog_id() === 17 ) {
-								// Uitzondering voor Gentbrugge en Hoeilaart
-								echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
-							} elseif ( get_current_blog_id() === 26 ) {
+							if ( get_current_blog_id() === 26 ) {
 								// Uitzondering voor Regio Brussel
 								echo 'Nu met thuislevering <b><u>op woensdag</u></b> (gratis vanaf 50 euro) en cadeautje vanaf 20 euro!';
 							} elseif ( get_current_blog_id() === 27 ) {
 								// Uitzondering voor Regio Hasselt
 								echo '<b><u>Gratis</u></b> thuislevering in Hasselt! (elders vanaf 50 euro)</p>';
-							} elseif ( get_current_blog_id() === 37 ) {
-								// Uitzondering voor Wuustwezel
-								echo '<b><u>Gratis</u></b> verzending vanaf 30 euro!';
 							} elseif ( get_current_blog_id() === 38 ) {
 								// Uitzondering voor Zele
 								echo '<b><u>Gratis</u></b> thuislevering in Zele en Berlare! (elders vanaf 50 euro)</p>';
