@@ -4144,6 +4144,8 @@
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'sanitize_callback' => 'comma_string_to_array' ) );
 		// We gebruiken hier bewust geen defaultwaarde, aangezien die in de front-end toch niet geïnterpreteerd wordt (admin-hook)
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		register_setting( 'oxfam-options-global', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
+		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'sanitize_callback' => 'comma_string_to_array' ) );
 	}
 
@@ -4224,6 +4226,16 @@
 					wp_mail( get_site_option('admin_email'), get_company_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
 				}
 			}
+		}
+	}
+
+	add_action( 'update_option_oxfam_does_risky_delivery', 'does_risky_delivery_was_updated', 10, 3 );
+
+	function does_risky_delivery_was_updated( $old_value, $new_value, $option ) {
+		if ( $new_value === 'yes' ) {
+			wp_mail( get_site_option('admin_email'), get_company_name().' schakelde thuislevering van breekbare goederen in', '' );
+		} else {
+			wp_mail( get_site_option('admin_email'), get_company_name().' schakelde thuislevering van breekbare goederen uit', '' );
 		}
 	}
 
@@ -5801,9 +5813,11 @@
 	}
 
 	function does_risky_delivery() {
-		// Begijnendijk CHECK OF DIT VOLSTAAT (NOTICES, FAQ, ...)
-		$full_deliverers = array( 42 );
+		// Begijnendijk en Diest
+		$full_deliverers = array( 42, 64 );
+		// CHECK OF DIT VOLSTAAT (NOTICES, FAQ, ...)
 		return in_array( get_current_blog_id(), $full_deliverers );
+		// return get_option('oxfam_does_risky_delivery');
 	}
 
 	function does_home_delivery() {

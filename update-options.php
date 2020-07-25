@@ -176,6 +176,14 @@
 								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?>" step="5" min="0" max="<?php echo get_site_option('oxfam_minimum_free_delivery'); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
 							</td>
 						</tr>
+						<tr valign="top">
+							<th class="left">
+								<label for="oxfam_does_risky_delivery">Schakel beperkingen op thuislevering uit:<br/><small>Als je dit aanvinkt, wordt de logica die de thuislevering van grote flessen fruitsap en volledige bakken fruitsap/bier verhindert uitgeschakeld (experimenteel).</small></label>
+							</th>
+							<td class="right">
+								<input type="checkbox" name="oxfam_does_risky_delivery" value="yes" <?php checked( get_option('oxfam_does_risky_delivery'), 'yes' ); ?> <?php if ( ! current_user_can('create_sites') ) echo ' disabled'; ?>>
+							</td>
+						</tr>
 					<?php
 				}
 			?>
