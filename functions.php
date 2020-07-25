@@ -4186,12 +4186,9 @@
 	function update_shipping_methods_free_delivery( $old_min_amount, $new_min_amount, $option ) {
 		$shipping_methods = array(
 			'free_delivery_by_shop' => 'free_shipping_1',
-			'delivery_by_shop' => 'flat_rate_2',
 			'free_delivery_by_eco' => 'free_shipping_3',
-			'delivery_by_eco' => 'flat_rate_4',
 			'free_delivery_by_bpost' => 'free_shipping_5',
-			'delivery_by_bpost' => 'flat_rate_6',
-			'bpack_delivery_by_bpost' => 'flat_rate_7'
+			'bpack_delivery_by_bpost' => 'flat_rate_7',
 		);
 
 		foreach ( $shipping_methods as $name => $key ) {
@@ -4203,33 +4200,15 @@
 			}
 			
 			$settings = get_option( $option_key );
-			$new_cost = '4,6698';
-
 			if ( is_array( $settings ) ) {
-				// Betalende methodes goedkoper maken
-				if ( in_array( $name, array( 'delivery_by_shop', 'delivery_by_eco', 'delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
-					if ( array_key_exists( 'cost', $settings ) ) {
-						// Verzendkosten zelf niet aanpassen
-						// $settings['cost'] = $new_cost;
-					}
-				}
-
 				if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
 					if ( $name === 'bpack_delivery_by_bpost' ) {
 						if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
-							if ( intval( $settings['free_shipping_min_amount'] ) !== 0 ) {
-								$settings['free_shipping_min_amount'] = $new_min_amount;
-							} else {
-								write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because free delivery");
-							}
+							$settings['free_shipping_min_amount'] = $new_min_amount;
 						}
 					} else {
 						if ( array_key_exists( 'min_amount', $settings ) ) {
-							if ( intval( $settings['min_amount'] ) !== 0 ) {
-								$settings['min_amount'] = $new_min_amount;
-							} else {
-								write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because free delivery");
-							}
+							$settings['min_amount'] = $new_min_amount;
 						}
 					}
 				}

@@ -174,10 +174,7 @@
 
 						if ( is_main_site() or does_home_delivery() ) {
 							echo '<div class="general-store-notice"><p class="free-shipping">';
-							if ( get_current_blog_id() === 9 or get_current_blog_id() === 15 ) {
-								// Uitzondering voor De Pinte
-								echo '<b><u>Gratis</u></b> verzending vanaf 20 euro!';
-							} elseif ( get_current_blog_id() === 15 or get_current_blog_id() === 17 ) {
+							if ( get_current_blog_id() === 15 or get_current_blog_id() === 17 ) {
 								// Uitzondering voor Gentbrugge en Hoeilaart
 								echo 'Nu met <b><u>gratis</u></b> thuislevering!</p>';
 							} elseif ( get_current_blog_id() === 26 ) {

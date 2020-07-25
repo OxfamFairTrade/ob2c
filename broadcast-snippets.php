@@ -394,7 +394,15 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 	}
 
 	// Verzendkosten wijzigen
-	$shipping_methods = array( 'free_delivery_by_shop' => 'free_shipping_1', 'delivery_by_shop' => 'flat_rate_2', 'free_delivery_by_eco' => 'free_shipping_3', 'delivery_by_eco' => 'flat_rate_4', 'free_delivery_by_bpost' => 'free_shipping_5', 'delivery_by_bpost' => 'flat_rate_6', 'bpack_delivery_by_bpost' => 'flat_rate_7' );
+	$shipping_methods = array(
+		'free_delivery_by_shop' => 'free_shipping_1',
+		'delivery_by_shop' => 'flat_rate_2',
+		'free_delivery_by_eco' => 'free_shipping_3',
+		'delivery_by_eco' => 'flat_rate_4',
+		'free_delivery_by_bpost' => 'free_shipping_5',
+		'delivery_by_bpost' => 'flat_rate_6',
+		'bpack_delivery_by_bpost' => 'flat_rate_7',
+	);
 
 	foreach ( $shipping_methods as $name => $key ) {
 		// Laad de juiste optie
@@ -405,9 +413,9 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		}
 		
 		$settings = get_option( $option_key );
-		// $new_cost = '6,5566';
+		$old_cost = '6,5566';
 		$new_cost = '4,6698';
-		$new_min_amount = '50';
+		$new_min_amount = '75';
 
 		if ( is_array( $settings ) ) {
 			// Betalende methodes goedkoper maken
@@ -420,18 +428,18 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 			if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
 				if ( $name === 'bpack_delivery_by_bpost' ) {
 					if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
-						if ( intval( $settings['free_shipping_min_amount'] ) !== 0 ) {
+						if ( intval( $settings['free_shipping_min_amount'] ) === 50 ) {
 							$settings['free_shipping_min_amount'] = $new_min_amount;
 						} else {
-							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because free delivery");
+							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because non-standard amount");
 						}
 					}
 				} else {
 					if ( array_key_exists( 'min_amount', $settings ) ) {
-						if ( intval( $settings['min_amount'] ) !== 0 ) {
+						if ( intval( $settings['min_amount'] ) === 50 ) {
 							$settings['min_amount'] = $new_min_amount;
 						} else {
-							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because free delivery");
+							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because non-standard amount");
 						}
 					}
 				}
