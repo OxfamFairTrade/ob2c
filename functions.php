@@ -4143,7 +4143,7 @@
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'sanitize_callback' => 'comma_string_to_array' ) );
 		// We gebruiken hier bewust geen defaultwaarde, aangezien die in de front-end toch niet geïnterpreteerd wordt (admin-hook)
-		register_setting( 'oxfam-options-global', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'sanitize_callback' => 'comma_string_to_array' ) );
 	}
 
@@ -4221,7 +4221,7 @@
 				}
 
 				if ( update_option( $option_key, $settings ) ) {
-					write_log( print_r( $settings, true ) );
+					wp_mail( get_site_option('admin_email'), get_company_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
 				}
 			}
 		}

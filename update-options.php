@@ -66,7 +66,7 @@
 
 					$profiles = $mollie->profilesByPartnerId( $partner_id_customer );
 					if ( $profiles->resultcode == '10' ) {
-						if ( get_company_name() != trim_and_uppercase($profiles->items->profile->name) ) {
+						if ( get_company_name() != trim_and_uppercase( $profiles->items->profile->name ) ) {
 							// $name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
 						// Fix voor winkels met twee nummers (bv. Mariakerke)
@@ -138,7 +138,7 @@
 			</tr>
 			<?php
 				if ( is_regional_webshop() ) {
-				echo "<tr valign='top'>";
+					echo "<tr valign='top'>";
 						echo "<th class='left'><label for='oxfam_member_shops' title=''>Regiosamenwerking</label></th>";
 						echo "<td class='right'>";
 							echo "<input type='text' name='oxfam_member_shops' class='text-input' value='".esc_attr( trim_and_uppercase( implode( ', ', get_option('oxfam_member_shops') ) ) )."'";
@@ -173,7 +173,7 @@
 								<label for="oxfam_minimum_free_delivery">Minimumbedrag voor gratis thuislevering:<br/><small>Dit bedrag verschijnt ook in de balk bovenaan je webshop, tenzij je een afwijkende boodschap liet plaatsen. Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau.</small></label>
 							</th>
 							<td class="right">
-								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?>" step="5" min="0" max="<?php echo get_site_option('oxfam_minimum_free_delivery'); ?>" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
+								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?>" step="5" min="0" max="<?php echo get_site_option('oxfam_minimum_free_delivery'); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
 							</td>
 						</tr>
 					<?php
@@ -213,11 +213,12 @@
 				</td>
 			</tr>
 			<?php
-				if ( current_user_can('create_sites') ) {
+				// Altijd tonen, nu er ook weer lokale instellingen zijn
+				// if ( current_user_can('create_sites') ) {
 					echo "<tr><th class='left'></th><td class='right'>";
 					submit_button();
 					echo "</td></tr>";
-				}
+				// }
 			?>
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database! -->
 			<tr valign="top">
