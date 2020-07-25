@@ -4237,16 +4237,13 @@
 	add_action( 'update_option_oxfam_does_risky_delivery', 'does_risky_delivery_was_updated', 10, 3 );
 
 	function does_risky_delivery_was_updated( $old_value, $new_value, $option ) {
-		write_log( print_r( $old_value, true ) );
-		write_log( print_r( $new_value, true ) );
-
-		if ( $old_value !== $new_value ) {
-			if ( $new_value === 'yes' ) {
-				wp_mail( get_site_option('admin_email'), get_company_name().' schakelde thuislevering van breekbare goederen in', '' );
-			} else {
-				wp_mail( get_site_option('admin_email'), get_company_name().' schakelde thuislevering van breekbare goederen uit', '' );
-			}
+		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
+		if ( $new_value == 'yes' ) {
+			$body = 'Breekbare leveringen ingeschakeld!';
+		} else {
+			$body = 'Breekbare leveringen uitgeschakeld!';
 		}
+		wp_mail( get_site_option('admin_email'), get_company_name().' paste thuislevering van breekbare goederen aan', $body );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
