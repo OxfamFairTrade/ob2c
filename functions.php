@@ -7,6 +7,35 @@
 
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	
+	// Schakel afrekenen in de webshop van Kortrijk uit van 1/8 t.e.m. 7/8
+	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
+	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
+	add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
+
+	function disable_all_payment_methods( $methods ) {
+		if ( get_current_blog_id() === 18 ) {
+			if ( date_i18n('Y-m-d') >= '2020-08-01' and date_i18n('Y-m-d') <= '2020-08-07' ) {
+				return array();
+			}
+		}
+		return $methods;
+	}
+
+	function print_explanation_if_disabled( $text ) {
+		return "<span style='color: red;'>".get_option('oxfam_sitewide_banner_top')."</span>";
+	}
+
+	
+	function disable_checkout_button( $html ) {
+		if ( get_current_blog_id() === 18 ) {
+			if ( date_i18n('Y-m-d') >= '2020-08-01' and date_i18n('Y-m-d') <= '2020-08-07' ) {
+				$original_button = __( 'Place order', 'woocommerce' );
+				return str_replace( '<input type="submit"', '<input type="submit" disabled="disabled"', str_replace( $original_button, 'Bestellen tijdelijk onmogelijk', $html ) );
+			}
+		}
+		return $html;
+	}
+
 	// Sitemap van afbeeldingen uitschakelen
 	add_filter( 'jetpack_sitemap_image_skip_post', '__return_true' );
 
