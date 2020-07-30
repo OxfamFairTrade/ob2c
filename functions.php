@@ -5903,8 +5903,7 @@
 	function does_home_delivery() {
 		// Kijk in de testsites naar de geactiveerde verzendmethodes i.p.v. de toegekende postcodes
 		if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
-			// Klopt altijd, behalve voor Geraardsbergen
-			return true;
+			return boolval( get_oxfam_covered_zips() );
 		} else {
 			// Zal niet kloppen voor Gent-Sint-Pieters (= geen enkele hoofdpostcode)?
 			return get_option('oxfam_zip_codes');
