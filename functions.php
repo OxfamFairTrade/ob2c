@@ -54,7 +54,7 @@
 					wp_safe_redirect( wp_login_url($url) );
 					exit();
 				}
-			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) ) {
+			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) and ! is_super_admin() ) {
 				// Toon tijdelijke boodschap, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
 				wp_safe_redirect( network_site_url('/wp-content/blog-suspended.php') );
 				exit();
