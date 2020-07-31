@@ -7,6 +7,23 @@
 
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	
+	add_filter( 'use_block_editor_for_post', 'gently_allow_gutenberg_per_post', 10, 1 );
+	add_filter( 'use_block_editor_for_post_type', 'gently_allow_gutenberg_per_post_type', 10, 1 );
+
+	function gently_allow_gutenberg_per_post( $post ) {
+		if ( get_post_type( $post ) === 'post' ) {
+			// return true;
+		}
+		return false;
+	}
+
+	function gently_allow_gutenberg_per_post_type( $post_type ) {
+		if ( $post_type === 'post' ) {
+			// return true;
+		}
+		return false;
+	}
+
 	// Schakel afrekenen in de webshop van Kortrijk uit van 1/8 t.e.m. 7/8
 	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
 	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
