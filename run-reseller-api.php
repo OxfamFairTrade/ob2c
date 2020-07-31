@@ -19,6 +19,69 @@
 		die( "Access prohibited!" );
 	}
 
+	$blog_id_not_wp = 52;
+	$login = '';
+	$email = '';
+	$shop_id = 3962;
+	$fname = '';
+	$lname = '';
+
+	switch_to_blog( $blog_id_not_wp );
+	$company = get_bloginfo('name');
+
+	$user_args = array(
+		'user_login' => $login,
+		'user_email' => $email,
+		'display_name' => $fname,
+		'first_name' => $fname,
+		'last_name' => $lname,
+		'role' => 'local_manager',
+	);
+	// Creër onmiddellijk user
+	var_dump_pre( wp_insert_user( $user_args ) );
+	
+	if ( update_option( 'admin_email', $email ) ) {
+		echo "Adminadres gewijzigd naar ".$email."!<br/>";
+	}
+	if ( update_option( 'oxfam_shop_post_id', $shop_id ) ) {
+		echo "Winkel-ID gewijzigd naar ".$shop_id."!<br/>";
+	}
+	if ( update_option( 'woocommerce_email_from_name', $company ) ) {
+		echo "Afzendnaam gewijzigd naar ".$company."!<br/>";
+	}
+	if ( update_option( 'woocommerce_email_from_address', $email ) ) {
+		echo "Algemeen afzendadres gewijzigd naar ".$email."!<br/>";
+	}
+	$new_order_settings = get_option('woocommerce_new_order_settings');
+	if ( is_array( $new_order_settings ) ) {
+		$new_order_settings['recipient'] = $email;
+		if ( update_option( 'woocommerce_new_order_settings', $new_order_settings ) ) {
+			echo "Afzendadres nieuwe bestelling gewijzigd naar ".$email."!<br/>";
+		}
+	}
+	$cancelled_order_settings = get_option('woocommerce_cancelled_order_settings');
+	if ( is_array( $cancelled_order_settings ) ) {
+		$cancelled_order_settings['recipient'] = $email;
+		if ( update_option( 'woocommerce_cancelled_order_settings', $cancelled_order_settings ) ) {
+			echo "Afzendadres geannuleerde bestelling gewijzigd naar ".$email."!<br/>";
+		}
+	}
+	$failed_order_settings = get_option('woocommerce_failed_order_settings');
+	if ( is_array( $failed_order_settings ) ) {
+		$failed_order_settings['recipient'] = $email;
+		if ( update_option( 'woocommerce_failed_order_settings', $failed_order_settings ) ) {
+			echo "Afzendadres mislukte bestelling gewijzigd naar ".$email."!<br/>";
+		}
+	}
+	$pickup_locations = get_option('woocommerce_pickup_locations');
+	if ( is_array( $pickup_locations ) ) {
+		// We wijzigen per definitie de eerste locatie
+		$pickup_locations[0]['shipping_company'] = $company;
+		if ( update_option( 'woocommerce_pickup_locations', $pickup_locations ) ) {
+			echo "Afhaalpunt hernoemd naar ".$company."!<br/>";
+		}
+	}
+
 	// Register autoloader
 	require_once WP_PLUGIN_DIR.'/mollie-reseller-api/autoloader.php';
 	Mollie_Autoloader::register();
@@ -26,114 +89,111 @@
 	// Instantiate Mollie class
 	$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 	
-	switch_to_blog( 40 );
-
 	try {
 		// Parameters op te halen uit site
 		// BIJ REGIOWERKINGEN KAN DIT AFWIJKEN (= NAAM REKENINGWINKEL)
-		$company = get_bloginfo('name');
 		$address = get_oxfam_shop_data('place');
 		$zip = get_oxfam_shop_data('zipcode');
 		$city = get_oxfam_shop_data('city');
 		$phone = '32'.str_replace( '/', '', str_replace( '.', '', substr( get_oxfam_shop_data('telephone'), 1 ) ) );
-		$email = get_option('admin_email');
+		$email = get_blog_option( $blog_id_not_wp, 'admin_email' );
 		$btw = str_replace( ' ', '', str_replace( '.', '', get_oxfam_shop_data('tax') ) );
-		$headquarter = get_oxfam_shop_data('headquarter');
-		$lines = explode( ', ', $headquarter, 2 );
-		$billing_address = trim($lines[0]);
-		$parts = explode( ' ', $lines[1], 2 );
-		$billing_zip = trim($parts[0]);
-		$billing_city = trim($parts[1]);
 		$iban = str_replace( ' ', '', get_oxfam_shop_data('account') );
-		$blog = get_bloginfo('name');
 		$url = get_bloginfo('url');
 		
-		// Parameters handmatig in te vullen
-		$login = 'owwmechelen';
-		$name = '';
-		$representative = '';
+		// HEADQUARTER IS LEEG SINDS NIEUWE OWW-SITE
+		// $headquarter = get_oxfam_shop_data('headquarter');
+		// $lines = explode( ', ', $headquarter, 2 );
+		// $billing_address = trim($lines[0]);
+		// $parts = explode( ' ', $lines[1], 2 );
+		// $billing_zip = trim($parts[0]);
+		// $billing_city = trim($parts[1]);
+		
+		$login = 'oww'.$login;
+		$representative = $fname.' '.$lname;
+		$billing_address = $address;
+		$billing_zip = $zip;
+		$billing_city = $city;
+		
+		// Check of we deze KBO-parameters niet handmatig moeten overrulen
+		// Moet in de praktijk toch opnieuw in Mollie, dus niet zo belangrijk
+		// $representative = '';
+		
 		// $bic = 'NICABEBB';
 		// $bic = 'AXABBE22';
-		$bic = 'GEBABEBB';
+		// $bic = 'GEBABEBB';
 		// $bic = 'GKCCBEBB';
 		// $bic = 'HBKABE22';
 		// $bic = 'KREDBEBB';
 		// $bic = 'VDSPBE91';
+		// $bic = 'ARSPBE22';
+		$bic = 'TRIOBEBB';
 
 		$parameters = array( 
-			'name' => $name, 
-			'company_name' => $company, 
-			'address' => $address, 
-			'zipcode' => $zip, 
-			'city' => $city, 
-			'country' => 'BE', 
-			'email' => $email, 
-			'registration_number' => str_replace( 'BE', '', $btw ), 
-			'legal_form' => 'vzw-be', 
-			'vat_number' => $btw, 
-			'representative' => $representative, 
-			'billing_address' => $billing_address, 
-			'billing_zipcode' => $billing_zip, 
-			'billing_city' => $billing_city, 
-			'billing_country' => 'BE', 
+			'name' => $representative,
+			'company_name' => $company,
+			'url' => $url,
+			'address' => $address,
+			'zipcode' => $zip,
+			'city' => $city,
+			'country' => 'BE',
+			'email' => $email,
+			'registration_number' => str_replace( 'BE', '', $btw ),
+			'legal_form' => 'vzw-be',
+			'vat_number' => $btw,
+			'representative' => $representative,
+			// 'billing_address' => $billing_address,
+			// 'billing_zipcode' => $billing_zip,
+			// 'billing_city' => $billing_city,
+			// 'billing_country' => 'BE',
 			'bankaccount_iban' => $iban,
-			'bankaccount_bic' => $bic, 
+			'bankaccount_bic' => $bic,
+			'locale' => 'nl_BE',
 		);
 
 		echo '<pre>'.var_export( $parameters, true ).'</pre>';
-
+		echo '<a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer='.str_replace( 'BE', '', $btw ).'&actionLu=Zoek" target="_blank">KBO-fiche</a><br/>';
+		echo '<a href="https://www.ibanbic.be/default.aspx?textboxBBAN='.$iban.'" target="_blank">BIC-code</a>';
+		
 		// UITSCHAKELEN INDIEN VOOR ECHT!
 		$parameters['testmode'] = 1;
+		
 		$accountxml = $mollie->accountCreate( $login, $parameters );
-
-		$partner_id_customer = '5271984';
-		$edit_parameters = array( 
-			'registration_number' => str_replace( 'BE', '', $btw ),
-			'vat_number' => $btw,
-		);
-		// $accountxml = $mollie->accountEditByPartnerId( $partner_id_customer, $edit_parameters );
+		echo '<pre>'.var_export( $accountxml, true ).'</pre>';
 	} catch (Mollie_Exception $e) {
 		die( "An error occurred: ".$e->getMessage() );
 	}
 
-	if ( $accountxml->resultcode == '10' ) {
+	if ( $accountxml->resultcode == '10' and ! array_key_exists( 'testmode', $parameters ) ) {
 		echo "<p>".$accountxml->resultmessage."</p>";
 		
 		echo "Partner-ID: ".$accountxml->partner_id."<br/>";
-		// Let op dat we de SimpleXML-node converteren naar een string!
-		if ( update_option( 'oxfam_mollie_partner_id', $accountxml->partner_id->__toString() ) ) {
+		// SimpleXML-node expliciet casten naar string indien geen context!
+		if ( update_blog_option( $blog_id_not_wp, 'oxfam_mollie_partner_id', (string) $accountxml->partner_id ) ) {
 			echo "Partner-ID gewijzigd in webshop!<br/>";
 		}
-		
+
 		echo "Wachtwoord: ".$accountxml->password."<br/>";
 		$user = get_user_by( 'email', $email );
 		if ( $user ) {
-			wp_set_password( $accountxml->password->__toString(), $user->ID );
+			wp_set_password( (string) $accountxml->password, $user->ID );
 			echo "Wachtwoord gekopieerd naar lokale beheerder!<br/>";
-		}
-
-		if ( update_option( 'woocommerce_email_from_name', $company ) ) {
-			echo "Afzender gewijzigd naar ".$company."!<br/>";
-		}
-
-		if ( update_option( 'woocommerce_email_from_address', $email ) ) {
-			echo "Afzendadres gewijzigd naar ".$email."!<br/>";
 		}
 
 		echo "<p>&nbsp;</p>";
 
-		$profilexml = $mollie->profileCreateByPartnerId( $accountxml->partner_id, $blog, $url, $email, $phone, 5499 );
+		$profilexml = $mollie->profileCreateByPartnerId( $accountxml->partner_id, $company, $url, $email, $phone, 5499 );
 		
 		if ( $profilexml->resultcode == '10' ) {
 			echo "<p>".$profilexml->resultmessage."</p>";
 			
 			echo "LIVE API: ".$profilexml->profile->api_keys->live."<br/>";
-			if ( update_option( 'mollie-payments-for-woocommerce_live_api_key', $profilexml->profile->api_keys->live->__toString() ) ) {
+			if ( update_blog_option( $blog_id_not_wp, 'mollie-payments-for-woocommerce_live_api_key', (string) $profilexml->profile->api_keys->live ) ) {
 				echo "Live API-key gewijzigd in webshop!<br/>";	
 			}
 
 			echo "TEST API: ".$profilexml->profile->api_keys->test."<br/>";
-			if ( update_option( 'mollie-payments-for-woocommerce_test_api_key', $profilexml->profile->api_keys->test->__toString() ) ) {
+			if ( update_blog_option( $blog_id_not_wp, 'mollie-payments-for-woocommerce_test_api_key', (string) $profilexml->profile->api_keys->test ) ) {
 				echo "Test API-key gewijzigd in webshop!<br/>";
 			}
 		} else {

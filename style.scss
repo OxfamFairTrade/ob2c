@@ -4,7 +4,7 @@
 	Author URI:		https://www.oxfamwereldwinkels.be
 	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
 	Template:		savoy
-	Version:		1.5.15
+	Version:		1.6.9
 	Text Domain:	oxfam-webshop
 */
 
@@ -26,6 +26,8 @@ $fluo-green: #57cc82;
 $oxfam-green: #61a534;
 $bright-red: #ff2e2e;
 $pale-blue: #60aafd;
+$cookie-grey: #efefef;
+$pale-black: #434343;
 $pickup: rgb(0, 175, 233);
 $delivery: rgb(255, 99, 133);
 // Wijzigen naar #434343?
@@ -33,9 +35,265 @@ $black: #2c2c2c;
 
 
 
+// Tooltips bij checkout
+label,
+.shipping-explanation {
+	.tooltip {
+		position: relative;
+		display: inline-block;
+		text-align: center;
+		margin-left: 0.25em;
+
+		.tooltiptext {
+			visibility: hidden;
+			width: 250px;
+			background-color: #282828;
+			color: white;
+			font-size: 0.6em;
+			line-height: 1.2em;
+			border-radius: 3px;
+			padding: 0.6em 1em 1em 1em;
+
+			position: absolute;
+			z-index: 1;
+			bottom: 125%;
+			// Vermijd dat het uit beeld gaat op mobiel
+			margin-left: -240px;
+		
+			opacity: 0;
+			transition: opacity 0.5s;
+
+			/* Puntje van tooltip */
+			&:after {
+				content: '';
+				position: absolute;
+				top: 100%;
+				right: 15px;
+				margin-left: -5px;
+				border-width: 5px;
+				border-style: solid;
+				border-color: #282828 transparent transparent transparent;
+			}
+		}
+	}
+
+	&:hover .tooltiptext {
+		visibility: visible;
+		opacity: 1;
+	}
+}
+
+form.woocommerce-checkout {
+	padding-top: 0 !important;
+}
+.nm-checkout-login-coupon > li:last-child {
+	margin-bottom: 2em !important;
+}
+
+select.ui-datepicker-month,
+select.ui-datepicker-year {
+	padding: 0;
+}
+
+.form-row.no-margin-bottom {
+	margin-bottom: 0;
+}
+
+.cart-collaterals .shop_table tr td.shipping-explanation,
+#order_review .shop_table tfoot tr td.shipping-explanation {
+	border-left: 1px solid #e5e5e5;
+	background-color: lightseagreen;
+	color: white;
+}
+
+
+
+// Veilige marges voor iPhone 10+
+@supports( padding: max(0px) ) {
+	.nm-row {
+		// Trucje om de SCSS-compiler niet te doen vastlopen
+		padding-left: unquote('max( 15px, env(safe-area-inset-left) )');
+		padding-right: unquote('max( 15px, env(safe-area-inset-right) )');
+	}
+}
+
+.ob2c-home-row > .nm_column:first-child {
+	position: relative;
+	left: -2em;
+}
+
+.ob2c-home-row > .nm_column:last-child {
+	position: relative;
+	left: 2em;
+}
+
+.ob2c-home-row .ob2c-grey-filter {
+	&:before {
+		content: '';
+		position: absolute;
+		background-color: rgba(0,0,0,0.05);
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
+
+	.nm-feature {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+
+		.wpb_text_column {
+			margin: 0;
+
+			& > p > a {
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				color: white;
+				font-size: 1.4em;
+				line-height: 1.2em;
+				text-shadow: 1px 1px 3px black;
+
+				& > span {
+					padding: 0.5em 1em;
+					position: absolute;
+					left: 0;
+					right: 0;
+					bottom: 0;
+
+					@media (max-width: 1199px) {
+						// Super belangrijk, anders blijft de button absoluut gepositioneerd en krijgt ze geen hoogte
+						position: initial !important;
+						display: block;
+					}
+				}
+			}
+		}
+
+		.vc_btn.vc_btn_link {
+			display: none;
+		}
+	}
+}
+
+.nm-product-slider {
+	.slick-dots {
+		padding: 1em;
+
+		li.slick-active button {
+			border-color: black;
+		}
+	}
+
+	/* WERKT ENKEL BIJ RECENTE VERSIES VAN SAVOY */
+	.slick-prev i,
+	.slick-next i {
+		font-size: 60px;
+	}
+
+	/* WERKT ENKEL BIJ OUDE VERSIES VAN SAVOY */
+	.slick-prev,
+	.slick-next {
+		/* Vuile truc om de labels 'Previous' en 'Next' onzichtbaar te maken (ook bij hover!) */
+		color: transparent !important;
+	}
+
+	.slick-prev:before,
+	.slick-next:before {
+		font-family: 'nm-font';
+		content: "\e600";
+		position: absolute;
+		font-size: 100px;
+		top: -50px;
+		right: 0px;
+		color: black;
+	}
+	.slick-next:before {
+		content: "\e601";
+		left: 0;
+	}
+
+	.slick-slider:hover {
+		.slick-prev {
+			left: 10px;
+		}
+
+		.slick-next {
+			right: 10px;
+		}
+	}
+}
+
+.ob2c-category-title.wpb_content_element {
+	margin: 1em 0 2em 0;
+
+	h2 {
+		font-size: 2em;
+		line-height: 1.5em;
+		font-weight: bold;
+	}
+}
+
+@media (min-width: 1200px) {
+	/* Fix voor verspringen van rijhoogte door nog niet ingeladen packshots achteraan de slider */
+	.ob2c-home-row .nm-shop-loop-thumbnail img {
+		// max-height: 274px;
+	}
+}
+	
+@media (max-width: 1199px) {
+	.ob2c-home-row > .nm_column:first-child,
+	.ob2c-home-row > .nm_column:last-child {
+		left: 0;
+	}
+	
+	.ob2c-home-row .ob2c-grey-filter {
+		&:before {
+			display: none;
+		}
+
+		top: 2em;
+		background-image: none !important;
+		background-color: black;
+
+		.nm-feature {
+			position: initial;
+
+			&.layout-centered {
+				max-width: initial;
+				padding: 0;
+			}
+
+			.wpb_text_column {
+				& > p > a {
+					position: initial;
+					text-shadow: none;
+				}
+			}
+		}
+	}
+}
+
+
+
 /************/
 /*  HEADER  */
 /************/
+
+.nm-top-bar {
+	.nm-menu > li > a {
+		font-weight: bold;
+
+		&:hover {
+			color: $cookie-grey;
+		}
+	}
+}
 
 /* UNIVERSEEL */
 .nm-header.menu-centered {
@@ -55,6 +313,8 @@ $black: #2c2c2c;
 		display: inline-block;
 	}
 }
+
+
 
 /* SPECIFIEK VOOR LOKALE PAGINA'S */
 body:not(.portal) .nm-header.menu-centered {
@@ -289,14 +549,16 @@ body.portal.home {
 			padding-left: 0.5em;
 			left: -5px;
 		}
-	}
 
-	#wpsl-result-list {
-		width: 25%;
-	}
-
-	#wpsl-gmap {
-		width: 74%;
+		#wpsl-search-btn {
+			height: 31px;
+			padding: 2px 10px;
+			font-size: 0.95em;
+			background: white;
+			color: $pale-black;
+			border: none;
+			border-radius: 2em;
+		}
 	}
 
 	.button-go-to-webshop {
@@ -321,21 +583,26 @@ body.portal.home {
 
 	p {
 		font-size: 1.2em;
-		line-height: 2em;
+		line-height: 1.2em;
 		text-align: center;
 		margin: 0 auto;
+		max-width: 800px;
 		position: relative;
 
-		&.free-shipping:after {
-			content: '';
-			display: inline-block;
-			background-image: url('images/shipping-icon.svg');
-			background-size: contain;
-			background-repeat: no-repeat;
-			width: 2em;
-			height: 2em;
-			margin-left: 0.5em;
-			vertical-align: middle;
+		&.free-shipping {
+			line-height: 2em;
+			
+			&:after {
+				content: '';
+				display: inline-block;
+				background-image: url('images/shipping-icon.svg');
+				background-size: contain;
+				background-repeat: no-repeat;
+				width: 2em;
+				height: 2em;
+				margin-left: 0.5em;
+				vertical-align: middle;
+			}
 		}
 	}
 }
@@ -350,6 +617,156 @@ body.portal.home .general-store-notice {
 	font-size: 0.9em;
 }
 
+.nm-shop-header {
+	// Verminder witruimte  
+	padding-top: 2em;
+	padding-bottom: 3em;
+
+	@media (max-width: 991px) {
+		// padding-top: 2em;
+		// padding-bottom: 2em;
+	}
+
+	// Voeg icoontjes toe aan hoofdcategorieën in balk 
+	.nm-shop-menu {
+		// Mobiele weergave
+		ul.nm-shop-filter-menu {
+			li.nm-shop-categories-btn-wrap > a:after {
+				content: '(tik om te openen)';
+				display: inline-block;
+				font-size: 80%;
+				padding-left: 0.5em;
+			}
+
+			li.nm-shop-categories-btn-wrap.active > a:after {
+				// Na het aanklikken van een categorie klapt het blok dicht maar blijft de 'active'-klasse staan, bij tappen gelukkig niet
+				content: '(tik om te sluiten)';
+			}
+		}
+		
+		ul.nm-shop-categories {
+			li {
+				margin: 0 0.5em;
+				// Fix voor het schuin afsnijden van border-bottom (geen border-left en border-right, maar padding om verschuiven te voorkomen)
+				padding: 0.5em 2px;
+				border-top: 2px solid transparent;
+				border-bottom: 2px solid transparent;
+				max-width: 90%;
+
+				a {
+					display: inline-block;
+				}
+
+				& > a {
+					margin: 0 0.5em;
+
+					&:before {
+						content: '';
+						// Margin en breedte bewust nog niet instellen zodat niet-categorielinks er identiek uit zien zonder rare witruimte vooraan!
+						margin: 0;
+						height: 2em;
+						display: inline-block;
+						background-size: contain;
+						background-position: center center;
+						background-repeat: no-repeat;
+						vertical-align: middle;
+					}
+
+					&.koffie-thee:before {
+						background-image: url('images/cat-koffie-thee.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
+					}
+
+					&.wijn:before {
+						background-image: url('images/cat-wijn.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
+					}
+
+					&.snacks-drinks:before {
+						background-image: url('images/cat-snacks-drinks.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
+					}
+
+					&.ontbijt:before {
+						background-image: url('images/cat-ontbijt.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
+					}
+
+					&.wereldkeuken:before {
+						background-image: url('images/cat-wereldkeuken.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
+					}
+
+					&.cadeaubonnen:before {
+						background-image: url('images/cat-cadeaubonnen.svg');
+						margin: 0.25em 0.5em 0.25em 0;
+						width: 2em;
+					}
+				}
+
+				&:hover,
+				&:focus,
+				&:active {
+					border-bottom-color: $black;
+
+					& > a {
+						color: $black !important;
+
+						&:before {
+							filter: saturate(0%) brightness(0%);
+						}
+					}
+				}
+
+				&.current-cat,
+				&.current-parent-cat {
+					border-left: 2px solid;
+					border-right: 2px solid;
+					padding-left: 0;
+					padding-right: 0;
+					border-color: $black;
+
+					& > a {
+						color: $black;
+
+						&:before {
+							filter: saturate(0%) brightness(0%);
+						}
+					}
+				}
+			}
+
+			ul.nm-shop-sub-categories {
+				li {
+					padding: 0.5em 1em;
+
+					& > a {
+						margin: 0;
+
+						&:before {
+							display: none;
+						}
+					}
+
+					&.current-cat {
+						border-left: none;
+						border-right: none;
+						border-top-color: transparent;
+
+						& > a {
+							padding-bottom: 0;
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 
 /**************/
@@ -538,10 +955,25 @@ p.herkomst {
 	font-weight: bold;
 }
 p.promotie {
-	margin-bottom: 1em;
-	color: red;
-	font-style: italic;
+	margin: 2em 0;
 	line-height: 1.25em;
+	padding: 1em;
+	color: $see-through-red;
+	border: 2px solid $see-through-red;
+	border-radius: 3px;
+	position: relative;
+
+	&:before {
+		content: 'Promo!';
+		position: absolute;
+		color: $pale-black;
+		font-family: 'Pacifico', cursive;
+		font-size: 1.25em;
+		top: -1.5em;
+		right: 0.5em;
+		transform: rotate(-5deg);
+		z-index: 50;
+	}
 }
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */ 
@@ -630,10 +1062,38 @@ tr.shipping .woocommerce-Price-amount {
 }
 
 
+/*************/
+/*  SIDEBAR  */
+/*************/
+
+.nm-shop-sidebar {
+	.ob2c-sale-banner {
+		padding: 0.5em 1em;
+		font-weight: bold;
+		color: white;
+		background-color: $see-through-red;
+		margin-bottom: 2em;
+	}
+}
+
+
 
 /************/
 /*  FOOTER  */
 /************/
+
+.woocommerce-store-notice.demo_store {
+	position: fixed;
+	bottom: 0;
+	z-index: 100;
+
+	.woocommerce-store-notice__dismiss-link {
+		background-color: white;
+		padding: 0.5em;
+		border-radius: 3px;
+		margin: 0 1em;
+	}
+}
 
 .textwidget i,
 .textwidget h2,
@@ -662,26 +1122,26 @@ li.widget.widget_text:not(:last-child) {
 	color: $oxfam-green !important;
 }
 
-@mixin icon( $image: 'wereld' ) {
+@mixin icon( $image: 'always-open' ) {
 	/* Zorg ervoor dat het originele icoontje in ::before onzichtbaar wordt */
 	color: transparent !important;
 	font-size: 64px;
-	background-image: url('images/#{$image}.png');
+	background-image: url('images/#{$image}-icon.svg');
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center center;
 }
 
 i.pe-7s-timer {
-	@include icon( 'klok' );
+	@include icon('always-open');
 }
 
 i.pe-7s-global {
-	@include icon( 'wereld');
+	@include icon('global-products');
 }
 
 i.pe-7s-comment {
-	@include icon( 'handen' );
+	@include icon('hands-together');
 }
 
 
@@ -739,9 +1199,33 @@ li.product.product_tag-promotie::after {
 	@include banner( $see-through-red );
 	content: "Promo";
 }
+li.product.product_tag-promotie.one-plus-one::after {
+	content: "Promo 1+1 gratis";
+}
+li.product.product_tag-promotie.three-plus-one::after {
+	content: "Promo 3+1 gratis";
+}
+li.product.product_tag-promotie.fifty-percent-off::after {
+	content: "Promo 2de -50%";
+}
+li.product.product_tag-promotie.twenty-five-percent-off::after {
+	content: "Promo -25%";
+}
 div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__wrapper::after {
 	@include banner( $see-through-red, 95% );
 	content: "In promotie";
+}
+div.nm-single-product.product_tag-promotie.one-plus-one figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: 1+1 gratis";
+}
+div.nm-single-product.product_tag-promotie.three-plus-one figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: 3+1 gratis";
+}
+div.nm-single-product.product_tag-promotie.fifty-percent-off figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: 2de fles aan -50%";
+}
+div.nm-single-product.product_tag-promotie.twenty-five-percent-off figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: -25%";
 }
 
 /* Indien 'bioproduct'-klasse actief is: plaats de 'nieuw'-, 'promo'- en/of 'afhalen'-klasse lager om overlap te vermijden */
@@ -770,6 +1254,68 @@ body.is_b2b_customer {
 	}
 }
 
+#cookie-notice {
+	/* Wordt overruled door instellingen plugin */
+	background-color: $cookie-grey;
+	/* Wordt overruled door instellingen plugin */
+	color: $pale-black;
+	max-width: 500px;
+	min-width: initial;
+	padding: 0;
+	left: auto;
+	right: 2em;
+	bottom: 2em;
+	box-shadow: 1px 1px 5px 1px rgba(77,77,77,0.5);
+
+	#cn-notice-text {
+		margin-bottom: 1em;
+
+		&:before {
+			content: '';
+			display: block;
+			background-image: url('images/cookie-icon.svg');
+			background-size: contain;
+			background-repeat: no-repeat;
+			width: 4em;
+			height: 4em;
+			margin: 0 auto 0.5em auto;
+		}
+	}
+	
+	.cn-buttons-container {
+		display: block;
+		margin-top: 1em;
+
+		.cn-button.wp-default.cookie {
+			border: none;
+			background: initial;
+			text-shadow: none;
+			line-height: 1em;
+			padding: 1em;
+			border-radius: 2em;
+
+			&.cn-set-cookie:nth-of-type(1) {
+				background-color: $fluo-green;
+				color: white;
+			}
+
+			&.cn-set-cookie:nth-of-type(2) {
+				background-color: white;
+				color: $pale-black;
+			}
+
+			&.cn-more-info {
+				background-color: transparent;
+				color: $pale-black;
+				font-size: 0.8em;
+				display: block;
+				padding: 0;
+				margin: 1em auto 0 auto;
+			}
+		}
+	}
+}
+
 
 
 /*************/
@@ -789,7 +1335,8 @@ body.is_b2b_customer {
 .checkout-subscribe-action,
 .products li.outofstock .nm-shop-loop-thumbnail > a:after,
 .ui-helper-hidden-accessible,
-.widget_product_tag_cloud {
+.widget_product_tag_cloud,
+.nm_widget_price_filter {
 	display: none !important;
 }
 
@@ -946,6 +1493,20 @@ div.nm-feature.layout-centered {
 			margin-top: 3em;
 		}
 	}
+
+	#cookie-notice {
+		max-width: initial;
+		width: 100%;
+		left: 0;
+		right: 0;
+		bottom: 0;
+
+		#cn-notice-text:before {
+			position: absolute;
+			left: 1em;
+			bottom: 0.5em;
+		}
+	}
 }
 
 @media (max-width: 480px) {
@@ -988,6 +1549,16 @@ div.nm-feature.layout-centered {
 	body.portal {
 		#oxfam-zip-user {
 			width: 175px;
+		}
+	}
+
+	#cookie-notice {
+		.cn-buttons-container {
+			text-align: right;
+
+			.cn-more-info {
+				text-align: center;
+			}
 		}
 	}
 }

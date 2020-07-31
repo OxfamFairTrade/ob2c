@@ -24,8 +24,6 @@ echo '<p>' . __( 'Bericht bovenaan de mail die de klant ontvangt als er een opme
 
 echo '<blockquote style="font-style: italic;">' . wpautop( wptexturize( $customer_note ) ) . '</blockquote>';
 
-echo '<p>&nbsp;</p>';
-
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.
  * @hooked WC_Structured_Data::generate_order_data() Generates structured data.

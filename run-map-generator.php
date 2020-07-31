@@ -45,28 +45,23 @@
 							$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 							
 							foreach ( $locations as $location ) {
-								$id_parts = explode( 'id=', $location['note'] );
-								if ( isset( $id_parts[1] ) ) {
-									$post_id = intval( str_replace( ']', '', $id_parts[1] ) );
-								} else {
-									$post_id = intval( get_option('oxfam_shop_post_id') );
+								$shop_post_id = intval( get_option('oxfam_shop_post_id') );
+								$parts = explode( 'id=', $location['note'] );
+								if ( isset( $parts[1] ) ) {
+									$custom_shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
+									if ( $custom_shop_post_id > 0 ) {
+										$shop_post_id = $custom_shop_post_id;
+									}
 								}
 
-								$node_parts = explode( 'node=', $location['note'] );
-								if ( isset( $node_parts[1] ) ) {
-									$node = str_replace( ']', '', $node_parts[1] );
-								} else {
-									$node = get_option('oxfam_shop_node');
-								}
-								
 								// Want get_company_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
-								if ( $post_id > 0 ) {
+								if ( $shop_post_id > 0 ) {
 									$txt .= "<Placemark>";
 									$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
 									$txt .= "<styleUrl>#pickup</styleUrl>";
-									$oww_store_data = get_external_wpsl_store( $post_id );
-									$txt .= "<description><![CDATA[<p>".get_company_address( $node, $post_id )."</p><p><a href=".$oww_store_data['link']." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
-									$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $node, false, $post_id )."</coordinates></Point>";
+									$oww_store_data = get_external_wpsl_store( $shop_post_id );
+									$txt .= "<description><![CDATA[<p>".get_company_address( $shop_post_id )."</p><p><a href=".$oww_store_data['link']." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
+									$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', 0, false, $shop_post_id )."</coordinates></Point>";
 									$txt .= "</Placemark>";
 								}
 							}
@@ -128,9 +123,15 @@
 							delete_option('oxfam_holidays');
 						}
 
-						if ( ! does_home_delivery() ) {
+						if ( does_home_delivery() ) {
+							$home_delivery = true;
+							$store_args['meta_input']['wpsl_alternate_marker_url'] = '';
+						} else {
+							$home_delivery = false;
 							// Alternatieve marker indien enkel afhaling
 							$store_args['meta_input']['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';
+							// LEGENDE ONTBREEKT, OVERRULE OPNIEUW DOOR DEFAULT
+							$store_args['meta_input']['wpsl_alternate_marker_url'] = '';
 						}
 
 						// Maak aan op hoofdsite
@@ -138,7 +139,7 @@
 						$result = wp_insert_post( $store_args );
 						// Winkelcategorie op deze manier instellen, 'tax_input'-argument bij wp_insert_post() werkt niet
 						wp_set_object_terms( $result, 'afhaling', 'wpsl_store_category', false );
-						if ( ! array_key_exists( 'wpsl_alternate_marker_url', $store_args['meta_input'] ) ) {
+						if ( $home_delivery ) {
 							// Tweede categorie instellen indien niet enkel afhaling
 							wp_set_object_terms( $result, 'levering', 'wpsl_store_category', true );
 						}

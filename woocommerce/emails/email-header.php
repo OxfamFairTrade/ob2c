@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								echo '<div id="template_header_image">';
 								// GEWIJZIGD: Voeg link naar homepage toe
 								if ( $img = do_shortcode( get_option( 'woocommerce_email_header_image' ) ) ) {
-									echo '<p style="margin-top:0;"><a href="'.home_url().'" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
+									echo '<p style="margin-top:0;"><a href="'.home_url().'" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" style="max-width: 200px;" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
 								}
 								echo '</div>';
 							}

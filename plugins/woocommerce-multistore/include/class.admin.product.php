@@ -797,8 +797,10 @@
                             $_woonet_child_stock_synchronize        =   get_post_meta($post_ID , '_woonet_child_stock_synchronize', TRUE);
                             
                             //chck for Always maintain stock synchronization;  If set, it also modify any stock change within child product to parent
-                            if($options['synchronize-stock']    !=  'yes'   &&  $_woonet_child_inherit_updates  !=  'yes'  &&  $_woonet_child_stock_synchronize    !=  'yes')
+                            // GEWIJZIGD: Bug, hier moeten toch OR's staan? Typische instelling: $options['synchronize-stock'] != 'yes' EN $_woonet_child_stock_synchronize == empty MAAR $_woonet_child_inherit_updates == 'yes'
+                            if ( $options['synchronize-stock'] !=  'yes' or ( $_woonet_child_inherit_updates != 'yes' or $_woonet_child_stock_synchronize != 'yes' ) ) {
                                 return;
+                            }
                             
                             list($_woonet_network_is_child_product_id, $_woonet_network_is_child_site_id, $ignore_blogs) = $this->functions->on_child_product_change__update_parent( $post_ID );
                             

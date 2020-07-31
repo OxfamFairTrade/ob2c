@@ -16,17 +16,35 @@
 
 					if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
 						// Stel de waarschuwingsbanner in
-						update_option( 'woocommerce_demo_store_notice', 'Opgelet: deze webshop is nog niet actief! De betalingen staan in testmodus.' );
+						if ( in_array( $site->blog_id, get_site_option('oxfam_blocked_sites') ) ) {
+							update_option( 'woocommerce_demo_store_notice', 'Deze webshop is nog niet gepubliceerd. Bestellingen worden nog niet uitgeleverd.' );
+							$type = 'A';
+						} else {
+							update_option( 'woocommerce_demo_store_notice', 'Betalingen zijn nog niet geactiveerd. Bestellingen worden nog niet uitgeleverd.' );
+							$type = 'B';
+						}
 						if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
-							write_log("Waarschuwingsbanner geactiveerd op ".$site->blogname."!");
+							write_log("Waarschuwingsbanner type ".$type." geactiveerd op ".$site->blogname."!");
 						}
 					} else {
 						// Neem de wettelijke feestdagen indien er geen enkele lokale gedefinieerd is (of merge altijd?)
-						if ( in_array( date_i18n('Y-m-d'), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
+						if ( $site->blog_id == 13 and date_i18n('Y-m-d') <= '2020-08-31' ) {
+							// Evergem
+							update_option( 'woocommerce_demo_store_notice', 'Wegens onze verhuis is de winkel momenteel gesloten, maar onze webshop blijft open!' );
+							if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
+								write_log("Speciale banner geactiveerd op ".$site->blogname."!");
+							}
+						} elseif ( $site->blog_id == 40 and date_i18n('Y-m-d') <= '2020-07-31' ) {
+							// Mechelen
+							update_option( 'woocommerce_demo_store_notice', 'Wegens onze jaarlijkse vakantie is de winkel momenteel gesloten, maar onze webshop blijft open!' );
+							if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
+								write_log("Speciale banner geactiveerd op ".$site->blogname."!");
+							}
+						} elseif ( in_array( date_i18n('Y-m-d'), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
 							// Stel de afwezigheidsboodschap in, op voorwaarde dat er momenteel geen andere boodschap getoond wordt
 							if ( get_option('woocommerce_demo_store') === 'no' ) {
 								// PERSONALISEERBAAR MAKEN? EERSTE WERKDAG ZOEKEN NA VAKANTIE?
-								update_option( 'woocommerce_demo_store_notice', 'We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening. Faire feesten gewenst!' );
+								update_option( 'woocommerce_demo_store_notice', 'We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening.' );
 								if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
 									write_log("Vakantiebanner geactiveerd op ".$site->blogname."!");
 								}

@@ -76,28 +76,28 @@
 	}
 
 	// Subsites afschermen en verbergen op kaart
-	$oxfam_blocked_sites = array();
+	$oxfam_blocked_sites = array( 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52 );
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
-	$default_holidays = array( '2019-11-01', '2019-11-11', '2019-12-25', '2020-01-01' );
+	$default_holidays = array( '2020-04-03', '2020-04-04', '2020-04-05', '2020-04-06', '2020-04-07', '2020-04-08', '2020-04-09', '2020-04-10', '2020-04-11', '2020-04-12', '2020-04-13', '2020-04-14', '2020-04-15', '2020-04-16', '2020-04-17', '2020-04-18', '2020-04-19', '2020-05-01', '2020-05-21', '2020-06-01', '2020-07-21', '2020-08-15', '2020-11-01', '2020-11-11', '2020-12-25', '2021-01-01' );
 	update_site_option( 'oxfam_holidays', $default_holidays );
+
+	// Handige truc om alle vinkjes aan te zetten op https://shop.oxfamwereldwinkels.be/wp-admin/edit.php?post_status=publish&post_type=product&orderby=sku&order=desc
+	// jQuery("#woocommerce-multistore-fields").find("input[name*='_child_inheir']").prop('checked',true);
 
 	// Startpagina instellen
 	$homepage = get_page_by_title( 'Startpagina' );
 	if ( $homepage ) {
-	    update_option( 'show_on_front', 'page' );
-	    update_option( 'page_on_front', $homepage->ID );
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $homepage->ID );
 	}
 
 	// Voorwaardenpagina opsnorren
 	$terms = get_page_by_title( 'Algemene voorwaarden' );
 	if ( $terms ) {
-	    update_option( 'woocommerce_terms_page_id', $terms->ID );
+		update_option( 'woocommerce_terms_page_id', $terms->ID );
 	}
-
-	// Relevanssi-index opbouwen
-	relevanssi_build_index();
 
 	// Leeggoed verbergen en op voorraad zetten
 	$args = array(
@@ -120,6 +120,9 @@
 		wp_reset_postdata();
 	}
 	
+	// Relevanssi-index opbouwen
+	relevanssi_build_index();
+
 	// Unassigned producten opnieuw aan hoofdsite koppelen
 	$args = array(
 		'post_type'			=> 'product',
@@ -160,7 +163,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> array('publish'),
-		'title'			=> 'koffie',
+		'title'			=> 'appelsap',
 	);
 
 	$all_coupons = new WP_Query( $args );
@@ -205,7 +208,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '20248', '21500', '21502', '21504', '21515', '25300', '25302', '25310', '25629', '24547', '24634' );
+	$photos_to_delete = array( '26424' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
@@ -243,7 +246,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '20182', '20262', '20416', '27516', '27517', '27518', '24647', '24648', '24635', '24640', '24643', '24641', '24642' );
+	$outofstocks = array( '25013', '19236', '19237', '19238', '19239', '24529', '24634', '24648' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -271,58 +274,22 @@
 	}
 
 	// Stel de openingsuren in van een niet-OWW-afhaalpunt
-	$node = 'tuincentrum';
+	$node = 'dilbeek';
 	$hours = array(
-		1 => array(
-			array(
-				'start' => '13:30',
-				'end' => '18:00',
-			),
-		),
-		2 => array(
-			array(
-				'start' => '8:30',
-				'end' => '12:00',
-			),
-			array(
-				'start' => '13:30',
-				'end' => '18:00',
-			),
-		),
+		1 => false,
+		2 => false,
 		3 => array(
 			array(
-				'start' => '8:30',
-				'end' => '12:00',
-			),
-			array(
-				'start' => '13:30',
-				'end' => '18:00',
-			),
+				'start' => '10:00',
+				'end' => '11:00',
+			)
 		),
-		4 => array(
-			array(
-				'start' => '8:30',
-				'end' => '12:00',
-			),
-			array(
-				'start' => '13:30',
-				'end' => '18:00'
-			),
-		),
-		5 => array(
-			array(
-				'start' => '8:30',
-				'end' => '12:00',
-			),
-			array(
-				'start' => '13:30',
-				'end' => '18:00'
-			),
-		),
+		4 => false,
+		5 => false,
 		6 => array(
 			array(
-				'start' => '9:00',
-				'end' => '17:00'
+				'start' => '10:00',
+				'end' => '11:00'
 			),
 		),
 		7 => false,
@@ -330,7 +297,7 @@
 	update_site_option( 'oxfam_opening_hours_'.$node , $hours );
 
 	// Fix de BestelWeb-parameter indien de ERP-import herstart moest worden (of we de B2B-producten vergeten waren)
-	$erp_skus = array( '20031', '20032', '20050', '20052', '20054', '20055', '20058', '20059', '20060', '20062', '20067', '20068', '20070', '20071', '20152', '20154', '20211', '20212', '20225', '20250', '20252', '20253', '20257', '20260', '20261', '20409', '20413', '20414', '20415', '20600', '20602', '20607', '20608', '21000', '21002', '21003', '21008', '21050', '21052', '21100', '21102', '21103', '21500', '21502', '21504', '21515', '22005', '22013', '22019', '22023', '22024', '22025', '22026', '22029', '22200', '22206', '22400', '22401', '22600', '22601', '22602', '22604', '22704', '22706', '22750', '22800', '22805', '23002', '23006', '23201', '23400', '23401', '23402', '23501', '23503', '23504', '23505', '23506', '23507', '23702', '23705', '24006', '24016', '24100', '24101', '24102', '24103', '24117', '24218', '24219', '24220', '24230', '24231', '24232', '24233', '24240', '24290', '24291', '24300', '24303', '24501', '24502', '24525', '24529', '24531', '24532', '24634', '25004', '25006', '25009', '25010', '25011', '25012', '25201', '25208', '25210', '25211', '25216', '25217', '25218', '25219', '25220', '25221', '25300', '25301', '25302', '25310', '25314', '25315', '25404', '25405', '25406', '25407', '25450', '25451', '25480', '25481', '25600', '25627', '25628', '25722', '25723', '25724', '26002', '26008', '26009', '26010', '26011', '26012', '26311', '26312', '26314', '26400', '26401', '26402', '26419', '26493', '26494', '26701', '26703', '26712', '27003', '27008', '27009', '27051', '27100', '27101', '27103', '27109', '27111', '27113', '27201', '27204', '27205', '27502', '27503', '27506', '27510', '27512', '27808', '27810', '27811', '27813', '27818', '27819', '27820', '27822', '28020', '28021', '28310', '28311', '28312', '28318', '28319', '28321', '28324', '28327', '28328', '28329', '20073', '26000', '24286', '21061', '27996', '27999', '27997', '27998', '26315', '25629', '25452', '20263', '27013', '20700', '28800', '28801', '28802', '26490', '28810', '28811', '22209', '20075', '20074', '20601', '21011', '21108', '25728', '21498', '21499', '27054', '23697', '23698', '23699', '24545', '25726', '25727', '24221', '25725', '20076', '20180', '20181', '27114', '27117', '17105', '23403', '27151', '20808', '20810', '20812', '24644', '24645', '24646', '26713', '24302', '26014', '28804', '22605', '20807', '20809', '20811', '24547', '19266', '20416', '20262', '24648', '24647', '20248', '19074', '19073', '19075', '19235', '26714', '25618', '20182', '27516', '27517', '27518', '29297', '29298', '05246', '08808', '08809' );
+	$erp_skus = array( '29297', '29298', '05246', '08808', '08809', '19236', '19237', '19238', '19239' );
 	foreach ( $erp_skus as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -426,7 +393,71 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		update_option( 'cookie_notice_options', $cookie_settings );
 	}
 
-	// Verzendzones wijzigen
+	// Verzendkosten wijzigen
+	$shipping_methods = array(
+		'free_delivery_by_shop' => 'free_shipping_1',
+		'delivery_by_shop' => 'flat_rate_2',
+		'free_delivery_by_eco' => 'free_shipping_3',
+		'delivery_by_eco' => 'flat_rate_4',
+		'free_delivery_by_bpost' => 'free_shipping_5',
+		'delivery_by_bpost' => 'flat_rate_6',
+		'bpack_delivery_by_bpost' => 'flat_rate_7',
+	);
+
+	foreach ( $shipping_methods as $name => $key ) {
+		// Laad de juiste optie
+		if ( $name === 'bpack_delivery_by_bpost' ) {
+			$option_key = 'sendcloudshipping_service_point_shipping_method_7_settings';
+		} else {
+			$option_key = 'woocommerce_'.$key.'_settings';
+		}
+		
+		$settings = get_option( $option_key );
+		$old_cost = '6,5566';
+		$new_cost = '4,6698';
+		$new_min_amount = '75';
+
+		if ( is_array( $settings ) ) {
+			// Betalende methodes goedkoper maken
+			if ( in_array( $name, array( 'delivery_by_shop', 'delivery_by_eco', 'delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
+				if ( array_key_exists( 'cost', $settings ) ) {
+					$settings['cost'] = $new_cost;
+				}
+			}
+
+			if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
+				if ( $name === 'bpack_delivery_by_bpost' ) {
+					if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
+						if ( intval( $settings['free_shipping_min_amount'] ) === 50 ) {
+							$settings['free_shipping_min_amount'] = $new_min_amount;
+						} else {
+							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because non-standard amount");
+						}
+					}
+				} else {
+					if ( array_key_exists( 'min_amount', $settings ) ) {
+						if ( intval( $settings['min_amount'] ) === 50 ) {
+							$settings['min_amount'] = $new_min_amount;
+						} else {
+							write_log("Blog-ID ".get_current_blog_id().": did not modify '".$name."' minimum amount because non-standard amount");
+						}
+					}
+				}
+			}
+
+			if ( update_option( $option_key, $settings ) ) {
+				write_log( print_r( $settings, true ) );
+			}
+		}
+	}
+
+	// Individuele Mollie-instelling wijzigen
+	// Tip: volgorde van betaalmethodes wordt bewaard in 'woocommerce_gateway_order'
+	$bancontact = get_option('mollie_wc_gateway_mistercash_settings');
+	if ( is_array( $bancontact ) ) {
+		$bancontact['description'] = 'Betaal snel en veilig met je Belgische bankkaart. Hou je kaartlezer klaar, of scan de QR-code met je Payconiq-app!';
+		update_option( 'mollie_wc_gateway_mistercash_settings', $bancontact );
+	}
 
 	// Tabel met stopwoorden kopiëren
 

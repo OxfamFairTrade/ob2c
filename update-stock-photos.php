@@ -60,7 +60,11 @@
 							restore_current_blog();
 							
 							$content .= '">';
-								$content .= '<p class="title">'.$product->get_sku().': '.$product->get_title().'</p>';
+								$content .= '<p class="title">'.$product->get_sku().': '.$product->get_title();
+								if ( has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
+									$content .= '<br/><small>ENKEL ZICHTBAAR VOOR B2B-KLANTEN</small>';
+								}
+								$content .= '</p>';
 								$content .= '<p>';
 									$content .= '<input type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
 									$content .= '<label for="'.get_the_ID().'-featured" style="margin-left: 5px;">In de kijker?</label>';

@@ -3,7 +3,7 @@
 Plugin Name: WP All Export Pro
 Plugin URI: http://www.wpallimport.com/export/
 Description: Export any post type to a CSV or XML file. Edit the exported data, and then re-import it later using WP All Import.
-Version: 1.5.5
+Version: 1.6.1
 Author: Soflyy
 */
 
@@ -47,7 +47,7 @@ else {
 	 */
 	define('PMXE_PREFIX', 'pmxe_');
 
-	define('PMXE_VERSION', '1.5.5');
+	define('PMXE_VERSION', '1.6.1');
 
 	define('PMXE_EDITION', 'paid');
 
@@ -147,6 +147,8 @@ else {
 
 		private static $hasActiveSchedulingLicense = null;
 
+		/** @var  \Wpae\App\Service\Addons\AddonService */
+		private $addons;
 		/**
 		 * Return singletone instance
 		 * @return PMXE_Plugin
@@ -264,6 +266,8 @@ else {
 				require_once $filePath;
 			}
 
+            $this->addons = new \Wpae\App\Service\Addons\AddonService();
+
 			$plugin_basename = plugin_basename( __FILE__ );
 
 			self::$cache_key = md5( 'edd_plugin_' . sanitize_key( $plugin_basename ) . '_version_info' );
@@ -271,13 +275,15 @@ else {
 			// init plugin options
 			$option_name = get_class($this) . '_Options';
 			$options_default = PMXE_Config::createFromFile(self::ROOT_DIR . '/config/options.php')->toArray();
-			$this->options = array_intersect_key(get_option($option_name, array()), $options_default) + $options_default;
+            $current_options = get_option($option_name, array());
+			$this->options = array_intersect_key($current_options, $options_default) + $options_default;
 			$this->options = array_intersect_key($options_default, array_flip(array('info_api_url'))) + $this->options; // make sure hidden options apply upon plugin reactivation
 			if ('' == $this->options['cron_job_key']) $this->options['cron_job_key'] = wp_all_export_url_title(wp_all_export_rand_char(12));
 			if ('' == $this->options['zapier_api_key']) $this->options['zapier_api_key'] = wp_all_export_rand_char(32);
 
-			update_option($option_name, $this->options);
-			$this->options = get_option(get_class($this) . '_Options');
+            if ($current_options !== $this->options) {
+                update_option($option_name, $this->options);
+            }
 			register_activation_hook(self::FILE, array($this, 'activation'));
 
 			// register action handlers
@@ -324,17 +330,33 @@ else {
 			$this->load_plugin_textdomain();
 		}
 
-		public function showNoticeAndDisablePlugin($message){
-                $notice = new \Wpae\WordPress\AdminErrorNotice($message);
-                $notice->render();
-                deactivate_plugins( str_replace('\\', '/', dirname(__FILE__)) . '/wp-all-export-pro.php');
+        public function showNoticeAndDisablePlugin($message){
+            $this->showNotice($message);
+            deactivate_plugins( str_replace('\\', '/', dirname(__FILE__)) . '/wp-all-export-pro.php');
         }
-		/**
+
+        public function showNotice($message)
+        {
+            $notice = new \Wpae\WordPress\AdminErrorNotice($message);
+            $notice->render();
+        }
+
+        public function showDismissibleNotice($message, $noticeId)
+        {
+            $notice = new \Wpae\WordPress\AdminDismissibleNotice($message, $noticeId);
+            if(!$notice->isDismissed()) {
+                $notice->render();
+            }
+        }
+
+        /**
 		 * pre-dispatching logic for admin page controllers
 		 */
 		public function adminInit() {
 
 			wp_enqueue_style('wp-all-export-updater', PMXE_ROOT_URL . '/static/css/plugin-update-styles.css', array(), PMXE_VERSION);
+
+            wp_enqueue_script('wp-all-export-notice-dismiss', PMXE_ROOT_URL . '/static/js/pmxe_notice_dismiss.js', array('jquery'), PMXE_VERSION);
 
 			// create history folder
 			$uploads = wp_upload_dir();
@@ -358,6 +380,12 @@ else {
 			if ( ! is_dir($uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY) or ! is_writable($uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY)) {
 				$this->showNoticeAndDisablePlugin(sprintf(__('Uploads folder %s must be writable', 'wp_all_export_plugin'), $uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY));
 			}
+
+
+			if($this->addons->userExportsExistAndAddonNotInstalled() && current_user_can('manage_options')) {
+                $this->showDismissibleNotice(__('<strong style="font-size:16px">WP All Export Pro requires the User Export Add-On Pro</strong><p>Your user and customer exports will not be able to run until you install the User Export Add-On Pro for WP All Export Pro. This add-on has been added to your account, free of charge.</p>', PMXE_Plugin::LANGUAGE_DOMAIN)
+                    .'<p><a class="button button-primary" href="https://wpallimport.com/portal" target="_blank">'.__('Download Add-On', PMXE_Plugin::LANGUAGE_DOMAIN).'</a></p>', 'wpae_user_addon_not_installed_notice');
+            }
 
 			$functions = $uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'functions.php';
 
@@ -394,8 +422,8 @@ else {
 						);
 						add_filter('current_screen', array($this, 'getAdminCurrentScreen'));
 						add_filter('admin_body_class',
-                            function() {
-						        return 'wpallexport-plugin';
+                            function($admin_body_class) {
+						        return $admin_body_class.' wpallexport-plugin';
 						    }
 						);
 
@@ -404,8 +432,32 @@ else {
 							throw new Exception("Administration page `$page` matches to a wrong controller type.");
 						}
 
+						if($controller instanceof PMXE_Admin_Manage && $action == 'update' && isset($_GET['id'])) {
+						    $addons = new \Wpae\App\Service\Addons\AddonService();
+                            $exportId = intval($_GET['id']);
+
+                            $export = new \PMXE_Export_Record();
+                            $export->getById($exportId);
+
+                            $cpt = $export->options['cpt'];
+                            if (!is_array($cpt)) {
+                                $cpt = array($cpt);
+                            }
+
+                            if (
+                                ((in_array('users', $cpt) || in_array('shop_customer', $cpt)) && !$addons->isUserAddonActive()) ||
+                                ($export->options['export_type'] == 'advanced' && $export->options['wp_query_selector'] == 'wp_user_query' && !$addons->isUserAddonActive())
+                            ) {
+                                die(\__('The User Export Add-On Pro is required to run this export. You can download the add-on here: <a href="http://www.wpallimport.com/portal/" target="_blank">http://www.wpallimport.com/portal/</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+                            }
+						}
+
 						if ($this->_admin_current_screen->is_ajax) { // ajax request
-							$controller->$action();
+                            try {
+                                $controller->$action();
+                            } catch (\Wpae\App\Service\Addons\AddonNotFoundException $e) {
+                                die($e->getMessage());
+                            }
 							do_action('wpallexport_action_after');
 							die(); // stop processing since we want to output only what controller is randered, nothing in addition
 						} elseif ( ! $controller->isInline) {
@@ -736,7 +788,7 @@ else {
 				$wpdb->query("ALTER TABLE {$table} ADD `parent_id` BIGINT(20) NOT NULL DEFAULT 0;");
 			}
 			if ( ! $export_post_type ){
-				$wpdb->query("ALTER TABLE {$table} ADD `export_post_type` VARCHAR(64) NOT NULL DEFAULT '';");
+				$wpdb->query("ALTER TABLE {$table} ADD `export_post_type` TEXT NOT NULL DEFAULT '';");
 			}
 
 			update_option( "wp_all_export_db_version", PMXE_VERSION );
@@ -870,6 +922,7 @@ else {
 				'created_at_version' => '',
         		'export_variations' => XmlExportEngine::VARIABLE_PRODUCTS_EXPORT_PARENT_AND_VARIATION,
 				'export_variations_title' => XmlExportEngine::VARIATION_USE_PARENT_TITLE,
+                'export_only_customers_that_made_purchases' => ( PMXE_Plugin::isExistingExport() ) ? 1 : 0,
                 'include_header_row' => 1,
 				'wpml_lang' => 'all',
 				'enable_export_scheduling' => 'false',
