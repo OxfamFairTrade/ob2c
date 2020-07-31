@@ -3192,6 +3192,24 @@
 		return $headers;
 	}
 
+	add_filter( 'woocommerce_mail_callback_params', 'divert_and_flag_all_mails_in_dev', 10, 2 );
+
+	function divert_and_flag_all_mails_in_dev( $params, $object ) {
+		// Kan vervangen worden door wp_get_environment_type() vanaf WP 5.5+
+		if ( WP_ENVIRONMENT_TYPE !== 'live' ) {
+			if ( is_array( $params ) ) {
+				// Vervang bestemmeling enkel indien niet leeg
+				// Dit heeft geen effect op eventuele (B)CC's in headers! 
+				if ( $params[0] !== '' ) {
+					$params[0] = get_option('admin_email');
+				}
+				// Prefix onderwerp
+				$params[1] = 'TEST '.$params[1];
+			}
+		}
+		return $params;
+	}
+
 
 
 	###################
