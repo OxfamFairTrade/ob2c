@@ -8,17 +8,6 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update 
 	
-	// Schakel nieuwe WooCommerce-features uit
-	add_filter( 'woocommerce_marketing_menu_items', '__return_empty_array' );
-	add_filter( 'woocommerce_admin_disabled', '__return_true' );
-	add_filter( 'woocommerce_admin_features', 'disable_wc_admin_features' );
-	
-	function disable_wc_admin_features( $features ) {
-		$marketing = array_search( 'marketing', $features );
-		unset( $features[$marketing] );
-		return $features;
-	}
-
 	// Schakel Gutenberg uit
 	add_filter( 'use_block_editor_for_post', 'gently_allow_gutenberg_per_post', 10, 1 );
 	add_filter( 'use_block_editor_for_post_type', 'gently_allow_gutenberg_per_post_type', 10, 1 );

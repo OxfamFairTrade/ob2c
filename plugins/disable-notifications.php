@@ -9,4 +9,8 @@
 			return;
 		}
 	}
+
+	// Schakel nieuwe WooCommerce-features uit
+	add_filter( 'woocommerce_marketing_menu_items', '__return_empty_array' );
+	add_filter( 'woocommerce_admin_disabled', '__return_true' );
 ?>
