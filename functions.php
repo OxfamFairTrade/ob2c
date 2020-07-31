@@ -7,6 +7,12 @@
 
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	
+	// Schakel nieuwe WooCommerce-features uit
+	add_filter( 'woocommerce_marketing_menu_items', '__return_empty_array' );
+	add_filter( 'woocommerce_admin_disabled', '__return_true' );
+	// add_filter( 'woocommerce_admin_features', 'disable_features' );
+
+	// Schakel Gutenberg uit
 	add_filter( 'use_block_editor_for_post', 'gently_allow_gutenberg_per_post', 10, 1 );
 	add_filter( 'use_block_editor_for_post_type', 'gently_allow_gutenberg_per_post_type', 10, 1 );
 
@@ -5471,9 +5477,9 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-info">';
-					echo '<p>De promoties voor de maand juli werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Later deze maand verschijnen ook nog enkele nieuwe producten.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>De promoties voor de maand juli werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Later deze maand verschijnen ook nog enkele nieuwe producten.</p>';
+				// echo '</div>';
 				// echo '<div class="notice notice-success">';
 				// 	echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
 				// 		$skus = array( '19236', '19237', '19238', '19239', '25013' );
