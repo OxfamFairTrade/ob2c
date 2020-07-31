@@ -544,21 +544,26 @@ body.portal.home {
 
 	p {
 		font-size: 1.2em;
-		line-height: 2em;
+		line-height: 1.2em;
 		text-align: center;
 		margin: 0 auto;
+		max-width: 800px;
 		position: relative;
 
-		&.free-shipping:after {
-			content: '';
-			display: inline-block;
-			background-image: url('images/shipping-icon.svg');
-			background-size: contain;
-			background-repeat: no-repeat;
-			width: 2em;
-			height: 2em;
-			margin-left: 0.5em;
-			vertical-align: middle;
+		&.free-shipping {
+			line-height: 2em;
+			
+			&:after {
+				content: '';
+				display: inline-block;
+				background-image: url('images/shipping-icon.svg');
+				background-size: contain;
+				background-repeat: no-repeat;
+				width: 2em;
+				height: 2em;
+				margin-left: 0.5em;
+				vertical-align: middle;
+			}
 		}
 	}
 }
