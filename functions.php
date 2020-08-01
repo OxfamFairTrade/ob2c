@@ -5481,34 +5481,35 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>De promoties voor de maand juli werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Later deze maand verschijnen ook nog enkele nieuwe producten.</p>';
-				// echo '</div>';
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Er werden 2 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
-				// 		$skus = array( '20265', '27057' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku($sku);
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De paasfiguren werden verborgen.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>De promoties voor de maand augustus werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Bij de 2+1-actie wordt een extra gratis reep toegevoegd van zodra er twee in je winkelmandje zitten. De THT-actie op de pralines blijft doorlopen voor de enkele winkels die nog oude voorraad liggen hebben die binnenkort vervalt. In september arriveert de nieuwe productie pralines.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Er werden 2 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
+						$skus = array( '20265', '27057' );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku($sku);
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De paasfiguren werden verborgen.</p>';
+				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
 					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
 					// echo '</div>';
 				}
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>3 aflopende producten werden uit de database verwijderd omdat ze eind juni vervielen. Het gaat om 24644 Hart melkchocolade, 24645 Minifiguurtjes melkchocolade 5 x 15 g en 24646 Beertje melkchocolade.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-warning">';
+					// Volgende keer: 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade
+					echo '<p>6 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 22722 BIO Koffiecaps lungo, 22723 BIO Koffiecaps dark roast, 25617 Medjoul dadels (nieuwe referentie: 25618, bio), 26313 BIO Braambesconfituur, 27150 BIO Rijstwafels zeezout (nieuwe referentie: 27151), 27513 BIO Lychees en 27821 Tom Yum kruidenpasta voor soep (rood).</p>';
+				echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}
