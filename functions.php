@@ -5239,9 +5239,17 @@
 		if ( $import_id == 7 ) {
 			// Zet de key '_in_bestelweb' van alle producten op nee
 			$args = array(
-				'post_type'			=> 'product',
-				'post_status'		=> array( 'publish', 'draft', 'trash' ),
-				'posts_per_page'	=> -1,
+				'post_type'	=> 'product',
+				'post_status' => array( 'publish', 'draft', 'trash' ),
+				'posts_per_page' => -1,
+				// Behalve van producten die handmatig toegevoegd werden!
+				'meta_query' => array(
+					array(
+						'key' => '_sku',
+						'value' => array( '29297', '29298', '05246', '08808', '08809', '19236', '19237', '19238', '19239' ),
+						'compare' => 'NOT IN',
+					),
+				),
 			);
 
 			$to_remove = new WP_Query( $args );
@@ -5477,8 +5485,8 @@
 				// 	echo '<p>De promoties voor de maand juli werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Later deze maand verschijnen ook nog enkele nieuwe producten.</p>';
 				// echo '</div>';
 				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
-				// 		$skus = array( '19236', '19237', '19238', '19239', '25013' );
+				// 	echo '<p>Er werden 2 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
+				// 		$skus = array( '20265', '27057' );
 				// 		foreach ( $skus as $sku ) {
 				// 			$product_id = wc_get_product_id_by_sku($sku);
 				// 			if ( $product_id ) {
