@@ -5507,8 +5507,8 @@
 					// echo '</div>';
 				}
 				echo '<div class="notice notice-warning">';
-					// Volgende keer: 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade
-					echo '<p>6 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 22722 BIO Koffiecaps lungo, 22723 BIO Koffiecaps dark roast, 25617 Medjoul dadels (nieuwe referentie: 25618, bio), 26313 BIO Braambesconfituur, 27150 BIO Rijstwafels zeezout (nieuwe referentie: 27151), 27513 BIO Lychees en 27821 Tom Yum kruidenpasta voor soep (rood).</p>';
+					// Volgende keer: 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio)
+					echo '<p>6 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 22722 BIO Koffiecaps lungo, 22723 BIO Koffiecaps dark roast, 26313 BIO Braambesconfituur, 27150 BIO Rijstwafels zeezout (nieuwe referentie: 27151), 27513 BIO Lychees en 27821 Tom Yum kruidenpasta voor soep (rood).</p>';
 				echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
