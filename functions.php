@@ -8,6 +8,9 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update 
 	
+	// Test voor exports, geen nadelige neveneffecten?
+	add_filter( 'woocommerce_order_hide_zero_taxes',  '__return_false' );
+
 	// Schakel Gutenberg uit
 	add_filter( 'use_block_editor_for_post', 'gently_allow_gutenberg_per_post', 10, 1 );
 	add_filter( 'use_block_editor_for_post_type', 'gently_allow_gutenberg_per_post_type', 10, 1 );
@@ -4603,7 +4606,7 @@
 			$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
 			
 			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-				$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
+				$output = '<img src="'.get_stylesheet_directory_uri().'/images/nix18.svg" class="alcohol-warning" style="max-width: 200px; float: right;">Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
 			}
 
 			if ( ! is_b2b_customer() and ! does_risky_delivery() and $product->get_shipping_class() === 'breekbaar' ) {
