@@ -15,7 +15,7 @@
 			
 			// Let op met SPF-verificatie nu dit een '@oft.be'-adres geworden is MAILGUN TO THE RESCUE
 			$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
-			$headers[] = 'Bcc: frederik.neirynck@oft.be';
+			$headers[] = 'Bcc: e-commerce@oft.be';
 			$headers[] = 'Content-Type: text/html';
 				
 			foreach ( $sites as $site ) {

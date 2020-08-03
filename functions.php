@@ -572,7 +572,7 @@
 	function warn_if_invalid_status_change( $order_id, $order ) {
 		// TEGENHOUDEN VAN TRANSITIE M.B.V. EXCEPTION THROW IN 'WOOCOMMERCE_ORDER_STATUS_COMPLETED'-ACTIE KAN NOG NIET IN WC3.0
 		// $order->get_edit_order_url() pas beschikbaar vanaf WC3.3+
-		wp_mail( get_site_option('admin_email'), 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), 'Gelieve te checken!' );
+		wp_mail( 'e-commerce@oft.be', 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), 'Gelieve te checken!' );
 	}
 
 	// Functie is niet gebaseerd op eigenschappen van gebruikers en dus al zeer vroeg al bepaald (geen 'init' nodig)
@@ -700,7 +700,7 @@
 		}
 
 		if ( ! isset( $owner ) ) {
-			wp_mail( get_site_option('admin_email'), 'Geen eigenaar gevonden voor te claimen bestelling '.$order->get_order_number().'!', '' );
+			wp_mail( 'e-commerce@oft.be', 'Geen eigenaar gevonden voor te claimen bestelling '.$order->get_order_number().'!', '' );
 			// Koppel als laatste redmiddel aan de locatie van de hoofdwinkel
 			$owner = mb_strtolower( get_oxfam_shop_data('city') );
 		}
@@ -4284,7 +4284,7 @@
 		}
 
 		if ( $updated ) {
-			wp_mail( get_site_option('admin_email'), get_company_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
+			wp_mail( 'e-commerce@oft.be', get_company_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
 		} 
 	}
 
@@ -4301,7 +4301,7 @@
 		}
 
 		if ( $body ) {
-			wp_mail( get_site_option('admin_email'), get_company_name().' paste thuislevering van breekbare goederen aan', $body );
+			wp_mail( 'e-commerce@oft.be', get_company_name().' paste thuislevering van breekbare goederen aan', $body );
 		}
 	}
 
@@ -4313,7 +4313,7 @@
 		} else {
 			$body = 'Custom tekst gewist!';
 		}
-		wp_mail( get_site_option('admin_email'), get_company_name().' paste bannertekst aan', $body );
+		wp_mail( 'e-commerce@oft.be', get_company_name().' paste bannertekst aan', $body );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
@@ -4603,7 +4603,7 @@
 			$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
 			
 			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-				$output = '<img src="'.get_stylesheet_directory_uri().'/images/nix18.svg" class="alcohol-warning" style="max-width: 150px; float: right; margin: 0 0 1em 1em;">Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
+				$output = '<img src="'.get_stylesheet_directory_uri().'/images/nix18.svg" class="alcohol-warning" style="max-width: 150px; float: right; margin: 0 0 10px 10px;">Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
 			}
 
 			if ( ! is_b2b_customer() and ! does_risky_delivery() and $product->get_shipping_class() === 'breekbaar' ) {
