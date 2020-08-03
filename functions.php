@@ -4174,6 +4174,21 @@
 	function show_empties_subtotal() {
 		echo 'waarvan XX euro leeggoed';
 	}
+
+	// Vermijd dat leeggoedlijnen meegekopieerd worden vanuit een vorige bestelling
+	add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
+
+	function prevent_empties_from_being_copied( $cart_item_data, $cart_id ) {
+		if ( $cart_item_data['data'] !== false ) {
+			write_log( $cart_item_data['data']->get_sku() );
+			if ( strpos( $cart_item_data['data']->get_sku(), 'W' ) === 0 ) {
+				// Hopelijk is dit nog op tijd om te annuleren, de cart_id voor het product is al aangemaakt ...
+				$cart_item_data['quantity'] = 0;
+			}
+		}
+		
+		return $cart_item_data;
+	}
 	
 
 
