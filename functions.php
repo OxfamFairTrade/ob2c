@@ -4176,7 +4176,8 @@
 	}
 
 	// Vermijd dat leeggoedlijnen meegekopieerd worden vanuit een vorige bestelling
-	add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
+	// WERKT NOG NIET OP DEZE MANIER IN WC 3.0.9, DOE VOORLOPIG CORE HACK
+	// add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
 
 	function prevent_empties_from_being_copied( $cart_item_data, $cart_id ) {
 		if ( $cart_item_data['data'] !== false ) {
