@@ -3319,8 +3319,11 @@
 			default:
 				if ( intval( $shop_post_id ) === 3338 ) {
 					// Voorlopig enkel thuislevering op woensdag bij Brussel 
-					if ( date_i18n( 'N', $from ) > 1 and date_i18n( 'N', $from ) < 4 ) {
-						// Na de deadline van maandag 23u59: begin pas bij 2de werkdag, kwestie van zeker op volgende week uit te komen
+					if ( ( date_i18n( 'N', $from ) == 5 and date_i18n( 'G', $from ) >= 15 ) or date_i18n( 'N', $from ) > 5 ) {
+						// Na de deadline van vrijdag 15u00: begin pas bij 4de werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+4 weekdays', $from );
+					} else {
+						// Tel er sowieso 2 werkdagen bij, zodat we op maandag en dinsdag ook doorschuiven naar de volgende week
 						$from = strtotime( '+2 weekdays', $from );
 					}
 
