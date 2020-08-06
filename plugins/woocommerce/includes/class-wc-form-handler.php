@@ -597,7 +597,6 @@ class WC_Form_Handler {
 			// GEWIJZIGD: Skip leeggoedregels (worden achteraf automatisch toegevoegd)
 			$product = wc_get_product( $product_id );
 			if ( $product !== false ) {
-				write_log( $product->get_sku() );
 				if ( strpos( $product->get_sku(), 'W' ) === 0 ) {
 					continue;
 				}
