@@ -5913,6 +5913,9 @@
 		if ( get_current_blog_id() === 25 ) {
 			// Uitzondering voor Regio Brugge
 			$zoom = 11;
+		} elseif ( get_current_blog_id() === 50 ) {
+			// Uitzondering voor Oudenaarde-Ronse
+			$zoom = 12;
 		} elseif ( is_regional_webshop() ) {
 			$zoom = 13;
 		} else {
