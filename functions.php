@@ -3175,7 +3175,9 @@
 			// write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
 		}
 
-		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
+		if ( $shop_post_id === 0 ) {
+			$shop_post_id = get_option('oxfam_shop_post_id');
+		}
 		
 		if ( ! is_numeric( $shop_post_id ) ) {
 			$hours = get_site_option( 'oxfam_opening_hours_'.$shop_post_id );
@@ -5644,6 +5646,7 @@
 	add_shortcode( 'telefoon', 'print_telephone' );
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
+	add_shortcode( 'alle_openingsuren', 'print_all_office_hours' );
 	add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	add_shortcode( 'toon_inleiding', 'print_welcome' );
@@ -5724,7 +5727,7 @@
 	}
 
 	function print_office_hours( $atts = [] ) {
-		// Overschrijf defaults met expliciete data van de gebruiker MAG VOORZICHTIG UITGEFASEERD WORDEN
+		// Overschrijf defaults met expliciete data van de gebruiker
 		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
 		
 		$output = '';
@@ -5808,6 +5811,23 @@
 		}
 		
 		return $output;
+	}
+
+	function print_all_office_hours( $atts = [] ) {
+		$atts = shortcode_atts( 'start' => 'monday' ), $atts );
+
+		if ( $locations = get_option('woocommerce_pickup_locations') ) {
+			foreach ( $locations as $location ) {
+				$parts = explode( 'id=', $location['note'] );
+				if ( isset( $parts[1] ) ) {
+					// Vragen we ook de openingsuren van niet-numerieke ID's op?
+					// Zijn meestel geen wereldwinkels, tenzij we uitzonderingen gedefinieerd hebben ...
+					$atts['id'] = str_replace( ']', '', $parts[1] );
+					echo '<h4>'.$location['shipping_company'].'<h4>';
+					echo print_office_hours( $atts );
+				}
+			}
+		}
 	}
 
 	function print_oxfam_shop_data( $key, $atts ) {
