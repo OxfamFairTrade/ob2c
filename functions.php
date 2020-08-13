@@ -21,7 +21,7 @@
 
 	function add_member_of_shop_column_value( $value, $column_name, $user_id ) {
 		if ( $column_name === 'member_of_shop' ) {
-			$value = get_user_meta( $user_id, 'blog_'.get_current_blog_id().'_member_of_shop', true );
+			$value = trim_and_uppercase( get_user_meta( $user_id, 'blog_'.get_current_blog_id().'_member_of_shop', true ) );
 		}
 		return $value;
 	}
@@ -5817,7 +5817,7 @@
 					
 				}
 				$output .= '<h6>'.$location['shipping_company'].'</h6>';
-				$output .= print_office_hours( $atts ).'<br/>';
+				$output .= print_office_hours( $atts ).'<br/><br/>';
 			}
 		}
 
