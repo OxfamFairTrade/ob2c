@@ -5814,7 +5814,7 @@
 	}
 
 	function print_all_office_hours( $atts = [] ) {
-		$atts = shortcode_atts( 'start' => 'monday' ), $atts );
+		$atts = shortcode_atts( array( 'start' => 'monday' ), $atts );
 
 		if ( $locations = get_option('woocommerce_pickup_locations') ) {
 			foreach ( $locations as $location ) {
