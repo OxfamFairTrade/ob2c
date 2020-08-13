@@ -8,6 +8,24 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update 
 	
+	// Toon kolom met winkel waar elke gebruiker lid van is
+	add_filter( 'manage_users_columns', 'add_member_of_shop_column', 10, 1 );
+	add_filter( 'manage_users_custom_column', 'add_member_of_shop_column_value', 10, 3 );
+
+	function add_member_of_shop_column( $columns ) {
+		if ( is_regional_webshop() ) {
+			$columns['member_of_shop'] = 'Bevestigt voor';
+		}
+		return $columns;
+	}
+
+	function add_member_of_shop_column_value( $value, $column_name, $user_id ) {
+		if ( $column_name === 'member_of_shop' ) {
+			$value = get_user_meta( $user_id, 'blog_'.get_current_blog_id().'_member_of_shop', true );
+		}
+		return $value;
+	}
+
 	// Schakel Gutenberg uit
 	add_filter( 'use_block_editor_for_post', 'gently_allow_gutenberg_per_post', 10, 1 );
 	add_filter( 'use_block_editor_for_post_type', 'gently_allow_gutenberg_per_post_type', 10, 1 );
@@ -24,35 +42,6 @@
 			// return true;
 		}
 		return false;
-	}
-
-	// Schakel afrekenen in de webshop van Kortrijk uit van 1/8 t.e.m. 7/8
-	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
-	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
-	add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
-
-	function disable_all_payment_methods( $methods ) {
-		if ( get_current_blog_id() === 18 ) {
-			if ( date_i18n('Y-m-d') >= '2020-08-01' and date_i18n('Y-m-d') <= '2020-08-07' ) {
-				return array();
-			}
-		}
-		return $methods;
-	}
-
-	function print_explanation_if_disabled( $text ) {
-		return "<span style='color: red;'>".get_option('oxfam_sitewide_banner_top')."</span>";
-	}
-
-	
-	function disable_checkout_button( $html ) {
-		if ( get_current_blog_id() === 18 ) {
-			if ( date_i18n('Y-m-d') >= '2020-08-01' and date_i18n('Y-m-d') <= '2020-08-07' ) {
-				$original_button = __( 'Place order', 'woocommerce' );
-				return str_replace( '<input type="submit"', '<input type="submit" disabled="disabled"', str_replace( $original_button, 'Bestellen tijdelijk onmogelijk', $html ) );
-			}
-		}
-		return $html;
 	}
 
 	// Sitemap van afbeeldingen uitschakelen
@@ -5828,7 +5817,7 @@
 					
 				}
 				$output .= '<h6>'.$location['shipping_company'].'</h6>';
-				$output .= print_office_hours( $atts ).'</br>';
+				$output .= print_office_hours( $atts ).'<br/>';
 			}
 		}
 
