@@ -5823,9 +5823,10 @@
 					// Vragen we ook de openingsuren van niet-numerieke ID's op?
 					// Zijn meestel geen wereldwinkels, tenzij we uitzonderingen gedefinieerd hebben ...
 					$atts['id'] = str_replace( ']', '', $parts[1] );
-					echo '<h4>'.$location['shipping_company'].'<h4>';
-					echo print_office_hours( $atts );
+					
 				}
+				echo '<h4>'.$location['shipping_company'].'</h4>';
+				echo print_office_hours( $atts );
 			}
 		}
 	}
