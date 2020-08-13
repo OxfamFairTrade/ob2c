@@ -14,7 +14,7 @@
 
 	function add_member_of_shop_column( $columns ) {
 		if ( is_regional_webshop() ) {
-			$columns['member_of_shop'] = 'Bevestigt voor';
+			$columns['member_of_shop'] = 'Bevestigt thuisleveringen voor';
 		}
 		return $columns;
 	}
