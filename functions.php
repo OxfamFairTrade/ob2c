@@ -5814,6 +5814,7 @@
 	}
 
 	function print_all_office_hours( $atts = [] ) {
+		// Toon standaardweek vanaf maandag
 		$atts = shortcode_atts( array( 'start' => 'monday' ), $atts );
 		$output = '';
 
@@ -5827,7 +5828,7 @@
 					
 				}
 				$output .= '<h6>'.$location['shipping_company'].'</h6>';
-				$output .= print_office_hours( $atts );
+				$output .= print_office_hours( $atts ).'</br>';
 			}
 		}
 
