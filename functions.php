@@ -5729,8 +5729,8 @@
 	function print_office_hours( $atts = [] ) {
 		// Overschrijf defaults met expliciete data van de gebruiker
 		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
-		
 		$output = '';
+
 		$days = get_office_hours( NULL, $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brugge', 'knokke', 'gistel', 'evergem' );
@@ -5815,6 +5815,7 @@
 
 	function print_all_office_hours( $atts = [] ) {
 		$atts = shortcode_atts( array( 'start' => 'monday' ), $atts );
+		$output = '';
 
 		if ( $locations = get_option('woocommerce_pickup_locations') ) {
 			foreach ( $locations as $location ) {
@@ -5825,10 +5826,12 @@
 					$atts['id'] = str_replace( ']', '', $parts[1] );
 					
 				}
-				echo '<h4>'.$location['shipping_company'].'</h4>';
-				echo print_office_hours( $atts );
+				$output .= '<h6>'.$location['shipping_company'].'</h6>';
+				$output .= print_office_hours( $atts );
 			}
 		}
+
+		return $output;
 	}
 
 	function print_oxfam_shop_data( $key, $atts ) {
