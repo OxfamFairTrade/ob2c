@@ -6110,6 +6110,18 @@
 						case 'telephone':
 							return call_user_func( 'format_'.$key, '0493082695', '.' );
 					}
+				} elseif ( intval( $shop_post_id ) === 3454 ) {
+					// Uitzonderingen voor Hemiksem
+					switch ($key) {
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0494626517', '.' );
+					}
+				} elseif ( intval( $shop_post_id ) === 3725 ) {
+					// Uitzonderingen voor Schelle
+					switch ($key) {
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0487436822', '.' );
+					}
 				}
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[$key] !== '' ) {
