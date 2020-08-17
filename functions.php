@@ -194,9 +194,10 @@
 	add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
+		// Parameter $type bevat het soort GA-tracking
 		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			// Parameter $type bevat het soort GA-tracking
 			// Wordt standaard enkel uitgeschakeld voor users met 'manage_options'-rechten (= superadmins)
+			// Let op: hoofdniveau NIET in testmodus zetten, anders verliezen we tracking van homepage!
 			if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
 				return true;
 			} else {
@@ -4624,7 +4625,8 @@
 			$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
 			
 			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-				$output = '<img src="'.get_stylesheet_directory_uri().'/images/nix18.svg" class="alcohol-warning" style="max-width: 150px; float: right; margin: 0 0 10px 10px;">Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
+				// <img src="'.get_stylesheet_directory_uri().'/images/nix18.svg" class="alcohol-warning" style="max-width: 150px; float: right; margin: 0 0 10px 10px;">
+				$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
 			}
 
 			if ( ! is_b2b_customer() and ! does_risky_delivery() and $product->get_shipping_class() === 'breekbaar' ) {
