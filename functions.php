@@ -194,12 +194,14 @@
 	add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
-		// Parameter $type bevat het soort GA-tracking
-		// Wordt standaard enkel uitgeschakeld voor users met 'manage_options'-rechten (= superadmins)
-		if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
-			return true;
-		} else {
-			return false;
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			// Parameter $type bevat het soort GA-tracking
+			// Wordt standaard enkel uitgeschakeld voor users met 'manage_options'-rechten (= superadmins)
+			if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -207,15 +209,17 @@
 	add_action( 'wp_head', 'add_google_tag_manager_js', 100 );
 
 	function add_google_tag_manager_js() {
-		echo '<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">';
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-			?>
-			<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-			})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			echo '<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">';
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+				?>
+				<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+				new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+				j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+				'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+				})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
+				<?php
+			}
 		}
 	}
 
@@ -223,11 +227,13 @@
 	add_action( 'wp_head', 'add_google_tag_manager_no_js', 100 );
 
 	function add_google_tag_manager_no_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-			?>
-			<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
-			height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+				?>
+				<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
+				height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+				<?php
+			}
 		}
 	}
 
@@ -235,19 +241,21 @@
 	add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
 
 	function add_facebook_pixel_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-			?>
-			<script>!function(f,b,e,v,n,t,s)
-			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-			n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-			if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-			n.queue=[];t=b.createElement(e);t.async=!0;
-			t.src=v;s=b.getElementsByTagName(e)[0];
-			s.parentNode.insertBefore(t,s)}(window, document,'script',
-			'https://connect.facebook.net/en_US/fbevents.js');
-			fbq('init', '1964131620531187');
-			fbq('track', 'PageView');</script>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+				?>
+				<script>!function(f,b,e,v,n,t,s)
+				{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+				n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+				if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+				n.queue=[];t=b.createElement(e);t.async=!0;
+				t.src=v;s=b.getElementsByTagName(e)[0];
+				s.parentNode.insertBefore(t,s)}(window, document,'script',
+				'https://connect.facebook.net/en_US/fbevents.js');
+				fbq('init', '1964131620531187');
+				fbq('track', 'PageView');</script>
+				<?php
+			}
 		}
 	}
 
@@ -255,12 +263,14 @@
 	add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
 
 	function add_facebook_pixel_no_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-			?>
-			<noscript><img height="1" width="1" style="display:none"
-			src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
-			/></noscript>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+				?>
+				<noscript><img height="1" width="1" style="display:none"
+				src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
+				/></noscript>
+				<?php
+			}
 		}
 	}
 
@@ -268,17 +278,19 @@
 	add_action( 'wp_footer', 'add_facebook_messenger', 300 );
 
 	function add_facebook_messenger() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and ( is_main_site() or is_front_page() or is_cart() ) ) {
-			?>
-			<div id='fb-root'></div>
-			<script>(function(d, s, id) {
-				var js, fjs = d.getElementsByTagName(s)[0];
-				js = d.createElement(s); js.id = id;
-				js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js#xfbml=1&version=v2.12&autoLogAppEvents=1';
-				fjs.parentNode.insertBefore(js, fjs);
-				}(document, 'script', 'facebook-jssdk'));</script>
-			<div class='fb-customerchat' attribution="wordpress" page_id='116000561802704' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!'logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and ( is_main_site() or is_front_page() or is_cart() ) ) {
+				?>
+				<div id='fb-root'></div>
+				<script>(function(d, s, id) {
+					var js, fjs = d.getElementsByTagName(s)[0];
+					js = d.createElement(s); js.id = id;
+					js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js#xfbml=1&version=v2.12&autoLogAppEvents=1';
+					fjs.parentNode.insertBefore(js, fjs);
+					}(document, 'script', 'facebook-jssdk'));</script>
+				<div class='fb-customerchat' attribution="wordpress" page_id='116000561802704' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!'logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
+				<?php
+			}
 		}
 	}
 
