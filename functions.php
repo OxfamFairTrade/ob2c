@@ -825,12 +825,12 @@
 			if ( $locations = get_option('woocommerce_pickup_locations') ) {
 				foreach ( $locations as $location ) {
 					if ( stristr( $location['shipping_company'], $order->get_meta('claimed_by') ) ) {
-						$parts = explode( 'id=', $location['note'] );
+						$parts = explode( 'id=', $location['address_1'] );
 						if ( isset( $parts[1] ) ) {
 							// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
 							$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
 							if ( $shop_post_id > 0 ) {
-								// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de openingsuren
+								// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de straatnaam
 								$shop_address = get_company_address( $shop_post_id );
 							}
 						}
@@ -5649,7 +5649,6 @@
 	add_shortcode( 'telefoon', 'print_telephone' );
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
-	add_shortcode( 'alle_openingsuren', 'print_all_office_hours' );
 	add_shortcode( 'alle_winkels', 'print_all_shops' );
 	add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
@@ -5817,38 +5816,34 @@
 		return $output;
 	}
 
-	function print_all_office_hours( $atts = [] ) {
-		// Toon standaardweek vanaf maandag
-		$atts = shortcode_atts( array( 'start' => 'monday' ), $atts );
-		$output = '';
-
+	function print_all_shops() {
+		$shops = array();
+		// $shops = array( 3305 => 'Boom', 3673 => 'Oostende' );
 		if ( $locations = get_option('woocommerce_pickup_locations') ) {
 			foreach ( $locations as $location ) {
-				$parts = explode( 'id=', $location['note'] );
+				$parts = explode( 'id=', $location['address_1'] );
 				if ( isset( $parts[1] ) ) {
-					// Vragen we ook de openingsuren van niet-numerieke ID's op?
-					// Zijn meestel geen wereldwinkels, tenzij we uitzonderingen gedefinieerd hebben ...
-					$atts['id'] = str_replace( ']', '', $parts[1] );
-					
+					// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
+					$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
+					if ( $shop_post_id > 0 ) {
+						// Eventueel str_replace( 'Oxfam-Wereldwinkel ', '', $location['shipping_company'] ) doen?
+						$shops[ $shop_post_id ] = $location['shipping_company'];
+					}
+				} else {
+					// Geen argument, dus het is de hoofdwinkel, altijd opnemen!
+					$shops[ get_option('oxfam_shop_post_id') ] = $location['shipping_company'];
 				}
-				$output .= '<h6>'.$location['shipping_company'].'</h6>';
-				$output .= print_office_hours( $atts ).'<br/><br/>';
 			}
 		}
-
-		return $output;
-	}
-
-	function print_all_shops() {
-		// [vc_row type="boxed" max_width="1200"][vc_column]
+		
 		$output = '[vc_tta_tour spacing="5" autoplay="10" active_section="1"]';
-		$shops = array( 3305 => 'Boom', 3673 => 'Oostende' );
 		foreach ( $shops as $shop_id => $shop_name ) {
+			$shop_address = get_company_address( $shop_post_id );
 			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_id.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" id="'.$shop_id.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
 		}
 		$output .= '[/vc_tta_tour]';
-		// [/vc_column][/vc_row]
-		return $output;
+		
+		return do_shortcode( $output );
 	}
 
 	function print_oxfam_shop_data( $key, $atts ) {
@@ -6205,17 +6200,19 @@
 		return get_option('admin_email');
 	}
 
-	function get_company_contact() {
-		return get_company_address()."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data('telephone')."<br/>".get_oxfam_shop_data('tax');
+	function get_company_contact( $shop_post_id = 0 ) {
+		if ( $shop_post_id === 0 ) {
+			$shop_post_id = get_option('oxfam_shop_post_id');
+		}
+		// Het e-mailadres is universeel!
+		return get_company_address( $shop_post_id )."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data( 'telephone', 0, false, $shop_post_id )."<br/>".get_oxfam_shop_data( 'tax', 0, false, $shop_post_id );
 	}
 
 	function get_company_address( $shop_post_id = 0 ) {
-		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
+		if ( $shop_post_id === 0 ) {
+			$shop_post_id = get_option('oxfam_shop_post_id');
+		}
 		return get_oxfam_shop_data( 'place', 0, false, $shop_post_id )."<br/>".get_oxfam_shop_data( 'zipcode', 0, false, $shop_post_id )." ".get_oxfam_shop_data( 'city', 0, false, $shop_post_id );
-	}
-
-	function get_full_company() {
-		return get_company_name()."<br/>".get_company_address()."<br/>".get_company_contact();
 	}
 
 	function get_shops() {
