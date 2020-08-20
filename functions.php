@@ -5650,6 +5650,7 @@
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
 	add_shortcode( 'alle_openingsuren', 'print_all_office_hours' );
+	add_shortcode( 'alle_winkels', 'print_all_shops' );
 	add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	add_shortcode( 'toon_inleiding', 'print_welcome' );
@@ -5835,6 +5836,18 @@
 			}
 		}
 
+		return $output;
+	}
+
+	function print_all_shops() {
+		// [vc_row type="boxed" max_width="1200"][vc_column]
+		$output = '[vc_tta_tour spacing="5" autoplay="10" active_section="1"]';
+		$shops = array( 3305 => 'Boom', 3673 => 'Oostende' );
+		foreach ( $shops as $shop_id => $shop_name ) {
+			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_id.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" id="'.$shop_id.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
+		}
+		$output .= '[/vc_tta_tour]';
+		// [/vc_column][/vc_row]
 		return $output;
 	}
 
