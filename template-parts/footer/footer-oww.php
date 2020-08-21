@@ -65,7 +65,15 @@
 				<div class="col-md-2">
 					<div class="footer-info">
 						<h3>Contact</h3>
-						<p><?php echo get_company_contact( $atts ); ?></p>
+						<?php
+							if ( is_main_site() ) {
+								echo '<p>Ververijstraat 17<br/>B-9000 Gent<br/>BE 0415.365.777<br/>RPR GENT</p>';
+								echo '<p><a href="tel:+32092188899">+32 (0)9/218.88.99</a></p>';
+								echo '<a href="https://www.oxfamwereldwinkels.be/contact/" class="btn">Contacteer ons</a>';
+							} else {
+								echo get_company_contact( $atts );
+							}
+						?>
 					</div>
 				</div>
 			</div>
