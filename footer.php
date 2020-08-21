@@ -39,9 +39,7 @@
 
             <?php
                 // GEWIJZIGD: Voeg store selector panel toe
-                if ( $nm_globals['login_popup'] && ! is_user_logged_in() && ! is_account_page() ) {
-                    get_template_part( 'template-parts/store-selector/locations' );
-                }
+                get_template_part( 'template-parts/store-selector/locations' );
             ?>
 
             <div id="nm-page-overlay"></div>
