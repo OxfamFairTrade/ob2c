@@ -1,5 +1,6 @@
 <?php
 	// Haal de huidige keuze op (nog aan te passen naar individuele winkels i.p.v. webshops)
+	// Gebruik shop-ID's i.p.v. site-ID's
 	$current_store = false;
 	if ( isset( $_COOKIE['latest_subsite'] ) ) {
 		$current_store = get_blog_details( $_COOKIE['latest_subsite'], false );
