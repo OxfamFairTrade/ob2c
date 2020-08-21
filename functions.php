@@ -5736,9 +5736,9 @@
 
 		$days = get_office_hours( NULL, $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
-		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brugge', 'knokke', 'gistel', 'evergem' );
+		$exceptions = array( 'roeselare', 'evergem' );
 		if ( in_array( $atts['id'], $exceptions ) ) {
-			$holidays = array('2020-05-21');
+			$holidays = array( '2020-11-01', '2020-11-11' );
 		} else {
 			// Uitzondering voor Borgerhout en Merksem
 			if ( $atts['id'] == 3316 or $atts['id'] == 3646 ) {
@@ -5788,9 +5788,9 @@
 			if ( get_current_blog_id() === 13 ) {
 				// Uitzondering voor Evergem
 				$output = '<p class="corona-notice">Wegens onze verhuis is de winkel momenteel gesloten, maar onze webshop blijft open! Na het plaatsen van je bestelling contacteren we je om een afspraak te maken voor afhaling.</p>';
-			} elseif ( get_current_blog_id() === 40 ) {
-				// Uitzondering voor Mechelen
-				$output = '<p class="corona-notice">Wegens onze jaarlijkse vakantie is de winkel momenteel gesloten, maar onze webshop blijft open! Na het plaatsen van je bestelling contacteren we je om een afspraak te maken voor afhaling.</p>';
+			} elseif ( get_current_blog_id() === 44 ) {
+				// Uitzondering voor Diksmuide
+				$output = '<p class="corona-notice">Tijdens de lockdown van De Stoasje: gratis thuislevering op donderdag tussen 18u en 20u!</p>';
 			} else {
 				// UITSCHAKELEN
 				// $locations = get_option('woocommerce_pickup_locations');
@@ -5818,7 +5818,6 @@
 
 	function print_all_shops() {
 		$shops = array();
-		// $shops = array( 3305 => 'Boom', 3673 => 'Oostende' );
 		if ( $locations = get_option('woocommerce_pickup_locations') ) {
 			foreach ( $locations as $location ) {
 				$parts = explode( 'id=', $location['address_1'] );
