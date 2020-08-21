@@ -15,11 +15,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div class="nm-shop-sidebar-col col-md-3 col-sm-12">
 	<div id="nm-shop-sidebar" class="nm-shop-sidebar" data-sidebar-layout="default">
+		<!-- GEWIJZIGD: Store selector toevoegen -->
+		<div class="store-selector catalogue">
+			<span>Jouw Oxfam-winkel</span>
+			<!-- To do Frederik: Dynamisch maken (winkel vs. webshop!) -->
+			<p><?php echo get_company_address(); ?></p>
+			<ul>
+				<li class="inactive">​Levering aan huis</li>
+				<li class="active">Afhalen in de winkel</li>
+			</ul>
+			<!-- To do Pieter: Toggle modal die verborgen zit in footer -->
+			<a href="">Winkel wijzigen</a>
+		</div>
+			
 		<?php
 			// GEWIJZIGD: Link naar promoties toevoegen
 			$args = array(
-				// Parameter nog niet beschikbaar in WooCommerce 3.0!
-				// 'stock_status' => 'instock',
+				'stock_status' => 'instock',
 				'include' => wc_get_product_ids_on_sale(),
 			);
 			$sale_products = wc_get_products( $args );
