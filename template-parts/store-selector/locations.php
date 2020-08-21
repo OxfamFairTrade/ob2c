@@ -6,7 +6,7 @@
 	}
 	
 	// On select: cookie bijwerken en redirecten MOET VANUIT 'INIT'-ACTIE GEBEUREN VÒÒR ENIGE OUTPUT
-	if ( $current_store === false ) {
+	if ( $current_store === false ) {
 		// setcookie( 'latest_shop_id', get_option('oxfam_shop_post_id'), time() + 30 * DAY_IN_SECONDS, 'oxfamwereldwinkels.be' );
 		// wp_safe_redirect( $store_url );
 		// exit();

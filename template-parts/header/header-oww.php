@@ -50,7 +50,7 @@
 		</div>
 	</div>
 </div>
-<div id="header" class="visible-sm visible-xs">
+<div id="header" class="visible-sm visible-xs" style="display: none;">
 	<div class="container">
 		<div class="col-row display-flex">
 			<div class="col-xs-6 align-self-center">
