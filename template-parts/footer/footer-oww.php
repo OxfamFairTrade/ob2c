@@ -1,5 +1,10 @@
 <?php
 	// Voorlopig volledig statisch, behalve de contactgegevens
+	if ( isset( $_COOKIE['latest_shop_id'] ) ) {
+		$atts['id'] = $_COOKIE['latest_shop_id'];
+	} else {
+		$atts['id'] = get_option('oxfam_shop_post_id');
+	}
 ?>
 <div id="footer">
 	<div class="container">
@@ -11,44 +16,47 @@
 							<div class="footer-menu">
 								<h3>Oxfam-Wereldwinkels</h3>
 								<ul id="menu-footer-menu-1" class="menu">
-									<li id="menu-item-7413" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7413"><a href="https://www.oxfamwereldwinkels.be/over-ons/">Missie en aanpak</a></li>
-									<li id="menu-item-390" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-390"><a href="https://www.oxfamwereldwinkels.be/steun-ons/">Steun ons</a></li>
-									<li id="menu-item-23477" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-23477"><a href="https://www.oxfamwereldwinkels.be/over-ons/bescherming-tegen-misbruik-en-uitbuiting/">Meld wangedrag</a></li>
-									<li id="menu-item-389" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-389"><a href="https://www.oxfamwereldwinkels.be/vacatures/">Vacatures</a></li>
-									<li id="menu-item-7929" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7929"><a href="https://www.oxfamwereldwinkels.be/over-ons/bevriende-organisaties/">Bevriende organisaties</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/over-ons/">Missie en aanpak</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/steun-ons/">Steun ons</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/over-ons/bescherming-tegen-misbruik-en-uitbuiting/">Meld wangedrag</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/vacatures/">Vacatures</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/over-ons/bevriende-organisaties/">Bevriende organisaties</a></li>
 								</ul>
 							</div>
 						</div>
 						<div class="col-md-3">
 							<div class="footer-menu">
 								<h3>Meer over fair trade</h3>
-								<ul id="menu-footer-menu-2" class="menu"><li id="menu-item-21573" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-21573"><a href="https://www.oxfamwereldwinkels.be/expertise/">Expertise</a></li>
-									<li id="menu-item-1010" class="menu-item menu-item-type-post_type_archive menu-item-object-partner menu-item-1010"><a href="https://www.oxfamwereldwinkels.be/partners/">Producenten</a></li>
-									<li id="menu-item-446" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-446"><a href="https://www.oxfamwereldwinkels.be/nieuws/">Nieuws</a></li>
-									<li id="menu-item-1502" class="menu-item menu-item-type-post_type_archive menu-item-object-recipe menu-item-1502"><a href="https://www.oxfamwereldwinkels.be/recepten/">Recepten</a></li>
-									<li id="menu-item-12645" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-12645"><a href="https://www.oxfamwereldwinkels.be/magazine-fair/">Magazine FAIR</a></li>
+								<ul id="menu-footer-menu-2" class="menu">
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/expertise/">Expertise</a></li>
+									<li class="menu-item menu-item-type-post_type_archive menu-item-object-partner"><a href="https://www.oxfamwereldwinkels.be/partners/">Producenten</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/nieuws/">Nieuws</a></li>
+									<li class="menu-item menu-item-type-post_type_archive menu-item-object-recipe"><a href="https://www.oxfamwereldwinkels.be/recepten/">Recepten</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/magazine-fair/">Magazine FAIR</a></li>
 								</ul>
 							</div>
 						</div>
 						<div class="col-md-3">
 							<div class="footer-menu">
 								<h3>Ik ben</h3>
-								<ul id="menu-footer-menu-3" class="menu"><li id="menu-item-1734" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1734"><a href="https://www.oxfamwereldwinkels.be/pers/">Pers</a></li>
-									<li id="menu-item-1503" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1503"><a href="https://www.oxfamwereldwinkels.be/oxfam-op-school/">School</a></li>
-									<li id="menu-item-7417" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7417"><a href="https://www.oxfamwereldwinkels.be/expertise/">Beleidsmedewerker</a></li>
-									<li id="menu-item-87" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-87"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Bedrijf</a></li>
-									<li id="menu-item-88" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-88"><a target="_blank" rel="noopener noreferrer" href="https://copain.oww.be">Vrijwilliger</a></li>
+								<ul id="menu-footer-menu-3" class="menu">
+									<li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://www.oxfamwereldwinkels.be/pers/">Pers</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/oxfam-op-school/">School</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://www.oxfamwereldwinkels.be/expertise/">Beleidsmedewerker</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Bedrijf</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://copain.oww.be">Vrijwilliger</a></li>
 								</ul>
 							</div>
 						</div>
 						<div class="col-md-3">
 							<div class="footer-menu">
 								<h3>Blijf op de hoogte</h3>
-								<ul id="menu-footer-menu-4" class="menu"><li id="menu-item-89" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-89"><a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/OxfamWereldwinkels">Facebook</a></li>
-									<li id="menu-item-90" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-90"><a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/OxfamWereldwinkels">YouTube</a></li>
-									<li id="menu-item-92" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-92"><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/oxfam.wereldwinkels/">Instagram</a></li>
-									<li id="menu-item-91" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-91"><a target="_blank" rel="noopener noreferrer" href="https://twitter.com/OxfamFairTrade">Twitter</a></li>
-									<li id="menu-item-93" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-93"><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/company/oxfam-fair-trade/">LinkedIn</a></li>
+								<ul id="menu-footer-menu-4" class="menu">
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/OxfamWereldwinkels">Facebook</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/OxfamWereldwinkels">YouTube</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/oxfam.wereldwinkels/">Instagram</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://twitter.com/OxfamFairTrade">Twitter</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/company/oxfam-fair-trade/">LinkedIn</a></li>
 								</ul>
 							</div>
 						</div>
@@ -57,8 +65,7 @@
 				<div class="col-md-2">
 					<div class="footer-info">
 						<h3>Contact</h3>
-						<p><?php echo get_company_contact(); ?></p>
-						<a href="mailto:<?php echo get_company_email(); ?>" target="_blank" class="btn">Contacteer ons</a>
+						<p><?php echo get_company_contact( $atts ); ?></p>
 					</div>
 				</div>
 			</div>

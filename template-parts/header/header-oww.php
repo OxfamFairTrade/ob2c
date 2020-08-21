@@ -10,7 +10,7 @@
 			<div class="col-md-3 md-align-self-center">
 				<div class="logo">
 					<a href="https://www.oxfamwereldwinkels.be/">
-						<img src="https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/images/logo-green.svg" alt="Logo Oxfam-Wereldwinkels">
+						<img src="https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
 					</a>
 				</div>
 			</div>
@@ -55,7 +55,7 @@
 		<div class="col-row display-flex">
 			<div class="col-xs-6 align-self-center">
 				<div class="logo">
-					<a href="https://www.oxfamwereldwinkels.be/"><img src="https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/images/logo-green.svg" alt=""></a>
+					<a href="https://www.oxfamwereldwinkels.be/"><img src="https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
 				</div>
 			</div> 
 			<div class="col-xs-6 align-self-center">
