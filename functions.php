@@ -8,6 +8,24 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update 
 	
+	// Toon kolom met winkel waar elke gebruiker lid van is
+	add_filter( 'manage_users_columns', 'add_member_of_shop_column', 10, 1 );
+	add_filter( 'manage_users_custom_column', 'add_member_of_shop_column_value', 10, 3 );
+
+	function add_member_of_shop_column( $columns ) {
+		if ( is_regional_webshop() ) {
+			$columns['member_of_shop'] = 'Bevestigt thuisleveringen voor';
+		}
+		return $columns;
+	}
+
+	function add_member_of_shop_column_value( $value, $column_name, $user_id ) {
+		if ( $column_name === 'member_of_shop' ) {
+			$value = trim_and_uppercase( get_user_meta( $user_id, 'blog_'.get_current_blog_id().'_member_of_shop', true ) );
+		}
+		return $value;
+	}
+
 	// Schakel Gutenberg uit
 	add_filter( 'use_block_editor_for_post', '__return_false', 100 );
 	add_filter( 'use_block_editor_for_post_type', '__return_false', 100 );
@@ -87,35 +105,6 @@
 			}
 		}
 		return $order_statuses;
-	}
-
-	// Schakel afrekenen in de webshop van Kortrijk uit van 1/8 t.e.m. 7/8
-	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
-	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
-	add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
-
-	function disable_all_payment_methods( $methods ) {
-		if ( get_current_blog_id() === 18 ) {
-			if ( date_i18n('Y-m-d') >= '2020-08-01' and date_i18n('Y-m-d') <= '2020-08-07' ) {
-				return array();
-			}
-		}
-		return $methods;
-	}
-
-	function print_explanation_if_disabled( $text ) {
-		return "<span style='color: red;'>".get_option('oxfam_sitewide_banner_top')."</span>";
-	}
-
-	
-	function disable_checkout_button( $html ) {
-		if ( get_current_blog_id() === 18 ) {
-			if ( date_i18n('Y-m-d') >= '2020-08-01' and date_i18n('Y-m-d') <= '2020-08-07' ) {
-				$original_button = __( 'Place order', 'woocommerce' );
-				return str_replace( '<input type="submit"', '<input type="submit" disabled="disabled"', str_replace( $original_button, 'Bestellen tijdelijk onmogelijk', $html ) );
-			}
-		}
-		return $html;
 	}
 
 	// Sitemap van afbeeldingen uitschakelen
@@ -269,11 +258,14 @@
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
 		// Parameter $type bevat het soort GA-tracking
-		// Wordt standaard enkel uitgeschakeld voor users met 'manage_options'-rechten (= superadmins)
-		if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
-			return true;
-		} else {
-			return false;
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			// Wordt standaard enkel uitgeschakeld voor users met 'manage_options'-rechten (= superadmins)
+			// Let op: hoofdniveau NIET in testmodus zetten, anders verliezen we tracking van homepage!
+			if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -281,15 +273,17 @@
 	add_action( 'wp_head', 'add_google_tag_manager_js', 100 );
 
 	function add_google_tag_manager_js() {
-		echo '<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">';
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-			?>
-			<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-			})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			echo '<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">';
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+				?>
+				<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+				new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+				j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+				'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+				})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
+				<?php
+			}
 		}
 	}
 
@@ -297,11 +291,13 @@
 	add_action( 'wp_head', 'add_google_tag_manager_no_js', 100 );
 
 	function add_google_tag_manager_no_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-			?>
-			<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
-			height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+				?>
+				<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
+				height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+				<?php
+			}
 		}
 	}
 
@@ -309,19 +305,21 @@
 	add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
 
 	function add_facebook_pixel_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-			?>
-			<script>!function(f,b,e,v,n,t,s)
-			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-			n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-			if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-			n.queue=[];t=b.createElement(e);t.async=!0;
-			t.src=v;s=b.getElementsByTagName(e)[0];
-			s.parentNode.insertBefore(t,s)}(window, document,'script',
-			'https://connect.facebook.net/en_US/fbevents.js');
-			fbq('init', '1964131620531187');
-			fbq('track', 'PageView');</script>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+				?>
+				<script>!function(f,b,e,v,n,t,s)
+				{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+				n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+				if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+				n.queue=[];t=b.createElement(e);t.async=!0;
+				t.src=v;s=b.getElementsByTagName(e)[0];
+				s.parentNode.insertBefore(t,s)}(window, document,'script',
+				'https://connect.facebook.net/en_US/fbevents.js');
+				fbq('init', '1964131620531187');
+				fbq('track', 'PageView');</script>
+				<?php
+			}
 		}
 	}
 
@@ -329,12 +327,14 @@
 	add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
 
 	function add_facebook_pixel_no_js() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-			?>
-			<noscript><img height="1" width="1" style="display:none"
-			src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
-			/></noscript>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+				?>
+				<noscript><img height="1" width="1" style="display:none"
+				src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
+				/></noscript>
+				<?php
+			}
 		}
 	}
 
@@ -342,17 +342,19 @@
 	add_action( 'wp_footer', 'add_facebook_messenger', 300 );
 
 	function add_facebook_messenger() {
-		if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and ( is_main_site() or is_front_page() or is_cart() ) ) {
-			?>
-			<div id='fb-root'></div>
-			<script>(function(d, s, id) {
-				var js, fjs = d.getElementsByTagName(s)[0];
-				js = d.createElement(s); js.id = id;
-				js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js#xfbml=1&version=v2.12&autoLogAppEvents=1';
-				fjs.parentNode.insertBefore(js, fjs);
-				}(document, 'script', 'facebook-jssdk'));</script>
-			<div class='fb-customerchat' attribution="wordpress" page_id='116000561802704' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!'logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
-			<?php
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and ( is_main_site() or is_front_page() or is_cart() ) ) {
+				?>
+				<div id='fb-root'></div>
+				<script>(function(d, s, id) {
+					var js, fjs = d.getElementsByTagName(s)[0];
+					js = d.createElement(s); js.id = id;
+					js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js#xfbml=1&version=v2.12&autoLogAppEvents=1';
+					fjs.parentNode.insertBefore(js, fjs);
+					}(document, 'script', 'facebook-jssdk'));</script>
+				<div class='fb-customerchat' attribution="wordpress" page_id='116000561802704' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!'logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
+				<?php
+			}
 		}
 	}
 
@@ -670,7 +672,7 @@
 	function warn_if_invalid_status_change( $order_id, $order ) {
 		// TEGENHOUDEN VAN TRANSITIE M.B.V. EXCEPTION THROW IN 'WOOCOMMERCE_ORDER_STATUS_COMPLETED'-ACTIE KAN NOG NIET IN WC3.0
 		// $order->get_edit_order_url() pas beschikbaar vanaf WC3.3+
-		wp_mail( get_site_option('admin_email'), 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), 'Gelieve te checken!' );
+		wp_mail( 'e-commerce@oft.be', 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), 'Gelieve te checken!' );
 	}
 
 	// Functie is niet gebaseerd op eigenschappen van gebruikers en dus al zeer vroeg al bepaald (geen 'init' nodig)
@@ -798,7 +800,7 @@
 		}
 
 		if ( ! isset( $owner ) ) {
-			wp_mail( get_site_option('admin_email'), 'Geen eigenaar gevonden voor te claimen bestelling '.$order->get_order_number().'!', '' );
+			wp_mail( 'e-commerce@oft.be', 'Geen eigenaar gevonden voor te claimen bestelling '.$order->get_order_number().'!', '' );
 			// Koppel als laatste redmiddel aan de locatie van de hoofdwinkel
 			$owner = mb_strtolower( get_oxfam_shop_data('city') );
 		}
@@ -921,12 +923,12 @@
 			if ( $locations = get_option('woocommerce_pickup_locations') ) {
 				foreach ( $locations as $location ) {
 					if ( stristr( $location['shipping_company'], $order->get_meta('claimed_by') ) ) {
-						$parts = explode( 'id=', $location['note'] );
+						$parts = explode( 'id=', $location['address_1'] );
 						if ( isset( $parts[1] ) ) {
 							// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
 							$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
 							if ( $shop_post_id > 0 ) {
-								// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de openingsuren
+								// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de straatnaam
 								$shop_address = get_company_address( $shop_post_id );
 							}
 						}
@@ -3302,7 +3304,9 @@
 			// write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
 		}
 
-		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
+		if ( $shop_post_id === 0 ) {
+			$shop_post_id = get_option('oxfam_shop_post_id');
+		}
 		
 		if ( ! is_numeric( $shop_post_id ) ) {
 			$hours = get_site_option( 'oxfam_opening_hours_'.$shop_post_id );
@@ -3446,8 +3450,11 @@
 			default:
 				if ( intval( $shop_post_id ) === 3338 ) {
 					// Voorlopig enkel thuislevering op woensdag bij Brussel 
-					if ( date_i18n( 'N', $from ) > 1 and date_i18n( 'N', $from ) < 4 ) {
-						// Na de deadline van maandag 23u59: begin pas bij 2de werkdag, kwestie van zeker op volgende week uit te komen
+					if ( ( date_i18n( 'N', $from ) == 5 and date_i18n( 'G', $from ) >= 15 ) or date_i18n( 'N', $from ) > 5 ) {
+						// Na de deadline van vrijdag 15u00: begin pas bij 4de werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+4 weekdays', $from );
+					} else {
+						// Tel er sowieso 2 werkdagen bij, zodat we op maandag en dinsdag ook doorschuiven naar de volgende week
 						$from = strtotime( '+2 weekdays', $from );
 					}
 
@@ -4302,6 +4309,21 @@
 	function show_empties_subtotal() {
 		echo 'waarvan XX euro leeggoed';
 	}
+
+	// Vermijd dat leeggoedlijnen meegekopieerd worden vanuit een vorige bestelling
+	// WERKT NOG NIET OP DEZE MANIER IN WC 3.0.9, DOE VOORLOPIG CORE HACK
+	// add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
+
+	function prevent_empties_from_being_copied( $cart_item_data, $cart_id ) {
+		if ( $cart_item_data['data'] !== false ) {
+			if ( strpos( $cart_item_data['data']->get_sku(), 'W' ) === 0 ) {
+				// Hopelijk is dit nog op tijd om te annuleren, de cart_id voor het product is al aangemaakt ...
+				$cart_item_data['quantity'] = 0;
+			}
+		}
+		
+		return $cart_item_data;
+	}
 	
 
 
@@ -4412,7 +4434,7 @@
 		}
 
 		if ( $updated ) {
-			wp_mail( get_site_option('admin_email'), get_company_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
+			wp_mail( 'e-commerce@oft.be', get_company_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
 		} 
 	}
 
@@ -4429,7 +4451,7 @@
 		}
 
 		if ( $body ) {
-			wp_mail( get_site_option('admin_email'), get_company_name().' paste thuislevering van breekbare goederen aan', $body );
+			wp_mail( 'e-commerce@oft.be', get_company_name().' paste thuislevering van breekbare goederen aan', $body );
 		}
 	}
 
@@ -4441,7 +4463,7 @@
 		} else {
 			$body = 'Custom tekst gewist!';
 		}
-		wp_mail( get_site_option('admin_email'), get_company_name().' paste bannertekst aan', $body );
+		wp_mail( 'e-commerce@oft.be', get_company_name().' paste bannertekst aan', $body );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
@@ -4725,22 +4747,24 @@
 
 	function show_delivery_warning() {
 		global $product;
-
-		$cat_ids = $product->get_category_ids();
-		$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
 		$output = '';
-
-		if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-			$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
-		}
-
-		if ( $product->is_in_stock() and ! $product->is_on_backorder() and ! is_b2b_customer() and ! does_risky_delivery() and $product->get_shipping_class() === 'breekbaar' ) {
-			$output .= 'Opgelet: dit product kan enkel afgehaald worden in de winkel! ';
-			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' ) {
-				$output .= 'Tip: losse bierflesjes zijn wel beschikbaar voor thuislevering.';
+		$cat_ids = $product->get_category_ids();
+		if ( count( $cat_ids ) > 0 ) {
+			$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
+			
+			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
+				// <img src="'.get_stylesheet_directory_uri().'/images/nix18.svg" class="alcohol-warning" style="max-width: 150px; float: right; margin: 0 0 10px 10px;">
+				$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
 			}
-			if ( get_term( $parent_id, 'product_cat' )->slug === 'fruitsap' ) {
-				$output .= 'Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.';
+
+			if ( ! is_b2b_customer() and ! does_risky_delivery() and $product->get_shipping_class() === 'breekbaar' ) {
+				$output .= 'Opgelet: dit product kan enkel afgehaald worden in de winkel! ';
+				if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' ) {
+					$output .= 'Tip: losse bierflesjes zijn wel beschikbaar voor thuislevering.';
+				}
+				if ( get_term( $parent_id, 'product_cat' )->slug === 'fruitsap' ) {
+					$output .= 'Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.';
+				}
 			}
 		}
 
@@ -5371,9 +5395,17 @@
 		if ( $import_id == 7 ) {
 			// Zet de key '_in_bestelweb' van alle producten op nee
 			$args = array(
-				'post_type'			=> 'product',
-				'post_status'		=> array( 'publish', 'draft', 'trash' ),
-				'posts_per_page'	=> -1,
+				'post_type'	=> 'product',
+				'post_status' => array( 'publish', 'draft', 'trash' ),
+				'posts_per_page' => -1,
+				// Behalve van producten die handmatig toegevoegd werden!
+				'meta_query' => array(
+					array(
+						'key' => '_sku',
+						'value' => array( '29297', '29298', '05246', '08808', '08809', '19236', '19237', '19238', '19239' ),
+						'compare' => 'NOT IN',
+					),
+				),
 			);
 
 			$to_remove = new WP_Query( $args );
@@ -5605,34 +5637,35 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>De promoties voor de maand juli werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Later deze maand verschijnen ook nog enkele nieuwe producten.</p>';
-				// echo '</div>';
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Er werden 5 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
-				// 		$skus = array( '19236', '19237', '19238', '19239', '25013' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku($sku);
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De paasfiguren werden verborgen.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>De promoties voor de maand augustus werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Bij de 2+1-actie wordt een extra gratis reep toegevoegd van zodra er twee in je winkelmandje zitten. De THT-actie op de pralines blijft doorlopen voor de enkele winkels die nog oude voorraad liggen hebben die binnenkort vervalt. In september arriveert de nieuwe productie pralines.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Er werden 2 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
+						$skus = array( '20265', '27057' );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku($sku);
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
 					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
 					// echo '</div>';
 				}
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>3 aflopende producten werden uit de database verwijderd omdat ze eind juni vervielen. Het gaat om 24644 Hart melkchocolade, 24645 Minifiguurtjes melkchocolade 5 x 15 g en 24646 Beertje melkchocolade.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-warning">';
+					// Volgende keer: 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio)
+					echo '<p>6 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 22722 BIO Koffiecaps lungo, 22723 BIO Koffiecaps dark roast, 26313 BIO Braambesconfituur, 27150 BIO Rijstwafels zeezout (nieuwe referentie: 27151), 27513 BIO Lychees en 27821 Tom Yum kruidenpasta voor soep (rood).</p>';
+				echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}
@@ -5747,6 +5780,8 @@
 	add_shortcode( 'telefoon', 'print_telephone' );
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
+	add_shortcode( 'alle_winkels', 'print_all_shops' );
+	add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	add_shortcode( 'toon_inleiding', 'print_welcome' );
 	// add_shortcode( 'toon_shops', 'print_store_selector' );
@@ -5826,15 +5861,15 @@
 	}
 
 	function print_office_hours( $atts = [] ) {
-		// Overschrijf defaults met expliciete data van de gebruiker MAG VOORZICHTIG UITGEFASEERD WORDEN
+		// Overschrijf defaults met expliciete data van de gebruiker
 		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
-		
 		$output = '';
+
 		$days = get_office_hours( NULL, $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
-		$exceptions = array( 'dilbeek', 'hoogstraten', 'leuven', 'roeselare', 'brugge', 'knokke', 'gistel', 'evergem' );
+		$exceptions = array( 'roeselare', 'evergem' );
 		if ( in_array( $atts['id'], $exceptions ) ) {
-			$holidays = array('2020-05-21');
+			$holidays = array( '2020-11-01', '2020-11-11' );
 		} else {
 			// Uitzondering voor Borgerhout en Merksem
 			if ( $atts['id'] == 3316 or $atts['id'] == 3646 ) {
@@ -5884,9 +5919,9 @@
 			if ( get_current_blog_id() === 13 ) {
 				// Uitzondering voor Evergem
 				$output = '<p class="corona-notice">Wegens onze verhuis is de winkel momenteel gesloten, maar onze webshop blijft open! Na het plaatsen van je bestelling contacteren we je om een afspraak te maken voor afhaling.</p>';
-			} elseif ( get_current_blog_id() === 40 ) {
-				// Uitzondering voor Mechelen
-				$output = '<p class="corona-notice">Wegens onze jaarlijkse vakantie is de winkel momenteel gesloten, maar onze webshop blijft open! Na het plaatsen van je bestelling contacteren we je om een afspraak te maken voor afhaling.</p>';
+			} elseif ( get_current_blog_id() === 44 ) {
+				// Uitzondering voor Diksmuide
+				$output = '<p class="corona-notice">Tijdens de lockdown van De Stoasje: gratis thuislevering op donderdag tussen 18u en 20u!</p>';
 			} else {
 				// UITSCHAKELEN
 				// $locations = get_option('woocommerce_pickup_locations');
@@ -5910,6 +5945,35 @@
 		}
 		
 		return $output;
+	}
+
+	function print_all_shops() {
+		$shops = array();
+		if ( $locations = get_option('woocommerce_pickup_locations') ) {
+			foreach ( $locations as $location ) {
+				$parts = explode( 'id=', $location['address_1'] );
+				if ( isset( $parts[1] ) ) {
+					// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
+					$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
+					if ( $shop_post_id > 0 ) {
+						// Eventueel str_replace( 'Oxfam-Wereldwinkel ', '', $location['shipping_company'] ) doen?
+						$shops[ $shop_post_id ] = $location['shipping_company'];
+					}
+				} else {
+					// Geen argument, dus het is de hoofdwinkel, altijd opnemen!
+					$shops[ get_option('oxfam_shop_post_id') ] = $location['shipping_company'];
+				}
+			}
+		}
+		
+		$output = '[vc_tta_tour spacing="5" autoplay="10" active_section="1"]';
+		foreach ( $shops as $shop_id => $shop_name ) {
+			$shop_address = get_company_address( $shop_post_id );
+			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_id.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address id="'.$shop_id.'"][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" id="'.$shop_id.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
+		}
+		$output .= '[/vc_tta_tour]';
+		
+		return do_shortcode( $output );
 	}
 
 	function print_oxfam_shop_data( $key, $atts ) {
@@ -6019,6 +6083,9 @@
 		if ( get_current_blog_id() === 25 ) {
 			// Uitzondering voor Regio Brugge
 			$zoom = 11;
+		} elseif ( get_current_blog_id() === 50 ) {
+			// Uitzondering voor Oudenaarde-Ronse
+			$zoom = 12;
 		} elseif ( is_regional_webshop() ) {
 			$zoom = 13;
 		} else {
@@ -6199,6 +6266,18 @@
 						case 'telephone':
 							return call_user_func( 'format_'.$key, '0493082695', '.' );
 					}
+				} elseif ( intval( $shop_post_id ) === 3454 ) {
+					// Uitzonderingen voor Hemiksem
+					switch ($key) {
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0494626517', '.' );
+					}
+				} elseif ( intval( $shop_post_id ) === 3725 ) {
+					// Uitzonderingen voor Schelle
+					switch ($key) {
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0487436822', '.' );
+					}
 				}
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[$key] !== '' ) {
@@ -6255,17 +6334,19 @@
 		return get_option('admin_email');
 	}
 
-	function get_company_contact() {
-		return get_company_address()."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data('telephone')."<br/>".get_oxfam_shop_data('tax');
+	function get_company_contact( $atts = [] ) {
+		// Overschrijf defaults met expliciete data van de gebruiker
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
+
+		// Het e-mailadres is universeel!
+		return get_company_address( $atts['id'] )."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data( 'telephone', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'tax', 0, false, $atts['id'] );
 	}
 
 	function get_company_address( $shop_post_id = 0 ) {
-		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
+		if ( $shop_post_id === 0 ) {
+			$shop_post_id = get_option('oxfam_shop_post_id');
+		}
 		return get_oxfam_shop_data( 'place', 0, false, $shop_post_id )."<br/>".get_oxfam_shop_data( 'zipcode', 0, false, $shop_post_id )." ".get_oxfam_shop_data( 'city', 0, false, $shop_post_id );
-	}
-
-	function get_full_company() {
-		return get_company_name()."<br/>".get_company_address()."<br/>".get_company_contact();
 	}
 
 	function get_shops() {
