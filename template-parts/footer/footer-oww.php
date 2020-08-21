@@ -1,5 +1,5 @@
 <?php
-	// Voorlopig volledig statisch!
+	// Voorlopig volledig statisch, behalve de contactgegevens
 ?>
 <div id="footer">
 	<div class="container">
@@ -57,9 +57,8 @@
 				<div class="col-md-2">
 					<div class="footer-info">
 						<h3>Contact</h3>
-						<p>Ververijstraat 17<br>B-9000 Gent<br>BE 0415.365.777<br>RPR GENT</p>
-						<p><a href="tel:+32092188899">+32 (0)9/218.88.99</a></p>
-						<a href="/contact" target="" class="btn">Contacteer ons</a>
+						<p><?php echo get_company_contact(); ?></p>
+						<a href="mailto:<?php echo get_company_email(); ?>" target="_blank" class="btn">Contacteer ons</a>
 					</div>
 				</div>
 			</div>
