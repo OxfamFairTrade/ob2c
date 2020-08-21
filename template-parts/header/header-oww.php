@@ -22,18 +22,14 @@
 							<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Voor bedrijven</a></li>
 						</ul>
 					</div>
+					<div class="top-social">
+						<a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>"><span class="fab"></span> Aanmelden</a>
+					</div>
 					<div class="top-search">
 						<form id="globalSearch" action="https://www.oxfamwereldwinkels.be/" method="get">
 							<input type="text" name="s" placeholder="Zoeken">
 							<input type="submit" value="">
 						</form>
-					</div>
-					<div class="top-social">
-						<a href="https://www.facebook.com/OxfamWereldwinkels" target="_blank"><span class="fab fa-facebook-f"></span></a>
-						<a href="https://www.youtube.com/OxfamWereldwinkels" target="_blank"><span class="fab fa-youtube"></span></a>
-						<a href="https://www.instagram.com/oxfam.wereldwinkels/" target="_blank"><span class="fab fa-instagram"></span></a>
-						<a href="https://twitter.com/OxfamFairTrade" target="_blank"><span class="fab fa-twitter"></span></a>
-						<a href="https://www.linkedin.com/company/oxfam-fair-trade/" target="_blank"><span class="fab fa-linkedin-in"></span></a>
 					</div>
 				</div>
 				<div id="nav" class="nav">
