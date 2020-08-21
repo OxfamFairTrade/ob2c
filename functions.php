@@ -5839,7 +5839,7 @@
 		$output = '[vc_tta_tour spacing="5" autoplay="10" active_section="1"]';
 		foreach ( $shops as $shop_id => $shop_name ) {
 			$shop_address = get_company_address( $shop_post_id );
-			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_id.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" id="'.$shop_id.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
+			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_id.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address id="'.$shop_id.'"][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" id="'.$shop_id.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
 		}
 		$output .= '[/vc_tta_tour]';
 		
@@ -6200,12 +6200,12 @@
 		return get_option('admin_email');
 	}
 
-	function get_company_contact( $shop_post_id = 0 ) {
-		if ( $shop_post_id === 0 ) {
-			$shop_post_id = get_option('oxfam_shop_post_id');
-		}
+	function get_company_contact( $atts = [] ) {
+		// Overschrijf defaults met expliciete data van de gebruiker
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
+
 		// Het e-mailadres is universeel!
-		return get_company_address( $shop_post_id )."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data( 'telephone', 0, false, $shop_post_id )."<br/>".get_oxfam_shop_data( 'tax', 0, false, $shop_post_id );
+		return get_company_address( $atts['id'] )."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data( 'telephone', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'tax', 0, false, $atts['id'] );
 	}
 
 	function get_company_address( $shop_post_id = 0 ) {
