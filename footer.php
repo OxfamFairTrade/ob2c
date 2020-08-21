@@ -14,7 +14,7 @@
                 
                 <?php 
                     // GEWIJZIGD: Footer bar vervangen door footer van OWW-site
-                    get_template_part( 'template-parts/footer', 'oww' );
+                    get_template_part( 'template-parts/footer/footer', 'oww' );
                 ?>
             </footer>
             
