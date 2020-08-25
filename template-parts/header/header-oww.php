@@ -40,12 +40,15 @@
 						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/over-ons/">Over ons</a></li>
 						<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://stage.oxfamwereldwinkels.be/winkels/">Vind winkel</a></li>
 						<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://stage.oxfamwereldwinkels.be/word-vrijwilliger/">Word vrijwilliger</a></li>
+						<?php
+							$cart_url = ( $nm_globals['cart_panel'] ) ? '#' : wc_get_cart_url();
+							echo sprintf(
+								'<li class="nm-menu-cart menu-item"><a href="%s" id="nm-menu-cart-btn">%s</a></li>',
+								esc_url( $cart_url ),
+								nm_get_cart_contents_count()
+							);
+						?>
 					</ul>
-					<!-- #nm-menu-cart-btn zorgt ervoor dat de mini-cart opent in shop.oww.be! -->
-					<a href="<?php echo $cart_url; ?>" id="nm-menu-cart-btn" style="display: inline-block; width: 40px; height: 40px; background-color: grey;">
-						<i class="nm-menu-cart-icon"></i>
-						<span class="nm-menu-cart-count"><?php echo $cart_qty; ?></span>
-					</a>
 				</div>
 			</div>
 		</div>

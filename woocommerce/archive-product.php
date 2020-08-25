@@ -139,30 +139,35 @@ get_header( 'shop' ); ?>
 
             <div class="nm-shop-products-col <?php echo esc_attr( $shop_column_size ); ?>">
                 <div id="nm-shop-products-overlay" class="nm-loader"></div>
+                <?php
+                    /** 
+                     * Shop page
+                     *
+                     * Note: Keep below "get_header()", page not loading properly in some cases otherwise
+                     * WPML: The "wpml_object_id" filter is used to get the translated page (if created)
+                     */
+                    $shop_page = ( $show_shop_page ) ? get_post( apply_filters( 'wpml_object_id', $nm_globals['shop_page_id'], 'page' ) ) : false;
+                    if ( $shop_page ) :
+                ?>
+                <div class="nm-page-full">
+                    <div class="entry-content">
+                        <?php echo apply_filters( 'the_content', $shop_page->post_content ); ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <?php
+                    // Specifieke productzoeker net boven het productoverzicht
+                    if ( $nm_globals['shop_search_header'] ) {
+                        // Heeft ondersteuning voor instant results maar vergt nog heel wat tweaking ...
+                        get_template_part( 'template-parts/woocommerce/searchform' );
+                    } elseif ( $nm_globals['shop_search'] ) {
+                        wc_get_template( 'product-searchform_nm.php' );
+                    }
+                ?>
+
                 <div id="nm-shop-browse-wrap" class="nm-shop-description-<?php echo esc_attr( $nm_theme_options['shop_description_layout'] ); ?>">
                     <?php
-                        /** 
-                         * Shop page
-                         *
-                         * Note: Keep below "get_header()", page not loading properly in some cases otherwise
-                         * WPML: The "wpml_object_id" filter is used to get the translated page (if created)
-                         */
-                        $shop_page = ( $show_shop_page ) ? get_post( apply_filters( 'wpml_object_id', $nm_globals['shop_page_id'], 'page' ) ) : false;
-                        if ( $shop_page ) :
-                    ?>
-                    <div class="nm-page-full">
-                        <div class="entry-content">
-                            <?php echo apply_filters( 'the_content', $shop_page->post_content ); ?>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-
-                    <?php
-                        // Extra product search mét instant results
-                        if ( $nm_globals['shop_search_header'] ) {
-                            get_template_part( 'template-parts/woocommerce/searchform' );
-                        }
-
                         /**
                          * Results bar
                          */
