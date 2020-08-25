@@ -6,7 +6,9 @@
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
-	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update 
+	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
+
+	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
 	
 	// Toon kolom met winkel waar elke gebruiker lid van is
 	add_filter( 'manage_users_columns', 'add_member_of_shop_column', 10, 1 );
@@ -1337,9 +1339,17 @@
 	function no_orders_on_main( $price, $product ) {
 		if ( ! is_admin() ) {
 			if ( is_main_site() ) {
+				// Echte koopknoppen sowieso uitschakelen BETER REGELEN IN TEMPLATES LOOP/ADD-TO-CART.PHP EN SINGLE-PRODUCT/ADD-TO-CART/SIMPLE.PHP?
 				remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
 				remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
-				return "<i>Geen verkoop vanuit nationaal</i>";
+				
+				if ( $product->get_meta('_woonet_publish_to_23') !== 'yes' ) {
+					// Het product wordt niet online verkocht (o.b.v. Oostende als test case)
+					$price .= '<span class="unavailable">Niet online beschikbaar</span>';
+				} else {
+					// Toon een winkelmandknop die in de praktijk gewoon de store selector opent
+					$price .= '<a href="#" id="open-store-selector" class="add-to-cart"></a>';
+				}
 			}
 			if ( is_b2b_customer() ) {
 				$price .= ' per stuk';
@@ -1348,7 +1358,7 @@
 		return $price;
 	}
 
-	// Doorstreepte adviesprijs en badge uitschakelen (meestal geen rechtsreekse productkorting)
+	// Doorstreepte adviesprijs en badge uitschakelen (meestal geen rechtstreekse productkorting)
 	add_filter( 'woocommerce_sale_flash', '__return_false' );
 	add_filter( 'woocommerce_format_sale_price', 'format_sale_as_regular_price', 10, 3 );
 

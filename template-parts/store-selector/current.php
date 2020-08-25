@@ -5,14 +5,23 @@
 		$current_store = intval( $_COOKIE['latest_shop_id'] );
 	}
 ?>
-<div class="selected-store">
-	<span>Jouw Oxfam-winkel</span>
-	<!-- To do Frederik: Dynamisch maken (winkel vs. webshop!) -->
-	<p><?php echo get_company_name( $current_store ).'<br/>'.get_company_address( $current_store ); ?></p>
-	<ul>
-		<li class="inactive">​Levering aan huis</li>
-		<li class="active">Afhalen in de winkel</li>
-	</ul>
-	<!-- To do Pieter: Toggle modal die verborgen zit in footer -->
-	<a href="#" class="open-store-selector">Winkel wijzigen</a>
-</div>
+
+<?php if ( is_main_site() or $current_store === false ) : ?>
+	<div class="selected-store not-ok" style="border: 1px solid red; padding: 0.5em;">
+		<span class="pointer"></span>
+		<p>Online shoppen?</p>
+		<!-- Alle #open-store-selector toggelen de modal die verborgen zit in de footer -->
+		<a href="#" id="open-store-selector"><button>Selecteer winkel</button></a>
+	</div>
+<?php else : ?>
+	<div class="selected-store not-ok" style="border: 1px solid green; padding: 0.5em;">
+		<span class="pointer">Jouw Oxfam-winkel</span>
+		<!-- Niet alle ID's zitten in elke shop, beter ophalen op hoofdniveau? -->
+		<p><?php echo get_company_name().'<br/>'.get_company_address(); ?></p>
+		<ul>
+			<li class="inactive">​Levering aan huis</li>
+			<li class="active">Afhalen in de winkel</li>
+		</ul>
+		<a href="#" id="open-store-selector">Winkel wijzigen</a>
+	</div>
+<?php endif; ?>

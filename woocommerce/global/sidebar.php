@@ -21,18 +21,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 		?>
 
 		<ul id="nm-shop-widgets-ul">
-			<h3 class="nm-widget-title">In de kijker</h3>
-			<?php
-				$args = array(
-					'stock_status' => 'instock',
-					'include' => wc_get_product_ids_on_sale(),
-				);
-				$sale_products = wc_get_products( $args );
-				if ( count( $sale_products ) > 0 ) {
-					echo '<a href="'.get_site_url().'/tag/promotie/#shop"><span>In promotie</span></a>';
-				}
-				echo '<a href="'.get_site_url().'/tag/sinterklaas/#shop"><span>Sinterklaas</span></a>';
-			?>
+			<li id="woocommerce_product_categories-3" class="widget woocommerce widget_product_categories">
+				<div class="nm-shop-widget-col">
+					<h3 class="nm-widget-title">In de kijker</h3>
+				</div>
+				<div class="nm-shop-widget-col">
+					<?php
+						$args = array(
+							'stock_status' => 'instock',
+							'include' => wc_get_product_ids_on_sale(),
+						);
+						$sale_products = wc_get_products( $args );
+						if ( count( $sale_products ) > 0 ) {
+							echo '<a href="'.get_site_url().'/tag/promotie/#shop"><span>In promotie</span></a>';
+						}
+						echo '<a href="'.get_site_url().'/tag/sinterklaas/#shop"><span>Sinterklaas</span></a>';
+					?>
+				</div>
+			</li>
 
 			<?php
 				if ( is_active_sidebar( 'widgets-shop' ) ) {
