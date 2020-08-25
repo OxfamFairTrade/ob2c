@@ -41,8 +41,12 @@
 						<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://stage.oxfamwereldwinkels.be/winkels/">Vind winkel</a></li>
 						<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://stage.oxfamwereldwinkels.be/word-vrijwilliger/">Word vrijwilliger</a></li>
 					</ul>
+					<!-- #nm-menu-cart-btn zorgt ervoor dat de mini-cart opent in shop.oww.be! -->
+					<a href="<?php echo $cart_url; ?>" id="nm-menu-cart-btn" style="display: inline-block; width: 40px; height: 40px; background-color: grey;">
+						<i class="nm-menu-cart-icon"></i>
+						<span class="nm-menu-cart-count"><?php echo $cart_qty; ?></span>
+					</a>
 				</div>
-				<div id="mobile-nav"></div>
 			</div>
 		</div>
 	</div>
@@ -77,7 +81,7 @@
 		</form>
 	</div>
 </div>
-<div id="side-menu" class="active">
+<div id="side-menu" class="" style="display: none;">
 	<!-- Zoekbalk beter weglaten in mobiel menu? -->
 	<div class="top-search">
 		<form action="https://stage.oxfamwereldwinkels.be/" method="get">
@@ -117,10 +121,3 @@
 		</ul>
 	</div>
 </div>
-
-<?php
-	// Shop search
-	if ( $nm_globals['shop_search_header'] ) {
-		get_template_part( 'template-parts/woocommerce/searchform' );
-	}
-?>
