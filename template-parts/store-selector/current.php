@@ -14,7 +14,7 @@
 		<a href="#" id="open-store-selector"><button>Selecteer winkel</button></a>
 	</div>
 <?php else : ?>
-	<div class="selected-store not-ok" style="border: 1px solid green; padding: 0.5em;">
+	<div class="selected-store ok" style="border: 1px solid green; padding: 0.5em;">
 		<span class="pointer">Jouw Oxfam-winkel</span>
 		<!-- Niet alle ID's zitten in elke shop, beter ophalen op hoofdniveau? -->
 		<p><?php echo get_company_name().'<br/>'.get_company_address(); ?></p>

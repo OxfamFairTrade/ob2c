@@ -5791,15 +5791,15 @@
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
 	add_shortcode( 'alle_winkels', 'print_all_shops' );
-	add_shortcode( 'toon_titel', 'print_portal_title' );
+	// add_shortcode( 'toon_titel', 'print_portal_title' );
 	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
-	add_shortcode( 'toon_inleiding', 'print_welcome' );
+	// add_shortcode( 'toon_inleiding', 'print_welcome' );
 	// add_shortcode( 'toon_shops', 'print_store_selector' );
 	// add_shortcode( 'toon_kaart', 'print_store_locator_map' );
 	add_shortcode( 'toon_thuislevering', 'print_delivery_snippet' );
 	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
-	add_shortcode( 'scrolltext', 'print_scroll_text' );
+	// add_shortcode( 'scrolltext', 'print_scroll_text' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );
