@@ -6106,7 +6106,7 @@
 			$logger->notice( 'Could not retrieve shops on page '.$page, $context );
 		}
 
-		return $all_store;
+		return $all_stores;
 	}
 
 	function get_external_partner( $partner_name, $domain = 'www.oxfamwereldwinkels.be' ) {
