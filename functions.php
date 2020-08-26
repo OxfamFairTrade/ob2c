@@ -1667,78 +1667,6 @@
 					});
 				</script>
 			<?php
-		} elseif ( is_main_site() and is_front_page() ) {
-			?>
-				<script type="text/javascript">
-					jQuery(document).ready( function() {
-						var wto;
-						jQuery('#oxfam-zip-user').on( 'input change', function() {
-							clearTimeout(wto);
-							var zip = jQuery(this).val();
-							var button = jQuery('#do_oxfam_redirect');
-							var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
-							if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
-								button.prop( 'disabled', false ).parent().addClass('is-valid');
-								wto = setTimeout( function() {
-									button.find('i').addClass('loading');
-									wto = setTimeout( function() {
-										button.trigger('click');
-									}, 750);
-								}, 250);
-							} else {
-								button.prop( 'disabled', true ).parent().removeClass('is-valid');
-							}
-						});
-						
-						jQuery('#oxfam-zip-user').keyup( function(event) {
-							if ( event.which == 13 ) {
-								jQuery('#do_oxfam_redirect').trigger('click');
-							}
-						});
-						
-						jQuery('#do_oxfam_redirect').on( 'click', function() {
-							jQuery(this).prop( 'disabled', true );
-							var input = jQuery('#oxfam-zip-user');
-							var zip = input.val();
-							var url = jQuery('#'+zip+'.oxfam-zip-value').val();
-							var all_cities = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ) ?>;
-							// Indien er meerdere plaatsnamen zijn, knippen we ze op en gebruiken we de eerste (= hoofdgemeente)
-							var cities_for_zip = all_cities[zip].split(' / ');
-							if ( typeof url !== 'undefined' ) {
-								if ( url.length > 10 ) {
-									var suffix = '';
-									<?php if ( isset( $_GET['addSku'] ) ) : ?>
-										suffix = '&addSku=<?php echo $_GET['addSku']; ?>';
-									<?php endif; ?>
-									window.location.href = url+'?referralZip='+zip+'&referralCity='+cities_for_zip[0]+suffix;
-								} else {
-									alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
-									jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
-									input.val('');
-								}
-							} else {
-								alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ); ?> Tip: je kunt ook de naam van je gemeente beginnen te typen en de juiste postcode selecteren uit de suggesties die verschijnen.");
-								jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
-								input.val('');
-							}
-						});
-
-						jQuery( function() {
-							var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
-							jQuery( '#oxfam-zip-user' ).autocomplete({
-								source: zips,
-								minLength: 1,
-								autoFocus: true,
-								position: { my : "right+20 top", at: "right bottom" },
-								close: function(event,ui) {
-									// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
-									jQuery( '#oxfam-zip-user' ).trigger('change');
-								}
-							});
-						});
-					});
-				</script>
-			<?php
 		} elseif ( is_account_page() and is_user_logged_in() ) {
 			$current_user = wp_get_current_user();
 			$user_meta = get_userdata($current_user->ID);
@@ -5792,14 +5720,14 @@
 	add_shortcode( 'openingsuren', 'print_office_hours' );
 	add_shortcode( 'alle_winkels', 'print_all_shops' );
 	// add_shortcode( 'toon_titel', 'print_portal_title' );
-	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	// add_shortcode( 'toon_inleiding', 'print_welcome' );
 	// add_shortcode( 'toon_shops', 'print_store_selector' );
 	// add_shortcode( 'toon_kaart', 'print_store_locator_map' );
+	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	add_shortcode( 'toon_thuislevering', 'print_delivery_snippet' );
 	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
-	// add_shortcode( 'scrolltext', 'print_scroll_text' );
+	add_shortcode( 'scrolltext', 'print_scroll_text' );
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );
@@ -6010,48 +5938,6 @@
 
 	function print_telephone( $atts = [] ) {
 		return print_oxfam_shop_data( 'telephone', $atts );
-	}
-
-	function print_welcome() {
-		// Negeer afgeschermde en gearchiveerde sites
-		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
-		// Trek hoofdsite af van totaal
-		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png" class="placemarker">';
-		$msg .= '<h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
-		return $msg;
-	}
-
-	function print_portal_title() {
-		return __( 'Titel in de header van de portaalpagina', 'oxfam-webshop' );
-	}
-
-	function print_store_selector() {
-		$global_zips = get_shops();
-		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
-		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
-		$msg = '<div class="portal-header"><div class="wrapper">';
-		$msg .= '<h2>Shop online in 1 van onze '.($sites-1).' webshops</h2>';
-		$msg .= '<p>Ze zijn verbonden aan een lokale wereldwinkel. Thuislevering is mogelijk over heel Vlaanderen!</p>';
-		$msg .= '<p>'.__( 'Vul je postcode in en ontvang je bestelling aan huis:', 'oxfam-webshop' );
-		$msg .= '<span class="input-group">';
-		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
-		$msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
-		$msg .= '</span></p>';
-		$msg .= '</div></div>';
-		foreach ( $all_zips as $zip => $city ) {
-			if ( isset( $global_zips[$zip] ) ) {
-				$url = $global_zips[$zip];
-			} else {
-				$url = '';
-			}
-			$msg .= '<input type="hidden" class="oxfam-zip-value" id="'.$zip.'" value="'.$url.'">';
-		}
-		return $msg;
-	}
-
-	function print_store_locator_map() {
-		// Eventuele styling: maptype='light_monochrome'
-		return do_shortcode("[flexiblemap src='".content_url('/maps/global.kml')."' width='100%' height='600px' zoom='9' hidemaptype='true' hidescale='false' kmlcache='4 hours' locale='nl-BE' id='map-oxfam']");
 	}
 
 	function print_woocommerce_messages() {
