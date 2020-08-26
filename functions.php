@@ -6084,25 +6084,22 @@
 		// In API is -1 geen geldige waarde voor 'per_page' 
 		$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores?per_page=100&page='.$page );
 		
-		$logger = wc_get_logger();
-		$context = array( 'source' => 'WordPress API' );
-		
-		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
+		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {			
 			// Bewaar als een array i.p.v. een object
-			$all_stores[] = json_decode( wp_remote_retrieve_body( $response ), true );				
+			$all_stores = json_decode( wp_remote_retrieve_body( $response ), true );
 
 			if ( $page === 1 ) {
 				// Deze header geeft aan hoeveel resultatenpagina's er in totaal zijn
-				$total_pages = wp_remote_retrieve_headers( $response, 'X-WP-TotalPages' );
+				$total_pages = intval( wp_remote_retrieve_header( $response, 'X-WP-TotalPages' ) );
 
 				// Vul indien nodig recursief aan vanaf 2de pagina
 				for ( $i = 2; $i <= $total_pages; $i++ ) { 
-					$all_stores[] = get_external_wpsl_stores( $domain, $i );
+					$all_stores = array_merge( $all_stores,  get_external_wpsl_stores( $domain, $i ) );
 				}
 			}
-
-			$logger->debug( 'Added shops on page '.$page.' to results list', $context );
 		} else {
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'WordPress API' );
 			$logger->notice( 'Could not retrieve shops on page '.$page, $context );
 		}
 
