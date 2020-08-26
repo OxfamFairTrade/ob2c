@@ -6017,13 +6017,15 @@
 		return ( get_option('oxfam_does_risky_delivery') === 'yes' );
 	}
 
-	function does_home_delivery() {
-		// Kijk in de testsites naar de geactiveerde verzendmethodes i.p.v. de toegekende postcodes
-		if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
+	function does_home_delivery( $zipcode = 0, $blog_id = 0 ) {
+		if ( $zipcode === 0 ) {
 			return boolval( get_oxfam_covered_zips() );
 		} else {
-			// Zal niet kloppen voor Gent-Sint-Pieters (= geen enkele hoofdpostcode)?
-			return get_option('oxfam_zip_codes');
+			switch_to_blog( $blog_id );
+			// Check of de webshop thuislevering doet voor deze specifieke postcode
+			$response = in_array( $zipcode, get_oxfam_covered_zips() );
+			restore_current_blog();
+			return $response;
 		}
 	}
 
@@ -6059,28 +6061,52 @@
 		$shop_post_id = intval( $shop_post_id );
 
 		if ( false === ( $store_data = get_site_transient( $shop_post_id.'_store_data' ) ) ) {
-			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
-			$args = array(
-				'headers' => array(
-					'Authorization' => 'Basic '.base64_encode( OWW_USER.':'.OWW_PASSWORD ),
-				),
-			);
 			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id );
 			
-			$logger = wc_get_logger();
-			$context = array( 'source' => 'WordPress API' );
-			
-			if ( $response['response']['code'] == 200 ) {
-				$logger->debug( 'Shop data saved in transient for ID '.$shop_post_id, $context );
+			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
 				// Bewaar als een array i.p.v. een object
-				$store_data = json_decode( $response['body'], true );
+				$store_data = json_decode( wp_remote_retrieve_body( $response ), true );
 				set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
 			} else {
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'WordPress API' );
 				$logger->notice( 'Could not retrieve shop data for ID '.$shop_post_id, $context );
 			}
 		}
 
 		return $store_data;
+	}
+
+	function get_external_wpsl_stores( $domain = 'www.oxfamwereldwinkels.be', $page = 1 ) {
+		$all_stores = array();
+
+		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!
+		// In API is -1 geen geldige waarde voor 'per_page' 
+		$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores?per_page=100&page='.$page );
+		
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'WordPress API' );
+		
+		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
+			// Bewaar als een array i.p.v. een object
+			$all_stores[] = json_decode( wp_remote_retrieve_body( $response ), true );				
+
+			if ( $page === 1 ) {
+				// Deze header geeft aan hoeveel resultatenpagina's er in totaal zijn
+				$total_pages = wp_remote_retrieve_headers( $response, 'X-WP-TotalPages' );
+
+				// Vul indien nodig recursief aan vanaf 2de pagina
+				for ( $i = 2; $i <= $total_pages; $i++ ) { 
+					$all_stores[] = get_external_wpsl_stores( $domain, $i );
+				}
+			}
+
+			$logger->debug( 'Added shops on page '.$page.' to results list', $context );
+		} else {
+			$logger->notice( 'Could not retrieve shops on page '.$page, $context );
+		}
+
+		return $all_store;
 	}
 
 	function get_external_partner( $partner_name, $domain = 'www.oxfamwereldwinkels.be' ) {
