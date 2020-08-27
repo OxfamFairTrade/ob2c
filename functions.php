@@ -8,7 +8,10 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Toon breadcrumbs wél op shoppagina's
 	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
+	// Laad géén extra NM-stijlen rechtstreeks in de pagina!
+	add_filter( 'nm_include_custom_styles', '__return_false' );
 	
 	// Geautomatiseerde manier om instellingen van Savoy te kopiëren naar subsites
 	add_action( 'update_option_nm_theme_options', 'sync_theme_settings_to_subsites', 10, 3 );
