@@ -1,72 +1,48 @@
 <?php 
 	global $product, $post;
+
+	// $partners = array( 'Manduvira', 'Conacado' );
+	$partners = get_partner_terms_by_product( $product );
 	
-	// Ga op zoek naar een A/B-partner om uit te lichten
-	// $partners = get_field('partners'); FUNCTIE BESTAAT NIET IN OB2C
-	$partners = array( 'Manduvira', 'Conacado' );
-	$featured_partner = 'Manduvira';
-	if ( $partners ) {
-		foreach ( $partners as $partner ) {
-			$categories = get_the_terms( $partner->ID, 'partner_cat' );
-			if ( $categories ) {
-				// Zoek de eerste de beste A-partner (randomisatie + voorrang aan ontwikkelingspartners nog toe te voegen)
-				foreach ( $categories as $category ) {
-					if ( $category->slug === 'a' and 'publish' === get_post_status( $partner->ID ) ) {
-						$featured_partner = $partner;
-						break;
-					}
-				}
-				if ( $featured_partner === false ) {
-					// Als we nog geen resultaat hebben: probeer het opnieuw met de B-partners
-					foreach ( $categories as $category ) {
-						if ( $category->slug === 'b' and 'publish' === get_post_status( $partner->ID ) ) {
-							$featured_partner = $partner;
-							break;
-						}
-					}
-				}
+	if ( count( $partners ) > 0 ) {
+		$partners_with_quote = array();
+		foreach ( $partners as $term_id => $partner_name ) {
+			$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
+			if ( isset( $partner_info['quote'] ) and strlen( $partner_info['quote'] ) > 5 ) {
+				$partners_with_quote[] = $partner_info;
 			}
-		}
-	}
 
-	function output_provenance_info( $partners ) {
-		global $product, $post;
-		echo '<div class="product-provenance">';
-
-		if ( $partners !== false ) {
-
-			echo '<h3>' . _n( 'Producent', 'Producenten', count($partners) ) . '</h3>';
-			echo '<p class="partners">';
-			foreach ( $partners as $post ) {
-				// Variabele MOET $post heten! 
-				setup_postdata($post);
-				$countries = get_the_term_list( $post->ID, 'partner_country' );
-				// Alle gepubliceerde partners mogen gelinkt worden!
-				// Eventueel check toevoegen op waarde van '_link_to' (= externe site in nieuw tabblad openen)
-				if ( 'publish' === get_post_status( $post->ID ) ) {
-					echo '<a href="'.get_the_permalink().'">'.get_the_title().'</a>';
-				} else {
-					echo get_the_title();
-				}
-				echo ' ('.strip_tags($countries).')<br/>';
-			}
-			wp_reset_postdata();
-			echo '</p>';
-
-		} elseif ( $product->get_attribute('herkomst') !== '' ) {
-
-			echo '<h3>Herkomst</h3>';
-			echo '<ul>';
-			// Indien een product geen partners heeft, tonen we gewoon de landen
-			$countries = explode( ', ', $product->get_attribute('herkomst') );
-			foreach( $countries as $country ) {
-				echo '<li>'.$country.'</li>';
-			}
-			echo '</ul>';
-
+			// Nieuwe manier van werken: ga op zoek naar een A/B-partner om uit te lichten (veld toe te voegen aan API)
+			// $categories = get_the_terms( $partner->ID, 'partner_cat' );
+			// if ( $categories ) {
+			// 	// Zoek de eerste de beste A-partner (randomisatie + voorrang aan ontwikkelingspartners nog toe te voegen)
+			// 	foreach ( $categories as $category ) {
+			// 		if ( $category->slug === 'a' and 'publish' === get_post_status( $partner->ID ) ) {
+			// 			$featured_partner = $partner;
+			// 			break;
+			// 		}
+			// 	}
+			// 	if ( $featured_partner === false ) {
+			// 		// Als we nog geen resultaat hebben: probeer het opnieuw met de B-partners
+			// 		foreach ( $categories as $category ) {
+			// 			if ( $category->slug === 'b' and 'publish' === get_post_status( $partner->ID ) ) {
+			// 				$featured_partner = $partner;
+			// 				break;
+			// 			}
+			// 		}
+			// 	}
+			// }
 		}
 
-		echo '</div>';
+		// var_dump_pre( $partners_with_quote );
+		
+		// Toon een random quote
+		if ( count( $partners_with_quote ) > 0 ) {
+			$i = random_int( 0, count($partners_with_quote) - 1 );
+			$featured_partner = $partners_with_quote[$i];
+		} else {
+			$featured_partner = get_info_by_partner( get_term_by( 'slug', 'manduvira', 'product_partner' ) );
+		}
 	}
 
 	// Definitie van labels en verplichte voedingswaarden
@@ -87,23 +63,6 @@
 	);
 	$food_required_keys = array( '_fat', '_fasat', '_choavl', '_sugar', '_pro', '_salteq' );
 	$food_secondary_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
-
-	// Functie om de passende legende op te halen bij een ingrediëntenlijst, te verhuizen naar functions.php
-	function get_ingredients_legend( $ingredients ) {
-		$legend = array();
-		if ( ! empty( $ingredients ) ) {
-			if ( strpos( $ingredients, '*' ) !== false ) {
-				$legend[] = '* ingrediënt uit een eerlijke handelsrelatie';
-			}
-			if ( strpos( $ingredients, '°' ) !== false ) {
-				$legend[] = '° ingrediënt van biologische landbouw';
-			}
-			if ( strpos( $ingredients, '†' ) !== false ) {
-				$legend[] = '† ingrediënt verkregen in de periode van omschakeling naar biologische landbouw';
-			}
-		}
-		return $legend;
-	}
 
 	// Check of het product nog niet gecached werd
 	if ( false === ( $oft_quality_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
@@ -131,6 +90,22 @@
 				set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
 			}
 		}
+	}
+
+	function get_ingredients_legend( $ingredients ) {
+		$legend = array();
+		if ( ! empty( $ingredients ) ) {
+			if ( strpos( $ingredients, '*' ) !== false ) {
+				$legend[] = '* ingrediënt uit een eerlijke handelsrelatie';
+			}
+			if ( strpos( $ingredients, '°' ) !== false ) {
+				$legend[] = '° ingrediënt van biologische landbouw';
+			}
+			if ( strpos( $ingredients, '†' ) !== false ) {
+				$legend[] = '† ingrediënt verkregen in de periode van omschakeling naar biologische landbouw';
+			}
+		}
+		return $legend;
 	}
 
 	function output_food_values( $oft_quality_data, $food_api_labels, $food_required_keys, $title_tag = 'h4' ) {
@@ -189,6 +164,46 @@
 			<?php
 		}
 	}
+
+	function output_provenance_info( $partners ) {
+		global $product, $post;
+		echo '<div class="product-provenance">';
+
+		if ( $partners !== false ) {
+
+			echo '<h3>' . _n( 'Producent', 'Producenten', count($partners) ) . '</h3>';
+			echo '<p class="partners">';
+			foreach ( $partners as $post ) {
+				// Variabele MOET $post heten! 
+				setup_postdata($post);
+				$countries = get_the_term_list( $post->ID, 'partner_country' );
+				// Alle gepubliceerde partners mogen gelinkt worden!
+				// Eventueel check toevoegen op waarde van '_link_to' (= externe site in nieuw tabblad openen)
+				if ( 'publish' === get_post_status( $post->ID ) ) {
+					echo '<a href="'.get_the_permalink().'">'.get_the_title().'</a>';
+				} else {
+					echo get_the_title();
+				}
+				echo ' ('.strip_tags($countries).')<br/>';
+			}
+			wp_reset_postdata();
+			echo '</p>';
+
+		} elseif ( $product->get_attribute('herkomst') !== '' ) {
+
+			echo '<h3>Herkomst</h3>';
+			echo '<ul>';
+			// Indien een product geen partners heeft, tonen we gewoon de landen
+			$countries = explode( ', ', $product->get_attribute('herkomst') );
+			foreach( $countries as $country ) {
+				echo '<li>'.$country.'</li>';
+			}
+			echo '</ul>';
+
+		}
+
+		echo '</div>';
+	}
 ?>
 
 <div class="full-width-container">
@@ -196,37 +211,34 @@
 		<div class="col-row">
 			<div class="col-md-8 col-md-push-4 partner-info">
 				<?php
-					if ( $featured_partner ) {
+					if ( $featured_partner !== false ) {
 
-						// Variabele MOET $post heten! 
-						$post = $featured_partner;
-						setup_postdata($post);
 						?>
-						<h3>Producent in de kijker: <span style="font-weight: normal;"><?php the_title(); ?></span></h3>
+						<h3>Producent in de kijker: <span style="font-weight: normal;"><?php echo $featured_partner['name']; ?></span></h3>
 						<div class="featured-partner">
 							<div class="col-row">
 								<div class="col-md-7">
-									<?php the_post_thumbnail('post-thumbnail'); ?>
-									<!-- FUNCTIE BESTAAT NIET IN OB2C -->
-									<?php // the_field('short_text'); ?>
-									<p>Dit is een korte beschrijving van de partner. Wie, wat, waar en waarom? Je komt het allemaal te weten. Of toch bijna.</p>
-									<p><a href="<?php the_permalink(); ?>">Maak kennis met <?php the_title(); ?></a></p>
+									<!-- Op dit ogenblik krijgen we enkel een kleine thumbnail van 100x100 door via de API -->
+									<!-- Pas voorlopig een vuile truc toe om het origineel uit de OWW-site in te laden -->
+									<img src="<?php echo str_replace( '-100x100.jpg', '.jpg', $featured_partner['quote_photo'] ); ?>">
+									<ul>
+										<li>Dit is een korte beschrijving van de partner</li>
+										<li>Lekker beknopt, in 3 bullet points</li>
+										<li>Nog toe te voegen aan API</li>
+									</ul>
+									<p><a href="<?php echo $featured_partner['url']; ?>">Maak kennis met <?php echo $featured_partner['name']; ?></a></p>
 								</div>
 								<div class="col-md-5">
-									<!-- FUNCTIE BESTAAT NIET IN OB2C -->
-									<?php if ( 1 === 0 and get_field('quote_text') ) : ?>
-										<blockquote>
-											&#8220;<?php the_field('quote_text'); ?>&#8221;
-											<?php if ( get_field('quote_name') ) : ?>
-												<footer><?php the_field('quote_name'); ?></footer>
-											<?php endif; ?>
-										</blockquote>
-									<?php endif; ?>
+									<blockquote>
+										&#8220;<?php echo $featured_partner['quote']; ?>&#8221;
+										<?php if ( array_key_exists( 'quote_by', $featured_partner ) ) : ?>
+											<footer><?php echo $featured_partner['quote_by']; ?></footer>
+										<?php endif; ?>
+									</blockquote>
 								</div>
 							</div>
 						</div>
 						<?php
-						wp_reset_postdata();
 
 					} else {
 
