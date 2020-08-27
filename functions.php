@@ -4735,8 +4735,8 @@
 		return $args;
 	}
 
-	// Registreer een extra tabje op de productdetailpagina voor de voedingswaardes
-	add_filter( 'woocommerce_product_tabs', 'add_extra_product_tabs' );
+	// Registreer een extra tabje op de productdetailpagina voor de voedingswaardes DEPRECATED
+	// add_filter( 'woocommerce_product_tabs', 'add_extra_product_tabs' );
 	
 	function add_extra_product_tabs( $tabs ) {
 		global $product;
@@ -4777,43 +4777,7 @@
 		return $tabs;
 	}
 
-	// Lijst van alle keys en labels die op het voedingstabblad kunnen verschijnen en via WC API extern opgehaald worden
-	$food_api_labels = array(
-		'_ingredients' => 'Ingrediënten',
-		'_energy' => 'Energie',
-		'_fat' => 'Vetten',
-		'_fasat' => 'waarvan verzadigde vetzuren',
-		'_famscis' => 'waarvan enkelvoudig onverzadigde vetzuren',
-		'_fapucis' => 'waarvan meervoudig onverzadigde vetzuren',
-		'_choavl' => 'Koolhydraten',
-		'_sugar' => 'waarvan suikers',
-		'_polyl' => 'waarvan polyolen',
-		'_starch' => 'waarvan zetmeel',
-		'_fibtg' => 'Vezels',
-		'_pro' => 'Eiwitten',
-		'_salteq' => 'Zout',
-	);
-	$food_required_keys = array( '_fat', '_fasat', '_choavl', '_sugar', '_pro', '_salteq' );
-	$food_secondary_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
-
-	// Haal de legende op die bij een gegeven ingrediëntenlijst hoort
-	function get_ingredients_legend( $ingredients ) {
-		$legend = array();
-		if ( ! empty( $ingredients ) ) {
-			if ( strpos( $ingredients, '*' ) !== false ) {
-				$legend[] = '* '.__( 'ingrediënt uit een eerlijke handelsrelatie', 'oxfam-webshop' );
-			}
-			if ( strpos( $ingredients, '°' ) !== false ) {
-				$legend[] = '° '.__( 'ingrediënt van biologische landbouw', 'oxfam-webshop' );
-			}
-			if ( strpos( $ingredients, '†' ) !== false ) {
-				$legend[] = '† '.__( 'ingrediënt verkregen in de periode van omschakeling naar biologische landbouw', 'oxfam-webshop' );
-			}
-		}
-		return $legend;
-	}
-
-	// Retourneer de gegevens voor een custom tab (antwoordt met FALSE indien geen gegevens beschikbaar)
+	// Retourneer de gegevens voor een custom tab (antwoordt met FALSE indien geen gegevens beschikbaar) DEPRECATED
 	function get_tab_content( $type ) {
 		global $product;
 		$has_row = false;
@@ -6280,7 +6244,7 @@
 			return get_stylesheet_directory_uri().'/logo/'.get_option('oxfam_shop_node').'.png';
 		} else {
 			// Fallback
-			return get_stylesheet_directory_uri().'/images/oww-logo.svg';
+			return get_stylesheet_directory_uri().'/images/logo-green.svg';
 		}
 	}
 

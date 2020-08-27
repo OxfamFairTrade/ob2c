@@ -79,7 +79,7 @@
 		});
 
 		var wto;
-		jQuery('#oxfam-zip-user').on( 'input change', function() {
+		jQuery('#oxfam-zip-userDISABLE').on( 'input change', function() {
 			clearTimeout(wto);
 			var zip = jQuery(this).val();
 			var button = jQuery('#do_oxfam_redirect');
@@ -97,7 +97,7 @@
 			}
 		});
 		
-		jQuery('#oxfam-zip-user').keyup( function(event) {
+		jQuery('#oxfam-zip-userDISABLE').keyup( function(event) {
 			if ( event.which == 13 ) {
 				jQuery('#do_oxfam_redirect').trigger('click');
 			}
