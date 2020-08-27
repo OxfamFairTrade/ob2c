@@ -381,14 +381,16 @@
 	}
 
 	// Voeg klasse toe indien recent product
-	// MIGREER NAAR add_filter( 'woocommerce_post_class', $classes, $product ) VANAF WC 3.6+
-	add_filter( 'post_class', 'add_recent_product_class', 1000, 1 );
+	add_filter( 'woocommerce_post_class', 'add_recent_product_class', 1000, 2 );
 
-	function add_recent_product_class( $classes ) {
-		global $post;
-		
-		if ( get_the_date( 'Y-m-d', $post->ID ) > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
+	function add_recent_product_class( $classes, $product ) {
+		if ( $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
 			$classes[] = 'newbee';
+		}
+
+		// Zal nog vervangen worden door een taxonomie i.p.v. attribuut
+		if ( $product->get_attribute('bio') === 'Ja' ) {
+			$classes[] = 'organic';
 		}
 
 		if ( does_risky_delivery() ) {
@@ -399,30 +401,26 @@
 		}
 
 		// Label producten met 1+1 / 2de -50% / 3+1 / -25% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
-		// Zou eventueel ook in template sale-flash.php kunnen, maar dit is - ondanks de omweg via product-ID - toch handiger
-		$one_plus_one_products = array( '24531', '24302', '24547', '25310', '21003', '21011', '25010', '26014' );
-		foreach ( $one_plus_one_products as $sku ) {
-			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
-				$classes[] = 'one-plus-one';
-			}	
+		// Zou eventueel ook in template sale-flash.php kunnen maar dit is handiger
+		$one_plus_one_products = array();
+		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
+			$classes[] = 'one-plus-one';
 		}
-		$fifty_percent_off_second_products = array( '20070', '20076', '25727', '27997' );
-		foreach ( $fifty_percent_off_second_products as $sku ) {
-			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
-				$classes[] = 'fifty-percent-off';
-			}
+		$fifty_percent_off_second_products = array( '21052', '24532', '25404', '25405', '25406', '27151' );
+		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
+			$classes[] = 'fifty-percent-off';
 		}
-		$three_plus_one_products = array( '20808', '20810', '20812', '21108' );
-		foreach ( $three_plus_one_products as $sku ) {
-			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
-				$classes[] = 'three-plus-one';
-			}
+		$two_plus_one_products = array( '24102', '24117' );
+		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
+			$classes[] = 'two-plus-one';
 		}
-		$twentyfive_percent_off_products = array( '20807', '20809', '20811' );
-		foreach ( $twentyfive_percent_off_products as $sku ) {
-			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
-				$classes[] = 'twenty-five-percent-off';
-			}
+		$three_plus_one_products = array();
+		if ( in_array( $product->get_sku(), $three_plus_one_products ) ) {
+			$classes[] = 'three-plus-one';
+		}
+		$twentyfive_percent_off_products = array();
+		if ( in_array( $product->get_sku(), $twentyfive_percent_off_products ) ) {
+			$classes[] = 'twenty-five-percent-off';
 		}
 		
 		return $classes;
@@ -4644,38 +4642,6 @@
 		return true;
 	}
 
-	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
-	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-breekbaar
-	add_action( 'woocommerce_single_product_summary', 'show_delivery_warning', 45 );
-
-	function show_delivery_warning() {
-		global $product;
-		$output = '';
-		$cat_ids = $product->get_category_ids();
-		if ( count( $cat_ids ) > 0 ) {
-			$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
-			
-			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
-				// <img src="'.get_stylesheet_directory_uri().'/images/nix18.svg" class="alcohol-warning" style="max-width: 150px; float: right; margin: 0 0 10px 10px;">
-				$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
-			}
-
-			if ( ! is_b2b_customer() and ! does_risky_delivery() and $product->get_shipping_class() === 'breekbaar' ) {
-				$output .= 'Opgelet: dit product kan enkel afgehaald worden in de winkel! ';
-				if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' ) {
-					$output .= 'Tip: losse bierflesjes zijn wel beschikbaar voor thuislevering.';
-				}
-				if ( get_term( $parent_id, 'product_cat' )->slug === 'fruitsap' ) {
-					$output .= 'Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.';
-				}
-			}
-		}
-
-		if ( $output !== '' ) {
-			echo '<p style="margin: 1em 0;">'.$output.'</p>';
-		}
-	}
-
 	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan
 	add_action( 'init', 'register_partner_taxonomy', 0 );
 	
@@ -5133,6 +5099,38 @@
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
 	// add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 100 );
 	
+	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
+	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-breekbaar
+	add_action( 'woocommerce_single_product_summary', 'show_delivery_warning', 9 );
+
+	function show_delivery_warning() {
+		global $product;
+		$output = '';
+		$cat_ids = $product->get_category_ids();
+		if ( count( $cat_ids ) > 0 ) {
+			$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
+			
+			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
+				// <img src="'.get_stylesheet_directory_uri().'/images/nix18.svg" class="alcohol-warning" style="max-width: 150px; float: right; margin: 0 0 10px 10px;">
+				$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
+			}
+
+			if ( ! is_b2b_customer() and ! does_risky_delivery() and $product->get_shipping_class() === 'breekbaar' ) {
+				$output .= 'Opgelet: dit product kan enkel afgehaald worden in de winkel! ';
+				if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' ) {
+					$output .= 'Tip: losse bierflesjes zijn wel beschikbaar voor thuislevering.';
+				}
+				if ( get_term( $parent_id, 'product_cat' )->slug === 'fruitsap' ) {
+					$output .= 'Tip: tetrabrikken en kleine sapflesjes zijn wel beschikbaar voor thuislevering.';
+				}
+			}
+		}
+
+		if ( $output !== '' ) {
+			echo '<p class="wettelijke-info">'.$output.'</p>';
+		}
+	}
+
 	// Herkomstlanden en promoties net boven de winkelmandknop tonen
 	add_action( 'woocommerce_single_product_summary', 'show_active_promos', 7 );
 
@@ -5142,14 +5140,7 @@
 			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
 			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
 				echo '<p class="promotie">';
-					// Check of de noussines voor de koffieactie wel op voorraad zijn
-					$product_id = wc_get_product_id_by_sku('24501');
-					$noussines = wc_get_product( $product_id );
-					if ( date_i18n('Y-m-d') < '2020-02-16' and $noussines !== false and ! $noussines->is_in_stock() ) {
-						echo 'De koffieactie is momenteel helaas niet beschikbaar omdat onze voorraad noussines uitgeput is.';
-					} else {
-						echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'. Niet van toepassing bij verkoop op factuur.';
-					}
+					echo $product->get_meta('promo_text').' <a href="#" class="read-more">Voorwaarden</a><span class="hidden">Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'. Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur.</span>';
 				echo '</p>';
 			}
 		}
