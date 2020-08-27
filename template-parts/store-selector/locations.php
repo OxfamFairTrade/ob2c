@@ -25,9 +25,8 @@
 	}
 ?>
 
-<div class="store-selector" style="display: none; position: fixed; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(200,200,200,0.9);">
+<div class="store-selector-modal" style="display: none; position: fixed; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(200,200,200,0.9);">
 	<div class="store-selector-inner">
-		<?php var_dump_pre( $current_store ); ?>
 		<h2>Selecteer jouw Oxfam-winkel</h2>
 		<p>Vul de postcode in waar jij de producten wil <b>afhalen</b> of waar ze <b>geleverd</b> moeten worden. Je bestelling wordt opgevolgd door de vrijwilligers van een Oxfam-Wereldwinkel in jouw buurt.</p>
 		<span class="store-selector-zipcode">
@@ -35,9 +34,16 @@
 			<button type="submit" class="" id="do_oxfam_redirect" disabled></button>
 			<?php echo $options; ?>
 		</span>
+		<?php
+			// Winkels zitten enkel op het hoofdniveau, werkt anders niet in subsites!
+			switch_to_blog(1);
+			echo do_shortcode('[wpsl template="no_map"]');
+			restore_current_blog();
+		?>
 		<div class="store-selector-results">
 			<!-- Default content, in afwachting van ingeven postcode -->
 			<p>Laatst gezocht: 9000 Gent</p>
+			<?php var_dump_pre( $current_store ); ?>
 			<ul class="benefits">
 				<li>Gratis verzending vanaf 50 euro</li>
 				<li>Wij kopen rechtreeks bij kwetsbare producenten, met oog voor ecologische duurzaamheid</li>
@@ -68,6 +74,10 @@
 
 <script type="text/javascript">
 	jQuery(document).ready( function() {
+		jQuery('#open-store-selector').on( 'click', function() {
+			jQuery('.store-selector-modal').toggle();
+		});
+
 		var wto;
 		jQuery('#oxfam-zip-user').on( 'input change', function() {
 			clearTimeout(wto);

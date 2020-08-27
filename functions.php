@@ -116,11 +116,10 @@
 	add_action( 'init', 'force_user_login' );
 	
 	function force_user_login() {
-		$url = get_current_url();
-
 		// Demosite tijdelijk openstellen: or get_current_site()->domain !== 'shop.oxfamwereldwinkels.be'
 		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
 			if ( ! is_user_logged_in() ) {
+				$url = get_current_url();
 				// Nooit redirecten: inlog-, reset-, activatiepagina en WC API calls
 				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wc_lostpassword_url() ) and ! strpos( $url, 'activate.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					// Stuur gebruiker na inloggen terug naar huidige pagina
@@ -473,69 +472,49 @@
 
 	// Laad onze custom markers (zowel in front-end als back-end)
 	define( 'WPSL_MARKER_URI', dirname( get_bloginfo('stylesheet_url') ).'/markers/' );
-	add_filter( 'wpsl_admin_marker_dir', 'custom_admin_marker_dir' );
+	add_filter( 'wpsl_admin_marker_dir', 'wpsl_admin_marker_dir' );
+	add_filter( 'wpsl_js_settings', 'wpsl_hide_start_marker' );
 
-	function custom_admin_marker_dir() {
-		$admin_marker_dir = get_stylesheet_directory().'/markers/';
-		return $admin_marker_dir;
+	function wpsl_admin_marker_dir() {
+		return get_stylesheet_directory().'/markers/';
 	}
 
-	// Wijzig de weergave van de zoekresultaten
-	add_filter( 'wpsl_listing_template', 'custom_listing_template' );
-
-	function custom_listing_template() {
-		global $wpsl, $wpsl_settings;
-
-		$listing_template = '<li data-store-id="<%= id %>">' . "\r\n";
-		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
-		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template('listing'), 'addSku' ) . "\r\n";
-		// TO DO: Correcte link naar webshop toevoegen
-		$listing_template .= "\t\t\t\t" . '<a href="/?addSku='.$_GET['addSku'].'"><button class="button-go-to-webshop" style="float: right;">Bestel online en haal af</button></a>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %></span>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<% if ( address2 ) { %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address2 %></span>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<% } %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<span>' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
-		$listing_template .= "\t\t\t" . '</p>' . "\r\n";
-
-		// Show the phone and email data if they exist
-		if ( $wpsl_settings['show_contact_details'] ) {
-			$listing_template .= "\t\t\t" . '<p class="wpsl-contact-details">' . "\r\n";
-			$listing_template .= "\t\t\t" . '<% if ( phone ) { %>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<span><strong>' . esc_html( $wpsl->i18n->get_translation( 'phone_label', __( 'Phone', 'wpsl' ) ) ) . '</strong>: <%= formatPhoneNumber( phone ) %></span>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<% } %>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<% if ( email ) { %>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<span><strong>' . esc_html( $wpsl->i18n->get_translation( 'email_label', __( 'Email', 'wpsl' ) ) ) . '</strong>: <%= email %></span>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<% } %>' . "\r\n";
-			$listing_template .= "\t\t\t" . '</p>' . "\r\n";
-		}
-
-		$listing_template .= "\t\t\t" . wpsl_more_info_template() . "\r\n"; // Check if we need to show the 'More Info' link and info
-		$listing_template .= "\t" . '</li>';
-
-		return $listing_template;
+	function wpsl_hide_start_marker( $settings ) {
+		$settings['startMarker'] = '';
+		return $settings;
 	}
 
-	// Zet de winkels met webshop bovenaan, tot een maximum range van 30 kilometer
-	add_filter( 'wpsl_store_data', 'custom_result_sort' );
+	add_filter( 'wpsl_templates', 'wpsl_add_no_map_template' );
 
-	function custom_result_sort( $store_meta ) {
+	function wpsl_add_no_map_template( $templates ) {
+		$templates[] = array (
+			'id'   => 'no_map',
+			'name' => 'Zonder kaart',
+			'path' => get_stylesheet_directory().'/wpsl-templates/no-map.php',
+		);
+		return $templates;
+	}
+
+	// Voorbeeld van 'featured' winkels: https://wpstorelocator.co/document/create-featured-store-that-shows-up-first-in-search-results/
+	// add_filter( 'wpsl_store_data', 'wpsl_change_results_sorting' );
+
+	function wpsl_change_results_sorting( $store_meta ) {
 		$custom_sort = array();
 		foreach ( $store_meta as $key => $row ) {
-			write_log( print_r( $row, true ) );
-			$custom_sort[$key] = $row['city'];
+			// In plaats van sorteren op 'distance'
+			$custom_sort[ $key ] = $row['webshop'];
 		}
 
-		array_multisort( $custom_sort, SORT_DESC, SORT_REGULAR, $store_meta );
-
+		// Winkels zonder webshop-URL (= lege string) belanden onderaan
+		array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_meta );
+		// write_log( print_r( $store_meta, true ) );
 		return $store_meta;
 	}
 
 	// Wijzig de weergave van het infovenster
-	add_filter( 'wpsl_info_window_template', 'custom_info_window_template' );
+	// add_filter( 'wpsl_info_window_template', 'wpsl_customize_info_window' );
 
-	function custom_info_window_template() { 
+	function wpsl_customize_info_window() { 
 		$info_window_template = '<div data-store-id="<%= id %>" class="wpsl-info-window">' . "\r\n";
 		$info_window_template .= "\t\t" . '<p>' . "\r\n";
 		$info_window_template .= "\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template(), 'addSku' ) . "\r\n";  
@@ -552,42 +531,31 @@
 		return $info_window_template;
 	}
 
-	// Voeg post-ID toe als extra metadata op winkel
-	add_filter( 'wpsl_meta_box_fields', 'custom_meta_box_fields' );
+	// Voeg o.a. post-ID toe als extra metadata op winkel
+	add_filter( 'wpsl_meta_box_fields', 'wpsl_add_meta_box_fields' );
 
-	function custom_meta_box_fields( $meta_fields ) {
-		$meta_fields[__( 'Additional Information', 'wpsl' )] = array(
-			'phone' => array(
-				'label' => 'Telefoon'
-			),
-			'email' => array(
-				'label' => 'E-mail'
-			),
-			'url' => array(
-				'label' => 'Webshop-URL'
-			),
-			'oxfam_shop_post_id' => array(
-				'label' => 'Post-ID in OWW-site'
-			),
-			'alternate_marker_url' => array(
-            	'label' => 'Afwijkende marker (indien enkel afhaling)'
-        	)
+	function wpsl_add_meta_box_fields( $meta_fields ) {
+		$meta_fields[ __( 'Additional Information', 'wpsl' ) ] = array(
+			'phone' => array( 'label' => 'Telefoon' ),
+			'email' => array( 'label' => 'E-mail' ),
+			'url' => array( 'label' => 'Winkelpagina' ),
+			'oxfam_shop_post_id' => array( 'label' => 'Post-ID in OWW-site' ),
+			'webshop' => array( 'label' => 'Webshop-URL' ),
 		);
 
 		return $meta_fields;
 	}
 
 	// Geef de extra metadata mee in de JSON-response
-	add_filter( 'wpsl_frontend_meta_fields', 'custom_frontend_meta_fields' );
+	add_filter( 'wpsl_frontend_meta_fields', 'wpsl_add_frontend_meta_fields' );
 
-	function custom_frontend_meta_fields( $store_fields ) {
+	function wpsl_add_frontend_meta_fields( $store_fields ) {
 		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
-		$store_fields['wpsl_alternate_marker_url'] = array( 'name' => 'alternateMarkerUrl' );
+		$store_fields['wpsl_webshop'] = array( 'name' => 'webshop' );
 		return $store_fields;
 	}
 
 	function append_get_parameter_to_href( $str, $get_param ) {
-		write_log($str);
 		if ( isset( $_GET[$get_param] ) ) {
 			// Check inbouwen op reeds aanwezige parameters in $2-fragment? 
 			$str = preg_replace( '/<a(.*)href="([^"]*)"(.*)>/','<a$1href="$2?'.$get_param.'='.$_GET[$get_param].'"$3>', $str );
@@ -3258,7 +3226,7 @@
 		return $hours;
 	}
 
-	// Stop de uitzonderlijke sluitingsdagen in een array 
+	// Stop de uitzonderlijke sluitingsdagen in een array
 	function get_closing_days( $shop_post_id = 0 ) {
 		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
 		

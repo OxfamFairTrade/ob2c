@@ -15,7 +15,7 @@
 				'posts_per_page' => -1,
 			);
 
-			$trashers = new WP_Query($all_store_args);
+			$trashers = new WP_Query( $all_store_args );
 		
 			if ( $trashers->have_posts() ) {
 				while ( $trashers->have_posts() ) {
@@ -29,128 +29,127 @@
 			global $wpdb;
 			$wpdb->query( "DELETE FROM `$wpdb->sitemeta` WHERE `meta_key` LIKE ('%_store_data')" );
 
-			// Sluit afgeschermde en gearchiveerde webshops uit
-			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
 			
+
+			// Sluit afgeschermde en gearchiveerde webshops uit
+			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
+
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
-					
-					// Sluit hoofdsite uit
-					if ( ! is_main_site() ) {
-						// Maak de lokale kaart aan met alle deelnemende winkelpunten, inclusief externen
-						if ( $locations = get_option( 'woocommerce_pickup_locations' ) ) {
-							$local_file = fopen("../../maps/site-".$site->blog_id.".kml", "w");
-							$txt = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
-							// Icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin
-							$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
-							
-							foreach ( $locations as $location ) {
-								$shop_post_id = intval( get_option('oxfam_shop_post_id') );
-								$parts = explode( 'id=', $location['note'] );
-								if ( isset( $parts[1] ) ) {
-									$custom_shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
-									if ( $custom_shop_post_id > 0 ) {
-										$shop_post_id = $custom_shop_post_id;
-									}
-								}
 
-								// Want get_company_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
-								if ( $shop_post_id > 0 ) {
-									$txt .= "<Placemark>";
-									$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
-									$txt .= "<styleUrl>#pickup</styleUrl>";
-									$oww_store_data = get_external_wpsl_store( $shop_post_id );
-									$txt .= "<description><![CDATA[<p>".get_company_address( $shop_post_id )."</p><p><a href=".$oww_store_data['link']." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
-									$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', 0, false, $shop_post_id )."</coordinates></Point>";
-									$txt .= "</Placemark>";
+				// MAAK EEN HANDIGE LIJST MET ALLE SHOP-ID's EN HUN BIJBEHORENDE BLOG-ID
+				// AANMAAK VAN KAARTEN NIET LANGER NODIG?
+
+				if ( ! is_main_site() ) {
+					// Maak de lokale kaart aan met alle deelnemende winkelpunten, inclusief externen
+					if ( $locations = get_option('woocommerce_pickup_locations') ) {
+						$local_file = fopen("../../maps/site-".$site->blog_id.".kml", "w");
+						$txt = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
+						// Icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin
+						$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
+						
+						foreach ( $locations as $location ) {
+							$shop_post_id = intval( get_option('oxfam_shop_post_id') );
+							$parts = explode( 'id=', $location['address_1'] );
+							if ( isset( $parts[1] ) ) {
+								$custom_shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
+								if ( $custom_shop_post_id > 0 ) {
+									$shop_post_id = $custom_shop_post_id;
 								}
 							}
 
-							$txt .= "</Document></kml>";
-							fwrite($local_file, $txt);
-							fclose($local_file);
+							// Want get_company_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
+							if ( $shop_post_id > 0 ) {
+								$txt .= "<Placemark>";
+								$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
+								$txt .= "<styleUrl>#pickup</styleUrl>";
+								$oww_store_data = get_external_wpsl_store( $shop_post_id );
+								$txt .= "<description><![CDATA[<p>".get_company_address( $shop_post_id )."</p><p><a href=".$oww_store_data['link']." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
+								$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', 0, false, $shop_post_id )."</coordinates></Point>";
+								$txt .= "</Placemark>";
+							}
 						}
 
-						// Vraag de bestaande winkel op
-						$post_args = array(
-							'post_type'	=> 'wpsl_stores',
-							'post_status' => 'trash',
-							'posts_per_page' => 1,
-							'meta_key' => 'wpsl_oxfam_shop_post_id',
-							'meta_value' => get_option('oxfam_shop_post_id'),
-						);
-
-						// Zoek op de hoofdsite de zonet verwijderde WP Store op die past bij de OWW-node
-						switch_to_blog(1);
-						$stores = new WP_Query( $post_args );
-						switch_to_blog( $site->blog_id );
-
-						if ( $stores->have_posts() ) {
-							$stores->the_post();
-							$store_id = get_the_ID();
-							wp_reset_postdata();
-						} else {
-							// Maak nieuwe store aan door de ID op 0 te zetten
-							$store_id = 0;
-						}
-						
-						$ll = explode( ',', get_oxfam_shop_data('ll') );
-						$store_args = array(
-							'ID' =>	$store_id,
-							'post_title' => get_company_name(),
-							'post_status' => 'publish',
-							'post_author' => 1,
-							'post_type' => 'wpsl_stores',
-							'meta_input' => array(
-								'wpsl_oxfam_shop_post_id' => get_option('oxfam_shop_post_id'),
-								'wpsl_address' => get_oxfam_shop_data('place'),
-								'wpsl_city' => get_oxfam_shop_data('city'),
-								'wpsl_zip' => get_oxfam_shop_data('zipcode'),
-								'wpsl_country' => 'België',
-								'wpsl_lat' => $ll[1],
-								'wpsl_lng' => $ll[0],
-								'wpsl_url' => get_site_url().'/',
-								'wpsl_email' => get_company_email(),
-								'wpsl_phone' => get_oxfam_shop_data('telephone'),
-							),
-						);
-
-						if ( get_closing_days() !== false ) {
-							// Neem de ingestelde sluitingsdagen over uit de OWW-site
-							update_option( 'oxfam_holidays', get_closing_days() );
-						} else {
-							// Zorg dat we geen lege array achterlaten die de default waardes blokkeert
-							delete_option('oxfam_holidays');
-						}
-
-						if ( does_home_delivery() ) {
-							$home_delivery = true;
-							$store_args['meta_input']['wpsl_alternate_marker_url'] = '';
-						} else {
-							$home_delivery = false;
-							// Alternatieve marker indien enkel afhaling
-							$store_args['meta_input']['wpsl_alternate_marker_url'] = get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png';
-							// LEGENDE ONTBREEKT, OVERRULE OPNIEUW DOOR DEFAULT
-							$store_args['meta_input']['wpsl_alternate_marker_url'] = '';
-						}
-
-						// Maak aan op hoofdsite
-						switch_to_blog(1);
-						$result = wp_insert_post( $store_args );
-						// Winkelcategorie op deze manier instellen, 'tax_input'-argument bij wp_insert_post() werkt niet
-						wp_set_object_terms( $result, 'afhaling', 'wpsl_store_category', false );
-						if ( $home_delivery ) {
-							// Tweede categorie instellen indien niet enkel afhaling
-							wp_set_object_terms( $result, 'levering', 'wpsl_store_category', true );
-						}
-						switch_to_blog( $site->blog_id );
+						$txt .= "</Document></kml>";
+						fwrite($local_file, $txt);
+						fclose($local_file);
 					}
+				}
 					
 				restore_current_blog();
 			}
 
-			write_log("Kaarten bijgewerkt voor ".( count($sites) - 1 )." webshops!");
-			echo "The end";
+			
+
+			// Vraag alle huidige winkels in de OWW-site op
+			$oww_stores = get_external_wpsl_stores();
+
+			foreach ( $oww_stores as $oww_store_data ) {
+				// Zoek op de hoofdsite de zonet verwijderde WP Store op die past bij de post-ID
+				$post_args = array(
+					'post_type'	=> 'wpsl_stores',
+					'post_status' => 'trash',
+					'posts_per_page' => 1,
+					'meta_key' => 'wpsl_oxfam_shop_post_id',
+					'meta_value' => $oww_store_data['id'],
+				);
+				$wpsl_stores = new WP_Query( $post_args );
+				
+				if ( $wpsl_stores->have_posts() ) {
+					$wpsl_stores->the_post();
+					$wpsl_store_id = get_the_ID();
+					wp_reset_postdata();
+				} else {
+					// Maak nieuwe store aan door de ID op 0 te zetten
+					$wpsl_store_id = 0;
+				}
+
+				$ll = explode( ',', $oww_store_data['location']['ll'] );
+				$store_args = array(
+					'ID' =>	$wpsl_store_id,
+					'post_title' => $oww_store_data['title']['rendered'],
+					'post_status' => 'publish',
+					'post_author' => 1,
+					'post_type' => 'wpsl_stores',
+					'meta_input' => array(
+						'wpsl_oxfam_shop_post_id' => $oww_store_data['id'],
+						'wpsl_address' => $oww_store_data['location']['place'],
+						'wpsl_city' => $oww_store_data['location']['city'],
+						'wpsl_zip' => $oww_store_data['location']['zipcode'],
+						'wpsl_country' => 'België',
+						'wpsl_lat' => $ll[1],
+						'wpsl_lng' => $ll[0],
+						'wpsl_phone' => $oww_store_data['telephone'],
+						'wpsl_url' => $oww_store_data['link'],
+						// DIT MOET UIT DE LIJST MET SITES KOMEN (DATA IN OWW-SITE KAN VERVUILD ZIJN)
+						'wpsl_webshop' => get_site_url().'/',
+						// Neem bewust het algemene mailadres (ook voor webshopwinkels)
+						'wpsl_email' => $oww_store_data['mail'],
+						// Openingsuren toch internaliseren?
+						'wpsl_hours' => $oww_store_data['opening_hours'],
+					),
+				);
+
+				if ( count( $oww_store_data['closing_days'] ) > 0 ) {
+					// Neem de ingestelde sluitingsdagen over uit de OWW-site
+					update_option( 'oxfam_holidays', $oww_store_data['closing_days'] );
+				} else {
+					// Verwijder de optie zodat we géén lege array achterlaten die de default waardes blokkeert
+					delete_option('oxfam_holidays');
+				}
+
+				// Dit veroorzaakt elke dag een nieuwe '_wp_old_date'-entry ...
+				$result = wp_insert_post( $store_args );
+				
+				// Winkelcategorie op deze manier instellen, 'tax_input'-argument bij wp_insert_post() werkt niet HEEFT GEEN ZIN MEER
+				wp_set_object_terms( $result, 'afhaling', 'wpsl_store_category', false );
+				if ( $home_delivery ) {
+					// Tweede categorie instellen indien niet enkel afhaling
+					wp_set_object_terms( $result, 'levering', 'wpsl_store_category', true );
+				}
+			}
+
+			echo "THE END";
 		} else {
 			die("Access prohibited!");
 		}
