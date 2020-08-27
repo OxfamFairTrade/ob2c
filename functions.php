@@ -6244,7 +6244,7 @@
 			return get_stylesheet_directory_uri().'/logo/'.get_option('oxfam_shop_node').'.png';
 		} else {
 			// Fallback
-			return get_stylesheet_directory_uri().'/images/oww-logo.svg';
+			return get_stylesheet_directory_uri().'/images/logo-green.svg';
 		}
 	}
 
