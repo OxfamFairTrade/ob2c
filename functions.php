@@ -1309,15 +1309,15 @@
 		if ( ! is_admin() ) {
 			if ( is_main_site() ) {
 				// Echte koopknoppen sowieso uitschakelen BETER REGELEN IN TEMPLATES LOOP/ADD-TO-CART.PHP EN SINGLE-PRODUCT/ADD-TO-CART/SIMPLE.PHP?
-				remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
-				remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+				// remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
+				// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 				
 				if ( $product->get_meta('_woonet_publish_to_23') !== 'yes' ) {
 					// Het product wordt niet online verkocht (o.b.v. Oostende als test case)
 					$price .= '<span class="unavailable">Niet online beschikbaar</span>';
 				} else {
 					// Toon een winkelmandknop die in de praktijk gewoon de store selector opent
-					$price .= '<a href="#" id="open-store-selector" class="add-to-cart" style="width: 30px; height: 30px; background-color: grey; float: right;"></a>';
+					// $price .= '<a href="#" id="open-store-selector" class="add-to-cart" style="width: 30px; height: 30px; background-color: grey; float: right;"></a>';
 				}
 			}
 			if ( is_b2b_customer() ) {
@@ -1418,10 +1418,6 @@
 		if ( isset( $_GET['emptyCart'] ) ) {
 			WC()->cart->empty_cart();
 		}
-		
-		// Zet korte beschrijving meer naar onder
-		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
-		add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 100 );
 	}
 
 	// Verhoog het aantal producten per winkelpagina
@@ -5126,20 +5122,22 @@
 		return $partner_info;
 	}
 
-	// Vervroeg actie zodat ze ook in de linkerkolom belandt op tablet (blijkbaar alles t.e.m. prioriteit 15)
+	// Verwijder sterren
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 5 );
+	
+	// Plaats kort beschrijving hoger (+ zodat ze ook in de linkerkolom belandt op tablet, blijkbaar alles t.e.m. prioriteit 15)
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
-	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 12 );
+	add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 8 );
+
+	// Wat is dit?
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
+	// add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 100 );
 	
 	// Herkomstlanden en promoties net boven de winkelmandknop tonen
-	add_action( 'woocommerce_single_product_summary', 'show_product_origin', 14 );
+	add_action( 'woocommerce_single_product_summary', 'show_active_promos', 7 );
 
-	function show_product_origin() {
+	function show_active_promos() {
 		global $product;
-		if ( $product->get_meta('_herkomst_nl') !== '' ) {
-			echo '<p class="herkomst">';
-				echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
-			echo '</p>';
-		}
 		if ( ! is_b2b_customer() ) {
 			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
 			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
@@ -5157,34 +5155,15 @@
 		}
 	}
 
-	// Partnerquote tonen, net onder de winkelmandknop
-	add_action( 'woocommerce_single_product_summary', 'show_random_partner_quote', 75 );
+	// Herkomstlanden net boven grijze balk tonen
+	add_action( 'woocommerce_before_extra_product_info', 'show_product_origin' );
 
-	function show_random_partner_quote() {
+	function show_product_origin() {
 		global $product;
-		$partners = get_partner_terms_by_product( $product );
-		if ( count( $partners ) > 0 ) {
-			$partners_with_quote = array();
-			// Sla enkel de partners op waarvan de info een ondertekende quote bevat 
-			foreach ( $partners as $term_id => $partner_name ) {
-				$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-				if ( isset( $partner_info['quote'] ) and strlen( $partner_info['quote'] ) > 5 ) {
-					$partners_with_quote[] = $partner_info;
-				}
-			}
-			// Toon een random quote
-			if ( count( $partners_with_quote ) > 0 ) {
-				$i = random_int( 0, count($partners_with_quote) - 1 );
-				if ( isset( $partner_info['quote_by'] ) and strlen( $partner_info['quote_by'] ) > 5 ) {
-					$signature = $partners_with_quote[$i]['quote_by'];
-				} else {
-					$signature = $partners_with_quote[$i]['name'].', '.$partners_with_quote[$i]['country'];
-				}
-				// SHORTCODE BESTAAT NIET MEER, TE VERVANGEN
-				if ( function_exists('nm_shortcode_nm_testimonial') ) {
-					echo nm_shortcode_nm_testimonial( array( 'signature' => $signature, 'image_url' => $partners_with_quote[$i]['quote_photo'], 'link' => $partners_with_quote[$i]['url'] ), $partners_with_quote[$i]['quote'] );
-				}
-			}
+		if ( $product->get_meta('_herkomst_nl') !== '' ) {
+			echo '<p class="herkomst">';
+				echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
+			echo '</p>';
 		}
 	}
 
