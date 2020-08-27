@@ -690,7 +690,7 @@ table tbody td:last-child {
 }
 #header .nav ul li {
   display: block;
-  margin: 0 30px;
+  margin: 0 0 0 20px;
   padding: 0;
   float: left;
 }
