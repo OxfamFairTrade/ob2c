@@ -1,0 +1,119 @@
+
+
+// Products
+// --------------------------------------------------
+
+// Product detail block
+.full-width-container {
+  background: whitesmoke;
+  margin: 0 auto;
+  padding: 17px 0;
+}
+
+.product-details-block {
+  font-size: 15.3px;
+
+  h4 {
+    font-size: 15.3px;
+    margin: 0;
+  }
+
+  h3 {
+    font-size: 19.125px;
+  }
+
+  table {
+    margin-top: 0.5em;
+
+    th,
+    td {
+      border-left: none;
+      border-right: none;
+      padding-right: 0;
+    }
+
+    td:first-child {
+      padding-left: 0;
+    }
+  }
+
+  .extra-info {
+    margin-top: 30.6px;
+
+    ul {
+      margin: 0 0 7.65px 0;
+      padding-left: 2px;
+      list-style-position: inside;
+    }
+
+    .icons {
+      margin-bottom: 22.95px;
+
+      .icon {
+        display: inline-block;
+        margin-right: 0.5em;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 30.6px;
+        height: 30.6px;
+      }
+    }
+
+    .ingredients {
+      margin-bottom: 22.95px;
+
+      .legend {
+        font-style: italic;
+        /* Nodig om line-height kleiner te maken */
+        display: inline-block;
+        line-height: 15.3px;
+      }
+    }
+  }
+
+  .partner-info {
+    margin-top: 30.6px;
+
+    img {
+      height: 250px;
+      width: 100%;
+      max-width: 440px;
+      object-fit: cover;
+    }
+
+    ul {
+      margin: 15.3px 0;
+      padding-left: 2px;
+      list-style-position: inside;
+    }
+
+    a {
+      color: $black;
+
+      @media (max-width: 991px) {
+        margin-bottom: 20px;
+        display: inline-block;
+      }
+    }
+
+    blockquote {
+      margin: 0;
+      padding: 0 0 19.125px 19.125px;
+      background-color: transparent;
+      color: #1b1b1b;
+      font-size: 19.125px;
+      font-weight: bold;
+
+      &:before {
+        display: none;
+      }
+
+      footer {
+        display: block;
+        margin-top: 1em;
+        font-size: 0.75em;
+        font-weight: normal;
+      }
+    }
+  }
+}
