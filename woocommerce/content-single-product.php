@@ -117,7 +117,7 @@ if ( post_password_required() ) {
                              */
                             do_action( 'woocommerce_single_product_summary' );
 
-
+                            get_template_part( 'template-parts/store-selector/current' );
 
                         ?>
                         <?php echo $summary_pin_wrapper_close_escaped; ?>
@@ -129,6 +129,8 @@ if ( post_password_required() ) {
     </div>
         
 	<?php
+        do_action( 'woocommerce_before_extra_product_info' );
+
         // GEWIJZIGD: Laad de grijze blok met voedings- en partnerinfo in
         get_template_part( 'template-parts/woocommerce/extra-product-info' );
 

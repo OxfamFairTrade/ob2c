@@ -1309,15 +1309,15 @@
 		if ( ! is_admin() ) {
 			if ( is_main_site() ) {
 				// Echte koopknoppen sowieso uitschakelen BETER REGELEN IN TEMPLATES LOOP/ADD-TO-CART.PHP EN SINGLE-PRODUCT/ADD-TO-CART/SIMPLE.PHP?
-				remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
-				remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+				// remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
+				// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 				
 				if ( $product->get_meta('_woonet_publish_to_23') !== 'yes' ) {
 					// Het product wordt niet online verkocht (o.b.v. Oostende als test case)
 					$price .= '<span class="unavailable">Niet online beschikbaar</span>';
 				} else {
 					// Toon een winkelmandknop die in de praktijk gewoon de store selector opent
-					$price .= '<a href="#" id="open-store-selector" class="add-to-cart" style="width: 30px; height: 30px; background-color: grey; float: right;"></a>';
+					// $price .= '<a href="#" id="open-store-selector" class="add-to-cart" style="width: 30px; height: 30px; background-color: grey; float: right;"></a>';
 				}
 			}
 			if ( is_b2b_customer() ) {
@@ -5155,8 +5155,8 @@
 		}
 	}
 
-	// Herkomstlanden helemaal onderaan tonen (of verhuizen naar grijze balk?)
-	add_action( 'woocommerce_single_product_summary', 'show_product_origin', 100 );
+	// Herkomstlanden net boven grijze balk tonen
+	add_action( 'woocommerce_before_extra_product_info', 'show_product_origin' );
 
 	function show_product_origin() {
 		global $product;
