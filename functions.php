@@ -10,6 +10,23 @@
 
 	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
 	
+	// Geautomatiseerde manier om instellingen van Savoy te kopiëren naar subsites
+	add_action( 'update_option_nm_theme_options', 'sync_theme_settings_to_subsites', 10, 3 );
+	
+	function sync_theme_settings_to_subsites( $old_value, $new_value, $option ) {
+		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
+		if ( get_current_blog_id() === 1 and current_user_can('update_core') ) {
+			$sites = get_sites( array( 'site__not_in' => array(1) ) );
+			foreach ( $sites as $site ) {
+				switch_to_blog( $site->blog_id );
+				if ( update_option( $option, $new_value ) ) {
+					write_log("Thema-instellingen gesynchroniseerd naar blog-ID ".$site->blog_id );
+				}
+				restore_current_blog();
+			}
+		}
+	}
+
 	// Toon kolom met winkel waar elke gebruiker lid van is
 	add_filter( 'manage_users_columns', 'add_member_of_shop_column', 10, 1 );
 	add_filter( 'manage_users_custom_column', 'add_member_of_shop_column_value', 10, 3 );
@@ -251,9 +268,6 @@
 		}
 	}
 	
-	// Vuile truc om te verhinderen dat WordPress de afmeting van 'large'-afbeeldingen verkeerd weergeeft
-	$content_width = 1500;
-
 	// Schakel Google Analytics uit in bepaalde gevallen
 	add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
 
@@ -512,26 +526,6 @@
 		array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_meta );
 		// write_log( print_r( $store_meta, true ) );
 		return $store_meta;
-	}
-
-	// Wijzig de weergave van het infovenster
-	// add_filter( 'wpsl_info_window_template', 'wpsl_customize_info_window' );
-
-	function wpsl_customize_info_window() { 
-		$info_window_template = '<div data-store-id="<%= id %>" class="wpsl-info-window">' . "\r\n";
-		$info_window_template .= "\t\t" . '<p>' . "\r\n";
-		$info_window_template .= "\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template(), 'addSku' ) . "\r\n";  
-		$info_window_template .= "\t\t\t" . '<span><%= address %></span>' . "\r\n";
-		$info_window_template .= "\t\t\t" . '<% if ( address2 ) { %>' . "\r\n";
-		$info_window_template .= "\t\t\t" . '<span><%= address2 %></span>' . "\r\n";
-		$info_window_template .= "\t\t\t" . '<% } %>' . "\r\n";
-		$info_window_template .= "\t\t\t" . '<span>' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
-		$info_window_template .= "\t\t" . '</p>' . "\r\n";
-		// Routebeschrijving e.d. uitschakelen
-		// $info_window_template .= "\t\t" . '<%= createInfoWindowActions( id ) %>' . "\r\n";
-		$info_window_template .= "\t" . '</div>' . "\r\n";
-
-		return $info_window_template;
 	}
 
 	// Voeg o.a. post-ID toe als extra metadata op winkel
