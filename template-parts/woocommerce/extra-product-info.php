@@ -3,8 +3,8 @@
 	
 	// Ga op zoek naar een A/B-partner om uit te lichten
 	// $partners = get_field('partners'); FUNCTIE BESTAAT NIET IN OB2C
-	$partners = false;
-	$featured_partner = false;
+	$partners = array( 'Manduvira', 'Conacado' );
+	$featured_partner = 'Manduvira';
 	if ( $partners ) {
 		foreach ( $partners as $partner ) {
 			$categories = get_the_terms( $partner->ID, 'partner_cat' );
@@ -207,11 +207,14 @@
 							<div class="col-row">
 								<div class="col-md-7">
 									<?php the_post_thumbnail('post-thumbnail'); ?>
-									<?php the_field('short_text'); ?>
+									<!-- FUNCTIE BESTAAT NIET IN OB2C -->
+									<?php // the_field('short_text'); ?>
+									<p>Dit is een korte beschrijving van de partner. Wie, wat, waar en waarom? Je komt het allemaal te weten. Of toch bijna.</p>
 									<p><a href="<?php the_permalink(); ?>">Maak kennis met <?php the_title(); ?></a></p>
 								</div>
 								<div class="col-md-5">
-									<?php if ( get_field('quote_text') ) : ?>
+									<!-- FUNCTIE BESTAAT NIET IN OB2C -->
+									<?php if ( 1 === 0 and get_field('quote_text') ) : ?>
 										<blockquote>
 											&#8220;<?php the_field('quote_text'); ?>&#8221;
 											<?php if ( get_field('quote_name') ) : ?>
@@ -246,7 +249,7 @@
 							$icons = explode( ', ', $product->get_attribute('voedingsvoorkeuren') );
 							foreach ( $icons as $icon_name ) {
 								echo '<a href="'.get_post_type_archive_link('product').'?swoof=1&pa_voedingsvoorkeuren='.sanitize_title($icon_name).'#result">';
-									echo '<div class="icon" style="background-image: url('.get_stylesheet_directory_uri().'/images/voedingsvoorkeuren/'.sanitize_title($icon_name).'.svg);" alt="'.$icon_name.'" title="Bekijk alles '.strtolower($icon_name).'"></div>';
+									echo '<div class="icon" style="background-image: url('.get_stylesheet_directory_uri().'/images/voedingsvoorkeuren/'.sanitize_title($icon_name).'.svg); width: 30px; height: 30px; background-size: cover;" alt="'.$icon_name.'" title="Bekijk alles '.strtolower($icon_name).'"></div>';
 								echo '</a>';
 							}
 						?>
@@ -257,7 +260,7 @@
 				<p class="brand"><?php echo $product->get_attribute('merk'); ?></p>
 
 				<h4>Artikelnummer</h4>
-				<p class="sku"><?php $product->get_attribute('shopplus'); ?></p>
+				<p class="sku"><?php echo $product->get_attribute('shopplus'); ?></p>
 
 				<?php
 					// Check of de data inmiddels wel beschikbaar is

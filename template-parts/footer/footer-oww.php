@@ -6,100 +6,91 @@
 		$atts['id'] = get_option('oxfam_shop_post_id');
 	}
 ?>
-<?php if ( get_post_type() === 'wpsl_stores' and get_field('mailchimp_signup_url') ) : ?>
-    <div id="newsletter">
-        <div class="container">
-            <div class="col-row md-display-flex">
-                <div class="col-md-5 md-align-self-center">
-                    <h2>Abonneer je hier op de<br/> nieuwsbrief van <?php the_title(); ?></h2>
-                </div>
-                <div class="col-md-7 md-align-self-center">
-                    <form action="<?php the_field('mailchimp_signup_url'); ?>" method="post" target="_blank">
-                        <input type="text" name="FNAME" placeholder="Voornaam" required="required">
-                        <input type="email" name="EMAIL" placeholder="E-mailadres" required="required">
-                        <input type="submit" value="Inschrijven">
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-<?php elseif ( in_array( $post->ID, get_option('oxfam_school_pages') ) or in_array( wp_get_post_parent_id( $post->ID ), get_option('oxfam_school_pages') ) or is_singular('scholenactie') ) : ?>
-    <div id="newsletter">
-        <div class="container">
-            <div class="col-row md-display-flex">
-                <div class="col-md-5 md-align-self-center">
-                    <h2>Abonneer je op de<br/> scholennieuwsbrief</h2>
-                </div>
-                <div class="col-md-7 md-align-self-center">
-                    <form id="school-newsletter" class="mc4wp-form" method="post" data-name="Aboneer je op de scholennieuwsbrief">
-                        <div class="mc4wp-form-fields">
-                            <input type="text" name="FNAME" placeholder="Voornaam" required />
-                            <input type="email" name="EMAIL" placeholder="E-mailadres" required />
-                            <input type="hidden" name="LIST_ID" value="66358ad206">
-                            <label style="display: none !important;">Laat dit veld leeg als je een mens bent: <input type="text" name="HONING" value="" tabindex="-1" autocomplete="off"></label>
-                            <input type="submit" value="Inschrijven" />
-                        </div>
-                        <div class="mc4wp-response"></div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script type="text/javascript">
-      jQuery(document).ready( function() {
-        jQuery('#school-newsletter').on( 'submit', function(event) {
-          event.preventDefault();
-          var form = jQuery(this);
-          var output = form.find('.mc4wp-response');
 
-          form.find("input[type='submit']").prop( 'disabled', true );
-          output.html('Even geduld ...');
+<!-- TO DO: Logica aanpassen zodat we kijken of de huidige geselecteerde winkel een lokale nieuwsbrief heeft -->
+<?php if ( get_post_type() === 'wpsl_stores' ) : ?>
+	<div id="newsletter">
+		<div class="container">
+			<div class="col-row md-display-flex">
+				<div class="col-md-5 md-align-self-center">
+					<h2>Abonneer je hier op de<br/> nieuwsbrief van <?php echo $atts['id']; ?></h2>
+				</div>
+				<div class="col-md-7 md-align-self-center">
+					<!-- TO DO: Alternatief voor the_field('mailchimp_signup_url') zoeken -->
+					<form action="" method="post" target="_blank">
+						<input type="text" name="FNAME" placeholder="Voornaam" required="required">
+						<input type="email" name="EMAIL" placeholder="E-mailadres" required="required">
+						<input type="submit" value="Inschrijven">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php else : ?>
+	<div id="newsletter">
+		<div class="container">
+			<div class="col-row md-display-flex">
+				<div class="col-md-5 md-align-self-center">
+					<h2>Abonneer je hier<br/> op onze nieuwsbrief</h2>
+				</div>
+				<div class="col-md-7 md-align-self-center">
+					<form id="subscribe-to-newsletter" class="mc4wp-form" method="post" data-name="Abonneer je op onze nieuwsbrief">
+						<div class="mc4wp-form-fields">
+							<input type="text" name="FNAME" placeholder="Voornaam" required />
+							<input type="email" name="EMAIL" placeholder="E-mailadres" required />
+							<input type="hidden" name="LIST_ID" value="5cce3040aa">
+							<label style="display: none !important;">Laat dit veld leeg als je een mens bent: <input type="text" name="HONING" value="" tabindex="-1" autocomplete="off"></label>
+							<input type="submit" value="Inschrijven" />
+						</div>
+						<div class="mc4wp-response"></div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		jQuery(document).ready( function() {
+			jQuery('#subscribe-to-newsletter').on( 'submit', function(event) {
+				event.preventDefault();
+				var form = jQuery(this);
+				var output = form.find('.mc4wp-response');
 
-          var newsletter = 'no';
-          if ( form.find("input[name='HONING']").val().length == 0 ) {
-            newsletter = 'yes';
-          }
+				form.find("input[type='submit']").prop( 'disabled', true );
+				output.html('Even geduld ...');
 
-          jQuery.ajax({
-            type: 'POST',
-            url: '<?php echo get_stylesheet_directory_uri().'/mailchimp/subscribe.php'; ?>',
-            data: {
-              'fname': form.find("input[name='FNAME']").val(),
-              'email': form.find("input[name='EMAIL']").val(),
-              'list_id': form.find("input[name='LIST_ID']").val(),
-              'newsletter': newsletter
-            },
-            dataType: 'json',
-          }).done( function(response) {
-            if ( response.status == 'subscribed' || response.status == 'resubscribed') {
-              output.html('Hoera, je bent nu ingeschreven op onze nieuwsbrief voor scholen!');
-            } else if ( response.status == 'updated' ) {
-              output.html('Je was al ingeschreven op deze nieuwsbrief. Bedankt voor je enthousiasme!');
-            } else {
-              output.html('Er liep iets verkeerd ('+response.error+').');
-            }
-          }).fail( function() {
-            output.html('Er liep iets verkeerd. Probeer je het eens opnieuw?');
-          }).always( function() {
-            form.find("input[type='submit']").prop( 'disabled', false );
-          });
-        });
-      });
-    </script>
-<?php elseif ( get_post_type() !== 'faq' and get_post_type() !== 'press' and get_post_type() !== 'wpsl_stores' ) : ?>
-    <div id="newsletter">
-        <div class="container">
-            <div class="col-row md-display-flex">
-                <div class="col-md-5 md-align-self-center">
-                    <h2>Abonneer je hier<br/>op onze nieuwsbrief</h2>
-                </div>
-                <div class="col-md-7 md-align-self-center">
-                    <?php echo do_shortcode('[mc4wp_form id="101"]'); ?>
-                </div>
-            </div>
-        </div>
-    </div>
+				var newsletter = 'no';
+				if ( form.find("input[name='HONING']").val().length == 0 ) {
+					newsletter = 'yes';
+				}
+
+				jQuery.ajax({
+					type: 'POST',
+					url: 'https://www.oxfamWereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php',
+					data: {
+						'fname': form.find("input[name='FNAME']").val(),
+						'email': form.find("input[name='EMAIL']").val(),
+						'list_id': form.find("input[name='LIST_ID']").val(),
+						'newsletter': newsletter
+					},
+					dataType: 'json',
+				}).done( function(response) {
+					if ( response.status == 'subscribed' || response.status == 'resubscribed') {
+						output.html('Hoera, je bent nu ingeschreven op onze nieuwsbrief voor scholen!');
+					} else if ( response.status == 'updated' ) {
+						output.html('Je was al ingeschreven op deze nieuwsbrief. Bedankt voor je enthousiasme!');
+					} else {
+						output.html('Er liep iets verkeerd ('+response.error+').');
+					}
+				}).fail( function() {
+					output.html('Er liep iets verkeerd. Probeer je het eens opnieuw?');
+				}).always( function() {
+					form.find("input[type='submit']").prop( 'disabled', false );
+				});
+			});
+		});
+	</script>
 <?php endif; ?>
+
 <div id="footer">
 	<div class="container">
 		<div class="footer">
@@ -209,17 +200,15 @@
 </div>
 
 <div id="copyright">
-    <div class="container">
-        <div class="col-row">
-            <div class="col-sm-6">
-                <p>Oxfam-Wereldwinkels vzw &copy; 2019-<?php echo date_i18n('Y'); ?>. Alle rechten voorbehouden.</p>
-            </div>
-            <div class="col-sm-6 text-right">
-                <?php //the_field( 'copyright', 'options' ); ?>
-
-                <!-- @ToDo: refactor to WP menu? -->
-                <p><a href="/privacy/">Privacybeleid</a> / <a href="/cookiebeleid/">Cookiebeleid</a> / <a href="/sitemap/">Sitemap</a></p>
-            </div>
-        </div>
-    </div>
+	<div class="container">
+		<div class="col-row">
+			<div class="col-sm-6">
+				<p>Oxfam-Wereldwinkels vzw &copy; 2019-<?php echo date_i18n('Y'); ?>. Alle rechten voorbehouden.</p>
+			</div>
+			<div class="col-sm-6 text-right">
+				<!-- @ToDo: refactor to WP menu? -->
+				<p><a href="https://stage.oxfamwereldwinkels.be/privacy/">Privacybeleid</a> / <a href="https://stage.oxfamwereldwinkels.be/cookiebeleid/">Cookiebeleid</a> / <a href="https://stage.oxfamwereldwinkels.be/sitemap/">Sitemap</a></p>
+			</div>
+		</div>
+	</div>
 </div>
