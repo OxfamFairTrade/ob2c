@@ -380,8 +380,8 @@
 		return $classes;
 	}
 
-	// Voeg klasse toe indien recent product
-	add_filter( 'woocommerce_post_class', 'add_recent_product_class', 1000, 2 );
+	// Voeg klasse toe indien recent product DEPRECATED
+	// add_filter( 'woocommerce_post_class', 'add_recent_product_class', 1000, 2 );
 
 	function add_recent_product_class( $classes, $product ) {
 		if ( $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
@@ -393,10 +393,13 @@
 			$classes[] = 'organic';
 		}
 
-		if ( does_risky_delivery() ) {
-			if ( ( $key = array_search( 'product_shipping_class-breekbaar', $classes ) ) !== false ) {
-				// Zorg ervoor dat 'enkel afhaling'-labeltjes niet verschijnen (of voeg een extra klasse toe en pas CSS aan?)
-				unset( $classes[ $key ] );
+		if ( ! is_b2b_customer() and has_term( 'promotie', 'product_tag', $product->get_id() ) ) {
+			$classes[] = 'promotion';
+		}
+
+		if ( ! does_risky_delivery() ) {
+			if ( $product->get_shipping_class() === 'breekbaar' ) {
+				$classes[] = 'pickup-only';
 			}
 		}
 
@@ -414,7 +417,8 @@
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$classes[] = 'two-plus-one';
 		}
-		$three_plus_one_products = array();
+		// Testproduct
+		$three_plus_one_products = array( '26424' );
 		if ( in_array( $product->get_sku(), $three_plus_one_products ) ) {
 			$classes[] = 'three-plus-one';
 		}

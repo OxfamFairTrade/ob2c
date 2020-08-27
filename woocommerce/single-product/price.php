@@ -24,4 +24,5 @@ global $product;
 	if ( floatval( $product->get_attribute('eprijs') ) !== 0 ) {
 		echo '<p class="unit-price">&euro;/'.strtolower( $product->get_attribute('eenheid') ).' '.number_format_i18n( $product->get_attribute('eprijs'), 2 ).'</p>';
 	}
-?>
+
+/* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */
