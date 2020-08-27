@@ -719,10 +719,6 @@ table tbody td:last-child {
   color: #0c884a;
   border-color: #0c884a;
 }
-#header .nav ul li.orange-btn,
-#header .nav ul li.green-btn {
-  margin: 0 10px;
-}
 #header .nav ul li.orange-btn a,
 #header .nav ul li.green-btn a {
   background: #ff9104;
@@ -738,6 +734,30 @@ table tbody td:last-child {
 }
 #header .nav ul li.green-btn a {
   background: #3da969;
+}
+#header .nav #nm-menu-cart-btn {
+  margin-left: 20px;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  vertical-align: top;
+  background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
+  background-size: 40px 40px;
+  position: relative;
+}
+#header .nav #nm-menu-cart-btn > .nm-menu-cart-count {
+  width: 20px;
+  height: 20px;
+  display: block;
+  font-size: 12px;
+  background: #1b1b1B;
+  color: #ffffff;
+  text-align: center;
+  line-height: 20px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  right: 5px;
 }
 #header .topbar {
   margin: 0;
@@ -832,7 +852,7 @@ table tbody td:last-child {
 
 @media (max-width: 1600px) {
   #header .nav ul li {
-    margin: 0 15px;
+    margin: 0 0 0 20px;
   }
 
   #header .nav ul li.orange-btn a {
@@ -842,10 +862,14 @@ table tbody td:last-child {
   #header .nav ul li.green-btn a {
     width: 150px;
   }
+
+  #header .nav #nm-menu-cart-btn {
+    margin-left: 20px;
+  }
 }
 @media (max-width: 1200px) {
   #header .nav ul li {
-    margin: 0 10px;
+    margin: 0 0 0 15px;
   }
 
   #header .nav ul li a {
@@ -858,6 +882,10 @@ table tbody td:last-child {
 
   #header .nav ul li.green-btn a {
     width: 140px;
+  }
+
+  #header .nav #nm-menu-cart-btn {
+    margin-left: 15px;
   }
 
   #header .top-menu ul li {
