@@ -11,7 +11,7 @@
 			<div class="col-md-3 md-align-self-center">
 				<div class="logo">
 					<a href="https://stage.oxfamwereldwinkels.be/">
-						<img src="https://stage.oxfamwereldwinkels.be/wp-content/themes/oxfam/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
+						<img src="/wp-content/themes/oxfam-webshop/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
 					</a>
 				</div>
 			</div>
@@ -48,13 +48,12 @@
 	</div>
 </div>
 
-<!-- Mobiel menu, voorlopig hard verbergen wegens ontbreken van klasses .visible-sm en .visible-xs -->
 <div id="header" class="visible-sm visible-xs" style="display: none;">
 	<div class="container">
 		<div class="col-row display-flex">
 			<div class="col-xs-6 align-self-center">
 				<div class="logo">
-					<a href="https://stage.oxfamwereldwinkels.be/"><img src="https://stage.oxfamwereldwinkels.be/wp-content/themes/oxfam/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
+					<a href="https://stage.oxfamwereldwinkels.be/"><img src="/wp-content/themes/oxfam-webshop/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
 				</div>
 			</div> 
 			<div class="col-xs-6 align-self-center">
@@ -68,7 +67,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="menu-btn"><img src="https://stage.oxfamwereldwinkels.be/wp-content/themes/oxfam/images/menu-btn-black.png" alt=""></div>
+		<div id="menu-btn"><img src="/wp-content/themes/oxfam-webshop/images/menu-btn-black.png" alt=""></div>
 	</div>
 	<div class="top-search top-search_mobile hidden">         
 		<form action="https://stage.oxfamwereldwinkels.be/" method="get">
@@ -77,7 +76,7 @@
 		</form>
 	</div>
 </div>
-<div id="side-menu" class="active">
+<div id="side-menu">
 	<!-- Zoekbalk beter weglaten in mobiel menu? -->
 	<div class="top-search">
 		<form action="https://stage.oxfamwereldwinkels.be/" method="get">

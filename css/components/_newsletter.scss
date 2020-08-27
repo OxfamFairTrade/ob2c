@@ -1,0 +1,81 @@
+
+
+// Newsletter
+// --------------------------------------------------
+
+#newsletter {
+  margin: 0;
+  padding: 51px 0;
+  background: $green;
+  color: white;
+
+  h2 {
+    font-size: 42.5px;
+    color: inherit;
+    margin-bottom: 0;
+  }
+
+  input[type=text],
+  input[type=email] {
+    display: inline-block;
+    margin-right: 1em;
+    box-sizing: border-box;
+    width: calc(35% - 1em);
+    background: white;
+    border-color: white;
+    padding: 19px 20px;
+  }
+
+  input[type=submit] {
+    box-sizing: border-box;
+    width: 25%;
+    background: none;
+    border-color: inherit;
+    color: inherit;
+    padding: 19px 20px;
+
+    &:hover {
+      background: white;
+      color: $green;
+    }
+  }
+}
+
+.single-wpsl_stores #newsletter {
+  background: $orange;
+
+  h2 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 991px) {
+  #newsletter {
+    padding: 70px 0 !important;
+    text-align: center;
+
+    h2 {
+      margin-bottom: 30px;
+      font-size: 30px;
+
+      br {
+        display: none;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 992px) and (max-width: 1200px) {
+  #newsletter h2 {
+    font-size: 38px;
+  }
+}
+
+@media screen and (max-width: 580px) {
+  #newsletter input[type=email],
+  #newsletter input[type=text],
+  #newsletter input[type=submit] {
+    width: 100%;
+    margin-bottom: 1em;
+  }
+}

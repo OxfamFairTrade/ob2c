@@ -1,0 +1,100 @@
+
+
+// Form elements
+// --------------------------------------------------
+
+input, button, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: normal !important;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+input[type="tel"],
+input[type="range"],
+input[type="date"],
+input[type="month"],
+input[type="week"],
+input[type="time"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="color"],
+select,
+textarea {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 14px 20px;
+  background: none;
+  color: #696767;
+  border: 1px solid #E5E5E5;
+  border-radius: 0;
+  font-size: 16px;
+  line-height: normal;
+  font-weight: normal;
+  resize: none;
+}
+
+select {
+  padding-right: 40px;
+  background: url(../images/select.svg) no-repeat center right;
+  appearance: none;
+}
+
+input#datum {
+  background: url(../images/date-input.svg) no-repeat center right;
+}
+
+button,
+input[type="button"],
+input[type="submit"],
+.btn {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  padding: 14px 30px;
+  background: $green;
+  color: #fff;
+  border: 2px solid $green;
+  border-radius: 0;
+  cursor: pointer;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 14px;
+  line-height: normal;
+  font-weight: 700;
+  text-transform: none;
+  transition: all .2s;
+  appearance: none;
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+.btn:hover {
+  background: #0C884A;
+  border-color: #0C884A;
+  color: #fff;
+}
+
+.wpforms-form .wpforms-field {
+  clear: both;
+
+  label.wpforms-error {
+    position: absolute;
+    top: 14px;
+    right: 0;
+    font-size: 12px;
+  }
+}

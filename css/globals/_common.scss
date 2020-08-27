@@ -1,0 +1,134 @@
+
+
+// Common elements
+// --------------------------------------------------
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  line-height: 24px;
+  color: $black;
+
+  letter-spacing: 0.02em;
+  letter-spacing: 0.34px;
+
+  &.active {
+    overflow: hidden;
+
+    &:after {
+      content: '';
+      position: fixed;
+      margin: 0;
+      padding: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.2);
+      z-index: 111;
+    }
+  }
+}
+
+:focus {
+  outline: none;
+}
+
+img {
+  vertical-align: middle;
+  border: none;
+  max-width: 100%;
+  height: auto;
+}
+
+hr {
+  margin: 30px 0;
+  border: 0;
+  border-top: 1px solid #E5E5E5;
+}
+
+embed, iframe, object {
+  margin: 0 0 20px;
+  max-width: 100%;
+}
+
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */ color:#C4C4C4; opacity:1; /* Firefox */ }
+:-ms-input-placeholder { /* Internet Explorer 10-11 */ color:#C4C4C4; }
+::-ms-input-placeholder { /* Microsoft Edge */ color:#C4C4C4; }
+
+.error404 #content {
+  padding: 80px 0;
+  text-align: center;
+
+  h1,
+  .h1 {
+    font-size: 150px;
+    color: $green;
+  }
+}
+
+.cookie-bar-bottom-left-block #catapult-cookie-bar {
+  text-align: center;
+
+  a {
+    text-decoration: underline;
+  }
+
+  button#catapultCookie {
+    margin: 0;
+    padding: 16px 30px;
+  }
+}
+
+
+
+#awesome-menu {
+  margin: 15px auto 0;
+  float: none;
+  text-align: center;
+
+  .menu-trigger {
+    min-width: 10px;
+    border-radius: 5px;
+    padding: 0;
+
+    &.dl-active {
+      text-indent: inherit;
+      font-size: 0;
+    }
+
+    &.dl-active:before,
+    &.dl-active:after {
+      content: '';
+      position: absolute;
+      top: 42%;
+      left: 16%;
+      width: 68%;
+      height: 5px;
+      background: #fff;
+      transform: rotate(45deg);
+    }
+
+    &.dl-active:after {
+      transform: rotate(-45deg);
+      box-shadow: none;
+    }
+  }
+
+  ul {
+    ul {
+      margin: 0;
+    }
+
+    li a {
+      font-weight: 700;
+    }
+  }
+}

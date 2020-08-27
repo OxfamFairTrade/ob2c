@@ -1,0 +1,203 @@
+
+
+// Side menu (mobile menu)
+// --------------------------------------------------
+
+#side-menu {
+  margin: 0;
+  padding: 30px 50px;
+  display: none;
+  position: fixed;
+  top: 0;
+  right: -400px;
+  bottom: 0;
+  width: 325px;
+  background: #fff;
+  z-index: 1111;
+  transition: all .3s;
+  overflow-y: scroll;
+
+  @media (max-width: 991px) {
+    display: block;
+  }
+
+  &.active {
+    right: 0;
+  }
+
+  .top-search {
+    display: block;
+    margin: 0 0 50px;
+    padding: 0;
+    position: relative;
+
+    input[type=text] {
+      width: 100%;
+      padding: 18px;
+    }
+
+    input[type=submit] {
+      padding: 0;
+      width: 28px;
+      height: 29px;
+      background: url(/wp-content/themes/oxfam-webshop/images/search.svg) no-repeat;
+      border: none;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+    }
+  }
+
+  .nav {
+    margin: 0;
+    padding: 0;
+
+    ul {
+      display: block;
+      margin: 0;
+      padding: 0;
+
+      li {
+        display: block;
+        margin: 0 0 15px;
+        padding: 0;
+
+        a {
+          display: block;
+          margin: 0;
+          padding: 0;
+          font-size: 24px;
+          line-height: 40px;
+          font-weight: 700;
+          color: black;
+          text-decoration: none;
+          border-bottom: 2px solid transparent;
+        }
+
+        &:hover a {
+          color: #0C884A;
+          border-color: #0C884A;
+        }
+      }
+
+      li.orange-btn,
+      li.green-btn {
+        a {
+          font-size: 20px;
+          line-height: 60px;
+          background: $new-orange;
+          color: white;
+          width: 100%;
+          border: none;
+          text-align: center;
+          font-weight: normal;
+
+          &:hover {
+            color: white;
+            opacity: 0.9;
+          }
+        }
+      }
+
+      li.green-btn {
+        a {
+          background: $new-green;
+        }
+      }
+    }
+
+    &.items ul li {
+      &.orange-btn,
+      &.green-btn {
+        display: none;
+      }
+    }
+
+    &.btns {
+      ul li,
+      ol li {
+        display: none;
+
+        &.orange-btn,
+        &.green-btn {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .top-menu {
+    display: block;
+    margin: 30px 0 0;
+    padding: 0;
+
+    ul {
+      display: block;
+      margin: 0;
+      padding: 0;
+
+      li {
+        display: block;
+        margin: 0 0 30px;
+        padding: 0;
+
+        a {
+          display: block;
+          margin: 0;
+          padding: 0;
+          font-size: 18px;
+          line-height: normal;
+          font-weight: normal;
+          text-decoration: none;
+          color: #8F8F8F;
+        }
+
+        &:hover a {
+          color: #0C884A;
+        }
+      }
+    }
+  }
+
+  .top-social {
+    display: block;
+    margin: 50px 0 0;
+    padding: 30px 0;
+    border-top: 2px solid #EFEFEF;
+    text-align: center;
+
+    a {
+      display: inline-block;
+      margin: 0 8px;
+      padding: 0;
+      font-size: 24px;
+      color: #000;
+
+      &:hover {
+        color: #60A434;
+      }
+    }
+  }
+}
+
+#menu-btn {
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  cursor: pointer;
+  z-index: 111;
+  bottom: auto;
+  top: 20px;
+  right: 15px;
+
+  @media(max-width: 450px){
+    top: auto;
+    bottom: 40px;
+  }
+
+  img {
+    margin: 0;
+    padding: 0;
+    width: 48px;
+  }
+}

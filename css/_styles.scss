@@ -1,0 +1,36 @@
+/*!
+	Theme Name:		Oxfam-Wereldwinkels Webshop
+	Author:			Efraim Sebrechts & Frederik Neirynck
+	Author URI:		https://www.oxfamwereldwinkels.be
+	Description:	Custom portaalpagina, lokale logo's en extra banners bij producten.
+	Template:		savoy
+	Version:		1.6.9
+	Text Domain:	oxfam-webshop
+*/
+
+// Imports
+// --------------------------------------------------
+
+// Variables
+@import "vars";
+
+// Globals
+@import "globals/common";
+@import "globals/typography";
+@import "globals/form";
+@import "globals/table";
+@import "globals/grid";
+@import "globals/helper";
+
+// Components
+@import "components/header";
+@import "components/side-menu";
+@import "components/newsletter";
+@import "components/footer";
+@import "components/copyright";
+
+
+
+// @ToDo: Refactor scss to separate files
+@import "components/refactor";
+
