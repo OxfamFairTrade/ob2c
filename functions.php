@@ -6,7 +6,9 @@
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
-	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update 
+	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
+
+	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
 	
 	// Toon kolom met winkel waar elke gebruiker lid van is
 	add_filter( 'manage_users_columns', 'add_member_of_shop_column', 10, 1 );
@@ -114,11 +116,10 @@
 	add_action( 'init', 'force_user_login' );
 	
 	function force_user_login() {
-		$url = get_current_url();
-
 		// Demosite tijdelijk openstellen: or get_current_site()->domain !== 'shop.oxfamwereldwinkels.be'
 		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
 			if ( ! is_user_logged_in() ) {
+				$url = get_current_url();
 				// Nooit redirecten: inlog-, reset-, activatiepagina en WC API calls
 				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wc_lostpassword_url() ) and ! strpos( $url, 'activate.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					// Stuur gebruiker na inloggen terug naar huidige pagina
@@ -472,69 +473,49 @@
 
 	// Laad onze custom markers (zowel in front-end als back-end)
 	define( 'WPSL_MARKER_URI', dirname( get_bloginfo('stylesheet_url') ).'/markers/' );
-	add_filter( 'wpsl_admin_marker_dir', 'custom_admin_marker_dir' );
+	add_filter( 'wpsl_admin_marker_dir', 'wpsl_admin_marker_dir' );
+	add_filter( 'wpsl_js_settings', 'wpsl_hide_start_marker' );
 
-	function custom_admin_marker_dir() {
-		$admin_marker_dir = get_stylesheet_directory().'/markers/';
-		return $admin_marker_dir;
+	function wpsl_admin_marker_dir() {
+		return get_stylesheet_directory().'/markers/';
 	}
 
-	// Wijzig de weergave van de zoekresultaten
-	add_filter( 'wpsl_listing_template', 'custom_listing_template' );
-
-	function custom_listing_template() {
-		global $wpsl, $wpsl_settings;
-
-		$listing_template = '<li data-store-id="<%= id %>">' . "\r\n";
-		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
-		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template('listing'), 'addSku' ) . "\r\n";
-		// TO DO: Correcte link naar webshop toevoegen
-		$listing_template .= "\t\t\t\t" . '<a href="/?addSku='.$_GET['addSku'].'"><button class="button-go-to-webshop" style="float: right;">Bestel online en haal af</button></a>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %></span>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<% if ( address2 ) { %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address2 %></span>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<% } %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<span>' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
-		$listing_template .= "\t\t\t" . '</p>' . "\r\n";
-
-		// Show the phone and email data if they exist
-		if ( $wpsl_settings['show_contact_details'] ) {
-			$listing_template .= "\t\t\t" . '<p class="wpsl-contact-details">' . "\r\n";
-			$listing_template .= "\t\t\t" . '<% if ( phone ) { %>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<span><strong>' . esc_html( $wpsl->i18n->get_translation( 'phone_label', __( 'Phone', 'wpsl' ) ) ) . '</strong>: <%= formatPhoneNumber( phone ) %></span>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<% } %>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<% if ( email ) { %>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<span><strong>' . esc_html( $wpsl->i18n->get_translation( 'email_label', __( 'Email', 'wpsl' ) ) ) . '</strong>: <%= email %></span>' . "\r\n";
-			$listing_template .= "\t\t\t" . '<% } %>' . "\r\n";
-			$listing_template .= "\t\t\t" . '</p>' . "\r\n";
-		}
-
-		$listing_template .= "\t\t\t" . wpsl_more_info_template() . "\r\n"; // Check if we need to show the 'More Info' link and info
-		$listing_template .= "\t" . '</li>';
-
-		return $listing_template;
+	function wpsl_hide_start_marker( $settings ) {
+		$settings['startMarker'] = '';
+		return $settings;
 	}
 
-	// Zet de winkels met webshop bovenaan, tot een maximum range van 30 kilometer
-	add_filter( 'wpsl_store_data', 'custom_result_sort' );
+	add_filter( 'wpsl_templates', 'wpsl_add_no_map_template' );
 
-	function custom_result_sort( $store_meta ) {
+	function wpsl_add_no_map_template( $templates ) {
+		$templates[] = array (
+			'id'   => 'no_map',
+			'name' => 'Zonder kaart',
+			'path' => get_stylesheet_directory().'/wpsl-templates/no-map.php',
+		);
+		return $templates;
+	}
+
+	// Voorbeeld van 'featured' winkels: https://wpstorelocator.co/document/create-featured-store-that-shows-up-first-in-search-results/
+	// add_filter( 'wpsl_store_data', 'wpsl_change_results_sorting' );
+
+	function wpsl_change_results_sorting( $store_meta ) {
 		$custom_sort = array();
 		foreach ( $store_meta as $key => $row ) {
-			write_log( print_r( $row, true ) );
-			$custom_sort[$key] = $row['city'];
+			// In plaats van sorteren op 'distance'
+			$custom_sort[ $key ] = $row['webshop'];
 		}
 
-		array_multisort( $custom_sort, SORT_DESC, SORT_REGULAR, $store_meta );
-
+		// Winkels zonder webshop-URL (= lege string) belanden onderaan
+		array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_meta );
+		// write_log( print_r( $store_meta, true ) );
 		return $store_meta;
 	}
 
 	// Wijzig de weergave van het infovenster
-	add_filter( 'wpsl_info_window_template', 'custom_info_window_template' );
+	// add_filter( 'wpsl_info_window_template', 'wpsl_customize_info_window' );
 
-	function custom_info_window_template() { 
+	function wpsl_customize_info_window() { 
 		$info_window_template = '<div data-store-id="<%= id %>" class="wpsl-info-window">' . "\r\n";
 		$info_window_template .= "\t\t" . '<p>' . "\r\n";
 		$info_window_template .= "\t\t\t" . append_get_parameter_to_href( wpsl_store_header_template(), 'addSku' ) . "\r\n";  
@@ -551,42 +532,31 @@
 		return $info_window_template;
 	}
 
-	// Voeg post-ID toe als extra metadata op winkel
-	add_filter( 'wpsl_meta_box_fields', 'custom_meta_box_fields' );
+	// Voeg o.a. post-ID toe als extra metadata op winkel
+	add_filter( 'wpsl_meta_box_fields', 'wpsl_add_meta_box_fields' );
 
-	function custom_meta_box_fields( $meta_fields ) {
-		$meta_fields[__( 'Additional Information', 'wpsl' )] = array(
-			'phone' => array(
-				'label' => 'Telefoon'
-			),
-			'email' => array(
-				'label' => 'E-mail'
-			),
-			'url' => array(
-				'label' => 'Webshop-URL'
-			),
-			'oxfam_shop_post_id' => array(
-				'label' => 'Post-ID in OWW-site'
-			),
-			'alternate_marker_url' => array(
-            	'label' => 'Afwijkende marker (indien enkel afhaling)'
-        	)
+	function wpsl_add_meta_box_fields( $meta_fields ) {
+		$meta_fields[ __( 'Additional Information', 'wpsl' ) ] = array(
+			'phone' => array( 'label' => 'Telefoon' ),
+			'email' => array( 'label' => 'E-mail' ),
+			'url' => array( 'label' => 'Winkelpagina' ),
+			'oxfam_shop_post_id' => array( 'label' => 'Post-ID in OWW-site' ),
+			'webshop' => array( 'label' => 'Webshop-URL' ),
 		);
 
 		return $meta_fields;
 	}
 
 	// Geef de extra metadata mee in de JSON-response
-	add_filter( 'wpsl_frontend_meta_fields', 'custom_frontend_meta_fields' );
+	add_filter( 'wpsl_frontend_meta_fields', 'wpsl_add_frontend_meta_fields' );
 
-	function custom_frontend_meta_fields( $store_fields ) {
+	function wpsl_add_frontend_meta_fields( $store_fields ) {
 		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
-		$store_fields['wpsl_alternate_marker_url'] = array( 'name' => 'alternateMarkerUrl' );
+		$store_fields['wpsl_webshop'] = array( 'name' => 'webshop' );
 		return $store_fields;
 	}
 
 	function append_get_parameter_to_href( $str, $get_param ) {
-		write_log($str);
 		if ( isset( $_GET[$get_param] ) ) {
 			// Check inbouwen op reeds aanwezige parameters in $2-fragment? 
 			$str = preg_replace( '/<a(.*)href="([^"]*)"(.*)>/','<a$1href="$2?'.$get_param.'='.$_GET[$get_param].'"$3>', $str );
@@ -1338,9 +1308,17 @@
 	function no_orders_on_main( $price, $product ) {
 		if ( ! is_admin() ) {
 			if ( is_main_site() ) {
+				// Echte koopknoppen sowieso uitschakelen BETER REGELEN IN TEMPLATES LOOP/ADD-TO-CART.PHP EN SINGLE-PRODUCT/ADD-TO-CART/SIMPLE.PHP?
 				remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
 				remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
-				return "<i>Geen verkoop vanuit nationaal</i>";
+				
+				if ( $product->get_meta('_woonet_publish_to_23') !== 'yes' ) {
+					// Het product wordt niet online verkocht (o.b.v. Oostende als test case)
+					$price .= '<span class="unavailable">Niet online beschikbaar</span>';
+				} else {
+					// Toon een winkelmandknop die in de praktijk gewoon de store selector opent
+					$price .= '<a href="#" id="open-store-selector" class="add-to-cart" style="width: 30px; height: 30px; background-color: grey; float: right;"></a>';
+				}
 			}
 			if ( is_b2b_customer() ) {
 				$price .= ' per stuk';
@@ -1349,7 +1327,7 @@
 		return $price;
 	}
 
-	// Doorstreepte adviesprijs en badge uitschakelen (meestal geen rechtsreekse productkorting)
+	// Doorstreepte adviesprijs en badge uitschakelen (meestal geen rechtstreekse productkorting)
 	add_filter( 'woocommerce_sale_flash', '__return_false' );
 	add_filter( 'woocommerce_format_sale_price', 'format_sale_as_regular_price', 10, 3 );
 
@@ -1655,78 +1633,6 @@
 							jQuery("[name='update_cart']").trigger('click');
 						}, 500);
 
-					});
-				</script>
-			<?php
-		} elseif ( is_main_site() and is_front_page() ) {
-			?>
-				<script type="text/javascript">
-					jQuery(document).ready( function() {
-						var wto;
-						jQuery('#oxfam-zip-user').on( 'input change', function() {
-							clearTimeout(wto);
-							var zip = jQuery(this).val();
-							var button = jQuery('#do_oxfam_redirect');
-							var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
-							if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
-								button.prop( 'disabled', false ).parent().addClass('is-valid');
-								wto = setTimeout( function() {
-									button.find('i').addClass('loading');
-									wto = setTimeout( function() {
-										button.trigger('click');
-									}, 750);
-								}, 250);
-							} else {
-								button.prop( 'disabled', true ).parent().removeClass('is-valid');
-							}
-						});
-						
-						jQuery('#oxfam-zip-user').keyup( function(event) {
-							if ( event.which == 13 ) {
-								jQuery('#do_oxfam_redirect').trigger('click');
-							}
-						});
-						
-						jQuery('#do_oxfam_redirect').on( 'click', function() {
-							jQuery(this).prop( 'disabled', true );
-							var input = jQuery('#oxfam-zip-user');
-							var zip = input.val();
-							var url = jQuery('#'+zip+'.oxfam-zip-value').val();
-							var all_cities = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ) ?>;
-							// Indien er meerdere plaatsnamen zijn, knippen we ze op en gebruiken we de eerste (= hoofdgemeente)
-							var cities_for_zip = all_cities[zip].split(' / ');
-							if ( typeof url !== 'undefined' ) {
-								if ( url.length > 10 ) {
-									var suffix = '';
-									<?php if ( isset( $_GET['addSku'] ) ) : ?>
-										suffix = '&addSku=<?php echo $_GET['addSku']; ?>';
-									<?php endif; ?>
-									window.location.href = url+'?referralZip='+zip+'&referralCity='+cities_for_zip[0]+suffix;
-								} else {
-									alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
-									jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
-									input.val('');
-								}
-							} else {
-								alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ); ?> Tip: je kunt ook de naam van je gemeente beginnen te typen en de juiste postcode selecteren uit de suggesties die verschijnen.");
-								jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
-								input.val('');
-							}
-						});
-
-						jQuery( function() {
-							var zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
-							jQuery( '#oxfam-zip-user' ).autocomplete({
-								source: zips,
-								minLength: 1,
-								autoFocus: true,
-								position: { my : "right+20 top", at: "right bottom" },
-								close: function(event,ui) {
-									// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
-									jQuery( '#oxfam-zip-user' ).trigger('change');
-								}
-							});
-						});
 					});
 				</script>
 			<?php
@@ -3321,7 +3227,7 @@
 		return $hours;
 	}
 
-	// Stop de uitzonderlijke sluitingsdagen in een array 
+	// Stop de uitzonderlijke sluitingsdagen in een array
 	function get_closing_days( $shop_post_id = 0 ) {
 		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
 		
@@ -5782,11 +5688,11 @@
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
 	add_shortcode( 'alle_winkels', 'print_all_shops' );
-	add_shortcode( 'toon_titel', 'print_portal_title' );
-	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
-	add_shortcode( 'toon_inleiding', 'print_welcome' );
+	// add_shortcode( 'toon_titel', 'print_portal_title' );
+	// add_shortcode( 'toon_inleiding', 'print_welcome' );
 	// add_shortcode( 'toon_shops', 'print_store_selector' );
 	// add_shortcode( 'toon_kaart', 'print_store_locator_map' );
+	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	add_shortcode( 'toon_thuislevering', 'print_delivery_snippet' );
 	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
@@ -6003,48 +5909,6 @@
 		return print_oxfam_shop_data( 'telephone', $atts );
 	}
 
-	function print_welcome() {
-		// Negeer afgeschermde en gearchiveerde sites
-		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
-		// Trek hoofdsite af van totaal
-		$msg = '<img src="'.get_stylesheet_directory_uri().'/markers/placemarker-afhaling.png" class="placemarker">';
-		$msg .= '<h3 class="afhaling">'.sprintf( __( 'Begroetingstekst met het aantal webshops (%d) en promotie voor de afhaalkaart.', 'oxfam-webshop' ), $sites-1 ).'</h3>';
-		return $msg;
-	}
-
-	function print_portal_title() {
-		return __( 'Titel in de header van de portaalpagina', 'oxfam-webshop' );
-	}
-
-	function print_store_selector() {
-		$global_zips = get_shops();
-		$all_zips = get_site_option( 'oxfam_flemish_zip_codes' );
-		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'count' => true ) );
-		$msg = '<div class="portal-header"><div class="wrapper">';
-		$msg .= '<h2>Shop online in 1 van onze '.($sites-1).' webshops</h2>';
-		$msg .= '<p>Ze zijn verbonden aan een lokale wereldwinkel. Thuislevering is mogelijk over heel Vlaanderen!</p>';
-		$msg .= '<p>'.__( 'Vul je postcode in en ontvang je bestelling aan huis:', 'oxfam-webshop' );
-		$msg .= '<span class="input-group">';
-		$msg .= '<input type="text" class="minimal" placeholder="zoek op postcode" id="oxfam-zip-user" autocomplete="off"> ';
-		$msg .= '<button class="minimal" type="submit" id="do_oxfam_redirect" disabled><i class="pe-7s-search"></i></button>';
-		$msg .= '</span></p>';
-		$msg .= '</div></div>';
-		foreach ( $all_zips as $zip => $city ) {
-			if ( isset( $global_zips[$zip] ) ) {
-				$url = $global_zips[$zip];
-			} else {
-				$url = '';
-			}
-			$msg .= '<input type="hidden" class="oxfam-zip-value" id="'.$zip.'" value="'.$url.'">';
-		}
-		return $msg;
-	}
-
-	function print_store_locator_map() {
-		// Eventuele styling: maptype='light_monochrome'
-		return do_shortcode("[flexiblemap src='".content_url('/maps/global.kml')."' width='100%' height='600px' zoom='9' hidemaptype='true' hidescale='false' kmlcache='4 hours' locale='nl-BE' id='map-oxfam']");
-	}
-
 	function print_woocommerce_messages() {
 		if ( function_exists('wc_print_notices') and wc_notice_count() > 0 ) {
 			return wc_print_notices();
@@ -6122,13 +5986,15 @@
 		return ( get_option('oxfam_does_risky_delivery') === 'yes' );
 	}
 
-	function does_home_delivery() {
-		// Kijk in de testsites naar de geactiveerde verzendmethodes i.p.v. de toegekende postcodes
-		if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
+	function does_home_delivery( $zipcode = 0, $blog_id = 0 ) {
+		if ( $zipcode === 0 ) {
 			return boolval( get_oxfam_covered_zips() );
 		} else {
-			// Zal niet kloppen voor Gent-Sint-Pieters (= geen enkele hoofdpostcode)?
-			return get_option('oxfam_zip_codes');
+			switch_to_blog( $blog_id );
+			// Check of de webshop thuislevering doet voor deze specifieke postcode
+			$response = in_array( $zipcode, get_oxfam_covered_zips() );
+			restore_current_blog();
+			return $response;
 		}
 	}
 
@@ -6164,28 +6030,49 @@
 		$shop_post_id = intval( $shop_post_id );
 
 		if ( false === ( $store_data = get_site_transient( $shop_post_id.'_store_data' ) ) ) {
-			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
-			$args = array(
-				'headers' => array(
-					'Authorization' => 'Basic '.base64_encode( OWW_USER.':'.OWW_PASSWORD ),
-				),
-			);
 			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id );
 			
-			$logger = wc_get_logger();
-			$context = array( 'source' => 'WordPress API' );
-			
-			if ( $response['response']['code'] == 200 ) {
-				$logger->debug( 'Shop data saved in transient for ID '.$shop_post_id, $context );
+			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
 				// Bewaar als een array i.p.v. een object
-				$store_data = json_decode( $response['body'], true );
+				$store_data = json_decode( wp_remote_retrieve_body( $response ), true );
 				set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
 			} else {
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'WordPress API' );
 				$logger->notice( 'Could not retrieve shop data for ID '.$shop_post_id, $context );
 			}
 		}
 
 		return $store_data;
+	}
+
+	function get_external_wpsl_stores( $domain = 'www.oxfamwereldwinkels.be', $page = 1 ) {
+		$all_stores = array();
+
+		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!
+		// In API is -1 geen geldige waarde voor 'per_page' 
+		$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores?per_page=100&page='.$page );
+		
+		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {			
+			// Bewaar als een array i.p.v. een object
+			$all_stores = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			if ( $page === 1 ) {
+				// Deze header geeft aan hoeveel resultatenpagina's er in totaal zijn
+				$total_pages = intval( wp_remote_retrieve_header( $response, 'X-WP-TotalPages' ) );
+
+				// Vul indien nodig recursief aan vanaf 2de pagina
+				for ( $i = 2; $i <= $total_pages; $i++ ) { 
+					$all_stores = array_merge( $all_stores,  get_external_wpsl_stores( $domain, $i ) );
+				}
+			}
+		} else {
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'WordPress API' );
+			$logger->notice( 'Could not retrieve shops on page '.$page, $context );
+		}
+
+		return $all_stores;
 	}
 
 	function get_external_partner( $partner_name, $domain = 'www.oxfamwereldwinkels.be' ) {
