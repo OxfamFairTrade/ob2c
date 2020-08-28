@@ -769,13 +769,6 @@ body.page-template-default div.nm-row.nm-row-boxed.nm-row-max-width {
   margin-right: 5px;
 }
 
-/* Breedte productarchief- en productdetailpagina's limiteren */
-div#nm-shop,
-div.nm-single-product {
-  max-width: 1500px;
-  margin: 0 auto;
-}
-
 /* Zet de titels op de homepage groter */
 .titels-homepage h4 {
   font-size: 2em !important;
@@ -798,16 +791,6 @@ h1.product_title.entry-title {
   margin-bottom: 0;
 }
 
-/* Geef leeggoedboodschap wat marge boven en onder */
-div.wc-force-sells {
-  margin: 1em 0;
-}
-div.wc-force-sells > p {
-  margin-bottom: 0;
-}
-div.wc-force-sells > ul {
-  margin-left: 30px;
-}
 
 /* Maak de testimonial iets subtieler */
 div.nm-testimonial {
@@ -911,33 +894,6 @@ div.nm-single-product div.woocommerce-product-gallery  {
 /* Fix voor zoombox die productfoto's op detailpagina rechts afknipt */
 figure {
   margin: 0 !important;
-}
-
-/* Styleer herkomstinfo en promoties boven winkelmandknop */
-p.herkomst {
-  margin-bottom: 1em;
-  font-weight: bold;
-}
-p.promotie {
-  margin: 2em 0;
-  line-height: 1.25em;
-  padding: 1em;
-  color: $see-through-red;
-  border: 2px solid $see-through-red;
-  border-radius: 3px;
-  position: relative;
-
-  &:before {
-    content: 'Promo!';
-    position: absolute;
-    color: $pale-black;
-    font-family: 'Pacifico', cursive;
-    font-size: 1.25em;
-    top: -1.5em;
-    right: 0.5em;
-    transform: rotate(-5deg);
-    z-index: 50;
-  }
 }
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */
@@ -1364,12 +1320,6 @@ div.nm-feature.layout-centered {
 /*****************/
 
 @media (min-width: 881px) {
-  /* Zet een limiet op de breedte van de add-to-cart knoppen */
-  div.nm-quantity-wrap,
-  button.nm-simple-add-to-cart-button {
-    max-width: 250px;
-  }
-
   /* Maak de leeggoedicoontjes kleiner */
   .shop_table.cart .product-thumbnail.empties {
     padding: 20px;

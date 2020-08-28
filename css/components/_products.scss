@@ -3,6 +3,232 @@
 // Products
 // --------------------------------------------------
 
+// Product detail
+
+.product {
+  .nm-shop-loop-thumbnail-link,
+  .woocommerce-product-gallery {
+    position: relative;
+
+    .info-labels {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 999;
+
+      .info-label {
+        display: inline-block;
+        margin: 0 0 6px 0;
+        padding: 5.95px 8.925px;
+        font-size: 14px;
+        line-height: 16px;
+        background: $white;
+        color: $black;
+        border: 1px solid $black;
+        float: right;
+        clear: both;
+
+        &.promotion {
+          color: $red-promo;
+          border-color: $red-promo;
+        }
+
+        &.newbee {
+          color: $yellow-new;
+          border-color: $yellow-new;
+        }
+
+        &.organic {
+          color: $green-bio;
+          border-color: $green-bio;
+        }
+
+        &.pickup-only {
+
+        }
+      }
+    }
+  }
+
+  .nm-shop-loop-thumbnail-link {
+    .info-labels {
+      .info-label {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .related.products {
+    > .nm-row {
+      width: 1370px;
+      margin: 0 auto;
+
+      @media (max-width: 1600px) {
+        width: 1170px;
+      }
+
+      @media (max-width: 1200px) {
+        width: 970px;
+      }
+
+      @media (max-width: 991px) {
+        width: 750px;
+        padding: 0 20px;
+      }
+
+      @media (max-width: 767px) {
+        width:100%;
+      }
+    }
+  }
+
+  .summary {
+    .price span.amount {
+      font-size: 26.5625px;
+      color: $green-price;
+      font-weight: bold;
+    }
+
+    p.price {
+      padding-bottom: 0;
+
+      .woocommerce-price-suffix {
+        color: gray;
+      }
+    }
+
+    button.button {
+      width: auto;
+      display: inline-block;
+      vertical-align: top;
+
+      font-weight: bold;
+      padding: 10.5px 21px;
+      margin-right: 7px;
+      margin-bottom: 21px;
+      line-height: 22.4px;
+      color: $white;
+      border: none;
+      background: url(/wp-content/themes/oxfam-webshop/shop.svg) no-repeat left center $red-promo;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    .nm-quantity-wrap {
+      width: auto;
+      display: inline-block;
+      border: 1px solid #dadada;
+    }
+  }
+
+  p {
+    font-size: 17px;
+    line-height: 24px;
+
+    &.herkomst {
+      margin-bottom: 14px;
+      font-weight: bold;
+    }
+
+    &.promotie {
+      margin: 28px 0;
+      padding: 14px;
+      color: $see-through-red;
+      border: 2px solid $see-through-red;
+      border-radius: 3px;
+      position: relative;
+      font-size: 14px;
+      line-height: 17.5px;
+
+      &:before {
+        content: 'Promo!';
+        position: absolute;
+        color: $pale-black;
+        font-family: 'Pacifico', cursive;
+        font-size: 17.5px;
+        line-height: 17.5px;
+        top: -26.25px;
+        right: 8.75px;
+        transform: rotate(-5deg);
+        z-index: 50;
+      }
+    }
+
+    &.weight,
+    &.unit-price {
+      display: inline-block;
+      color: gray;
+      font-size: 15.3px;
+      margin-right: 7.65px;
+    }
+  }
+
+  .wc-force-sells {
+    color: gray;
+    margin: 0 0 17px 0;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.4;
+
+    > p {
+      margin-bottom: 0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    > ul {
+      margin-left: 30px;
+    }
+  }
+}
+
+div.nm-single-product.product {
+  > .nm-single-product-bg {
+    background: transparent;
+    max-width: 1370px;
+    margin: 0 auto;
+
+    @media (max-width: 1600px) {
+      max-width: 1170px;
+    }
+
+    @media (max-width: 1200px) {
+      max-width: 970px;
+    }
+  }
+
+  .nm-single-product-summary-row {
+    padding: 0;
+
+    .nm-single-product-summary-col {
+      padding: 0 !important;
+
+      > .woocommerce-product-gallery {
+        width: 33.333334%;
+        padding-right: 12px;
+      }
+
+      > .summary {
+        width: 66.6666666%;
+        padding-left: 12px;
+      }
+    }
+  }
+
+  .woocommerce-breadcrumb {
+    font-size: 12.75px;
+    line-height: normal;
+    color: $black;
+  }
+
+  .product_title {
+    font-size: 34px;
+    line-height: 1.2;
+  }
+}
+
 // Product detail block
 .full-width-container {
   background: whitesmoke;
@@ -113,6 +339,49 @@
         margin-top: 1em;
         font-size: 0.75em;
         font-weight: normal;
+      }
+    }
+  }
+}
+
+// Related products
+.nm-products {
+  > .product {
+    .woocommerce-loop-product__title {
+      padding-right: 0;
+
+      > a {
+        display: inline-block;
+        height: 25.2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 18px;
+        width: 100%;
+        white-space: nowrap;
+      }
+    }
+
+    .nm-shop-loop-details {
+      position: relative;
+    }
+
+    .nm-shop-loop-actions {
+      > .button {
+        display: inline-block;
+        width: 24px;
+        height: 20px;
+
+        text-indent: 100%;
+        overflow: hidden;
+
+        background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
+
+        position: absolute;
+        right: 0;
+        bottom: 3px;
+
+        margin: 0;
+        padding: 0;
       }
     }
   }

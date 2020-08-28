@@ -767,7 +767,7 @@ table tbody td:last-child {
 }
 #header .topbar .top-menu {
   display: inline-block;
-  margin: 0 40px 0 0;
+  margin: 0 30px 0 0;
   padding: 0;
 }
 #header .topbar .top-menu ul {
@@ -777,7 +777,7 @@ table tbody td:last-child {
 }
 #header .topbar .top-menu ul li {
   display: block;
-  margin: 0 20px;
+  margin: 0 15px;
   padding: 0;
   float: left;
 }
@@ -827,6 +827,7 @@ table tbody td:last-child {
   line-height: normal;
   padding: 0;
   padding-left: 12px;
+  position: relative;
 }
 #header .topbar .top-social a:before {
   content: "";
@@ -1147,6 +1148,196 @@ table tbody td:last-child {
   width: 48px;
 }
 
+.product .nm-shop-loop-thumbnail-link,
+.product .woocommerce-product-gallery {
+  position: relative;
+}
+.product .nm-shop-loop-thumbnail-link .info-labels,
+.product .woocommerce-product-gallery .info-labels {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 999;
+}
+.product .nm-shop-loop-thumbnail-link .info-labels .info-label,
+.product .woocommerce-product-gallery .info-labels .info-label {
+  display: inline-block;
+  margin: 0 0 6px 0;
+  padding: 5.95px 8.925px;
+  font-size: 14px;
+  line-height: 16px;
+  background: #ffffff;
+  color: #1b1b1B;
+  border: 1px solid #1b1b1B;
+  float: right;
+  clear: both;
+}
+.product .nm-shop-loop-thumbnail-link .info-labels .info-label.promotion,
+.product .woocommerce-product-gallery .info-labels .info-label.promotion {
+  color: #ff1d34;
+  border-color: #ff1d34;
+}
+.product .nm-shop-loop-thumbnail-link .info-labels .info-label.newbee,
+.product .woocommerce-product-gallery .info-labels .info-label.newbee {
+  color: #ffc049;
+  border-color: #ffc049;
+}
+.product .nm-shop-loop-thumbnail-link .info-labels .info-label.organic,
+.product .woocommerce-product-gallery .info-labels .info-label.organic {
+  color: #61a534;
+  border-color: #61a534;
+}
+.product .nm-shop-loop-thumbnail-link .info-labels .info-label {
+  font-size: 12px;
+}
+.product .related.products > .nm-row {
+  width: 1370px;
+  margin: 0 auto;
+}
+@media (max-width: 1600px) {
+  .product .related.products > .nm-row {
+    width: 1170px;
+  }
+}
+@media (max-width: 1200px) {
+  .product .related.products > .nm-row {
+    width: 970px;
+  }
+}
+@media (max-width: 991px) {
+  .product .related.products > .nm-row {
+    width: 750px;
+    padding: 0 20px;
+  }
+}
+@media (max-width: 767px) {
+  .product .related.products > .nm-row {
+    width: 100%;
+  }
+}
+.product .summary .price span.amount {
+  font-size: 26.5625px;
+  color: #77a464;
+  font-weight: bold;
+}
+.product .summary p.price {
+  padding-bottom: 0;
+}
+.product .summary p.price .woocommerce-price-suffix {
+  color: gray;
+}
+.product .summary button.button {
+  width: auto;
+  display: inline-block;
+  vertical-align: top;
+  font-weight: bold;
+  padding: 10.5px 21px;
+  margin-right: 7px;
+  margin-bottom: 21px;
+  line-height: 22.4px;
+  color: #ffffff;
+  border: none;
+  background: url(/wp-content/themes/oxfam-webshop/shop.svg) no-repeat left center #ff1d34;
+}
+.product .summary button.button:hover {
+  opacity: 0.9;
+}
+.product .summary .nm-quantity-wrap {
+  width: auto;
+  display: inline-block;
+  border: 1px solid #dadada;
+}
+.product p {
+  font-size: 17px;
+  line-height: 24px;
+}
+.product p.herkomst {
+  margin-bottom: 14px;
+  font-weight: bold;
+}
+.product p.promotie {
+  margin: 28px 0;
+  padding: 14px;
+  color: rgba(250, 22, 50, 0.9);
+  border: 2px solid rgba(250, 22, 50, 0.9);
+  border-radius: 3px;
+  position: relative;
+  font-size: 14px;
+  line-height: 17.5px;
+}
+.product p.promotie:before {
+  content: "Promo!";
+  position: absolute;
+  color: #434343;
+  font-family: "Pacifico", cursive;
+  font-size: 17.5px;
+  line-height: 17.5px;
+  top: -26.25px;
+  right: 8.75px;
+  transform: rotate(-5deg);
+  z-index: 50;
+}
+.product p.weight, .product p.unit-price {
+  display: inline-block;
+  color: gray;
+  font-size: 15.3px;
+  margin-right: 7.65px;
+}
+.product .wc-force-sells {
+  color: gray;
+  margin: 0 0 17px 0;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.4;
+}
+.product .wc-force-sells > p {
+  margin-bottom: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.product .wc-force-sells > ul {
+  margin-left: 30px;
+}
+
+div.nm-single-product.product > .nm-single-product-bg {
+  background: transparent;
+  max-width: 1370px;
+  margin: 0 auto;
+}
+@media (max-width: 1600px) {
+  div.nm-single-product.product > .nm-single-product-bg {
+    max-width: 1170px;
+  }
+}
+@media (max-width: 1200px) {
+  div.nm-single-product.product > .nm-single-product-bg {
+    max-width: 970px;
+  }
+}
+div.nm-single-product.product .nm-single-product-summary-row {
+  padding: 0;
+}
+div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-summary-col {
+  padding: 0 !important;
+}
+div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-summary-col > .woocommerce-product-gallery {
+  width: 33.333334%;
+  padding-right: 12px;
+}
+div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-summary-col > .summary {
+  width: 66.6666666%;
+  padding-left: 12px;
+}
+div.nm-single-product.product .woocommerce-breadcrumb {
+  font-size: 12.75px;
+  line-height: normal;
+  color: #1b1b1B;
+}
+div.nm-single-product.product .product_title {
+  font-size: 34px;
+  line-height: 1.2;
+}
+
 .full-width-container {
   background: whitesmoke;
   margin: 0 auto;
@@ -1242,6 +1433,35 @@ table tbody td:last-child {
   margin-top: 1em;
   font-size: 0.75em;
   font-weight: normal;
+}
+
+.nm-products > .product .woocommerce-loop-product__title {
+  padding-right: 0;
+}
+.nm-products > .product .woocommerce-loop-product__title > a {
+  display: inline-block;
+  height: 25.2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  width: 100%;
+  white-space: nowrap;
+}
+.nm-products > .product .nm-shop-loop-details {
+  position: relative;
+}
+.nm-products > .product .nm-shop-loop-actions > .button {
+  display: inline-block;
+  width: 24px;
+  height: 20px;
+  text-indent: 100%;
+  overflow: hidden;
+  background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
+  position: absolute;
+  right: 0;
+  bottom: 3px;
+  margin: 0;
+  padding: 0;
 }
 
 #newsletter {
@@ -2047,13 +2267,6 @@ body.page-template-default div.nm-row.nm-row-boxed.nm-row-max-width {
   margin-right: 5px;
 }
 
-/* Breedte productarchief- en productdetailpagina's limiteren */
-div#nm-shop,
-div.nm-single-product {
-  max-width: 1500px;
-  margin: 0 auto;
-}
-
 /* Zet de titels op de homepage groter */
 .titels-homepage h4 {
   font-size: 2em !important;
@@ -2074,19 +2287,6 @@ div.nm-single-product {
 /* Prijs wat dichter bij de titel laten komen */
 h1.product_title.entry-title {
   margin-bottom: 0;
-}
-
-/* Geef leeggoedboodschap wat marge boven en onder */
-div.wc-force-sells {
-  margin: 1em 0;
-}
-
-div.wc-force-sells > p {
-  margin-bottom: 0;
-}
-
-div.wc-force-sells > ul {
-  margin-left: 30px;
 }
 
 /* Maak de testimonial iets subtieler */
@@ -2199,33 +2399,6 @@ div.nm-single-product div.woocommerce-product-gallery {
 /* Fix voor zoombox die productfoto's op detailpagina rechts afknipt */
 figure {
   margin: 0 !important;
-}
-
-/* Styleer herkomstinfo en promoties boven winkelmandknop */
-p.herkomst {
-  margin-bottom: 1em;
-  font-weight: bold;
-}
-
-p.promotie {
-  margin: 2em 0;
-  line-height: 1.25em;
-  padding: 1em;
-  color: rgba(250, 22, 50, 0.9);
-  border: 2px solid rgba(250, 22, 50, 0.9);
-  border-radius: 3px;
-  position: relative;
-}
-p.promotie:before {
-  content: "Promo!";
-  position: absolute;
-  color: #434343;
-  font-family: "Pacifico", cursive;
-  font-size: 1.25em;
-  top: -1.5em;
-  right: 0.5em;
-  transform: rotate(-5deg);
-  z-index: 50;
 }
 
 /* Verzendkosten rechts uitlijnen, ook als er slechts één methode beschikbaar is */
@@ -2693,12 +2866,6 @@ div.nm-feature.layout-centered {
 /*  BREAKPOINTS  */
 /*****************/
 @media (min-width: 881px) {
-  /* Zet een limiet op de breedte van de add-to-cart knoppen */
-  div.nm-quantity-wrap,
-button.nm-simple-add-to-cart-button {
-    max-width: 250px;
-  }
-
   /* Maak de leeggoedicoontjes kleiner */
   .shop_table.cart .product-thumbnail.empties {
     padding: 20px;
