@@ -14,16 +14,17 @@
 	add_filter( 'nm_include_custom_styles', '__return_false' );
 	
 	// Geautomatiseerde manier om instellingen van Savoy te kopiëren naar subsites
-	add_action( 'update_option_nm_theme_options', 'sync_theme_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wpsl_settings', 'sync_settings_to_subsites', 10, 3 );
 	
-	function sync_theme_settings_to_subsites( $old_value, $new_value, $option ) {
+	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( get_current_blog_id() === 1 and current_user_can('update_core') ) {
 			$sites = get_sites( array( 'site__not_in' => array(1) ) );
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
 				if ( update_option( $option, $new_value ) ) {
-					write_log("Thema-instellingen gesynchroniseerd naar blog-ID ".$site->blog_id );
+					write_log("Instelling '".$option."' gesynchroniseerd naar blog-ID ".$site->blog_id );
 				}
 				restore_current_blog();
 			}
@@ -493,11 +494,13 @@
 	// Laad onze custom markers (zowel in front-end als back-end)
 	define( 'WPSL_MARKER_URI', dirname( get_bloginfo('stylesheet_url') ).'/markers/' );
 	add_filter( 'wpsl_admin_marker_dir', 'wpsl_admin_marker_dir' );
-	add_filter( 'wpsl_js_settings', 'wpsl_hide_start_marker' );
 
 	function wpsl_admin_marker_dir() {
 		return get_stylesheet_directory().'/markers/';
 	}
+
+	// Verberg de startpositie (zonder gefoefel met transparante afbeeldingen)
+	add_filter( 'wpsl_js_settings', 'wpsl_hide_start_marker' );
 
 	function wpsl_hide_start_marker( $settings ) {
 		$settings['startMarker'] = '';
@@ -509,26 +512,37 @@
 	function wpsl_add_no_map_template( $templates ) {
 		$templates[] = array (
 			'id'   => 'no_map',
-			'name' => 'Zonder kaart',
+			'name' => 'Modal zonder kaart',
 			'path' => get_stylesheet_directory().'/wpsl-templates/no-map.php',
 		);
 		return $templates;
 	}
 
 	// Voorbeeld van 'featured' winkels: https://wpstorelocator.co/document/create-featured-store-that-shows-up-first-in-search-results/
-	// add_filter( 'wpsl_store_data', 'wpsl_change_results_sorting' );
+	add_filter( 'wpsl_store_data', 'wpsl_change_results_sorting', 1000 );
 
 	function wpsl_change_results_sorting( $store_meta ) {
 		$custom_sort = array();
 		foreach ( $store_meta as $key => $row ) {
 			// In plaats van sorteren op 'distance'
 			$custom_sort[ $key ] = $row['webshop'];
+			
+			// Formatteer de afstand op z'n Belgisch
+			$store_meta[ $key ]['distance'] = '+/- '.round( $row['distance'], 0 );
 		}
 
 		// Winkels zonder webshop-URL (= lege string) belanden onderaan
-		array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_meta );
+		// array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_meta );
 		// write_log( print_r( $store_meta, true ) );
 		return $store_meta;
+	}
+
+	// Deze filter zal misschien van pas komen indien er geen enkel resultaat gevonden werd
+	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
+
+	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
+		write_log("Geen enkele winkel gevonden binnen de 30 kilometer!");
+		return $store_data;
 	}
 
 	// Voeg o.a. post-ID toe als extra metadata op winkel
@@ -541,6 +555,7 @@
 			'url' => array( 'label' => 'Winkelpagina' ),
 			'oxfam_shop_post_id' => array( 'label' => 'Post-ID in OWW-site' ),
 			'webshop' => array( 'label' => 'Webshop-URL' ),
+			'mailchimp' => array( 'label' => 'Lokale nieuwsbrief' ),
 		);
 
 		return $meta_fields;
@@ -552,6 +567,7 @@
 	function wpsl_add_frontend_meta_fields( $store_fields ) {
 		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
 		$store_fields['wpsl_webshop'] = array( 'name' => 'webshop' );
+		$store_fields['wpsl_mailchimp'] = array( 'name' => 'mailchimp' );
 		return $store_fields;
 	}
 
