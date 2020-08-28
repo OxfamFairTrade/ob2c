@@ -1,8 +1,8 @@
 <?php 
-	global $product, $post;
+	global $product;
 
-	// $partners = array( 'Manduvira', 'Conacado' );
 	$partners = get_partner_terms_by_product( $product );
+	$all_partners = array();
 	
 	if ( count( $partners ) > 0 ) {
 		$partners_with_quote = array();
@@ -11,6 +11,7 @@
 			if ( isset( $partner_info['quote'] ) and strlen( $partner_info['quote'] ) > 5 ) {
 				$partners_with_quote[] = $partner_info;
 			}
+			$all_partners[] = $partner_info;
 
 			// Nieuwe manier van werken: ga op zoek naar een A/B-partner om uit te lichten (veld toe te voegen aan API)
 			// $categories = get_the_terms( $partner->ID, 'partner_cat' );
@@ -35,6 +36,7 @@
 		}
 
 		// var_dump_pre( $partners_with_quote );
+		var_dump_pre( $all_partners );
 		
 		// Toon een random quote
 		if ( count( $partners_with_quote ) > 0 ) {
@@ -166,27 +168,25 @@
 	}
 
 	function output_provenance_info( $partners ) {
-		global $product, $post;
+		global $product;
 		echo '<div class="product-provenance">';
 
-		if ( $partners !== false ) {
+		if ( count( $partners ) > 0 ) {
 
 			echo '<h3>' . _n( 'Producent', 'Producenten', count($partners) ) . '</h3>';
 			echo '<p class="partners">';
-			foreach ( $partners as $post ) {
-				// Variabele MOET $post heten! 
-				setup_postdata($post);
-				$countries = get_the_term_list( $post->ID, 'partner_country' );
-				// Alle gepubliceerde partners mogen gelinkt worden!
-				// Eventueel check toevoegen op waarde van '_link_to' (= externe site in nieuw tabblad openen)
-				if ( 'publish' === get_post_status( $post->ID ) ) {
-					echo '<a href="'.get_the_permalink().'">'.get_the_title().'</a>';
-				} else {
-					echo get_the_title();
-				}
-				echo ' ('.strip_tags($countries).')<br/>';
+			foreach ( $partners as $partner ) {
+				// AANPASSEN AAN NIEUWE STRUCTUUR (GEEN POST OBJECT AANWEZIG)
+				// $countries = get_the_term_list( $post->ID, 'partner_country' );
+				// // Alle gepubliceerde partners mogen gelinkt worden!
+				// // Eventueel check toevoegen op waarde van '_link_to' (= externe site in nieuw tabblad openen)
+				// if ( 'publish' === get_post_status( $post->ID ) ) {
+				// 	echo '<a href="'.get_the_permalink().'">'.get_the_title().'</a>';
+				// } else {
+				// 	echo get_the_title();
+				// }
+				// echo ' ('.strip_tags($countries).')<br/>';
 			}
-			wp_reset_postdata();
 			echo '</p>';
 
 		} elseif ( $product->get_attribute('herkomst') !== '' ) {
@@ -194,7 +194,7 @@
 			echo '<h3>Herkomst</h3>';
 			echo '<ul>';
 			// Indien een product geen partners heeft, tonen we gewoon de landen
-			$countries = explode( ', ', $product->get_attribute('herkomst') );
+			$countries = explode( ', ', $product->get_meta('_herkomst_nl') );
 			foreach( $countries as $country ) {
 				echo '<li>'.$country.'</li>';
 			}
@@ -244,7 +244,7 @@
 
 						// Toon de herkomstinfo en voedingsinfo hier pas (om het gat op te vullen)
 						echo '<div class="col-row"><div class="col-md-6">';
-						output_provenance_info( $partners );
+						output_provenance_info( $all_partners );
 						echo '</div><div class="col-md-6">';
 						output_food_values( $oft_quality_data, $food_api_labels, $food_required_keys, 'h3' );
 						echo '</div></div>';

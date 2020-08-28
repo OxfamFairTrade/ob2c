@@ -129,9 +129,9 @@ if ( post_password_required() ) {
     </div>
         
 	<?php
-    // GEWIJZIGD: Voeg nieuwe actie toe en toon blok met voedings- en partnerinfo
-    do_action( 'woocommerce_before_extra_product_info' );
-    get_template_part( 'template-parts/woocommerce/extra-product-info' );
+    // GEWIJZIGD: Toon blokken met herkomst, voedings- en partnerinfo
+    get_template_part( 'template-parts/woocommerce/product-origin' );
+    get_template_part( 'template-parts/woocommerce/product-details' );
 
     /**
      * Hook: woocommerce_after_single_product_summary.

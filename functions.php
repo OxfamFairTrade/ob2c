@@ -5242,18 +5242,6 @@
 		}
 	}
 
-	// Herkomstlanden net boven grijze balk tonen
-	add_action( 'woocommerce_before_extra_product_info', 'show_product_origin' );
-
-	function show_product_origin() {
-		global $product;
-		if ( $product->get_meta('_herkomst_nl') !== '' ) {
-			echo '<p class="herkomst">';
-				echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
-			echo '</p>';
-		}
-	}
-
 	// Formatteer de gewichten in de attributen
 	add_filter( 'woocommerce_attribute', 'add_suffixes', 10, 3 );
 
