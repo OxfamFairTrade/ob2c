@@ -19,28 +19,17 @@
 		<p>Vul de postcode in waar jij de producten wil <b>afhalen</b> of waar ze <b>geleverd</b> moeten worden. Je bestelling wordt opgevolgd door de vrijwilligers van een Oxfam-Wereldwinkel in jouw buurt.</p>
 		<?php
 			// Door core hack halen we altijd de winkels in het hoofdniveau op, werkt anders niet in subsites!
-			// Opgelet: instelling "Toon 'meer info'-link in de locatielijst" doet de resultaten verdwijnen
 			// Opgelet: instelling "Zodra een gebruiker op 'route' klikt, open een nieuwe venster en toon de route op google.com/maps" ingeschakeld laten
 			// Anders wordt reverseGeocode() niet doorlopen in wpsl-gmap.js, waardoor de huidige postcode van de gebruiker niet ingevuld wordt
 			echo do_shortcode('[wpsl template="no_map"]');
 		?>
-		<div class="store-selector-resultsDISABLE" style="display: none;">
-			<!-- Voorbeeldcontent, alle winkels binnen een straal van 30 kilometer -->
-			<ul class="stores">
-				<li class="store active" style="cursor: pointer;">
-					<h3>Oxfam-Wereldwinkel Gent-Centrum</h3>
-					<p>Lammerstraat 16, 9000 Gent</p>
-					<ul class="delivery-options">
-						<li class="shipping active">​Levering aan huis</li>
-						<li class="pickup active">Afhalen in de winkel</li>
-					</ul>
-					<button>Online winkelen</button>
-				</li>
-				<li class="store inactive" style="cursor: not-allowed;">
-					<h3>Oxfam-Wereldwinkel Lokeren</h3>
-					<p>Kapellestraat 3, 9160 Lokeren</p>
-					<p>Online winkelen niet beschikbaar.<br/>Stuur je bestelling <a href="mailto:lokeren@oww.be">per e-mail</a>.</p>
-				</li>
+		<div id="default-content">
+			<!-- In afwachting van ingeven van postcode -->
+			<p>Laatst gezocht: <?php $_COOKIE['current_location']; ?></p>
+			<ul class="benefits">
+				<li>Gratis verzending vanaf 50 euro</li>
+				<li>Wij kopen rechtreeks bij kwetsbare producenten, met oog voor ecologische duurzaamheid</li>
+				<li>Met jouw aankoop steun je onze strijd voor een structureel eerlijk handelssysteem</li>
 			</ul>
 		</div>
 	</div>
@@ -51,17 +40,22 @@
 		var wto;
 		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
 		
-		/* WERKT NIET ... */
+		/* Werkt niet, wat doe ik verkeerd? Zou veel duplicate logica kunnen vermijden! */
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-search-btn', function() {
 			alert('HALLO');
+			jQuery('#default-content').hide();
 			/* Maak de resultatenlijst zéker zichtbaar */
 			jQuery('#wpsl-result-list').show();
+			/* Bewaar de ingave in een cookie voor later gebruik, o.a. in AJAX */
+			setCookie( 'current_location', jQuery('#wpsl-search-input').val() );
 		});
 
 		jQuery('#wpsl-search-input').keyup( function(event) {
 			if ( event.which == 13 ) {
 				jQuery('#wpsl-search-btn').trigger('click');
+				jQuery('#default-content').hide();
 				jQuery('#wpsl-result-list').show();
+				setCookie( 'current_location', jQuery('#wpsl-search-input').val() );
 			}
 		});
 
@@ -69,9 +63,8 @@
 			jQuery('.store-selector-modal').toggle();
 			
 			var zip = jQuery('#wpsl-search-input').val();
-			var button = jQuery('#wpsl-search-btn');
 			if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
-				button.prop( 'disabled', false ).parent().addClass('is-valid');
+				jQuery('#wpsl-search-btn').prop( 'disabled', false ).parent().addClass('is-valid');
 			}
 		});
 
@@ -84,7 +77,9 @@
 			close: function(event,ui) {
 				// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
 				jQuery('#wpsl-search-btn').trigger('click');
+				jQuery('#default-content').hide();
 				jQuery('#wpsl-result-list').show();
+				setCookie( 'current_location', jQuery('#wpsl-search-input').val() );
 			}
 		});
 
@@ -98,7 +93,9 @@
 					button.find('i').addClass('loading');
 					wto = setTimeout( function() {
 						button.trigger('click');
+						jQuery('#default-content').hide();
 						jQuery('#wpsl-result-list').show();
+						setCookie( 'current_location', jQuery('#wpsl-search-input').val() );
 					}, 750);
 				}, 250);
 			} else {
@@ -107,7 +104,7 @@
 		});
 
 		/* Gebruik event delegation, deze nodes zijn nog niet aanwezig bij DOM load! */
-		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li', function() {
+		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
 			alert("Registreer keuze in cookie en doe redirect!");
 		});
 		
@@ -138,4 +135,11 @@
 			}
 		});
 	});
+
+	function setCookie(cname, cvalue) {
+		var d = new Date();
+		d.setTime( d.getTime() + 30*24*60*60*1000 );
+		var expires = "expires="+ d.toUTCString();
+		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+	}
 </script>

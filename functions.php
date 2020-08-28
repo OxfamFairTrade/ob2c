@@ -518,6 +518,59 @@
 		return $templates;
 	}
 
+	add_filter( 'wpsl_listing_template', 'wpsl_custom_results_template' );
+
+	function wpsl_custom_results_template() {
+		global $wpsl, $wpsl_settings;
+
+		$listing_template = '<% if ( available == "yes" ) { %>' . "\r\n";
+		// Winkel heeft een webshop
+		$listing_template .= "\t" . '<li data-store-id="<%= id %>" class="available" style="cursor: pointer;">' . "\r\n";
+		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
+		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
+		$listing_template .= "\t\t\t\t" . wpsl_store_header_template( 'listing' ) . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %>, ' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
+		$listing_template .= "\t\t\t" . '</p>' . "\r\n";
+
+		$listing_template .= "\t\t" . '<div class="wpsl-direction-wrap">' . "\r\n";
+		if ( ! $wpsl_settings['hide_distance'] ) {
+			$listing_template .= "\t\t\t" . '+/- <%= distance %> ' . esc_html( $wpsl_settings['distance_unit'] ) . '' . "\r\n";
+		}
+		$listing_template .= "\t\t" . '</div>' . "\r\n";
+		
+		$listing_template .= "\t\t\t" . '<ul class="delivery-options">' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<li class="pickup active">Afhalen in de winkel</li>' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<%= delivery %>' . "\r\n";
+		$listing_template .= "\t\t\t" . '</ul>' . "\r\n";
+
+		$listing_template .= "\t\t\t" . '<button>Online winkelen</button>' . "\r\n";
+		$listing_template .= "\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t" . '</li>';
+
+		$listing_template .= '<% } else { %>' . "\r\n";
+		// Winkel heeft géén webshop
+		$listing_template .= "\t" . '<li data-store-id="<%= id %>" style="cursor: not-allowed;">' . "\r\n";
+		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
+		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
+		$listing_template .= "\t\t\t\t" . wpsl_store_header_template( 'listing' ) . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %>, ' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
+		$listing_template .= "\t\t\t" . '</p>' . "\r\n";
+
+		$listing_template .= "\t\t" . '<div class="wpsl-direction-wrap">' . "\r\n";
+		if ( ! $wpsl_settings['hide_distance'] ) {
+			$listing_template .= "\t\t\t" . '+/- <%= distance %> ' . esc_html( $wpsl_settings['distance_unit'] ) . '' . "\r\n";
+		}
+		$listing_template .= "\t\t" . '</div>' . "\r\n";
+		
+		$listing_template .= "\t\t\t" . '<p>Online winkelen niet beschikbaar.<br/>Stuur je bestelling <a href="mailto:<%= email %>">per e-mail</a>.</p>' . "\r\n";
+		$listing_template .= "\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t" . '</li>';
+
+		$listing_template .= '<% } %>' . "\r\n";
+
+		return $listing_template;
+	}
+
 	// Voorbeeld van 'featured' winkels: https://wpstorelocator.co/document/create-featured-store-that-shows-up-first-in-search-results/
 	add_filter( 'wpsl_store_data', 'wpsl_change_results_sorting', 1000 );
 
@@ -528,12 +581,35 @@
 			$custom_sort[ $key ] = $row['webshop'];
 			
 			// Formatteer de afstand op z'n Belgisch
-			$store_meta[ $key ]['distance'] = '+/- '.round( $row['distance'], 0 );
+			$store_meta[ $key ]['distance'] = round( $row['distance'], 0 );
 		}
 
 		// Winkels zonder webshop-URL (= lege string) belanden onderaan
 		// array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_meta );
 		// write_log( print_r( $store_meta, true ) );
+		return $store_meta;
+	}
+
+	add_filter( 'wpsl_store_meta', 'wpsl_add_delivery_parameters_to_meta', 2 );
+
+	function wpsl_add_delivery_parameters_to_meta( $store_meta, $store_id = 0 ) {
+		// Vreemd genoeg wordt $store_id meestal niet doorgegeven ...
+		
+		// Key moet altijd aanwezig zijn, anders loopt de Underscore-template vast
+		$store_meta['delivery'] = '<li class="delivery inactive">Géén levering aan huis</li>';
+		$store_meta['available'] = 'no'; 
+
+		if ( $store_meta['webshopBlogId'] !== '' ) {
+			$store_meta['available'] = 'yes'; 
+			switch_to_blog( $store_meta['webshopBlogId'] );
+			if ( in_array( $_COOKIE['current_location'], get_oxfam_covered_zips() ) ) {
+				$store_meta['delivery'] = '<li class="delivery active">Levering aan huis</li>';
+			} else {
+				write_log( $_COOKIE['current_location'] );
+				write_log( serialize( get_oxfam_covered_zips() ) );
+			}
+			restore_current_blog();
+		}
 		return $store_meta;
 	}
 
@@ -554,7 +630,8 @@
 			'email' => array( 'label' => 'E-mail' ),
 			'url' => array( 'label' => 'Winkelpagina' ),
 			'oxfam_shop_post_id' => array( 'label' => 'Post-ID in OWW-site' ),
-			'webshop' => array( 'label' => 'Webshop-URL' ),
+			'webshop' => array( 'label' => 'URL van de webshop' ),
+			'webshop_blog_id' => array( 'label' => 'Blog-ID van de webshop' ),
 			'mailchimp' => array( 'label' => 'Lokale nieuwsbrief' ),
 		);
 
@@ -567,10 +644,12 @@
 	function wpsl_add_frontend_meta_fields( $store_fields ) {
 		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
 		$store_fields['wpsl_webshop'] = array( 'name' => 'webshop' );
+		$store_fields['wpsl_webshop_blog_id'] = array( 'name' => 'webshopBlogId' );
 		$store_fields['wpsl_mailchimp'] = array( 'name' => 'mailchimp' );
 		return $store_fields;
 	}
 
+	// Kan nog van pas komen om gewenst artikelnummer door te geven aan subsite
 	function append_get_parameter_to_href( $str, $get_param ) {
 		if ( isset( $_GET[$get_param] ) ) {
 			// Check inbouwen op reeds aanwezige parameters in $2-fragment? 
@@ -1038,7 +1117,7 @@
 	// Bevat geen WooCommerce-acties want die worden wegens een bug ingeladen via JavaScript!
 	// add_filter( 'bulk_actions-edit-shop_order', 'my_custom_bulk_actions', 1, 10000 );
 
-	function my_custom_bulk_actions( $actions ){
+	function my_custom_bulk_actions( $actions ) {
 		var_dump_pre( $actions );
 		return $actions;
 	}
