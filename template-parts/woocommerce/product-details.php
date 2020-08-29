@@ -1,9 +1,7 @@
 <?php 
-	global $product;
+	global $product, $partners, $featured_partner, $oft_quality_data, $food_api_labels;
 
 	$partner_terms = get_partner_terms_by_product( $product );
-	global $partners;
-	global $featured_partner;
 	$partners = array();
 	$featured_partner = false;
 
