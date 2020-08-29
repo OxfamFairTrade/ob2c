@@ -8,14 +8,14 @@
 		
 		if ( strlen( trim( $ingredients ) ) > 0 ) {
 			?>
-			<h4>Ingrediënten</h4>
-			<div class="ingredients">
-				<ul>
+			<div id="product-ingredients" class="product-info-panel ingredients">
+				<h4>Ingrediënten</h4>
+				<ul class="ingredients">
 					<li>
 						<?php
 							// Splits de commentaren op het einde af (o.a. cacaobestanddelen)
 							// Eventueel ook splitsen op ' // ' voor de producten die uit meerdere componenten bestaan (bv. noussines)?
-							$parts = explode( ' - ', $ingredients );
+							$parts = explode( ' - ', trim( $ingredients ) );
 							// Verhinder het splitsen van subingrediëntenlijsten tussen haakjes!
 							echo implode( '</li><li>', preg_split( "/, (?![^()]*\))/", $parts[0], -1, PREG_SPLIT_NO_EMPTY ) );
 							if ( count( $parts ) > 1 ) {
@@ -30,7 +30,7 @@
 				</ul>
 				<?php if ( get_ingredients_legend( $ingredients ) ) : ?>
 					<small class="legend">
-						<?php implode( '<br/>', get_ingredients_legend( $ingredients ) ); ?>
+						<?php echo implode( '<br/>', get_ingredients_legend( $ingredients ) ); ?>
 					</small>
 				<?php endif; ?>
 			</div>
