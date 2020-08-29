@@ -2,46 +2,40 @@
 	global $product;
 
 	$partners = get_partner_terms_by_product( $product );
+	$featured_partner === false;
 	$all_partners = array();
+
+	function test_if_quote_not_empty( $partner ) {
+		return ! empty( $partner_info['quote']['content'] );
+	}
 	
 	if ( count( $partners ) > 0 ) {
 		$partners_with_quote = array();
 		foreach ( $partners as $term_id => $partner_name ) {
 			$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-			if ( isset( $partner_info['quote'] ) and strlen( $partner_info['quote'] ) > 5 ) {
-				$partners_with_quote[] = $partner_info;
-			}
 			$all_partners[] = $partner_info;
 
-			// Nieuwe manier van werken: ga op zoek naar een A/B-partner om uit te lichten (veld toe te voegen aan API)
-			// $categories = get_the_terms( $partner->ID, 'partner_cat' );
-			// if ( $categories ) {
-			// 	// Zoek de eerste de beste A-partner (randomisatie + voorrang aan ontwikkelingspartners nog toe te voegen)
-			// 	foreach ( $categories as $category ) {
-			// 		if ( $category->slug === 'a' and 'publish' === get_post_status( $partner->ID ) ) {
-			// 			$featured_partner = $partner;
-			// 			break;
-			// 		}
-			// 	}
-			// 	if ( $featured_partner === false ) {
-			// 		// Als we nog geen resultaat hebben: probeer het opnieuw met de B-partners
-			// 		foreach ( $categories as $category ) {
-			// 			if ( $category->slug === 'b' and 'publish' === get_post_status( $partner->ID ) ) {
-			// 				$featured_partner = $partner;
-			// 				break;
-			// 			}
-			// 		}
-			// 	}
-			// }
+			if ( ! empty( $partner_info['quote']['content'] ) ) {
+				$partners_with_quote[] = $partner_info;
+			}
 		}
 
-		// var_dump_pre( $partners_with_quote );
+		$a_partners = wp_list_filter( $all_partners, array( 'type' => 'A', ) );
+		$b_partners = wp_list_filter( $all_partners, array( 'type' => 'B', ) );
+		$partners_with_quote = array_filter( $all_partners, 'test_if_quote_not_empty' );
+		
+		// Ga op zoek naar een A/B-partner om uit te lichten
+		if ( $featured_partner === false ) {
+			$featured_partner = $a_parnters[ array_rand( $a_partners ) ];
+			// Als we nog geen resultaat hebben: probeer het opnieuw met de B-partners
+		}
+
+		var_dump_pre( $partners_with_quote );
 		var_dump_pre( $all_partners );
 		
 		// Toon een random quote
 		if ( count( $partners_with_quote ) > 0 ) {
-			$i = random_int( 0, count($partners_with_quote) - 1 );
-			$featured_partner = $partners_with_quote[$i];
+			$featured_partner = $partners_with_quote[ array_rand( $partners_with_quote ) ];
 		} else {
 			$featured_partner = get_info_by_partner( get_term_by( 'slug', 'manduvira', 'product_partner' ) );
 		}
@@ -218,23 +212,19 @@
 						<div class="featured-partner">
 							<div class="col-row">
 								<div class="col-md-7">
-									<!-- Op dit ogenblik krijgen we enkel een kleine thumbnail van 100x100 door via de API -->
-									<!-- Pas voorlopig een vuile truc toe om het origineel uit de OWW-site in te laden -->
-									<img src="<?php echo str_replace( '-100x100.jpg', '.jpg', $featured_partner['quote_photo'] ); ?>">
-									<ul>
-										<li>Dit is een korte beschrijving van de partner</li>
-										<li>Lekker beknopt, in 3 bullet points</li>
-										<li>Nog toe te voegen aan API</li>
-									</ul>
-									<p><a href="<?php echo $featured_partner['url']; ?>">Maak kennis met <?php echo $featured_partner['name']; ?></a></p>
+									<img src="<?php echo esc_url( $featured_partner['quote']['image'] ); ?>">
+									<?php echo $featured_partner['bullet_points']; ?>
+									<p><a href="<?php echo esc_url( $featured_partner['link'] ); ?>">Maak kennis met <?php echo $featured_partner['title']['rendered']; ?></a></p>
 								</div>
 								<div class="col-md-5">
-									<blockquote>
-										&#8220;<?php echo $featured_partner['quote']; ?>&#8221;
-										<?php if ( array_key_exists( 'quote_by', $featured_partner ) ) : ?>
-											<footer><?php echo $featured_partner['quote_by']; ?></footer>
-										<?php endif; ?>
-									</blockquote>
+									<?php if ( ! empty( $featured_partner['quote']['content'] ) ) : ?>
+										<blockquote>
+											&#8220;<?php echo $featured_partner['quote']['content']; ?>&#8221;
+											<?php if ( ! empty( $featured_partner['quote']['by'] ) ) : ?>
+												<footer><?php echo $featured_partner['quote']['by']; ?></footer>
+											<?php endif; ?>
+										</blockquote>
+									<?php endif; ?>
 								</div>
 							</div>
 						</div>
@@ -261,7 +251,7 @@
 							$icons = explode( ', ', $product->get_attribute('voedingsvoorkeuren') );
 							foreach ( $icons as $icon_name ) {
 								echo '<a href="'.get_post_type_archive_link('product').'?swoof=1&pa_voedingsvoorkeuren='.sanitize_title($icon_name).'#result">';
-									echo '<div class="icon" style="background-image: url('.get_stylesheet_directory_uri().'/images/voedingsvoorkeuren/'.sanitize_title($icon_name).'.svg); width: 30px; height: 30px; background-size: cover;" alt="'.$icon_name.'" title="Bekijk alles '.strtolower($icon_name).'"></div>';
+									echo '<div class="icon" style="background-image: url('.get_stylesheet_directory_uri().'/images/voedingsvoorkeuren/'.sanitize_title( $icon_name ).'.svg);" alt="'.$icon_name.'" title="Bekijk alles '.strtolower( $icon_name ).'"></div>';
 								echo '</a>';
 							}
 						?>
