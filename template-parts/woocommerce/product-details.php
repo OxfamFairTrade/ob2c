@@ -12,8 +12,8 @@
 			$partners[] = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
 		}
 
-		$a_partners = wp_list_filter( $partners, array( 'type' => 'A', ) );
-		$b_partners = wp_list_filter( $partners, array( 'type' => 'B', ) );
+		$a_partners = wp_list_filter( $partners, array( 'type' => 'A' ) );
+		$b_partners = wp_list_filter( $partners, array( 'type' => 'B' ) );
 		
 		// Zoek een random A/B-partner om uit te lichten
 		if ( count( $a_partners ) > 0 ) {
@@ -23,8 +23,6 @@
 		}
 
 		// var_dump_pre( $partners );
-		// var_dump_pre( $a_partners );
-		// var_dump_pre( $b_partners );
 		// var_dump_pre( $featured_partner );
 	}
 

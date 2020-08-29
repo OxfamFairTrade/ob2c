@@ -7,25 +7,34 @@
 		$ingredients = $oft_quality_data['food']['_ingredients'];
 		
 		if ( strlen( trim( $ingredients ) ) > 0 ) {
-			echo '<h4>Ingrediënten</h4>';
-			// Splits de commentaren op het einde af (o.a. cacaobestanddelen)
-			// Eventueel ook splitsen op ' // ' voor de producten die uit meerdere componenten bestaan (bv. noussines)?
-			$parts = explode( ' - ', $ingredients );
-			echo '<div class="ingredients"><ul><li>';
-			// Verhinder het splitsen van subingrediëntenlijsten tussen haakjes!
-			echo implode( '</li><li>', preg_split( "/, (?![^()]*\))/", $parts[0], -1, PREG_SPLIT_NO_EMPTY ) );
-			if ( count( $parts ) > 1 ) {
-				// Plak de commentaren op het einde er weer aan
-				unset( $parts[0] );
-				foreach ( $parts as $comment ) {
-					echo '</li><li>' . implode( '</li><li>', preg_split( "/, (?![^()]*\))/", $comment, -1, PREG_SPLIT_NO_EMPTY ) );
-				}
-			}
-			echo '</li></ul>';
-			if ( get_ingredients_legend( $ingredients ) ) {
-				echo '<small class="legend">'.implode( '<br/>', get_ingredients_legend( $ingredients ) ).'</small>';
-			}
-			echo '</div>';
+			?>
+			<h4>Ingrediënten</h4>
+			<div class="ingredients">
+				<ul>
+					<li>
+						<?php
+							// Splits de commentaren op het einde af (o.a. cacaobestanddelen)
+							// Eventueel ook splitsen op ' // ' voor de producten die uit meerdere componenten bestaan (bv. noussines)?
+							$parts = explode( ' - ', $ingredients );
+							// Verhinder het splitsen van subingrediëntenlijsten tussen haakjes!
+							echo implode( '</li><li>', preg_split( "/, (?![^()]*\))/", $parts[0], -1, PREG_SPLIT_NO_EMPTY ) );
+							if ( count( $parts ) > 1 ) {
+								// Plak de commentaren op het einde er weer aan
+								unset( $parts[0] );
+								foreach ( $parts as $comment ) {
+									echo '</li><li>' . implode( '</li><li>', preg_split( "/, (?![^()]*\))/", $comment, -1, PREG_SPLIT_NO_EMPTY ) );
+								}
+							}
+						?>
+					</li>
+				</ul>
+				<?php if ( get_ingredients_legend( $ingredients ) ) : ?>
+					<small class="legend">
+						<?php implode( '<br/>', get_ingredients_legend( $ingredients ) ); ?>
+					</small>
+				<?php endif; ?>
+			</div>
+			<?php
 		}	
 	}
 
@@ -44,4 +53,5 @@
 		}
 		return $legend;
 	}
-?>
+
+/* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */
