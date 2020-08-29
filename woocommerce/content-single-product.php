@@ -117,7 +117,6 @@ if ( post_password_required() ) {
                          */
                         do_action( 'woocommerce_single_product_summary' );
 
-                        // GEWIJZIGD: Voeg store selector toe
                         get_template_part( 'template-parts/store-selector/current' );
                         ?>
                         <?php echo $summary_pin_wrapper_close_escaped; ?>
@@ -128,9 +127,15 @@ if ( post_password_required() ) {
     
     </div>
         
-	<?php
-    // GEWIJZIGD: Toon blokken met herkomst, voedings- en partnerinfo
-    get_template_part( 'template-parts/woocommerce/product-origin' );
+	<div class="container product-origin-block">
+        <div class="col-row">
+            <div class="col-md-12">
+                <?php get_template_part( 'template-parts/woocommerce/product-origin' ); ?>
+            </div>
+        </div>
+    </div>
+
+    <?php
     get_template_part( 'template-parts/woocommerce/product-details' );
 
     /**
