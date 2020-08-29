@@ -2,6 +2,8 @@
 	global $product;
 
 	$partner_terms = get_partner_terms_by_product( $product );
+	global $partners;
+	global $featured_partner;
 	$partners = array();
 	$featured_partner = false;
 
@@ -20,10 +22,10 @@
 			$featured_partner = $b_partners[ array_rand( $b_partners ) ];
 		}
 
-		// var_dump_pre( $partners );
+		var_dump_pre( $partners );
 		// var_dump_pre( $a_partners );
 		// var_dump_pre( $b_partners );
-		// var_dump_pre( $featured_partner );
+		var_dump_pre( $featured_partner );
 	}
 
 	// $partners_with_quote = array_filter( $partners, 'test_if_quote_not_empty' );
