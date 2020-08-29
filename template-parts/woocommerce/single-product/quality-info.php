@@ -49,22 +49,30 @@
 			}
 		}
 
-		// Onderscheid vast/vloeibaar maken?
-		echo '<'.$title_tag.'>Voedingswaarde per 100 g</'.$title_tag.'>';
 		$table = array( 'body' => $food );
 
+		// Maak onderscheid tussen vaste en vloeibare producten
+		if ( $product->get_attribute('eenheid') === 'L' ) {
+			$eh = 'ml';
+		} else {
+			$eh = 'g';
+		}
+		
 		?>
-		<table class="quality-data">
-			<tbody>
-				<?php foreach ( $table['body'] as $tr ) : ?>
-					<tr>
-						<?php foreach ( $tr as $td ) : ?>
-							<td><span><?php echo $td['c']; ?></span></td>
-						<?php endforeach; ?>
-					</tr>
-				<?php endforeach; ?>
-			</tbody>
-		</table>
+		<div class="product-quality-info">
+			<<?php echo $title_tag; ?>>Voedingswaarde per 100 <?php echo $eh; ?></<?php echo $title_tag; ?>>
+			<table class="quality-data">
+				<tbody>
+					<?php foreach ( $table['body'] as $tr ) : ?>
+						<tr>
+							<?php foreach ( $tr as $td ) : ?>
+								<td><span><?php echo $td['c']; ?></span></td>
+							<?php endforeach; ?>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		</div>
 		<?php
 	}
 

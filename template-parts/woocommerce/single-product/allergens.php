@@ -20,24 +20,26 @@
 		}
 
 		?>
-		<h4>Allergeneninfo</h4>
-		<p class="allergens">
-			<?php
-				if ( $no_allergens === true or ( count( $traces ) === 0 and count( $contains ) === 0 ) ) {
-					echo 'Dit product bevat geen meldingsplichtige allergenen.';
-				} else {
-					if ( count( $contains ) > 0 ) {
-						echo 'Bevat '.implode( ', ', $contains ).'.';
+		<div class="product-allergens">
+			<h4>Allergeneninfo</h4>
+			<p class="allergens">
+				<?php
+					if ( $no_allergens === true or ( count( $traces ) === 0 and count( $contains ) === 0 ) ) {
+						echo 'Dit product bevat geen meldingsplichtige allergenen.';
+					} else {
+						if ( count( $contains ) > 0 ) {
+							echo 'Bevat '.implode( ', ', $contains ).'.';
+							if ( count( $traces ) > 0 ) {
+								echo '<br/>';
+							}
+						}
 						if ( count( $traces ) > 0 ) {
-							echo '<br/>';
+							echo 'Kan sporen bevatten van '.implode( ', ', $traces ).'.';
 						}
 					}
-					if ( count( $traces ) > 0 ) {
-						echo 'Kan sporen bevatten van '.implode( ', ', $traces ).'.';
-					}
-				}
-			?>
-		</p>
+				?>
+			</p>
+		</div>
 		<?php
 	}
 

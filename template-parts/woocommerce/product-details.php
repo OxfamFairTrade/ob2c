@@ -1,36 +1,10 @@
 <?php 
-	// TO DO: Vervang globale variabelen door template parameters (WP 5.5+)
-	global $product, $partners, $featured_partner, $oft_quality_data, $food_api_labels, $title_tag;
+	global $product, $partners, $featured_partner;
+	
+	// Nieuwe globals, te vervangen door template parameters (WP 5.5+)
+	global $title_tag, $food_api_labels, $oft_quality_data;
 
-	$partner_terms = get_partner_terms_by_product( $product );
-	$partners = array();
-	$featured_partner = false;
 	$title_tag = 'h4';
-
-	if ( count( $partner_terms ) > 0 ) {
-		foreach ( $partner_terms as $term_id => $partner_name ) {
-			$partners[] = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-		}
-
-		$a_partners = wp_list_filter( $partners, array( 'type' => 'A' ) );
-		$b_partners = wp_list_filter( $partners, array( 'type' => 'B' ) );
-		
-		// Zoek een random A/B-partner om uit te lichten
-		if ( count( $a_partners ) > 0 ) {
-			$featured_partner = $a_partners[ array_rand( $a_partners ) ];
-		} elseif ( count( $b_partners ) > 0 ) {
-			$featured_partner = $b_partners[ array_rand( $b_partners ) ];
-		}
-
-		// var_dump_pre( $partners );
-		// var_dump_pre( $featured_partner );
-	}
-
-	// $partners_with_quote = array_filter( $partners, 'test_if_quote_not_empty' );
-	// var_dump_pre( $partners_with_quote );
-	function test_if_quote_not_empty( $partner ) {
-		return ! empty( $partner['quote']['content'] );
-	}
 
 	// Definitie van labels en verplichte voedingswaarden BEETJE AMBETANT DAT WE DIT HIER OOK AL NODIG HEBBEN ...
 	$food_api_labels = array(
