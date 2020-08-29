@@ -4965,8 +4965,8 @@
 	// Retourneert zo veel mogelijk beschikbare info bij een partner (enkel naam en land steeds ingesteld!)
 	function get_info_by_partner( $partner ) {
 		$partner_info['name'] = $partner->name;
-		// Zit nu ook in API! 
-		// $partner_info['country'] = get_term_by( 'id', $partner->parent, 'product_partner' )->name;
+		// Zit ook in de API, maar die bevat enkel A/B-partners
+		$partner_info['country'] = get_term_by( 'id', $partner->parent, 'product_partner' )->name;
 		$partner_info['archive'] = get_term_link( $partner->term_id );
 		
 		if ( strlen( $partner->description ) > 20 ) {
@@ -5921,6 +5921,8 @@
 				
 				if ( count( $matching_partners ) === 1 ) {
 					$partner_data = $matching_partners[0];
+					// Beperk de payload
+					unset( $partner_data['content'] );
 					unset( $partner_data['yoast_head'] );
 					unset( $partner_data['_links'] );
 					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
