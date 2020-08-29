@@ -1,9 +1,11 @@
 <?php 
-	global $product, $partners, $featured_partner, $oft_quality_data, $food_api_labels;
+	// TO DO: Vervang globale variabelen door template parameters (WP 5.5+)
+	global $product, $partners, $featured_partner, $oft_quality_data, $food_api_labels, $title_tag;
 
 	$partner_terms = get_partner_terms_by_product( $product );
 	$partners = array();
 	$featured_partner = false;
+	$title_tag = 'h4';
 
 	if ( count( $partner_terms ) > 0 ) {
 		foreach ( $partner_terms as $term_id => $partner_name ) {
@@ -20,10 +22,10 @@
 			$featured_partner = $b_partners[ array_rand( $b_partners ) ];
 		}
 
-		var_dump_pre( $partners );
+		// var_dump_pre( $partners );
 		// var_dump_pre( $a_partners );
 		// var_dump_pre( $b_partners );
-		var_dump_pre( $featured_partner );
+		// var_dump_pre( $featured_partner );
 	}
 
 	// $partners_with_quote = array_filter( $partners, 'test_if_quote_not_empty' );
@@ -93,8 +95,10 @@
 									<?php get_template_part( 'template-parts/woocommerce/product-origin' ); ?>
 								</div>
 								<div class="col-md-6">';
-									<!-- TO DO: Geef $title_tag 'h3' mee als template parameter (WP 5.5+) -->
-									<?php get_template_part( 'template-parts/woocommerce/single-product/quality-info' ); ?>
+									<?php
+										$title_tag = 'h3';
+										get_template_part( 'template-parts/woocommerce/single-product/quality-info' );
+									?>
 								</div>
 							</div>
 						<?php

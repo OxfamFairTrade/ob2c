@@ -1,5 +1,5 @@
 <?php 
-	global $product, $food_api_labels, $oft_quality_data;
+	global $product, $food_api_labels, $oft_quality_data, $title_tag;
 
 	$food_required_keys = array( '_fat', '_fasat', '_choavl', '_sugar', '_pro', '_salteq' );
 	$food_secondary_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
