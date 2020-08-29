@@ -59,9 +59,9 @@
 		}
 		
 		?>
-		<div class="product-quality-info">
+		<div id="product-quality-info" class="product-info-panel quality-info">
 			<<?php echo $title_tag; ?>>Voedingswaarde per 100 <?php echo $eh; ?></<?php echo $title_tag; ?>>
-			<table class="quality-data">
+			<table class="quality-info">
 				<tbody>
 					<?php foreach ( $table['body'] as $tr ) : ?>
 						<tr>

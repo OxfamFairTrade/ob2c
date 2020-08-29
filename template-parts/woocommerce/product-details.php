@@ -82,11 +82,15 @@
 				<h3>Extra informatie</h3>
 				<?php get_template_part( 'template-parts/woocommerce/product-icons' ); ?>
 
-				<h4>Merk</h4>
-				<p class="brand"><?php echo $product->get_attribute('merk'); ?></p>
+				<div id="product-brand" class="product-info-panel brand">
+					<h4>Merk</h4>
+					<p><?php echo $product->get_attribute('merk'); ?></p>
+				</div>
 
-				<h4>Artikelnummer</h4>
-				<p class="sku"><?php echo $product->get_attribute('shopplus'); ?></p>
+				<div id="product-sku" class="product-info-panel sku">
+					<h4>Artikelnummer</h4>
+					<p><?php echo $product->get_attribute('shopplus'); ?></p>
+				</div>
 
 				<?php
 					get_template_part( 'template-parts/woocommerce/single-product/ingredients' );

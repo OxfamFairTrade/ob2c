@@ -3,7 +3,7 @@
 
 	if ( $product->get_attribute('voedingsvoorkeuren') !== '' ) {
 		?>
-		<div class="icons">
+		<div id="product-icons" class="product-info-panel icons">
 			<?php
 				$icons = explode( ', ', $product->get_attribute('voedingsvoorkeuren') );
 				foreach ( $icons as $icon_name ) {

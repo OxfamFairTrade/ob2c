@@ -20,9 +20,9 @@
 		}
 
 		?>
-		<div class="product-allergens">
+		<div id="product-allergens" class="product-info-panel allergens">
 			<h4>Allergeneninfo</h4>
-			<p class="allergens">
+			<p>
 				<?php
 					if ( $no_allergens === true or ( count( $traces ) === 0 and count( $contains ) === 0 ) ) {
 						echo 'Dit product bevat geen meldingsplichtige allergenen.';
