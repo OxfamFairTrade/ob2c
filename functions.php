@@ -5506,25 +5506,25 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-info">';
-					echo '<p>De promoties voor de maand augustus werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Bij de 2+1-actie wordt een extra gratis reep toegevoegd van zodra er twee in je winkelmandje zitten. De THT-actie op de pralines blijft doorlopen voor de enkele winkels die nog oude voorraad liggen hebben die binnenkort vervalt. In september arriveert de nieuwe productie pralines.</p>';
-				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>Er werden 2 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
-						$skus = array( '20265', '27057' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku($sku);
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>De promoties voor de maand augustus werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Bij de 2+1-actie wordt een extra gratis reep toegevoegd van zodra er twee in je winkelmandje zitten. De THT-actie op de pralines blijft doorlopen voor de enkele winkels die nog oude voorraad liggen hebben die binnenkort vervalt. In september arriveert de nieuwe productie pralines.</p>';
+				// echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Er werden 2 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
+				// 		$skus = array( '20265', '27057' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku($sku);
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
