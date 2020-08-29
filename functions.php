@@ -6079,8 +6079,8 @@
 					$partner_data = $matching_partners[0];
 					$partner_info['url'] = $partner_data['link'];
 					$partner_info['quote'] = $partner_data['quote']['content'];
-					$partner_info['quote_by'] = $partner_data['quote']['speaker'];
-					$partner_info['quote_photo'] = $partner_data['quote']['image'];
+					$partner_info['quote_by'] = $partner_data['quote']['by'];
+					$partner_info['quote_photo'] = $partner_data['quote']['thumbnail'];
 					set_site_transient( $partner_slug.'_partner_data', $partner_info, DAY_IN_SECONDS );
 					$logger->debug( 'Partner data saved in transient for '.$partner_slug, $context );
 				} elseif ( count( $matching_partners ) > 1 ) {
