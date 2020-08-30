@@ -65,8 +65,8 @@
 							<div class="col-row">
 								<div class="col-md-6">
 									<?php
-										get_template_part( 'template-parts/woocommerce/ingredients' );
-										get_template_part( 'template-parts/woocommerce/allergens' );
+										get_template_part( 'template-parts/woocommerce/single-product/ingredients' );
+										get_template_part( 'template-parts/woocommerce/single-product/allergens' );
 									?>
 								</div>
 								<div class="col-md-6">
