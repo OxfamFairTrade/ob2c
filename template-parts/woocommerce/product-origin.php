@@ -26,12 +26,11 @@
 
 		// var_dump_pre( $partners );
 		// var_dump_pre( $featured_partner );
-	}
 
-	// $partners_with_quote = array_filter( $partners, 'test_if_quote_not_empty' );
-	// var_dump_pre( $partners_with_quote );
-	function test_if_quote_not_empty( $partner ) {
-		return ! empty( $partner['quote']['content'] );
+		$partners_with_quote = array_filter( $partners, function( $p ) {
+			return ! empty( $partner['quote']['content'] );
+		} );
+		// var_dump_pre( $partners_with_quote );
 	}
 ?>
 

@@ -38,6 +38,7 @@
 		}	
 	}
 
+	// Opgelet: als we deze template 2x tonen, wordt ook deze functie 2x gedefinieerd (fatal error)
 	function get_ingredients_legend( $ingredients ) {
 		$legend = array();
 		if ( ! empty( $ingredients ) ) {
