@@ -64,9 +64,12 @@
 						?>
 							<div class="col-row">
 								<div class="col-md-6">
-									<?php get_template_part( 'template-parts/woocommerce/product-origin' ); ?>
+									<?php
+										get_template_part( 'template-parts/woocommerce/ingredients' );
+										get_template_part( 'template-parts/woocommerce/allergens' );
+									?>
 								</div>
-								<div class="col-md-6">';
+								<div class="col-md-6">
 									<?php
 										$title_tag = 'h3';
 										get_template_part( 'template-parts/woocommerce/single-product/quality-info' );
@@ -93,11 +96,9 @@
 				</div>
 
 				<?php
-					get_template_part( 'template-parts/woocommerce/single-product/ingredients' );
-					
-					get_template_part( 'template-parts/woocommerce/single-product/allergens' );
-					
 					if ( $featured_partner ) {
+						get_template_part( 'template-parts/woocommerce/single-product/ingredients' );
+						get_template_part( 'template-parts/woocommerce/single-product/allergens' );
 						get_template_part( 'template-parts/woocommerce/single-product/quality-info' );
 					}
 				?>

@@ -4807,14 +4807,8 @@
 
 		// Voeg tabje met voedingswaarde toe (indien niet leeg)
 		if ( get_tab_content('food') !== false ) {
-			$eh = $product->get_attribute('pa_eenheid');
-			if ( $eh === 'L' ) {
-				$suffix = 'ml';
-			} elseif ( $eh === 'KG' ) {
-				$suffix = 'g';
-			}
 			$tabs['food_info'] = array(
-				'title' 	=> 'Voedingswaarde per 100 '.$suffix,
+				'title' 	=> 'Voedingswaarde per 100 g',
 				'priority' 	=> 14,
 				'callback' 	=> function() { output_tab_content('food'); },
 			);
