@@ -2,9 +2,7 @@
 	global $product, $partners, $featured_partner;
 	
 	// Nieuwe globals, te vervangen door template parameters (WP 5.5+)
-	global $title_tag, $food_api_labels, $oft_quality_data;
-
-	$title_tag = 'h4';
+	global $food_api_labels, $oft_quality_data;
 
 	// Definitie van labels en verplichte voedingswaarden BEETJE AMBETANT DAT WE DIT HIER OOK AL NODIG HEBBEN ...
 	$food_api_labels = array(
@@ -65,14 +63,13 @@
 							<div class="col-row">
 								<div class="col-md-6">
 									<?php
-										get_template_part( 'template-parts/woocommerce/single-product/ingredients' );
+										get_template_part( 'template-parts/woocommerce/single-product/ingredients', NULL, array( 'title_tag' => 'h3' ) );
 										get_template_part( 'template-parts/woocommerce/single-product/allergens' );
 									?>
 								</div>
 								<div class="col-md-6">
 									<?php
-										$title_tag = 'h3';
-										get_template_part( 'template-parts/woocommerce/single-product/quality-info' );
+										get_template_part( 'template-parts/woocommerce/single-product/quality-info', NULL, array( 'title_tag' => 'h3' ) );
 									?>
 								</div>
 							</div>

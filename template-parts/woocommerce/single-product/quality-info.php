@@ -1,10 +1,9 @@
 <?php 
-	global $product, $food_api_labels, $oft_quality_data, $title_tag;
+	global $product, $food_api_labels, $oft_quality_data;
 
 	$food_required_keys = array( '_fat', '_fasat', '_choavl', '_sugar', '_pro', '_salteq' );
 	$food_secondary_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
-	// Voorlopig fixed
-	$title_tag = 'h4';
+	$args = wp_parse_args( $args, array( 'title_tag' => 'h4' ) );
 
 	// Check of het überhaupt zin heeft om eraan te beginnen
 	if ( $oft_quality_data and array_key_exists( 'food', $oft_quality_data ) and floatval( $oft_quality_data['food']['_energy'] ) > 0 ) {
@@ -53,14 +52,14 @@
 
 		// Maak onderscheid tussen vaste en vloeibare producten
 		if ( $product->get_attribute('eenheid') === 'L' ) {
-			$eh = 'ml';
+			$unity = 'ml';
 		} else {
-			$eh = 'g';
+			$unity = 'g';
 		}
 		
 		?>
 		<div id="product-quality-info" class="product-info-panel quality-info">
-			<<?php echo $title_tag; ?>>Voedingswaarde per 100 <?php echo $eh; ?></<?php echo $title_tag; ?>>
+			<<?php echo $args['title_tag']; ?>>Voedingswaarde per 100 <?php echo $unity; ?></<?php echo $args['title_tag']; ?>>
 			<table class="quality-info">
 				<tbody>
 					<?php foreach ( $table['body'] as $tr ) : ?>

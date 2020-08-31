@@ -1,5 +1,6 @@
 <?php 
 	global $product, $oft_quality_data;
+	$args = wp_parse_args( $args, array( 'title_tag' => 'h4' ) );
 
 	// Check of het überhaupt zin heeft om eraan te beginnen
 	if ( $oft_quality_data and array_key_exists( 'food', $oft_quality_data ) and array_key_exists( '_ingredients', $oft_quality_data['food'] ) ) {
@@ -9,7 +10,7 @@
 		if ( strlen( trim( $ingredients ) ) > 0 ) {
 			?>
 			<div id="product-ingredients" class="product-info-panel ingredients">
-				<h4>Ingrediënten</h4>
+				<<?php echo $args['title_tag']; ?>>Ingrediënten</<?php echo $args['title_tag']; ?>>
 				<ul class="ingredients">
 					<li>
 						<?php
@@ -36,23 +37,6 @@
 			</div>
 			<?php
 		}	
-	}
-
-	// Opgelet: als we deze template 2x tonen, wordt ook deze functie 2x gedefinieerd (fatal error)
-	function get_ingredients_legend( $ingredients ) {
-		$legend = array();
-		if ( ! empty( $ingredients ) ) {
-			if ( strpos( $ingredients, '*' ) !== false ) {
-				$legend[] = '* ingrediënt uit een eerlijke handelsrelatie';
-			}
-			if ( strpos( $ingredients, '°' ) !== false ) {
-				$legend[] = '° ingrediënt van biologische landbouw';
-			}
-			if ( strpos( $ingredients, '†' ) !== false ) {
-				$legend[] = '† ingrediënt verkregen in de periode van omschakeling naar biologische landbouw';
-			}
-		}
-		return $legend;
 	}
 
 /* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */

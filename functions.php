@@ -31,6 +31,22 @@
 		}
 	}
 
+	function get_ingredients_legend( $ingredients ) {
+		$legend = array();
+		if ( ! empty( $ingredients ) ) {
+			if ( strpos( $ingredients, '*' ) !== false ) {
+				$legend[] = '* ingrediënt uit een eerlijke handelsrelatie';
+			}
+			if ( strpos( $ingredients, '°' ) !== false ) {
+				$legend[] = '° ingrediënt van biologische landbouw';
+			}
+			if ( strpos( $ingredients, '†' ) !== false ) {
+				$legend[] = '† ingrediënt verkregen in de periode van omschakeling naar biologische landbouw';
+			}
+		}
+		return $legend;
+	}
+
 	// Toon kolom met winkel waar elke gebruiker lid van is
 	add_filter( 'manage_users_columns', 'add_member_of_shop_column', 10, 1 );
 	add_filter( 'manage_users_custom_column', 'add_member_of_shop_column_value', 10, 3 );
