@@ -44,7 +44,8 @@
         }
 
         &.pickup-only {
-
+          color: $see-through-blue;
+          border-color: $see-through-blue;
         }
       }
     }
