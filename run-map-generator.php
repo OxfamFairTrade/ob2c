@@ -58,13 +58,13 @@
 								}
 							}
 
-							// Want get_company_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
+							// Want get_shop_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
 							if ( $shop_post_id > 0 ) {
 								$txt .= "<Placemark>";
 								$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
 								$txt .= "<styleUrl>#pickup</styleUrl>";
 								$oww_store_data = get_external_wpsl_store( $shop_post_id );
-								$txt .= "<description><![CDATA[<p>".get_company_address( $shop_post_id )."</p><p><a href=".$oww_store_data['link']." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
+								$txt .= "<description><![CDATA[<p>".get_shop_address( array( 'id' => $shop_post_id ) )."</p><p><a href=".$oww_store_data['link']." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
 								$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', 0, false, $shop_post_id )."</coordinates></Point>";
 								$txt .= "</Placemark>";
 							}

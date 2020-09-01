@@ -156,7 +156,11 @@
 								echo '<p><a href="tel:+32092188899">+32 (0)9/218.88.99</a></p>';
 								echo '<a href="https://stage.oxfamwereldwinkels.be/contact/" class="btn">Contacteer ons</a>';
 							} else {
-								echo get_company_contact( $atts );
+								echo '<p>'.get_shop_name( $atts ).'<br/>'.get_shop_address( $atts ).'</p>';
+								$phone = get_oxfam_shop_data( 'telephone', 0, false, $atts['id'] );
+								echo '<p><a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', $phone ), 1 ).'">'.$phone.'</a></p>';
+								// Het e-mailadres is universeel voor alle winkels!
+								echo '<a href="mailto:'.get_webshop_email().'" class="btn">Contacteer ons</a>';
 							}
 						?>
 					</div>

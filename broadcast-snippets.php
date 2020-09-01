@@ -332,7 +332,7 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 	restore_current_blog();
 	if ( is_array($mail_settings) ) {
 		$mail_settings['enabled'] = 'yes';
-		$mail_settings['recipient'] =  get_company_email();
+		$mail_settings['recipient'] =  get_webshop_email();
 		$mail_settings['subject'] = 'Actie vereist: nieuwe online bestelling ({order_number}) – {order_date}';
 		$mail_settings['heading'] = 'Hoera, een nieuwe bestelling!';
 		update_option( 'woocommerce_new_order_settings', $mail_settings );

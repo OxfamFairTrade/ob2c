@@ -10,7 +10,7 @@
 	<form method="post" action="options.php">
 		<table class="form-table" id="oxfam-options">
 			<tr valign="top">
-				<th class='left'><a href='https://outlook.office.com/oww.be?login_hint=<?php echo get_option('admin_email'); ?>' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>
+				<th class='left'><a href='https://outlook.office.com/oww.be?login_hint=<?php echo get_webshop_email(); ?>' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>
 				<td class='right'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>
 			</tr>
 
@@ -66,7 +66,7 @@
 
 					$profiles = $mollie->profilesByPartnerId( $partner_id_customer );
 					if ( $profiles->resultcode == '10' ) {
-						if ( get_company_name() != trim_and_uppercase( $profiles->items->profile->name ) ) {
+						if ( get_webshop_name() != trim_and_uppercase( $profiles->items->profile->name ) ) {
 							// $name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
 						// Fix voor winkels met twee nummers (bv. Mariakerke)
@@ -81,7 +81,7 @@
 								$phone_warning = $warning;
 							}
 						}
-						if ( get_company_email() != $profiles->items->profile->email ) {
+						if ( get_webshop_email() != $profiles->items->profile->email ) {
 							$mail_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactadres geregistreerd!</small>";
 						}
 					}
@@ -258,7 +258,7 @@
 					<label for="oxfam_company" title="Dit is ook de titel van deze subsite en kan enkel door Frederik gewijzigd worden.">Bedrijfsnaam: <?php if ( isset($name_warning) ) echo $name_warning; ?></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_company" class="text-input" value="<?php echo get_company_name(); ?>" readonly>
+					<input type="text" name="oxfam_company" class="text-input" value="<?php echo get_webshop_name(); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -298,7 +298,7 @@
 					<label for="oxfam_email" title="Deze Office 365-mailbox wordt ingesteld als het algemene contactadres van deze subsite en is initieel ook ekoppeld aan de lokale beheeraccount. Opgelet: via de profielpagina kun je deze hoofdgebruiker aan een andere mailbox linken (of schakelen we dat uit? niet handig indien we voor meerdere lokale beheerders opteren!) maar het contactadres naar klanten blijft altijd dit e-mailadres!">E-mailadres: <?php if ( isset($mail_warning) ) echo $mail_warning; ?></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_email" class="text-input" value="<?php echo get_company_email(); ?>" readonly>
+					<input type="text" name="oxfam_email" class="text-input" value="<?php echo get_webshop_email(); ?>" readonly>
 				</td>
 			</tr>
 		</table>

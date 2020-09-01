@@ -186,7 +186,8 @@
 					}
 				}
 			}
-			if ( isset( $_GET['addSku'] ) ) {
+			// Redirect mag vanaf nu altijd gebeuren! 
+			// if ( isset( $_GET['addSku'] ) ) {
 				if ( isset( $_COOKIE['latest_subsite'] ) ) {
 					$destination_blog = get_blog_details( $_COOKIE['latest_subsite'], false );
 					if ( $destination_blog->path !== '/' ) {
@@ -198,10 +199,10 @@
 					wc_clear_notices();
 					wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen. We bewaren je keuze in deze browser maar via de knop rechtsboven kun je steeds een andere webshop selecteren.', 'oxfam-webshop' ), 'error' );
 				}
-			}
+			// }
 		} else {
-			// Dit updatet de cookie bij elke pageview!
-			setcookie( 'latest_subsite', get_current_blog_id(), time() + 30*DAY_IN_SECONDS, '/' );
+			// Cookie enkel nog instellen bij expliciet kiezen in store selector!
+			// setcookie( 'latest_subsite', get_current_blog_id(), time() + YEAR_IN_SECONDS, '/' );
 			if ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
 				add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
 			}
@@ -998,7 +999,7 @@
 
 	function ob2c_add_starting_point_to_google_maps( $url, $order ) {
 		// Neem als default de hoofdwinkel
-		$shop_address = get_company_address();
+		$shop_address = get_shop_address();
 		
 		if ( $order->get_meta('claimed_by') !== '' ) {
 			if ( $locations = get_option('woocommerce_pickup_locations') ) {
@@ -1010,7 +1011,7 @@
 							$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
 							if ( $shop_post_id > 0 ) {
 								// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de straatnaam
-								$shop_address = get_company_address( $shop_post_id );
+								$shop_address = get_shop_address( array( 'id' => $shop_post_id ) );
 							}
 						}
 						break;
@@ -1398,7 +1399,7 @@
 					switch_to_blog( $site->blog_id );
 					$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
 					if ( $local_product !== false and $local_product->is_in_stock() ) {
-						$shops_instock[] = get_company_name();
+						$shops_instock[] = get_webshop_name();
 					}
 					restore_current_blog();
 				}
@@ -1746,7 +1747,7 @@
 			$current_user = wp_get_current_user();
 			$user_meta = get_userdata($current_user->ID);
 			$user_roles = $user_meta->roles;
-			if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_company_email() ) {
+			if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_webshop_email() ) {
 				?>
 					<script type="text/javascript">
 						jQuery(document).ready( function() {
@@ -2131,7 +2132,7 @@
 				'email' => $data['billing_email'],
 				'source' => 'webshop',
 				'newsletter' => 'yes',
-				'shop' => get_company_name(),
+				'shop' => get_webshop_name(),
 			);
 
 			if ( $data['digizine'] === 1 ) {
@@ -2451,7 +2452,7 @@
 				case stristr( $shipping_method['method_id'], 'flat_rate' ):
 					
 					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_webshop_name() ) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -2475,7 +2476,7 @@
 				case stristr( $shipping_method['method_id'], 'b2b_home_delivery' ):
 
 					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_webshop_name() ) ) );
 					break;
 
 				case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
@@ -2483,7 +2484,7 @@
 					// Verwijzen naar postpunt
 					$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
 					$service_point_info = explode ( '|', $service_point['extra'] );
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_webshop_name() ) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -2659,7 +2660,7 @@
 		$current_user = wp_get_current_user();
 		$user_meta = get_userdata($current_user->ID);
 		$user_roles = $user_meta->roles;
-		if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_company_email() ) {
+		if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_webshop_email() ) {
 			?>
 			<script type="text/javascript">
 				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
@@ -3069,7 +3070,7 @@
 	function show_b2b_account_hint() {
 		// Niet tonen bij Brugge
 		if ( ! is_b2b_customer() and get_current_blog_id() !== 25 ) {
-			wc_print_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via <a href="mailto:'.get_company_email().'?subject=Aanvraag B2B-webshopaccount">'.get_company_email().'</a>.', 'notice' );
+			wc_print_notice( 'Wil je als bedrijf of vereniging aankopen op factuur doen? Vraag dan een B2B-account aan via <a href="mailto:'.get_webshop_email().'?subject=Aanvraag B2B-webshopaccount">'.get_webshop_email().'</a>.', 'notice' );
 		}
 	}
 	
@@ -3189,7 +3190,7 @@
 			// Bij dit type mogen we ervan uit gaan dat $oject een WP_User bevat met de property ID
 			if ( is_b2b_customer( $object->ID ) ) {
 				// Hoe voorkomen we dat kopie verstuurd wordt bij échte wachtwoordreset van B2B-gebruiker?
-				$extra_recipients[] = get_company_name().' <'.get_company_email().'>';
+				$extra_recipients[] = get_webshop_name().' <'.get_webshop_email().'>';
 			}
 		}
 
@@ -3210,13 +3211,12 @@
 	add_filter( 'woocommerce_mail_callback_params', 'divert_and_flag_all_mails_in_dev', 10, 2 );
 
 	function divert_and_flag_all_mails_in_dev( $params, $object ) {
-		// Kan vervangen worden door wp_get_environment_type() vanaf WP 5.5+
-		if ( WP_ENVIRONMENT_TYPE !== 'live' ) {
+		if ( wp_get_environment_type() !== 'production' ) {
 			if ( is_array( $params ) ) {
 				// Vervang bestemmeling enkel indien niet leeg
 				// Dit heeft geen effect op eventuele (B)CC's in headers! 
 				if ( $params[0] !== '' ) {
-					$params[0] = get_option('admin_email');
+					$params[0] = get_webshop_email();
 				}
 				// Prefix onderwerp
 				$params[1] = 'TEST '.$params[1];
@@ -3965,8 +3965,8 @@
 
 	// Zorg dat afhalingen in de winkel als standaard levermethode geselecteerd worden
 	// Nodig omdat Local Pickup Plus geen verzendzones gebruikt maar alles overkoepelt
-	// Documentatie in class-wc-shipping.php: "If not set, not available, or available methods have changed, set to the DEFAULT option"
-	add_filter( 'woocommerce_shipping_chosen_method', 'set_pickup_as_default_shipping', 10, 3 );
+	// Documentatie in class-wc-shipping.php: "If not set, not available, or available methods have changed, set to the DEFAULT option" UITSCHAKELEN
+	// add_filter( 'woocommerce_shipping_chosen_method', 'set_pickup_as_default_shipping', 10, 3 );
 
 	function set_pickup_as_default_shipping( $default, $rates, $chosen_method ) {
 		return 'local_pickup_plus';
@@ -4447,7 +4447,7 @@
 		}
 
 		if ( $updated ) {
-			wp_mail( 'e-commerce@oft.be', get_company_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
+			wp_mail( 'e-commerce@oft.be', get_webshop_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
 		} 
 	}
 
@@ -4464,7 +4464,7 @@
 		}
 
 		if ( $body ) {
-			wp_mail( 'e-commerce@oft.be', get_company_name().' paste thuislevering van breekbare goederen aan', $body );
+			wp_mail( 'e-commerce@oft.be', get_webshop_name().' paste thuislevering van breekbare goederen aan', $body );
 		}
 	}
 
@@ -4476,7 +4476,7 @@
 		} else {
 			$body = 'Custom tekst gewist!';
 		}
-		wp_mail( 'e-commerce@oft.be', get_company_name().' paste bannertekst aan', $body );
+		wp_mail( 'e-commerce@oft.be', get_webshop_name().' paste bannertekst aan', $body );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
@@ -4602,7 +4602,7 @@
 		rename( $new_account_path, $reset_password_path );
 		$user = get_user_by( 'id', $_POST['customer_id'] );
 		if ( retrieve_password_for_customer( $user ) ) {
-			printf( 'Succesvol uitgenodigd, kopie verstuurd naar %s!', get_company_email() );
+			printf( 'Succesvol uitgenodigd, kopie verstuurd naar %s!', get_webshop_email() );
 			update_user_meta( $user->ID, 'blog_'.get_current_blog_id().'_b2b_invitation_sent', current_time('mysql') );
 		} else {
 			printf( 'Uitnodigen eigenaar \'%s\' mislukt, herlaad pagina en probeer eens opnieuw!', $user->user_login );
@@ -5530,9 +5530,9 @@
 	add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );
-	add_shortcode( 'company_name', 'get_company_name' );
-	add_shortcode( 'contact_address', 'get_company_contact' );
-	add_shortcode( 'map_address', 'get_company_address' );
+	add_shortcode( 'company_name', 'get_webshop_name' );
+	add_shortcode( 'contact_address', 'get_shop_contact' );
+	add_shortcode( 'map_address', 'get_shop_address' );
 	add_shortcode( 'email_footer', 'get_company_and_year' );
 	add_shortcode( 'email_header', 'get_local_logo_url' );
 	add_shortcode( 'toon_eventueel_promos', 'show_conditional_promo_row' );
@@ -5567,7 +5567,7 @@
 	}
 
 	function print_widget_contact() {
-		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een aanklikbaar telefoonnummer (%2$s).', 'oxfam-webshop' ), get_company_email(), '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', get_oxfam_shop_data('telephone') ), 1 ).'">'.get_oxfam_shop_data('telephone').'</a>' ).'[/nm_feature]');
+		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een aanklikbaar telefoonnummer (%2$s).', 'oxfam-webshop' ), get_webshop_email(), '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', get_oxfam_shop_data('telephone') ), 1 ).'">'.get_oxfam_shop_data('telephone').'</a>' ).'[/nm_feature]');
 	}
 
 	function print_greeting() {
@@ -5580,7 +5580,7 @@
 		} else {
 			$greeting = "Goeieavond";
 		}
-		return sprintf( __( 'Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s).', 'oxfam-webshop' ), $greeting, get_customer(), get_company_name() );
+		return sprintf( __( 'Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s).', 'oxfam-webshop' ), $greeting, get_customer(), get_webshop_name() );
 	}
 
 	function get_customer() {
@@ -5589,7 +5589,7 @@
 	}
 
 	function print_copyright() {
-		$text = get_company_name().' &copy; 2017-'.date_i18n('Y');
+		$text = get_webshop_name().' &copy; 2017-'.date_i18n('Y');
 		if ( ! is_main_site() ) {
 			// Contactpagina niet linken op portaalpagina
 			$text = '<a href="'.get_site_url( get_current_blog_id(), '/contact/' ).'">'.$text.'</a>';
@@ -5705,7 +5705,7 @@
 		
 		$output = '[vc_tta_tour spacing="5" autoplay="10" active_section="1"]';
 		foreach ( $shops as $shop_id => $shop_name ) {
-			$shop_address = get_company_address( $shop_post_id );
+			$shop_address = get_shop_address( array( 'id' => $shop_id ) );
 			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_id.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address id="'.$shop_id.'"][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" id="'.$shop_id.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
 		}
 		$output .= '[/vc_tta_tour]';
@@ -5719,8 +5719,9 @@
 		return get_oxfam_shop_data( $key, 0, false, $atts['id'] );
 	}
 
-	function print_mail() {
-		return "<a href='mailto:".get_company_email()."'>".get_company_email()."</a>";
+	function print_mail( $atts = [] ) {
+		$atts = shortcode_atts( array( 'email' => get_webshop_email() ), $atts );
+		return "<a href='mailto:".$atts['email']."'>".$atts['email']."</a>";
 	}
 
 	function print_place( $atts = [] ) {
@@ -6042,32 +6043,46 @@
 		}
 	}
 
-	function get_company_name() {
+	function get_webshop_name() {
 		return get_bloginfo('name');
 	}
 
-	function get_main_shop_node() {
-		$list = get_option('oxfam_shop_nodes');
-		return $list[0];
-	}
-
-	function get_company_email() {
+	function get_webshop_email() {
 		return get_option('admin_email');
 	}
 
-	function get_company_contact( $atts = [] ) {
-		// Overschrijf defaults met expliciete data van de gebruiker
+	// Of rechtstreeks ophalen uit WPSL op hoofdniveau?
+	function get_shop_name( $atts = [] ) {
 		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
-
-		// Het e-mailadres is universeel!
-		return get_company_address( $atts['id'] )."<br/><a href='mailto:".get_company_email()."'>".get_company_email()."</a><br/>".get_oxfam_shop_data( 'telephone', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'tax', 0, false, $atts['id'] );
+		// Te integreren in get_oxfam_shop_data()
+		$oww_store_data = get_external_wpsl_store( $atts['id'] );
+		if ( $oww_store_data !== false ) {
+			return 'Oxfam-Wereldwinkel '.$oww_store_data['title']['rendered'];
+		} else {
+			return false;
+		}
 	}
 
-	function get_company_address( $shop_post_id = 0 ) {
-		if ( $shop_post_id === 0 ) {
-			$shop_post_id = get_option('oxfam_shop_post_id');
+	// Of rechtstreeks ophalen uit WPSL op hoofdniveau?
+	function get_shop_email( $atts = [] ) {
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
+		// Te integreren in get_oxfam_shop_data()
+		$oww_store_data = get_external_wpsl_store( $atts['id'] );
+		if ( $oww_store_data !== false ) {
+			return $oww_store_data['location']['mail'];
+		} else {
+			return false;
 		}
-		return get_oxfam_shop_data( 'place', 0, false, $shop_post_id )."<br/>".get_oxfam_shop_data( 'zipcode', 0, false, $shop_post_id )." ".get_oxfam_shop_data( 'city', 0, false, $shop_post_id );
+	}
+
+	function get_shop_contact( $atts = [] ) {
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
+		return get_shop_address( $atts )."<br/>".get_oxfam_shop_data( 'telephone', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'tax', 0, false, $atts['id'] );
+	}
+
+	function get_shop_address( $atts = [] ) {
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
+		return get_oxfam_shop_data( 'place', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'zipcode', 0, false, $atts['id'] )." ".get_oxfam_shop_data( 'city', 0, false, $atts['id'] );
 	}
 
 	function get_shops() {
@@ -6104,7 +6119,7 @@
 	}, 10, 2 );
 
 	function get_company_and_year() {
-		return get_company_name().' &copy; 2017-'.date_i18n('Y');
+		return get_webshop_name().' &copy; 2017-'.date_i18n('Y');
 	}
 
 	function get_local_logo_url() {
