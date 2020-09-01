@@ -173,7 +173,7 @@
 		// Stuur Digizine-lezers meteen door op basis van postcode in hun profiel
 		if ( is_main_site() ) {
 			$suffix = '';
-			if ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
+			if ( ! empty( $_GET['addSku'] ) ) {
 				$suffix = 'addSku='.$_GET['addSku'];
 			}
 			if ( isset( $_GET['landingZip'] ) ) {
@@ -186,12 +186,12 @@
 					}
 				}
 			}
-			// Redirect mag vanaf nu altijd gebeuren! 
-			// if ( isset( $_GET['addSku'] ) ) {
+			// Redirect mag vanaf nu altijd gebeuren! WACHT NOG EVEN
+			if ( isset( $_GET['addSku'] ) and 1 === 2 ) {
 				if ( isset( $_COOKIE['latest_subsite'] ) ) {
 					$destination_blog = get_blog_details( $_COOKIE['latest_subsite'], false );
 					if ( $destination_blog->path !== '/' ) {
-						wp_safe_redirect( network_site_url($destination_blog->path.'?'.$suffix) );
+						wp_safe_redirect( network_site_url( $destination_blog->path.'?'.$suffix ) );
 						exit();
 					}
 				} else {
@@ -199,11 +199,11 @@
 					wc_clear_notices();
 					wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen. We bewaren je keuze in deze browser maar via de knop rechtsboven kun je steeds een andere webshop selecteren.', 'oxfam-webshop' ), 'error' );
 				}
-			// }
+			}
 		} else {
 			// Cookie enkel nog instellen bij expliciet kiezen in store selector!
 			// setcookie( 'latest_subsite', get_current_blog_id(), time() + YEAR_IN_SECONDS, '/' );
-			if ( isset( $_GET['addSku'] ) and ! empty( $_GET['addSku'] ) ) {
+			if ( ! empty( $_GET['addSku'] ) ) {
 				add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
 			}
 		}
@@ -5738,7 +5738,17 @@
 	}
 
 	function print_telephone( $atts = [] ) {
-		return print_oxfam_shop_data( 'telephone', $atts );
+		$telephone = print_oxfam_shop_data( 'telephone', $atts );
+		return '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', $telephone ), 1 ).'">'.$telephone.'</a>';
+	}
+
+	function get_shop_vat_number( $atts = [], $before = '', $after = '' ) {
+		$vat_number = print_oxfam_shop_data( 'tax', $atts );
+		if ( ! empty( $vat_number ) ) {
+			return $before . $vat_number . $after;
+		} else {
+			return '';
+		}
 	}
 
 	function print_woocommerce_messages() {
@@ -6005,7 +6015,7 @@
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[$key] !== '' ) {
 					
-					switch ($key) {
+					switch ( $key ) {
 						case 'telephone':
 							// Geef alternatieve delimiter mee
 							return call_user_func( 'format_'.$key, $location_data[$key], '.' );
@@ -6020,13 +6030,13 @@
 					return call_user_func( 'format_'.$key, $location_data[$key] );
 
 				} else {
-					return "";
+					return '';
 				}
 			}
 
 		} else {
 
-			switch ($key) {
+			switch ( $key ) {
 				case 'place':
 					return call_user_func( 'format_place', 'Ververijstraat 17' );
 				case 'zipcode':
@@ -6038,7 +6048,7 @@
 				case 'tax':
 					return call_user_func( 'format_tax', 'BE 0415.365.777' );
 				default:
-					return "(gegevens cvba)";
+					return 'niet gevonden';
 			}
 
 		}

@@ -150,19 +150,24 @@
 				<div class="col-md-2">
 					<div class="footer-info">
 						<h3>Contact</h3>
-						<?php
-							if ( is_main_site() ) {
-								echo '<p>Ververijstraat 17<br/>B-9000 Gent<br/>BE 0415.365.777<br/>RPR GENT</p>';
-								echo '<p><a href="tel:+32092188899">+32 (0)9/218.88.99</a></p>';
-								echo '<a href="https://stage.oxfamwereldwinkels.be/contact/" class="btn">Contacteer ons</a>';
-							} else {
-								echo '<p>'.get_shop_name( $atts ).'<br/>'.get_shop_address( $atts ).'</p>';
-								$phone = get_oxfam_shop_data( 'telephone', 0, false, $atts['id'] );
-								echo '<p><a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', $phone ), 1 ).'">'.$phone.'</a></p>';
-								// Het e-mailadres is universeel voor alle winkels!
-								echo '<a href="mailto:'.get_webshop_email().'" class="btn">Contacteer ons</a>';
-							}
-						?>
+						<?php if ( is_main_site() ) : ?>
+							<p>
+								Ververijstraat 17<br/>
+								B-9000 Gent<br/>
+								BE 0415.365.777<br/>
+								RPR GENT
+							</p>
+							<p><a href="tel:+32092188899">+32 (0)9/218.88.99</a></p>
+							<a href="https://stage.oxfamwereldwinkels.be/contact/" class="btn">Contacteer ons</a>
+						<?php else : ?>
+							<p>
+								<?php echo get_shop_name( $atts ); ?><br/>
+								<?php echo get_shop_address( $atts ); ?><br/>
+								<?php echo get_shop_vat_number( $atts ); ?>
+							</p>
+							<p><?php echo print_telephone( $atts ); ?></p>
+							<a href="mailto:<?php echo get_webshop_email(); ?>" class="btn">Contacteer ons</a>
+						<?php endif; ?>
 					</div>
 				</div>
 			</div>
