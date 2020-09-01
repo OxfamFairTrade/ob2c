@@ -44,7 +44,8 @@
         }
 
         &.pickup-only {
-
+          color: $see-through-blue;
+          border-color: $see-through-blue;
         }
       }
     }
@@ -83,6 +84,8 @@
   }
 
   .summary {
+    padding-top: 0 !important;
+
     .price span.amount {
       font-size: 26.5625px;
       color: $green-price;
@@ -103,13 +106,13 @@
       vertical-align: top;
 
       font-weight: bold;
-      padding: 10.5px 21px;
-      margin-right: 7px;
+      padding: 10.5px 10.5px 10.5px 42px;
+      margin-right: 0;
       margin-bottom: 21px;
       line-height: 22.4px;
       color: $white;
       border: none;
-      background: url(/wp-content/themes/oxfam-webshop/shop.svg) no-repeat left center $red-promo;
+      background: url(/wp-content/themes/oxfam-webshop/images/shop.svg) no-repeat left 10.5px center $red-promo;
 
       &:hover {
         opacity: 0.9;
@@ -128,8 +131,7 @@
     line-height: 24px;
 
     &.herkomst {
-      margin-bottom: 14px;
-      font-weight: bold;
+
     }
 
     &.promotie {
@@ -163,6 +165,12 @@
       font-size: 15.3px;
       margin-right: 7.65px;
     }
+  }
+
+  .product-origin-block {
+    margin-bottom: 14px;
+    margin-top: 14px;
+    font-weight: bold;
   }
 
   .wc-force-sells {
@@ -206,13 +214,71 @@ div.nm-single-product.product {
       padding: 0 !important;
 
       > .woocommerce-product-gallery {
-        width: 33.333334%;
-        padding-right: 12px;
+        width: 66.666666% !important;
+        margin: 0 auto;
+
+        @media (min-width: 992px) {
+          padding-right: 12px;
+          width: 33.333334% !important;
+        }
+
+        > .woocommerce-product-gallery__wrapper {
+          max-width: 100%;
+        }
       }
 
       > .summary {
         width: 66.6666666%;
         padding-left: 12px;
+
+        > .nm-product-summary-inner-col {
+          float: none;
+          width: 100%;
+
+          > .woocommerce-product-details__short-description {
+            margin-bottom: 24px;
+            padding-bottom: 0;
+          }
+
+          > .woocommerce-product-details__short-description[aria-expanded="true"] + a[data-readmore-toggle]:after {
+            transform: rotate(180deg);
+          }
+
+          a[data-readmore-toggle] {
+            margin-bottom: 24px;
+            margin-top: 24px;
+
+            text-decoration: underline;
+
+            &:after {
+              background: url(/wp-content/themes/oxfam-webshop/images/arrow-down-black.svg) no-repeat center center transparent;
+              content: "";
+              display: inline-block;
+              line-height: 24px;
+              height: 24px;
+              vertical-align: top;
+              width: 24px;
+            }
+          }
+        }
+
+        @media (min-width: 768px) {
+          display: flex;
+          flex-wrap: wrap;
+
+          > .nm-product-summary-inner-col-1 {
+            width: 100%;
+          }
+
+          > .nm-product-summary-inner-col-2 {
+            padding-right: 12px;
+          }
+
+          > .nm-product-summary-inner-col-2,
+          > .selected-store {
+            width: 50%;
+          }
+        }
       }
     }
   }
@@ -226,6 +292,10 @@ div.nm-single-product.product {
   .product_title {
     font-size: 34px;
     line-height: 1.2;
+
+    @media (min-width: 992px) {
+      margin-top: 0;
+    }
   }
 }
 
@@ -264,7 +334,9 @@ div.nm-single-product.product {
   }
 
   .extra-info {
-    margin-top: 30.6px;
+    @media (min-width: 992px) {
+      margin-top: 30.6px;
+    }
 
     ul {
       margin: 0 0 7.65px 0;
@@ -297,8 +369,24 @@ div.nm-single-product.product {
     }
   }
 
+  .product-info-panel{
+    &.quality-info {
+      @media (max-width: 991px) {
+        margin-top: 30.4px;
+      }
+    }
+
+    &.allergens {
+      margin-top: 30.4px;
+    }
+  }
+
   .partner-info {
     margin-top: 30.6px;
+
+    @media (min-width: 992px) {
+      margin-bottom: 30.6px;
+    }
 
     img {
       height: 250px;
@@ -352,12 +440,8 @@ div.nm-single-product.product {
 
       > a {
         display: inline-block;
-        height: 25.2px;
-        overflow: hidden;
-        text-overflow: ellipsis;
         font-size: 18px;
         width: 100%;
-        white-space: nowrap;
       }
     }
 

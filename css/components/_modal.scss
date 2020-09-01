@@ -1,0 +1,114 @@
+
+
+// Modals
+// --------------------------------------------------
+
+.store-selector-modal {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(200,200,200,0.9);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+
+  &.open {
+    display: flex;
+  }
+
+  .store-selector-inner {
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.156862745098039);
+    max-width: 800px;
+    max-height: 600px;
+    overflow-y: scroll;
+    background-color: $white;
+    margin: 12px;
+    padding: 30px;
+    position: relative;
+
+    font-size: 15px;
+
+    h2 {
+      font-size: 18px;
+    }
+  }
+
+  .store-selector-close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: url(/wp-content/themes/oxfam-webshop/images/x.svg);
+    width: 26px;
+    height: 26px;
+  }
+
+  .benefits {
+    margin-bottom: 0;
+    margin-left: 1.5em;
+
+    li {
+      list-style-image: url(/wp-content/themes/oxfam-webshop/images/checkmark.svg);
+    }
+  }
+}
+
+#wpsl-wrap {
+  .wpsl-search {
+    margin-bottom: 12px;
+    padding: 0;
+    background: transparent;
+  }
+
+  #wpsl-search-wrap {
+    position: relative;
+
+    #wpsl-checkbox-filter {
+      width: 70%;
+      text-align: center;
+    }
+
+    .wpsl-input,
+    .wpsl-select-wrap {
+      display: block;
+      float: none;
+      margin: 0;
+    }
+
+    .wpsl-input {
+      label {
+        width: initial;
+        color: $black;
+      }
+
+      #wpsl-search-input {
+        height: 40px;
+        width: 100%;
+      }
+    }
+
+    .wpsl-search-btn-wrap {
+      float: none;
+      margin: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    #wpsl-search-btn {
+      height: 40px;
+      width: 40px;
+      text-indent: 100%;
+      overflow: hidden;
+      color: $black;
+      background: url(/wp-content/themes/oxfam-webshop/images/search.svg) no-repeat center center transparent;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+      margin: 0;
+    }
+  }
+}
+

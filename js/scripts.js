@@ -1,8 +1,17 @@
-jQuery(document).ready(function($) {
-  $("#menu-btn").click(function(e) {
-    e.preventDefault();
-    $("#side-menu").addClass("active");
-    $("body").addClass("active");
+( function( $ ){
+  $(document).ready( function () {
+    $("#menu-btn").click(function(e) {
+      e.preventDefault();
+      $("#side-menu").addClass("active");
+      $("body").addClass("active");
+    });
+
+    $('.woocommerce-product-details__short-description').readmore({
+      collapsedHeight: 48,
+      heightMargin: 24,
+      moreLink: '<a href="#">Lees meer</a>',
+      lessLink: '<a href="#">Lees minder</a>'
+    });
   });
 
   $(document).mouseup(function(e){
@@ -12,4 +21,5 @@ jQuery(document).ready(function($) {
       $("body").removeClass("active");
     }
   });
-});
+
+})(jQuery);
