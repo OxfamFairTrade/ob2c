@@ -31,6 +31,22 @@
 		}
 	}
 
+	function get_ingredients_legend( $ingredients ) {
+		$legend = array();
+		if ( ! empty( $ingredients ) ) {
+			if ( strpos( $ingredients, '*' ) !== false ) {
+				$legend[] = '* ingrediënt uit een eerlijke handelsrelatie';
+			}
+			if ( strpos( $ingredients, '°' ) !== false ) {
+				$legend[] = '° ingrediënt van biologische landbouw';
+			}
+			if ( strpos( $ingredients, '†' ) !== false ) {
+				$legend[] = '† ingrediënt verkregen in de periode van omschakeling naar biologische landbouw';
+			}
+		}
+		return $legend;
+	}
+
 	// Toon kolom met winkel waar elke gebruiker lid van is
 	add_filter( 'manage_users_columns', 'add_member_of_shop_column', 10, 1 );
 	add_filter( 'manage_users_custom_column', 'add_member_of_shop_column_value', 10, 3 );
@@ -467,7 +483,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/admin.css', array(), '1.2.5' );
+		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.2.5' );
 	}
 
 	// Fixes i.v.m. cURL
@@ -4807,14 +4823,8 @@
 
 		// Voeg tabje met voedingswaarde toe (indien niet leeg)
 		if ( get_tab_content('food') !== false ) {
-			$eh = $product->get_attribute( 'pa_eenheid' );
-			if ( $eh === 'L' ) {
-				$suffix = 'ml';
-			} elseif ( $eh === 'KG' ) {
-				$suffix = 'g';
-			}
 			$tabs['food_info'] = array(
-				'title' 	=> 'Voedingswaarde per 100 '.$suffix,
+				'title' 	=> 'Voedingswaarde per 100 g',
 				'priority' 	=> 14,
 				'callback' 	=> function() { output_tab_content('food'); },
 			);
@@ -4886,205 +4896,7 @@
 					<td><?php echo 'Dit product is voor '.number_format( $product->get_attribute( 'pa_fairtrade' ), 0 ).' % afkomstig van '.$str.' waarmee Oxfam-Wereldwinkels een eerlijke handelsrelatie onderhoudt. <a href="https://www.oxfamwereldwinkels.be/expertise/labels/" target="_blank">Lees meer over deze certificering op onze website.</a>'; ?></td>
 				</tr>
 			<?php	
-			}
-			
-		} else {
-			
-			if ( false === ( $oft_quality_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
-
-				// Haal de kwaliteitsdata op in de OFT-site indien ze nog niet gecached werd in een transient 
-				require_once WP_CONTENT_DIR.'/wc-api/autoload.php';
-				$logger = wc_get_logger();
-				$context = array( 'source' => 'Quality' );
-				$oft_db = new Client(
-					'https://www.oxfamfairtrade.be', OFT_WC_KEY, OFT_WC_SECRET,
-					[
-						'wp_api' => true,
-						'version' => 'wc/v2',
-						'query_string_auth' => true,
-					]
-				);
-				// Trash wordt niet doorzocht via SKU
-				$params = array( 'status' => 'any', 'sku' => $product->get_sku(), 'lang' => 'nl' );
-				
-				try {
-					global $food_api_labels;
-					$oft_products = $oft_db->get( 'products', $params );
-					$last_response = $oft_db->http->getResponse();
-					
-					if ( $last_response->getCode() === 200 ) {
-						if ( count($oft_products) > 1 ) {
-							$logger->alert( 'Multiple results found for SKU '.$product->get_sku().' in OFT database', $context );
-						} else {
-							$oft_product = reset($oft_products);
-							
-							if ( $oft_product === false ) {	
-								// Indien we de oude product-ID uit de OFT-database hebben, kunnen we $oft_product langs deze weg nog rechtstreeks opvullen
-								if ( $product->meta_exists('oft_product_id') and intval( $product->get_meta('oft_product_id') ) > 0 ) {
-									$oft_product = $oft_db->get( 'products/'.$product->get_meta('oft_product_id') );
-									$last_response = $oft_db->http->getResponse();
-
-									if ( $last_response->getCode() === 200 ) {
-										$logger->notice( 'SKU '.$product->get_sku().' queried by ID in OFT database', $context );
-									} else {
-										$oft_product = false;
-										$logger->alert( 'SKU '.$product->get_sku().' could not be queried by ID in OFT database', $context );
-									}
-								} else {
-									$logger->notice( 'SKU '.$product->get_sku().' not found in OFT database', $context );
-								}
-							}
-
-							if ( $oft_product !== false ) {	
-								
-								// Stop voedingswaarden én ingrediënten in een array met als keys de namen van de eigenschappen
-								foreach ( $oft_product->meta_data as $meta_data ) {
-									if ( array_key_exists( $meta_data->key, $food_api_labels ) ) {
-										$oft_quality_data['food'][$meta_data->key] = $meta_data->value;
-									}
-								}
-
-								// Stop allergenen in een array met als keys de slugs van de allergenen
-								foreach ( $oft_product->product_allergen as $product_allergen ) {
-									$oft_quality_data['allergen'][$product_allergen->slug] = $product_allergen->name;
-								}
-
-								set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
-
-							}
-						}
-					} else {
-						$logger->alert( 'API response code was '.$last_response->getCode(), $context );
-					}
-				} catch ( HttpClientException $e ) {
-					$logger->alert( $e->getMessage(), $context );
-				}
-			}
-
-			// Check of de data inmiddels wel beschikbaar is
-			if ( $oft_quality_data ) {
-				
-				if ( $type === 'food' ) {
-					
-					// Check of er voedingswaarden zijn, tonen van zodra energie ingevuld is
-					if ( array_key_exists( 'food', $oft_quality_data ) and floatval($oft_quality_data['food']['_energy']) > 0 ) {
-						global $food_api_labels, $food_required_keys, $food_secondary_keys;
-						$has_row = true;
-
-						wc_print_r( $oft_quality_data, true );
-
-						foreach ( $food_api_labels as $food_key => $food_label ) {
-							// Toon voedingswaarde als het een verplicht veld is en in 2de instantie als er expliciet een (nul)waarde ingesteld is
-							if ( in_array( $food_key, $food_required_keys ) or array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
-								$food_value = '';
-								if ( array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
-									// Vul de waarde in uit de database
-									$food_value = $oft_quality_data['food'][$food_key];
-								}
-
-								if ( floatval($food_value) > 0 ) {
-									// Formatter het getal als Belgische tekst
-									$food_value = str_replace( '.', ',', $food_value );
-								} elseif ( in_array( $food_key, $food_required_keys ) ) {
-									// Zet een nul (zonder expliciete precisie)
-									$food_value = '0';
-								} else {
-									// Rij niet tonen, skip naar volgende key
-									continue;
-								}
-								?>
-								<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-									<th class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php echo $food_label; ?></th>
-									<td class="<?php echo in_array( $food_key, $food_secondary_keys ) ? 'secondary' : 'primary'; ?>"><?php
-										if ( $food_key === '_energy' ) {
-											echo $food_value.' kJ';
-										} else {
-											echo $food_value.' g';
-										}
-									?></td>
-								</tr>
-								<?php
-							}
-						}
-					}
-
-				} elseif ( $type === 'allergen' ) {
-
-					if ( array_key_exists( 'food', $oft_quality_data ) and array_key_exists( '_ingredients', $oft_quality_data['food'] ) ) {
-						$ingredients = $oft_quality_data['food']['_ingredients'];
-						if ( strlen($ingredients) > 3 ) {
-							// Ingrediënteninfo beschikbaar, dus tabje tonen
-							$has_row = true;
-							?>
-							<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-								<th><?php echo 'Ingrediënten'; ?></th>
-								<td><?php 
-									echo $ingredients;
-									if ( get_ingredients_legend($ingredients) ) {
-										echo '<small class="ingredients">'.implode( '<br/>', get_ingredients_legend($ingredients) ).'</small>';
-									}
-								?></td>
-							</tr>
-							<?php
-						}
-					}
-
-					$contains = array();
-					$traces = array();
-					$no_allergens = false;
-					if ( array_key_exists( 'allergen', $oft_quality_data ) ) {
-						// Allergeneninfo beschikbaar, dus tabje tonen
-						$has_row = true;
-						foreach ( $oft_quality_data['allergen'] as $slug => $name ) {
-							$parts = explode( '-', $slug );
-							if ( $parts[0] === 'c' ) {
-								$contains[] = $name;
-							} elseif ( $parts[0] === 'mc' ) {
-								$traces[] = $name;
-							} elseif ( $parts[0] === 'none' ) {
-								$no_allergens = true;
-							}
-						}
-					} else {
-						write_log( "ERROR: NO ALLERGEN TERMS SET YET FOR SKU ".$product->get_sku() );
-					}
-					?>
-					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-						<th><?php echo 'Dit product bevat'; ?></th>
-						<td>
-						<?php
-							if ( count($contains) > 0 ) {
-								echo implode( ', ', $contains );
-							} else {
-								if ( $no_allergens === true or count($traces) > 0 ) {
-									echo 'geen meldingsplichtige allergenen';
-								} else {
-									echo '/';
-								}
-							}
-						?>
-						</td>
-					</tr>
-
-					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-						<th><?php echo 'Kan sporen bevatten van'; ?></th>
-						<td>
-						<?php
-							if ( count($traces) > 0 ) {
-								echo implode( ', ', $traces );
-							} else {
-								if ( $no_allergens === true or count($contains) > 0 ) {
-									echo 'geen meldingsplichtige allergenen';
-								} else {
-									echo '/';
-								}
-							}
-						?>
-						</td>
-					</tr>
-					<?php
-				}
-			}
+			}	
 		}
 		
 		echo '</table>';
@@ -5097,7 +4909,7 @@
 		}
 	}
 
-	// Print de inhoud van een tab
+	// Print de inhoud van een tab DEPRECATED
 	function output_tab_content( $type ) {
 		if ( get_tab_content( $type ) !== false ) {
 			echo '<div class="nm-additional-information-inner">'.get_tab_content( $type ).'</div>';
@@ -5163,6 +4975,7 @@
 	// Retourneert zo veel mogelijk beschikbare info bij een partner (enkel naam en land steeds ingesteld!)
 	function get_info_by_partner( $partner ) {
 		$partner_info['name'] = $partner->name;
+		// Zit ook in de API, maar die bevat enkel A/B-partners
 		$partner_info['country'] = get_term_by( 'id', $partner->parent, 'product_partner' )->name;
 		$partner_info['archive'] = get_term_link( $partner->term_id );
 		
@@ -5193,7 +5006,6 @@
 
 	// Wat is dit?
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
-	// add_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 100 );
 	
 	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
 	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-breekbaar
@@ -5239,18 +5051,6 @@
 					echo $product->get_meta('promo_text').' <a href="#" class="read-more">Voorwaarden</a><span class="hidden">Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'. Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur.</span>';
 				echo '</p>';
 			}
-		}
-	}
-
-	// Herkomstlanden net boven grijze balk tonen
-	add_action( 'woocommerce_before_extra_product_info', 'show_product_origin' );
-
-	function show_product_origin() {
-		global $product;
-		if ( $product->get_meta('_herkomst_nl') !== '' ) {
-			echo '<p class="herkomst">';
-				echo 'Herkomst: '.$product->get_meta('_herkomst_nl');
-			echo '</p>';
 		}
 	}
 
@@ -6063,7 +5863,7 @@
 			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id );
 			
 			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
-				// Bewaar als een array i.p.v. een object
+				// Zet het JSON-object om in een PHP-array
 				$store_data = json_decode( wp_remote_retrieve_body( $response ), true );
 				set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
 			} else {
@@ -6084,7 +5884,7 @@
 		$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores?per_page=100&page='.$page );
 		
 		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {			
-			// Bewaar als een array i.p.v. een object
+			// Zet het JSON-object om in een PHP-array
 			$all_stores = json_decode( wp_remote_retrieve_body( $response ), true );
 
 			if ( $page === 1 ) {
@@ -6106,10 +5906,10 @@
 	}
 
 	function get_external_partner( $partner_name, $domain = 'www.oxfamwereldwinkels.be' ) {
-		$partner_info = array();
+		$partner_data = array();
 		$partner_slug = sanitize_title( $partner_name );
 
-		if ( false === ( $partner_info = get_site_transient( $partner_slug.'_partner_data' ) ) ) {
+		if ( false === ( $partner_data = get_site_transient( $partner_slug.'_partner_data' ) ) ) {
 			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
 			$args = array(
 				'headers' => array(
@@ -6117,24 +5917,25 @@
 				),
 			);
 
-			// Dit levert een array met (in principe) één element
-			// Zoekt default enkel naar objecten met de status 'publish'
+			// Zoekt default enkel naar objecten met status 'publish', levert in principe één element op
 			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/?slug='.$partner_slug );
 			
+			// Log alles op de hoofdsite
+			switch_to_blog(1);
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'WordPress API' );
 			
-			if ( $response['response']['code'] == 200 ) {
-				// Zet het JSON-object om in een array
-				$matching_partners = json_decode( $response['body'], true );
+			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
+				// Zet het JSON-object om in een PHP-array
+				$matching_partners = json_decode( wp_remote_retrieve_body( $response ), true );
 				
 				if ( count( $matching_partners ) === 1 ) {
 					$partner_data = $matching_partners[0];
-					$partner_info['url'] = $partner_data['link'];
-					$partner_info['quote'] = $partner_data['quote']['content'];
-					$partner_info['quote_by'] = $partner_data['quote']['speaker'];
-					$partner_info['quote_photo'] = $partner_data['quote']['image'];
-					set_site_transient( $partner_slug.'_partner_data', $partner_info, DAY_IN_SECONDS );
+					// Beperk de payload
+					unset( $partner_data['content'] );
+					unset( $partner_data['yoast_head'] );
+					unset( $partner_data['_links'] );
+					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
 					$logger->debug( 'Partner data saved in transient for '.$partner_slug, $context );
 				} elseif ( count( $matching_partners ) > 1 ) {
 					$logger->notice( 'Multiple partners found for '.$partner_slug, $context );
@@ -6144,9 +5945,11 @@
 			} else {
 				$logger->notice( 'Could not retrieve partner for '.$partner_slug, $context );
 			}
+
+			restore_current_blog();
 		}
 
-		return $partner_info;
+		return $partner_data;
 	}
 
 	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen (mag verdwijnen van zodra logomateriaal uit OWW-site komt)

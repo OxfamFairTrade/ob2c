@@ -117,7 +117,6 @@ if ( post_password_required() ) {
                          */
                         do_action( 'woocommerce_single_product_summary' );
 
-                        // GEWIJZIGD: Voeg store selector toe
                         get_template_part( 'template-parts/store-selector/current' );
                         ?>
                         <?php echo $summary_pin_wrapper_close_escaped; ?>
@@ -128,10 +127,16 @@ if ( post_password_required() ) {
     
     </div>
         
-	<?php
-    // GEWIJZIGD: Voeg nieuwe actie toe en toon blok met voedings- en partnerinfo
-    do_action( 'woocommerce_before_extra_product_info' );
-    get_template_part( 'template-parts/woocommerce/extra-product-info' );
+	<div class="container product-origin-block">
+        <div class="col-row">
+            <div class="col-md-12">
+                <?php get_template_part( 'template-parts/woocommerce/product-origin' ); ?>
+            </div>
+        </div>
+    </div>
+
+    <?php
+    get_template_part( 'template-parts/woocommerce/product-details' );
 
     /**
      * Hook: woocommerce_after_single_product_summary.
