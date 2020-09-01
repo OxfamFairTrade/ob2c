@@ -476,7 +476,8 @@
 		// WordPress 4.9 gebruikt nog jQuery UI 1.11.4
 		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css' );
 		wp_enqueue_style( 'jquery-ui' );
-        wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts.js', array('jquery') );
+        wp_enqueue_script( 'readmore', get_stylesheet_directory_uri() . '/libraries/readmore/readmore.min.js', array('jquery') );
+        wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts-min.js', array('jquery') );
     }
 
 	// Voeg custom styling toe aan de adminomgeving (voor Relevanssi en Voorraadbeheer)

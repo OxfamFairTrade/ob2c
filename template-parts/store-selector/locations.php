@@ -13,8 +13,9 @@
 	}
 ?>
 
-<div class="store-selector-modal" style="display: none; position: fixed; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(200,200,200,0.9); z-index: 100;">
-	<div class="store-selector-inner" style="max-width: 800px; max-height: 600px; overflow-y: scroll; background-color: grey; margin: 0 auto; padding: 1em;">
+<div class="store-selector-modal">
+	<div class="store-selector-inner">
+        <a href="#" class="store-selector-close"></a>
 		<h2>Selecteer jouw Oxfam-winkel</h2>
 		<p>Vul de postcode in waar jij de producten wil <b>afhalen</b> of waar ze <b>geleverd</b> moeten worden. Je bestelling wordt opgevolgd door de vrijwilligers van een Oxfam-Wereldwinkel in jouw buurt.</p>
 		<?php
@@ -60,13 +61,18 @@
 		});
 
 		jQuery('#open-store-selector').on( 'click', function() {
-			jQuery('.store-selector-modal').toggle();
+			jQuery('.store-selector-modal').toggleClass('open');
 			
 			var zip = jQuery('#wpsl-search-input').val();
 			if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
 				jQuery('#wpsl-search-btn').prop( 'disabled', false ).parent().addClass('is-valid');
 			}
 		});
+
+		jQuery('.store-selector-close').on( 'click', function(event) {
+          event.preventDefault();
+          jQuery('.store-selector-modal').toggleClass('open');
+        });
 
 		jQuery('.autocomplete-postcodes').autocomplete({
 			/* Dit is een licht andere vorm dan var zips! */

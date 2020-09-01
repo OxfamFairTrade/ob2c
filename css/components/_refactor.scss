@@ -478,52 +478,6 @@ body.portal.home {
     color: $black;
   }
 
-  #wpsl-search-wrap {
-    #wpsl-checkbox-filter {
-      width: 70%;
-      text-align: center;
-    }
-
-    .wpsl-input {
-      label {
-        width: initial;
-        color: $black;
-      }
-
-      #wpsl-search-input {
-        height: 40px;
-        width: 215px;
-        border-top-left-radius: 20px;
-        border-bottom-left-radius: 20px;
-        border-right: none;
-        padding-right: 0.25em;
-        left: 5px;
-      }
-    }
-
-    #wpsl-search-btn {
-      height: 40px;
-      font-size: 0.95em;
-      background: white;
-      color: $black;
-      border-top-right-radius: 20px;
-      border-bottom-right-radius: 20px;
-      border-left: none;
-      padding-left: 0.5em;
-      left: -5px;
-    }
-
-    #wpsl-search-btn {
-      height: 31px;
-      padding: 2px 10px;
-      font-size: 0.95em;
-      background: white;
-      color: $pale-black;
-      border: none;
-      border-radius: 2em;
-    }
-  }
-
   .button-go-to-webshop {
     background-color: #5CCB84;
     border-radius: 5px;
