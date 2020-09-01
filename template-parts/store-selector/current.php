@@ -1,7 +1,7 @@
 <?php
 	// Haal de huidig gekozen winkel op
 	$current_store = false;
-	if ( isset( $_COOKIE['latest_shop_id'] ) ) {
+	if ( ! empty( $_COOKIE['latest_shop_id'] ) ) {
 		$current_store = intval( $_COOKIE['latest_shop_id'] );
 	}
 ?>

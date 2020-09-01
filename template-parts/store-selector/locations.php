@@ -1,15 +1,12 @@
 <?php
 	// Haal de huidig gekozen winkel op
 	$current_store = false;
-	if ( isset( $_COOKIE['latest_shop_id'] ) ) {
+	$current_location = false;
+	if ( ! empty( $_COOKIE['latest_shop_id'] ) ) {
 		$current_store = intval( $_COOKIE['latest_shop_id'] );
 	}
-
-	// On select: cookie bijwerken en redirecten MOET VANUIT 'INIT'-ACTIE GEBEUREN VÒÒR ENIGE OUTPUT
-	if ( $current_store === false ) {
-		// setcookie( 'latest_shop_id', get_option('oxfam_shop_post_id'), time() + 30 * DAY_IN_SECONDS, 'oxfamwereldwinkels.be' );
-		// wp_safe_redirect( $store_url );
-		// exit();
+	if ( ! empty( $_COOKIE['current_location'] ) ) {
+		$current_location = intval( $_COOKIE['current_location'] );
 	}
 ?>
 
@@ -25,8 +22,9 @@
 			echo do_shortcode('[wpsl template="no_map"]');
 		?>
 		<div id="default-content">
-			<!-- In afwachting van ingeven van postcode -->
-			<p>Laatst gezocht: <?php $_COOKIE['current_location']; ?></p>
+			<?php if ( $current_location ) : ?>
+				<p>Laatst gezocht: <?php echo $current_location; ?></p>
+			<?php endif; ?>
 			<ul class="benefits">
 				<li>Gratis verzending vanaf 50 euro</li>
 				<li>Wij kopen rechtreeks bij kwetsbare producenten, met oog voor ecologische duurzaamheid</li>
@@ -38,11 +36,8 @@
 
 <script type="text/javascript">
 	jQuery(document).ready( function() {
-		var wto;
-		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
-		
-		/* Werkt niet, wat doe ik verkeerd? Zou veel duplicate logica kunnen vermijden! */
-		jQuery('#wpsl-wrap').on( 'click', '#wpsl-search-btn', function() {
+		/* In wpsl-gmap.js zit een $( "#wpsl-search-btn" ).unbind( "click" ) die dit verhindert ... */
+		jQuery('#wpsl-search-btn').on( 'click', function() {
 			alert('HALLO');
 			jQuery('#default-content').hide();
 			/* Maak de resultatenlijst zéker zichtbaar */
@@ -60,6 +55,9 @@
 			}
 		});
 
+		var wto;
+		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
+		
 		jQuery('#open-store-selector').on( 'click', function() {
 			jQuery('.store-selector-modal').toggleClass('open');
 			
@@ -115,6 +113,17 @@
 		});
 		
 		jQuery('#do_oxfam_redirect').on( 'click', function() {
+			// Cookie bijwerken en redirecten
+			// Voorzien we een non-JS-back-up via <a href>?
+
+			// Opgelet: voor PHP-cookies moet dit vanuit de 'init'-actie gebeuren (vòòr enige output)
+			// Leading dot in domein is enkel nodig voor verouderde browsers
+			// Resultaat pas raadpleegbaar bij volgende page load
+			// setcookie( 'latest_subsite', get_current_blog_id(), time() + YEAR_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
+			// setcookie( 'latest_shop_id', get_option('oxfam_shop_post_id'), time() + YEAR_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
+			// wp_safe_redirect( $store_url );
+			// exit();
+			
 			jQuery(this).prop( 'disabled', true );
 			var input = jQuery('#oxfam-zip-user');
 			var zip = input.val();
@@ -144,8 +153,8 @@
 
 	function setCookie(cname, cvalue) {
 		var d = new Date();
-		d.setTime( d.getTime() + 30*24*60*60*1000 );
+		d.setTime( d.getTime() + 365*24*60*60*1000 );
 		var expires = "expires="+ d.toUTCString();
-		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;domain=.oxfamwereldwinkels.be";
 	}
 </script>

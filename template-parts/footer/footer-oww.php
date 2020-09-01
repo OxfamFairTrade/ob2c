@@ -1,6 +1,6 @@
 <?php
 	// Voorlopig volledig statisch, behalve de contactgegevens
-	if ( isset( $_COOKIE['latest_shop_id'] ) ) {
+	if ( ! empty( $_COOKIE['latest_shop_id'] ) ) {
 		$atts['id'] = $_COOKIE['latest_shop_id'];
 	} else {
 		$atts['id'] = get_option('oxfam_shop_post_id');
