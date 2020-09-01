@@ -334,27 +334,33 @@
 			}
 		}
 
-		// Label producten met 1+1 / 2de -50% / 3+1 / -25% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
+		// Label producten met 1+1 / 2+1 / 3+1 / 2de -50% / -25% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
 		// Zou eventueel ook in template sale-flash.php kunnen, maar dit is - ondanks de omweg via product-ID - toch handiger
-		$one_plus_one_products = array( '24531', '24302', '24547', '25310', '21003', '21011', '25010', '26014' );
+		$one_plus_one_products = array();
 		foreach ( $one_plus_one_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'one-plus-one';
 			}	
 		}
-		$fifty_percent_off_second_products = array( '20070', '20076', '25727', '27997' );
-		foreach ( $fifty_percent_off_second_products as $sku ) {
+		$two_plus_one_products = array( '24102', '24117' );
+		foreach ( $two_plus_one_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
-				$classes[] = 'fifty-percent-off';
-			}
+				$classes[] = 'two-plus-one';
+			}	
 		}
-		$three_plus_one_products = array( '20808', '20810', '20812', '21108' );
+		$three_plus_one_products = array();
 		foreach ( $three_plus_one_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'three-plus-one';
 			}
 		}
-		$twentyfive_percent_off_products = array( '20807', '20809', '20811' );
+		$fifty_percent_off_second_products = array( '21052', '24532', '25404', '25405', '25406', '27151' );
+		foreach ( $fifty_percent_off_second_products as $sku ) {
+			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
+				$classes[] = 'fifty-percent-off-second';
+			}
+		}
+		$twentyfive_percent_off_products = array();
 		foreach ( $twentyfive_percent_off_products as $sku ) {
 			if ( wc_get_product_id_by_sku( $sku ) == $post->ID ) {
 				$classes[] = 'twenty-five-percent-off';
@@ -5382,7 +5388,7 @@
 		echo '<div class="rss-widget">';
 		echo '<p>De <a href="https://github.com/OxfamFairTrade/ob2c/wiki" target="_blank">online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Gebruik eventueel de zoekfunctie bovenaan rechts.</p>';
 		echo '<p>Daarnaast kun je de nieuwe slides van de voorbije opleidingssessies raadplegen voor een overzicht van alle afspraken en praktische details: <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-concept.pdf" target="_blank">Deel 1: Concept</a> (16/05/2020) en <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-praktisch.pdf" target="_blank">Deel 2: Praktisch</a> (30/05/2020). Op <a href="https://copain.oww.be/webshop" target="_blank">de webshoppagina op Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
-		echo '<p>Stuur een mailtje naar <a href="mailto:e-commerce@oft.be?">e-commerce@oft.be</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Voor dringende problemen mag je ook telefonisch contact opnemen met Frederik Neirynck via <a href="tel:+3292188863">09/218.88.63</a>.</p>';
+		echo '<p>Stuur een mailtje naar de <a href="mailto:e-commerce@oft.be?">Helpdesk E-Commerce</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Tineke, Ive, Elien en Frederik helpen je zo snel mogelijk verder.</p>';
 		echo '</div>';
 	}
 
@@ -5506,24 +5512,24 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>De promoties voor de maand augustus werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Bij de 2+1-actie wordt een extra gratis reep toegevoegd van zodra er twee in je winkelmandje zitten. De THT-actie op de pralines blijft doorlopen voor de enkele winkels die nog oude voorraad liggen hebben die binnenkort vervalt. In september arriveert de nieuwe productie pralines.</p>';
-				// echo '</div>';
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Er werden 2 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
-				// 		$skus = array( '20265', '27057' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku($sku);
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+				echo '<div class="notice notice-info">';
+					echo '<p>De promoties voor de maand september werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n118/news/view/20167/12894/promo-s-online-winkel-september-update.html" target="_blank">Copain</a>). Opgelet: bij de 2+1-actie op de chocoladerepen kunnen witte en notenchocolade naar keuze gemengd worden. Bijgevolg wordt de korting pas verrekend van zodra er (een veelvoud van) <u>drie</u> geledige artikels in het winkelmandje zitten. We weten op voorhand immers niet welke smaak de klant verkiest voor de gratis reep. De configuratie in ShopPlus is identiek.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Deze maand slechts 1 nieuw product:</p><ul style="margin-left: 2em;">';
+						$skus = array( '20610' );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku($sku);
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
 				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
@@ -5531,10 +5537,10 @@
 					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
 					// echo '</div>';
 				}
-				echo '<div class="notice notice-warning">';
-					// Volgende keer: 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio)
-					echo '<p>6 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 22722 BIO Koffiecaps lungo, 22723 BIO Koffiecaps dark roast, 26313 BIO Braambesconfituur, 27150 BIO Rijstwafels zeezout (nieuwe referentie: 27151), 27513 BIO Lychees en 27821 Tom Yum kruidenpasta voor soep (rood).</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-warning">';
+				// 	// Volgende keer: 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio)
+				// 	echo '<p>6 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 22722 BIO Koffiecaps lungo, 22723 BIO Koffiecaps dark roast, 26313 BIO Braambesconfituur, 27150 BIO Rijstwafels zeezout (nieuwe referentie: 27151), 27513 BIO Lychees en 27821 Tom Yum kruidenpasta voor soep (rood).</p>';
+				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}

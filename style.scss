@@ -1164,10 +1164,13 @@ li.product.product_tag-promotie::after {
 li.product.product_tag-promotie.one-plus-one::after {
 	content: "Promo 1+1 gratis";
 }
+li.product.product_tag-promotie.two-plus-one::after {
+	content: "Promo 2+1 gratis";
+}
 li.product.product_tag-promotie.three-plus-one::after {
 	content: "Promo 3+1 gratis";
 }
-li.product.product_tag-promotie.fifty-percent-off::after {
+li.product.product_tag-promotie.fifty-percent-off-second::after {
 	content: "Promo 2de -50%";
 }
 li.product.product_tag-promotie.twenty-five-percent-off::after {
@@ -1180,11 +1183,14 @@ div.nm-single-product.product_tag-promotie figure.woocommerce-product-gallery__w
 div.nm-single-product.product_tag-promotie.one-plus-one figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: 1+1 gratis";
 }
+div.nm-single-product.product_tag-promotie.two-plus-one figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: 2+1 gratis";
+}
 div.nm-single-product.product_tag-promotie.three-plus-one figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: 3+1 gratis";
 }
-div.nm-single-product.product_tag-promotie.fifty-percent-off figure.woocommerce-product-gallery__wrapper::after {
-	content: "In promotie: 2de fles aan -50%";
+div.nm-single-product.product_tag-promotie.fifty-percent-off-second figure.woocommerce-product-gallery__wrapper::after {
+	content: "In promotie: 2de stuk aan -50%";
 }
 div.nm-single-product.product_tag-promotie.twenty-five-percent-off figure.woocommerce-product-gallery__wrapper::after {
 	content: "In promotie: -25%";
