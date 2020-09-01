@@ -5513,10 +5513,10 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
-					echo '<p>De promoties voor de maand september werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n118/news/view/20167/12894/promo-s-online-winkel-september-update.html" target="_blank">Copain</a>). Opgelet: bij de 2+1-actie op de chocoladerepen kunnen witte en notenchocolade naar keuze gemengd worden. Bijgevolg wordt de korting pas verrekend van zodra er (een veelvoud van) <u>drie</u> geledige artikels in het winkelmandje zitten. We weten op voorhand immers niet welke smaak de klant verkiest voor de gratis reep. De configuratie in ShopPlus is identiek.</p>';
+					echo '<p>De promoties voor de maand september werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n118/news/view/20167/12894/promo-s-online-winkel-september-update.html" target="_blank">Copain</a>). Opgelet: bij de 2+1-actie op de chocoladerepen kunnen witte en notenchocolade naar keuze gemengd worden. Bijgevolg wordt de korting pas verrekend van zodra er (een veelvoud van) <u>drie</u> geldige artikels in het winkelmandje zitten. We weten op voorhand immers niet welke smaak de klant verkiest voor de gratis reep. De kortingsregel in ShopPlus werd op een gelijkaardige manier opgezet.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>Deze maand slechts 1 nieuw product:</p><ul style="margin-left: 2em;">';
+					echo '<p>Deze maand slechts 1 nieuw product, maar wat voor één:</p><ul style="margin-left: 2em;">';
 						$skus = array( '20610' );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku($sku);
