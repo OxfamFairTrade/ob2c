@@ -641,7 +641,7 @@
 	function wpsl_add_delivery_parameters_to_meta( $store_meta, $store_id = 0 ) {
 		// Vreemd genoeg wordt $store_id meestal niet doorgegeven ...
 		
-		// Key moet altijd aanwezig zijn, anders loopt de Underscore-template vast
+		// Keys moeten altijd aanwezig zijn, anders loopt de Underscore.js-template vast
 		$store_meta['delivery'] = '<li class="delivery inactive">Géén levering aan huis</li>';
 		$store_meta['available'] = 'no'; 
 

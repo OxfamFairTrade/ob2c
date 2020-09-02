@@ -5,10 +5,15 @@
 	} else {
 		$atts['id'] = get_option('oxfam_shop_post_id');
 	}
+
+	// Check of de huidige geselecteerde winkel een lokale nieuwsbrief heeft
+	$oww_store_data = get_external_wpsl_store( $atts['id'] );
+	if ( $oww_store_data !== false ) {
+		$mailchimp_url = $oww_store_data['mailchimp'];
+	}
 ?>
 
-<!-- TO DO: Logica aanpassen zodat we kijken of de huidige geselecteerde winkel een lokale nieuwsbrief heeft -->
-<?php if ( get_post_type() === 'wpsl_stores' ) : ?>
+<?php if ( ! empty( $mailchimp_url ) ) : ?>
 	<div id="newsletter">
 		<div class="container">
 			<div class="col-row md-display-flex">
@@ -16,8 +21,7 @@
 					<h2>Abonneer je hier op de<br/> nieuwsbrief van <?php echo $atts['id']; ?></h2>
 				</div>
 				<div class="col-md-7 md-align-self-center">
-					<!-- TO DO: Alternatief voor the_field('mailchimp_signup_url') zoeken -->
-					<form action="" method="post" target="_blank">
+					<form action="<?php echo $mailchimp_url; ?>" method="post" target="_blank">
 						<input type="text" name="FNAME" placeholder="Voornaam" required="required">
 						<input type="email" name="EMAIL" placeholder="E-mailadres" required="required">
 						<input type="submit" value="Inschrijven">
