@@ -29,16 +29,12 @@
 			global $wpdb;
 			$wpdb->query( "DELETE FROM `$wpdb->sitemeta` WHERE `meta_key` LIKE ('%_store_data')" );
 
-			
-
 			// Sluit afgeschermde en gearchiveerde webshops uit
 			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
+			$site_ids_vs_blog_ids = array();
 
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
-
-				// MAAK EEN HANDIGE LIJST MET ALLE SHOP-ID's EN HUN BIJBEHORENDE BLOG-ID
-				// AANMAAK VAN KAARTEN NIET LANGER NODIG?
 
 				if ( ! is_main_site() ) {
 					// Maak de lokale kaart aan met alle deelnemende winkelpunten, inclusief externen
@@ -67,10 +63,18 @@
 								$txt .= "<description><![CDATA[<p>".get_shop_address( array( 'id' => $shop_post_id ) )."</p><p><a href=".$oww_store_data['link']." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
 								$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', 0, false, $shop_post_id )."</coordinates></Point>";
 								$txt .= "</Placemark>";
+
+								// Maak een handige lijst met alle shop-ID's en hun bijbehorende blog-ID
+								$site_ids_vs_blog_ids[ $shop_post_id ] = array(
+									'blog_id' => get_current_blog_id(),
+									'blog_url' => get_site_url().'/',
+									'home_delivery' => does_home_delivery(),
+								);
 							}
 						}
 
 						$txt .= "</Document></kml>";
+						// Aanmaak van kaarten niet langer nodig?
 						fwrite($local_file, $txt);
 						fclose($local_file);
 					}
@@ -79,7 +83,7 @@
 				restore_current_blog();
 			}
 
-			
+			var_dump_pre( $site_ids_vs_blog_ids );
 
 			// Vraag alle huidige winkels in de OWW-site op
 			$oww_stores = get_external_wpsl_stores();
@@ -119,14 +123,16 @@
 						'wpsl_country' => 'België',
 						'wpsl_lat' => $ll[1],
 						'wpsl_lng' => $ll[0],
-						'wpsl_phone' => $oww_store_data['telephone'],
+						'wpsl_phone' => $oww_store_data['location']['telephone'],
 						'wpsl_url' => $oww_store_data['link'],
-						// DIT MOET UIT DE LIJST MET SITES KOMEN (DATA IN OWW-SITE KAN VERVUILD ZIJN)
-						'wpsl_webshop' => get_site_url().'/',
-						// Neem bewust het algemene mailadres (ook voor webshopwinkels)
-						'wpsl_email' => $oww_store_data['mail'],
+						// DIT MOET UIT DE LIJST MET SITES KOMEN (DATA IN OWW-SITE KAN VERVUILD ZIJN MET ANDERE WEBSHOPS)
+						'wpsl_webshop' => $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_url'],
+						'wpsl_webshop_blog_id' => $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_id'],
+						// Vul hier bewust het algemene mailadres in (ook voor winkels mét webshop)
+						'wpsl_email' => $oww_store_data['location']['mail'],
 						// Openingsuren toch internaliseren?
 						'wpsl_hours' => $oww_store_data['opening_hours'],
+						'wpsl_mailchimp' => $oww_store_data['mailchimp'],
 					),
 				);
 
@@ -139,13 +145,13 @@
 				}
 
 				// Dit veroorzaakt elke dag een nieuwe '_wp_old_date'-entry ...
-				$result = wp_insert_post( $store_args );
+				$result_post_id = wp_insert_post( $store_args );
 				
-				// Winkelcategorie op deze manier instellen, 'tax_input'-argument bij wp_insert_post() werkt niet HEEFT GEEN ZIN MEER
-				wp_set_object_terms( $result, 'afhaling', 'wpsl_store_category', false );
-				if ( $home_delivery ) {
+				// Winkelcategorie instellen DEPRECATED
+				wp_set_object_terms( $result_post_id, 'afhaling', 'wpsl_store_category', false );
+				if ( $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['home_delivery'] ) {
 					// Tweede categorie instellen indien niet enkel afhaling
-					wp_set_object_terms( $result, 'levering', 'wpsl_store_category', true );
+					wp_set_object_terms( $result_post_id, 'levering', 'wpsl_store_category', true );
 				}
 			}
 

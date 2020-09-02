@@ -36,9 +36,10 @@
 
 <script type="text/javascript">
 	jQuery(document).ready( function() {
-		/* In wpsl-gmap.js zit een $( "#wpsl-search-btn" ).unbind( "click" ) die dit verhindert ... */
+		/* In wpsl-gmap.js staat in searchLocationBtn() een $( "#wpsl-search-btn" ).unbind( "click" ) die dit verhindert */
+		/* Voorlopig daar hard verwijderd maar wellicht beter om zelf een custom event te verzinnen en binden? */
 		jQuery('#wpsl-search-btn').on( 'click', function() {
-			alert('HALLO');
+			console.log("Executing click binding by OB2C ...");
 			jQuery('#default-content').hide();
 			/* Maak de resultatenlijst zéker zichtbaar */
 			jQuery('#wpsl-result-list').show();
@@ -49,9 +50,6 @@
 		jQuery('#wpsl-search-input').keyup( function(event) {
 			if ( event.which == 13 ) {
 				jQuery('#wpsl-search-btn').trigger('click');
-				jQuery('#default-content').hide();
-				jQuery('#wpsl-result-list').show();
-				setCookie( 'current_location', jQuery('#wpsl-search-input').val() );
 			}
 		});
 
@@ -68,9 +66,9 @@
 		});
 
 		jQuery('.store-selector-close').on( 'click', function(event) {
-          event.preventDefault();
-          jQuery('.store-selector-modal').toggleClass('open');
-        });
+			event.preventDefault();
+			jQuery('.store-selector-modal').toggleClass('open');
+		});
 
 		jQuery('.autocomplete-postcodes').autocomplete({
 			/* Dit is een licht andere vorm dan var zips! */
@@ -81,12 +79,10 @@
 			close: function(event,ui) {
 				// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
 				jQuery('#wpsl-search-btn').trigger('click');
-				jQuery('#default-content').hide();
-				jQuery('#wpsl-result-list').show();
-				setCookie( 'current_location', jQuery('#wpsl-search-input').val() );
 			}
 		});
 
+		/* Eventueel uitschakelen en mensen gewoon altijd laten klikken/enteren om te zoeken? */
 		jQuery('#wpsl-search-input').on( 'input change', function() {
 			clearTimeout(wto);
 			var zip = jQuery(this).val();
@@ -97,9 +93,6 @@
 					button.find('i').addClass('loading');
 					wto = setTimeout( function() {
 						button.trigger('click');
-						jQuery('#default-content').hide();
-						jQuery('#wpsl-result-list').show();
-						setCookie( 'current_location', jQuery('#wpsl-search-input').val() );
 					}, 750);
 				}, 250);
 			} else {
@@ -110,10 +103,6 @@
 		/* Gebruik event delegation, deze nodes zijn nog niet aanwezig bij DOM load! */
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
 			alert("Registreer keuze in cookie en doe redirect!");
-		});
-		
-		jQuery('#do_oxfam_redirect').on( 'click', function() {
-			// Cookie bijwerken en redirecten
 			// Voorzien we een non-JS-back-up via <a href>?
 
 			// Opgelet: voor PHP-cookies moet dit vanuit de 'init'-actie gebeuren (vòòr enige output)
@@ -123,7 +112,10 @@
 			// setcookie( 'latest_shop_id', get_option('oxfam_shop_post_id'), time() + YEAR_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
 			// wp_safe_redirect( $store_url );
 			// exit();
-			
+		});
+		
+		/* DEPRECATED */
+		jQuery('#do_oxfam_redirect').on( 'click', function() {
 			jQuery(this).prop( 'disabled', true );
 			var input = jQuery('#oxfam-zip-user');
 			var zip = input.val();
