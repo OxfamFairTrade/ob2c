@@ -1,0 +1,48 @@
+
+
+// Store notices
+// --------------------------------------------------
+
+
+.general-store-notice {
+  clear: both;
+  padding: 0.5em;
+  width: 100%;
+  color: white;
+  background-color: $pale-blue;
+
+  p {
+    font-size: 16.8px;
+    line-height: 33.6px;
+    text-align: center;
+    margin: 0 auto;
+    max-width: 800px;
+    position: relative;
+
+    &.free-shipping {
+      line-height: 2em;
+
+      &:after {
+        content: '';
+        display: inline-block;
+        background-image: url('/wp-content/themes/oxfam-webshop/images/shipping-icon.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 33.6px;
+        height: 33.6px;
+        margin-left: 8.4px;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+body.portal.home .general-store-notice {
+  background-color: $bright-red;
+}
+
+.corona-notice {
+  color: $pale-blue;
+  font-style: initial;
+  font-size: 0.9em;
+}

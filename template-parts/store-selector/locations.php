@@ -75,7 +75,7 @@
 			source: <?php echo json_encode( get_flemish_zips_and_cities() ); ?>,
 			minLength: 1,
 			autoFocus: true,
-			position: { my : "right+10 top", at: "right bottom" },
+			position: { my : "right top", at: "right bottom" },
 			close: function(event,ui) {
 				// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
 				jQuery('#wpsl-search-btn').trigger('click');

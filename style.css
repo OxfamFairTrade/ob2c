@@ -1288,8 +1288,8 @@ table tbody td:last-child {
   margin-right: 7.65px;
 }
 .product .product-origin-block {
-  margin-bottom: 14px;
-  margin-top: 14px;
+  margin-bottom: 30.6px;
+  margin-top: 30.6px;
   font-weight: bold;
 }
 .product .wc-force-sells {
@@ -1394,6 +1394,7 @@ div.nm-single-product.product .woocommerce-breadcrumb {
 }
 div.nm-single-product.product .product_title {
   font-size: 34px;
+  margin-bottom: 28px;
   line-height: 1.2;
 }
 @media (min-width: 992px) {
@@ -1440,9 +1441,6 @@ div.nm-single-product.product .product_title {
   padding-left: 2px;
   list-style-position: inside;
 }
-.product-details-block .extra-info .icons {
-  margin-bottom: 22.95px;
-}
 .product-details-block .extra-info .icons .icon {
   display: inline-block;
   margin-right: 0.5em;
@@ -1451,22 +1449,16 @@ div.nm-single-product.product .product_title {
   width: 30.6px;
   height: 30.6px;
 }
-.product-details-block .extra-info .ingredients {
-  margin-bottom: 22.95px;
-}
 .product-details-block .extra-info .ingredients .legend {
   font-style: italic;
-  /* Nodig om line-height kleiner te maken */
   display: inline-block;
   line-height: 15.3px;
 }
-@media (max-width: 991px) {
-  .product-details-block .product-info-panel.quality-info {
-    margin-top: 30.4px;
-  }
+.product-details-block .extra-info ul.ingredients li {
+  list-style: inside disc;
 }
-.product-details-block .product-info-panel.allergens {
-  margin-top: 30.4px;
+.product-details-block .product-info-panel {
+  margin-top: 20px;
 }
 .product-details-block .partner-info {
   margin-top: 30.6px;
@@ -1486,6 +1478,9 @@ div.nm-single-product.product .product_title {
   margin: 15.3px 0;
   padding-left: 2px;
   list-style-position: inside;
+}
+.product-details-block .partner-info ul li {
+  list-style: inside disc;
 }
 .product-details-block .partner-info a {
   color: #1b1b1B;
@@ -1539,6 +1534,13 @@ div.nm-single-product.product .product_title {
   padding: 0;
 }
 
+.ui-autocomplete.ui-front {
+  z-index: 10000;
+  position: fixed;
+  overflow-y: scroll !important;
+  max-height: 300px;
+}
+
 .store-selector-modal {
   display: none;
   position: fixed;
@@ -1558,7 +1560,7 @@ div.nm-single-product.product .product_title {
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1568627451);
   max-width: 800px;
   max-height: 600px;
-  overflow-y: scroll;
+  overflow: hidden;
   background-color: #ffffff;
   margin: 12px;
   padding: 30px;
@@ -1582,6 +1584,17 @@ div.nm-single-product.product .product_title {
 }
 .store-selector-modal .benefits li {
   list-style-image: url(/wp-content/themes/oxfam-webshop/images/checkmark.svg);
+}
+
+body.portal .ui-autocomplete {
+  color: #1b1b1B;
+  font-size: 95%;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  overflow: hidden;
 }
 
 #wpsl-wrap .wpsl-search {
@@ -1628,6 +1641,117 @@ div.nm-single-product.product .product_title {
   border: none;
   box-shadow: none;
   margin: 0;
+}
+#wpsl-wrap.wpsl-store-below #wpsl-result-list > div > ul > li {
+  padding: 10px 20px;
+  border-bottom: 1px solid #f2f2f2;
+}
+#wpsl-wrap.wpsl-store-below #wpsl-result-list > div > ul > li:hover {
+  background-color: #f2f2f2;
+}
+#wpsl-wrap > #wpsl-result-list #wpsl-stores {
+  height: 370px !important;
+}
+
+#wpsl-stores > ul > li.not-available .wpsl-actions-wrap {
+  font-style: italic;
+  color: #707070;
+  text-align: right;
+  min-width: 235px;
+}
+#wpsl-stores > ul > li.not-available .wpsl-actions-wrap a {
+  text-decoration: underline;
+  color: #707070;
+}
+#wpsl-stores .wpsl-preloader img {
+  margin-right: 8px;
+  display: inline-block;
+  left: 0;
+  position: relative;
+  top: 3px;
+}
+#wpsl-stores .wpsl-store-location {
+  display: flex;
+  justify-content: space-between;
+}
+#wpsl-stores .wpsl-store-location > .wpsl-store-wrap {
+  padding-right: 20px;
+}
+#wpsl-stores .wpsl-store-location .wpsl-delivery-wrap .delivery-options > li {
+  padding: 0 !important;
+  margin: 0 5px 0 0 !important;
+  display: inline-block;
+}
+#wpsl-stores .wpsl-store-location .wpsl-delivery-wrap .delivery-options > li.delivery:before, #wpsl-stores .wpsl-store-location .wpsl-delivery-wrap .delivery-options > li.pickup:before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 24px;
+  vertical-align: top;
+  line-height: 24px;
+  margin-right: 4px;
+}
+#wpsl-stores .wpsl-store-location .wpsl-delivery-wrap .delivery-options > li.delivery.active:before, #wpsl-stores .wpsl-store-location .wpsl-delivery-wrap .delivery-options > li.pickup.active:before {
+  background: url(/wp-content/themes/oxfam-webshop/images/checkmark-green.svg) no-repeat center center transparent;
+  background-size: contain;
+}
+#wpsl-stores .wpsl-store-location .wpsl-delivery-wrap .delivery-options > li.delivery.inactive:before, #wpsl-stores .wpsl-store-location .wpsl-delivery-wrap .delivery-options > li.pickup.inactive:before {
+  background: url(/wp-content/themes/oxfam-webshop/images/x-red.svg) no-repeat center center transparent;
+  background-size: contain;
+}
+#wpsl-stores .wpsl-store-location > .wpsl-actions-wrap {
+  display: flex;
+  align-items: center;
+}
+#wpsl-stores .wpsl-store-location > .wpsl-actions-wrap > button {
+  padding: 1.5px 30px;
+  color: #ffffff;
+  background-color: #00cc00;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 25px;
+  text-align: center;
+}
+
+.general-store-notice {
+  clear: both;
+  padding: 0.5em;
+  width: 100%;
+  color: white;
+  background-color: #60aafd;
+}
+.general-store-notice p {
+  font-size: 16.8px;
+  line-height: 33.6px;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 800px;
+  position: relative;
+}
+.general-store-notice p.free-shipping {
+  line-height: 2em;
+}
+.general-store-notice p.free-shipping:after {
+  content: "";
+  display: inline-block;
+  background-image: url("/wp-content/themes/oxfam-webshop/images/shipping-icon.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 33.6px;
+  height: 33.6px;
+  margin-left: 8.4px;
+  vertical-align: middle;
+}
+
+body.portal.home .general-store-notice {
+  background-color: #ff2e2e;
+}
+
+.corona-notice {
+  color: #60aafd;
+  font-style: initial;
+  font-size: 0.9em;
 }
 
 #newsletter {
@@ -2158,16 +2282,6 @@ body.portal .input-group.is-valid > #do_oxfam_redirect,
 body.portal .input-group.is-valid > #oxfam-zip-user {
   border-color: #57cc82;
 }
-body.portal .ui-autocomplete {
-  color: #1b1b1B;
-  font-size: 95%;
-  background: white;
-  border: 1px solid black;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  border-top: none;
-  overflow: hidden;
-}
 body.portal .ui-menu-item {
   padding: 3px 6px;
 }
@@ -2211,46 +2325,6 @@ body.portal.home .wpsl-infobox {
   border-radius: 10px;
   border-color: white;
   border-width: 5px;
-}
-
-.general-store-notice {
-  clear: both;
-  padding: 0.5em;
-  width: 100%;
-  color: white;
-  background-color: #60aafd;
-}
-.general-store-notice p {
-  font-size: 1.2em;
-  line-height: 1.2em;
-  text-align: center;
-  margin: 0 auto;
-  max-width: 800px;
-  position: relative;
-}
-.general-store-notice p.free-shipping {
-  line-height: 2em;
-}
-.general-store-notice p.free-shipping:after {
-  content: "";
-  display: inline-block;
-  background-image: url("images/shipping-icon.svg");
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 2em;
-  height: 2em;
-  margin-left: 0.5em;
-  vertical-align: middle;
-}
-
-body.portal.home .general-store-notice {
-  background-color: #ff2e2e;
-}
-
-.corona-notice {
-  color: #60aafd;
-  font-style: initial;
-  font-size: 0.9em;
 }
 
 .nm-shop-header {

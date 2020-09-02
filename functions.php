@@ -544,44 +544,55 @@
 		$listing_template = '<% if ( available == "yes" ) { %>' . "\r\n";
 		// Winkel heeft een webshop
 		$listing_template .= "\t" . '<li data-store-id="<%= id %>" class="available" style="cursor: pointer;">' . "\r\n";
-		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
-		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . wpsl_store_header_template( 'listing' ) . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %>, ' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
-		$listing_template .= "\t\t\t" . '</p>' . "\r\n";
+        $listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
+        $listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
+        $listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
+        $listing_template .= "\t\t\t\t\t" . '<%= thumb %>' . "\r\n";
+		$listing_template .= "\t\t\t\t\t" . wpsl_store_header_template( 'listing' ) . "\r\n";
+		$listing_template .= "\t\t\t\t\t" . '<span class="wpsl-street"><%= address %>, ' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
+        $listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
 
-		$listing_template .= "\t\t" . '<div class="wpsl-direction-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t" . '<div class="wpsl-direction-wrap">' . "\r\n";
 		if ( ! $wpsl_settings['hide_distance'] ) {
-			$listing_template .= "\t\t\t" . '+/- <%= distance %> ' . esc_html( $wpsl_settings['distance_unit'] ) . '' . "\r\n";
+			$listing_template .= "\t\t\t\t" . '+/- <%= distance %> ' . esc_html( $wpsl_settings['distance_unit'] ) . '' . "\r\n";
 		}
-		$listing_template .= "\t\t" . '</div>' . "\r\n";
-		
-		$listing_template .= "\t\t\t" . '<ul class="delivery-options">' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<li class="pickup active">Afhalen in de winkel</li>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<%= delivery %>' . "\r\n";
-		$listing_template .= "\t\t\t" . '</ul>' . "\r\n";
+		$listing_template .= "\t\t\t" . '</div>' . "\r\n";
 
-		$listing_template .= "\t\t\t" . '<button>Online winkelen</button>' . "\r\n";
-		$listing_template .= "\t\t" . '</div>' . "\r\n";
+        $listing_template .= "\t\t\t\t" . '<div class="wpsl-delivery-wrap">' . "\r\n";
+        $listing_template .= "\t\t\t\t\t" . '<ul class="delivery-options">' . "\r\n";
+		$listing_template .= "\t\t\t\t\t\t" . '<li class="pickup active">Afhalen in de winkel</li>' . "\r\n";
+		$listing_template .= "\t\t\t\t\t\t" . '<%= delivery %>' . "\r\n";
+		$listing_template .= "\t\t\t\t\t" . '</ul>' . "\r\n";
+        $listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
+        $listing_template .= "\t\t\t" . '</div>' . "\r\n";
+
+        $listing_template .= "\t\t\t" . '<div class="wpsl-actions-wrap">' . "\r\n";
+        $listing_template .= "\t\t\t\t" . '<button>Online winkelen</button>' . "\r\n";
+        $listing_template .= "\t\t\t" . '</div>' . "\r\n";
+        $listing_template .= "\t\t" . '</div>' . "\r\n";
 		$listing_template .= "\t" . '</li>';
 
 		$listing_template .= '<% } else { %>' . "\r\n";
 		// Winkel heeft géén webshop
-		$listing_template .= "\t" . '<li data-store-id="<%= id %>" style="cursor: not-allowed;">' . "\r\n";
+		$listing_template .= "\t" . '<li data-store-id="<%= id %>" class="not-available" style="cursor: not-allowed;">' . "\r\n";
 		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
-		$listing_template .= "\t\t\t" . '<p><%= thumb %>' . "\r\n";
-		$listing_template .= "\t\t\t\t" . wpsl_store_header_template( 'listing' ) . "\r\n";
-		$listing_template .= "\t\t\t\t" . '<span class="wpsl-street"><%= address %>, ' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
-		$listing_template .= "\t\t\t" . '</p>' . "\r\n";
+        $listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
+        $listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t\t\t" . '<%= thumb %>' . "\r\n";
+		$listing_template .= "\t\t\t\t\t" . wpsl_store_header_template( 'listing' ) . "\r\n";
+		$listing_template .= "\t\t\t\t\t" . '<span class="wpsl-street"><%= address %>, ' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
+        $listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
 
-		$listing_template .= "\t\t" . '<div class="wpsl-direction-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t" . '<div class="wpsl-direction-wrap">' . "\r\n";
 		if ( ! $wpsl_settings['hide_distance'] ) {
-			$listing_template .= "\t\t\t" . '+/- <%= distance %> ' . esc_html( $wpsl_settings['distance_unit'] ) . '' . "\r\n";
+			$listing_template .= "\t\t\t\t" . '+/- <%= distance %> ' . esc_html( $wpsl_settings['distance_unit'] ) . '' . "\r\n";
 		}
-		$listing_template .= "\t\t" . '</div>' . "\r\n";
-		
-		$listing_template .= "\t\t\t" . '<p>Online winkelen niet beschikbaar.<br/>Stuur je bestelling <a href="mailto:<%= email %>">per e-mail</a>.</p>' . "\r\n";
-		$listing_template .= "\t\t" . '</div>' . "\r\n";
+        $listing_template .= "\t\t\t" . '</div>' . "\r\n";
+
+        $listing_template .= "\t\t" . '</div>' . "\r\n";
+        $listing_template .= "\t\t" . '<div class="wpsl-actions-wrap">' . "\r\n";
+        $listing_template .= "\t\t\t" . '<span>Online winkelen niet beschikbaar.<br/>Stuur je bestelling <a href="mailto:<%= email %>">per e-mail</a>.</span>' . "\r\n";
+        $listing_template .= "\t\t" . '</div>' . "\r\n";
 		$listing_template .= "\t" . '</li>';
 
 		$listing_template .= '<% } %>' . "\r\n";

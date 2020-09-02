@@ -168,8 +168,8 @@
   }
 
   .product-origin-block {
-    margin-bottom: 14px;
-    margin-top: 14px;
+    margin-bottom: 30.6px;
+    margin-top: 30.6px;
     font-weight: bold;
   }
 
@@ -291,6 +291,7 @@ div.nm-single-product.product {
 
   .product_title {
     font-size: 34px;
+    margin-bottom: 28px;
     line-height: 1.2;
 
     @media (min-width: 992px) {
@@ -345,8 +346,6 @@ div.nm-single-product.product {
     }
 
     .icons {
-      margin-bottom: 22.95px;
-
       .icon {
         display: inline-block;
         margin-right: 0.5em;
@@ -358,27 +357,22 @@ div.nm-single-product.product {
     }
 
     .ingredients {
-      margin-bottom: 22.95px;
-
       .legend {
         font-style: italic;
-        /* Nodig om line-height kleiner te maken */
         display: inline-block;
         line-height: 15.3px;
+      }
+    }
+
+    ul.ingredients {
+      li {
+        list-style: inside disc;
       }
     }
   }
 
   .product-info-panel{
-    &.quality-info {
-      @media (max-width: 991px) {
-        margin-top: 30.4px;
-      }
-    }
-
-    &.allergens {
-      margin-top: 30.4px;
-    }
+    margin-top: 20px;
   }
 
   .partner-info {
@@ -399,6 +393,10 @@ div.nm-single-product.product {
       margin: 15.3px 0;
       padding-left: 2px;
       list-style-position: inside;
+
+      li {
+        list-style: inside disc;
+      }
     }
 
     a {

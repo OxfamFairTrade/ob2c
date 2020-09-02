@@ -426,17 +426,6 @@ body.portal {
     border-color: $fluo-green;
   }
 
-  .ui-autocomplete {
-    color: $black;
-    font-size: 95%;
-    background: white;
-    border: 1px solid black;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-top: none;
-    overflow: hidden;
-  }
-
   .ui-menu-item {
     padding: 3px 6px;
   }
@@ -490,49 +479,6 @@ body.portal.home {
     border-color: white;
     border-width: 5px;
   }
-}
-
-.general-store-notice {
-  clear: both;
-  padding: 0.5em;
-  width: 100%;
-  color: white;
-  background-color: $pale-blue;
-
-  p {
-    font-size: 1.2em;
-    line-height: 1.2em;
-    text-align: center;
-    margin: 0 auto;
-    max-width: 800px;
-    position: relative;
-
-    &.free-shipping {
-      line-height: 2em;
-
-      &:after {
-        content: '';
-        display: inline-block;
-        background-image: url('images/shipping-icon.svg');
-        background-size: contain;
-        background-repeat: no-repeat;
-        width: 2em;
-        height: 2em;
-        margin-left: 0.5em;
-        vertical-align: middle;
-      }
-    }
-  }
-}
-
-body.portal.home .general-store-notice {
-  background-color: $bright-red;
-}
-
-.corona-notice {
-  color: $pale-blue;
-  font-style: initial;
-  font-size: 0.9em;
 }
 
 .nm-shop-header {
