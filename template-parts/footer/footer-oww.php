@@ -211,12 +211,12 @@
 <div id="copyright">
 	<div class="container">
 		<div class="col-row">
-			<div class="col-sm-6">
+			<div class="col-sm-8">
 				<p>Oxfam-Wereldwinkels vzw &copy; 2019-<?php echo date_i18n('Y'); ?>. Alle rechten voorbehouden.<br/>
 				Oxfam-Wereldwinkels/Fair Trade en Oxfam-Solidariteit bundelen de krachten onder de naam Oxfam België.</p>
 			</div>
-			<div class="col-sm-6 text-right">
-				<!-- @ToDo: refactor to WP menu? -->
+			<div class="col-sm-4 text-right">
+				<!-- @ToDo: refactor ACF field to WP menu? -->
 				<p><a href="https://stage.oxfamwereldwinkels.be/privacy/">Privacybeleid</a> / <a href="https://stage.oxfamwereldwinkels.be/cookiebeleid/">Cookiebeleid</a> / <a href="https://stage.oxfamwereldwinkels.be/sitemap/">Sitemap</a></p>
 			</div>
 		</div>
