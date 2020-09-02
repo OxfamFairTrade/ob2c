@@ -8,6 +8,22 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Update bij elke cart load (ook via AJAX!) onze custom cookies
+	add_action( 'woocommerce_set_cart_cookies', 'set_number_of_items_in_cart_cookie' );
+
+	function set_number_of_items_in_cart_cookie() {
+		// Vroege actie, check altijd of aangeroepen functies reeds beschikbaar zijn!
+		if ( ! is_main_site() ) {
+			// Enkel instellen bij expliciet kiezen in store selector?
+			setcookie( 'latest_blog_id', get_current_blog_id(), time() + MONTH_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
+			$current_blog = get_blog_details();
+			setcookie( 'latest_blog_path', str_replace( '/', '', $current_blog->path ), time() + MONTH_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
+			if ( is_object( WC()->cart ) ) {
+				setcookie( 'blog_'.get_current_blog_id().'_items_in_cart', WC()->cart->get_cart_contents_count(), time() + WEEK_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
+			}
+		}
+	}
+
 	// Toon breadcrumbs wél op shoppagina's
 	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
 	// Laad géén extra NM-stijlen rechtstreeks in de pagina!
@@ -201,8 +217,6 @@
 				}
 			}
 		} else {
-			// Cookie enkel nog instellen bij expliciet kiezen in store selector!
-			// setcookie( 'latest_subsite', get_current_blog_id(), time() + YEAR_IN_SECONDS, '/' );
 			if ( ! empty( $_GET['addSku'] ) ) {
 				add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
 			}
@@ -541,16 +555,18 @@
 	function wpsl_custom_results_template() {
 		global $wpsl, $wpsl_settings;
 
+		// Omdat we in deze Underscore.js-template beperkt zijn qua controlestructuren herhalen we de logica voor beide types winkels!
 		$listing_template = '<% if ( available == "yes" ) { %>' . "\r\n";
-		// Winkel heeft een webshop
+		
+		// WINKEL MET WEBSHOP
 		$listing_template .= "\t" . '<li data-store-id="<%= id %>" class="available" style="cursor: pointer;">' . "\r\n";
-        $listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
-        $listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
-        $listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
-        $listing_template .= "\t\t\t\t\t" . '<%= thumb %>' . "\r\n";
+		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
+		$listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t\t\t" . '<%= thumb %>' . "\r\n";
 		$listing_template .= "\t\t\t\t\t" . wpsl_store_header_template( 'listing' ) . "\r\n";
 		$listing_template .= "\t\t\t\t\t" . '<span class="wpsl-street"><%= address %>, ' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
-        $listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
 
 		$listing_template .= "\t\t\t" . '<div class="wpsl-direction-wrap">' . "\r\n";
 		if ( ! $wpsl_settings['hide_distance'] ) {
@@ -558,41 +574,42 @@
 		}
 		$listing_template .= "\t\t\t" . '</div>' . "\r\n";
 
-        $listing_template .= "\t\t\t\t" . '<div class="wpsl-delivery-wrap">' . "\r\n";
-        $listing_template .= "\t\t\t\t\t" . '<ul class="delivery-options">' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<div class="wpsl-delivery-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t\t\t" . '<ul class="delivery-options">' . "\r\n";
 		$listing_template .= "\t\t\t\t\t\t" . '<li class="pickup active">Afhalen in de winkel</li>' . "\r\n";
 		$listing_template .= "\t\t\t\t\t\t" . '<%= delivery %>' . "\r\n";
 		$listing_template .= "\t\t\t\t\t" . '</ul>' . "\r\n";
-        $listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
-        $listing_template .= "\t\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t\t\t" . '</div>' . "\r\n";
 
-        $listing_template .= "\t\t\t" . '<div class="wpsl-actions-wrap">' . "\r\n";
-        $listing_template .= "\t\t\t\t" . '<button>Online winkelen</button>' . "\r\n";
-        $listing_template .= "\t\t\t" . '</div>' . "\r\n";
-        $listing_template .= "\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t\t\t" . '<div class="wpsl-actions-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<button>Online winkelen</button>' . "\r\n";
+		$listing_template .= "\t\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t\t" . '</div>' . "\r\n";
 		$listing_template .= "\t" . '</li>';
 
 		$listing_template .= '<% } else { %>' . "\r\n";
-		// Winkel heeft géén webshop
+		
+		// WINKEL ZONDER WEBSHOP
 		$listing_template .= "\t" . '<li data-store-id="<%= id %>" class="not-available" style="cursor: not-allowed;">' . "\r\n";
 		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
-        $listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
-        $listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
 		$listing_template .= "\t\t\t\t\t" . '<%= thumb %>' . "\r\n";
 		$listing_template .= "\t\t\t\t\t" . wpsl_store_header_template( 'listing' ) . "\r\n";
 		$listing_template .= "\t\t\t\t\t" . '<span class="wpsl-street"><%= address %>, ' . wpsl_address_format_placeholders() . '</span>' . "\r\n";
-        $listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
 
 		$listing_template .= "\t\t\t" . '<div class="wpsl-direction-wrap">' . "\r\n";
 		if ( ! $wpsl_settings['hide_distance'] ) {
 			$listing_template .= "\t\t\t\t" . '+/- <%= distance %> ' . esc_html( $wpsl_settings['distance_unit'] ) . '' . "\r\n";
 		}
-        $listing_template .= "\t\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t\t\t" . '</div>' . "\r\n";
 
-        $listing_template .= "\t\t" . '</div>' . "\r\n";
-        $listing_template .= "\t\t" . '<div class="wpsl-actions-wrap">' . "\r\n";
-        $listing_template .= "\t\t\t" . '<span>Online winkelen niet beschikbaar.<br/>Stuur je bestelling <a href="mailto:<%= email %>">per e-mail</a>.</span>' . "\r\n";
-        $listing_template .= "\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t\t" . '</div>' . "\r\n";
+		$listing_template .= "\t\t" . '<div class="wpsl-actions-wrap">' . "\r\n";
+		$listing_template .= "\t\t\t" . '<span>Online winkelen niet beschikbaar.<br/>Stuur je bestelling <a href="mailto:<%= email %>">per e-mail</a>.</span>' . "\r\n";
+		$listing_template .= "\t\t" . '</div>' . "\r\n";
 		$listing_template .= "\t" . '</li>';
 
 		$listing_template .= '<% } %>' . "\r\n";
@@ -2077,9 +2094,9 @@
 		// WC()->cart->get_cart_subtotal() geeft het subtotaal vòòr korting, verzending en (indien B2B) BTW
 		// WC()->cart->cart_contents_total geeft het subtotaal vòor BTW en verzending maar nà korting
 		// Gebruik in de toekomst WC()->cart->get_total('edit') om het totaalbedrag als float op te vragen (WC3.2+)
-		if ( floatval( WC()->cart->cart_contents_total ) < $min ) {
+		if ( floatval( WC()->cart->get_total('edit') ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
-		} elseif ( floatval( WC()->cart->cart_contents_total ) > $max ) {
+		} elseif ( floatval( WC()->cart->get_total('edit') ) > $max ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
 		}
 	}
