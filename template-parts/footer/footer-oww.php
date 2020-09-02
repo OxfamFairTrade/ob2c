@@ -212,7 +212,8 @@
 	<div class="container">
 		<div class="col-row">
 			<div class="col-sm-6">
-				<p>Oxfam-Wereldwinkels vzw &copy; 2019-<?php echo date_i18n('Y'); ?>. Alle rechten voorbehouden.</p>
+				<p>Oxfam-Wereldwinkels vzw &copy; 2019-<?php echo date_i18n('Y'); ?>. Alle rechten voorbehouden.<br/>
+				Oxfam-Wereldwinkels/Fair Trade en Oxfam-Solidariteit bundelen de krachten onder de naam Oxfam België.</p>
 			</div>
 			<div class="col-sm-6 text-right">
 				<!-- @ToDo: refactor to WP menu? -->
