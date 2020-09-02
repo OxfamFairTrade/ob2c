@@ -38,12 +38,12 @@
 					<h2>Abonneer je hier<br/> op onze nieuwsbrief</h2>
 				</div>
 				<div class="col-md-7 md-align-self-center">
-					<form id="subscribe-to-newsletter" class="mc4wp-form" method="post" data-name="Abonneer je op onze nieuwsbrief">
+					<form id="regular-newsletter" class="mc4wp-form ajaxified-subscription" method="post" data-name="Abonneer je op onze nieuwsbrief">
 						<div class="mc4wp-form-fields">
 							<input type="text" name="FNAME" placeholder="Voornaam" required />
 							<input type="email" name="EMAIL" placeholder="E-mailadres" required />
 							<input type="hidden" name="LIST_ID" value="5cce3040aa">
-							<label style="display: none !important;">Laat dit veld leeg als je een mens bent: <input type="text" name="HONING" value="" tabindex="-1" autocomplete="off"></label>
+							<label style="display: none !important;">Laat dit veld leeg als je een mens bent: <input type="text" name="lekkere-honing" value="" tabindex="-1" autocomplete="off"></label>
 							<input type="submit" value="Inschrijven" />
 						</div>
 						<div class="mc4wp-response"></div>
@@ -52,48 +52,49 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript">
-		jQuery(document).ready( function() {
-			jQuery('#subscribe-to-newsletter').on( 'submit', function(event) {
-				event.preventDefault();
-				var form = jQuery(this);
-				var output = form.find('.mc4wp-response');
+<?php endif; ?>
 
-				form.find("input[type='submit']").prop( 'disabled', true );
-				output.html('Even geduld ...');
+<script type="text/javascript">
+	jQuery(document).ready( function() {
+		jQuery('.ajaxified-subscription').on( 'submit', function(event) {
+			event.preventDefault();
+			var form = jQuery(this);
+			var output = form.find('.mc4wp-response');
 
-				var newsletter = 'no';
-				if ( form.find("input[name='HONING']").val().length == 0 ) {
-					newsletter = 'yes';
+			form.find("input[type='submit']").prop( 'disabled', true );
+			output.html('Even geduld ...');
+
+			var newsletter = 'no';
+			if ( form.find("input[name='lekkere-honing']").val().length == 0 ) {
+				newsletter = 'yes';
+			}
+
+			jQuery.ajax({
+				type: 'POST',
+				url: 'https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php',
+				data: {
+					'fname': form.find("input[name='FNAME']").val(),
+					'email': form.find("input[name='EMAIL']").val(),
+					'list_id': form.find("input[name='LIST_ID']").val(),
+					'newsletter': newsletter
+				},
+				dataType: 'json',
+			}).done( function(response) {
+				if ( response.status == 'subscribed' || response.status == 'resubscribed') {
+					output.html('Hoera, je bent nu ingeschreven op onze nieuwsbrief voor scholen!');
+				} else if ( response.status == 'updated' ) {
+					output.html('Je was al ingeschreven op deze nieuwsbrief. Bedankt voor je enthousiasme!');
+				} else {
+					output.html('Er liep iets verkeerd ('+response.error+').');
 				}
-
-				jQuery.ajax({
-					type: 'POST',
-					url: 'https://www.oxfamWereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php',
-					data: {
-						'fname': form.find("input[name='FNAME']").val(),
-						'email': form.find("input[name='EMAIL']").val(),
-						'list_id': form.find("input[name='LIST_ID']").val(),
-						'newsletter': newsletter
-					},
-					dataType: 'json',
-				}).done( function(response) {
-					if ( response.status == 'subscribed' || response.status == 'resubscribed') {
-						output.html('Hoera, je bent nu ingeschreven op onze nieuwsbrief voor scholen!');
-					} else if ( response.status == 'updated' ) {
-						output.html('Je was al ingeschreven op deze nieuwsbrief. Bedankt voor je enthousiasme!');
-					} else {
-						output.html('Er liep iets verkeerd ('+response.error+').');
-					}
-				}).fail( function() {
-					output.html('Er liep iets verkeerd. Probeer je het eens opnieuw?');
-				}).always( function() {
-					form.find("input[type='submit']").prop( 'disabled', false );
-				});
+			}).fail( function() {
+				output.html('Er liep iets verkeerd. Probeer je het eens opnieuw?');
+			}).always( function() {
+				form.find("input[type='submit']").prop( 'disabled', false );
 			});
 		});
-	</script>
-<?php endif; ?>
+	});
+</script>
 
 <div id="footer">
 	<div class="container">

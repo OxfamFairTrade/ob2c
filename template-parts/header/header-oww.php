@@ -22,8 +22,22 @@
 							<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Voor bedrijven</a></li>
 						</ul>
 					</div>
-					<div class="top-social">
-						<a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>"><span class="fab"></span> Aanmelden</a>
+					<div class="top-social logged-in-user">
+						<a href="<?php get_permalink( wc_get_page_id('myaccount') ); ?>">
+							<span class="fab fa-user"></span>
+							<?php
+								if ( is_user_logged_in() ) {
+									$user = wp_get_current_user();
+									if ( ! empty( $user->display_name ) ) {
+										echo ' Welkom '.$user->display_name;
+									} else {
+										echo ' Mijn account';
+									}
+								} else {
+									echo ' Aanmelden';
+								}
+							?>
+						</a>
 					</div>
 					<div class="top-search">
 						<form id="globalSearch" action="https://stage.oxfamwereldwinkels.be/" method="get">
