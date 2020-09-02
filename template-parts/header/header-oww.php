@@ -23,7 +23,7 @@
 						</ul>
 					</div>
 					<div class="top-social logged-in-user">
-						<a href="<?php get_permalink( wc_get_page_id('myaccount') ); ?>">
+						<a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>">
 							<span class="fab"></span>
 							<?php
 								if ( is_user_logged_in() ) {
