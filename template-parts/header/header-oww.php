@@ -4,14 +4,13 @@
 	// We duiden 'Producten' voorlopig ook steeds aan als huidige pagina
 ?>
 
-<!-- Regulier menu -->
 <div id="header" class="hidden-sm hidden-xs">
 	<div class="container">
 		<div class="col-row md-display-flex">
 			<div class="col-md-3 md-align-self-center">
 				<div class="logo">
 					<a href="https://stage.oxfamwereldwinkels.be/">
-						<img src="/wp-content/themes/oxfam-webshop/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
+						<img src="<?php echo get_template_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
 					</a>
 				</div>
 			</div>
@@ -41,14 +40,14 @@
 						<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://stage.oxfamwereldwinkels.be/winkels/">Vind winkel</a></li>
 						<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://stage.oxfamwereldwinkels.be/word-vrijwilliger/">Word vrijwilliger</a></li>
 					</ul>
-                    <?php
-                        $cart_url = ( $nm_globals['cart_panel'] ) ? '#' : wc_get_cart_url();
-                        echo sprintf(
-                            '<a href="%s" id="nm-menu-cart-btn">%s</a>',
-                            esc_url( $cart_url ),
-                            nm_get_cart_contents_count()
-                        );
-                    ?>
+					<?php
+						$cart_url = ( $nm_globals['cart_panel'] ) ? '#' : wc_get_cart_url();
+						echo sprintf(
+							'<a href="%s" id="nm-menu-cart-btn">%s</a>',
+							esc_url( $cart_url ),
+							nm_get_cart_contents_count()
+						);
+					?>
 				</div>
 			</div>
 		</div>
@@ -60,7 +59,7 @@
 		<div class="col-row display-flex">
 			<div class="col-xs-6 align-self-center">
 				<div class="logo">
-					<a href="https://stage.oxfamwereldwinkels.be/"><img src="/wp-content/themes/oxfam-webshop/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
+					<a href="https://stage.oxfamwereldwinkels.be/"><img src="<?php echo get_template_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
 				</div>
 			</div> 
 			<div class="col-xs-6 align-self-center">
@@ -74,9 +73,9 @@
 				</div>
 			</div>
 		</div>
-		<div id="menu-btn"><img src="/wp-content/themes/oxfam-webshop/images/menu-btn-black.png" alt=""></div>
+		<div id="menu-btn"><img src="<?php echo get_template_directory_uri(); ?>/images/menu-btn-black.png" alt=""></div>
 	</div>
-	<div class="top-search top-search_mobile hidden">         
+	<div class="top-search top-search_mobile hidden">
 		<form action="https://stage.oxfamwereldwinkels.be/" method="get">
 			<input type="text" name="s" placeholder="Zoeken">
 			<input type="submit" value="">
@@ -84,7 +83,7 @@
 	</div>
 </div>
 <div id="side-menu">
-	<!-- Zoekbalk beter weglaten in mobiel menu? -->
+	<!-- Als we het mobiele menu fixed maken, kan deze zoekbalk verdwijnen -->
 	<div class="top-search">
 		<form action="https://stage.oxfamwereldwinkels.be/" method="get">
 			<input type="text" name="s" placeholder="Zoeken">
@@ -107,14 +106,6 @@
 			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/oxfam-op-school/">Voor scholen</a></li>
 			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Voor bedrijven</a></li>
 		</ul>
-	</div>
-	<!-- Socials beter weglaten in mobiel menu? -->
-	<div class="top-social">
-		<a href="https://www.facebook.com/OxfamWereldwinkels" target="_blank"><span class="fab fa-facebook-f"></span></a>
-		<a href="https://www.youtube.com/OxfamWereldwinkels" target="_blank"><span class="fab fa-youtube"></span></a>
-		<a href="https://www.instagram.com/oxfam.wereldwinkels/" target="_blank"><span class="fab fa-instagram"></span></a>
-		<a href="https://twitter.com/OxfamFairTrade" target="_blank"><span class="fab fa-twitter"></span></a>
-		<a href="https://www.linkedin.com/company/oxfam-fair-trade/" target="_blank"><span class="fab fa-linkedin-in"></span></a>
 	</div>
 	<div class="nav btns">
 		<ul id="menu-main-menu-2" class="menu">
