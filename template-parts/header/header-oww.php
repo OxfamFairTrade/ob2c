@@ -10,7 +10,7 @@
 			<div class="col-md-3 md-align-self-center">
 				<div class="logo">
 					<a href="https://stage.oxfamwereldwinkels.be/">
-						<img src="<?php echo get_template_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
+						<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
 					</a>
 				</div>
 			</div>
@@ -59,7 +59,7 @@
 		<div class="col-row display-flex">
 			<div class="col-xs-6 align-self-center">
 				<div class="logo">
-					<a href="https://stage.oxfamwereldwinkels.be/"><img src="<?php echo get_template_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
+					<a href="https://stage.oxfamwereldwinkels.be/"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
 				</div>
 			</div> 
 			<div class="col-xs-6 align-self-center">
@@ -73,7 +73,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="menu-btn"><img src="<?php echo get_template_directory_uri(); ?>/images/menu-btn-black.png" alt=""></div>
+		<div id="menu-btn"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/menu-btn-black.png" alt=""></div>
 	</div>
 	<div class="top-search top-search_mobile hidden">
 		<form action="https://stage.oxfamwereldwinkels.be/" method="get">
