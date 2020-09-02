@@ -9,7 +9,7 @@
 	// Check of de huidige geselecteerde winkel een lokale nieuwsbrief heeft
 	$oww_store_data = get_external_wpsl_store( $atts['id'] );
 	if ( $oww_store_data !== false ) {
-		$mailchimp_url = $oww_store_data['mailchimp'];
+		$mailchimp_url = $oww_store_data['mailchimp_url'];
 	}
 ?>
 

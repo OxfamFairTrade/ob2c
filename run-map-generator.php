@@ -132,7 +132,7 @@
 						'wpsl_email' => $oww_store_data['location']['mail'],
 						// Openingsuren toch internaliseren?
 						'wpsl_hours' => $oww_store_data['opening_hours'],
-						'wpsl_mailchimp' => $oww_store_data['mailchimp'],
+						'wpsl_mailchimp' => $oww_store_data['mailchimp_url'],
 					),
 				);
 
