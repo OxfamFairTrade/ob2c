@@ -11,8 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-//global $wp_query, $nm_theme_options;
-global $nm_theme_options;
+global $wp_query, $nm_theme_options;
 
 $total   = isset( $total ) ? $total : wc_get_loop_prop( 'total_pages' );
 $current = isset( $current ) ? $current : wc_get_loop_prop( 'current_page' );
@@ -59,8 +58,8 @@ if ( is_woocommerce() && $nm_theme_options['shop_infinite_load'] !== '0' ) {
 
 <div class="nm-infload-controls <?php echo esc_attr( $nm_theme_options['shop_infinite_load'] ); ?>-mode">
     <!-- GEWIJZIGD: Toon progressie in productenlijst -->
-    <p>Weergave <?php echo $current; ?> van <?php echo $current * $total; ?> producten</p>
-    <a href="#" class="nm-infload-btn"><?php esc_html_e( 'Load More', 'nm-framework' ); ?></a>
+    <p>Weergave <?php echo max( 1, $current ) * $wp_query->get('posts_per_page'); ?> van <?php echo $wp_query->found_posts; ?> producten</p>
+    <a href="#" class="nm-infload-btn">Meer producten laden</a>
     
     <a href="#" class="nm-infload-to-top"><?php esc_html_e( 'All products loaded.', 'nm-framework' ); ?></a>
 </div>

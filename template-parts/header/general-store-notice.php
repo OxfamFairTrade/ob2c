@@ -28,10 +28,10 @@
 	<div class="col-row">
 		<ul>
 			<?php if ( $html ) : ?>
-				<li class="col-md-4"><?php echo $args['html']; ?></li>
+				<li class="col-md-4"><?php echo $html; ?></li>
 			<?php endif; ?>
 			<li class="col-md-4">Wij kopen rechtreeks bij kwetsbare producenten</li>
 			<li class="col-md-4">Je steunt de strijd voor eerlijke handel</li>
-		<ul>
+		</ul>
 	</div>
 </div>
