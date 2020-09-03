@@ -137,13 +137,17 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 
 <!-- We nemen de brakke Conversal-logica voorlopig over -->
 <?php if ( $position_in_grid === 6 ) : ?>
-    <div class="col-md-4">
-        <div class="promo-block">
-            <h3>BANNER PROMO PRODUCTS</h3>
-            <p>Dit is de tekst.</p>
-            <a href="#" class="more-info">Dit is een link (maar dat willen we niet?)</a>
+    <li>
+        <div class="nm-shop-loop-product-wrap">
+            <!-- <div class="col-md-4"> -->
+                <div class="promo-block">
+                    <h3>BANNER PROMO PRODUCTS</h3>
+                    <p>Dit is de tekst.</p>
+                    <a href="#" class="more-info">Dit is een link (maar dat willen we niet?)</a>
+                </div>
+            <!-- </div> -->
         </div>
-    </div>
+    </li>
 
     <!-- Categoriespecifieke blokjes voorlopig uitschakelen, ACF-velden hier niet beschikbaar -->
     <?php $product_cat = get_queried_object(); ?>
