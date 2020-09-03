@@ -39,6 +39,8 @@
                         // GEWIJZIGD: Header content vervangen door header van OWW-site
                         get_template_part( 'template-parts/header/header', 'oww' );
                     
-                        // GEWIJZIGD: Custom banner met afhaal/leverinfo
-                        get_template_part( 'template-parts/header/general-store-notice' );
+                        // GEWIJZIGD: Custom banner met afhaal/leverinfo tonen op shoppagina's
+                        if ( is_woocommerce() ) {
+                            get_template_part( 'template-parts/header/general-store-notice' );
+                        }
                     ?>

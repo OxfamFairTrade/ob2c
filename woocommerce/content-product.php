@@ -136,7 +136,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 </li>
 
 <!-- We nemen de brakke Conversal-logica voorlopig over -->
-<?php if ( $position_in_grid === 4 ) : ?>
+<?php if ( $position_in_grid === 4 and is_shop() ) : ?>
     <!-- Banner op volledige breedte -->
     <a href="#">
         <div class="col-md-12" style="background-color: grey;">
@@ -146,7 +146,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
             </div>
         </div>
     </a>
-<?php elseif ( $position_in_grid === 7 ) : ?>
+<?php elseif ( $position_in_grid === 7 and is_shop() ) : ?>
     <!-- Blokje op zelfde formaat als een product -->
     <li>
         <div class="nm-shop-loop-product-wrap">
