@@ -15,11 +15,11 @@
 		// Vroege actie, check altijd of aangeroepen functies reeds beschikbaar zijn!
 		if ( ! is_main_site() ) {
 			// Enkel instellen bij expliciet kiezen in store selector?
-			setcookie( 'latest_blog_id', get_current_blog_id(), time() + MONTH_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
+			setcookie( 'latest_blog_id', get_current_blog_id(), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
 			$current_blog = get_blog_details();
-			setcookie( 'latest_blog_path', str_replace( '/', '', $current_blog->path ), time() + MONTH_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
+			setcookie( 'latest_blog_path', str_replace( '/', '', $current_blog->path ), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
 			if ( is_object( WC()->cart ) ) {
-				setcookie( 'blog_'.get_current_blog_id().'_items_in_cart', WC()->cart->get_cart_contents_count(), time() + WEEK_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
+				setcookie( 'blog_'.get_current_blog_id().'_items_in_cart', WC()->cart->get_cart_contents_count(), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
 			}
 		}
 	}
@@ -559,7 +559,7 @@
 		$listing_template = '<% if ( available == "yes" ) { %>' . "\r\n";
 		
 		// WINKEL MET WEBSHOP
-		$listing_template .= "\t" . '<li data-store-id="<%= id %>" class="available" style="cursor: pointer;">' . "\r\n";
+		$listing_template .= "\t" . '<li data-store-id="<%= id %>" data-oxfam-shop-post-id="<%= oxfamShopPostId %>" data-webshop-url="<%= webshopUrl %>" data-webshop-blog-id="<%= webshopBlogId %>" class="available" style="cursor: pointer;">' . "\r\n";
 		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
 		$listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
@@ -591,7 +591,7 @@
 		$listing_template .= '<% } else { %>' . "\r\n";
 		
 		// WINKEL ZONDER WEBSHOP
-		$listing_template .= "\t" . '<li data-store-id="<%= id %>" class="not-available" style="cursor: not-allowed;">' . "\r\n";
+		$listing_template .= "\t" . '<li data-store-id="<%= id %>" data-oxfam-shop-post-id="<%= oxfamShopPostId %>" class="not-available" style="cursor: not-allowed;">' . "\r\n";
 		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
 		$listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
@@ -689,9 +689,9 @@
 
 	function wpsl_add_frontend_meta_fields( $store_fields ) {
 		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
-		$store_fields['wpsl_webshop'] = array( 'name' => 'webshop' );
+		$store_fields['wpsl_webshop'] = array( 'name' => 'webshopUrl' );
 		$store_fields['wpsl_webshop_blog_id'] = array( 'name' => 'webshopBlogId' );
-		$store_fields['wpsl_mailchimp'] = array( 'name' => 'mailchimp' );
+		$store_fields['wpsl_mailchimp'] = array( 'name' => 'mailchimpUrl' );
 		return $store_fields;
 	}
 
@@ -5857,7 +5857,7 @@
 	}
 
 	function does_home_delivery( $zipcode = 0, $blog_id = 0 ) {
-		if ( $zipcode === 0 ) {
+		if ( intval( $zipcode ) === 0 ) {
 			return boolval( get_oxfam_covered_zips() );
 		} else {
 			switch_to_blog( $blog_id );

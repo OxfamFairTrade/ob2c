@@ -82,8 +82,8 @@
 			}
 		});
 
-		/* Eventueel uitschakelen en mensen gewoon altijd laten klikken/enteren om te zoeken? */
-		jQuery('#wpsl-search-input').on( 'input change', function() {
+		/* DEPRECATED */
+		jQuery('#wpsl-search-inputDISABLE').on( 'input change', function() {
 			clearTimeout(wto);
 			var zip = jQuery(this).val();
 			var button = jQuery('#wpsl-search-btn');
@@ -101,17 +101,11 @@
 		});
 
 		/* Gebruik event delegation, deze nodes zijn nog niet aanwezig bij DOM load! */
+		/* Voorzien we een non-JS back-up via <a href>? */
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
-			alert("Registreer keuze in cookie en doe redirect!");
-			// Voorzien we een non-JS-back-up via <a href>?
-
-			// Opgelet: voor PHP-cookies moet dit vanuit de 'init'-actie gebeuren (vòòr enige output)
-			// Leading dot in domein is enkel nodig voor verouderde browsers
-			// Resultaat pas raadpleegbaar bij volgende page load
-			// setcookie( 'latest_subsite', get_current_blog_id(), time() + YEAR_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
-			// setcookie( 'latest_shop_id', get_option('oxfam_shop_post_id'), time() + YEAR_IN_SECONDS, '/', '.oxfamwereldwinkels.be' );
-			// wp_safe_redirect( $store_url );
-			// exit();
+			console.log( "Registreer shop-ID "+jQuery(this).data('oxfam-shop-post-id')+" in cookie en doe redirect naar "+jQuery(this).data('webshop-url')+"!" );
+			setCookie( 'latest_shop_id', jQuery(this).data('oxfam-shop-post-id') );
+			window.location.replace( jQuery(this).data('webshop-url') );
 		});
 		
 		/* DEPRECATED */
@@ -145,8 +139,8 @@
 
 	function setCookie(cname, cvalue) {
 		var d = new Date();
-		d.setTime( d.getTime() + 365*24*60*60*1000 );
+		d.setTime( d.getTime() + 30*24*60*60*1000 );
 		var expires = "expires="+ d.toUTCString();
-		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;domain=.oxfamwereldwinkels.be";
+		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;domain=<?php echo OXFAM_COOKIE_DOMAIN; ?>";
 	}
 </script>
