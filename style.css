@@ -2003,6 +2003,93 @@ body.portal.home .general-store-notice {
   font-size: 0.9em;
 }
 
+.selected-store {
+  background: #eeeded;
+  border: 1px solid #3da969;
+  color: #000000;
+  margin-top: 17px;
+  padding: 30px 20px 20px;
+  position: relative;
+  font-size: 15px;
+  line-height: 25px;
+}
+.selected-store .pointer {
+  color: #FFFFFF;
+  font-size: 12px;
+  line-height: 12px;
+  padding: 7px 8px 7px 16px;
+  position: absolute;
+  text-transform: uppercase;
+  top: -13px;
+  left: 9px;
+}
+.selected-store .pointer:before {
+  content: "";
+  background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center #3da969;
+  background-size: 37px;
+  border-radius: 50%;
+  height: 37px;
+  width: 37px;
+  position: absolute;
+  left: -27px;
+  top: -5px;
+}
+.selected-store.ok {
+  border-color: #3da969;
+}
+.selected-store.ok .pointer {
+  background: #3da969;
+}
+.selected-store.ok .pointer:before {
+  background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center #3da969;
+}
+.selected-store.not-ok {
+  border-color: #ff1d34;
+}
+.selected-store.not-ok .pointer {
+  background: #ff1d34;
+  left: 47px;
+}
+.selected-store.not-ok .pointer:before {
+  background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center #ff1d34;
+}
+.selected-store .shop-name {
+  margin-bottom: 10px;
+  text-decoration: underline;
+}
+.selected-store .shop-address {
+  margin-bottom: 10px;
+}
+.selected-store .delivery-options {
+  margin-bottom: 10px;
+}
+.selected-store .delivery-options > li {
+  padding: 0 !important;
+  margin: 0 5px 0 0 !important;
+  display: inline-block;
+}
+.selected-store .delivery-options > li:before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 24px;
+  vertical-align: top;
+  line-height: 24px;
+  margin-right: 4px;
+}
+.selected-store .delivery-options > li.active:before {
+  background: url(/wp-content/themes/oxfam-webshop/images/checkmark-green.svg) no-repeat center center transparent;
+  background-size: contain;
+}
+.selected-store .delivery-options > li.inactive:before {
+  background: url(/wp-content/themes/oxfam-webshop/images/x-red.svg) no-repeat center center transparent;
+  background-size: contain;
+}
+.selected-store #open-store-selector {
+  opacity: 0.54;
+  text-decoration: underline;
+}
+
 #newsletter {
   margin: 0;
   padding: 51px 0;

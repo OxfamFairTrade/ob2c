@@ -136,14 +136,22 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 </li>
 
 <!-- We nemen de brakke Conversal-logica voorlopig over -->
-<?php if ( $position_in_grid === 4 ) : ?>
+<?php if ( $position_in_grid === 4 and is_shop() ) : ?>
     <!-- Banner op volledige breedte -->
     <li class="promo-banner horizontal">
         <a href="#">
             <img src="https://placekitten.com/g/1200/200" />
         </a>
     </li>
-<?php elseif ( $position_in_grid === 7 ) : ?>
+<?php elseif ( $position_in_grid === 7 and is_shop() ) : ?>
+    <!--<a href="#">
+        <div class="col-md-12" style="background-color: grey;">
+            <div class="banner-promo-products">
+                <h3>BANNER PROMO PRODUCTS</h3>
+                <p>Dit is de tekst.</p>
+            </div>
+        </div>
+    </a>-->
     <!-- Blokje op zelfde formaat als een product -->
     <li class="promo-banner vertical">
         <a href="#">
