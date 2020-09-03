@@ -87,7 +87,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="menu-btn"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/menu-btn-black.png" alt=""></div>
+		<div id="menu-btn"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/menu-btn-black.png"></div>
 	</div>
 	<div class="top-search top-search_mobile hidden">
 		<form action="https://stage.oxfamwereldwinkels.be/" method="get">
@@ -98,7 +98,8 @@
 </div>
 <div id="side-menu">
 	<!-- Als we het mobiele menu fixed maken, kan deze zoekbalk verdwijnen -->
-	<div class="top-search">
+    <div id="menu-btn-close"></div>
+    <div class="top-search">
 		<form action="https://stage.oxfamwereldwinkels.be/" method="get">
 			<input type="text" name="s" placeholder="Zoeken">
 			<input type="submit" value="">

@@ -26,6 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<h3 class="nm-widget-title">In de kijker</h3>
 				</div>
 				<div class="nm-shop-widget-col">
+                    <span class="btn toggle-filter">Filteren</span>
 					<?php
 						$args = array(
 							'stock_status' => 'instock',

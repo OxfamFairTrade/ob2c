@@ -863,6 +863,24 @@ table tbody td:last-child {
 #header .topbar .top-search_mobile input[type=submit] {
   display: none;
 }
+#header .top-search_mobile {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  padding: 76.5px 17px 17px 17px;
+  background-color: rgba(255, 255, 255, 0.75);
+  position: fixed;
+  z-index: 10;
+}
+#header .top-search_mobile input[type=text] {
+  width: 100% !important;
+  background-color: black;
+  color: white;
+}
+#header .top-search_mobile input[type=submit] {
+  display: none;
+}
 
 @media (max-width: 1600px) {
   #header .nav ul li {
@@ -980,7 +998,7 @@ table tbody td:last-child {
 
 #side-menu {
   margin: 0;
-  padding: 30px 50px;
+  padding: 50px;
   display: none;
   position: fixed;
   top: 0;
@@ -996,6 +1014,15 @@ table tbody td:last-child {
   #side-menu {
     display: block;
   }
+}
+#side-menu #menu-btn-close {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  background: url(/wp-content/themes/oxfam-webshop/images/x.svg);
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
 }
 #side-menu.active {
   right: 0;
@@ -1151,6 +1178,9 @@ table tbody td:last-child {
 .nm-shop-sidebar-default #nm-shop-sidebar {
   padding-right: 0 !important;
 }
+.nm-shop-sidebar-default #nm-shop-sidebar > .selected-store {
+  margin-bottom: 30px;
+}
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .nm-widget-title {
   color: #1b1b1B;
   font-size: 21.25px;
@@ -1158,13 +1188,35 @@ table tbody td:last-child {
   line-height: 25.5px;
   margin-bottom: 15px;
 }
-.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .cat-item {
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget {
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget .nm-shop-widget-col {
+  display: flex;
+  flex-direction: column;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget ul.children {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget ul li {
+  line-height: 24px;
+  margin-bottom: 0;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget a {
+  display: inline-block;
   font-size: 16px;
   font-weight: 400;
+  margin-bottom: 8px;
   line-height: 24px;
   padding-left: 12.8px;
+  text-decoration: none;
 }
-.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .cat-item:before {
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget a:hover {
+  color: #1b1b1B;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget a:before {
   content: "";
   display: inline-block;
   background-color: white;
@@ -1176,9 +1228,24 @@ table tbody td:last-child {
   left: -9.6px;
   top: 2.4px;
 }
-.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .cat-item.current-cat-parent:before, .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .cat-item.current-cat:before {
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .product-categories {
+  margin-bottom: 0;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul li.current-cat-parent > a,
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul li.current-cat > a {
+  color: #1b1b1B;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul li.current-cat-parent > a:before,
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul li.current-cat > a:before {
   background-color: #3da969;
   border-color: #3da969;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul li.current-cat-parent > a:after,
+.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul li.current-cat > a:after {
+  content: "X";
+  color: #ff1d34;
+  display: inline-block;
+  padding-left: 10px;
 }
 
 #nm-shop {
@@ -1207,7 +1274,7 @@ table tbody td:last-child {
   }
 }
 #nm-shop.header-disabled {
-  padding: 0 !important;
+  padding: 0 12px !important;
 }
 #nm-shop .woocommerce-breadcrumb {
   padding: 0 !important;
@@ -1228,8 +1295,10 @@ table tbody td:last-child {
   padding: 0 !important;
   margin: 20px 0 !important;
 }
+.nm-shop-search-inner #nm-shop-search-close {
+  display: none;
+}
 .nm-shop-search-inner #nm-shop-search-form {
-  max-width: 900px;
   margin: 0 auto;
   padding: 0;
   position: relative;
@@ -1238,8 +1307,8 @@ table tbody td:last-child {
   display: none;
 }
 .nm-shop-search-inner #nm-shop-search-form #nm-shop-search-input {
-  padding: 26px 220px 26px 65px;
-  background: url(/wp-content/themes/oxfam-webshop/images/search.svg) no-repeat center left 20px #F5F5F2;
+  padding: 26px 65px 26px 26px;
+  background: url(/wp-content/themes/oxfam-webshop/images/search.svg) no-repeat center right 20px #F5F5F2;
   display: block;
   width: 100%;
   margin: 0;
@@ -1267,6 +1336,65 @@ table tbody td:last-child {
 }
 #nm-shop-browse-wrap {
   margin-top: 50px;
+}
+#nm-shop-browse-wrap .nm-products {
+  display: flex;
+  flex-wrap: wrap;
+}
+#nm-shop-browse-wrap .nm-products > li {
+  display: flex;
+  clear: none;
+  float: none;
+}
+#nm-shop-browse-wrap .nm-products > .promo-banner {
+  padding: 0 12px;
+  margin-bottom: 24px;
+}
+#nm-shop-browse-wrap .nm-products > .promo-banner.horizontal {
+  width: 100%;
+}
+#nm-shop-browse-wrap .nm-products > .promo-banner.vertical > a {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+  display: flex;
+}
+#nm-shop-browse-wrap .nm-products > .promo-banner.vertical > a img {
+  object-fit: cover;
+}
+#nm-shop-browse-wrap .nm-infload-controls a.nm-infload-btn {
+  background: #1b1b1B;
+  border: 0;
+  color: #ffffff;
+  display: inline-block;
+  font-size: 12px;
+  line-height: 20px;
+  padding: 8px 16px;
+  text-transform: uppercase;
+}
+#nm-shop-browse-wrap .nm-infload-controls a.nm-infload-btn:hover {
+  background: #353535;
+  border: 0;
+}
+#nm-shop-browse-wrap .nm-infload-controls.nm-loader a.nm-infload-btn {
+  background: transparent;
+  border: 0;
+}
+
+.toggle-filter,
+.close-filter {
+  display: none;
+}
+@media (max-width: 991px) {
+  .toggle-filter,
+.close-filter {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+  }
 }
 
 .product .nm-shop-loop-thumbnail-link,
@@ -1880,6 +2008,9 @@ body.portal.home .general-store-notice {
   padding: 51px 0;
   background: #60a434;
   color: white;
+}
+#newsletter form .mc4wp-response {
+  position: absolute;
 }
 #newsletter h2 {
   font-size: 42.5px;

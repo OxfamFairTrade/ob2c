@@ -253,6 +253,27 @@
       }
     }
   }
+
+  .top-search_mobile {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 76.5px 17px 17px 17px;
+    background-color: rgba(255, 255, 255, 0.75);
+    position: fixed;
+    z-index: 10;
+
+    input[type="text"] {
+      width: 100% !important;
+      background-color: black;
+      color: white;
+    }
+
+    input[type=submit] {
+      display: none;
+    }
+  }
 }
 
 @media (max-width: 1600px) {

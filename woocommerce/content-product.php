@@ -138,26 +138,17 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 <!-- We nemen de brakke Conversal-logica voorlopig over -->
 <?php if ( $position_in_grid === 4 ) : ?>
     <!-- Banner op volledige breedte -->
-    <a href="#">
-        <div class="col-md-12" style="background-color: grey;">
-            <div class="banner-promo-products">
-                <h3>BANNER PROMO PRODUCTS</h3>
-                <p>Dit is de tekst.</p>
-            </div>
-        </div>
-    </a>
+    <li class="promo-banner horizontal">
+        <a href="#">
+            <img src="https://placekitten.com/g/1200/200" />
+        </a>
+    </li>
 <?php elseif ( $position_in_grid === 7 ) : ?>
     <!-- Blokje op zelfde formaat als een product -->
-    <li>
-        <div class="nm-shop-loop-product-wrap">
-            <!-- <div class="col-md-4"> -->
-                <div class="promo-block" style="background-color: grey;">
-                    <h3>PROMO BLOCK</h3>
-                    <p>Dit is de tekst.</p>
-                    <a href="#" class="more-info">Dit is een link (maar dat willen we niet?)</a>
-                </div>
-            <!-- </div> -->
-        </div>
+    <li class="promo-banner vertical">
+        <a href="#">
+            <img src="https://placekitten.com/g/400/631" />
+        </a>
     </li>
 
     <!-- Categoriespecifieke blokjes voorlopig uitschakelen, ACF-velden hier niet beschikbaar -->

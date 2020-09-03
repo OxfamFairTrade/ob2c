@@ -5,7 +5,7 @@
 
 #side-menu {
   margin: 0;
-  padding: 30px 50px;
+  padding: 50px;
   display: none;
   position: fixed;
   top: 0;
@@ -19,6 +19,16 @@
 
   @media (max-width: 991px) {
     display: block;
+  }
+
+  #menu-btn-close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: url(/wp-content/themes/oxfam-webshop/images/x.svg);
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
   }
 
   &.active {
