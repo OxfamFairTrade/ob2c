@@ -5566,6 +5566,7 @@
 	add_shortcode( 'email_header', 'get_local_logo_url' );
 	add_shortcode( 'toon_eventueel_promos', 'show_conditional_promo_row' );
 	add_shortcode( 'toon_voordelenbalk', 'show_general_store_notice' );
+	add_shortcode( 'toon_zoekbalk_producten', 'show_product_search' );
 
 	function show_conditional_promo_row() {
 		$args = array(
@@ -5583,6 +5584,10 @@
 
 	function show_general_store_notice() {
 		get_template_part( 'template-parts/header/general-store-notice' );
+	}
+
+	function show_product_search() {
+		wc_get_template( 'product-searchform_nm.php' );
 	}
 
 	function print_widget_usp() {
