@@ -28,6 +28,22 @@
 	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
 	// Laad géén extra NM-stijlen rechtstreeks in de pagina!
 	add_filter( 'nm_include_custom_styles', '__return_false' );
+
+	add_filter( 'woocommerce_get_breadcrumb', 'modify_woocommerce_breadcrumbs' );
+	function modify_woocommerce_breadcrumbs( $crumbs ) {
+		$new_crumbs = array();
+		// Key 0 = Titel, Key 1 = URL
+		foreach ( $crumbs as $page ) {
+			if ( $page[0] === 'Home' ) {
+				$page[1] = 'https://stage.oxfamwereldwinkels.be/';
+			} elseif ( $page[0] === 'Producten' and ! is_main_site() ) {
+				// Prepend de lokale homepage van de huidige webshop
+				$new_crumbs[] = array( 0 => 'Webshop '.get_webshop_name(), 1 => get_site_url() );
+			}
+			$new_crumbs[] = $page;
+		}
+		return $new_crumbs;
+	}
 	
 	// Geautomatiseerde manier om instellingen van Savoy te kopiëren naar subsites
 	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
