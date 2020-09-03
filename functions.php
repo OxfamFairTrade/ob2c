@@ -5565,6 +5565,7 @@
 	add_shortcode( 'email_footer', 'get_company_and_year' );
 	add_shortcode( 'email_header', 'get_local_logo_url' );
 	add_shortcode( 'toon_eventueel_promos', 'show_conditional_promo_row' );
+	add_shortcode( 'toon_voordelenbalk', 'show_general_store_notice' );
 
 	function show_conditional_promo_row() {
 		$args = array(
@@ -5578,6 +5579,10 @@
 		} else {
 			return '';
 		}
+	}
+
+	function show_general_store_notice() {
+		get_template_part( 'template-parts/header/general-store-notice' );
 	}
 
 	function print_widget_usp() {

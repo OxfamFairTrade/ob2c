@@ -99,9 +99,10 @@
 		/* Gebruik event delegation, deze nodes zijn nog niet aanwezig bij DOM load! */
 		/* Voorzien we een non-JS back-up via <a href>? */
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
-			console.log( "Registreer shop-ID "+jQuery(this).data('oxfam-shop-post-id')+" in cookie en doe redirect naar "+jQuery(this).data('webshop-url')+"!" );
+			console.log( "Registreer shop-ID "+jQuery(this).data('oxfam-shop-post-id')+" in cookie en doe redirect naar "+jQuery(this).data('webshop-url') );
 			setCookie( 'latest_shop_id', jQuery(this).data('oxfam-shop-post-id') );
-			window.location.replace( jQuery(this).data('webshop-url') );
+			/* Of altijd het huidige pad erachter proberen te plakken? */
+			window.location.replace( jQuery(this).data('webshop-url')+'producten/' );
 		});
 		
 		/* DEPRECATED */

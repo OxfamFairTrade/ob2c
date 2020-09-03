@@ -40,27 +40,5 @@
                         get_template_part( 'template-parts/header/header', 'oww' );
                     
                         // GEWIJZIGD: Custom banner met afhaal/leverinfo
-                        if ( strlen( get_option('oxfam_sitewide_banner_top') ) > 0 ) {
-
-                            echo '<div class="general-store-notice"><p>'.get_option('oxfam_sitewide_banner_top').'</p></div>';
-
-                        } elseif ( is_main_site() or does_home_delivery() ) {
-
-                            // Neem netwerkinstelling als defaultwaarde
-                            $min_amount = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
-                            
-                            echo '<div class="general-store-notice"><p class="free-shipping">';
-                            if ( $min_amount > 0 ) {
-                                echo '<b><u>Gratis</u></b> verzending vanaf '.$min_amount.' euro!';
-                            } else {
-                                echo 'Nu met <b><u>gratis</u></b> thuislevering!';
-                            }
-                            echo '</p></div>';
-
-                        } elseif ( ! is_main_site() and ! does_home_delivery() ) {
-
-                            // Standaardboodschap voor winkels die geen thuislevering aanbieden
-                            // echo '<div class="general-store-notice"><p class="local-pickup">Omwille van het coronavirus kun je je bestelling momenteel enkel <b><u>op afspraak</u></b> afhalen in de winkel.</p></div>';
-
-                        }
+                        get_template_part( 'template-parts/header/general-store-notice' );
                     ?>
