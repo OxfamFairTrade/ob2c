@@ -1,10 +1,6 @@
 <?php
-	// Haal de huidig gekozen winkel op
-	$current_store = false;
+	// Haal de huidige postcode op
 	$current_location = false;
-	if ( ! empty( $_COOKIE['latest_shop_id'] ) ) {
-		$current_store = intval( $_COOKIE['latest_shop_id'] );
-	}
 	if ( ! empty( $_COOKIE['current_location'] ) ) {
 		$current_location = intval( $_COOKIE['current_location'] );
 	}
