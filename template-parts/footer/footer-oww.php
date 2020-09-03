@@ -18,12 +18,12 @@
 		<div class="container">
 			<div class="col-row md-display-flex">
 				<div class="col-md-5 md-align-self-center">
-					<h2>Abonneer je hier op de<br/> nieuwsbrief van <?php echo $atts['id']; ?></h2>
+					<h2>Abonneer je hier op de<br/> nieuwsbrief van <?php echo $oww_store_data['title']['rendered']; ?></h2>
 				</div>
 				<div class="col-md-7 md-align-self-center">
-					<form action="<?php echo $mailchimp_url; ?>" method="post" target="_blank">
-						<input type="text" name="FNAME" placeholder="Voornaam" required="required">
-						<input type="email" name="EMAIL" placeholder="E-mailadres" required="required">
+					<form id="local-newsletter" action="<?php echo $mailchimp_url; ?>" method="post" target="_blank">
+						<input type="text" name="FNAME" placeholder="Voornaam" required>
+						<input type="email" name="EMAIL" placeholder="E-mailadres" required>
 						<input type="submit" value="Inschrijven">
 					</form>
 				</div>
@@ -40,11 +40,11 @@
 				<div class="col-md-7 md-align-self-center">
 					<form id="regular-newsletter" class="mc4wp-form ajaxified-subscription" method="post" data-name="Abonneer je op onze nieuwsbrief">
 						<div class="mc4wp-form-fields">
-							<input type="text" name="FNAME" placeholder="Voornaam" required />
-							<input type="email" name="EMAIL" placeholder="E-mailadres" required />
+							<input type="text" name="FNAME" placeholder="Voornaam" required>
+							<input type="email" name="EMAIL" placeholder="E-mailadres" required>
 							<input type="hidden" name="LIST_ID" value="5cce3040aa">
 							<label style="display: none !important;">Laat dit veld leeg als je een mens bent: <input type="text" name="lekkere-honing" value="" tabindex="-1" autocomplete="off"></label>
-							<input type="submit" value="Inschrijven" />
+							<input type="submit" value="Inschrijven">
 						</div>
 						<div class="mc4wp-response"></div>
 					</form>
