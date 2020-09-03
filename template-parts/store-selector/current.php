@@ -8,7 +8,7 @@
 	// Indien we false doorgeven, wordt er niet gefilterd op postcode
 	if ( does_home_delivery( $current_location ) ) {
 		$home_delivery = 'active';
-	} else {
+	} else {
 		$home_delivery = 'inactive';
 	}
 
