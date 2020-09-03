@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 
 global $product, $nm_globals, $nm_theme_options, $position_in_grid;
 
-if ( empty( $position_in_grid ) ) {
+if ( ! isset( $position_in_grid ) ) {
     $position_in_grid = 1;
 }
 
@@ -136,12 +136,23 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 </li>
 
 <!-- We nemen de brakke Conversal-logica voorlopig over -->
-<?php if ( $position_in_grid === 6 ) : ?>
+<?php if ( $position_in_grid === 4 ) : ?>
+    <!-- Banner op volledige breedte -->
+    <a href="#">
+        <div class="col-md-12" style="background-color: grey;">
+            <div class="banner-promo-products">
+                <h3>BANNER PROMO PRODUCTS</h3>
+                <p>Dit is de tekst.</p>
+            </div>
+        </div>
+    </a>
+<?php elseif ( $position_in_grid === 7 ) : ?>
+    <!-- Blokje op zelfde formaat als een product -->
     <li>
         <div class="nm-shop-loop-product-wrap">
             <!-- <div class="col-md-4"> -->
-                <div class="promo-block">
-                    <h3>BANNER PROMO PRODUCTS</h3>
+                <div class="promo-block" style="background-color: grey;">
+                    <h3>PROMO BLOCK</h3>
                     <p>Dit is de tekst.</p>
                     <a href="#" class="more-info">Dit is een link (maar dat willen we niet?)</a>
                 </div>
