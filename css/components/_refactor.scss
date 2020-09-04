@@ -145,54 +145,6 @@ select.ui-datepicker-year {
   }
 }
 
-.nm-product-slider {
-  .slick-dots {
-    padding: 1em;
-
-    li.slick-active button {
-      border-color: black;
-    }
-  }
-
-  /* WERKT ENKEL BIJ RECENTE VERSIES VAN SAVOY */
-  .slick-prev i,
-  .slick-next i {
-    font-size: 60px;
-  }
-
-  /* WERKT ENKEL BIJ OUDE VERSIES VAN SAVOY */
-  .slick-prev,
-  .slick-next {
-    /* Vuile truc om de labels 'Previous' en 'Next' onzichtbaar te maken (ook bij hover!) */
-    color: transparent !important;
-  }
-
-  .slick-prev:before,
-  .slick-next:before {
-    font-family: 'nm-font';
-    content: "\e600";
-    position: absolute;
-    font-size: 100px;
-    top: -50px;
-    right: 0px;
-    color: black;
-  }
-  .slick-next:before {
-    content: "\e601";
-    left: 0;
-  }
-
-  .slick-slider:hover {
-    .slick-prev {
-      left: 10px;
-    }
-
-    .slick-next {
-      right: 10px;
-    }
-  }
-}
-
 .ob2c-category-title.wpb_content_element {
   margin: 1em 0 2em 0;
 

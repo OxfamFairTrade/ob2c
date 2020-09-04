@@ -1,0 +1,38 @@
+
+
+// Product category teasers
+// --------------------------------------------------
+
+.nm-product-categories [class*="block-grid-"],
+.nm-product-categories .nm-products {
+  margin: 0 -12px 26px !important;;
+}
+
+.nm-product-categories [class*="block-grid-"] > li.product-category,
+.nm-product-categories .product-category {
+  padding: 0 12px !important;
+  margin-bottom: 24px;
+}
+
+.product-category {
+  .nm-product-category-inner {
+    display: flex;
+    border: 1px solid $light-grey;
+
+    > a {
+      width: 100px;
+    }
+
+    > .nm-product-category-text {
+      position: relative;
+      padding: 12px;
+      width: calc(100% - 100px);
+      word-break: break-word;
+
+      h3 {
+        font-size: 16px;
+        line-height: 26px;
+      }
+    }
+  }
+}

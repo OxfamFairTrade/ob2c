@@ -205,6 +205,17 @@ div.nm-single-product.product {
     @media (max-width: 1200px) {
       max-width: 970px;
     }
+
+    > .nm-single-product-top {
+      padding-top: 0;
+
+      > .nm-row {
+        margin-left: -12px;
+        margin-right: -12px;
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
   }
 
   .nm-single-product-summary-row {
