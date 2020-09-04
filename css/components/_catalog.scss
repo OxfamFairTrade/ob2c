@@ -10,6 +10,10 @@
     margin-bottom: 30px;
   }
 
+  @media (max-width: 991px) {
+    margin-top: 32px !important;
+  }
+
   #nm-shop-widgets-ul {
     .nm-widget-title {
       color: $black;
@@ -103,17 +107,21 @@
     width: 970px;
   }
 
+  &.header-disabled {
+    padding-top: 0 !important;
+  }
+
   @media (max-width: 991px) {
     width: 750px;
     padding: 0 20px;
+
+    &.header-disabled {
+      padding: 0 12px !important;
+    }
   }
 
   @media (max-width: 767px) {
     width:100%;
-  }
-
-  &.header-disabled {
-    padding: 0 12px !important;
   }
 
   .woocommerce-breadcrumb {
@@ -196,6 +204,10 @@
   .nm-products {
     display: flex;
     flex-wrap: wrap;
+
+    &:before {
+      content: none;
+    }
 
     > li {
       display: flex;

@@ -274,9 +274,13 @@ div.nm-single-product.product {
             padding-right: 12px;
           }
 
-          > .nm-product-summary-inner-col-2,
+          > .nm-product-summary-inner-col-2 {
+            width: calc(100% - 290px);
+          }
+
           > .selected-store {
-            width: 50%;
+            margin-top: 6px;
+            width: 290px;
           }
         }
       }
@@ -431,6 +435,7 @@ div.nm-single-product.product {
 }
 
 // Related products
+.slick-track,
 .nm-products {
   > .product {
     .woocommerce-loop-product__title {
@@ -450,13 +455,15 @@ div.nm-single-product.product {
     .nm-shop-loop-actions {
       > .button {
         display: inline-block;
-        width: 24px;
-        height: 20px;
+        width: 30px;
+        height: 26px;
 
         text-indent: 100%;
         overflow: hidden;
 
         background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
+        background-size: 30px 26px;
+        border: 0;
 
         position: absolute;
         right: 0;

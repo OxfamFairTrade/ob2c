@@ -6,10 +6,54 @@
 
 .general-store-notice {
   clear: both;
-  padding: 0.5em;
-  width: 100%;
+  padding: 12px;
   color: white;
   background-color: $pale-blue;
+
+  ul {
+    margin-bottom: 0;
+
+    li {
+      margin-bottom: 10px;
+      font-size: 15px;
+      line-height: 26px;
+
+      @media (min-width: 992px) {
+        margin-bottom: 0;
+
+        &:nth-of-type(2) {
+          text-align: center;
+        }
+
+        &:last-of-type {
+          text-align: right;
+        }
+      }
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+
+      span {
+        position: relative;
+        padding-left: 24px;
+
+        &:before {
+          content: "";
+          background: url('/wp-content/themes/oxfam-webshop/images/checkmark-white.svg') no-repeat center center transparent;
+          display: inline-block;
+          margin-right: 5px;
+          width: 19px;
+          height: 19px;
+          line-height: 19px;
+          vertical-align: top;
+          position: absolute;
+          left: 0;
+          top: -1px;
+        }
+      }
+    }
+  }
 
   p {
     font-size: 16.8px;

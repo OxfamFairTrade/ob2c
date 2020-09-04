@@ -23,6 +23,10 @@
     top: -13px;
     left: 9px;
 
+    @media (max-width: 992px) {
+      left: 47px;
+    }
+
     &:before {
       content: "";
       background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center $new-green;
@@ -54,10 +58,15 @@
     .pointer {
       background: $red-promo;
       left: 47px;
+      padding: 0;
 
       &:before {
         background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center $red-promo;
       }
+    }
+
+    #open-store-selector {
+      opacity: 1;
     }
   }
 
@@ -107,5 +116,14 @@
   #open-store-selector {
     opacity: 0.54;
     text-decoration: underline;
+
+    button {
+      background-color: rgba(91, 91, 91, 1);
+      border: 0;
+      font-size: 15px;
+      color: #FFFFFF;
+      padding: 5px 20px;
+      border-radius: 4px;
+    }
   }
 }
