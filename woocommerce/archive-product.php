@@ -157,7 +157,7 @@ get_header( 'shop' ); ?>
                 <?php endif; ?>
 
                 <?php
-                    // Specifieke productzoeker net boven het productoverzicht
+                    // GEWIJZIGD: Specifieke productzoeker toevoegen net boven het productoverzicht
                     if ( $nm_globals['shop_search_header'] ) {
                         // Heeft ondersteuning voor instant results maar vergt nog heel wat tweaking ...
                         get_template_part( 'template-parts/woocommerce/searchform' );
@@ -171,7 +171,8 @@ get_header( 'shop' ); ?>
                         /**
                          * Results bar
                          */
-                        wc_get_template_part( 'content', 'product_nm_results_bar' );
+                        // GEWIJZIGD: Balk uitschakelen
+                        // wc_get_template_part( 'content', 'product_nm_results_bar' );
                     ?>
 
                     <?php
