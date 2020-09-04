@@ -1181,6 +1181,11 @@ table tbody td:last-child {
 .nm-shop-sidebar-default #nm-shop-sidebar > .selected-store {
   margin-bottom: 30px;
 }
+@media (max-width: 991px) {
+  .nm-shop-sidebar-default #nm-shop-sidebar {
+    margin-top: 32px !important;
+  }
+}
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .nm-widget-title {
   color: #1b1b1B;
   font-size: 21.25px;
@@ -1262,19 +1267,22 @@ table tbody td:last-child {
     width: 970px;
   }
 }
+#nm-shop.header-disabled {
+  padding-top: 0 !important;
+}
 @media (max-width: 991px) {
   #nm-shop {
     width: 750px;
     padding: 0 20px;
+  }
+  #nm-shop.header-disabled {
+    padding: 0 12px !important;
   }
 }
 @media (max-width: 767px) {
   #nm-shop {
     width: 100%;
   }
-}
-#nm-shop.header-disabled {
-  padding: 0 12px !important;
 }
 #nm-shop .woocommerce-breadcrumb {
   padding: 0 !important;
@@ -1340,6 +1348,9 @@ table tbody td:last-child {
 #nm-shop-browse-wrap .nm-products {
   display: flex;
   flex-wrap: wrap;
+}
+#nm-shop-browse-wrap .nm-products:before {
+  content: none;
 }
 #nm-shop-browse-wrap .nm-products > li {
   display: flex;
@@ -1631,9 +1642,12 @@ div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-
   div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-summary-col > .summary > .nm-product-summary-inner-col-2 {
     padding-right: 12px;
   }
-  div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-summary-col > .summary > .nm-product-summary-inner-col-2,
-div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-summary-col > .summary > .selected-store {
-    width: 50%;
+  div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-summary-col > .summary > .nm-product-summary-inner-col-2 {
+    width: calc(100% - 290px);
+  }
+  div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-summary-col > .summary > .selected-store {
+    margin-top: 6px;
+    width: 290px;
   }
 }
 div.nm-single-product.product .woocommerce-breadcrumb {
@@ -1758,24 +1772,30 @@ div.nm-single-product.product .product_title {
   font-weight: normal;
 }
 
+.slick-track > .product .woocommerce-loop-product__title,
 .nm-products > .product .woocommerce-loop-product__title {
   padding-right: 0;
 }
+.slick-track > .product .woocommerce-loop-product__title > a,
 .nm-products > .product .woocommerce-loop-product__title > a {
   display: inline-block;
   font-size: 18px;
   width: 100%;
 }
+.slick-track > .product .nm-shop-loop-details,
 .nm-products > .product .nm-shop-loop-details {
   position: relative;
 }
+.slick-track > .product .nm-shop-loop-actions > .button,
 .nm-products > .product .nm-shop-loop-actions > .button {
   display: inline-block;
-  width: 24px;
-  height: 20px;
+  width: 30px;
+  height: 26px;
   text-indent: 100%;
   overflow: hidden;
   background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
+  background-size: 30px 26px;
+  border: 0;
   position: absolute;
   right: 0;
   bottom: 3px;
@@ -1965,10 +1985,48 @@ body.portal .ui-autocomplete {
 
 .general-store-notice {
   clear: both;
-  padding: 0.5em;
-  width: 100%;
+  padding: 12px;
   color: white;
   background-color: #60aafd;
+}
+.general-store-notice ul {
+  margin-bottom: 0;
+}
+.general-store-notice ul li {
+  margin-bottom: 10px;
+  font-size: 15px;
+  line-height: 26px;
+}
+@media (min-width: 992px) {
+  .general-store-notice ul li {
+    margin-bottom: 0;
+  }
+  .general-store-notice ul li:nth-of-type(2) {
+    text-align: center;
+  }
+  .general-store-notice ul li:last-of-type {
+    text-align: right;
+  }
+}
+.general-store-notice ul li:last-of-type {
+  margin-bottom: 0;
+}
+.general-store-notice ul li span {
+  position: relative;
+  padding-left: 24px;
+}
+.general-store-notice ul li span:before {
+  content: "";
+  background: url("/wp-content/themes/oxfam-webshop/images/checkmark-white.svg") no-repeat center center transparent;
+  display: inline-block;
+  margin-right: 5px;
+  width: 19px;
+  height: 19px;
+  line-height: 19px;
+  vertical-align: top;
+  position: absolute;
+  left: 0;
+  top: -1px;
 }
 .general-store-notice p {
   font-size: 16.8px;
@@ -2023,6 +2081,11 @@ body.portal.home .general-store-notice {
   top: -13px;
   left: 9px;
 }
+@media (max-width: 992px) {
+  .selected-store .pointer {
+    left: 47px;
+  }
+}
 .selected-store .pointer:before {
   content: "";
   background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center #3da969;
@@ -2049,9 +2112,13 @@ body.portal.home .general-store-notice {
 .selected-store.not-ok .pointer {
   background: #ff1d34;
   left: 47px;
+  padding: 0;
 }
 .selected-store.not-ok .pointer:before {
   background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center #ff1d34;
+}
+.selected-store.not-ok #open-store-selector {
+  opacity: 1;
 }
 .selected-store .shop-name {
   margin-bottom: 10px;
@@ -2088,6 +2155,14 @@ body.portal.home .general-store-notice {
 .selected-store #open-store-selector {
   opacity: 0.54;
   text-decoration: underline;
+}
+.selected-store #open-store-selector button {
+  background-color: #5b5b5b;
+  border: 0;
+  font-size: 15px;
+  color: #FFFFFF;
+  padding: 5px 20px;
+  border-radius: 4px;
 }
 
 #newsletter {

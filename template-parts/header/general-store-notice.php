@@ -25,13 +25,13 @@
 ?>
 
 <div class="container general-store-notice">
-	<div class="col-row">
-		<ul>
+	<div>
+		<ul class="col-row">
 			<?php if ( $html ) : ?>
-				<li class="col-md-4"><?php echo $html; ?></li>
+				<li class="col-md-4"><span><?php echo $html; ?></span></li>
 			<?php endif; ?>
-			<li class="col-md-4">Wij kopen rechtreeks bij kwetsbare producenten</li>
-			<li class="col-md-4">Je steunt de strijd voor eerlijke handel</li>
+			<li class="col-md-4"><span>Wij kopen rechtreeks bij kwetsbare producenten</span></li>
+			<li class="col-md-4"><span>Je steunt de strijd voor eerlijke handel</span></li>
 		</ul>
 	</div>
 </div>
