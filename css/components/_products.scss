@@ -198,6 +198,10 @@ div.nm-single-product.product {
     max-width: 1370px;
     margin: 0 auto;
 
+    @media (min-width: 1601px) {
+      max-width: 1370px;
+    }
+
     @media (max-width: 1600px) {
       max-width: 1170px;
     }
@@ -208,12 +212,26 @@ div.nm-single-product.product {
 
     > .nm-single-product-top {
       padding-top: 0;
+      width: 1370px;
+      margin: 0 auto;
+
+      @media (max-width: 1600px) {
+        width: 1170px;
+      }
+
+      @media (max-width: 1200px) {
+        width: 970px;
+      }
+
+      @media (max-width: 991px) {
+        width: 710px;
+      }
 
       > .nm-row {
-        margin-left: -12px;
-        margin-right: -12px;
         padding-left: 0;
         padding-right: 0;
+        margin-left: -12px;
+        margin-right: -12px;
       }
     }
   }

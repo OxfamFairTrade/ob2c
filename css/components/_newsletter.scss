@@ -39,8 +39,10 @@
     padding: 19px 20px;
 
     &:hover {
-      background: white;
+      background: $white;
       color: $green;
+      opacity: 1;
+      border-color: $white;
     }
   }
 }

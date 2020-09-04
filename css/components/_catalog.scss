@@ -68,6 +68,16 @@
           top: 2.4px;
         }
       }
+
+      &.widget_recently_viewed_products {
+        a {
+          padding-left: 0;
+
+          &:before {
+            content: none;
+          }
+        }
+      }
     }
 
     .product-categories {
