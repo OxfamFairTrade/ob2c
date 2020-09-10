@@ -6152,7 +6152,7 @@
 						case 'telephone':
 							return call_user_func( 'format_'.$key, '0487436822', '.' );
 					}
-				} elseif ( intval( $shop_post_id ) === 3428 ) {
+				} elseif ( intval( $shop_post_id ) === 3383 ) {
 					// Uitzonderingen voor Diest
 					switch ($key) {
 						case 'telephone':
