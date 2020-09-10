@@ -5511,6 +5511,9 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
+			// echo '<div class="notice notice-error">';
+			// 	echo '<p>Mails naar Microsoft-adressen (@htomail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
+			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
 					echo '<p>De promoties voor de maand september werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n118/news/view/20167/12894/promo-s-online-winkel-september-update.html" target="_blank">Copain</a>). Opgelet: bij de 2+1-actie op de chocoladerepen kunnen witte en notenchocolade naar keuze gemengd worden. Bijgevolg wordt de korting pas verrekend van zodra er (een veelvoud van) <u>drie</u> geldige artikels in het winkelmandje zitten. We weten op voorhand immers niet welke smaak de klant verkiest voor de gratis reep. De kortingsregel in ShopPlus werd op een gelijkaardige manier opgezet.</p>';
@@ -6148,6 +6151,12 @@
 					switch ($key) {
 						case 'telephone':
 							return call_user_func( 'format_'.$key, '0487436822', '.' );
+					}
+				} elseif ( intval( $shop_post_id ) === 3428 ) {
+					// Uitzonderingen voor Diest
+					switch ($key) {
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0475596166', '.' );
 					}
 				}
 				
