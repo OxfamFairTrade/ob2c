@@ -1361,11 +1361,11 @@ table tbody td:last-child {
     margin-top: 32px !important;
   }
 }
-.nm-shop-sidebar-default #nm-shop-sidebar > .nm-shop-widget-col {
+.nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col {
   margin-bottom: 30px;
   padding-bottom: 30px;
 }
-.nm-shop-sidebar-default #nm-shop-sidebar > .nm-shop-widget-col a {
+.nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col a {
   display: inline-block;
   font-size: 16px;
   font-weight: 400;
@@ -1375,10 +1375,10 @@ table tbody td:last-child {
   text-decoration: none;
   width: 100%;
 }
-.nm-shop-sidebar-default #nm-shop-sidebar > .nm-shop-widget-col a:hover {
+.nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col a:hover {
   color: #1b1b1B;
 }
-.nm-shop-sidebar-default #nm-shop-sidebar > .nm-shop-widget-col a:before {
+.nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col a:before {
   content: "";
   display: inline-block;
   background-color: white;
@@ -1390,7 +1390,7 @@ table tbody td:last-child {
   left: -9.6px;
   top: 2.4px;
 }
-.nm-shop-sidebar-default #nm-shop-sidebar > .nm-shop-widget-col a.active:before {
+.nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col a.active:before {
   background-color: #3da969;
   border-color: #3da969;
 }
@@ -1465,6 +1465,35 @@ table tbody td:last-child {
   color: #ff1d34;
   display: inline-block;
   padding-left: 10px;
+}
+@media (max-width: 991px) {
+  .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters {
+    display: none;
+  }
+  .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters .nm-widget-title {
+    pointer-events: none;
+  }
+  .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters .nm-widget-title:after {
+    content: none;
+  }
+  .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters .nm-shop-widget-col {
+    height: auto !important;
+  }
+  .nm-shop-sidebar-default #nm-shop-sidebar.show-me .catalog-filters {
+    display: block !important;
+    background: #f9f9f9 !important;
+    position: fixed;
+    width: calc(100% - 30px);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 31px;
+    z-index: 1000;
+    height: 90%;
+    overflow-y: auto;
+  }
 }
 
 #nm-shop {

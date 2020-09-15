@@ -14,7 +14,7 @@
     margin-top: 32px !important;
   }
 
-  > .nm-shop-widget-col {
+  .catalog-filters > .nm-shop-widget-col {
     margin-bottom: 30px;
     padding-bottom: 30px;
 
@@ -139,6 +139,40 @@
           padding-left: 10px;
         }
       }
+    }
+  }
+
+  @media (max-width: 991px) {
+    .catalog-filters {
+      display: none;
+
+      .nm-widget-title {
+        pointer-events: none;
+
+        &:after {
+          content: none;
+        }
+      }
+
+      .nm-shop-widget-col {
+        height: auto !important;
+      }
+    }
+
+    &.show-me .catalog-filters {
+      display: block !important;
+      background: #f9f9f9 !important;
+      position: fixed;
+      width: calc(100% - 30px);
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 31px;
+      z-index: 1000;
+      height: 90%;
+      overflow-y: auto;
     }
   }
 }

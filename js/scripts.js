@@ -23,13 +23,13 @@
     });
 
     $(".toggle-filter").on('click', function() {
-      $("body").addClass('overlay');
-      $(".products-sidebar").addClass('show-me');
+      $("body").addClass('active');
+      $(".nm-shop-sidebar-default #nm-shop-sidebar").addClass('show-me');
     });
 
     $(".close-filter").on('click', function() {
-      $("body").removeClass('overlay');
-      $(".products-sidebar").removeClass('show-me');
+      $("body").removeClass('active');
+      $(".nm-shop-sidebar-default #nm-shop-sidebar").removeClass('show-me');
     });
   });
 
@@ -38,6 +38,7 @@
     if (!container.is(e.target) && container.has(e.target).length === 0){
       $("#side-menu").removeClass("active");
       $("body").removeClass("active");
+      //$(".nm-shop-sidebar-default #nm-shop-sidebar").removeClass('show-me');
     }
   });
 
