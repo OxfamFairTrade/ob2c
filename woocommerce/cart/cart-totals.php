@@ -15,14 +15,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div class="cart_totals <?php if ( WC()->customer->has_calculated_shipping() ) echo 'calculated_shipping'; ?>">
     
-    <!-- GEWIJZIGD: Ook uitschakelen indien winkel geen thuislevering doet -->
-    <?php if ( WC()->cart->needs_shipping() && 'yes' === get_option( 'woocommerce_enable_shipping_calc' ) && does_home_delivery() && ! is_b2b_customer() ) : ?>
-        <div class="nm-shipping-calc-wrap">
-            <?php woocommerce_shipping_calculator(); ?>
-        </div>
-    <?php endif; ?>
-    
-	<?php do_action( 'woocommerce_before_cart_totals' ); ?>
+    <!-- GEWIJZIGD: Shipping calculator volledig verwijderen -->
+   
+   <?php do_action( 'woocommerce_before_cart_totals' ); ?>
     
 	<table cellspacing="0" class="shop_table shop_table_responsive">
 

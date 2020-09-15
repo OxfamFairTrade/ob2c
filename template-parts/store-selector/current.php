@@ -63,5 +63,16 @@
 			<li class="shipping <?php echo $home_delivery; ?>">​Levering aan huis</li>
 		</ul>
 		<a href="#" id="open-store-selector">Winkel wijzigen</a>
+
+		<?php if ( $args['context'] === 'cart' ) : ?>
+			<p>Openingsuren</p>
+			<?php
+				switch_to_blog(1);
+				// Te vervangen door reële post-ID van WPSL-object! (= niet gelijk aan $current_store)
+				echo do_shortcode('[wpsl_hours id="1660"]');
+				restore_current_blog();
+			?>
+			<p>Je ontvangt een bevestigingsmail zodra je bestelling klaar is voor afhaling of thuislevering.</p>
+		<?php endif; ?>
 	</div>
 <?php endif; ?>

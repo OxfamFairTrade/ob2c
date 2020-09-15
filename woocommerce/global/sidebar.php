@@ -29,9 +29,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 				);
 				$sale_products = wc_get_products( $args );
 				if ( count( $sale_products ) > 0 ) {
-					echo '<a href="'.get_site_url().'/tag/promotie/#shop"><span>In promotie</span></a>';
+					if ( is_product_tag('promotie') ) {
+						$class = 'active';
+					} else {
+						$class = 'inactive';
+					}
+					echo '<a href="'.get_term_link( 'promotie', 'product_tag' ).'#shop" class="'.$class.'"><span>In promotie</span></a>';
 				}
-				echo '<a href="'.get_site_url().'/tag/sinterklaas/#shop"><span>Sinterklaas</span></a>';
+				if ( is_product_tag('sinterklaas') ) {
+					$class = 'active';
+				} else {
+					$class = 'inactive';
+				}
+				echo '<a href="'.get_term_link( 'sinterklaas', 'product_tag' ).'#shop" class="'.$class.'"><span>Sinterklaas</span></a>';
 			?>
 		</div>
 		
