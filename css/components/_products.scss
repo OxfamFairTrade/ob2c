@@ -227,6 +227,12 @@ div.nm-single-product.product {
         width: 710px;
       }
 
+      @media (max-width: 768px) {
+        width: 750px;
+        padding: 0 20px;
+        max-width: calc(100% - 24px);
+      }
+
       > .nm-row {
         padding-left: 0;
         padding-right: 0;
@@ -267,6 +273,25 @@ div.nm-single-product.product {
           > .woocommerce-product-details__short-description {
             margin-bottom: 24px;
             padding-bottom: 0;
+            position: relative;
+
+            &:after {
+              content: "";
+              background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              height: 24px;
+              opacity: 1;
+              transition: all .1s;
+            }
+          }
+
+          > .woocommerce-product-details__short-description[aria-expanded="true"] {
+            &:after {
+              opacity: 0;
+            }
           }
 
           > .woocommerce-product-details__short-description[aria-expanded="true"] + a[data-readmore-toggle]:after {

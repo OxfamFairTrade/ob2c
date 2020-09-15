@@ -149,6 +149,8 @@ body.portal {
 
 // Stores list
 #wpsl-stores {
+  overflow-y: scroll !important;
+
   > ul > li {
     &.not-available {
       .wpsl-actions-wrap {

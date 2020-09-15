@@ -12,7 +12,7 @@
     });
 
     $('.woocommerce-product-details__short-description').readmore({
-      collapsedHeight: 48,
+      collapsedHeight: 72,
       heightMargin: 24,
       moreLink: '<a href="#">Lees meer</a>',
       lessLink: '<a href="#">Lees minder</a>'

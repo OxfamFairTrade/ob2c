@@ -14,6 +14,44 @@
     margin-top: 32px !important;
   }
 
+  > .nm-shop-widget-col {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+
+    a {
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 8px;
+      line-height: 24px;
+      padding-left: 12.8px;
+      text-decoration: none;
+      width: 100%;
+
+      &:hover {
+        color: $black;
+      }
+
+      &:before {
+        content: "";
+        display: inline-block;
+        background-color: white;
+        border: 1px solid $black;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        position: relative;
+        left: -9.6px;
+        top: 2.4px;
+      }
+
+      &.active:before {
+        background-color: $new-green;
+        border-color: $new-green;
+      }
+    }
+  }
+
   #nm-shop-widgets-ul {
     .nm-widget-title {
       color: $black;
