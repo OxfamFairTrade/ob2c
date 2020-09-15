@@ -3274,7 +3274,7 @@
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
-				} elseif ( $shop_post_id === 'vorselaar' or $shop_post_id === 'roeselare' ) {
+				} elseif ( $shop_post_id === 'vorselaar' ) {
 					if ( date_i18n( 'N', $from ) > 4 ) {
 						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
@@ -5745,7 +5745,7 @@
 
 		$days = get_office_hours( NULL, $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
-		$exceptions = array( 'roeselare', 'evergem' );
+		$exceptions = array( 'evergem' );
 		if ( in_array( $atts['id'], $exceptions ) ) {
 			$holidays = array( '2020-11-01', '2020-11-11' );
 		} else {
