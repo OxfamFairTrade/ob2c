@@ -146,8 +146,6 @@ do_action( 'woocommerce_before_cart' ); ?>
 					</div>
 				<?php } ?>
                 
-                <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
-                
                 <!-- Bijwerken winkelmandje gebeurt automatisch maar laat button wel staan om te triggeren -->
                 <button type="submit" class="button border" style="display: none;" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
 
@@ -190,6 +188,8 @@ do_action( 'woocommerce_before_cart' ); ?>
          */
         do_action( 'woocommerce_cart_collaterals' );
     ?>
+
+    <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
 
 </div>
 
