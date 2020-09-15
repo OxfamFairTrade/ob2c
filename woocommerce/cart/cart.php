@@ -183,13 +183,16 @@ do_action( 'woocommerce_before_cart' ); ?>
         /**
          * Cart collaterals hook.
          *
-         * @hooked woocommerce_cross_sell_display
          * @hooked woocommerce_cart_totals - 10
          */
         do_action( 'woocommerce_cart_collaterals' );
     ?>
 
     <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
+
+    <div class="wc-proceed-to-checkout">
+        <?php do_action( 'woocommerce_proceed_to_checkout' ); ?>
+    </div>
 
 </div>
 

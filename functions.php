@@ -8,6 +8,15 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Wordt zowel doorlopen in woocommerce/ajax/shop-full.php als woocommerce/archive-product.php?
+	add_action( 'woocommerce_before_shop_loop', 'add_custom_dropdown_filters_per_category' );
+
+	function add_custom_dropdown_filters_per_category() {
+		if ( is_product_category('wijn') ) {
+			echo '<select name="grapes"><option value="pinot-gris">pinot gris</option><option value="chardonnay">chardonnay</option><option value="cabernet sauvignon">cabernet sauvignon</option></select>';
+		}
+	}
+
 	// Update bij elke cart load (ook via AJAX!) onze custom cookies
 	add_action( 'woocommerce_set_cart_cookies', 'set_number_of_items_in_cart_cookie' );
 
@@ -5568,7 +5577,7 @@
 	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
 	add_shortcode( 'scrolltext', 'print_scroll_text' );
-	add_shortcode( 'widget_usp', 'print_widget_usp' );
+	// add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );
 	add_shortcode( 'company_name', 'get_webshop_name' );
@@ -5576,9 +5585,9 @@
 	add_shortcode( 'map_address', 'get_shop_address' );
 	add_shortcode( 'email_footer', 'get_company_and_year' );
 	add_shortcode( 'email_header', 'get_local_logo_url' );
-	add_shortcode( 'toon_eventueel_promos', 'show_conditional_promo_row' );
-	add_shortcode( 'toon_voordelenbalk', 'show_general_store_notice' );
-	add_shortcode( 'toon_zoekbalk_producten', 'show_product_search' );
+	// add_shortcode( 'toon_eventueel_promos', 'show_conditional_promo_row' );
+	// add_shortcode( 'toon_voordelenbalk', 'show_general_store_notice' );
+	// add_shortcode( 'toon_zoekbalk_producten', 'show_product_search' );
 
 	function show_conditional_promo_row() {
 		$args = array(
@@ -5618,7 +5627,9 @@
 	}
 
 	function print_widget_contact() {
-		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'"]'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een aanklikbaar telefoonnummer (%2$s).', 'oxfam-webshop' ), get_webshop_email(), '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', get_oxfam_shop_data('telephone') ), 1 ).'">'.get_oxfam_shop_data('telephone').'</a>' ).'[/nm_feature]');
+		$terms = get_page_by_title('Algemene voorwaarden');
+		$faq = get_page_by_title('Veelgestelde vragen');
+		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'"]<p>Heb je een vraag? We geven je een eerlijk antwoord.<br/><a href="'.get_permalink( $terms->ID ).'">'.$terms->post_title.'</a><br/><a href="'.get_permalink( $faq->ID ).'">'.$faq->post_title.'</a></p><p>'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een aanklikbaar telefoonnummer (%2$s).', 'oxfam-webshop' ), get_webshop_email(), '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', get_oxfam_shop_data('telephone') ), 1 ).'">'.get_oxfam_shop_data('telephone').'</a>' ).'</p>[/nm_feature]');
 	}
 
 	function print_greeting() {
