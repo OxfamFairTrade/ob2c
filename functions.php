@@ -1570,10 +1570,6 @@
 			WC()->customer->set_billing_city( $_GET['referralCity'] );
 			WC()->customer->set_shipping_city( $_GET['referralCity'] );
 		}
-		
-		if ( isset( $_GET['emptyCart'] ) ) {
-			WC()->cart->empty_cart();
-		}
 	}
 
 	// Verhoog het aantal producten per winkelpagina

@@ -21,6 +21,11 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 <?php 
 do_action( 'woocommerce_before_cart' ); ?>
 
+<!-- GEWIJZIGD: Extra wrappers -->
+<div class="container">
+<div class="col-row">
+<div class="col-md-8">
+
 <form class="woocommerce-cart-form" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post">
 
 <h3><?php esc_html_e( 'Shopping Cart', 'nm-framework' ); ?></h3>
@@ -141,11 +146,10 @@ do_action( 'woocommerce_before_cart' ); ?>
 					</div>
 				<?php } ?>
                 
-                <!-- GEWIJZIGD: Knop voor emptyCart toegevoegd en andere knop rechts laten floaten -->
-				<a href="<?php echo esc_url( wc_get_cart_url().'?emptyCart' ); ?>" id="wisknop" class="button border">Winkelmandje leegmaken</a>
-				<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" style="float: right;" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
+                <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
                 
-                <button type="submit" class="button border" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
+                <!-- Bijwerken winkelmandje gebeurt automatisch maar laat button wel staan om te triggeren -->
+                <button type="submit" class="button border" style="display: none;" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
 
 				<?php do_action( 'woocommerce_cart_actions' ); ?>
                 
@@ -159,13 +163,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 
 <?php do_action( 'woocommerce_after_cart_table' ); ?>
 
-</form>
-
-<?php do_action( 'woocommerce_before_cart_collaterals' ); ?>
-
 <div class="cart-collaterals">
-    
-    <h2><?php _e( 'Cart totals', 'woocommerce' ); ?></h2>
     
     <?php if ( ! is_ajax() && wc_coupons_enabled() ) { ?>
         <div class="nm-coupon-wrap">
@@ -183,16 +181,35 @@ do_action( 'woocommerce_before_cart' ); ?>
         </div>
     <?php } ?>
     
-	<?php 
+    <?php 
         /**
-		 * Cart collaterals hook.
-		 *
-		 * @hooked woocommerce_cross_sell_display
-		 * @hooked woocommerce_cart_totals - 10
-		 */
+         * Cart collaterals hook.
+         *
+         * @hooked woocommerce_cross_sell_display
+         * @hooked woocommerce_cart_totals - 10
+         */
         do_action( 'woocommerce_cart_collaterals' );
     ?>
 
+</div>
+
+</form>
+
+<!-- GEWIJZIGD: Extra wrappers -->
+</div>
+<div class="col-md-4">
+
+<?php do_action( 'woocommerce_before_cart_collaterals' ); ?>
+
+<p>Je bestelling wordt verzorgd door:</p>
+<?php
+    // Meegeven van argumenten vereist WP 5.5+
+    get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'cart' ) );
+?>
+
+<!-- GEWIJZIGD: Extra wrappers -->
+</div>
+</div>
 </div>
 
 <?php do_action( 'woocommerce_after_cart' ); ?>
