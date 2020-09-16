@@ -1,0 +1,55 @@
+
+
+// Cart
+// --------------------------------------------------
+
+.woocommerce-cart-form {
+  > h3 {
+    float: left;
+    margin-bottom: 20px;
+  }
+
+  > .wc-proceed-to-checkout {
+    margin-bottom: 20px;
+    padding-top: 0;
+    float: right;
+  }
+
+  > .shop_table.cart,
+  > .shop_table {
+    margin-top: 20px;
+
+    tr td {
+      padding: 15px 0 !important;
+      border: 0 !important;
+      border-bottom: 1px solid #eaeaea !important;
+    }
+
+    > tbody > tr {
+      border-top: 0;
+    }
+
+    .product-remove {
+      vertical-align: middle !important;
+    }
+
+    .nm-product-details {
+
+      > .product-wrapper {
+        .product-price,
+        .product-quantity,
+        .product-subtotal,
+        > a {
+          display: inline-block;
+        }
+
+        .product-subtotal,
+        .product-quantity {
+          float: none;
+        }
+      }
+    }
+  }
+}
+
+

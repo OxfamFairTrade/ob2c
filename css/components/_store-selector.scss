@@ -126,4 +126,39 @@
       border-radius: 4px;
     }
   }
+
+  .opening-hours-title {
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    &:before {
+      content: "";
+      background: url(/wp-content/themes/oxfam-webshop/images/clock.svg) no-repeat center center transparent;
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      top: 2px;
+      position: relative;
+      margin-right: 6px;
+    }
+  }
+
+  table.wpsl-opening-hours {
+    margin-left: 20px;
+    margin-bottom: 10px;
+
+    td,
+    th,
+    tr {
+      border: none;
+    }
+
+    tr {
+      border-bottom: 10px solid transparent;
+    }
+  }
+
+  .next-steps {
+    font-weight: bold;
+  }
 }

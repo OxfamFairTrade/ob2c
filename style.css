@@ -1730,6 +1730,50 @@ table tbody td:last-child {
   margin-top: -15px !important;
 }
 
+.woocommerce-cart-form > h3 {
+  float: left;
+  margin-bottom: 20px;
+}
+.woocommerce-cart-form > .wc-proceed-to-checkout {
+  margin-bottom: 20px;
+  padding-top: 0;
+  float: right;
+}
+.woocommerce-cart-form > .shop_table.cart,
+.woocommerce-cart-form > .shop_table {
+  margin-top: 20px;
+}
+.woocommerce-cart-form > .shop_table.cart tr td,
+.woocommerce-cart-form > .shop_table tr td {
+  padding: 15px 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid #eaeaea !important;
+}
+.woocommerce-cart-form > .shop_table.cart > tbody > tr,
+.woocommerce-cart-form > .shop_table > tbody > tr {
+  border-top: 0;
+}
+.woocommerce-cart-form > .shop_table.cart .product-remove,
+.woocommerce-cart-form > .shop_table .product-remove {
+  vertical-align: middle !important;
+}
+.woocommerce-cart-form > .shop_table.cart .nm-product-details > .product-wrapper .product-price,
+.woocommerce-cart-form > .shop_table.cart .nm-product-details > .product-wrapper .product-quantity,
+.woocommerce-cart-form > .shop_table.cart .nm-product-details > .product-wrapper .product-subtotal,
+.woocommerce-cart-form > .shop_table.cart .nm-product-details > .product-wrapper > a,
+.woocommerce-cart-form > .shop_table .nm-product-details > .product-wrapper .product-price,
+.woocommerce-cart-form > .shop_table .nm-product-details > .product-wrapper .product-quantity,
+.woocommerce-cart-form > .shop_table .nm-product-details > .product-wrapper .product-subtotal,
+.woocommerce-cart-form > .shop_table .nm-product-details > .product-wrapper > a {
+  display: inline-block;
+}
+.woocommerce-cart-form > .shop_table.cart .nm-product-details > .product-wrapper .product-subtotal,
+.woocommerce-cart-form > .shop_table.cart .nm-product-details > .product-wrapper .product-quantity,
+.woocommerce-cart-form > .shop_table .nm-product-details > .product-wrapper .product-subtotal,
+.woocommerce-cart-form > .shop_table .nm-product-details > .product-wrapper .product-quantity {
+  float: none;
+}
+
 .product .nm-shop-loop-thumbnail-link,
 .product .woocommerce-product-gallery {
   position: relative;
@@ -2551,6 +2595,35 @@ body.portal.home .general-store-notice {
   color: #FFFFFF;
   padding: 5px 20px;
   border-radius: 4px;
+}
+.selected-store .opening-hours-title {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.selected-store .opening-hours-title:before {
+  content: "";
+  background: url(/wp-content/themes/oxfam-webshop/images/clock.svg) no-repeat center center transparent;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  top: 2px;
+  position: relative;
+  margin-right: 6px;
+}
+.selected-store table.wpsl-opening-hours {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+.selected-store table.wpsl-opening-hours td,
+.selected-store table.wpsl-opening-hours th,
+.selected-store table.wpsl-opening-hours tr {
+  border: none;
+}
+.selected-store table.wpsl-opening-hours tr {
+  border-bottom: 10px solid transparent;
+}
+.selected-store .next-steps {
+  font-weight: bold;
 }
 
 #newsletter {
