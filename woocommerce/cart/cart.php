@@ -18,8 +18,7 @@ remove_action( 'woocommerce_cart_collaterals', 'woocommerce_cross_sell_display' 
 add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 ?>
 
-<?php 
-do_action( 'woocommerce_before_cart' ); ?>
+<?php do_action( 'woocommerce_before_cart' ); ?>
 
 <!-- GEWIJZIGD: Extra wrappers -->
 <div class="container">
@@ -51,42 +50,44 @@ do_action( 'woocommerce_before_cart' ); ?>
 								<tr class="woocommerce-cart-form__cart-item <?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
 
 									<!-- GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed -->
-									<td class="product-thumbnail <?php echo ( ! $_product->is_visible() and $_product->get_sku() !== 'GIFT' ) ? 'empties' : ''; ?>"><?php
-									$thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
+									<td class="product-thumbnail <?php echo ( ! $_product->is_visible() and $_product->get_sku() !== 'GIFT' ) ? 'empties' : ''; ?>">
+										<?php
+											$thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
 
-									if ( ! $product_permalink ) {
-                                            echo $thumbnail; // PHPCS: XSS ok.
-                                        } else {
-                                            printf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $thumbnail ); // PHPCS: XSS ok.
+											if ( ! $product_permalink ) {
+												echo $thumbnail;
+											} else {
+												printf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $thumbnail );
+											}
+										?>
+									</td>
+
+									<td class="nm-product-details" data-title="<?php esc_attr_e( 'Product', 'woocommerce' ); ?>">
+                                    	<?php
+                                    	if ( ! $product_permalink ) {
+                                    		echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ) . '&nbsp;' );
+                                    	} else {
+                                    		echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', sprintf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $_product->get_name() ), $cart_item, $cart_item_key ) );
+                                    	}
+
+                                    	do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
+
+            							// Meta data
+                                        echo wc_get_formatted_cart_item_data( $cart_item ); // PHPCS: XSS ok.
+
+            							// Backorder notification
+                                        if ( $_product->backorders_require_notification() && $_product->is_on_backorder( $cart_item['quantity'] ) ) {
+                                        	echo wp_kses_post( apply_filters( 'woocommerce_cart_item_backorder_notification', '<p class="backorder_notification">' . esc_html__( 'Available on backorder', 'woocommerce' ) . '</p>', $product_id ) );
                                         }
-                                        ?></td>
+                                        ?>
 
-                                        <td class="nm-product-details" data-title="<?php esc_attr_e( 'Product', 'woocommerce' ); ?>">
-                                        	<?php
-                                        	if ( ! $product_permalink ) {
-                                        		echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ) . '&nbsp;' );
-                                        	} else {
-                                        		echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', sprintf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $_product->get_name() ), $cart_item, $cart_item_key ) );
-                                        	}
-
-                                        	do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
-
-                							// Meta data
-                                            echo wc_get_formatted_cart_item_data( $cart_item ); // PHPCS: XSS ok.
-
-                							// Backorder notification
-                                            if ( $_product->backorders_require_notification() && $_product->is_on_backorder( $cart_item['quantity'] ) ) {
-                                            	echo wp_kses_post( apply_filters( 'woocommerce_cart_item_backorder_notification', '<p class="backorder_notification">' . esc_html__( 'Available on backorder', 'woocommerce' ) . '</p>', $product_id ) );
-                                            }
+                                        <?php if ( $nm_theme_options['cart_show_item_price'] ) : ?>
+                                        	<div class="product-price" data-title="<?php esc_attr_e( 'Price', 'woocommerce' ); ?>">
+                                        		<?php
+                                            echo apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key ); // PHPCS: XSS ok.
                                             ?>
-
-                                            <?php if ( $nm_theme_options['cart_show_item_price'] ) : ?>
-                                            	<div class="product-price" data-title="<?php esc_attr_e( 'Price', 'woocommerce' ); ?>">
-                                            		<?php
-                                                echo apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key ); // PHPCS: XSS ok.
-                                                ?>
-                                            </div>
-                                        <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
                                         
                                         <div class="nm-product-quantity-pricing">
                                         	<div class="product-quantity" data-title="<?php esc_attr_e( 'Quantity', 'woocommerce' ); ?>">
@@ -140,18 +141,19 @@ do_action( 'woocommerce_before_cart' ); ?>
 
                             do_action( 'woocommerce_cart_contents' );
                             ?>
-                            <tr>
+                            <!-- GEWIJZIGD: Laat rij staan om buttons te triggeren maar verberg altijd -->
+                            <tr style="display: none;">
                             	<td colspan="3" class="actions">
 
+                            		<!-- GEWIJZIGD: Klanten moeten kortingsbonnen nooit handmatig invoeren -->
                             		<?php if ( wc_coupons_enabled() ) { ?>
                             			<div class="coupon">
                             				<label for="coupon_code"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label> <input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" /> <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?></button>
-                            				<?php //do_action( 'woocommerce_cart_coupon' ); ?>
+                            				<?php do_action( 'woocommerce_cart_coupon' ); ?>
                             			</div>
                             		<?php } ?>
 
-                            		<!-- Bijwerken winkelmandje gebeurt automatisch maar laat button wel staan om te triggeren -->
-                            		<button type="submit" class="button border" style="display: none;" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
+                            		<button type="submit" class="button border" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
 
                             		<?php do_action( 'woocommerce_cart_actions' ); ?>
 
@@ -161,59 +163,57 @@ do_action( 'woocommerce_before_cart' ); ?>
 
                             <?php do_action( 'woocommerce_after_cart_contents' ); ?>
                         </tbody>
-                    </table>
+				</table>
 
-                    <?php do_action( 'woocommerce_after_cart_table' ); ?>
+				<?php do_action( 'woocommerce_after_cart_table' ); ?>
 
-                    <div class="cart-collaterals">
+				<div class="cart-collaterals">
 
-                    	<?php if ( ! is_ajax() && wc_coupons_enabled() ) { ?>
-                    		<div class="nm-coupon-wrap">
-                    			<div class="nm-coupon-inner">
-                    				<a href="#" id="nm-coupon-btn"><?php esc_html_e( 'Enter coupon', 'nm-framework' ); ?></a>
+					<?php if ( ! is_ajax() && wc_coupons_enabled() ) : ?>
+						<div class="nm-coupon-wrap">
+							<div class="nm-coupon-inner">
+								<a href="#" id="nm-coupon-btn"><?php esc_html_e( 'Enter coupon', 'nm-framework' ); ?></a>
 
-                    				<div class="nm-coupon">
-                    					<input type="text" id="nm-coupon-code" class="input-text" name="nm_coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" />
+								<div class="nm-coupon">
+									<input type="text" id="nm-coupon-code" class="input-text" name="nm_coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" />
 
-                    					<input type="submit" id="nm-apply-coupon-btn" class="button border" name="nm_apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>" />
+									<input type="submit" id="nm-apply-coupon-btn" class="button border" name="nm_apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>" />
 
-                    					<?php do_action( 'woocommerce_cart_coupon' ); ?>
-                    				</div>
-                    			</div>
-                    		</div>
-                    	<?php } ?>
+									<?php do_action( 'woocommerce_cart_coupon' ); ?>
+								</div>
+							</div>
+						</div>
+					<?php endif; ?>
 
-                    	<?php 
-                        /**
-                         * Cart collaterals hook.
-                         *
-                         * @hooked woocommerce_cart_totals - 10
-                         */
-                        do_action( 'woocommerce_cart_collaterals' );
-                        ?>
+					<?php 
+						/**
+						 * Cart collaterals hook.
+						 *
+						 * @hooked woocommerce_cart_totals - 10
+						 */
+						do_action( 'woocommerce_cart_collaterals' );
+					?>
 
-                        <div class="wc-proceed-to-checkout">
-                        	<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
-                        	<?php do_action( 'woocommerce_proceed_to_checkout' ); ?>
-                        </div>
+					<div class="wc-proceed-to-checkout">
+						<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
+						<?php do_action( 'woocommerce_proceed_to_checkout' ); ?>
+					</div>
 
-                    </div>
+				</div>
+			</form>
 
-                </form>
+		</div>
 
-            </div>
-            <div class="col-md-4">
+		<div class="col-md-4">
+			<?php do_action( 'woocommerce_before_cart_collaterals' ); ?>
 
-            	<?php do_action( 'woocommerce_before_cart_collaterals' ); ?>
+			<p>Je bestelling wordt verzorgd door:</p>
+			<?php
+				// Meegeven van argumenten vereist WP 5.5+
+				get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'cart' ) );
+			?>
+		</div>
+	</div>
+</div>
 
-            	<p>Je bestelling wordt verzorgd door:</p>
-            	<?php
-                // Meegeven van argumenten vereist WP 5.5+
-            	get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'cart' ) );
-            	?>
-
-            </div>
-        </div>
-    </div>
-
-    <?php do_action( 'woocommerce_after_cart' ); ?>
+<?php do_action( 'woocommerce_after_cart' ); ?>

@@ -2,10 +2,10 @@
 /**
  * Cart totals
  *
- * @see 	    https://docs.woothemes.com/document/template-structure/
- * @author 		WooThemes
- * @package 	WooCommerce/Templates
- * @version     2.3.6
+ * @see 	https://docs.woothemes.com/document/template-structure/
+ * @author 	WooThemes
+ * @package WooCommerce/Templates
+ * @version 2.3.6
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 <div class="cart_totals <?php if ( WC()->customer->has_calculated_shipping() ) echo 'calculated_shipping'; ?>">
-    
-    <!-- GEWIJZIGD: Shipping calculator volledig verwijderen -->
-   
-   <?php do_action( 'woocommerce_before_cart_totals' ); ?>
-    
+
+	<!-- GEWIJZIGD: Shipping calculator volledig verwijderen -->
+
+	<?php do_action( 'woocommerce_before_cart_totals' ); ?>
+
 	<table cellspacing="0" class="shop_table shop_table_responsive">
 
 		<tr class="cart-subtotal">
@@ -44,16 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<?php do_action( 'woocommerce_cart_totals_after_shipping' ); ?>
 
-		<?php endif;/*elseif ( WC()->cart->needs_shipping() && 'yes' === get_option( 'woocommerce_enable_shipping_calc' ) ) : ?>
-
-			<tr class="shipping">
-				<td colspan="2" data-title="<?php esc_attr_e( 'Shipping', 'woocommerce' ); ?>">
-                    <p class="nm-shipping-th-title"><?php _e( 'Shipping', 'woocommerce' ); ?></p>
-                    <?php woocommerce_shipping_calculator(); ?>
-                </td>
-			</tr>
-
-		<?php endif;*/ ?>
+		<?php endif; ?>
 
 		<?php foreach ( WC()->cart->get_fees() as $fee ) : ?>
 			<tr class="fee">
@@ -83,7 +74,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php endif; ?>
 		<?php endif; ?>
 
-		<?php do_action( 'woocommerce_cart_totals_before_order_total' ); ?>
+		<?php // do_action( 'woocommerce_cart_totals_before_order_total' ); ?>
 
 		<tr class="order-total">
 			<th><?php _e( 'Total', 'woocommerce' ); ?></th>
@@ -93,7 +84,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php do_action( 'woocommerce_cart_totals_after_order_total' ); ?>
 
 	</table>
-    
+
 	<?php do_action( 'woocommerce_after_cart_totals' ); ?>
 
 </div>
