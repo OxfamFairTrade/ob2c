@@ -108,8 +108,8 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
                                         			);
                                         		}
 
-                                                    echo apply_filters( 'woocommerce_cart_item_quantity', $product_quantity, $cart_item_key, $cart_item ); // PHPCS: XSS ok.
-                                                    ?>
+                                                echo apply_filters( 'woocommerce_cart_item_quantity', $product_quantity, $cart_item_key, $cart_item );
+                                                ?>
                                                 </div>
 
                                                 <div class="product-subtotal" data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce' ); ?>">

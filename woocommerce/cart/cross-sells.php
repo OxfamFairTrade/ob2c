@@ -5,7 +5,7 @@
  * @see https://docs.woocommerce.com/document/template-structure/
  * @package WooCommerce/Templates
  * @version 4.4.0
- NM: Modified */
+NM: Modified */
 
 defined( 'ABSPATH' ) || exit;
 
@@ -19,26 +19,29 @@ $woocommerce_loop['columns_medium'] = '4';
 
 if ( $cross_sells ) : ?>
 
-	<div class="cross-sells">
-        <!-- GEWIJZIGD: Vaste titel -->
-		<h2>Mogelijk ook interessant voor jou</h2>
-        
-        <!-- GEWIJZIGD: Vervangen door slider? -->
-        <?php woocommerce_product_loop_start(); ?>
-        
-            <?php foreach ( $cross_sells as $cross_sell ) : ?>
-            
-                <?php
-				 	$post_object = get_post( $cross_sell->get_id() );
+	<div class="container">
+		<div class="col-row">
+			<div class="cross-sells col-md-12">
+				<!-- GEWIJZIGD: Vaste titel -->
+				<h2>Mogelijk ook interessant voor jou</h2>
 
-					setup_postdata( $GLOBALS['post'] =& $post_object );
+				<!-- GEWIJZIGD: Vervangen door slider? -->
+				<?php woocommerce_product_loop_start(); ?>
 
-					wc_get_template_part( 'content', 'product' ); ?>
+				<?php foreach ( $cross_sells as $cross_sell ) : ?>
 
-            <?php endforeach; ?>
+					<?php
+						$post_object = get_post( $cross_sell->get_id() );
+						setup_postdata( $GLOBALS['post'] =& $post_object );
+						wc_get_template_part( 'content', 'product' );
+					?>
 
-		<?php woocommerce_product_loop_end(); ?>
+				<?php endforeach; ?>
 
+				<?php woocommerce_product_loop_end(); ?>
+
+			</div>
+		</div>
 	</div>
 
 <?php endif;
