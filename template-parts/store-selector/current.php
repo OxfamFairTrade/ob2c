@@ -65,14 +65,28 @@
 		<a href="#" id="open-store-selector">Winkel wijzigen</a>
 
 		<?php if ( $args['context'] === 'cart' ) : ?>
-			<p>Openingsuren</p>
 			<?php
 				switch_to_blog(1);
-				// Te vervangen door reële post-ID van WPSL-object! (= niet gelijk aan $current_store)
-				echo do_shortcode('[wpsl_hours id="1660"]');
+				
+				// Zoek de post-ID op van het WPSL-object met als shop-ID de huidige $current_store
+				$post_args = array(
+					'post_type'	=> 'wpsl_stores',
+					'post_status' => 'publish',
+					'meta_key' => 'wpsl_oxfam_shop_post_id',
+					'meta_value' => $current_store,
+				);
+				$wpsl_stores = new WP_Query( $post_args );
+				
+				if ( $wpsl_stores->have_posts() ) {
+					$wpsl_stores->the_post();
+					echo '<p class="opening-hours-title">Openingsuren</p>';
+					echo do_shortcode('[wpsl_hours id="'.get_the_ID().'"]');
+					wp_reset_postdata();
+				}
+
 				restore_current_blog();
 			?>
-			<p>Je ontvangt een bevestigingsmail zodra je bestelling klaar is voor afhaling of thuislevering.</p>
+			<p class="next-steps">Je ontvangt een bevestigingsmail zodra je bestelling klaar is voor afhaling of thuislevering.</p>
 		<?php endif; ?>
 	</div>
 <?php endif; ?>
