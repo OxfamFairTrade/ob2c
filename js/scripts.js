@@ -34,11 +34,11 @@
   });
 
   $(document).mouseup(function(e){
-    var container = $("#side-menu");
+    var container = $("#side-menu, .catalog-filters");
     if (!container.is(e.target) && container.has(e.target).length === 0){
       $("#side-menu").removeClass("active");
       $("body").removeClass("active");
-      //$(".nm-shop-sidebar-default #nm-shop-sidebar").removeClass('show-me');
+      $(".nm-shop-sidebar-default #nm-shop-sidebar").removeClass('show-me');
     }
   });
 

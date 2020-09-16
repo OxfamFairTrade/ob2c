@@ -12,6 +12,10 @@
   display: block;
   max-width: calc(100% - 24px);
 
+  @media (max-width: 991px) {
+    padding: 0;
+  }
+
   > div {
     padding: 12px;
     background-color: $pale-blue;

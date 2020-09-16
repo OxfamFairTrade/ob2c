@@ -17,6 +17,17 @@
   .catalog-filters > .nm-shop-widget-col {
     margin-bottom: 30px;
     padding-bottom: 30px;
+    border-bottom: 1px solid #eaeaea;
+
+    @media (max-width: 991px) {
+      margin-bottom: 8px;
+      padding-bottom: 5px;
+      border-bottom: 0;
+    }
+
+    > .nm-widget-title {
+      font-weight: 400;
+    }
 
     a {
       display: inline-block;
@@ -58,16 +69,34 @@
       font-size: 21.25px;
       font-weight: 400;
       line-height: 25.5px;
-      margin-bottom: 15px
+      margin-bottom: 15px;
+
+      @media (max-width: 991px) {
+        padding: 0;
+        margin-bottom: 15px;
+        border: 0;
+      }
     }
 
     .widget {
       margin-bottom: 30px;
       padding-bottom: 30px;
 
+      @media (max-width: 991px) {
+        margin-bottom: 8px;
+        padding-bottom: 5px;
+      }
+
       .nm-shop-widget-col {
         display: flex;
         flex-direction: column;
+
+        @media (max-width: 991px) {
+          &:last-child > * {
+            padding: 0;
+            border: 0;
+          }
+        }
       }
 
       ul.children {
@@ -126,6 +155,9 @@
     li.current-cat {
       > a {
         color: $black;
+        position: relative;
+        padding-right: 20px;
+        width: 100%;
 
         &:before {
           background-color: $new-green;
@@ -137,6 +169,8 @@
           color: $red-promo;
           display: inline-block;
           padding-left: 10px;
+          position: absolute;
+          right: 0;
         }
       }
     }
@@ -148,6 +182,7 @@
 
       .nm-widget-title {
         pointer-events: none;
+        font-weight: 400;
 
         &:after {
           content: none;
@@ -360,5 +395,53 @@
     display: block;
     margin: 0 auto;
     width: 200px;
+  }
+}
+
+.close-filter {
+  margin-bottom: 15px;
+}
+
+
+.wjecf-fragment-cart-select-free-product {
+  display: none;
+}
+
+/* Fix overlap foto en tekst in widget */
+.widget_recently_viewed_products .product_list_widget > li {
+  padding: 5px 0 0 90px !important;
+
+  .product-title {
+    font-weight: bold;
+  }
+}
+
+.widget .product_list_widget {
+  margin-bottom: 0;
+
+  > li {
+    margin-bottom: 5px !important;
+
+    a {
+      margin-bottom: 0 !important;
+      width: 100%;
+
+      img {
+        top: 5px;
+      }
+    }
+  }
+}
+
+#nm-shop-products-overlay.show {
+  position: fixed !important;;
+  top: 0 !important;;
+  bottom: 0 !important;;
+  left: 0 !important;;
+  right: 0 !important;;
+
+  &:after {
+    top: 50% !important;;
+    margin-top: -15px !important;
   }
 }

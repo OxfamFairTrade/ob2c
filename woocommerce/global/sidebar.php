@@ -53,8 +53,8 @@ if ( ! defined( 'ABSPATH' ) ) {
                     }
                 ?>
 
-                <li class="mobile-only"><span class="btn close-filter">Sluiten</span></li>
             </ul>
+            <div class="mobile-only"><span class="btn close-filter">Sluiten</span></div>
         </div>
 
         <div class="nm-shop-widget-col">
