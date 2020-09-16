@@ -120,7 +120,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 
                                         <td class="product-remove">
                                         	<?php
-                                            echo apply_filters( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                                            echo apply_filters(
                                             	'woocommerce_cart_item_remove_link',
                                             	sprintf(
                                             		'<a href="%s" class="remove" aria-label="%s" data-product_id="%s" data-product_sku="%s"></a>',
