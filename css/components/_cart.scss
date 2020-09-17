@@ -3,6 +3,29 @@
 // Cart
 // --------------------------------------------------
 
+.woocommerce-page {
+  &.woocommerce-checkout,
+  &.woocommerce-cart {
+    .nm-page-wrap-inner {
+
+      > .nm-row {
+        @include grid-row();
+
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+
+  // @ToDo: Remove after adding .container to correct template
+  &.woocommerce-checkout {
+    .woocommerce {
+      padding: 0 20px;
+    }
+  }
+  // ^--
+}
+
 .woocommerce-cart-form {
   > h3 {
     float: left;
@@ -22,6 +45,7 @@
   > .shop_table.cart,
   > .shop_table {
     margin-top: 20px;
+    margin-bottom: 0;
 
     tr td {
       padding: 15px 8px !important;
@@ -70,13 +94,70 @@
     }
   }
 
-  .cart-collaterals {
+
+  > .cart-collaterals {
     width: 100%;
     margin-top: 0;
-    margin-bottom: 20px;
+    margin-bottom: 34px;
 
-    .cart_totals > table.shop_table {
-      margin-bottom: 20px;
+    > .cart_totals {
+      > table.shop_table {
+        margin-bottom: 20px;
+
+        tr {
+          border-top: 0;
+
+          &.cart-subtotal {
+            th,
+            td {
+              font-weight: bold;
+              font-size: 18px;
+            }
+          }
+
+          &.order-total {
+            th,
+            td {
+              font-weight: bold;
+              font-size: 20px;
+
+              .includes_tax {
+                font-weight: normal;
+                margin-top: 5px;
+              }
+            }
+          }
+
+          th,
+          td {
+            background: 0;
+
+            padding: 15px 8px !important;
+            border: 0 !important;
+            border-bottom: 1px solid #eaeaea !important;
+
+            &:first-of-type {
+              padding-left: 0 !important;
+            }
+
+            &:last-of-type {
+              padding-right: 0 !important;;
+            }
+
+            &.shipping-explanation {
+              color: $black;
+            }
+          }
+        }
+
+        #shipping_method {
+          margin-bottom: 0;
+        }
+
+        .woocommerce-shipping-destination {
+          padding: 0;
+        }
+      }
     }
   }
 }
@@ -113,10 +194,7 @@
 
 .storeselector-wrapper {
   margin-top: 10px;
-
-  @media (max-width: 991px) {
-    margin-bottom: 34px;
-  }
+  margin-bottom: 34px;
 
   > p {
     font-weight: 500;

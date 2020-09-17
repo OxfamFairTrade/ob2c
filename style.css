@@ -1730,6 +1730,24 @@ table tbody td:last-child {
   margin-top: -15px !important;
 }
 
+.woocommerce-page.woocommerce-checkout .nm-page-wrap-inner > .nm-row, .woocommerce-page.woocommerce-cart .nm-page-wrap-inner > .nm-row {
+  margin-left: -12px;
+  margin-right: -12px;
+  zoom: 1;
+  padding-left: 0;
+  padding-right: 0;
+}
+.woocommerce-page.woocommerce-checkout .nm-page-wrap-inner > .nm-row:before, .woocommerce-page.woocommerce-checkout .nm-page-wrap-inner > .nm-row:after, .woocommerce-page.woocommerce-cart .nm-page-wrap-inner > .nm-row:before, .woocommerce-page.woocommerce-cart .nm-page-wrap-inner > .nm-row:after {
+  content: " ";
+  display: table;
+}
+.woocommerce-page.woocommerce-checkout .nm-page-wrap-inner > .nm-row:after, .woocommerce-page.woocommerce-cart .nm-page-wrap-inner > .nm-row:after {
+  clear: both;
+}
+.woocommerce-page.woocommerce-checkout .woocommerce {
+  padding: 0 20px;
+}
+
 .woocommerce-cart-form > h3 {
   float: left;
   margin-bottom: 20px;
@@ -1747,6 +1765,7 @@ table tbody td:last-child {
 .woocommerce-cart-form > .shop_table.cart,
 .woocommerce-cart-form > .shop_table {
   margin-top: 20px;
+  margin-bottom: 0;
 }
 .woocommerce-cart-form > .shop_table.cart tr td,
 .woocommerce-cart-form > .shop_table tr td {
@@ -1795,13 +1814,56 @@ table tbody td:last-child {
 .woocommerce-cart-form > .shop_table .nm-quantity-wrap .qty {
   font-size: 18px;
 }
-.woocommerce-cart-form .cart-collaterals {
+.woocommerce-cart-form > .cart-collaterals {
   width: 100%;
   margin-top: 0;
+  margin-bottom: 34px;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table {
   margin-bottom: 20px;
 }
-.woocommerce-cart-form .cart-collaterals .cart_totals > table.shop_table {
-  margin-bottom: 20px;
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr {
+  border-top: 0;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr.cart-subtotal th,
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr.cart-subtotal td {
+  font-weight: bold;
+  font-size: 18px;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr.order-total th,
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr.order-total td {
+  font-weight: bold;
+  font-size: 20px;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr.order-total th .includes_tax,
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr.order-total td .includes_tax {
+  font-weight: normal;
+  margin-top: 5px;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr th,
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr td {
+  background: 0;
+  padding: 15px 8px !important;
+  border: 0 !important;
+  border-bottom: 1px solid #eaeaea !important;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr th:first-of-type,
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr td:first-of-type {
+  padding-left: 0 !important;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr th:last-of-type,
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr td:last-of-type {
+  padding-right: 0 !important;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr th.shipping-explanation,
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table tr td.shipping-explanation {
+  color: #1b1b1B;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table #shipping_method {
+  margin-bottom: 0;
+}
+.woocommerce-cart-form > .cart-collaterals > .cart_totals > table.shop_table .woocommerce-shipping-destination {
+  padding: 0;
 }
 
 .wc-proceed-to-checkout {
@@ -1832,11 +1894,7 @@ table tbody td:last-child {
 
 .storeselector-wrapper {
   margin-top: 10px;
-}
-@media (max-width: 991px) {
-  .storeselector-wrapper {
-    margin-bottom: 34px;
-  }
+  margin-bottom: 34px;
 }
 .storeselector-wrapper > p {
   font-weight: 500;

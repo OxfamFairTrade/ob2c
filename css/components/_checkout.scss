@@ -1,0 +1,14 @@
+
+
+// Checkout
+// --------------------------------------------------
+
+form.woocommerce-checkout {
+  .woocommerce-billing-fields__field-wrapper {
+    display: flex;
+
+    > .form-row {
+      float: none;
+    }
+  }
+}
