@@ -18,3 +18,8 @@
     clear: both;
   }
 }
+
+@mixin grid-col() {
+  padding-left: 12px;
+  padding-right: 12px;
+}

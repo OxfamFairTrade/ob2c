@@ -5,10 +5,66 @@
 
 form.woocommerce-checkout {
   .woocommerce-billing-fields__field-wrapper {
+    @include grid-row();
+
     display: flex;
+    flex-wrap: wrap;
 
     > .form-row {
+      @include grid-col();
+
       float: none;
+      width: 50%;
+
+      &.form-row-wide {
+        width: 100%;
+      }
+    }
+  }
+}
+
+#order_review {
+  .shop_table {
+    tbody tr:last-child td {
+      
+    }
+
+    tfoot {
+      tr td {
+        background: 0;
+        padding: 15px 8px !important;
+        border: 0 !important;
+        border-bottom: 1px solid #eaeaea !important;
+
+        &:first-of-type {
+          padding-left: 0 !important;
+        }
+
+        &:last-of-type {
+          padding-right: 0 !important;;
+        }
+
+        &.shipping-explanation {
+          .shipping-explanation {
+            color: $black;
+            background: 0;
+          }
+        }
+      }
+
+      > tbody > tr {
+        border-top: 0;
+      }
+    }
+  }
+
+  .nm-checkout-product-total,
+  .nm-checkout-product-name {
+    font-size: 18px;
+    font-weight: bold;
+
+    .variation {
+      font-weight: normal;
     }
   }
 }

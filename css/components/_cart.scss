@@ -17,13 +17,11 @@
     }
   }
 
-  // @ToDo: Remove after adding .container to correct template
   &.woocommerce-checkout {
     .woocommerce {
-      padding: 0 20px;
+      padding: 0;
     }
   }
-  // ^--
 }
 
 .woocommerce-cart-form {
