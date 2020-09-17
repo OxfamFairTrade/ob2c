@@ -65,9 +65,9 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 									<td class="nm-product-details" data-title="<?php esc_attr_e( 'Product', 'woocommerce' ); ?>">
                                         <?php
                                         if ( ! $product_permalink ) {
-                                            echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key ) . '&nbsp;' );
+                                            echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name',  sprintf( '<span class="product-title">%s</span>', $_product->get_name() ), $cart_item, $cart_item_key ) . '&nbsp;' );
                                         } else {
-                                            echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', sprintf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $_product->get_name() ), $cart_item, $cart_item_key ) );
+                                            echo wp_kses_post( apply_filters( 'woocommerce_cart_item_name', sprintf( '<a class="product-title" href="%s">%s</a>', esc_url( $product_permalink ), $_product->get_name() ), $cart_item, $cart_item_key ) );
                                         }
 
                                         do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );
@@ -79,10 +79,8 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
                                         if ( $_product->backorders_require_notification() && $_product->is_on_backorder( $cart_item['quantity'] ) ) {
                                             echo wp_kses_post( apply_filters( 'woocommerce_cart_item_backorder_notification', '<p class="backorder_notification">' . esc_html__( 'Available on backorder', 'woocommerce' ) . '</p>', $product_id ) );
                                         }
-                                        ?>
-                                    </td>
-                                    <td class="nm-product-price" data-title="<?php esc_attr_e( 'Product', 'woocommerce' ); ?>">
-                                        <?php if ( $nm_theme_options['cart_show_item_price'] ) : ?>
+
+                                        if ( $nm_theme_options['cart_show_item_price'] ) : ?>
                                                 <div class="product-price" data-title="<?php esc_attr_e( 'Price', 'woocommerce' ); ?>">
                                                     <?php
                                                 echo apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key ); // PHPCS: XSS ok.
@@ -115,7 +113,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
                                             <?php echo apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key ); ?>
                                     </td>
 
-                                    <td class="product-remove">
+                                    <!--<td class="product-remove">
                                         <?php
                                         echo apply_filters(
                                             'woocommerce_cart_item_remove_link',
@@ -129,7 +127,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
                                             $cart_item_key
                                         );
                                         ?>
-                                    </td>
+                                    </td>-->
 
                                 </tr>
                                 <?php
@@ -203,12 +201,13 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 
 		<div class="col-md-4">
 			<?php do_action( 'woocommerce_before_cart_collaterals' ); ?>
-
-			<p>Je bestelling wordt verzorgd door:</p>
-			<?php
-				// Meegeven van argumenten vereist WP 5.5+
-				get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'cart' ) );
-			?>
+            <div class="storeselector-wrapper">
+                <p>Je bestelling wordt verzorgd door:</p>
+                <?php
+                    // Meegeven van argumenten vereist WP 5.5+
+                    get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'cart' ) );
+                ?>
+            </div>
 		</div>
 	</div>
 </div>

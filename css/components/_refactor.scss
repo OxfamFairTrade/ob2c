@@ -870,6 +870,10 @@ tr.shipping .woocommerce-Price-amount {
 
 li.widget.widget_text:not(:last-child) {
   border-right: 1px solid $light-grey;
+
+  @media (max-width: 749px) {
+    border-right: 0;
+  }
 }
 
 .nm-footer-widgets.has-border {

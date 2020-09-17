@@ -13,6 +13,10 @@
     margin-bottom: 20px;
     padding-top: 0;
     float: right;
+
+    @media (max-width: 991px) {
+      padding-top: 0 !important;
+    }
   }
 
   > .shop_table.cart,
@@ -20,9 +24,17 @@
     margin-top: 20px;
 
     tr td {
-      padding: 15px 0 !important;
+      padding: 15px 8px !important;
       border: 0 !important;
       border-bottom: 1px solid #eaeaea !important;
+
+      &:first-of-type {
+        padding-left: 0 !important;
+      }
+
+      &:last-of-type {
+        padding-right: 0 !important;;
+      }
     }
 
     > tbody > tr {
@@ -33,23 +45,80 @@
       vertical-align: middle !important;
     }
 
-    .nm-product-details {
+    .nm-product-subtotal,
+    .product-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
 
-      > .product-wrapper {
-        .product-price,
-        .product-quantity,
-        .product-subtotal,
-        > a {
-          display: inline-block;
-        }
+    .nm-product-subtotal {
+      text-align: right;
+    }
 
-        .product-subtotal,
-        .product-quantity {
-          float: none;
-        }
+    .nm-product-quantity {
+      min-width: 100px;
+    }
+
+    .nm-quantity-wrap {
+      width: auto;
+      display: inline-block;
+      border: 1px solid #dadada;
+
+      .qty {
+        font-size: 18px;
       }
+    }
+  }
+
+  .cart-collaterals {
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 20px;
+
+    .cart_totals > table.shop_table {
+      margin-bottom: 20px;
     }
   }
 }
 
+.wc-proceed-to-checkout {
+  padding-top: 0 !important;
+  display: flex;
+  justify-content: flex-end;
 
+  .button {
+    width: auto !important;
+  }
+
+  #nm-cart-continue-button {
+    border: 0;
+    text-decoration: underline;
+  }
+
+  .checkout-button {
+    width: auto;
+
+    &:after {
+      content: "";
+      background: url(/wp-content/themes/oxfam-webshop/images/arrow-right-white.svg) no-repeat center center transparent;
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      margin-left: 10px;
+      top: 2px;
+      position: relative;
+    }
+  }
+}
+
+.storeselector-wrapper {
+  margin-top: 10px;
+
+  @media (max-width: 991px) {
+    margin-bottom: 34px;
+  }
+
+  > p {
+    font-weight: 500;
+  }
+}
