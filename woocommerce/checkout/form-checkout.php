@@ -15,6 +15,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $nm_theme_options, $nm_globals;
 
 $nm_validation_notices_class = ( $nm_theme_options['checkout_inline_notices'] ) ? ' nm-validation-inline-notices' : '';
+
+wc_print_notices();
+
 ?>
 
 <div class="container">
@@ -22,8 +25,6 @@ $nm_validation_notices_class = ( $nm_theme_options['checkout_inline_notices'] ) 
 		<div class="col-md-12">
 
 		<?php 
-			wc_print_notices();
-
 			do_action( 'woocommerce_before_checkout_form', $checkout );
 
 			// If checkout registration is disabled and not logged in, the user cannot checkout
