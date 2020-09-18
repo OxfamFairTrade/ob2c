@@ -54,7 +54,10 @@ if ( ! defined( 'ABSPATH' ) ) {
                 ?>
 
             </ul>
+            
             <div class="mobile-only"><span class="btn close-filter">Sluiten</span></div>
+
+            <?php the_widget( 'WC_Widget_Recently_Viewed', array( 'number' => 5, 'title' => 'Laatst bekeken' ), $args ); ?>
         </div>
 
         <div class="nm-shop-widget-col">
