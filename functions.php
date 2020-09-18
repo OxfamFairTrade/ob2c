@@ -2089,15 +2089,15 @@
 
 	function add_tooltips_after_woocommerce_label( $field, $key, $args, $value ) {
 		if ( $key === 'billing_birthday' ) {
-			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden.</span></span></label>', $field );
+			$field = str_replace( '</label>', '<a class="dashicons dashicons-editor-help tooltip" title="Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden."></a></label>', $field );
 		}
 
 		if ( $key === 'billing_phone' ) {
-			$field = str_replace( '</label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken het nummer nooit voor andere doeleinden.</span></span></label>', $field );
+			$field = str_replace( '</label>', '<a class="dashicons dashicons-editor-help tooltip" title="We bellen je enkel op indien dit nodig is voor een vlotte verwerking van je bestelling. We gebruiken het nummer nooit voor andere doeleinden."></a></label>', $field );
 		}
 
 		if ( $key === 'marketing' ) {
-			$field = str_replace( '</span></label>', '<span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">We mailen je hooguit 1x per week. Je kunt je voorkeuren op elk ogenblik aanpassen.</span></span></span></label>', $field );
+			$field = str_replace( '</span></label>', '<a class="dashicons dashicons-editor-help tooltip" title="We mailen je hooguit 1x per week. Je kunt je voorkeuren op elk ogenblik aanpassen."></a></span></label>', $field );
 		}
 
 		return $field;
