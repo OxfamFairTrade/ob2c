@@ -8,6 +8,10 @@
   padding: 12px !important;
   background-color: $pale-blue;
 
+  &:empty {
+    display: none !important;
+  }
+
   &.woocommerce-error {
     background-color: $bright-red;
   }

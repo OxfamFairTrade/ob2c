@@ -1,6 +1,6 @@
 ( function( $ ){
   $(document).ready( function () {
-    $('.oxfam-tt').tooltip();
+    $('.tooltip').tooltip();
 
     $("#menu-btn").on('click', function(e) {
       e.preventDefault();

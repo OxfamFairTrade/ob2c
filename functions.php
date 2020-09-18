@@ -4028,6 +4028,7 @@
 		// if ( current_user_can('update_core') ) {
 			// Als er slechts één methode beschikbaar is, moet het wel afhaling zijn!
 			if ( count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
+			    // @ToDo: Markup herschrijven zodat de span.tooltip een title="" bevat
 				echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">';
 				if ( ! does_home_delivery() ) {
 					echo 'Deze winkel organiseert geen thuislevering. Ga naar de webshop die voor jouw postcode aan huis levert.';

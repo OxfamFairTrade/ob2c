@@ -135,16 +135,6 @@
           top: 2.4px;
         }
       }
-
-      &.widget_recently_viewed_products {
-        a {
-          padding-left: 0;
-
-          &:before {
-            content: none;
-          }
-        }
-      }
     }
 
     .product-categories {
@@ -172,6 +162,29 @@
           position: absolute;
           right: 0;
         }
+      }
+    }
+  }
+
+  .widget_recently_viewed_products {
+    > h2 {
+      font-weight: normal;
+      font-size: 21.25px;
+      line-height: 25.5px
+    }
+
+    a {
+      padding-left: 0;
+      font-size: 16px;
+      line-height: 24px;
+      text-decoration: none;
+
+      &:hover {
+        color: $black;
+      }
+
+      &:before {
+        content: none;
       }
     }
   }

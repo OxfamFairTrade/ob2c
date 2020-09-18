@@ -1471,12 +1471,6 @@ table tbody td:last-child {
   left: -9.6px;
   top: 2.4px;
 }
-.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget.widget_recently_viewed_products a {
-  padding-left: 0;
-}
-.nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget.widget_recently_viewed_products a:before {
-  content: none;
-}
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .product-categories {
   margin-bottom: 0;
 }
@@ -1500,6 +1494,23 @@ table tbody td:last-child {
   padding-left: 10px;
   position: absolute;
   right: 0;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar .widget_recently_viewed_products > h2 {
+  font-weight: normal;
+  font-size: 21.25px;
+  line-height: 25.5px;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar .widget_recently_viewed_products a {
+  padding-left: 0;
+  font-size: 16px;
+  line-height: 24px;
+  text-decoration: none;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar .widget_recently_viewed_products a:hover {
+  color: #1b1b1B;
+}
+.nm-shop-sidebar-default #nm-shop-sidebar .widget_recently_viewed_products a:before {
+  content: none;
 }
 @media (max-width: 991px) {
   .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters {
@@ -1924,18 +1935,46 @@ form.woocommerce-checkout .woocommerce-billing-fields__field-wrapper > .form-row
   width: 100%;
 }
 
+#customer_details {
+  width: 100% !important;
+  padding-right: 0 !important;
+}
+#customer_details h3 {
+  padding-bottom: 0 !important;
+  margin-bottom: 20px !important;
+}
+
+#order_review_heading {
+  padding-bottom: 0 !important;
+  margin-bottom: 20px !important;
+}
+
+#order_review {
+  width: 100% !important;
+}
+#order_review .shop_table tbody tr:last-child td {
+  padding-bottom: 14px !important;
+}
+#order_review .shop_table tfoot tr th,
 #order_review .shop_table tfoot tr td {
-  background: 0;
+  background: 0 !important;
   padding: 15px 8px !important;
   border: 0 !important;
   border-bottom: 1px solid #eaeaea !important;
 }
+#order_review .shop_table tfoot tr th:first-of-type,
 #order_review .shop_table tfoot tr td:first-of-type {
   padding-left: 0 !important;
 }
+#order_review .shop_table tfoot tr th:last-of-type,
 #order_review .shop_table tfoot tr td:last-of-type {
   padding-right: 0 !important;
 }
+#order_review .shop_table tfoot tr th.shipping-explanation,
+#order_review .shop_table tfoot tr td.shipping-explanation {
+  color: #1b1b1B !important;
+}
+#order_review .shop_table tfoot tr th.shipping-explanation .shipping-explanation,
 #order_review .shop_table tfoot tr td.shipping-explanation .shipping-explanation {
   color: #1b1b1B;
   background: 0;
@@ -1954,12 +1993,21 @@ form.woocommerce-checkout .woocommerce-billing-fields__field-wrapper > .form-row
 }
 
 .ui-tooltip {
-  padding: 8px;
+  padding: 0 !important;
   position: absolute;
   z-index: 9999;
   max-width: 300px;
-  -webkit-box-shadow: 0 0 5px #aaa;
-  box-shadow: 0 0 5px #aaa;
+  -webkit-box-shadow: 0 0 2px #aaa;
+  box-shadow: 0 0 2px #aaa;
+  border: 0 !important;
+}
+.ui-tooltip > .ui-tooltip-content {
+  background-color: #282828;
+  color: white;
+  font-size: 0.6em;
+  line-height: 1.2em;
+  border-radius: 3px;
+  padding: 0.6em 1em 1em 1em;
 }
 
 label .tooltip,
@@ -1973,35 +2021,37 @@ label .tooltip,
      visibility: visible;
      opacity: 1;
    }*/
-}
-label .tooltip .tooltiptext,
-.shipping-explanation .tooltip .tooltiptext {
-  visibility: hidden;
-  width: 250px;
-  background-color: #282828;
-  color: white;
-  font-size: 0.6em;
-  line-height: 1.2em;
-  border-radius: 3px;
-  padding: 0.6em 1em 1em 1em;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  margin-left: -240px;
-  opacity: 0;
-  transition: opacity 0.5s;
-  /* Puntje van tooltip */
-}
-label .tooltip .tooltiptext:after,
-.shipping-explanation .tooltip .tooltiptext:after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  right: 15px;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #282828 transparent transparent transparent;
+  /*.tooltiptext {
+    visibility: hidden;
+    width: 250px;
+    background-color: #282828;
+    color: white;
+    font-size: 0.6em;
+    line-height: 1.2em;
+    border-radius: 3px;
+    padding: 0.6em 1em 1em 1em;
+
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    // Vermijd dat het uit beeld gaat op mobiel
+    margin-left: -240px;
+
+    opacity: 0;
+    transition: opacity 0.5s;
+
+    // Puntje van tooltip
+    &:after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      right: 15px;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #282828 transparent transparent transparent;
+    }
+  }*/
 }
 
 .product .nm-shop-loop-thumbnail-link,
@@ -2639,6 +2689,10 @@ div.nm-single-product.product .product_title {
 .nm-shop-notices {
   padding: 12px !important;
   background-color: #60aafd;
+}
+.woocommerce-notices-wrapper:empty,
+.nm-shop-notices:empty {
+  display: none !important;
 }
 .woocommerce-notices-wrapper.woocommerce-error,
 .nm-shop-notices.woocommerce-error {

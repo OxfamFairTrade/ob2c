@@ -4,12 +4,22 @@
 // --------------------------------------------------
 
 .ui-tooltip {
-  padding: 8px;
+  padding: 0 !important;
   position: absolute;
   z-index: 9999;
   max-width: 300px;
-  -webkit-box-shadow: 0 0 5px #aaa;
-  box-shadow: 0 0 5px #aaa;
+  -webkit-box-shadow: 0 0 2px #aaa;
+  box-shadow: 0 0 2px #aaa;
+  border: 0 !important;
+
+  > .ui-tooltip-content {
+    background-color: #282828;
+    color: white;
+    font-size: 0.6em;
+    line-height: 1.2em;
+    border-radius: 3px;
+    padding: 0.6em 1em 1em 1em;
+  }
 }
 
 
@@ -28,7 +38,7 @@ label,
       opacity: 1;
     }*/
 
-    .tooltiptext {
+    /*.tooltiptext {
       visibility: hidden;
       width: 250px;
       background-color: #282828;
@@ -47,7 +57,7 @@ label,
       opacity: 0;
       transition: opacity 0.5s;
 
-      /* Puntje van tooltip */
+      // Puntje van tooltip
       &:after {
         content: '';
         position: absolute;
@@ -58,6 +68,6 @@ label,
         border-style: solid;
         border-color: #282828 transparent transparent transparent;
       }
-    }
+    }*/
   }
 }
