@@ -3,13 +3,35 @@
 // Store notices
 // --------------------------------------------------
 
-.nm-shop-notice {
+.woocommerce-notices-wrapper,
+.nm-shop-notices {
   padding: 12px !important;
   background-color: $pale-blue;
-  color: $white !important;
-  
-  a {
-    text-decoration: underline;
+
+  &.woocommerce-error {
+    background-color: $bright-red;
+  }
+
+  > li.nm-shop-notice {
+    padding-top: 0;
+    margin: 0 0 12px 0 !important;
+
+    &:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    > span {
+      color: $white !important;
+      font-size: 15px;
+      line-height: 26px;
+
+      a {
+        color: $white !important;
+        text-decoration: underline;
+        font-size: 15px;
+        line-height: 26px;
+      }
+    }
   }
 }
 

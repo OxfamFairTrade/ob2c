@@ -18,7 +18,9 @@ if ( ! $notices ) {
 ?>
 
 <?php foreach ( $notices as $notice ) : ?>
-    <div class="nm-shop-notice woocommerce-info"<?php echo wc_get_notice_data_attr( $notice ); ?>>
-        <span><?php echo wc_kses_notice( $notice['notice'] ); ?></span>
-    </div>
+    <?php if(wc_kses_notice( $notice['notice'] ) != '') : ?>
+        <li class="nm-shop-notice woocommerce-info"<?php echo wc_get_notice_data_attr( $notice ); ?>>
+            <span><?php echo wc_kses_notice( $notice['notice'] ); ?></span>
+        </li>
+    <?php endif; ?>
 <?php endforeach; ?>
