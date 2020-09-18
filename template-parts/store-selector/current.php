@@ -79,7 +79,7 @@
 				if ( $wpsl_stores->have_posts() ) {
 					$wpsl_stores->the_post();
 					echo '<p class="opening-hours-title">Openingsuren</p>';
-					echo do_shortcode('[wpsl_hours id="'.get_the_ID().'"]');
+					echo do_shortcode('[wpsl_hours id="'.get_the_ID().'" hide_closed="true"]');
 					wp_reset_postdata();
 				}
 
