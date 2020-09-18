@@ -34,18 +34,16 @@ wc_print_notices();
 
     <form name="checkout" method="post" class="checkout woocommerce-checkout clear" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
 
-        <ul class="nm-checkout-login-coupon">
+        <ul class="nm-checkout-login-coupon nm-shop-notices">
             <?php if ( isset( $nm_globals['checkout_login_message'] ) ) : ?>
-                <li><?php wc_print_notice( $nm_globals['checkout_login_message'], 'notice' ); ?></li>
+                <?php wc_print_notice( $nm_globals['checkout_login_message'], 'notice' ); ?>
             <?php endif; ?>
-            <li><?php
-            // GEWIJZIGD: Definieer een extra actie voor notices met zelfde layout als inlogherinnering
-            echo do_action( 'woocommerce_just_before_checkout_form', $checkout );
-            ?></li>
             <?php
-            if ( isset( $nm_globals['checkout_coupon_message'] ) ) :
-                ?>
-                <li><?php wc_print_notice( $nm_globals['checkout_coupon_message'], 'notice' ); ?></li>
+                // GEWIJZIGD: Definieer een extra actie voor notices met zelfde layout als inlogherinnering
+                echo do_action( 'woocommerce_just_before_checkout_form', $checkout );
+            ?>
+            <?php if ( isset( $nm_globals['checkout_coupon_message'] ) ) : ?>
+                <?php wc_print_notice( $nm_globals['checkout_coupon_message'], 'notice' ); ?>
             <?php endif; ?>
         </ul>
 

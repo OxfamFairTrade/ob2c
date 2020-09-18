@@ -19,10 +19,12 @@ $nm_shop_notice_single_class = ( count( $notices ) > 1 ) ? ' nm-shop-notice-mult
 
 ?>
 
-<ul class="nm-shop-notice woocommerce-error<?php echo esc_attr( $nm_shop_notice_single_class ); ?>" role="alert">
+<ul class="nm-shop-notices woocommerce-error<?php echo esc_attr( $nm_shop_notice_single_class ); ?>" role="alert">
     <?php foreach ( $notices as $notice ) : ?>
-    <li<?php echo wc_get_notice_data_attr( $notice ); ?>>
-        <span><i class="nm-font nm-font-close"></i><?php echo wc_kses_notice( $notice['notice'] ); ?></span>
-    </li>
+        <?php if(wc_kses_notice( $notice['notice'] ) != '') : ?>
+            <li class="nm-shop-notice"<?php echo wc_get_notice_data_attr( $notice ); ?>>
+                <span><i class="nm-font nm-font-close"></i><?php echo wc_kses_notice( $notice['notice'] ); ?></span>
+            </li>
+        <?php endif; ?>
     <?php endforeach; ?>
 </ul>

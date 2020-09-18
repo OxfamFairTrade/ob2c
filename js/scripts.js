@@ -1,8 +1,6 @@
 ( function( $ ){
   $(document).ready( function () {
-    $('.tooltip').tooltip({
-      content: $(this).find('.tooltiptext').text()
-    });
+    $('.oxfam-tt').tooltip();
 
     $("#menu-btn").on('click', function(e) {
       e.preventDefault();
