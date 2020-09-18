@@ -1,5 +1,9 @@
 ( function( $ ){
   $(document).ready( function () {
+    $('.tooltip').tooltip({
+      content: $(this).find('.tooltiptext').text()
+    });
+
     $("#menu-btn").on('click', function(e) {
       e.preventDefault();
       $("#side-menu").addClass("active");

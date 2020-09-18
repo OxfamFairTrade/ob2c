@@ -505,19 +505,24 @@
 	}
 
 	// Laad het child theme
-	add_action( 'wp_enqueue_scripts', 'load_child_theme' );
+	add_action( 'wp_enqueue_scripts', 'load_child_theme', 11 );
 
 	function load_child_theme() {
 		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.6.9' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
-		wp_enqueue_script( 'jquery-ui-autocomplete' );
-		wp_enqueue_script( 'jquery-ui-datepicker' );
+
 		// WordPress 4.9 gebruikt nog jQuery UI 1.11.4
 		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css' );
 		wp_enqueue_style( 'jquery-ui' );
-        wp_enqueue_script( 'readmore', get_stylesheet_directory_uri() . '/libraries/readmore/readmore.min.js', array('jquery') );
-        wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts-min.js', array('jquery') );
+
+        wp_enqueue_script( 'jquery-ui' );
+		wp_enqueue_script( 'jquery-ui-autocomplete', '', array('jquery-ui') );
+        wp_enqueue_script( 'jquery-ui-datepicker', '', array('jquery-ui') );
+        wp_enqueue_script( 'jquery-ui-tooltip', '', array('jquery-ui') );
+
+        wp_enqueue_script( 'readmore', get_stylesheet_directory_uri() . '/libraries/readmore/readmore.min.js', array('jquery-ui') );
+        wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts-min.js', array('jquery-ui') );
     }
 
 	// Voeg custom styling toe aan de adminomgeving (voor Relevanssi en Voorraadbeheer)

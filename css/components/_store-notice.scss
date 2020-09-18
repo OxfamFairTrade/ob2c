@@ -3,6 +3,16 @@
 // Store notices
 // --------------------------------------------------
 
+.nm-shop-notice {
+  padding: 12px !important;
+  background-color: $pale-blue;
+  color: $white !important;
+  
+  a {
+    text-decoration: underline;
+  }
+}
+
 
 .general-store-notice {
   clear: both;
@@ -90,14 +100,4 @@
       }
     }
   }
-}
-
-body.portal.home .general-store-notice {
-  background-color: $bright-red;
-}
-
-.corona-notice {
-  color: $pale-blue;
-  font-style: initial;
-  font-size: 0.9em;
 }
