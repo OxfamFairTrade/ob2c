@@ -30,7 +30,7 @@ if ( $product->is_on_backorder() ) {
 } else {
 	// GEWIJZIGD: Store locator triggeren op hoofdniveau
 	if ( is_main_site() ) {
-		echo '<a id="open-store-selector" rel="nofollow" href="#" class="button product_type_simple add_to_cart_button"></a>';
+		echo '<a rel="nofollow" href="#" class="button product_type_simple add_to_cart_button store-selector-open"></a>';
 	} else {
 		echo apply_filters( 'woocommerce_loop_add_to_cart_link',
 			sprintf( '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',

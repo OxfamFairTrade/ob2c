@@ -52,7 +52,8 @@
 		var wto;
 		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
 		
-		jQuery('#open-store-selector').on( 'click', function() {
+		jQuery('.store-selector-open').on( 'click', function(event) {
+			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
 			
 			var zip = jQuery('#wpsl-search-input').val();
@@ -77,25 +78,7 @@
 				jQuery('#wpsl-search-btn').trigger('click');
 			}
 		});
-
-		/* DEPRECATED */
-		jQuery('#wpsl-search-inputDISABLE').on( 'input change', function() {
-			clearTimeout(wto);
-			var zip = jQuery(this).val();
-			var button = jQuery('#wpsl-search-btn');
-			if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
-				button.prop( 'disabled', false ).parent().addClass('is-valid');
-				wto = setTimeout( function() {
-					button.find('i').addClass('loading');
-					wto = setTimeout( function() {
-						button.trigger('click');
-					}, 750);
-				}, 250);
-			} else {
-				button.prop( 'disabled', true ).parent().removeClass('is-valid');
-			}
-		});
-
+		
 		/* Gebruik event delegation, deze nodes zijn nog niet aanwezig bij DOM load! */
 		/* Voorzien we een non-JS back-up via <a href>? */
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
@@ -103,34 +86,6 @@
 			setCookie( 'latest_shop_id', jQuery(this).data('oxfam-shop-post-id') );
 			/* Of altijd het huidige pad erachter proberen te plakken? */
 			window.location.replace( jQuery(this).data('webshop-url')+'producten/' );
-		});
-		
-		/* DEPRECATED */
-		jQuery('#do_oxfam_redirect').on( 'click', function() {
-			jQuery(this).prop( 'disabled', true );
-			var input = jQuery('#oxfam-zip-user');
-			var zip = input.val();
-			var url = jQuery('#'+zip+'.oxfam-zip-value').val();
-			var all_cities = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ) ?>;
-			// Indien er meerdere plaatsnamen zijn, knippen we ze op en gebruiken we de eerste (= hoofdgemeente)
-			var cities_for_zip = all_cities[zip].split(' / ');
-			if ( typeof url !== 'undefined' ) {
-				if ( url.length > 10 ) {
-					var suffix = '';
-					<?php if ( isset( $_GET['addSku'] ) ) : ?>
-						suffix = '&addSku=<?php echo $_GET['addSku']; ?>';
-					<?php endif; ?>
-					window.location.href = url+'?referralZip='+zip+'&referralCity='+cities_for_zip[0]+suffix;
-				} else {
-					alert("<?php _e( 'Foutmelding na het ingeven van een Vlaamse postcode waar Oxfam-Wereldwinkels nog geen thuislevering voorziet.', 'oxfam-webshop' ); ?>");
-					jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
-					input.val('');
-				}
-			} else {
-				alert("<?php _e( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ); ?> Tip: je kunt ook de naam van je gemeente beginnen te typen en de juiste postcode selecteren uit de suggesties die verschijnen.");
-				jQuery(this).parent().removeClass('is-valid').find('i').removeClass('loading');
-				input.val('');
-			}
 		});
 	});
 

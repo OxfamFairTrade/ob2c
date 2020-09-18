@@ -2778,7 +2778,7 @@ body.portal .ui-autocomplete {
 .selected-store.not-ok .pointer:before {
   background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center #ff1d34;
 }
-.selected-store.not-ok #open-store-selector {
+.selected-store.not-ok .store-selector-open {
   opacity: 1;
 }
 .selected-store .shop-name {
@@ -2813,11 +2813,11 @@ body.portal .ui-autocomplete {
   background: url(/wp-content/themes/oxfam-webshop/images/x-red.svg) no-repeat center center transparent;
   background-size: contain;
 }
-.selected-store #open-store-selector {
+.selected-store .store-selector-open {
   opacity: 0.54;
   text-decoration: underline;
 }
-.selected-store #open-store-selector button {
+.selected-store .store-selector-open button {
   background-color: #5b5b5b;
   border: 0;
   font-size: 15px;

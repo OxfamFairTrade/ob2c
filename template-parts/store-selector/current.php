@@ -45,8 +45,7 @@
 	<div class="selected-store not-ok">
 		<div class="pointer"></div>
 		<p>Online shoppen?</p>
-		<!-- Alle #open-store-selector toggelen de modal die verborgen zit in de footer -->
-		<a href="#" id="open-store-selector"><button>Selecteer winkel</button></a>
+		<a href="#" class="store-selector-open"><button>Selecteer winkel</button></a>
 	</div>
 <?php else : ?>
 	<div class="selected-store ok">
@@ -62,7 +61,7 @@
 			<li class="pickup active">Afhalen in de winkel</li>
 			<li class="shipping <?php echo $home_delivery; ?>">​Levering aan huis</li>
 		</ul>
-		<a href="#" id="open-store-selector">Winkel wijzigen</a>
+		<a href="#" class="store-selector-open">Winkel wijzigen</a>
 
 		<?php if ( $args['context'] === 'cart' ) : ?>
 			<?php
