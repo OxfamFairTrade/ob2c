@@ -64,17 +64,15 @@
   }
 }
 
-body.portal {
-  .ui-autocomplete {
-    color: $black;
-    font-size: 95%;
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-top: none;
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
-    overflow: hidden;
-  }
+.ui-autocomplete {
+  color: $black;
+  font-size: 95%;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  overflow: hidden;
 }
 
 #wpsl-wrap {

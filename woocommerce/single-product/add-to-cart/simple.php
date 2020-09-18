@@ -38,7 +38,7 @@ if ( $product->is_in_stock() and ! $product->is_on_backorder() ) : ?>
 
 			// GEWIJZIGD: Store locator triggeren op hoofdniveau
 			if ( is_main_site() ) {
-				?><button type="button" name="add-to-cart" class="store-selector-open nm-simple-add-to-cart-button single_add_to_cart_button button alt"><?php echo esc_html( $product->single_add_to_cart_text() ); ?></button><?php
+				?><button type="button" name="add-to-cart" class="store-selector-open button alt"><?php echo esc_html( $product->single_add_to_cart_text() ); ?></button><?php
 			} else {
 				?><button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="nm-simple-add-to-cart-button single_add_to_cart_button button alt"><?php echo esc_html( $product->single_add_to_cart_text() ); ?></button><?php
 			}

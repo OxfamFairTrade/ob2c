@@ -446,7 +446,7 @@
 
 	function add_main_site_class( $classes ) {
 		if ( is_main_site() ) {
-			$classes[] = 'portal';
+			$classes[] = 'portalDISABLE';
 		}
 		if ( is_b2b_customer() ) {
 			$classes[] = 'is_b2b_customer';
