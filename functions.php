@@ -4334,10 +4334,19 @@
 		}
 	}
 
-	add_action( 'update_option_oxfam_sitewide_banner_top', 'sitewide_banner_top_was_updated', 10, 3 );
-	add_action( 'update_option_oxfam_b2b_invitation_text', 'sitewide_banner_top_was_updated', 10, 3 );
+	add_action( 'add_option_oxfam_sitewide_banner_top', 'text_field_option_was_created', 10, 2 );
+	add_action( 'update_option_oxfam_sitewide_banner_top', 'text_field_option_was_updated', 10, 3 );
+	add_action( 'add_option_oxfam_b2b_invitation_text', 'text_field_option_was_created', 10, 2 );
+	add_action( 'update_option_oxfam_b2b_invitation_text', 'text_field_option_was_updated', 10, 3 );
 
-	function sitewide_banner_top_was_updated( $old_text, $new_text, $option ) {
+	function text_field_option_was_created( $option, $new_text ) {
+		if ( strlen( $new_text ) > 0 ) {
+			$body = '"'.$new_text.'"';
+		}
+		wp_mail( 'e-commerce@oft.be', get_company_name()." paste '".$option."'-tekst aan", $body );
+	}
+
+	function text_field_option_was_updated( $old_text, $new_text, $option ) {
 		if ( strlen( $new_text ) > 0 ) {
 			$body = '"'.$new_text.'"';
 		} else {
