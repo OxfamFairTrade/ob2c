@@ -4341,9 +4341,9 @@
 		if ( strlen( $new_text ) > 0 ) {
 			$body = '"'.$new_text.'"';
 		} else {
-			$body = 'Custom tekst \''.$option.'\' gewist!';
+			$body = "Custom '".$option."'-tekst gewist!";
 		}
-		wp_mail( 'e-commerce@oft.be', get_company_name().' paste tekst aan', $body );
+		wp_mail( 'e-commerce@oft.be', get_company_name()." paste '".$option."'-tekst aan", $body );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
