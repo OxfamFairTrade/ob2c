@@ -95,7 +95,7 @@
 			eraseCookie('latest_shop_id');
 			eraseCookie('latest_blog_id');
 			/* Of altijd het huidige pad erachter proberen te plakken? */
-			window.location.replace('https://'<?php echo OXFAM_MAIN_SHOP_DOMAIN; ?>'/producten/');
+			window.location.replace('https://<?php echo OXFAM_MAIN_SHOP_DOMAIN; ?>/producten/');
 		});
 	});
 
