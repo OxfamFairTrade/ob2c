@@ -21,17 +21,19 @@
 	}
 
 	// Update bij elke cart load (ook via AJAX!) onze custom cookies
-	// add_action( 'woocommerce_set_cart_cookies', 'set_number_of_items_in_cart_cookie' );
+	add_action( 'woocommerce_set_cart_cookies', 'set_number_of_items_in_cart_cookie' );
 
 	function set_number_of_items_in_cart_cookie() {
 		// Vroege actie, check altijd of aangeroepen functies reeds beschikbaar zijn!
 		if ( ! is_main_site() ) {
-			// Enkel instellen bij expliciet kiezen in store selector?
-			setcookie( 'latest_blog_id', get_current_blog_id(), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
-			$current_blog = get_blog_details();
-			setcookie( 'latest_blog_path', str_replace( '/', '', $current_blog->path ), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
-			if ( is_object( WC()->cart ) ) {
-				setcookie( 'blog_'.get_current_blog_id().'_items_in_cart', WC()->cart->get_cart_contents_count(), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
+			// Instellen van 'latest_blog_id' gebeurt enkel bij expliciet kiezen in store selector!
+			// Check of de huidige cookie overeenkomt met de huidige blog-ID
+			if ( isset( $_COOKIE['latest_blog_id'] ) and $_COOKIE['latest_blog_id'] == get_current_blog_id() ) {
+				$current_blog = get_blog_details();
+				setcookie( 'latest_blog_path', str_replace( '/', '', $current_blog->path ), time() + YEAR_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
+				if ( is_object( WC()->cart ) ) {
+					setcookie( 'blog_'.get_current_blog_id().'_items_in_cart', WC()->cart->get_cart_contents_count(), time() + YEAR_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
+				}
 			}
 		}
 	}
@@ -39,7 +41,7 @@
 	// Toon breadcrumbs wél op shoppagina's
 	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
 	// Laad géén extra NM-stijlen rechtstreeks in de pagina!
-	// add_filter( 'nm_include_custom_styles', '__return_false' );
+	add_filter( 'nm_include_custom_styles', '__return_false' );
 
 	add_filter( 'woocommerce_get_breadcrumb', 'modify_woocommerce_breadcrumbs' );
 	function modify_woocommerce_breadcrumbs( $crumbs ) {
@@ -47,7 +49,7 @@
 		// Key 0 = Titel, Key 1 = URL
 		foreach ( $crumbs as $page ) {
 			if ( $page[0] === 'Home' ) {
-				$page[1] = 'https://stage.oxfamwereldwinkels.be/';
+				$page[1] = 'https://'.OXFAM_MAIN_SITE_DOMAIN.'/';
 			} elseif ( $page[0] === 'Producten' and ! is_main_site() ) {
 				// Prepend de lokale homepage van de huidige webshop
 				$new_crumbs[] = array( 0 => 'Webshop '.get_webshop_name(), 1 => get_site_url() );
@@ -232,8 +234,8 @@
 			}
 			// Redirect mag vanaf nu altijd gebeuren! WACHT NOG EVEN
 			if ( isset( $_GET['addSku'] ) and 1 === 2 ) {
-				if ( isset( $_COOKIE['latest_subsite'] ) ) {
-					$destination_blog = get_blog_details( $_COOKIE['latest_subsite'], false );
+				if ( isset( $_COOKIE['latest_blog_id'] ) ) {
+					$destination_blog = get_blog_details( $_COOKIE['latest_blog_id'], false );
 					if ( $destination_blog->path !== '/' ) {
 						wp_safe_redirect( network_site_url( $destination_blog->path.'?'.$suffix ) );
 						exit();

@@ -130,11 +130,11 @@
 							<div class="footer-menu">
 								<h3>Oxfam-Wereldwinkels</h3>
 								<ul id="menu-footer-menu-1" class="menu">
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/over-ons/">Missie en aanpak</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/steun-ons/">Steun ons</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/over-ons/bescherming-tegen-misbruik-en-uitbuiting/">Meld wangedrag</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/vacatures/">Vacatures</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/over-ons/bevriende-organisaties/">Bevriende organisaties</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/">Missie en aanpak</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/steun-ons/">Steun ons</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/bescherming-tegen-misbruik-en-uitbuiting/">Meld wangedrag</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/vacatures/">Vacatures</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/bevriende-organisaties/">Bevriende organisaties</a></li>
 								</ul>
 							</div>
 						</div>
@@ -142,11 +142,11 @@
 							<div class="footer-menu">
 								<h3>Meer over fair trade</h3>
 								<ul id="menu-footer-menu-2" class="menu">
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/expertise/">Expertise</a></li>
-									<li class="menu-item menu-item-type-post_type_archive menu-item-object-partner"><a href="https://stage.oxfamwereldwinkels.be/partners/">Producenten</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/nieuws/">Nieuws</a></li>
-									<li class="menu-item menu-item-type-post_type_archive menu-item-object-recipe"><a href="https://stage.oxfamwereldwinkels.be/recepten/">Recepten</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/magazine-fair/">Magazine FAIR</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/expertise/">Expertise</a></li>
+									<li class="menu-item menu-item-type-post_type_archive menu-item-object-partner"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/partners/">Producenten</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/nieuws/">Nieuws</a></li>
+									<li class="menu-item menu-item-type-post_type_archive menu-item-object-recipe"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/recepten/">Recepten</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/magazine-fair/">Magazine FAIR</a></li>
 								</ul>
 							</div>
 						</div>
@@ -154,9 +154,9 @@
 							<div class="footer-menu">
 								<h3>Ik ben</h3>
 								<ul id="menu-footer-menu-3" class="menu">
-									<li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://stage.oxfamwereldwinkels.be/pers/">Pers</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/oxfam-op-school/">School</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://stage.oxfamwereldwinkels.be/expertise/">Beleidsmedewerker</a></li>
+									<li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/pers/">Pers</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/oxfam-op-school/">School</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/expertise/">Beleidsmedewerker</a></li>
 									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Bedrijf</a></li>
 									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://copain.oww.be">Vrijwilliger</a></li>
 								</ul>
@@ -187,7 +187,7 @@
 								RPR GENT
 							</p>
 							<p><a href="tel:+32092188899">+32 (0)9/218.88.99</a></p>
-							<a href="https://stage.oxfamwereldwinkels.be/contact/" class="btn">Contacteer ons</a>
+							<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/contact/" class="btn">Contacteer ons</a>
 						<?php else : ?>
 							<p>
 								<?php echo str_replace( 'Oxfam-Wereldwinkel ', 'OWW ', get_shop_name( $atts ) ); ?><br/>
@@ -205,29 +205,29 @@
 			<div class="col-row">
 				<div class="col-sm-2 hidden-xs">
 					<div class="logo">
-						<a href="https://stage.oxfamwereldwinkels.be/"><img src="https://stage.oxfamwereldwinkels.be/wp-content/themes/oxfam/images/logo-green.svg" alt=""></a>
+						<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/"><img src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/themes/oxfam/images/logo-green.svg" alt=""></a>
 					</div>
 				</div>
 				<div class="col-sm-10 col-xs-12">
 					<div class="col-row md-display-flex">
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://www.mo.be/" target="_blank"><img width="111" height="62" src="https://stage.oxfamwereldwinkels.be/wp-content/uploads/2019/04/footer-logo-1.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://www.mo.be/" target="_blank"><img width="111" height="62" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-1.png" class="attachment-medium size-medium" alt=""></a>
 							</div>
 						</div>
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://www.11.be/" target="_blank"><img width="140" height="60" src="https://stage.oxfamwereldwinkels.be/wp-content/uploads/2019/04/footer-logo-2.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://www.11.be/" target="_blank"><img width="140" height="60" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-2.png" class="attachment-medium size-medium" alt=""></a>
 							</div>
 						</div>
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://www.vlaanderen.be/" target="_blank"><img width="153" height="60" src="https://stage.oxfamwereldwinkels.be/wp-content/uploads/2019/04/footer-logo-3.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://www.vlaanderen.be/" target="_blank"><img width="153" height="60" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-3.png" class="attachment-medium size-medium" alt=""></a>
 							</div>
 						</div>
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://diplomatie.belgium.be/nl/Beleid/Ontwikkelingssamenwerking/" target="_blank"><img width="252" height="60" src="https://stage.oxfamwereldwinkels.be/wp-content/uploads/2019/04/footer-logo-4.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://diplomatie.belgium.be/nl/Beleid/Ontwikkelingssamenwerking/" target="_blank"><img width="252" height="60" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-4.png" class="attachment-medium size-medium" alt=""></a>
 							</div>
 						</div>
 					</div>
@@ -246,7 +246,7 @@
 			</div>
 			<div class="col-sm-4 text-right">
 				<!-- @ToDo: refactor ACF field to WP menu? -->
-				<p><a href="https://stage.oxfamwereldwinkels.be/privacy/">Privacybeleid</a> / <a href="https://stage.oxfamwereldwinkels.be/cookiebeleid/">Cookiebeleid</a> / <a href="https://stage.oxfamwereldwinkels.be/sitemap/">Sitemap</a></p>
+				<p><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/privacy/">Privacybeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/cookiebeleid/">Cookiebeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/sitemap/">Sitemap</a></p>
 			</div>
 		</div>
 	</div>

@@ -62,6 +62,7 @@
 			<li class="shipping <?php echo $home_delivery; ?>">​Levering aan huis</li>
 		</ul>
 		<a href="#" class="store-selector-open">Winkel wijzigen</a>
+		<a href="#" class="store-selector-erase">Wis voorkeur</a>
 
 		<?php if ( $args['context'] === 'cart' ) : ?>
 			<?php

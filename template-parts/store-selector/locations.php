@@ -84,15 +84,32 @@
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
 			console.log( "Registreer shop-ID "+jQuery(this).data('oxfam-shop-post-id')+" in cookie en doe redirect naar "+jQuery(this).data('webshop-url') );
 			setCookie( 'latest_shop_id', jQuery(this).data('oxfam-shop-post-id') );
+			setCookie( 'latest_blog_id', jQuery(this).data('webshop-blog-id') );
 			/* Of altijd het huidige pad erachter proberen te plakken? */
 			window.location.replace( jQuery(this).data('webshop-url')+'producten/' );
+		});
+
+		jQuery('.store-selector-erase').on( 'click', function(event) {
+			event.preventDefault();
+			console.log( "Reset cookies en doe redirect naar algemene catalogus" );
+			eraseCookie('latest_shop_id');
+			eraseCookie('latest_blog_id');
+			/* Of altijd het huidige pad erachter proberen te plakken? */
+			window.location.replace('https://'<?php echo OXFAM_MAIN_SHOP_DOMAIN; ?>'/producten/');
 		});
 	});
 
 	function setCookie(cname, cvalue) {
 		var d = new Date();
-		d.setTime( d.getTime() + 30*24*60*60*1000 );
+		d.setTime( d.getTime() + 365*24*60*60*1000 );
 		var expires = "expires="+ d.toUTCString();
 		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;domain=<?php echo OXFAM_COOKIE_DOMAIN; ?>";
+	}
+
+	function eraseCookie(cname) {
+		var d = new Date();
+		d.setTime( d.getTime() - 24*60*60*1000 );
+		var expires = "expires="+ d.toUTCString();
+		document.cookie = cname + "=;" + expires + ";path=/;domain=<?php echo OXFAM_COOKIE_DOMAIN; ?>";
 	}
 </script>
