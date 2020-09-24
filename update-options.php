@@ -198,7 +198,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_sitewide_banner_top">Afwijkende bannertekst<br/><small>Deze tekst verschijnt in de blauwe balk bovenaan elke pagina van de webshop en vervangt de standaardtekst. Hou het bondig en spelfoutenvrij! HTML-tags zijn niet toegestaan en zullen verwijderd worden. Wis alle tekst om opnieuw de standaardbanner te tonen.</small></label>
+					<label for="oxfam_sitewide_banner_top">Afwijkende bannertekst:<br/><small>Deze tekst verschijnt in de blauwe balk bovenaan elke pagina van de webshop en vervangt de standaardtekst. Hou het bondig en spelfoutenvrij! HTML-tags zijn niet toegestaan en zullen verwijderd worden. Wis alle tekst om opnieuw de standaardbanner te tonen.</small></label>
 				</th>
 				<td class="right">
 					<textarea name="oxfam_sitewide_banner_top" rows="2" maxlength="200" class="text-input" placeholder="Gratis verzending vanaf <?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?> euro!" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_sitewide_banner_top') ); ?></textarea>
@@ -230,7 +230,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_b2b_invitation_text">Afwijkende tekst onderaan de uitnodigingsmail naar B2B-klanten</label>
+					<label for="oxfam_b2b_invitation_text">Afwijkende tekst onderaan uitnodigingsmail naar B2B-klanten:<br/><small>HTML-tags zijn niet toegestaan en zullen verwijderd worden. Wis alle tekst om opnieuw de standaardbanner te tonen.</small></label>
 				</th>
 				<td class="right">
 					<textarea name="oxfam_b2b_invitation_text" rows="2" class="text-input" placeholder="<?php _e( 'Zesde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_b2b_invitation_text') ); ?></textarea>
