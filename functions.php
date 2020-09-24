@@ -4335,14 +4335,15 @@
 	}
 
 	add_action( 'update_option_oxfam_sitewide_banner_top', 'sitewide_banner_top_was_updated', 10, 3 );
+	add_action( 'update_option_oxfam_b2b_invitation_text', 'sitewide_banner_top_was_updated', 10, 3 );
 
 	function sitewide_banner_top_was_updated( $old_text, $new_text, $option ) {
 		if ( strlen( $new_text ) > 0 ) {
 			$body = '"'.$new_text.'"';
 		} else {
-			$body = 'Custom tekst gewist!';
+			$body = 'Custom tekst \''.$option.'\' gewist!';
 		}
-		wp_mail( 'e-commerce@oft.be', get_company_name().' paste bannertekst aan', $body );
+		wp_mail( 'e-commerce@oft.be', get_company_name().' paste tekst aan', $body );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
