@@ -4222,6 +4222,7 @@
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_sitewide_banner_top', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_b2b_invitation_text', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 	}

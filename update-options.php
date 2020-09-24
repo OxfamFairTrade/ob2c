@@ -228,6 +228,14 @@
 					<input type="text" name="oxfam_b2b_delivery_cost" class="text-input" value="<?php echo strip_tags( wc_price( $b2b_shipping_options['cost'] ) ).' excl. BTW'; ?>" readonly>
 				</td>
 			</tr>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_b2b_invitation_text">Afwijkende tekst onderaan de uitnodigingsmail naar B2B-klanten</label>
+				</th>
+				<td class="right">
+					<textarea name="oxfam_b2b_invitation_text" rows="2" class="text-input" placeholder="<?php _e( 'Zesde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_b2b_invitation_text') ); ?></textarea>
+				</td>
+			</tr>
 			<?php
 				// Altijd tonen, nu er ook weer lokale instellingen zijn
 				// if ( current_user_can('create_sites') ) {

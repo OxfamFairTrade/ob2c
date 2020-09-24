@@ -81,7 +81,15 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 	<p><?php _e( 'Vijfde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?></p>
 
-	<p><?php _e( 'Zesde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?></p>
+	<p>
+		<?php
+			if ( get_option( 'oxfam_b2b_invitation_text', '' ) !== '' ) {
+				echo get_option('oxfam_b2b_invitation_text');
+			} else {
+				_e( 'Zesde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' );
+			}
+		?>
+	</p>
 
 <?php else : ?>	
 
