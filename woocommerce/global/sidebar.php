@@ -48,9 +48,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<ul id="nm-shop-widgets-ul">
 				<?php
-					// if ( is_active_sidebar( 'widgets-shop' ) ) {
-					// 	dynamic_sidebar( 'widgets-shop' );
-					// }
+					if ( is_active_sidebar( 'widgets-shop' ) ) {
+						dynamic_sidebar( 'widgets-shop' );
+					}
 
 					// In plaats van de sidebar 'widgets-shop' op te roepen, tonen we expliciet bepaalde widgets
 					// Voordeel: instellingen moeten niet gesynchroniseerd worden over de webshops heen
@@ -60,7 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					// Of gewoon CSS aanpassen?
 					$args = array( 'before_widget' => '<li class="widget %s">', 'after_widget' => '</li>', 'before_title' => '<h3 class="nm-widget-title">', 'after_title' => '</h3>' );
 
-					the_widget( 'WC_Widget_Layered_Nav_Filters', array( 'title' => 'Actieve filters' ), $args );
+					the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );
 					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
 					the_widget( 'WC_Widget_Layered_Nav ', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'diets' ), $args );
 					the_widget( 'WC_Widget_Layered_Nav ', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );

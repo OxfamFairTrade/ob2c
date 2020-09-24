@@ -13,12 +13,15 @@
 
 	function add_custom_dropdown_filters_per_category() {
 		if ( is_product_category('wijn') ) {
-			echo '<select name="grapes"><option value="pinot-gris">pinot gris</option><option value="chardonnay">chardonnay</option><option value="cabernet sauvignon">cabernet sauvignon</option></select>';
+			// $grapes = get_terms('pa_grapes');
+			echo '<div class="col-md-4"><select name="grapes"><option disabled>Druivensoort</option><option value="pinot-gris">pinot gris</option><option value="chardonnay">chardonnay</option><option value="cabernet sauvignon">cabernet sauvignon</option></select></div>';
+			echo '<div class="col-md-4"><select name="recipes"><option disabled>Gerechten</option><option value="kip">kip</option><option value="vis">vis</option><option value="kaas">kaas</option></select></div>';
+			echo '<div class="col-md-4"><select name="taste"><option disabled>Smaak</option><option value="volrond">volrond</option><option value="fruitig">fruitig</option></select></div>';
 		}
 	}
 
 	// Update bij elke cart load (ook via AJAX!) onze custom cookies
-	add_action( 'woocommerce_set_cart_cookies', 'set_number_of_items_in_cart_cookie' );
+	// add_action( 'woocommerce_set_cart_cookies', 'set_number_of_items_in_cart_cookie' );
 
 	function set_number_of_items_in_cart_cookie() {
 		// Vroege actie, check altijd of aangeroepen functies reeds beschikbaar zijn!
@@ -36,7 +39,7 @@
 	// Toon breadcrumbs wél op shoppagina's
 	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
 	// Laad géén extra NM-stijlen rechtstreeks in de pagina!
-	add_filter( 'nm_include_custom_styles', '__return_false' );
+	// add_filter( 'nm_include_custom_styles', '__return_false' );
 
 	add_filter( 'woocommerce_get_breadcrumb', 'modify_woocommerce_breadcrumbs' );
 	function modify_woocommerce_breadcrumbs( $crumbs ) {
