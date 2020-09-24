@@ -60,7 +60,7 @@
 					<h2>Abonneer je hier<br/> op onze nieuwsbrief</h2>
 				</div>
 				<div class="col-md-7 md-align-self-center">
-					<form id="regular-newsletter" class="mc4wp-form ajaxified-subscription" method="post" data-name="Abonneer je op onze nieuwsbrief">
+					<form id="regular-newsletter" class="mc4wp-form ajaxified-subscription" method="post" data-description="onze nieuwsbrief">
 						<div class="mc4wp-form-fields">
 							<input type="text" name="FNAME" placeholder="Voornaam" required>
 							<input type="email" name="EMAIL" placeholder="E-mailadres" required>
@@ -78,14 +78,14 @@
 
 <script type="text/javascript">
 	jQuery(document).ready( function() {
-		jQuery('.ajaxified-subscription').on( 'submit', function(event) {
+		jQuery('form.ajaxified-subscription').on( 'submit', function(event) {
 			event.preventDefault();
 			var form = jQuery(this);
 			var output = form.find('.mc4wp-response');
-
+			
 			form.find("input[type='submit']").prop( 'disabled', true );
 			output.html('Even geduld ...');
-
+			
 			var newsletter = 'no';
 			if ( form.find("input[name='lekkere-honing']").val().length == 0 ) {
 				newsletter = 'yes';
@@ -102,10 +102,12 @@
 				},
 				dataType: 'json',
 			}).done( function(response) {
+				/* Varieer de succesboodschap per MailChimp-lijst */
+				var description = form.data('description');
 				if ( response.status == 'subscribed' || response.status == 'resubscribed') {
-					output.html('Hoera, je bent nu ingeschreven op onze nieuwsbrief voor scholen!');
+					output.html('Hoera, je bent nu ingeschreven op '+description+'!');
 				} else if ( response.status == 'updated' ) {
-					output.html('Je was al ingeschreven op deze nieuwsbrief. Bedankt voor je enthousiasme!');
+					output.html('Je was al ingeschreven op '+description+'. Bedankt voor je enthousiasme!');
 				} else {
 					output.html('Er liep iets verkeerd ('+response.error+').');
 				}
