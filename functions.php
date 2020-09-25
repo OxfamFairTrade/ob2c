@@ -39,7 +39,9 @@
 			echo '<div class="col-md-4"><label for="grapes">Druivensoort</label>'.wp_dropdown_categories( $args ).'</div>';
 			// echo '<div class="col-md-4"><label for="grapes">Druivensoort</label><select id="grapes"><option value="">(alle)</option><option value="pinot-gris">pinot gris</option><option value="chardonnay">chardonnay</option><option value="cabernet sauvignon">cabernet sauvignon</option></select></div>';
 			echo '<div class="col-md-4"><label for="recipes">Gerechten</label><select id="recipes"><option value="">(alle)</option><option value="kip">kip</option><option value="vis">vis</option><option value="kaas">kaas</option></select></div>';
-			echo '<div class="col-md-4"><label for="taste">Smaak</label><select id="taste"><option value="">(alle)</option><option value="volrond">volrond</option><option value="fruitig">fruitig</option></select></div>';
+			echo '<div class="col-md-4">';
+			the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Smaak', 'attribute' => 'taste', 'display_type' => 'dropdown' ) );
+			echo '</div>';
 		}
 	}
 
