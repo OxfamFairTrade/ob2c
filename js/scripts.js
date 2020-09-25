@@ -37,6 +37,8 @@
     $(".cat-item.current-cat").on('click', function(e) {
       e.preventDefault();
       alert("WIS DE HUIDIGE CATEGORIE");
+      // Kijk naar wat er gebeurt in nm-shop-filters.js
+      // Het 'href'-attribuut wijzigen naar '/producten/' lijkt te volstaan om te wissen!
     });
   });
 

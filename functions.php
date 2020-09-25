@@ -13,10 +13,35 @@
 
 	function add_custom_dropdown_filters_per_category() {
 		if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
-			// $grapes = get_terms('pa_grapes');
-			echo '<div class="col-md-4"><label for="grapes">Druivensoort</label><select id="grapes"><option value="pinot-gris">pinot gris</option><option value="chardonnay">chardonnay</option><option value="cabernet sauvignon">cabernet sauvignon</option></select></div>';
-			echo '<div class="col-md-4"><label for="recipes">Gerechten</label><select id="recipes"><option value="kip">kip</option><option value="vis">vis</option><option value="kaas">kaas</option></select></div>';
-			echo '<div class="col-md-4"><label for="taste">Smaak</label><select id="taste"><option value="volrond">volrond</option><option value="fruitig">fruitig</option></select></div>';
+			$args = array(
+				'show_option_all'   => '(alle)',
+				'show_option_none'  => '',
+				'orderby'           => 'name',
+				'order'             => 'ASC',
+				'show_count'        => 0,
+				'hide_empty'        => 1,
+				'child_of'          => 0,
+				'exclude'           => '',
+				'echo'              => 1,
+				'selected'          => 0,
+				'hierarchical'      => 0,
+				'name'              => 'grapes',
+				'id'                => '',
+				'class'             => 'postform',
+				'depth'             => 0,
+				'tab_index'         => 0,
+				'taxonomy'          => 'pa_grapes',
+				'hide_if_empty'     => false,
+				'option_none_value' => -1,
+				'value_field'       => 'term_id',
+				'required'          => false,
+			);
+			echo '<div class="col-md-4">';
+			wp_dropdown_categories( $args );
+			echo '</div>';
+			// echo '<div class="col-md-4"><label for="grapes">Druivensoort</label><select id="grapes"><option value="">(alle)</option><option value="pinot-gris">pinot gris</option><option value="chardonnay">chardonnay</option><option value="cabernet sauvignon">cabernet sauvignon</option></select></div>';
+			echo '<div class="col-md-4"><label for="recipes">Gerechten</label><select id="recipes"><option value="">(alle)</option><option value="kip">kip</option><option value="vis">vis</option><option value="kaas">kaas</option></select></div>';
+			echo '<div class="col-md-4"><label for="taste">Smaak</label><select id="taste"><option value="">(alle)</option><option value="volrond">volrond</option><option value="fruitig">fruitig</option></select></div>';
 		}
 	}
 

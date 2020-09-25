@@ -71,8 +71,8 @@ $is_product_taxonomy = ( is_product_taxonomy() ) ? true : false;
 
         the_widget( 'WC_Widget_Layered_Nav_Filters', array( 'title' => 'Actieve filters' ), $args );
         the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
-        the_widget( 'WC_Widget_Layered_Nav ', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'diets' ), $args );
-        the_widget( 'WC_Widget_Layered_Nav ', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );
+        the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'diets' ), $args );
+        the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );
     ?>
 </ul>
 <?php endif; ?>
