@@ -39,6 +39,8 @@
       alert("WIS DE HUIDIGE CATEGORIE");
       // Kijk naar wat er gebeurt in nm-shop-filters.js
       // Het 'href'-attribuut wijzigen naar '/producten/' lijkt te volstaan om te wissen!
+      $(this).find('a').attr( 'href', 'https://dev.oxfamwereldwinkels.be/oostende/producten/' );
+      $(this).unbind('click').click();
     });
   });
 

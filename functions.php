@@ -19,26 +19,24 @@
 				'orderby'           => 'name',
 				'order'             => 'ASC',
 				'show_count'        => 0,
-				'hide_empty'        => 1,
+				'hide_empty'        => 0,
 				'child_of'          => 0,
 				'exclude'           => '',
-				'echo'              => 1,
+				'echo'              => 0,
 				'selected'          => 0,
 				'hierarchical'      => 0,
 				'name'              => 'grapes',
 				'id'                => '',
-				'class'             => 'postform',
+				'class'             => 'extra-product-filter',
 				'depth'             => 0,
 				'tab_index'         => 0,
 				'taxonomy'          => 'pa_grapes',
 				'hide_if_empty'     => false,
 				'option_none_value' => -1,
-				'value_field'       => 'term_id',
+				'value_field'       => 'slug',
 				'required'          => false,
 			);
-			echo '<div class="col-md-4">';
-			wp_dropdown_categories( $args );
-			echo '</div>';
+			echo '<div class="col-md-4"><label for="grapes">Druivensoort</label>'.wp_dropdown_categories( $args ).'</div>';
 			// echo '<div class="col-md-4"><label for="grapes">Druivensoort</label><select id="grapes"><option value="">(alle)</option><option value="pinot-gris">pinot gris</option><option value="chardonnay">chardonnay</option><option value="cabernet sauvignon">cabernet sauvignon</option></select></div>';
 			echo '<div class="col-md-4"><label for="recipes">Gerechten</label><select id="recipes"><option value="">(alle)</option><option value="kip">kip</option><option value="vis">vis</option><option value="kaas">kaas</option></select></div>';
 			echo '<div class="col-md-4"><label for="taste">Smaak</label><select id="taste"><option value="">(alle)</option><option value="volrond">volrond</option><option value="fruitig">fruitig</option></select></div>';
