@@ -477,61 +477,11 @@
 
 	function add_main_site_class( $classes ) {
 		if ( is_main_site() ) {
-			$classes[] = 'portalDISABLE';
+			$classes[] = 'portal';
 		}
 		if ( is_b2b_customer() ) {
 			$classes[] = 'is_b2b_customer';
 		}
-		return $classes;
-	}
-
-	// Voeg klasse toe indien recent product DEPRECATED
-	// add_filter( 'woocommerce_post_class', 'add_recent_product_class', 1000, 2 );
-
-	function add_recent_product_class( $classes, $product ) {
-		if ( $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
-			$classes[] = 'newbee';
-		}
-
-		// Zal nog vervangen worden door een taxonomie i.p.v. attribuut
-		if ( $product->get_attribute('bio') === 'Ja' ) {
-			$classes[] = 'organic';
-		}
-
-		if ( ! is_b2b_customer() and has_term( 'promotie', 'product_tag', $product->get_id() ) ) {
-			$classes[] = 'promotion';
-		}
-
-		if ( ! does_risky_delivery() ) {
-			if ( $product->get_shipping_class() === 'breekbaar' ) {
-				$classes[] = 'pickup-only';
-			}
-		}
-
-		// Label producten met 1+1 / 2de -50% / 3+1 / -25% promotie (verschijnt enkel indien de 'promotie'-tag ook actief is, dus kan op voorhand al ingesteld worden!)
-		// Zou eventueel ook in template sale-flash.php kunnen maar dit is handiger
-		$one_plus_one_products = array();
-		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
-			$classes[] = 'one-plus-one';
-		}
-		$fifty_percent_off_second_products = array( '21052', '24532', '25404', '25405', '25406', '27151' );
-		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
-			$classes[] = 'fifty-percent-off';
-		}
-		$two_plus_one_products = array( '24102', '24117' );
-		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
-			$classes[] = 'two-plus-one';
-		}
-		// Testproduct
-		$three_plus_one_products = array( '26424' );
-		if ( in_array( $product->get_sku(), $three_plus_one_products ) ) {
-			$classes[] = 'three-plus-one';
-		}
-		$twentyfive_percent_off_products = array();
-		if ( in_array( $product->get_sku(), $twentyfive_percent_off_products ) ) {
-			$classes[] = 'twenty-five-percent-off';
-		}
-		
 		return $classes;
 	}
 
