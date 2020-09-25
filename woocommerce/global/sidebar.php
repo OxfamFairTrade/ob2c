@@ -48,9 +48,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<ul id="nm-shop-widgets-ul">
 				<?php
-					if ( is_active_sidebar( 'widgets-shop' ) ) {
-						dynamic_sidebar( 'widgets-shop' );
-					}
+					// if ( is_active_sidebar( 'widgets-shop' ) ) {
+					// 	dynamic_sidebar( 'widgets-shop' );
+					// }
 
 					// In plaats van de sidebar 'widgets-shop' op te roepen, tonen we expliciet bepaalde widgets
 					// Voordeel: instellingen moeten niet gesynchroniseerd worden over de webshops heen

@@ -33,6 +33,11 @@
       $("body").removeClass('active');
       $(".nm-shop-sidebar-default #nm-shop-sidebar").removeClass('show-me');
     });
+
+    $(".cat-item.current-cat").on('click', function(e) {
+      e.preventDefault();
+      alert("WIS DE HUIDIGE CATEGORIE");
+    });
   });
 
   $(document).mouseup(function(e){

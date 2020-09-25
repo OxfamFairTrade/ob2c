@@ -12,11 +12,11 @@
 	add_action( 'woocommerce_before_shop_loop', 'add_custom_dropdown_filters_per_category' );
 
 	function add_custom_dropdown_filters_per_category() {
-		if ( is_product_category('wijn') ) {
+		if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
 			// $grapes = get_terms('pa_grapes');
-			echo '<div class="col-md-4"><select name="grapes"><option disabled>Druivensoort</option><option value="pinot-gris">pinot gris</option><option value="chardonnay">chardonnay</option><option value="cabernet sauvignon">cabernet sauvignon</option></select></div>';
-			echo '<div class="col-md-4"><select name="recipes"><option disabled>Gerechten</option><option value="kip">kip</option><option value="vis">vis</option><option value="kaas">kaas</option></select></div>';
-			echo '<div class="col-md-4"><select name="taste"><option disabled>Smaak</option><option value="volrond">volrond</option><option value="fruitig">fruitig</option></select></div>';
+			echo '<div class="col-md-4"><label for="grapes">Druivensoort</label><select id="grapes"><option value="pinot-gris">pinot gris</option><option value="chardonnay">chardonnay</option><option value="cabernet sauvignon">cabernet sauvignon</option></select></div>';
+			echo '<div class="col-md-4"><label for="recipes">Gerechten</label><select id="recipes"><option value="kip">kip</option><option value="vis">vis</option><option value="kaas">kaas</option></select></div>';
+			echo '<div class="col-md-4"><label for="taste">Smaak</label><select id="taste"><option value="volrond">volrond</option><option value="fruitig">fruitig</option></select></div>';
 		}
 	}
 
@@ -34,6 +34,7 @@
 				if ( is_object( WC()->cart ) ) {
 					setcookie( 'blog_'.get_current_blog_id().'_items_in_cart', WC()->cart->get_cart_contents_count(), time() + YEAR_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
 				}
+				// Stel shipping_city in op gemeente die overeenkomt met current_location?
 			}
 		}
 	}
