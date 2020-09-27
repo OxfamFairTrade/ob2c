@@ -230,7 +230,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_b2b_invitation_text">Afwijkende tekst onderaan uitnodigingsmail naar B2B-klanten:<br/><small>HTML-tags zijn niet toegestaan en zullen verwijderd worden. Wis alle tekst om opnieuw de standaardbanner te tonen.</small></label>
+					<label for="oxfam_b2b_invitation_text">Afwijkende tekst onderaan uitnodigingsmail naar B2B-klanten:<br/><small>HTML-tags zijn niet toegestaan en zullen verwijderd worden. Wis alle tekst om opnieuw de standaardzin te gebruiken.</small></label>
 				</th>
 				<td class="right">
 					<textarea name="oxfam_b2b_invitation_text" rows="2" class="text-input" placeholder="<?php _e( 'Zesde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_b2b_invitation_text') ); ?></textarea>

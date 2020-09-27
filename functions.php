@@ -5971,6 +5971,9 @@
 		} elseif ( get_current_blog_id() === 50 ) {
 			// Uitzondering voor Oudenaarde-Ronse
 			$zoom = 12;
+		} elseif ( get_current_blog_id() === 60 ) {
+			// Uitzondering voor Hemiksem-Schelle
+			$zoom = 14;
 		} elseif ( is_regional_webshop() ) {
 			$zoom = 13;
 		} else {
