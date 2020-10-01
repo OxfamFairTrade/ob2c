@@ -5526,25 +5526,28 @@
 			// 	echo '<p>Mails naar Microsoft-adressen (@htomail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>De promoties n.a.v. Week van de Fair Trade werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">Copain</a>). Opgelet: bij de 2+1-actie op de chocoladerepen kunnen witte en notenchocolade naar keuze gemengd worden. Bijgevolg wordt de korting pas verrekend van zodra er (een veelvoud van) <u>drie</u> geldige artikels in het winkelmandje zitten. We weten op voorhand immers niet welke smaak de klant verkiest voor de gratis reep. De kortingsregel in ShopPlus werd op een gelijkaardige manier opgezet.</p>';
+				// echo '</div>';
 				echo '<div class="notice notice-info">';
-					echo '<p>De promoties voor de maand september werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n118/news/view/20167/12894/promo-s-online-winkel-september-update.html" target="_blank">Copain</a>). Opgelet: bij de 2+1-actie op de chocoladerepen kunnen witte en notenchocolade naar keuze gemengd worden. Bijgevolg wordt de korting pas verrekend van zodra er (een veelvoud van) <u>drie</u> geldige artikels in het winkelmandje zitten. We weten op voorhand immers niet welke smaak de klant verkiest voor de gratis reep. De kortingsregel in ShopPlus werd op een gelijkaardige manier opgezet.</p>';
+					echo '<p>Zoals <a href="https://copain.oww.be/k/nl/n118/news/view/20525/12894/prijs-notenchocolade-190g-wordt-tijdelijk-verlaagd.html" target="_blank">eerder aangekondigd</a> wordt de consumentenprijs van 24302 Notenchocolade 190 g (W14302) tijdens de maand oktober tijdelijk verlaagd naar 2,95 euro. Deze aanpassing werd ook doorgevoerd in jullie webshop.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>Deze maand slechts 1 nieuw product, maar wat voor één:</p><ul style="margin-left: 2em;">';
-						$skus = array( '20610' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku($sku);
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Deze maand slechts 1 nieuw product, maar wat voor één:</p><ul style="margin-left: 2em;">';
+				// 		$skus = array( '26321', '65224', '65225', '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515', '87339', '87352' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku($sku);
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
@@ -5552,8 +5555,7 @@
 					// echo '</div>';
 				}
 				// echo '<div class="notice notice-warning">';
-				// 	// Volgende keer: 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio)
-				// 	echo '<p>6 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 22722 BIO Koffiecaps lungo, 22723 BIO Koffiecaps dark roast, 26313 BIO Braambesconfituur, 27150 BIO Rijstwafels zeezout (nieuwe referentie: 27151), 27513 BIO Lychees en 27821 Tom Yum kruidenpasta voor soep (rood).</p>';
+				// 	echo '<p>5 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio).</p>';
 				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
