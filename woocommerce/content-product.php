@@ -137,19 +137,23 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 
 <!-- We nemen de brakke Conversal-logica voorlopig over -->
 <?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 ) : ?>
-    <!-- Banner op volledige breedte -->
-    <li class="promo-banner horizontal">
-        <a href="<?php echo get_term_link( 'promotie', 'product_tag' ); ?>">
-            <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promotie/promo-wvdft-2020-quinoa.png" />
-        </a>
-    </li>
-<?php elseif ( $position_in_grid === 7 and is_main_query() and wc_get_loop_prop('current_page') === 1 ) : ?>
-    <!-- Blokje op zelfde formaat als een product -->
-    <li class="promo-banner vertical">
-        <a href="<?php echo get_term_link( 'koffie', 'product_cat' ); ?>">
-            <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promotie/promo-wvdft-2020-koffie.png" />
-        </a>
-    </li>
+    <?php $term_link = get_term_link( 'promotie', 'product_tag' ); ?>
+    <?php if ( ! is_wp_error( $term_link ) ) : ?>
+        <li class="promo-banner horizontal">
+            <a href="<?php echo $term_link; ?>">
+                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2020-quinoa.png" />
+            </a>
+        </li>
+    <?php endif; ?>
+<?php elseif ( $position_in_grid === 7 and is_shop() and wc_get_loop_prop('current_page') === 1 ) : ?>
+    <?php $term_link = get_term_link( 'koffie', 'product_cat' ); ?>
+    <?php if ( ! is_wp_error( $term_link ) ) : ?>
+        <li class="promo-banner vertical">
+            <a href="<?php echo $term_link; ?>">
+                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2020-koffie.png" />
+            </a>
+        </li>
+    <?php endif; ?>
 
     <!-- Categoriespecifieke blokjes voorlopig uitschakelen, ACF-velden hier niet beschikbaar -->
     <?php $product_cat = get_queried_object(); ?>

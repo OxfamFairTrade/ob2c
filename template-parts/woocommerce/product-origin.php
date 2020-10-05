@@ -54,19 +54,9 @@
 			?>
 		</p>
 
-	<?php elseif ( $product->get_meta('_herkomst_nl') !== '' ) : ?>
-
+	<?php elseif ( $product->get_attribute('countries') !== '' ) : ?>
 		<p class="countries">
-			Herkomst: <?php echo $product->get_meta('_herkomst_nl'); ?>
-			<?php
-				// Eventueel kunnen we er ook een opsomming van maken
-				// echo '<ul>';
-				// $countries = explode( ', ', $product->get_meta('_herkomst_nl') );
-				// foreach( $countries as $country ) {
-				// 	echo '<li>'.$country.'</li>';
-				// }
-				// echo '</ul>';
-			?>
+			Herkomst: <?php echo $product->get_attribute('countries'); ?>
 		</p>
 	<?php endif; ?>
 </div>

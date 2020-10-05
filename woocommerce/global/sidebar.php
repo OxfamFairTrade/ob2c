@@ -35,14 +35,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 						} else {
 							$class = 'inactive';
 						}
-						echo '<a href="'.get_term_link( 'promotie', 'product_tag' ).'#shop" class="'.$class.'"><span>In promotie</span></a>';
+						$term_link = get_term_link( 'promotie', 'product_tag' );
+						if ( ! is_wp_error( $term_link ) ) {
+							echo '<a href="'.$term_link.'#shop" class="'.$class.'"><span>In promotie</span></a>';
+						}
 					}
 					if ( is_product_tag('sinterklaas') ) {
 						$class = 'active';
 					} else {
 						$class = 'inactive';
 					}
-					echo '<a href="'.get_term_link( 'sinterklaas', 'product_tag' ).'#shop" class="'.$class.'"><span>Sinterklaas</span></a>';
+					$term_link = get_term_link( 'sinterklaas', 'product_tag' );
+					if ( ! is_wp_error( $term_link ) ) {
+						echo '<a href="'.$term_link.'#shop" class="'.$class.'"><span>Sinterklaas</span></a>';
+					}
 				?>
 			</div>
 
@@ -62,7 +68,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );
 					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
-					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'diets' ), $args );
+					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'preferences' ), $args );
 					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );
 				?>
 			</ul>
