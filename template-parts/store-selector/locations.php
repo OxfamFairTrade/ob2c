@@ -49,7 +49,6 @@
 			}
 		});
 
-		var wto;
 		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
 		
 		/* Gebruik event delegation, de buttons zijn niet noodzakelijk al aanwezig bij DOM load! */
@@ -76,7 +75,7 @@
 			eraseCookie('latest_blog_path');
 			/* Probeer het huidige pad te bewaren! */
 			var current_url = window.location.href;
-			window.location.replace( current_url.replace( '<?php echo home_url(); ?>', '<?php echo site_url(); ?>' );
+			window.location.replace( current_url.replace( '<?php echo home_url(); ?>', '<?php echo site_url(); ?>' ) );
 		});
 
 		jQuery('.autocomplete-postcodes').autocomplete({

@@ -59,7 +59,7 @@
 						if ( is_main_site() ) {
 							$js_target = 'class="mini-cart-button store-selector-open"';
 						} else {
-							$js_target = 'id="nm-menu-cart-btn" class="mini-cart-button"';
+							$js_target = 'id="nm-menu-cart-btn" class="mini-cart-btn"';
 						}
 						echo sprintf(
 							'<a href="%s" %s>%s</a>',
