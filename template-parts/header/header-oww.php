@@ -57,7 +57,7 @@
 					<?php
 						$cart_url = ( $nm_globals['cart_panel'] ) ? '#' : wc_get_cart_url();
 						if ( is_main_site() ) {
-							$js_target = 'class="mini-cart-button store-selector-open"';
+							$js_target = 'class="mini-cart-btn store-selector-open"';
 						} else {
 							$js_target = 'id="nm-menu-cart-btn" class="mini-cart-btn"';
 						}
