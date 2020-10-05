@@ -395,8 +395,8 @@
   }
 
   .nm-infload-controls {
-    a.nm-infload-btn,
-    a.nm-infload-to-top {
+    a.nm-infload-btn:not(.hide-btn),
+    a.nm-infload-to-top:not(.hide-btn) {
       background: $black;
       border: 0;
       color: $white;

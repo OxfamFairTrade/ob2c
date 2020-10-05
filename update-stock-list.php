@@ -66,14 +66,13 @@
 
 						$content .= '">';
 							$content .= '<div class="cell" style="padding: 0.25em; width: 3%; text-align: center;"><a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'wc_order_status_icon', null, false ).'</a></div>';
-							$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().' ('.$product->get_attribute('pa_shopplus').')';
+							$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().' ('.$product->get_meta('_shopplus_code').')';
 							if ( has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
 								$content .= ' <small>ENKEL ZICHTBAAR VOOR B2B-KLANTEN</small>';
 							}
 							$content .= '</span></div>';
 							$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
 								$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
-								// Nieuwe voorraadstatus!
 								$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>Tijdelijk uit voorraad</option>';
 								$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 							$content .= '</select></div>';
@@ -128,14 +127,14 @@
 								'meta': meta,
 								'value': value,
 							};
-				    		
-				    		jQuery.ajax({
-				    			type: 'POST',
-	  							url: ajaxurl,
-				    			data: input,
-				    			dataType: 'html',
-				    			success: function(msg) {
-							    	tries = 0;
+
+							jQuery.ajax({
+								type: 'POST',
+								url: ajaxurl,
+								data: input,
+								dataType: 'html',
+								success: function(msg) {
+									tries = 0;
 									
 									// Pas de gekleurde rand aan na een succesvolle voorraadwijziging
 									if ( value == 'onbackorder' ) {
@@ -148,11 +147,12 @@
 
 									// Werk de tellers bij
 									jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border.color-green").length);
+									jQuery(".onbackorder-cnt").html(jQuery("#oxfam-products").find(".border-color-orange").length);
 									jQuery(".featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
-							    	
-							    	jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(5000).animate({
-							    		opacity: 0,
-							    	}, 1000, function(){
+
+									jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(5000).animate({
+										opacity: 0,
+									}, 1000, function(){
 										jQuery(this).html("&nbsp;").css('opacity', 1);
 									});
 								},
@@ -162,7 +162,7 @@
 										ajaxCall(id, meta, value);
 									} else {
 										// Val terug op de tegengestelde waarde
-										if ( value == 'outofstock' ) {
+										if ( value == 'outofstock' || value == 'onbackorder' ) {
 											jQuery(this).val('instock');
 										} else if ( value == 'instock' ) {
 											jQuery(this).val('outofstock');
@@ -173,8 +173,8 @@
 										tries = 0;
 
 										jQuery("#"+id).find(".output").html("Wijzigingen mislukt!").delay(15000).animate({
-								    		opacity: 0,
-								    	}, 1000, function(){
+											opacity: 0,
+										}, 1000, function(){
 											jQuery(this).html("&nbsp;").css('opacity', 1);
 										});
 									}
@@ -191,10 +191,9 @@
 									jQuery("#oxfam-products").find(".border.color-red").parent().find("select.toggle").val('instock').each( function() {
 										jQuery(this).delay(25).trigger('change');	
 									});
-									// SUCCESBOODSCHAP TONEN NA AFLOOP
 									jQuery(this).parent().parent().find(".output").delay(10000).animate({
-							    		opacity: 0,
-							    	}, 1000, function(){
+										opacity: 0,
+									}, 1000, function(){
 										jQuery(this).html("&nbsp;").css('opacity', 1);
 									});
 								} else {
@@ -209,10 +208,9 @@
 									jQuery("#oxfam-products").find(".border.color-green").parent().find("select.toggle").val('outofstock').each( function() {
 										jQuery(this).delay(25).trigger('change');	
 									});
-									// SUCCESBOODSCHAP TONEN NA AFLOOP
 									jQuery(this).parent().parent().find(".output").delay(10000).animate({
-							    		opacity: 0,
-							    	}, 1000, function(){
+										opacity: 0,
+									}, 1000, function(){
 										jQuery(this).html("&nbsp;").css('opacity', 1);
 									});
 								} else {

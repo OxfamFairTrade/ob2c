@@ -2452,7 +2452,7 @@
 					// BTW erbij tellen bij particulieren
 					$line_total += $item['line_subtotal_tax'];
 				}
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_attribute('shopplus') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
 				$i++;
 			}
 
@@ -4505,8 +4505,8 @@
 
 	function custom_oxfam_options() {
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
-		add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'manage_network_users', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
+		// add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
+		// add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'manage_network_users', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
@@ -5405,7 +5405,7 @@
 							$product_id = wc_get_product_id_by_sku($sku);
 							if ( $product_id ) {
 								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
 							}
 						}
 					echo '</ul><p>';

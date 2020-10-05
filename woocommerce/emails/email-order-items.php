@@ -33,8 +33,8 @@ foreach ( $items as $item_id => $item ) :
 
 				// SKU
 				// GEWIJZIGD: Verwijder hastag en vermeld ShopPlus-referentie i.p.v. ompaknummer
-				if ( $show_sku && is_object( $product ) && $product->get_attribute('shopplus') !== '' ) {
-					echo ' (' . $product->get_attribute('shopplus') . ')';
+				if ( $show_sku && is_object( $product ) && $product->get_meta('_shopplus_code') !== '' ) {
+					echo ' (' . $product->get_meta('_shopplus_code') . ')';
 				}
 
 				// allow other plugins to add additional product information here

@@ -89,7 +89,7 @@
 
 				<div id="product-sku" class="product-info-panel sku">
 					<h4>Artikelnummer</h4>
-					<p><?php echo $product->get_attribute('shopplus'); ?></p>
+					<p><?php echo $product->get_meta('_shopplus_code'); ?></p>
 				</div>
 
 				<?php
