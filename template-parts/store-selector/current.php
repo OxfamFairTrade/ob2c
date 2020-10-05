@@ -61,8 +61,8 @@
 			<li class="pickup active">Afhalen in de winkel</li>
 			<li class="shipping <?php echo $home_delivery; ?>">​Levering aan huis</li>
 		</ul>
-		<a href="#" class="store-selector-open">Winkel wijzigen</a>
-		<a href="#" class="store-selector-erase">Winkel wissen</a>
+		<a href="#" class="store-selector-open" title="Open winkelkiezer">Winkel wijzigen</a>
+		<a href="#" class="store-selector-erase" title="Wis winkelkeuze"></a>
 
 		<?php if ( $args['context'] === 'cart' ) : ?>
 			<?php

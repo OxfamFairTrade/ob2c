@@ -625,7 +625,8 @@
 		$custom_sort = array();
 		foreach ( $store_meta as $key => $row ) {
 			// In plaats van sorteren op 'distance'
-			$custom_sort[ $key ] = $row['webshop'];
+			// Key bestaat niet indien de winkel geen webshop heeft!
+			$custom_sort[ $key ] = ! empty( $row['webshop'] ) ? $row['webshop'] : '';
 			
 			// Formatteer de afstand op z'n Belgisch
 			$store_meta[ $key ]['distance'] = round( $row['distance'], 0 );
@@ -5177,8 +5178,8 @@
 		}
 	}
 
-	// Zet producten die onaangeroerd bleven door de ERP-import uit voorraad
-	add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
+	// Zet producten die onaangeroerd bleven door de ERP-import uit voorraad IMPORT LOOPT VAST OP HET EINDE?
+	// add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
 	
 	function after_xml_import( $import_id ) {
 		if ( $import_id == 7 ) {
