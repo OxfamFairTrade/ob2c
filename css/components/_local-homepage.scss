@@ -42,3 +42,17 @@
     margin-bottom: 50px;
   }
 }
+
+.product-category {
+  .nm-product-category-inner {
+    border-width: 0;
+
+    & > a {
+      width: 100%;
+    }
+  }
+
+  .nm-product-category-text {
+    display: none;
+  }
+}
