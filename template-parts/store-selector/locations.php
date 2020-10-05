@@ -75,7 +75,7 @@
 			eraseCookie('latest_blog_path');
 			/* Probeer het huidige pad te bewaren! */
 			var current_url = window.location.href;
-			window.location.replace( current_url.replace( '<?php echo home_url(); ?>', '<?php echo get_site_url(); ?>' ) );
+			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', '<?php echo network_site_url(); ?>' ) );
 		});
 
 		jQuery('.autocomplete-postcodes').autocomplete({
