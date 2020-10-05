@@ -63,6 +63,6 @@ if ( is_woocommerce() && $nm_theme_options['shop_infinite_load'] !== '0' ) {
         <p>Weergave <?php echo min( $wp_query->found_posts, max( 1, $current ) * $wp_query->get('posts_per_page') ); ?> van <?php echo $wp_query->found_posts; ?> producten</p>
     <?php endif; ?>
     <a href="#" class="nm-infload-btn">Meer producten laden</a>
-    <a href="#" class="nm-infload-to-top">Alle <?php echo $wp_query->found_posts; ?> producten zijn geladen.</a>
+    <a href="#" class="nm-infload-to-top">Alle <?php echo $wp_query->found_posts; ?> producten zijn geladen</a>
 </div>
 <?php endif; ?>

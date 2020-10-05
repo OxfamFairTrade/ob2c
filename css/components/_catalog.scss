@@ -417,6 +417,12 @@
       }
     }
 
+    &.hide-btn {
+      a.nm-infload-to-top {
+        display: inline-block;
+      }
+    }
+
     &.nm-loader {
       a.nm-infload-btn,
       a.nm-infload-to-top {
