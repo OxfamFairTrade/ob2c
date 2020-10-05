@@ -45,7 +45,7 @@
 
       &:before {
         // Eigenlijk geen checkbox nodig vooraan!
-        // content: "";
+        content: "";
         display: inline-block;
         background-color: white;
         border: 1px solid $black;
@@ -137,7 +137,7 @@
         }
       }
 
-      ul.product-categories a {
+      ul.product-categories a:before {
         border-radius: 50%;
       }
     }
@@ -194,20 +194,6 @@
     }
   }
 
-  .supplementary-filter {
-    h2 {
-      font-weight: normal;
-      font-size: 21.25px;
-      line-height: 25.5px;
-    }
-
-    select {
-      font-size: 16px;
-      background-color: lightgrey;
-      padding: 5px 15px;
-    }
-  }
-
   @media (max-width: 991px) {
     .catalog-filters {
       display: none;
@@ -240,6 +226,22 @@
       z-index: 1000;
       height: 90%;
       overflow-y: auto;
+    }
+  }
+}
+
+.nm-shop-products-col {
+  .supplementary-filter {
+    h2 {
+      font-weight: normal;
+      font-size: 21.25px;
+      line-height: 25.5px;
+    }
+
+    select {
+      font-size: 16px;
+      background-color: lightgrey;
+      padding: 5px 15px;
     }
   }
 }

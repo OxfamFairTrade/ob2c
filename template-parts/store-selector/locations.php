@@ -52,7 +52,8 @@
 		var wto;
 		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
 		
-		jQuery('.store-selector-open').on( 'click', function(event) {
+		/* Gebruik event delegation, de buttons zijn niet noodzakelijk al aanwezig bij DOM load! */
+		jQuery('#header,#nm-shop').on( 'click', '.store-selector-open', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
 			
@@ -62,9 +63,18 @@
 			}
 		});
 
-		jQuery('.store-selector-close').on( 'click', function(event) {
+		jQuery('#nm-shop').on( 'click', '.store-selector-close', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
+		});
+
+		jQuery('#nm-shop').on( 'click', '.store-selector-erase', function(event) {
+			event.preventDefault();
+			console.log( "Reset cookies en doe redirect naar algemene catalogus" );
+			eraseCookie('latest_shop_id');
+			eraseCookie('latest_blog_id');
+			/* Of altijd het huidige pad erachter proberen te plakken? */
+			window.location.replace('https://<?php echo OXFAM_MAIN_SHOP_DOMAIN; ?>/producten/');
 		});
 
 		jQuery('.autocomplete-postcodes').autocomplete({
@@ -87,15 +97,6 @@
 			setCookie( 'latest_blog_id', jQuery(this).data('webshop-blog-id') );
 			/* Of altijd het huidige pad erachter proberen te plakken? */
 			window.location.replace( jQuery(this).data('webshop-url')+'producten/' );
-		});
-
-		jQuery('.store-selector-erase').on( 'click', function(event) {
-			event.preventDefault();
-			console.log( "Reset cookies en doe redirect naar algemene catalogus" );
-			eraseCookie('latest_shop_id');
-			eraseCookie('latest_blog_id');
-			/* Of altijd het huidige pad erachter proberen te plakken? */
-			window.location.replace('https://<?php echo OXFAM_MAIN_SHOP_DOMAIN; ?>/producten/');
 		});
 	});
 

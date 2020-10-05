@@ -56,9 +56,15 @@
 					</ul>
 					<?php
 						$cart_url = ( $nm_globals['cart_panel'] ) ? '#' : wc_get_cart_url();
+						if ( is_main_site() ) {
+							$js_target = 'class="store-selector-open"';
+						} else {
+							$js_target = 'id="nm-menu-cart-btn"';
+						}
 						echo sprintf(
-							'<a href="%s" id="nm-menu-cart-btn">%s</a>',
+							'<a href="%s" %s>%s</a>',
 							esc_url( $cart_url ),
+							$js_target,
 							nm_get_cart_contents_count()
 						);
 					?>
