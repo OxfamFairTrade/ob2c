@@ -139,7 +139,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 <?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 ) : ?>
     <!-- Banner op volledige breedte -->
     <li class="promo-banner horizontal">
-        <a href="<?php echo get_term_link( 'promoties', 'product_tag' ); ?>">
+        <a href="<?php echo get_term_link( 'promotie', 'product_tag' ); ?>">
             <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promotie/promo-wvdft-2020-quinoa.png" />
         </a>
     </li>
