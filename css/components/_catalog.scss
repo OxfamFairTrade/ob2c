@@ -411,8 +411,10 @@
       }
     }
 
-    a.nm-infload-btn:not(.hide-btn) {
-      display: inline-block;
+    &:not(.hide-btn){
+      a.nm-infload-btn {
+        display: inline-block;
+      }
     }
 
     &.nm-loader {
