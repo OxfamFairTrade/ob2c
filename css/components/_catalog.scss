@@ -395,12 +395,11 @@
   }
 
   .nm-infload-controls {
-    a.nm-infload-btn:not(.hide-btn),
-    a.nm-infload-to-top:not(.hide-btn) {
+    a.nm-infload-btn,
+    a.nm-infload-to-top {
       background: $black;
       border: 0;
       color: $white;
-      display: inline-block;
       font-size: 12px;
       line-height: 20px;
       padding: 8px 16px;
@@ -410,6 +409,10 @@
         background: lighten($black, 10%);
         border: 0;
       }
+    }
+
+    a.nm-infload-btn:not(.hide-btn) {
+      display: inline-block;
     }
 
     &.nm-loader {
