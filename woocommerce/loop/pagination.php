@@ -60,7 +60,7 @@ if ( is_woocommerce() && $nm_theme_options['shop_infinite_load'] !== '0' ) {
     <!-- GEWIJZIGD: Toon progressie in productenlijst => wc_get_loop_prop('current_page') geeft altijd 1 door? -->
     <p>Weergave <?php echo min( $wp_query->found_posts, max( 1, $paged ) * $wp_query->get('posts_per_page') ); ?> van <?php echo $wp_query->found_posts; ?> producten</p>
     <?php if ( $paged < $wp_query->max_num_pages ) : ?>
-        <a href="#" class="nm-infload-btn"><?php echo 'PAGE '.$paged.' - PAGE '.get_query_var('paged').' - '; ?>Meer producten laden</a>
+        <a href="#" class="nm-infload-btn"><?php echo 'PAGE '.$paged.' - '; ?>Meer producten laden</a>
     <?php endif; ?>
     <a href="#" class="nm-infload-to-top"><?php esc_html_e( 'All products loaded.', 'nm-framework' ); ?></a>
 </div>

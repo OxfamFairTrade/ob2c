@@ -37,18 +37,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 						}
 						$term_link = get_term_link( 'promotie', 'product_tag' );
 						if ( ! is_wp_error( $term_link ) ) {
-							echo '<a href="'.$term_link.'#shop" class="'.$class.'"><span>In promotie</span></a>';
+							echo '<a href="'.$term_link.'#shop" class="'.$class.'"><span>Promoties #WeekVanDeFairTrade</span></a>';
 						}
 					}
-					if ( is_product_tag('sinterklaas') ) {
-						$class = 'active';
-					} else {
-						$class = 'inactive';
-					}
-					$term_link = get_term_link( 'sinterklaas', 'product_tag' );
-					if ( ! is_wp_error( $term_link ) ) {
-						echo '<a href="'.$term_link.'#shop" class="'.$class.'"><span>Sinterklaas</span></a>';
-					}
+					// if ( is_product_tag('sinterklaas') ) {
+					// 	$class = 'active';
+					// } else {
+					// 	$class = 'inactive';
+					// }
+					// $term_link = get_term_link( 'sinterklaas', 'product_tag' );
+					// if ( ! is_wp_error( $term_link ) ) {
+					// 	echo '<a href="'.$term_link.'#shop" class="'.$class.'"><span>Sinterklaas</span></a>';
+					// }
 				?>
 			</div>
 

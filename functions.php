@@ -14,22 +14,20 @@
 	function add_custom_dropdown_filters_per_category() {
 		if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
 			// Label bij non-selectie kan aangepast worden m.b.v. 'woocommerce_layered_nav_any_label'-filter
-			$args = array(
-				'before_title' => '<h4>',
-				'after_title' => '</h4>',
-				'display_type' => 'dropdown',
-				'title' => 'Druivenrassen',
-				'attribute' => 'grapes',
-			);
-			echo '<div class="col-md-4">';
+			echo '<div class="col-md-3 supplementary-filter">';
+				$args = array(
+					'display_type' => 'dropdown',
+					'title' => 'Druivenrassen',
+					'attribute' => 'grapes',
+				);
 				the_widget( 'WC_Widget_Layered_Nav', $args );
 			echo '</div>';
-			echo '<div class="col-md-4">';
+			echo '<div class="col-md-3 supplementary-filter">';
 				$args['title'] = 'Gerechten';
 				$args['attribute'] = 'recipes';
 				the_widget( 'WC_Widget_Layered_Nav', $args );
 			echo '</div>';
-			echo '<div class="col-md-4">';
+			echo '<div class="col-md-3 supplementary-filter">';
 				$args['title'] = 'Smaken';
 				$args['attribute'] = 'tastes';
 				the_widget( 'WC_Widget_Layered_Nav', $args );

@@ -38,7 +38,7 @@
 				</div>
 				<div class="col-row lh-category">
 					<div class="col-xs-12">
-						<?php echo do_shortcode('[nm_product_categories orderby="term_order" title_tag="h3" parent="0"]'); ?>
+						<?php echo do_shortcode('[nm_product_categories orderby="menu_order" title_tag="h3" parent="0"]'); ?>
 					</div>
 				</div>
 				<div class="col-row lh-header">
