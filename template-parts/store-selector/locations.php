@@ -63,18 +63,20 @@
 			}
 		});
 
-		jQuery('#nm-shop').on( 'click', '.store-selector-close', function(event) {
+		jQuery('.store-selector-close').on( 'click', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
 		});
 
-		jQuery('#nm-shop').on( 'click', '.store-selector-erase', function(event) {
+		jQuery('.store-selector-erase').on( 'click', function(event) {
 			event.preventDefault();
-			console.log( "Reset cookies en doe redirect naar algemene catalogus" );
+			console.log( "Reset cookies en doe redirect naar overeenkomstige URL zonder /<?php echo $_COOKIE['latest_blog_path'] ?>/" );
 			eraseCookie('latest_shop_id');
 			eraseCookie('latest_blog_id');
-			/* Of altijd het huidige pad erachter proberen te plakken? */
-			window.location.replace('https://<?php echo OXFAM_MAIN_SHOP_DOMAIN; ?>/producten/');
+			eraseCookie('latest_blog_path');
+			/* Probeer het huidige pad te bewaren! */
+			var current_url = window.location.href;
+			window.location.replace( current_url.replace( home_url(), site_url() );
 		});
 
 		jQuery('.autocomplete-postcodes').autocomplete({
@@ -84,19 +86,20 @@
 			autoFocus: true,
 			position: { my : "right top", at: "right bottom" },
 			close: function(event,ui) {
-				// Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak)
+				/* Opgelet: dit wordt uitgevoerd vòòr het standaardevent (= invullen van de postcode in het tekstvak) */
 				jQuery('#wpsl-search-btn').trigger('click');
 			}
 		});
 		
 		/* Gebruik event delegation, deze nodes zijn nog niet aanwezig bij DOM load! */
-		/* Voorzien we een non-JS back-up via <a href>? */
+		/* Non-JS back-up voorzien via <a href>? */
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
 			console.log( "Registreer shop-ID "+jQuery(this).data('oxfam-shop-post-id')+" in cookie en doe redirect naar "+jQuery(this).data('webshop-url') );
 			setCookie( 'latest_shop_id', jQuery(this).data('oxfam-shop-post-id') );
 			setCookie( 'latest_blog_id', jQuery(this).data('webshop-blog-id') );
-			/* Of altijd het huidige pad erachter proberen te plakken? */
-			window.location.replace( jQuery(this).data('webshop-url')+'producten/' );
+			/* Probeer het huidige pad te bewaren! */
+			var current_url = window.location.href;
+			window.location.replace( current_url.replace( home_url('/'), jQuery(this).data('webshop-url') ) );
 		});
 	});
 
