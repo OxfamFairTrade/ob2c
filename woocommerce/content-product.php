@@ -139,15 +139,15 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 <?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 ) : ?>
     <!-- Banner op volledige breedte -->
     <li class="promo-banner horizontal">
-        <a href="#">
-            <img src="https://placekitten.com/g/1200/200" />
+        <a href="<?php echo get_term_link( 'promoties', 'product_tag' ); ?>">
+            <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promotie/promo-wvdft-2020-quinoa.png" />
         </a>
     </li>
 <?php elseif ( $position_in_grid === 7 and is_main_query() and wc_get_loop_prop('current_page') === 1 ) : ?>
     <!-- Blokje op zelfde formaat als een product -->
     <li class="promo-banner vertical">
-        <a href="#">
-            <img src="https://placekitten.com/g/400/631" />
+        <a href="<?php echo get_term_link( 'koffie', 'product_cat' ); ?>">
+            <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promotie/promo-wvdft-2020-koffie.png" />
         </a>
     </li>
 

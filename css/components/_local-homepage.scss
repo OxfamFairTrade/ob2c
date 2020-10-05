@@ -45,10 +45,10 @@
 
 .product-category {
   .nm-product-category-inner {
-    border-width: 0;
+    border-width: 0 !important;
 
     & > a {
-      width: 100%;
+      width: 100% !important;
     }
   }
 
