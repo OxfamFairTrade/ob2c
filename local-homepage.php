@@ -47,7 +47,6 @@
 						'include' => wc_get_featured_product_ids(),
 					);
 					$featured_products = wc_get_products( $args );
-					var_dump_pre( $featured_products );
 				?>
 				<?php if ( count( $featured_products ) > 0 ) : ?>
 					<div class="col-row lh-header">
