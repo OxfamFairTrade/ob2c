@@ -33,7 +33,7 @@
 						<h2>Shoppen per categorie</h2>
 					</div>
 					<div class="col-xs-12 col-sm-6">
-						<a href="#">Alle producten</a>
+						<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
 					</div>
 				</div>
 				<div class="col-row lh-category">
@@ -41,39 +41,55 @@
 						<?php echo do_shortcode('[nm_product_categories orderby="menu_order" title_tag="h3" parent="0"]'); ?>
 					</div>
 				</div>
-				<div class="col-row lh-header">
-					<div class="col-xs-12 col-sm-6">
-						<h2>Producten in de kijker</h2>
+				<?php
+					$args = array(
+						'stock_status' => 'instock',
+						'include' => wc_get_featured_product_ids(),
+					);
+					$featured_products = wc_get_products( $args );
+				?>
+				<?php if ( count( $featured_products ) > 0 ) : ?>
+					<div class="col-row lh-header">
+						<div class="col-xs-12 col-sm-6">
+							<h2>Producten in de kijker</h2>
+						</div>
+						<div class="col-xs-12 col-sm-6">
+							<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
+						</div>
 					</div>
-					<div class="col-xs-12 col-sm-6">
-						<a href="#">Alle producten</a>
+					<div class="col-row lh-featured">
+						<div class="col-xs-12">
+							<?php echo do_shortcode('[nm_product_slider shortcode="featured_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
+						</div>
 					</div>
-				</div>
-				<div class="col-row lh-featured">
-					<div class="col-xs-12">
-						<?php echo do_shortcode('[nm_product_slider shortcode="featured_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
-					</div>
-				</div>
+				<?php endif; ?>
 				<div class="col-row lh-banner">
 					<div class="col-xs-12">
-						<div class="full-size-banner">
-                            <img src="<?php echo get_the_post_thumbnail_url( get_the_ID(), 'full' ); ?>" />
-                        </div>
+						<img src="<?php echo get_the_post_thumbnail_url( get_the_ID(), 'full' ); ?>" />
 					</div>
 				</div>
-				<div class="col-row lh-header">
-					<div class="col-xs-12 col-sm-6">
-						<h2>Promoties</h2>
+				<?php
+					$args = array(
+						'stock_status' => 'instock',
+						'include' => wc_get_product_ids_on_sale(),
+					);
+					$sale_products = wc_get_products( $args );
+				?>
+				<?php if ( count( $sale_products ) > 0 ) : ?>
+					<div class="col-row lh-header">
+						<div class="col-xs-12 col-sm-6">
+							<h2>Promoties</h2>
+						</div>
+						<div class="col-xs-12 col-sm-6">
+							<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
+						</div>
 					</div>
-					<div class="col-xs-12 col-sm-6">
-						<a href="#">Alle producten</a>
+					<div class="col-row lh-promo">
+						<div class="col-xs-12">
+							<?php echo do_shortcode('[nm_product_slider shortcode="sale_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
+						</div>
 					</div>
-				</div>
-				<div class="col-row lh-promo">
-					<div class="col-xs-12">
-						<?php echo do_shortcode('[nm_product_slider shortcode="sale_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
-					</div>
-				</div>
+				<?php endif; ?>
 			</div>
 		</div>
 	<?php endwhile; ?>
