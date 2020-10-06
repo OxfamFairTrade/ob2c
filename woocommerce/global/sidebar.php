@@ -59,7 +59,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						'before_widget' => '<li class="widget %s">',
 						'after_widget' => '</li>',
 						'before_title' => '<h3 class="nm-widget-title">',
-						'after_title' => '</h3><a href="'.get_permalink( wc_get_page_id('shop') ).'">Wis alle filters</a>',
+						'after_title' => '</h3><div style="position: absolute; top: 0; right; 0;"><a href="'.get_permalink( wc_get_page_id('shop') ).'">Wis alle filters</a></div>',
 					);
 					the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );
 					$args['after_title'] = '</h3>';

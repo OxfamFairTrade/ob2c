@@ -94,7 +94,7 @@
 
 	function only_lowest_term( $string ) {
 		$parts = explode( '>', $string );
-		return strtolower( $parts[count($parts)-1] );
+		return $parts[count($parts)-1];
 	}
 
 	function replace_commas_with_pipes( $string ) {

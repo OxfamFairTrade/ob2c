@@ -26,7 +26,6 @@
 
 	function add_custom_dropdown_filters_per_category() {
 		if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
-			// Label bij non-selectie kan aangepast worden m.b.v. 'woocommerce_layered_nav_any_label'-filter
 			echo '<div class="small-container"><div class="row">';
 			echo '<div class="col-md-3 supplementary-filter">';
 				$args = array(
@@ -50,6 +49,30 @@
 			// echo '<div class="col-md-3 supplementary-filter">'.woocommerce_catalog_ordering().'</div>';
 			echo '</div></div>';
 		}
+	}
+
+	// Pas de labels bij non-selectie van een dropdown aan
+	add_filter( 'woocommerce_layered_nav_any_label', 'tweak_layered_nav_any_labels' );
+
+	function tweak_layered_nav_any_labels( $label, $raw_label, $taxonomy ) {
+		switch ( $taxonomy->name ) {
+			case 'pa_recipes':
+				$label = '(alle gerechten)';
+				break;
+
+			case 'pa_grapes':
+				$label = '(alle druivenrassen)';
+				break;
+
+			case 'pa_tastes':
+				$label = '(alle smaken)';
+				break;
+
+			case 'pa_countries':
+				$label = '(alle landen)';
+				break;
+		}
+		return $label;
 	}
 
 	// Update bij elke cart load (ook via AJAX!) onze custom cookies
@@ -496,7 +519,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme', 20 );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.7.0' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.8.0' );
 		
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
