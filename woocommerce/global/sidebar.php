@@ -63,7 +63,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					// Nadeel: zelfde code moet toegevoegd worden aan woocommerce/ajax/shop-full.php voor AJAX reload
 					
 					// Wrapper argumenten, zie https://developer.wordpress.org/reference/functions/the_widget/
-					$args = array( 'before_widget' => '<li class="widget %s">', 'after_widget' => '</li>', 'before_title' => '<h3 class="nm-widget-title">', 'after_title' => '</h3>' );
+					$args = array( 'before_widget' => '<li class="widget %s">', 'after_widget' => '</li>', 'before_title' => '<h3 class="nm-widget-title">', 'after_title' => '</h3><a href="'.get_permalink( wc_get_page_id('shop') ).'">Wis alle filters</a>' );
 
 					the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );
 					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );

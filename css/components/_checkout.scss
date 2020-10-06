@@ -95,7 +95,7 @@ form.woocommerce-checkout {
   }
 
   #payment .payment_methods {
-    .payment_method {
+    .wc_payment_method {
       &.active {
         background-color: $new-green;
         color: white;
@@ -106,7 +106,7 @@ form.woocommerce-checkout {
       }
 
       .input-radio {
-        display: none;
+        display: none !important;
       }
 
       .payment_box {
