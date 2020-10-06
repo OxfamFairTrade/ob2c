@@ -65,7 +65,8 @@
 				<?php endif; ?>
 				<div class="col-row lh-banner">
 					<div class="col-xs-12">
-						<img src="<?php echo get_the_post_thumbnail_url( get_the_ID(), 'full' ); ?>" />
+						<?php // echo get_the_post_thumbnail_url( get_the_ID(), 'full' ); ?>
+						<img src="<?php echo get_stylesheet_directory_uri().'/images/promoties/prodmo-wvdft-2020-algemeen.png'; ?>" />
 					</div>
 				</div>
 				<?php if ( wc_get_product_ids_on_sale() > 0 ) : ?>

@@ -48,7 +48,7 @@
 			echo '</div>';
 			// Wordt niet zichtbaar door harde CSS ...
 			// echo '<div class="col-md-3 supplementary-filter">'.woocommerce_catalog_ordering().'</div>';
-			echo '</div></div><br/>';
+			echo '</div></div>';
 		}
 	}
 

@@ -209,6 +209,8 @@ get_header( 'shop' ); ?>
                         global $woocommerce_loop;
                         $woocommerce_loop['columns'] = $nm_theme_options['shop_columns'];
 
+                        // Fix weergave product grid i.c.m. categoriespecifieke filters
+                        echo '<div style="display: inline-block;">';
                         woocommerce_product_loop_start();
 
                         $nm_globals['is_categories_shortcode'] = false;
@@ -230,6 +232,7 @@ get_header( 'shop' ); ?>
                         }
 
                         woocommerce_product_loop_end();
+                        echo '</div>';
 
                         /**
                          * Hook: woocommerce_after_shop_loop.
