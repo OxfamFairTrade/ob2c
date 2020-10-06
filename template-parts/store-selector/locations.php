@@ -53,7 +53,7 @@
 		
 		/* Gebruik event delegation, de buttons in #nm-shop zijn niet noodzakelijk al aanwezig bij DOM load! */
 		/* Let op dat elementen niet dubbel getarget worden, dan zal de preventDefault() roet in het eten strooien! */
-		jQuery('#header,#nm-shop,#nm-related,.nm-product-slider,.selected-store').once( 'click', '.store-selector-open', function(event) {
+		jQuery('#header,#nm-shop,#nm-related,.nm-product-slider,.selected-store').one( 'click', '.store-selector-open', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
 			
