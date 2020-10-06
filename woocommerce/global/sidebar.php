@@ -69,6 +69,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					$args['after_title'] = '</h3>';
 					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
 					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'preferences' ), $args );
+					var_dump_pre( get_terms( 'pa_countries', array( 'hide_empty' => '1' ) ) );
 					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );
 				?>
 			</ul>
