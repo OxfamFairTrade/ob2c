@@ -108,6 +108,19 @@
       ul li {
         line-height: 24px;
         margin-bottom: 0;
+
+        &.chosen {
+          left: initial;
+          
+          & > a {
+            border-width: 0;
+
+            &:before {
+              background-color: $new-green;
+              border-color: $new-green;
+            }
+          }
+        }
       }
 
       a {
@@ -134,11 +147,6 @@
           position: relative;
           left: -9.6px;
           top: 2.4px;
-        }
-
-        &.chosen:before {
-          background-color: $new-green;
-          border-color: $new-green;
         }
       }
 
