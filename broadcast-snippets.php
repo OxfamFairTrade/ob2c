@@ -2,6 +2,21 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
+	// Migreer productattributen naar metadata
+	$args = array(
+		'limit' => -1,
+	);
+	$all_products = wc_get_products( $args );
+	$to_migrate = array( 'shopplus' => '_shopplus_code', 'barcode' => '_cu_ean', 'ompak' => '_multiple', 'eenheid' => '_stat_uom', 'fairtrade' => '_fairtrade_share' );
+	foreach ( $all_products as $product ) {
+		if ( $product->get_meta('_in_bestelweb') !== 'ja' ) {
+			foreach ( $to_migrate as $attribute => $meta_key ) {
+				$product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
+			}
+			$product->save();
+		}
+	}
+
 	// Verwijder deprecated metadata op producten
 	global $wpdb;
 	$to_delete = array( 'fb_product_group_id', 'fb_product_item_id', 'fb_product_description', 'fb_visibility', 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean' );
@@ -11,26 +26,17 @@
 
 	// Verwijder deprecated productattributen
 	global $wpdb;	
-	$to_delete = array( 'choavl', 'ener', 'famscis', 'fapucis', 'fasat', 'fat', 'fibtg', 'polyl', 'pro', 'salteq', 'starch', 'sugar' );
+	$to_delete = array( 'shopplus', 'barcode', 'ompak', 'eenheid', 'fairtrade' );
 	foreach ( $to_delete as $slug ) {
-		$attribute_id = absint( wc_attribute_taxonomy_id_by_name($slug) );
-		// wc_delete_attribute($id) bestaat pas vanaf WC3.2+ dus code letterlijk overnemen (zonder check_admin_referer)
-		$attribute_name = $wpdb->get_var( "SELECT attribute_name FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_id = $attribute_id" );
-		$taxonomy = wc_attribute_taxonomy_name( $attribute_name );
-		do_action( 'woocommerce_before_attribute_delete', $attribute_id, $attribute_name, $taxonomy );
-		if ( $attribute_name && $wpdb->query( "DELETE FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_id = $attribute_id" ) ) {
-			if ( taxonomy_exists( $taxonomy ) ) {
-				$terms = get_terms( $taxonomy, 'orderby=name&hide_empty=0' );
-				foreach ( $terms as $term ) {
-					wp_delete_term( $term->term_id, $taxonomy );
-				}
+		$attribute_id = absint( wc_attribute_taxonomy_id_by_name( $slug ) );
+		if ( $attribute_id > 0 ) {
+			// Bestaat pas vanaf WC 3.2+
+			if ( wc_delete_attribute( $attribute_id ) ) {
+				write_log("DELETED ATTRIBUTE ".$slug);
+			} else {
+				write_log("COULD NOT DELETE ATTRIBUTE ".$slug);
 			}
-			do_action( 'woocommerce_attribute_deleted', $attribute_id, $attribute_name, $taxonomy );
-			delete_transient( 'wc_attribute_taxonomies' );
-			write_log("DELETED ".$attribute_name." (".$attribute_id.")<br/>");
-		} else {
-			write_log("COULD NOT DELETE ".$attribute_name." (".$attribute_id.")<br/>");
-		}	
+		}
 	}
 
 	// Verwijder producttags

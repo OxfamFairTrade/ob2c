@@ -5122,40 +5122,59 @@
 	# MULTISITE #
 	#############
 
-	// Verhinder dat de lokale voorraad- en uitlichtingsinstellingen overschreven worden bij elke update
-	add_filter( 'woo_mstore/save_meta_to_post/ignore_meta_fields', 'ignore_featured_and_stock', 10, 2 );
+	// Verhinder dat de lokale voorraad overschreven wordt bij elke update (zit nu in principe netjes in instelling)
+	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'do_not_overwrite_local_stock', 10, 2 );
 
-	function ignore_featured_and_stock( $ignored_fields, $post_id ) {
-		$ignored_fields[] = 'total_sales';
-		$ignored_fields[] = '_stock';
-		$ignored_fields[] = '_stock_status';
-		$ignored_fields[] = '_wc_review_count';
-		$ignored_fields[] = '_wc_rating_count';
-		$ignored_fields[] = '_wc_average_rating';
-		$ignored_fields[] = '_in_bestelweb';
-
-		return $ignored_fields;
+	function do_not_overwrite_local_stock( $meta_keys, $data ) {
+		/**
+		 * @param array $meta_keys  Metadata keys to exclude from slave product
+		 * @param array $data array(
+		 *      WC_Product  master_product              Master product
+		 *      array       master_product_attributes   Master product attributes
+		 *      integer     master_product_blog_id      Master product blog ID
+		 *      array       master_product_terms        Master product terms
+		 *      array       master_product_upload_dir   Master product uploads directory information ( see wp_get_upload_dir() )
+		 *      array       options                     Plugin options
+		 *      WC_Product  slave_product               Slave product
+		 * )
+		**/
+		$meta_keys[] = 'total_sales';
+		$meta_keys[] = '_stock';
+		$meta_keys[] = '_stock_status';
+		$meta_keys[] = '_wc_review_count';
+		$meta_keys[] = '_wc_rating_count';
+		$meta_keys[] = '_wc_average_rating';
+		return $meta_keys;
 	}
 
-	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import (hoge prioriteit = helemaal op het einde) BLOKKEERT IMPORT NA UPGRADE
-	// add_action( 'pmxi_saved_post', 'run_product_sync', 50, 1 );
+	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import (hoge prioriteit = helemaal op het einde)
+	add_action( 'pmxi_saved_post', 'execute_product_sync', 50, 1 );
 	
-	function run_product_sync( $post_id ) {
+	function execute_product_sync( $post_id ) {
 		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
 		if ( get_post_type( $post_id ) === 'product' ) {
-			global $WOO_MSTORE;
-			$WOO_MSTORE->quick_edit_save( $post_id, get_post( $post_id ), true );
+			/**
+			 * Mark a new product to sync with a store and then call process_product hook to run the sync.
+			 *
+			 * @param integer $product_id WooCommerce product ID
+			 * @param array   $stores Store IDs
+			 * @param string  $child_inherit Set child inherit product change option. Valid value is either yes or no.
+			 * @param string  $stock_sync Set stock sync option. Valid value is either yes or no.
+			 */
+
+			$stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
+			do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no');
+			write_log( "SYNC PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
+
+			/**
+			 * After sync option is set, now fire the sync hook.
+			 *
+			 * @param integer $product_id WooCommerce product ID
+			**/
+			do_action( 'WOO_MSTORE_admin_product/process_product', $post_id );
+
+			// Gebruik eventueel 'WOO_MSTORE_admin_product/slave_product_updated' voor afsluitende save (indien attributen niet goed doorkomen)
 		}
-	}
-
-	function translate_to_fr( $code ) {
-		$fr = get_site_option( 'countries_fr' );
-		return $fr[$code];
-	}
-
-	function translate_to_en( $code ) {
-		$en = get_site_option( 'countries_en' );
-		return $en[$code];
 	}
 
 	// Reset alle '_in_bestelweb' velden voor we aan de ERP-import beginnen
@@ -5168,7 +5187,7 @@
 				'post_type'	=> 'product',
 				'post_status' => array( 'publish', 'draft', 'trash' ),
 				'posts_per_page' => -1,
-				// Behalve van producten die handmatig toegevoegd werden!
+				// Behalve van producten die handmatig toegevoegd werden! + CRAFTS
 				'meta_query' => array(
 					array(
 						'key' => '_sku',
@@ -5231,7 +5250,7 @@
 	* @param array $product_meta_item_row
 	*/	
 	function translate_main_to_local_ids( $local_product_id, $meta_key, $product_meta_item_row ) {
-		write_log("MAAK POST ".get_the_ID()." LOKAAL IN BLOG ".get_current_blog_id());
+		write_log( "MAAK POST ".get_the_ID()." LOKAAL IN BLOG ".get_current_blog_id() );
 		if ( $product_meta_item_row ) {
 			foreach ( $product_meta_item_row as $main_product_id ) {
 				switch_to_blog(1);
@@ -5542,8 +5561,8 @@
 	##############
 
 	// Personaliseer de begroeting op de startpagina
-	add_shortcode( 'topbar', 'print_greeting' );
-	add_shortcode( 'copyright', 'print_copyright' );
+	// add_shortcode( 'topbar', 'print_greeting' );
+	// add_shortcode( 'copyright', 'print_copyright' );
 	add_shortcode( 'straat', 'print_place' );
 	add_shortcode( 'postcode', 'print_zipcode' );
 	add_shortcode( 'gemeente', 'print_city' );
@@ -5559,7 +5578,7 @@
 	add_shortcode( 'toon_thuislevering', 'print_delivery_snippet' );
 	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
-	add_shortcode( 'scrolltext', 'print_scroll_text' );
+	// add_shortcode( 'scrolltext', 'print_scroll_text' );
 	// add_shortcode( 'widget_usp', 'print_widget_usp' );
 	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
 	add_shortcode( 'widget_contact', 'print_widget_contact' );
@@ -5568,27 +5587,7 @@
 	add_shortcode( 'map_address', 'get_shop_address' );
 	add_shortcode( 'email_footer', 'get_company_and_year' );
 	add_shortcode( 'email_header', 'get_local_logo_url' );
-	// add_shortcode( 'toon_eventueel_promos', 'show_conditional_promo_row' );
-	// add_shortcode( 'toon_voordelenbalk', 'show_general_store_notice' );
 	// add_shortcode( 'toon_zoekbalk_producten', 'show_product_search' );
-
-	function show_conditional_promo_row() {
-		$args = array(
-			// Parameter nog niet beschikbaar in WooCommerce 3.0!
-			// 'stock_status' => 'instock',
-			'include' => wc_get_product_ids_on_sale(),
-		);
-		$sale_products = wc_get_products( $args );
-		if ( count( $sale_products ) > 2 ) {
-			return do_shortcode('[vc_column][vc_column_text el_class="ob2c-category-title"]<h2 style="text-align: center;">Promoties</h2>[/vc_column_text][nm_product_slider shortcode="sale_products" per_page="-1" columns="4" orderby="rand" order="DESC" columns_mobile="1" arrows="1"][/vc_column]');
-		} else {
-			return '';
-		}
-	}
-
-	function show_general_store_notice() {
-		get_template_part( 'template-parts/header/general-store-notice' );
-	}
 
 	function show_product_search() {
 		wc_get_template( 'product-searchform_nm.php' );
