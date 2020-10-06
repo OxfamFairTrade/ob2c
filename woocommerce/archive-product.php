@@ -209,8 +209,8 @@ get_header( 'shop' ); ?>
                         global $woocommerce_loop;
                         $woocommerce_loop['columns'] = $nm_theme_options['shop_columns'];
 
-                        // Fix weergave product grid i.c.m. categoriespecifieke filters
-                        echo '<div style="display: inline-block;">';
+                        // Fix weergave product grid i.c.m. categoriespecifieke filters (expliciete 'width' is nodig indien taxonomiefiltering actief is)
+                        echo '<div style="display: inline-block; width: 100%;">';
                         woocommerce_product_loop_start();
 
                         $nm_globals['is_categories_shortcode'] = false;
