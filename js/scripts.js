@@ -22,8 +22,9 @@
 
     $('.promotie > .collapse-read-more').readmore({
       collapsedHeight: 0,
-      moreLink: '<a href="#">Voorwaarden</a>',
-      lessLink: '<a href="#">Verberg</a>'
+      heightMargin: 0,
+      moreLink: '<a href="#" style="display: inline;">Toon voorwaarden</a>',
+      lessLink: '<a href="#" style="display: inline;">Verberg voorwaarden</a>'
     });
 
     $('.header__item_search').on( 'click', function() {
