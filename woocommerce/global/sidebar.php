@@ -31,9 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					$sale_products = wc_get_products( $args );
 					if ( count( $sale_products ) > 0 ) {
 						if ( is_product_tag('promotie') ) {
-							$class = 'active';
-						} else {
-							$class = 'inactive';
+							$class = 'chosen';
 						}
 						$term_link = get_term_link( 'promotie', 'product_tag' );
 						if ( ! is_wp_error( $term_link ) ) {
@@ -41,9 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						}
 					}
 					// if ( is_product_tag('sinterklaas') ) {
-					// 	$class = 'active';
-					// } else {
-					// 	$class = 'inactive';
+					// 	$class = 'chosen';
 					// }
 					// $term_link = get_term_link( 'sinterklaas', 'product_tag' );
 					// if ( ! is_wp_error( $term_link ) ) {
@@ -63,7 +59,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						'before_widget' => '<li class="widget %s">',
 						'after_widget' => '</li>',
 						'before_title' => '<h3 class="nm-widget-title">',
-						'after_title' => '</h3><div href="'.get_permalink( wc_get_page_id('shop') ).'">Wis alle filters</div>',
+						'after_title' => '</h3><a href="'.get_permalink( wc_get_page_id('shop') ).'">Wis alle filters</a>',
 					);
 					the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );
 					$args['after_title'] = '</h3>';

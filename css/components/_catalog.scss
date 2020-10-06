@@ -57,7 +57,7 @@
         top: 2.4px;
       }
 
-      &.active:before {
+      &.chosen:before {
         background-color: $new-green;
         border-color: $new-green;
       }
@@ -134,6 +134,11 @@
           position: relative;
           left: -9.6px;
           top: 2.4px;
+        }
+
+        &.chosen:before {
+          background-color: $new-green;
+          border-color: $new-green;
         }
       }
 
