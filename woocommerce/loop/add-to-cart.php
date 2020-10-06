@@ -29,7 +29,9 @@ if ( is_main_site() ) {
 	echo '<a rel="nofollow" href="#" class="button product_type_simple store-selector-open"></a>';
 } else {
 	// GEWIJZIGD: Knop niet tonen bij voorraadstatus 'onbackorder'
-	if ( $product->is_in_stock() ) {
+	if ( $product->is_on_backorder() ) {
+		echo 'Tijdelijk niet beschikbaar';
+	} elseif ( $product->is_in_stock() ) {
 		echo apply_filters( 'woocommerce_loop_add_to_cart_link',
 			sprintf( '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',
 				esc_url( $product->add_to_cart_url() ),
@@ -39,8 +41,6 @@ if ( is_main_site() ) {
 				esc_html( $product->add_to_cart_text() )
 			),
 		$product, $args );
-	} elseif ( $product->is_on_backorder() ) {
-		echo 'Tijdelijk niet beschikbaar';
 	} else {
 		echo 'Niet in assortiment';
 	}

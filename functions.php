@@ -1699,16 +1699,16 @@
 	add_action( 'woocommerce_product_query', 'ob2c_constrain_assortment_to_b2b' );
 	
 	function ob2c_constrain_assortment_to_b2b( $query ) {
-		// Verberg oude niet-voorradige producten in lokale webshops
+		// Verberg oude producten in lokale webshops
 		if ( get_current_blog_id() == 23 ) {
 			$meta_query = (array) $query->get('meta_query');
-			// Probleem: als het voorradig is, moet het wél zichtbaar blijven!
+			// Toon het product enkel als het nog in de OFT-database zit OF als het lokaal nog voorradig is!
 			$meta_query[] = array(
 				'relation' => 'OR',
 				array(
 					'key' => '_in_bestelweb',
 					'value' => 'ja',
-					'compare' => '!=',
+					'compare' => '=',
 				),
 				array(
 					'key' => '_stock_status',
