@@ -5169,7 +5169,7 @@
 		 * @return array
 		 */
 		
-		$keys_to_sync( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share' );
+		$keys_to_sync( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id' );
 		foreach ( $keys_to_sync as $key ) {
 			$meta_data[ $key ] = $data['master_product']->get_meta( $key );
 		}
@@ -5209,6 +5209,13 @@
 
 			// Gebruik eventueel 'WOO_MSTORE_admin_product/slave_product_updated' voor afsluitende save (indien attributen niet goed doorkomen)
 		}
+	}
+
+	add_action( 'WOO_MSTORE_admin_product/slave_product_updated', 'do_something_after_slave_date_saved_in_db', 10, 1 );
+
+	function do_something_after_slave_date_saved_in_db( $data ) {
+		write_log( "FINAL SAVE ".$data['master_product']->get_sku() );
+		$data['master_product']->save();
 	}
 
 	// Reset alle '_in_bestelweb' velden voor we aan de ERP-import beginnen

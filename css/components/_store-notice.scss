@@ -67,18 +67,10 @@
       margin-bottom: 10px;
       font-size: 15px;
       line-height: 26px;
-      text-align: center;
 
       @media (min-width: 992px) {
         margin-bottom: 0;
-
-        &:nth-of-type(2) {
-          text-align: center;
-        }
-
-        &:last-of-type {
-          text-align: right;
-        }
+        text-align: center;
       }
 
       &:last-of-type {
