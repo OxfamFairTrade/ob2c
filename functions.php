@@ -2032,6 +2032,7 @@
 	add_filter( 'woocommerce_shipping_fields', 'format_checkout_shipping', 10, 1 );
 	
 	function format_checkout_shipping( $address_fields ) {
+		// Werkt blijkbaar niet meer?
 		$address_fields['shipping_address_1']['class'] = array('form-row-wide');
 		$address_fields['shipping_address_1']['clear'] = true;
 		unset($address_fields['shipping_company']);
@@ -4919,115 +4920,6 @@
 			$args['checked_ontop'] = false;
 		}
 		return $args;
-	}
-
-	// Registreer een extra tabje op de productdetailpagina voor de voedingswaardes DEPRECATED
-	// add_filter( 'woocommerce_product_tabs', 'add_extra_product_tabs' );
-	
-	function add_extra_product_tabs( $tabs ) {
-		global $product;
-		// Voeg altijd tabje met herkomstinfo toe
-		$tabs['partner_info'] = array(
-			'title' 	=> 'Partnerinfo',
-			'priority' 	=> 12,
-			'callback' 	=> function() { output_tab_content('partner'); },
-		);
-
-		// Voeg tabje met voedingswaarde toe (indien niet leeg)
-		if ( get_tab_content('food') !== false ) {
-			$tabs['food_info'] = array(
-				'title' 	=> 'Voedingswaarde per 100 g',
-				'priority' 	=> 14,
-				'callback' 	=> function() { output_tab_content('food'); },
-			);
-		}
-
-		// Voeg tabje met allergenen toe (indien niet leeg)
-		if ( get_tab_content('allergen') !== false ) {
-			$tabs['allergen_info'] = array(
-				'title' 	=> 'Allergenen',
-				'priority' 	=> 16,
-				'callback' 	=> function() { output_tab_content('allergen'); },
-			);
-		}
-
-		// Titel wijzigen van standaardtabs kan maar prioriteit niet! (description = 10, additional_information = 20)
-		$tabs['additional_information']['title'] = 'Technische fiche';
-		
-		return $tabs;
-	}
-
-	// Retourneer de gegevens voor een custom tab (antwoordt met FALSE indien geen gegevens beschikbaar) DEPRECATED
-	function get_tab_content( $type ) {
-		global $product;
-		$has_row = false;
-		$alt = 1;
-		ob_start();
-		echo '<table class="shop_attributes">';
-
-		if ( $type === 'partner' ) {
-			$str = 'partners';
-
-			$partners = get_partner_terms_by_product( $product );
-			if ( count($partners) > 0 ) {
-				$has_row = true;
-
-				if ( count($partners) === 1 ) $str = 'een partner';
-				?>
-					<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-						<th>Partners</th>
-						<td>
-						<?php
-							$i = 1;
-							$msg = "";
-							foreach ( $partners as $term_id => $partner_name ) {
-								$partner_info = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
-								
-								if ( isset( $partner_info['archive'] ) and strlen( $partner_info['archive'] ) > 10 ) {
-									$text = '<a href="'.$partner_info['archive'].'" title="Bekijk alle producten van deze partner">'.$partner_info['name'].'</a>';
-								} else {
-									$text = $partner_info['name'];
-								}
-								
-								if ( $i !== 1 ) $msg .= '<br/>';
-								$msg .= $text." &mdash; ".$partner_info['country'];
-								$i++;
-							}
-							echo $msg;
-						?>
-						</td>
-					</tr>
-				<?php
-			}
-			
-			// Enkel tonen indien percentage bekend 
-			if ( intval( $product->get_attribute( 'pa_fairtrade' ) ) > 40 ) {
-			?>
-				<tr class="<?php if ( ( $alt = $alt * -1 ) == 1 ) echo 'alt'; ?>">
-					<th><?php echo 'Fairtradepercentage'; ?></th>
-					<td><?php echo 'Dit product is voor '.number_format( $product->get_attribute( 'pa_fairtrade' ), 0 ).' % afkomstig van '.$str.' waarmee Oxfam-Wereldwinkels een eerlijke handelsrelatie onderhoudt. <a href="https://www.oxfamwereldwinkels.be/expertise/labels/" target="_blank">Lees meer over deze certificering op onze website.</a>'; ?></td>
-				</tr>
-			<?php	
-			}	
-		}
-		
-		echo '</table>';
-		
-		if ( $has_row ) {
-			return ob_get_clean();
-		} else {
-			ob_end_clean();
-			return false;
-		}
-	}
-
-	// Print de inhoud van een tab DEPRECATED
-	function output_tab_content( $type ) {
-		if ( get_tab_content( $type ) !== false ) {
-			echo '<div class="nm-additional-information-inner">'.get_tab_content( $type ).'</div>';
-		} else {
-			echo '<div class="nm-additional-information-inner"><i>Geen info beschikbaar.</i></div>';
-		}
 	}
 
 	// Retourneert een array met strings van landen waaruit dit product afkomstig is (en anders false)

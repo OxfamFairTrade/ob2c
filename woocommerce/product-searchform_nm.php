@@ -12,7 +12,7 @@
 	<?php
 		// Zie woocommerce/content-product_nm_results_bar.php'
 		if ( ! empty( $_REQUEST['s'] ) ) {
-			echo '<a id="nm-shop-search-taxonomy-reset" href="'.esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ).'"><p style="text-decoration: underline; margin: 10px 0;">Wis zoekopdracht</p></a>';
+			echo '<a href="'.esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ).'"><p style="text-decoration: underline; margin: 10px 0;">Wis zoekopdracht</p></a>';
 		}
 	?>
 </div>
