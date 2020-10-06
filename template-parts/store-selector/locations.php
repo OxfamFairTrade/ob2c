@@ -52,7 +52,7 @@
 		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
 		
 		/* Gebruik event delegation, de buttons in #nm-shop zijn niet noodzakelijk al aanwezig bij DOM load! */
-		jQuery('#header,#nm-shop,.selected-store').on( 'click', '.store-selector-open', function(event) {
+		jQuery('#header,#nm-shop-products,#nm-related,.nm-product-slider,.selected-store').on( 'click', '.store-selector-open', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
 			

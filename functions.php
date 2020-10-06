@@ -1362,6 +1362,27 @@
 		return $subject;
 	}
 
+	// Wijzig de bestemmelingen van de adminmails
+	add_filter( 'woocommerce_email_recipient_new_order', 'switch_admin_recipient_dynamically', 10, 2 );
+	add_filter( 'woocommerce_email_recipient_cancelled_order', 'switch_admin_recipient_dynamically', 10, 2 );
+
+	function oftc_switch_admin_recipient_dynamically( $recipients, $order ) {
+		// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is
+		if ( $order !== NULL and $order instanceof WC_Order ) {
+			
+		}
+
+		return get_staged_recipients( $recipients );
+	}
+
+	// Leid mails op DEV-omgevingen om naar de site admin
+	function get_staged_recipients( $recipients ) {
+		if ( $_SERVER['SERVER_NAME'] !== 'shop.oxfamwereldwinkels.be' ) {
+			return get_option('admin_email');
+		}
+		return $recipients;
+	}
+
 	// Pas de header van de mails aan naargelang de gekozen levermethode
 	add_filter( 'woocommerce_email_heading_new_order', 'change_new_order_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_processing_order', 'change_processing_email_heading', 10, 2 );
