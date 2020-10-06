@@ -1388,7 +1388,7 @@
 	add_filter( 'woocommerce_email_recipient_new_order', 'switch_admin_recipient_dynamically', 10, 2 );
 	add_filter( 'woocommerce_email_recipient_cancelled_order', 'switch_admin_recipient_dynamically', 10, 2 );
 
-	function oftc_switch_admin_recipient_dynamically( $recipients, $order ) {
+	function switch_admin_recipient_dynamically( $recipients, $order ) {
 		// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is
 		if ( $order !== NULL and $order instanceof WC_Order ) {
 			
@@ -5147,11 +5147,16 @@
 		 * @return array
 		 */
 		
-		$keys_to_sync = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id' );
-		foreach ( $keys_to_sync as $key ) {
+		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id', 'promo_text' );
+		foreach ( $keys_to_copy as $key ) {
 			$meta_data[ $key ] = $data['master_product']->get_meta( $key );
 		}
 		
+		$keys_to_translate = array( '_force_sell_ids', '_force_sell_synced_ids' );
+		foreach ( $keys_to_translate as $key ) {
+			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
+		}
+
 		foreach ( $meta_data as $key => $value ) {
 			write_log( $key.' => '.$value );
 		}
@@ -5284,6 +5289,26 @@
 			// Zorg ervoor dat het veld ook bij de child geleegd wordt!
 			update_post_meta( $local_product_id, $meta_key, null );
 		}
+	}
+
+	function translate_master_to_slave_ids( $meta_key, $main_product_ids, $master_blog_id, $master_product ) {
+		write_log( "MAAK EIGENSCHAP ".$meta_key." VAN SKU ".$master_product->get_sku()." LOKAAL IN BLOG ".get_current_blog_id() );
+		
+		$slave_product_ids = array();
+		foreach ( $main_product_ids as $main_product_id ) {
+			switch_to_blog( $master_blog_id );
+			$main_product = wc_get_product( $main_product_id );
+			restore_current_blog();
+			if ( $main_product !== false ) {
+				$slave_product_id = wc_get_product_id_by_sku( $main_product->get_sku() );
+				if ( intval( $slave_product_id ) > 0 ) {
+					$slave_product_ids[] = $slave_product_id;
+				}
+			}
+		}
+		
+		// Indien $main_product_ids leeg is, mogen we dit gewoon zo doorgeven, zodat het ook lokaal leeggemaakt kan worden
+		return $slave_product_ids;
 	}
 
 
