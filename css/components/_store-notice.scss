@@ -4,21 +4,25 @@
 // --------------------------------------------------
 
 .woocommerce-notices-wrapper,
-.nm-shop-notices {
-  padding: 12px !important;
-  background-color: $pale-blue;
-
+.nm-shop-notices,
+.woocommerce-cart .nm-shop-notices {
   &:empty {
     display: none !important;
   }
 
-  &.woocommerce-error {
-    background-color: $bright-red;
-  }
+  border: 2px solid $new-green;
 
   > li.nm-shop-notice {
-    padding-top: 0;
+    padding: 12px;
     margin: 0 0 12px 0 !important;
+
+    &.woocommerce-message {
+      border-color: $pale-blue;
+    }
+
+    &.woocommerce-error {
+      border-color: $bright-red;
+    }
 
     &:last-child {
       margin-bottom: 0 !important;

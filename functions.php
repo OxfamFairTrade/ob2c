@@ -1868,7 +1868,6 @@
 			'id' => 'datepicker',
 			'label' => 'Geboortedatum',
 			'placeholder' => '16/03/1988',
-			'description' => 'Omdat we ook alcoholische dranken verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken dit niet voor andere doeleinden.',
 			'class' => array('form-row-last'),
 			'clear' => true,
 			'required' => true,

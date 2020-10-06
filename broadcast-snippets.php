@@ -453,10 +453,16 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 
 	// Individuele Mollie-instelling wijzigen
 	// Tip: volgorde van betaalmethodes wordt bewaard in 'woocommerce_gateway_order'
-	$bancontact = get_option('mollie_wc_gateway_mistercash_settings');
-	if ( is_array( $bancontact ) ) {
-		$bancontact['description'] = 'Betaal snel en veilig met je Belgische bankkaart. Hou je kaartlezer klaar, of scan de QR-code met je Payconiq-app!';
-		update_option( 'mollie_wc_gateway_mistercash_settings', $bancontact );
+	$gateway = get_option('mollie_wc_gateway_bancontact_settings');
+	$gateway = get_option('mollie_wc_gateway_kbc_settings');
+	$gateway = get_option('mollie_wc_gateway_belfius_settings');
+	$gateway = get_option('mollie_wc_gateway_inghomepay_settings');
+	$gateway = get_option('mollie_wc_gateway_applepay_settings');
+	$gateway = get_option('mollie_wc_gateway_creditcard_settings');
+	$gateway = get_option('mollie_wc_gateway_ideal_settings');
+	if ( is_array( $gateway ) ) {
+		$gateway['description'] = 'Betaal snel en veilig met je Belgische bankkaart. Hou je kaartlezer klaar, of scan de QR-code met je Payconiq-app!';
+		update_option( 'mollie_wc_gateway_bancontact_settings', $gateway );
 	}
 
 	// Tabel met stopwoorden kopiëren

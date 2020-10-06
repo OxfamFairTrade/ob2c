@@ -21,6 +21,10 @@ form.woocommerce-checkout {
       }
     }
   }
+
+  span.optional {
+    display: none;
+  }
 }
 
 #customer_details {
@@ -87,6 +91,27 @@ form.woocommerce-checkout {
 
     .variation {
       font-weight: normal;
+    }
+  }
+
+  #payment .payment_methods {
+    .payment_method {
+      &.active {
+        background-color: $new-green;
+        color: white;
+
+        li label {
+          color: white;
+        }
+      }
+
+      .input-radio {
+        display: none;
+      }
+
+      .payment_box {
+        padding-left: 0;
+      }
     }
   }
 }
