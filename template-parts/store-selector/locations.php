@@ -100,6 +100,17 @@
 			var current_url = window.location.href;
 			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) );
 		});
+
+		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
+			e.preventDefault();
+			console.log("Wis de huidige categorie");
+			// Kijk naar wat er gebeurt in nm-shop-filters.js
+			// Het 'href'-attribuut wijzigen naar '/producten/' lijkt te volstaan om te wissen!
+			// jQuery(this).attr( 'href', 'https://dev.oxfamwereldwinkels.be/oostende/producten/' );
+			// jQuery(this).unbind('click').click();
+			// Of doe gewoon een location replace ...
+			window.location.replace( current_url.replace( jQuery(this).attr('href'), '<?php echo get_permalink( wc_get_page_id('shop') ); ?>' ) );
+		});
 	});
 
 	function setCookie(cname, cvalue) {

@@ -33,15 +33,6 @@
       $("body").removeClass('active');
       $(".nm-shop-sidebar-default #nm-shop-sidebar").removeClass('show-me');
     });
-
-    $(".cat-item.current-cat").on('click', function(e) {
-      e.preventDefault();
-      alert("WIS DE HUIDIGE CATEGORIE");
-      // Kijk naar wat er gebeurt in nm-shop-filters.js
-      // Het 'href'-attribuut wijzigen naar '/producten/' lijkt te volstaan om te wissen!
-      $(this).children('a').attr( 'href', 'https://dev.oxfamwereldwinkels.be/oostende/producten/' );
-      // $(this).unbind('click').click();
-    });
   });
 
   $(document).mouseup(function(e){
