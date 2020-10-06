@@ -5127,7 +5127,7 @@
 
 	function do_not_overwrite_local_stock( $meta_keys, $data ) {
 		/**
-		 * @param array $meta_keys  Metadata keys to exclude from slave product
+		 * @param array $meta_keys    Metadata keys to exclude from slave product
 		 * @param array $data array(
 		 *      WC_Product  master_product              Master product
 		 *      array       master_product_attributes   Master product attributes
@@ -5137,15 +5137,43 @@
 		 *      array       options                     Plugin options
 		 *      WC_Product  slave_product               Slave product
 		 * )
-		**/
+		 *
+		 * @return array
+		 */
 		$meta_keys[] = 'total_sales';
 		$meta_keys[] = '_stock';
 		$meta_keys[] = '_stock_status';
 		$meta_keys[] = '_wc_review_count';
 		$meta_keys[] = '_wc_rating_count';
 		$meta_keys[] = '_wc_average_rating';
+		write_log( implode( ',', $meta_keys ) );
 		return $meta_keys;
 	}
+
+	// Blijkbaar moeten we de meta keys die we willen syncen expliciet aangeven?
+	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 10, 2 );
+
+	function update_slave_product_meta( $meta_data, $data ) {
+		/**
+		 * @param array $meta_data    Metadata to update in slave product
+		 * @param array $data array(
+		 *      WC_Product  master_product              Master product
+		 *      array       master_product_attributes   Master product attributes
+		 *      integer     master_product_blog_id      Master product blog ID
+		 *      array       master_product_terms        Master product terms
+		 *      array       master_product_upload_dir   Master product uploads directory information ( see wp_get_upload_dir() )
+		 *      array       options                     Plugin options
+		 *      WC_Product  slave_product               Slave product
+		 * )
+		 *
+		 * @return array
+		 */
+		$meta_data['_in_bestelweb'] = $data['master_product']->get_meta('_in_bestelweb');
+		$meta_data['_shopplus_code'] = $data['master_product']->get_meta('_shopplus_code');
+		write_log( implode( ',', $meta_data ) );
+		return $meta_data;
+	}
+
 
 	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import (hoge prioriteit = helemaal op het einde)
 	add_action( 'pmxi_saved_post', 'execute_product_sync', 50, 1 );
@@ -5170,7 +5198,7 @@
 			 * After sync option is set, now fire the sync hook.
 			 *
 			 * @param integer $product_id WooCommerce product ID
-			**/
+			 */
 			do_action( 'WOO_MSTORE_admin_product/process_product', $post_id );
 
 			// Gebruik eventueel 'WOO_MSTORE_admin_product/slave_product_updated' voor afsluitende save (indien attributen niet goed doorkomen)
