@@ -44,6 +44,9 @@
 				$args['title'] = 'Smaken';
 				$args['attribute'] = 'tastes';
 				the_widget( 'WC_Widget_Layered_Nav', $args );
+			echo '</div>';
+			echo '<div class="col-md-3">';
+				woocommerce_catalog_ordering();
 			echo '</div></div>';
 		}
 	}
@@ -1623,16 +1626,6 @@
 		return $editable;
 	}
 	
-	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
-	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
-
-	function sku_sorting_orderby( $sortby ) {
-		$sortby['menu_order'] = __( 'Standaard volgorde', 'ob2c' );
-		$sortby['sku'] = __( 'Stijgend artikelnummer', 'ob2c' );
-		$sortby['sku-desc'] = __( 'Dalend artikelnummer', 'ob2c' );
-		return $sortby;
-	}
-
 	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
 	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_sku_sorting' );
 	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
@@ -1670,6 +1663,7 @@
 		// unset( $sortby['menu_order'] );
 		// unset( $sortby['rating'] );
 		// $sortby['popularity'] = 'Best verkocht';
+		$sortby['menu_order'] = 'Standaardvolgorde';
 		$sortby['date'] = 'Laatst toegevoegd';
 		// $sortby['price'] = 'Stijgende prijs';
 		// $sortby['price-desc'] = 'Dalende prijs';
