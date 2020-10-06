@@ -8,6 +8,47 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
+	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_extra_sorting_filters' );
+
+	function add_extra_sorting_filters( $args ) {
+		// Kan door veralgemening van code nu ook een shortcode argument zijn i.p.v. een GET-paramater in de URL!
+		// Verstoort shortcodes, zie gelijkaardige mixing issue op https://github.com/woocommerce/woocommerce/issues/18859
+		// Nettere voorwaarde wc_get_loop_prop('is_shortcode') lijkt niet te werken ...
+		if ( is_woocommerce() ) {
+			$orderby_value = isset( $_GET['orderby'] ) ? wc_clean( $_GET['orderby'] ) : apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
+
+			if ( 'menu_order' === $orderby_value ) {
+				$args['orderby'] = 'menu_order';
+				$args['order'] = 'ASC';
+			}
+
+			if ( 'sku' === $orderby_value ) {
+				$args['orderby'] = 'meta_value_num';
+				$args['order'] = 'ASC';
+				$args['meta_key'] = '_shopplus_code';
+			}
+
+			if ( 'sku-desc' === $orderby_value ) {
+				$args['orderby'] = 'meta_value_num';
+				$args['order'] = 'DESC';
+				$args['meta_key'] = '_shopplus_code';
+			}
+		}
+
+		return $args;
+	}
+
+	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
+	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
+
+	function sku_sorting_orderby( $sortby ) {
+		$sortby['menu_order'] = __( 'Standaard volgorde', 'ob2c' );
+		$sortby['sku'] = __( 'Stijgend artikelnummer', 'ob2c' );
+		$sortby['sku-desc'] = __( 'Dalend artikelnummer', 'ob2c' );
+		return $sortby;
+	}
+
 	// Als we AJAX-reload uitschakelen in theme, duiken plots SelectWoo-dropdowns op
 	add_action( 'wp_enqueue_scripts', 'woo_dequeue_select2', 100 );
 
@@ -5211,7 +5252,7 @@
 		}
 	}
 
-	add_action( 'WOO_MSTORE_admin_product/slave_product_updated', 'do_something_after_slave_date_saved_in_db', 10, 1 );
+	// add_action( 'WOO_MSTORE_admin_product/slave_product_updated', 'do_something_after_slave_date_saved_in_db', 10, 1 );
 
 	function do_something_after_slave_date_saved_in_db( $data ) {
 		write_log( "FINAL SAVE ".$data['master_product']->get_sku() );
@@ -5250,34 +5291,31 @@
 		}
 	}
 
-	// Zet producten die onaangeroerd bleven door de ERP-import uit voorraad IMPORT LOOPT VAST OP HET EINDE?
-	// add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
+	// Hernoem het importbestand na afloop van de import zodat we een snapshot krijgen dat niet overschreven wordt
+	add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
 	
 	function after_xml_import( $import_id ) {
 		if ( $import_id == 7 ) {
-			// Vind alle producten waarvan de key '_in_bestelweb' onaangeroerd is (= zat niet in Odisy-import)
-			$args = array(
-				'post_type'			=> 'product',
-				'post_status'		=> array( 'publish', 'draft', 'trash' ),
-				'posts_per_page'	=> -1,
-				'meta_key'			=> '_in_bestelweb', 
-				'meta_value'		=> 'nee',
-				'meta_compare'		=> '=',
-			);
+			// Vind alle producten waarvan de key '_in_bestelweb' onaangeroerd is (= zat niet in Odisy-import) NIET MEER DOEN, ECHTE VOORRAAD KOMT UIT OFT-SITE
+			// $args = array(
+			// 	'post_type'			=> 'product',
+			// 	'post_status'		=> array( 'publish', 'draft', 'trash' ),
+			// 	'posts_per_page'	=> -1,
+			// 	'meta_key'			=> '_in_bestelweb', 
+			// 	'meta_value'		=> 'nee',
+			// 	'meta_compare'		=> '=',
+			// );
+			// $to_outofstock = new WP_Query( $args );
+			// if ( $to_outofstock->have_posts() ) {
+			// 	while ( $to_outofstock->have_posts() ) {
+			// 		$to_outofstock->the_post();
+			// 		$productje = wc_get_product( get_the_ID() );
+			// 		$productje->set_stock_status('outofstock');
+			// 		$productje->save();
+			// 	}
+			// 	wp_reset_postdata();
+			// }
 
-			$to_outofstock = new WP_Query( $args );
-
-			if ( $to_outofstock->have_posts() ) {
-				while ( $to_outofstock->have_posts() ) {
-					$to_outofstock->the_post();
-					$productje = wc_get_product( get_the_ID() );
-					$productje->set_stock_status('outofstock');
-					$productje->save();
-				}
-				wp_reset_postdata();
-			}
-
-			// Hernoem het importbestand zodat we een snapshot krijgen dat niet overschreven wordt
 			$old = WP_CONTENT_DIR."/erp-import.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );

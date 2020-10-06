@@ -54,18 +54,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<ul id="nm-shop-widgets-ul">
 				<?php
-					// if ( is_active_sidebar( 'widgets-shop' ) ) {
-					// 	dynamic_sidebar( 'widgets-shop' );
-					// }
-
-					// In plaats van de sidebar 'widgets-shop' op te roepen, tonen we expliciet bepaalde widgets
-					// Voordeel: instellingen moeten niet gesynchroniseerd worden over de webshops heen
-					// Nadeel: zelfde code moet toegevoegd worden aan woocommerce/ajax/shop-full.php voor AJAX reload
+					// Toon expliciet bepaalde widgets in plaats van sidebar 'widgets-shop' op te roepen
+					// Voordeel: instellingen moeten niet gesynchroniseerd worden over de webshops heen!
+					// Nadeel: zelfde code moet toegevoegd worden aan woocommerce/ajax/shop-full.php voor AJAX-reload
 					
-					// Wrapper argumenten, zie https://developer.wordpress.org/reference/functions/the_widget/
-					$args = array( 'before_widget' => '<li class="widget %s">', 'after_widget' => '</li>', 'before_title' => '<h3 class="nm-widget-title">', 'after_title' => '</h3><a href="'.get_permalink( wc_get_page_id('shop') ).'">Wis alle filters</a>' );
-
+					// Zie https://developer.wordpress.org/reference/functions/the_widget/
+					$args = array(
+						'before_widget' => '<li class="widget %s">',
+						'after_widget' => '</li>',
+						'before_title' => '<h3 class="nm-widget-title">',
+						'after_title' => '</h3><div href="'.get_permalink( wc_get_page_id('shop') ).'">Wis alle filters</div>',
+					);
 					the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );
+					$args['after_title'] = '</h3>';
 					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
 					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'preferences' ), $args );
 					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );
