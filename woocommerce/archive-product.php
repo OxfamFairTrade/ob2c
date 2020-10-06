@@ -172,7 +172,7 @@ get_header( 'shop' ); ?>
                          * Results bar
                          */
                         // GEWIJZIGD: Balk uitschakelen
-                        wc_get_template_part( 'content', 'product_nm_results_bar' );
+                        // wc_get_template_part( 'content', 'product_nm_results_bar' );
                     ?>
 
                     <?php
