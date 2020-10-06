@@ -1699,6 +1699,27 @@
 	add_action( 'woocommerce_product_query', 'ob2c_constrain_assortment_to_b2b' );
 	
 	function ob2c_constrain_assortment_to_b2b( $query ) {
+		// Verberg oude niet-voorradige producten in lokale webshops
+		if ( get_current_blog_id() == 23 ) {
+			$meta_query = (array) $query->get('meta_query');
+			// Probleem: als het voorradig is, moet het wél zichtbaar blijven!
+			$meta_query[] = array(
+				'relation' => 'OR',
+				array(
+					'key' => '_in_bestelweb',
+					'value' => 'ja',
+					'compare' => '!=',
+				),
+				array(
+					'key' => '_stock_status',
+					'value' => 'instock',
+					'compare' => '=',
+				),
+			);
+			write_log( print_r( $meta_query, true ) );
+			$query->set( 'meta_query', $meta_query );
+		}
+
 		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
 		if ( ! is_b2b_customer() and ! current_user_can('manage_woocommerce') ) {
 			$tax_query = (array) $query->get('tax_query');
