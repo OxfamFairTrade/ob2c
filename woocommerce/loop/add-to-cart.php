@@ -25,7 +25,9 @@ if ( is_b2b_customer() ) {
 }
 
 // GEWIJZIGD: Knop niet tonen bij voorraadstatus 'onbackorder'
-if ( $product->is_on_backorder() ) {
+if ( ! $product->is_in_stock() ) {
+	echo 'Niet in assortiment';
+} elseif ( $product->is_on_backorder() ) {
 	echo 'Tijdelijk niet beschikbaar';
 } else {
 	// GEWIJZIGD: Store locator triggeren op hoofdniveau
