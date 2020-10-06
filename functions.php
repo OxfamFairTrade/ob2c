@@ -27,7 +27,7 @@
 	function add_custom_dropdown_filters_per_category() {
 		if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
 			// Label bij non-selectie kan aangepast worden m.b.v. 'woocommerce_layered_nav_any_label'-filter
-			echo '<div class="row"><div class="col-md-3 supplementary-filter">';
+			echo '<div class="container"><div class="row"><div class="col-md-3 supplementary-filter">';
 				$args = array(
 					'display_type' => 'dropdown',
 					'title' => 'Druivenrassen',
@@ -46,8 +46,9 @@
 				the_widget( 'WC_Widget_Layered_Nav', $args );
 			echo '</div>';
 			echo '<div class="col-md-3 supplementary-filter">';
+				// Wordt niet zichtbaar door harde CSS ...
 				woocommerce_catalog_ordering();
-			echo '</div></div>';
+			echo '</div></div></div>';
 		}
 	}
 
@@ -4027,20 +4028,18 @@
 		// if ( current_user_can('update_core') ) {
 			// Als er slechts één methode beschikbaar is, moet het wel afhaling zijn!
 			if ( count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
-			    // @ToDo: Markup herschrijven zodat de span.tooltip een title="" bevat
-				echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <span class="dashicons dashicons-editor-help tooltip"><span class="tooltiptext">';
-				if ( ! does_home_delivery() ) {
-					echo 'Deze winkel organiseert geen thuislevering. Ga naar de webshop die voor jouw postcode aan huis levert.';
+			    if ( ! does_home_delivery() ) {
+					$title = 'Deze winkel organiseert geen thuislevering. Ga naar de webshop die voor jouw postcode aan huis levert.';
 				} elseif ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
 					// Dit werkt enkel indien blokkage omwille van leeggoed reeds getoond
-					echo 'Omdat er producten in je winkelmandje zitten die niet beschikbaar zijn voor thuislevering.';
+					$title = 'Omdat er producten in je winkelmandje zitten die niet beschikbaar zijn voor thuislevering.';
 				} elseif ( strlen( WC()->customer->get_shipping_postcode() ) < 4 ) {
 					// WC()->customer->has_calculated_shipping() werkt niet zoals verwacht
-					echo 'Omdat de postcode nog niet ingevuld is.';
+					$title = 'Omdat de postcode nog niet ingevuld is.';
 				} else {
-					echo 'Omdat deze webshop niet thuislevert in de huidige postcode.';
+					$title = 'Omdat deze webshop niet thuislevert in de huidige postcode.';
 				}
-				echo '</span></span></td></tr>';
+				echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <a class="dashicons dashicons-editor-help tooltip" title=".$title."></a></td></tr>';
 			}
 		// }
 	}

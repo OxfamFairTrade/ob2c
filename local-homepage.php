@@ -47,6 +47,7 @@
 						'include' => wc_get_featured_product_ids(),
 					);
 					$featured_products = wc_get_products( $args );
+					var_dump_pre( $featured_products );
 				?>
 				<?php if ( count( $featured_products ) > 0 ) : ?>
 					<div class="col-row lh-header">
@@ -68,15 +69,7 @@
 						<img src="<?php echo get_the_post_thumbnail_url( get_the_ID(), 'full' ); ?>" />
 					</div>
 				</div>
-				<?php
-					$args = array(
-						'stock_status' => 'instock',
-						'include' => wc_get_product_ids_on_sale(),
-					);
-					$sale_products = wc_get_products( $args );
-					var_dump_pre( wc_get_product_ids_on_sale() );
-				?>
-				<?php if ( count( $sale_products ) > 0 ) : ?>
+				<?php if ( wc_get_product_ids_on_sale() > 0 ) : ?>
 					<div class="col-row lh-header">
 						<div class="col-xs-12 col-sm-6">
 							<h2>Promoties</h2>
