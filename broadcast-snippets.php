@@ -174,8 +174,8 @@
 	// Product-ID's in kortingsbon lokaal maken
 	$args = array(
 		'post_type'		=> 'shop_coupon',
-		'post_status'	=> array('publish'),
-		'title'			=> 'walnotenreep',
+		'post_status'	=> 'publish',
+		'title'			=> 'chips-50',
 	);
 
 	$all_coupons = new WP_Query( $args );
@@ -220,7 +220,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '23702', '25013', '26400' );
+	$photos_to_delete = array( '27057', '20610' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
@@ -258,7 +258,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '20265', '27057' );
+	$outofstocks = array( '20610' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {

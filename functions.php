@@ -520,7 +520,6 @@
 
 	function load_child_theme() {
 		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.9' );
-		
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 
@@ -3522,7 +3521,7 @@
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
-				} elseif ( $shop_post_id === 'vorselaar' or $shop_post_id === 'roeselare' ) {
+				} elseif ( $shop_post_id === 'vorselaar' ) {
 					if ( date_i18n( 'N', $from ) > 4 ) {
 						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
@@ -4470,6 +4469,7 @@
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_sitewide_banner_top', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_b2b_invitation_text', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 	}
@@ -4577,19 +4577,29 @@
 		}
 
 		if ( $body ) {
-			wp_mail( 'e-commerce@oft.be', get_webshop_name().' paste thuislevering van breekbare goederen aan', $body );
+			wp_mail( 'e-commerce@oft.be', get_webshop_name(true).' paste thuislevering van breekbare goederen aan', $body );
 		}
 	}
 
-	add_action( 'update_option_oxfam_sitewide_banner_top', 'sitewide_banner_top_was_updated', 10, 3 );
+	add_action( 'add_option_oxfam_sitewide_banner_top', 'text_field_option_was_created', 10, 2 );
+	add_action( 'update_option_oxfam_sitewide_banner_top', 'text_field_option_was_updated', 10, 3 );
+	add_action( 'add_option_oxfam_b2b_invitation_text', 'text_field_option_was_created', 10, 2 );
+	add_action( 'update_option_oxfam_b2b_invitation_text', 'text_field_option_was_updated', 10, 3 );
 
-	function sitewide_banner_top_was_updated( $old_text, $new_text, $option ) {
+	function text_field_option_was_created( $option, $new_text ) {
+		if ( strlen( $new_text ) > 0 ) {
+			$body = '"'.$new_text.'"';
+		}
+		wp_mail( 'e-commerce@oft.be', get_webshop_name(true)." paste '".$option."'-tekst aan", $body );
+	}
+
+	function text_field_option_was_updated( $old_text, $new_text, $option ) {
 		if ( strlen( $new_text ) > 0 ) {
 			$body = '"'.$new_text.'"';
 		} else {
-			$body = 'Custom tekst gewist!';
+			$body = "Custom '".$option."'-tekst gewist!";
 		}
-		wp_mail( 'e-commerce@oft.be', get_webshop_name().' paste bannertekst aan', $body );
+		wp_mail( 'e-commerce@oft.be', get_webshop_name(true)." paste '".$option."'-tekst aan", $body );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
@@ -5308,7 +5318,7 @@
 		echo '<div class="rss-widget">';
 		echo '<p>De <a href="https://github.com/OxfamFairTrade/ob2c/wiki" target="_blank">online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Gebruik eventueel de zoekfunctie bovenaan rechts.</p>';
 		echo '<p>Daarnaast kun je de nieuwe slides van de voorbije opleidingssessies raadplegen voor een overzicht van alle afspraken en praktische details: <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-concept.pdf" target="_blank">Deel 1: Concept</a> (16/05/2020) en <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-praktisch.pdf" target="_blank">Deel 2: Praktisch</a> (30/05/2020). Op <a href="https://copain.oww.be/webshop" target="_blank">de webshoppagina op Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
-		echo '<p>Stuur een mailtje naar <a href="mailto:e-commerce@oft.be?">e-commerce@oft.be</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Voor dringende problemen mag je ook telefonisch contact opnemen met Frederik Neirynck via <a href="tel:+3292188863">09/218.88.63</a>.</p>';
+		echo '<p>Stuur een mailtje naar de <a href="mailto:e-commerce@oft.be?">Helpdesk E-Commerce</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Tineke, Ive, Elien en Frederik helpen je zo snel mogelijk verder.</p>';
 		echo '</div>';
 	}
 
@@ -5431,36 +5441,41 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
+			// echo '<div class="notice notice-error">';
+			// 	echo '<p>Mails naar Microsoft-adressen (@htomail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
+			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>De promoties n.a.v. Week van de Fair Trade werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">Copain</a>). Opgelet: bij de 2+1-actie op de chocoladerepen kunnen witte en notenchocolade naar keuze gemengd worden. Bijgevolg wordt de korting pas verrekend van zodra er (een veelvoud van) <u>drie</u> geldige artikels in het winkelmandje zitten. We weten op voorhand immers niet welke smaak de klant verkiest voor de gratis reep. De kortingsregel in ShopPlus werd op een gelijkaardige manier opgezet.</p>';
+				// echo '</div>';
 				echo '<div class="notice notice-info">';
-					echo '<p>De promoties voor de maand augustus werden ingesteld (zie <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-juli-augustus-update.html" target="_blank">Copain</a>). Bij de 2+1-actie wordt een extra gratis reep toegevoegd van zodra er twee in je winkelmandje zitten. De THT-actie op de pralines blijft doorlopen voor de enkele winkels die nog oude voorraad liggen hebben die binnenkort vervalt. In september arriveert de nieuwe productie pralines.</p>';
+					echo '<p>Zoals <a href="https://copain.oww.be/k/nl/n118/news/view/20525/12894/prijs-notenchocolade-190g-wordt-tijdelijk-verlaagd.html" target="_blank">eerder aangekondigd</a> wordt de consumentenprijs van 24302 Notenchocolade 190 g (W14302) tijdens de maand oktober tijdelijk verlaagd naar 2,95 euro. Deze aanpassing werd ook doorgevoerd in jullie webshop.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>Er werden 2 nieuwe producten toegevoegd aan de database:</p><ul style="margin-left: 2em;">';
-						$skus = array( '20265', '27057' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku($sku);
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Deze maand slechts 1 nieuw product, maar wat voor één:</p><ul style="margin-left: 2em;">';
+				// 		$skus = array( '26321', '65224', '65225', '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515', '87339', '87352' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku($sku);
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
+				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
 					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
 					// echo '</div>';
 				}
-				echo '<div class="notice notice-warning">';
-					// Volgende keer: 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio)
-					echo '<p>6 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 22722 BIO Koffiecaps lungo, 22723 BIO Koffiecaps dark roast, 26313 BIO Braambesconfituur, 27150 BIO Rijstwafels zeezout (nieuwe referentie: 27151), 27513 BIO Lychees en 27821 Tom Yum kruidenpasta voor soep (rood).</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>5 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio).</p>';
+				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}
@@ -5654,7 +5669,7 @@
 
 		$days = get_office_hours( NULL, $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
-		$exceptions = array( 'roeselare', 'evergem' );
+		$exceptions = array( 'evergem' );
 		if ( in_array( $atts['id'], $exceptions ) ) {
 			$holidays = array( '2020-11-01', '2020-11-11' );
 		} else {
@@ -5842,6 +5857,9 @@
 		} elseif ( get_current_blog_id() === 50 ) {
 			// Uitzondering voor Oudenaarde-Ronse
 			$zoom = 12;
+		} elseif ( get_current_blog_id() === 60 ) {
+			// Uitzondering voor Hemiksem-Schelle
+			$zoom = 14;
 		} elseif ( is_regional_webshop() ) {
 			$zoom = 13;
 		} else {
@@ -6034,7 +6052,7 @@
 						case 'headquarter':
 							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
 						case 'telephone':
-							return call_user_func( 'format_'.$key, '0468113033', '.' );
+							return call_user_func( 'format_'.$key, '0495325682', '.' );
 					}
 				} elseif ( intval( $shop_post_id ) === 3226 ) {
 					// Uitzonderingen voor Regio Antwerpen vzw
@@ -6059,6 +6077,12 @@
 					switch ($key) {
 						case 'telephone':
 							return call_user_func( 'format_'.$key, '0487436822', '.' );
+					}
+				} elseif ( intval( $shop_post_id ) === 3383 ) {
+					// Uitzonderingen voor Diest
+					switch ($key) {
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0475596166', '.' );
 					}
 				}
 				
