@@ -27,7 +27,8 @@
 	function add_custom_dropdown_filters_per_category() {
 		if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
 			// Label bij non-selectie kan aangepast worden m.b.v. 'woocommerce_layered_nav_any_label'-filter
-			echo '<div class="container"><div class="row"><div class="col-md-3 supplementary-filter">';
+			echo '<div class="container"><div class="row">';
+			echo '<div class="col-md-3 supplementary-filter">';
 				$args = array(
 					'display_type' => 'dropdown',
 					'title' => 'Druivenrassen',
@@ -45,10 +46,9 @@
 				$args['attribute'] = 'tastes';
 				the_widget( 'WC_Widget_Layered_Nav', $args );
 			echo '</div>';
-			echo '<div class="col-md-3 supplementary-filter">';
-				// Wordt niet zichtbaar door harde CSS ...
-				woocommerce_catalog_ordering();
-			echo '</div></div></div>';
+			// Wordt niet zichtbaar door harde CSS ...
+			// echo '<div class="col-md-3 supplementary-filter">'.woocommerce_catalog_ordering().'</div>';
+			echo '</div></div>';
 		}
 	}
 
@@ -4039,7 +4039,7 @@
 				} else {
 					$title = 'Omdat deze webshop niet thuislevert in de huidige postcode.';
 				}
-				echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <a class="dashicons dashicons-editor-help tooltip" title=".$title."></a></td></tr>';
+				echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <a class="dashicons dashicons-editor-help tooltip" title="'.$title.'"></a></td></tr>';
 			}
 		// }
 	}

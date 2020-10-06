@@ -51,7 +51,7 @@
 		$table = array( 'body' => $food );
 
 		// Maak onderscheid tussen vaste en vloeibare producten
-		if ( $product->get_attribute('eenheid') === 'L' ) {
+		if ( $product->get_meta('_stat_uom') === 'L' ) {
 			$unity = 'ml';
 		} else {
 			$unity = 'g';
