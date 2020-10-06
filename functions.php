@@ -795,12 +795,15 @@
 		// Terug te plaatsen winkelboodschap: "We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening."
 	}
 
-	add_action( 'woocommerce_order_status_processing', 'warn_if_processing_from_invalid_status', 1, 2 );
-	add_action( 'woocommerce_order_status_completed', 'warn_if_completed_from_invalid_status', 1, 2 );
+	// Tegenhouden lukt niet omdat de orderstatus al bijgewerkt is als de actie doorlopen wordt ...
+	// add_action( 'woocommerce_order_status_processing', 'warn_if_processing_from_invalid_status', 1, 2 );
+	// add_action( 'woocommerce_order_status_completed', 'warn_if_completed_from_invalid_status', 1, 2 );
 	
 	function warn_if_processing_from_invalid_status( $order_id, $order ) {
 		if ( in_array( $order->get_status(), array( 'completed', 'cancelled', 'refunded' ) ) ) {
-			wp_mail( 'e-commerce@oft.be', $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', 'Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.' );
+			$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
+			$headers[] = 'Content-Type: text/html';
+			wp_mail( 'e-commerce@oft.be', $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>', $headers );
 			// Dit zal verderop opgevangen worden, en de foutmelding wordt als melding getoond in de back-end 
 			// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L396
 			throw new Exception( $order->get_order_number().' is reeds afgewerkt en kan niet opnieuw in verwerking genomen worden.' );
@@ -809,8 +812,10 @@
 
 	function warn_if_completed_from_invalid_status( $order_id, $order ) {
 		if ( in_array( $order->get_status(), array( 'pending', 'cancelled', 'refunded' ) ) ) {
-			wp_mail( 'e-commerce@oft.be', $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', 'Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.' );
-			throw new Exception( $order->get_order_number().' is niet betaakd en dient niet in verwerking genomen te worden.' );
+			$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
+			$headers[] = 'Content-Type: text/html';
+			wp_mail( 'e-commerce@oft.be', $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>', $headers );
+			throw new Exception( $order->get_order_number().' werd niet betaald en dient niet in verwerking genomen te worden.' );
 		}
 	}
 
@@ -824,7 +829,9 @@
 	add_action( 'woocommerce_order_status_cancelled_to_completed', 'warn_if_invalid_status_change', 10, 2 );
 	
 	function warn_if_invalid_status_change( $order_id, $order ) {
-		wp_mail( 'e-commerce@oft.be', 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), 'Gelieve de logs te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!' );
+		$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
+		$headers[] = 'Content-Type: text/html';
+		wp_mail( 'e-commerce@oft.be', 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), '<p>Gelieve de logs te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!</p>', $headers );
 	}
 
 	// Functie is niet gebaseerd op eigenschappen van gebruikers en dus al zeer vroeg al bepaald (geen 'init' nodig)
