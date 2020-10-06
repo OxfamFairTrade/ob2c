@@ -55,21 +55,21 @@
 	add_filter( 'woocommerce_layered_nav_any_label', 'tweak_layered_nav_any_labels', 10, 3 );
 
 	function tweak_layered_nav_any_labels( $label, $raw_label, $taxonomy ) {
-		switch ( $taxonomy->name ) {
+		switch ( $taxonomy ) {
 			case 'pa_recipes':
-				$label = '(alle gerechten)';
+				$label = '(selecteer een gerecht)';
 				break;
 
 			case 'pa_grapes':
-				$label = '(alle druivenrassen)';
+				$label = '(selecteer een druivenras)';
 				break;
 
 			case 'pa_tastes':
-				$label = '(alle smaken)';
+				$label = '(selecteer een smaak)';
 				break;
 
 			case 'pa_countries':
-				$label = '(alle landen)';
+				$label = '(selecteer een land)';
 				break;
 		}
 		return $label;
@@ -519,7 +519,7 @@
 	add_action( 'wp_enqueue_scripts', 'load_child_theme', 20 );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.8.0' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '1.9' );
 		
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
