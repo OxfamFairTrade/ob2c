@@ -8,47 +8,6 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
-	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
-	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_extra_sorting_filters' );
-
-	function add_extra_sorting_filters( $args ) {
-		// Kan door veralgemening van code nu ook een shortcode argument zijn i.p.v. een GET-paramater in de URL!
-		// Verstoort shortcodes, zie gelijkaardige mixing issue op https://github.com/woocommerce/woocommerce/issues/18859
-		// Nettere voorwaarde wc_get_loop_prop('is_shortcode') lijkt niet te werken ...
-		if ( is_woocommerce() ) {
-			$orderby_value = isset( $_GET['orderby'] ) ? wc_clean( $_GET['orderby'] ) : apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
-
-			if ( 'menu_order' === $orderby_value ) {
-				$args['orderby'] = 'menu_order';
-				$args['order'] = 'ASC';
-			}
-
-			if ( 'sku' === $orderby_value ) {
-				$args['orderby'] = 'meta_value_num';
-				$args['order'] = 'ASC';
-				$args['meta_key'] = '_shopplus_code';
-			}
-
-			if ( 'sku-desc' === $orderby_value ) {
-				$args['orderby'] = 'meta_value_num';
-				$args['order'] = 'DESC';
-				$args['meta_key'] = '_shopplus_code';
-			}
-		}
-
-		return $args;
-	}
-
-	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
-	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
-
-	function sku_sorting_orderby( $sortby ) {
-		$sortby['menu_order'] = __( 'Standaard volgorde', 'ob2c' );
-		$sortby['sku'] = __( 'Stijgend artikelnummer', 'ob2c' );
-		$sortby['sku-desc'] = __( 'Dalend artikelnummer', 'ob2c' );
-		return $sortby;
-	}
-
 	// Als we AJAX-reload uitschakelen in theme, duiken plots SelectWoo-dropdowns op
 	add_action( 'wp_enqueue_scripts', 'woo_dequeue_select2', 100 );
 
@@ -1664,6 +1623,16 @@
 		return $editable;
 	}
 	
+	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
+	add_filter( 'woocommerce_default_catalog_orderby_options', 'sku_sorting_orderby' );
+
+	function sku_sorting_orderby( $sortby ) {
+		$sortby['menu_order'] = __( 'Standaard volgorde', 'ob2c' );
+		$sortby['sku'] = __( 'Stijgend artikelnummer', 'ob2c' );
+		$sortby['sku-desc'] = __( 'Dalend artikelnummer', 'ob2c' );
+		return $sortby;
+	}
+
 	// Voeg sorteren op artikelnummer toe aan de opties op cataloguspagina's
 	add_filter( 'woocommerce_get_catalog_ordering_args', 'add_sku_sorting' );
 	add_filter( 'woocommerce_catalog_orderby', 'sku_sorting_orderby' );
@@ -1682,20 +1651,32 @@
 			$args['order'] = 'DESC';
 		}
 
+		if ( 'sku' === $orderby_value ) {
+			$args['orderby'] = 'meta_value_num';
+			$args['order'] = 'ASC';
+			$args['meta_key'] = '_shopplus_code';
+		}
+
+		if ( 'sku-desc' === $orderby_value ) {
+			$args['orderby'] = 'meta_value_num';
+			$args['order'] = 'DESC';
+			$args['meta_key'] = '_shopplus_code';
+		}
+
 		return $args;
 	}
 	
 	function sku_sorting_orderby( $sortby ) {
-		unset( $sortby['menu_order'] );
-		unset( $sortby['rating'] );
+		// unset( $sortby['menu_order'] );
+		// unset( $sortby['rating'] );
 		// $sortby['popularity'] = 'Best verkocht';
-		// $sortby['date'] = 'Laatst toegevoegd';
-		$sortby['alpha'] = 'Van A tot Z';
-		$sortby['alpha-desc'] = 'Van Z tot A';
+		$sortby['date'] = 'Laatst toegevoegd';
 		// $sortby['price'] = 'Stijgende prijs';
 		// $sortby['price-desc'] = 'Dalende prijs';
-		// $sortby['sku'] = 'Stijgend artikelnummer';
-		// $sortby['reverse_sku'] = 'Dalend artikelnummer';
+		$sortby['sku'] = 'Stijgend artikelnummer';
+		$sortby['sku-desc'] = 'Dalend artikelnummer';
+		$sortby['alpha'] = 'Van A tot Z';
+		$sortby['alpha-desc'] = 'Van Z tot A';
 		return $sortby;
 	}
 
