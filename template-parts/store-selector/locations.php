@@ -51,9 +51,9 @@
 
 		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
 		
-		/* Gebruik event delegation, de buttons in #nm-shop zijn niet noodzakelijk al aanwezig bij DOM load! */
-		/* Let op dat elementen niet dubbel getarget worden, dan zal de preventDefault() roet in het eten strooien! */
-		jQuery('#header,#nm-shop,#nm-related,.nm-product-slider,.selected-store').one( 'click', '.store-selector-open', function(event) {
+		/* Gebruik event delegation, de buttons in .nm-shop-products-col zijn niet noodzakelijk al aanwezig bij DOM load! */
+		/* Let op dat elementen niet dubbel getarget worden, dan zal de preventDefault() roet in het eten gooien! */
+		jQuery('#header,.nm-shop-products-col,#nm-related,.nm-product-slider,.selected-store').on( 'click', '.store-selector-open', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
 			
