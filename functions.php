@@ -45,7 +45,7 @@
 				$args['attribute'] = 'tastes';
 				the_widget( 'WC_Widget_Layered_Nav', $args );
 			echo '</div>';
-			echo '<div class="col-md-3">';
+			echo '<div class="col-md-3 supplementary-filter">';
 				woocommerce_catalog_ordering();
 			echo '</div></div>';
 		}
@@ -1634,16 +1634,6 @@
 	function add_sku_sorting( $args ) {
 		$orderby_value = isset( $_GET['orderby'] ) ? wc_clean( $_GET['orderby'] ) : apply_filters( 'woocommerce_default_catalog_orderby', get_option( 'woocommerce_default_catalog_orderby' ) );
 
-		if ( 'alpha' === $orderby_value ) {
-			$args['orderby'] = 'title';
-			$args['order'] = 'ASC';
-		}
-
-		if ( 'alpha-desc' === $orderby_value ) {
-			$args['orderby'] = 'title';
-			$args['order'] = 'DESC';
-		}
-
 		if ( 'sku' === $orderby_value ) {
 			$args['orderby'] = 'meta_value_num';
 			$args['order'] = 'ASC';
@@ -1656,17 +1646,26 @@
 			$args['meta_key'] = '_shopplus_code';
 		}
 
+		if ( 'alpha' === $orderby_value ) {
+			$args['orderby'] = 'title';
+			$args['order'] = 'ASC';
+		}
+
+		if ( 'alpha-desc' === $orderby_value ) {
+			$args['orderby'] = 'title';
+			$args['order'] = 'DESC';
+		}
+
 		return $args;
 	}
 	
 	function sku_sorting_orderby( $sortby ) {
-		// unset( $sortby['menu_order'] );
-		// unset( $sortby['rating'] );
-		// $sortby['popularity'] = 'Best verkocht';
+		unset( $sortby['rating'] );
+		unset( $sortby['popularity'] );
 		$sortby['menu_order'] = 'Standaardvolgorde';
 		$sortby['date'] = 'Laatst toegevoegd';
-		// $sortby['price'] = 'Stijgende prijs';
-		// $sortby['price-desc'] = 'Dalende prijs';
+		unset( $sortby['price'] );
+		unset( $sortby['price-desc'] );
 		$sortby['sku'] = 'Stijgend artikelnummer';
 		$sortby['sku-desc'] = 'Dalend artikelnummer';
 		$sortby['alpha'] = 'Van A tot Z';
