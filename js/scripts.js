@@ -20,6 +20,12 @@
       lessLink: '<a href="#">Lees minder</a>'
     });
 
+    $('.promotie > .collapse-read-more').readmore({
+      collapsedHeight: 0,
+      moreLink: '<a href="#">Voorwaarden</a>',
+      lessLink: '<a href="#">Verberg</a>'
+    });
+
     $('.header__item_search').on( 'click', function() {
       $('.top-search_mobile').toggleClass('hidden');
     });
