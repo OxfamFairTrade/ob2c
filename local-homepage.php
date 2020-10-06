@@ -74,6 +74,7 @@
 						'include' => wc_get_product_ids_on_sale(),
 					);
 					$sale_products = wc_get_products( $args );
+					var_dump_pre( $sale_products );
 				?>
 				<?php if ( count( $sale_products ) > 0 ) : ?>
 					<div class="col-row lh-header">

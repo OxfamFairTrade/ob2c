@@ -95,12 +95,12 @@ form.woocommerce-checkout {
   }
 
     #payment .payment_methods {
-      .wc_payment_method {
+      li.wc_payment_method {
         &.active {
           background-color: $new-green;
           color: white;
 
-          li label {
+          label {
             color: white !important;
           }
         }

@@ -24,9 +24,10 @@ if ( isset( $nm_globals['is_categories_shortcode'] ) && $nm_globals['is_categori
     if ( $thumbnail_id ) {
         $category_image = wp_get_attachment_image_src( $thumbnail_id, 'full' );
         $category_image_src = $category_image[0];
+    // Check of er een beeld in de themamap staat!
     } elseif ( file_exists( get_stylesheet_directory().'/images/productgroepen/'.$category->slug.'.png' ) ) {
-        // Check of er een beeld in de themamap staat!
-        $category_image = get_stylesheet_directory().'/images/productgroepen/'.$category->slug.'.png';
+        $category_image = true;
+        $category_image_src = get_stylesheet_directory_uri().'/images/productgroepen/'.$category->slug.'.png';
     } else {
         $category_image = false;
     }

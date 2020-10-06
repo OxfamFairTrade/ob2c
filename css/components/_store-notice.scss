@@ -11,7 +11,7 @@
   }
 
   > .nm-shop-notice {
-    padding: 12px;
+    padding: 12px !important;
     margin: 0 0 12px 0 !important;
     background-color: $new-green;
 
@@ -21,10 +21,6 @@
 
     &.woocommerce-error {
       background-color: $bright-red;
-    }
-
-    &:last-child {
-      margin-bottom: 0 !important;
     }
 
     > span {
