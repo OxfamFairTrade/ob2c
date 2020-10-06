@@ -90,7 +90,11 @@
 
     .widget {
       margin-bottom: 30px;
-      padding-bottom: 30px;
+      padding-bottom: 0;
+
+      &.widget_product_categories {
+        padding-bottom: 30px;
+      }
 
       @media (max-width: 991px) {
         margin-bottom: 8px;
@@ -100,11 +104,17 @@
       &.widget_layered_nav_filters {
         position: relative;
 
-        .reset-filters > a {
-          text-decoration: underline;
+        .reset-filters {
+          position: absolute;
+          top: 0;
+          right: 0;
 
-          &:before {
-            content: none;
+          & > a {
+            text-decoration: underline;
+
+            &:before {
+              content: none;
+            }
           }
         }
       }
