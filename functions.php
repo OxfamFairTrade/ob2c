@@ -5086,7 +5086,7 @@
 		}
 	}
 
-	// Herkomstlanden en promoties net boven de winkelmandknop tonen
+	// Promoties net boven de winkelmandknop tonen
 	add_action( 'woocommerce_single_product_summary', 'show_active_promos', 7 );
 
 	function show_active_promos() {
@@ -5105,20 +5105,17 @@
 	add_filter( 'woocommerce_attribute', 'add_suffixes', 10, 3 );
 
 	function add_suffixes( $wpautop, $attribute, $values ) {
-		$weighty_attributes = array( 'pa_choavl', 'pa_famscis', 'pa_fapucis', 'pa_fasat', 'pa_fat', 'pa_fibtg', 'pa_polyl', 'pa_pro', 'pa_salteq', 'pa_starch', 'pa_sugar' );
-		$percenty_attributes = array( 'pa_alcohol', 'pa_fairtrade' );
-
 		global $product;
-		$eh = $product->get_attribute('pa_eenheid');
+		$eh = $product->get_meta('_stat_uom');
 		if ( $eh === 'L' ) {
 			$suffix = 'liter';
 		} elseif ( $eh === 'KG' ) {
 			$suffix = 'kilogram';
 		}
 
-		if ( in_array( $attribute['name'], $weighty_attributes ) ) {
-			$values[0] = str_replace('.', ',', $values[0]).' g';
-		} elseif ( in_array( $attribute['name'], $percenty_attributes ) ) {
+		$percenty_attributes = array( 'pa_alcohol', 'pa_fairtrade' );
+
+		if ( in_array( $attribute['name'], $percenty_attributes ) ) {
 			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' %';
 		} elseif ( $attribute['name'] === 'pa_eprijs' ) {
 			$values[0] = '&euro; '.number_format( str_replace( ',', '.', $values[0] ), 2, ',', '.' ).' per '.$suffix;
