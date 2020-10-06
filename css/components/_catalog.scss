@@ -100,7 +100,7 @@
       &.widget_layered_nav_filters {
         position: relative;
 
-        a {
+        .reset-filters > a {
           text-decoration: underline;
 
           &:before {
