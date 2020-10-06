@@ -5158,9 +5158,9 @@
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
 
-		foreach ( $meta_data as $key => $value ) {
-			write_log( $key.' => '.$value );
-		}
+		// foreach ( $meta_data as $key => $value ) {
+		// 	write_log( $key.' => '.$value );
+		// }
 		
 		return $meta_data;
 	}
@@ -5295,20 +5295,24 @@
 	function translate_master_to_slave_ids( $meta_key, $main_product_ids, $master_blog_id, $master_product ) {
 		write_log( "MAAK EIGENSCHAP ".$meta_key." VAN SKU ".$master_product->get_sku()." LOKAAL IN BLOG ".get_current_blog_id() );
 		
-		$slave_product_ids = array();
-		foreach ( $main_product_ids as $main_product_id ) {
-			switch_to_blog( $master_blog_id );
-			$main_product = wc_get_product( $main_product_id );
-			restore_current_blog();
-			if ( $main_product !== false ) {
-				$slave_product_id = wc_get_product_id_by_sku( $main_product->get_sku() );
-				if ( intval( $slave_product_id ) > 0 ) {
-					$slave_product_ids[] = $slave_product_id;
+		if ( is_array( $main_product_ids ) ) {
+			$slave_product_ids = array();
+			foreach ( $main_product_ids as $main_product_id ) {
+				switch_to_blog( $master_blog_id );
+				$main_product = wc_get_product( $main_product_id );
+				restore_current_blog();
+				if ( $main_product !== false ) {
+					$slave_product_id = wc_get_product_id_by_sku( $main_product->get_sku() );
+					if ( intval( $slave_product_id ) > 0 ) {
+						$slave_product_ids[] = $slave_product_id;
+					}
 				}
 			}
+		} else {
+			// Indien $main_product_ids leeg is, mogen we dit gewoon zo doorgeven, zodat het ook lokaal leeggemaakt kan worden
+			$slave_product_ids = $main_product_ids;
 		}
 		
-		// Indien $main_product_ids leeg is, mogen we dit gewoon zo doorgeven, zodat het ook lokaal leeggemaakt kan worden
 		return $slave_product_ids;
 	}
 
