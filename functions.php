@@ -2162,7 +2162,7 @@
 		}
 
 		if ( $key === 'marketing' ) {
-			$field = str_replace( '</span></label>', '<a class="dashicons dashicons-editor-help tooltip" title="We mailen je hooguit 1x per week. Je kunt je voorkeuren op elk ogenblik aanpassen."></a></span></label>', $field );
+			$field = str_replace( '</span></label>', '</span><a class="dashicons dashicons-editor-help tooltip" title="We mailen je hooguit 1x per week. Je kunt je voorkeuren op elk ogenblik aanpassen."></a></label>', $field );
 		}
 
 		return $field;
