@@ -5122,7 +5122,7 @@
 	# MULTISITE #
 	#############
 
-	// Verhinder dat de lokale voorraad overschreven wordt bij elke update (zit nu in principe netjes in instelling)
+	// Verhinder dat de lokale voorraad overschreven wordt bij elke update ZIT NU IN PRINCIPE NETJES IN INSTELLING
 	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'do_not_overwrite_local_stock', 10, 2 );
 
 	function do_not_overwrite_local_stock( $meta_keys, $data ) {
@@ -5150,7 +5150,7 @@
 		return $meta_keys;
 	}
 
-	// Blijkbaar moeten we de meta keys die we willen syncen expliciet aangeven?
+	// Geef aan welke metavelden we willen kopiëren MOET TEGENWOORDIG EXPLICIET AANGEGEVEN WORDEN
 	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 10, 2 );
 
 	function update_slave_product_meta( $meta_data, $data ) {
@@ -5169,7 +5169,7 @@
 		 * @return array
 		 */
 		
-		$keys_to_sync( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id' );
+		$keys_to_sync = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id' );
 		foreach ( $keys_to_sync as $key ) {
 			$meta_data[ $key ] = $data['master_product']->get_meta( $key );
 		}
@@ -5181,8 +5181,8 @@
 		return $meta_data;
 	}
 
-	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import (hoge prioriteit = helemaal op het einde)
-	// add_action( 'pmxi_saved_post', 'execute_product_sync', 50, 1 );
+	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import GAAT BLIJKBAAR AUTOMATISCH
+	// add_action( 'pmxi_saved_post', 'execute_product_sync', 100, 1 );
 	
 	function execute_product_sync( $post_id ) {
 		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
