@@ -50,7 +50,7 @@
 	}
 
 	// Zal nog vervangen worden door een taxonomie i.p.v. attribuut
-	if ( strpos( $product->get_attribute('preferences'), 'biologisch' ) ) {
+	if ( strpos( $product->get_attribute('preferences'), 'biologisch' ) !== false ) {
 		$labels['organic'] = 'Bioproduct';
 	}
 
