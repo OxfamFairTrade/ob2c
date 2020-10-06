@@ -43,6 +43,6 @@ $customer = get_user_by( 'login', $user_login );
 	</a>
 </p>
 
-<p><?php printf( __( 'Ondertekening van mails met accountinfo, inclusief regio van webshop (%s).', 'oxfam-webshop' ), str_replace( 'Oxfam-Wereldwinkel ', '', get_webshop_name() ) ); ?></p>
+<p><?php printf( __( 'Ondertekening van mails met accountinfo, inclusief regio van webshop (%s).', 'oxfam-webshop' ), get_webshop_name(true) ); ?></p>
 
 <?php do_action( 'woocommerce_email_footer', $email ); ?>

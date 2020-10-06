@@ -16,11 +16,11 @@
 		<div id="content">
 			<div class="container">
 				<div class="breadcrumb">
-					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">Home</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Webshop <?php echo get_webshop_name(); ?></span>
+					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">Home</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Webshop <?php echo get_webshop_name(true); ?></span>
 				</div>
 				<div class="col-row lh-intro">
 					<div class="col-xs-12 col-md-6">
-						<h2>Oxfam Webshop <?php echo get_webshop_name(); ?></h2>
+						<h2>Oxfam Webshop <?php echo get_webshop_name(true); ?></h2>
 						<?php the_content(); ?>
 					</div>
 					<div class="col-xs-12 col-md-6">

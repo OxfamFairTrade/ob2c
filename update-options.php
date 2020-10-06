@@ -263,7 +263,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_place" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Straat en huisnummer:</label>
+					<label for="oxfam_place" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels.">Straat en huisnummer:</label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_place" class="text-input" value="<?php echo get_oxfam_shop_data('place'); ?>" readonly>
@@ -271,7 +271,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_zipcode" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Postcode:</label>
+					<label for="oxfam_zipcode" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels.">Postcode:</label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_zipcode" class="text-input" value="<?php echo get_oxfam_shop_data('zipcode'); ?>" readonly>
@@ -279,7 +279,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_city" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Gemeente:</label>
+					<label for="oxfam_city" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels.">Gemeente:</label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_city" class="text-input" value="<?php echo get_oxfam_shop_data('city'); ?>" readonly>
@@ -287,7 +287,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_city" title="Zie je een fout staan? Werk je telefoonnummer bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Telefoonnummer: <?php if ( isset($phone_warning) ) echo $phone_warning; ?></label>
+					<label for="oxfam_city" title="Zie je een fout staan? Werk je telefoonnummer bij op de publieke site van Oxfam-Wereldwinkels.">Telefoonnummer: <?php if ( isset($phone_warning) ) echo $phone_warning; ?></label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_telephone" class="text-input" value="<?php echo get_oxfam_shop_data('telephone'); ?>" readonly>

@@ -61,6 +61,12 @@
 		}
 	}
 
+	// Stel default productcategorie in
+	$term = get_term_by( 'slug', 'geschenken', 'product_cat' );
+	if ( $term !== false ) {
+		update_option( 'default_product_cat', $term->term_id );
+	}
+
 	// Verwijder partners
 	$taxonomy = 'product_partner';
 	if ( taxonomy_exists( $taxonomy ) ) {

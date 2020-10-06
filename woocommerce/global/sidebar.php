@@ -63,7 +63,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 					// Nadeel: zelfde code moet toegevoegd worden aan woocommerce/ajax/shop-full.php voor AJAX reload
 					
 					// Wrapper argumenten, zie https://developer.wordpress.org/reference/functions/the_widget/
-					// Of gewoon CSS aanpassen?
 					$args = array( 'before_widget' => '<li class="widget %s">', 'after_widget' => '</li>', 'before_title' => '<h3 class="nm-widget-title">', 'after_title' => '</h3>' );
 
 					the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );

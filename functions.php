@@ -8,6 +8,19 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Als we AJAX-reload uitschakelen in theme, duiken plots SelectWoo-dropdowns op
+	add_action( 'wp_enqueue_scripts', 'woo_dequeue_select2', 100 );
+
+	function woo_dequeue_select2() {
+		if ( class_exists( 'woocommerce' ) ) {
+			wp_dequeue_style( 'select2' );
+			wp_deregister_style( 'select2' );
+
+			wp_dequeue_script( 'selectWoo');
+			wp_deregister_script('selectWoo');
+		} 
+	}
+
 	// Wordt zowel doorlopen in woocommerce/ajax/shop-full.php als woocommerce/archive-product.php?
 	add_action( 'woocommerce_before_shop_loop', 'add_custom_dropdown_filters_per_category' );
 
@@ -68,7 +81,7 @@
 				$page[1] = 'https://'.OXFAM_MAIN_SITE_DOMAIN.'/';
 			} elseif ( $page[0] === 'Producten' and ! is_main_site() ) {
 				// Prepend de lokale homepage van de huidige webshop
-				$new_crumbs[] = array( 0 => 'Webshop '.get_webshop_name(), 1 => get_site_url() );
+				$new_crumbs[] = array( 0 => 'Webshop '.get_webshop_name(true), 1 => get_site_url() );
 			}
 			$new_crumbs[] = $page;
 		}
@@ -2471,7 +2484,7 @@
 				case stristr( $shipping_method['method_id'], 'flat_rate' ):
 					
 					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_webshop_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -2495,7 +2508,7 @@
 				case stristr( $shipping_method['method_id'], 'b2b_home_delivery' ):
 
 					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_webshop_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 					break;
 
 				case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
@@ -2503,7 +2516,7 @@
 					// Verwijzen naar postpunt
 					$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
 					$service_point_info = explode ( '|', $service_point['extra'] );
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( str_replace( 'Oxfam-Wereldwinkel ', '', get_webshop_name() ) ) );
+					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -6085,8 +6098,12 @@
 		}
 	}
 
-	function get_webshop_name() {
-		return get_bloginfo('name');
+	function get_webshop_name( $shortened = false ) {
+		$webshop_name = get_bloginfo('name');
+		if ( $shortened ) {
+			$webshop_name = str_replace( 'Oxfam-Wereldwinkel ', '', $webshop_name );
+		}
+		return $webshop_name;
 	}
 
 	function get_webshop_email() {

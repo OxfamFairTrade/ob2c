@@ -69,9 +69,9 @@ $is_product_taxonomy = ( is_product_taxonomy() ) ? true : false;
 
         $args = array( 'before_widget' => '<li class="widget %s">', 'after_widget' => '</li>', 'before_title' => '<h3 class="nm-widget-title">', 'after_title' => '</h3>' );
 
-        the_widget( 'WC_Widget_Layered_Nav_Filters', array( 'title' => 'Actieve filters' ), $args );
+        the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );
         the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
-        the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'diets' ), $args );
+        the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'preferences' ), $args );
         the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );
     ?>
 </ul>
