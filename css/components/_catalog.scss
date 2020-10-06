@@ -61,6 +61,15 @@
         background-color: $new-green;
         border-color: $new-green;
       }
+
+      &.chosen:after {
+        content: "X";
+        color: $red-promo;
+        display: inline-block;
+        padding-left: 10px;
+        position: absolute;
+        right: 0;
+      }
     }
   }
 
@@ -114,10 +123,20 @@
           
           & > a {
             border-width: 0;
+            color: $new-green;
 
             &:before {
               background-color: $new-green;
               border-color: $new-green;
+            }
+
+            &:after {
+              content: "X";
+              color: $red-promo;
+              display: inline-block;
+              padding-left: 10px;
+              position: absolute;
+              right: 0;
             }
           }
         }
@@ -159,10 +178,9 @@
       margin-bottom: 0;
     }
 
-    // li.current-cat-parent,
     li.current-cat {
       > a {
-        color: $black;
+        color: $new-green;
         position: relative;
         padding-right: 20px;
         width: 100%;
