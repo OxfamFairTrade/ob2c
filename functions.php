@@ -52,7 +52,7 @@
 	}
 
 	// Pas de labels bij non-selectie van een dropdown aan
-	add_filter( 'woocommerce_layered_nav_any_label', 'tweak_layered_nav_any_labels' );
+	add_filter( 'woocommerce_layered_nav_any_label', 'tweak_layered_nav_any_labels', 10, 3 );
 
 	function tweak_layered_nav_any_labels( $label, $raw_label, $taxonomy ) {
 		switch ( $taxonomy->name ) {

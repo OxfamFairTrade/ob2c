@@ -74,6 +74,14 @@
   }
 
   #nm-shop-widgets-ul {
+    .widget_layered_nav_filters {
+      position: relative;
+
+      a:before {
+        content: none;
+      }
+    }
+
     .nm-widget-title {
       color: $black;
       font-size: 21.25px;
