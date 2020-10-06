@@ -5152,6 +5152,7 @@
 			$meta_data[ $key ] = $data['master_product']->get_meta( $key );
 		}
 		
+		// '_upsell_ids' en '_crosssell_ids' worden in principe door WooMultistore zelf onderhouden
 		$keys_to_translate = array( '_force_sell_ids', '_force_sell_synced_ids' );
 		foreach ( $keys_to_translate as $key ) {
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
