@@ -5168,15 +5168,21 @@
 		 *
 		 * @return array
 		 */
-		$meta_data['_in_bestelweb'] = $data['master_product']->get_meta('_in_bestelweb');
-		$meta_data['_shopplus_code'] = $data['master_product']->get_meta('_shopplus_code');
-		write_log( implode( ',', $meta_data ) );
+		
+		$keys_to_sync( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share' );
+		foreach ( $keys_to_sync as $key ) {
+			$meta_data[ $key ] = $data['master_product']->get_meta( $key );
+		}
+		
+		foreach ( $meta_data as $key => $value ) {
+			write_log( $key.' => '.$value );
+		}
+		
 		return $meta_data;
 	}
 
-
 	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import (hoge prioriteit = helemaal op het einde)
-	add_action( 'pmxi_saved_post', 'execute_product_sync', 50, 1 );
+	// add_action( 'pmxi_saved_post', 'execute_product_sync', 50, 1 );
 	
 	function execute_product_sync( $post_id ) {
 		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
