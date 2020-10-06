@@ -23,7 +23,7 @@ form.woocommerce-checkout {
   }
 
   span.optional {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -94,24 +94,24 @@ form.woocommerce-checkout {
     }
   }
 
-  #payment .payment_methods {
-    .wc_payment_method {
-      &.active {
-        background-color: $new-green;
-        color: white;
-
-        li label {
+    #payment .payment_methods {
+      .wc_payment_method {
+        &.active {
+          background-color: $new-green;
           color: white;
+
+          li label {
+            color: white !important;
+          }
+        }
+
+        .input-radio {
+          display: none !important;
+        }
+
+        .payment_box {
+          padding-left: 0;
         }
       }
-
-      .input-radio {
-        display: none !important;
-      }
-
-      .payment_box {
-        padding-left: 0;
-      }
     }
-  }
 }
