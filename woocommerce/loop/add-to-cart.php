@@ -24,16 +24,12 @@ if ( is_b2b_customer() ) {
 	}
 }
 
-// GEWIJZIGD: Knop niet tonen bij voorraadstatus 'onbackorder'
-if ( ! $product->is_in_stock() ) {
-	echo 'Niet in assortiment';
-} elseif ( $product->is_on_backorder() ) {
-	echo 'Tijdelijk niet beschikbaar';
+// GEWIJZIGD: Store locator triggeren op hoofdniveau
+if ( is_main_site() ) {
+	echo '<a rel="nofollow" href="#" class="button product_type_simple store-selector-open"></a>';
 } else {
-	// GEWIJZIGD: Store locator triggeren op hoofdniveau
-	if ( is_main_site() ) {
-		echo '<a rel="nofollow" href="#" class="button product_type_simple store-selector-open"></a>';
-	} else {
+	// GEWIJZIGD: Knop niet tonen bij voorraadstatus 'onbackorder'
+	if ( $product->is_in_stock() ) {
 		echo apply_filters( 'woocommerce_loop_add_to_cart_link',
 			sprintf( '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',
 				esc_url( $product->add_to_cart_url() ),
@@ -43,5 +39,9 @@ if ( ! $product->is_in_stock() ) {
 				esc_html( $product->add_to_cart_text() )
 			),
 		$product, $args );
+	} elseif ( $product->is_on_backorder() ) {
+		echo 'Tijdelijk niet beschikbaar';
+	} else {
+		echo 'Niet in assortiment';
 	}
 }
