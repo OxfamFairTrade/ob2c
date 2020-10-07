@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Mini-cart
  *
  * Contains the markup for the mini-cart, used by the cart widget.
@@ -7,46 +7,55 @@
  * @see     https://docs.woocommerce.com/document/template-structure/
  * @author  WooThemes
  * @package WooCommerce/Templates
- * @version 2.5.0
-*/
-
+ * @version 3.7.0
+ NM: Modified */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-$nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-empty"' : '';
+global $nm_theme_options;
+
+$nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-empty"' : '';
 ?>
 
-<div id="nm-cart-panel"<?php echo $nm_cart_empty_class_attr; ?>>
+<div id="nm-cart-panel"<?php echo $nm_cart_empty_class_attr_escaped; ?>>
 
+<form id="nm-cart-panel-form" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post">
+    <?php
+        // Nonce field and cart URL needed for quantity inputs
+        wp_nonce_field( 'woocommerce-cart' );
+    ?>
+</form>
+    
 <div id="nm-cart-panel-loader">
-    <h5 class="nm-loader"><?php esc_html_e( 'Updating&hellip;', 'nm-framework' );//esc_html_e( 'Loading&hellip;', 'woocommerce' ); ?></h5>
+    <h5 class="nm-loader"><?php esc_html_e( 'Updating&hellip;', 'nm-framework' ); ?></h5>
 </div>
     
 <?php do_action( 'woocommerce_before_mini_cart' ); ?>
 
 <div class="nm-cart-panel-list-wrap">
 
-<ul class="cart_list product_list_widget <?php echo esc_attr( $args['list_class'] ); ?>">
+<ul class="woocommerce-mini-cart cart_list product_list_widget <?php echo esc_attr( $args['list_class'] ); ?>">
     
     <?php if ( ! WC()->cart->is_empty() ) : ?>
 
         <?php
+            do_action( 'woocommerce_before_mini_cart_contents' );
+    
             // GEWIJZIGD: Plaats het laatst toegevoegde product bovenaan door de te doorlopen array om te keren
-            foreach ( array_reverse(WC()->cart->get_cart()) as $cart_item_key => $cart_item ) {
+            foreach ( array_reverse( WC()->cart->get_cart() ) as $cart_item_key => $cart_item ) {
                 $_product     = apply_filters( 'woocommerce_cart_item_product', $cart_item['data'], $cart_item, $cart_item_key );
                 $product_id   = apply_filters( 'woocommerce_cart_item_product_id', $cart_item['product_id'], $cart_item, $cart_item_key );
 
                 if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_widget_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
-                    $product_name      = apply_filters( 'woocommerce_cart_item_name', $_product->get_title(), $cart_item, $cart_item_key );
+                    $product_name      = apply_filters( 'woocommerce_cart_item_name', $_product->get_name(), $cart_item, $cart_item_key );
                     $thumbnail         = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
                     //$product_price     = apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key );
                     $product_price     = apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key );
                     $product_permalink = apply_filters( 'woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink( $cart_item ) : '', $cart_item, $cart_item_key );
-
+                    
                     // NM
-                    $thumbnail = str_replace( array( 'http:', 'https:' ), '', $thumbnail );
-                    if ( ! $_product->is_visible() ) {
+                    if ( empty( $product_permalink ) ) {
                         $product_name = '<span class="nm-cart-panel-product-title">' . $product_name . '</span>';
                     } else {
                         $product_permalink = esc_url( $product_permalink );
@@ -54,16 +63,10 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                         $product_name = '<a href="' . $product_permalink . '" class="nm-cart-panel-product-title">' . $product_name . '</a>';
                     }
                     ?>
-                    <li id="nm-cart-panel-item-<?php echo esc_attr( $cart_item_key ); ?>" class="<?php echo esc_attr( apply_filters( 'woocommerce_mini_cart_item_class', 'mini_cart_item', $cart_item, $cart_item_key ) ); ?>">
+                    <li id="nm-cart-panel-item-<?php echo esc_attr( $cart_item_key ); ?>" class="woocommerce-mini-cart-item <?php echo esc_attr( apply_filters( 'woocommerce_mini_cart_item_class', 'mini_cart_item', $cart_item, $cart_item_key ) ); ?>">
                         <div class="nm-cart-panel-item-thumbnail">
-                            <?php
-                            // GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed
-                            if ( $_product->is_visible() or $_product->get_sku() === 'GIFT' ) {
-                                echo '<div class="nm-cart-panel-thumbnail-wrap">';
-                            } else {
-                                echo '<div class="nm-cart-panel-thumbnail-wrap empties">';
-                            }
-                            ?>
+                            <!-- GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed -->
+                            <div class="nm-cart-panel-thumbnail-wrap <?php echo ( ! $_product->is_visible() and $_product->get_sku() !== 'GIFT' ) ? 'empties' : ''; ?>">
                                 <?php echo $thumbnail; ?>
                                 <div class="nm-cart-panel-thumbnail-loader nm-loader"></div>
                             </div>
@@ -73,31 +76,28 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                             
                             <?php
                             echo apply_filters( 'woocommerce_cart_item_remove_link', sprintf(
-                                '<a href="%s" class="remove" title="%s" data-product_id="%s" data-product_sku="%s" data-cart-item-key="%s"><i class="nm-font nm-font-close2"></i></a>',    
-                                esc_url( WC()->cart->get_remove_url( $cart_item_key ) ),
-                                __( 'Remove this item', 'woocommerce' ),
+                                '<a href="%s" class="remove remove_from_cart_button" aria-label="%s" data-product_id="%s" data-cart_item_key="%s" data-product_sku="%s"><i class="nm-font nm-font-close2"></i></a>',
+                                esc_url( wc_get_cart_remove_url( $cart_item_key ) ),
+                                esc_attr__( 'Remove this item', 'woocommerce' ),
                                 esc_attr( $product_id ),
-                                esc_attr( $_product->get_sku() ),
-                                $cart_item_key
+                                esc_attr( $cart_item_key ),
+                                esc_attr( $_product->get_sku() )
                             ), $cart_item_key );
                             ?>
                             
                             <?php echo $product_name; ?>
                             <!-- GEWIJZIGD: Metadata zoals 'Hoort bij' niét tonen -->
-                            <?php // echo WC()->cart->get_item_data( $cart_item ); ?>
+                            <?php // echo wc_get_formatted_cart_item_data( $cart_item ); ?>
                             
                             <div class="nm-cart-panel-quantity-pricing">
                                 <!-- GEWIJZIGD: Niet tonen bij individueel verkochte cadeauverpakking -->
-                                <?php if ( $_product->is_sold_individually() and $_product->get_sku() !== 'GIFT' ) : ?>
+                                <?php if ( ! $nm_theme_options['cart_panel_quantity_arrows'] || ( $_product->is_sold_individually() ) and $_product->get_sku() !== 'GIFT' ) : ?>
                                     <?php
                                         echo apply_filters( 'woocommerce_widget_cart_item_quantity', '<span class="quantity">' . esc_html__( 'Qty', 'woocommerce' ) . ': ' . $cart_item['quantity'] . '</span>', $cart_item, $cart_item_key );
                                     ?>
-                                <?php endif; ?>
-                                <?php
-                                    // GEWIJZIGD: Hoeveelheidsknoppen niet tonen bij onzichtbaar leeggoed
-                                    if ( $_product->is_visible() ) :
-                                ?>
-                                    <div class="product-quantity" data-title="<?php _e( 'Quantity', 'woocommerce' ); ?>">
+                                <?php elseif ( $_product->is_visible() ) : ?>
+                                    <!-- GEWIJZIGD: Hoeveelheidsknoppen niet tonen bij onzichtbaar leeggoed -->
+                                    <div class="product-quantity" data-title="<?php esc_html_e( 'Quantity', 'woocommerce' ); ?>">
                                         <?php
                                             $product_quantity = woocommerce_quantity_input( array(
                                                 'input_name'  => "cart[{$cart_item_key}][qty]",
@@ -121,11 +121,13 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                     <?php
                 }
             }
+    
+            do_action( 'woocommerce_mini_cart_contents' );
         ?>
 
     <?php endif; ?>
 
-    <li class="empty"><?php _e( 'No products in the cart.', 'woocommerce' ); ?></li>
+    <li class="empty"><?php esc_html_e( 'No products in the cart.', 'woocommerce' ); ?></li>
 
 </ul><!-- end product list -->
 
@@ -137,7 +139,7 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
         
         <?php if ( ! WC()->cart->is_empty() ) : ?>
         
-        <p class="total">
+        <p class="woocommerce-mini-cart__total total">
             <strong><?php
                 $empties = false;
                 foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
@@ -148,9 +150,7 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                     } 
                 }
                
-                if ( floatval( WC()->cart->discount_cart ) > 0 ) {
-                // Vanaf WC 3.2+ gebruiken
-                // if ( WC()->cart->get_discount_total() ) > 0 ) {
+                if ( WC()->cart->get_discount_total() > 0 ) {
                     if ( $empties ) {
                         echo 'Subtotaal (incl. leeggoed, excl. korting):';
                     } else {
@@ -163,8 +163,6 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
                         echo 'Subtotaal:';
                     }
                 }
-                // write_log( wc_print_r( WC()->cart, true ) );
-                // echo '<br/>Shipping total: '.WC()->cart->shipping_total;
             ?></strong>
             <span class="nm-cart-panel-summary-subtotal">
                 <?php echo WC()->cart->get_cart_subtotal(); ?>
@@ -173,15 +171,15 @@ $nm_cart_empty_class_attr = ( WC()->cart->is_empty() ) ? ' class="nm-cart-panel-
 
         <?php do_action( 'woocommerce_widget_shopping_cart_before_buttons' ); ?>
 
-        <p class="buttons">
-            <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="button border wc-forward"><?php _e( 'View cart', 'woocommerce' ); ?></a>
-            <a href="<?php echo esc_url( wc_get_checkout_url() ); ?>" class="button checkout wc-forward"><?php _e( 'Checkout', 'woocommerce' ); ?></a>
+        <p class="woocommerce-mini-cart__buttons buttons">
+            <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="button border wc-forward"><?php esc_html_e( 'View cart', 'woocommerce' ); ?></a>
+            <a href="<?php echo esc_url( wc_get_checkout_url() ); ?>" class="button checkout wc-forward"><?php esc_html_e( 'Checkout', 'woocommerce' ); ?></a>
         </p>
         
         <?php endif; ?>
         
         <p class="buttons nm-cart-empty-button">
-            <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-panel-continue" class="button border"><?php _e( 'Continue shopping', 'woocommerce' ); ?></a>
+            <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-panel-continue" class="button border"><?php esc_html_e( 'Continue shopping', 'woocommerce' ); ?></a>
         </p>
         
     </div>

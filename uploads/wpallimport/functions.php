@@ -61,4 +61,44 @@
 		}
 		return $value;
 	}
+
+	function translate_tax( $tax_class ) {
+		if ( $tax_class === 'reduced' ) {
+			return 'voeding';
+		} elseif ( $tax_class === 'zero' ) {
+			return 'vrijgesteld';
+		}
+		return $tax_class;
+	}
+
+	function add_promo_tag( $tags, $from_date, $to_date ) {
+		if ( strtotime($from_date) !== false and strtotime($to_date) !== false ) {
+			if ( strtotime($from_date) < strtotime('today midnight') and strtotime($to_date) > strtotime('tomorrow midnight') ) {
+				$tags .= '|promotie';
+			}
+		} elseif ( strtotime($to_date) !== false ) {
+			// Eenmaal de 'vanaf'-datum gepasseerd is, wist WooCommerce dit automatisch!
+			if ( strtotime($to_date) > strtotime('tomorrow midnight') ) {
+				$tags .= '|promotie';
+			}
+		}
+		return $tags;
+	}
+
+	function merge_bio_status( $preferences, $bio ) {
+		if ( $bio === 'Ja' ) {
+			$preferences .= '|biologisch';
+		}
+		return $preferences;
+	}
+
+	function only_lowest_term( $string ) {
+		$parts = explode( '>', $string );
+		return $parts[count($parts)-1];
+	}
+
+	function replace_commas_with_pipes( $string ) {
+		$parts = explode( ', ', $string );
+		return implode( '|', $parts );
+	}
 ?>

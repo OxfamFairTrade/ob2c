@@ -16,23 +16,69 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="nm-shop-sidebar-col col-md-3 col-sm-12">
 	<div id="nm-shop-sidebar" class="nm-shop-sidebar" data-sidebar-layout="default">
 		<?php
-			// GEWIJZIGD: Link naar promoties toevoegen
-			$args = array(
-				// Parameter nog niet beschikbaar in WooCommerce 3.0!
-				// 'stock_status' => 'instock',
-				'include' => wc_get_product_ids_on_sale(),
-			);
-			$sale_products = wc_get_products( $args );
-			if ( count( $sale_products ) > 0 ) {
-				echo '<a href="'.get_site_url().'/tag/promotie/#shop"><p class="ob2c-sale-banner">Bekijk onze promoties</p></a>';
-			}
+			// Meegeven van argumenten vereist WP 5.5+
+			get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'sidebar' ) );
 		?>
-		<ul id="nm-shop-widgets-ul">
-			<?php
-				if ( is_active_sidebar( 'widgets-shop' ) ) {
-					dynamic_sidebar( 'widgets-shop' );
-				}
-			?>
-		</ul>
+
+		<div class="catalog-filters">
+			<div class="nm-shop-widget-col">
+				<h3 class="nm-widget-title">In de kijker</h3>
+				<?php
+					$args = array(
+						'stock_status' => 'instock',
+						'include' => wc_get_product_ids_on_sale(),
+					);
+					$sale_products = wc_get_products( $args );
+					if ( count( $sale_products ) > 0 ) {
+						if ( is_product_tag('promotie') ) {
+							$class = 'chosen';
+						}
+						$term_link = get_term_link( 'promotie', 'product_tag' );
+						if ( ! is_wp_error( $term_link ) ) {
+							echo '<a href="'.$term_link.'#nm-shop-products" class="'.$class.'"><span>Promoties #WeekVanDeFairTrade</span></a>';
+						}
+					}
+					// if ( is_product_tag('sinterklaas') ) {
+					// 	$class = 'chosen';
+					// }
+					// $term_link = get_term_link( 'sinterklaas', 'product_tag' );
+					// if ( ! is_wp_error( $term_link ) ) {
+					// 	echo '<a href="'.$term_link.'#nm-shop-products" class="'.$class.'"><span>Sinterklaas</span></a>';
+					// }
+				?>
+			</div>
+
+			<ul id="nm-shop-widgets-ul">
+				<?php
+					// Toon expliciet bepaalde widgets in plaats van sidebar 'widgets-shop' op te roepen
+					// Voordeel: instellingen moeten niet gesynchroniseerd worden over de webshops heen!
+					// Nadeel: zelfde code moet toegevoegd worden aan woocommerce/ajax/shop-full.php voor AJAX-reload
+					
+					// Zie https://developer.wordpress.org/reference/functions/the_widget/
+					$args = array(
+						'before_widget' => '<li class="widget %s">',
+						'after_widget' => '</li>',
+						'before_title' => '<h3 class="nm-widget-title">',
+						'after_title' => '</h3><span class="reset-filters"><a href="'.get_permalink( wc_get_page_id('shop') ).'">Wis alle filters</a></span>',
+					);
+					the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );
+					$args['after_title'] = '</h3>';
+					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
+					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'preferences' ), $args );
+					// Duidelijk een probleem met het tellen van de termen ...
+					// var_dump_pre( get_terms( 'pa_countries', array( 'hide_empty' => '0' ) ) );
+					// _wc_term_recount( get_terms( 'pa_countries', array( 'hide_empty' => '0' ) ), get_taxonomy('pa_countries'), true, false );
+					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );
+				?>
+			</ul>
+
+			<div class="mobile-only"><span class="btn close-filter">Sluiten</span></div>
+		</div>
+
+		<?php the_widget( 'WC_Widget_Recently_Viewed', array( 'title' => 'Laatst bekeken', 'number' => 4 ) ); ?>
+
+		<div class="nm-shop-widget-col">
+			<span class="btn toggle-filter">Filteren</span>
+		</div>
 	</div>
 </div>

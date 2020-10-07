@@ -1,0 +1,531 @@
+
+
+// Products
+// --------------------------------------------------
+
+// Product detail
+
+.product {
+  .nm-shop-loop-thumbnail-link,
+  .woocommerce-product-gallery {
+    position: relative;
+
+    .info-labels {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 999;
+
+      .info-label {
+        display: inline-block;
+        margin: 0 0 6px 0;
+        padding: 5.95px 8.925px;
+        font-size: 14px;
+        line-height: 16px;
+        background: $white;
+        color: $black;
+        border: 1px solid $black;
+        float: right;
+        clear: both;
+
+        &.promotion {
+          color: $red-promo;
+          border-color: $red-promo;
+        }
+
+        &.newbee {
+          color: $yellow-new;
+          border-color: $yellow-new;
+        }
+
+        &.organic {
+          color: $green-bio;
+          border-color: $green-bio;
+        }
+
+        &.pickup-only {
+          color: $see-through-blue;
+          border-color: $see-through-blue;
+        }
+      }
+    }
+  }
+
+  .nm-shop-loop-thumbnail-link {
+    .info-labels {
+      .info-label {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .related.products {
+    > .nm-row {
+      width: 1370px;
+      margin: 0 auto;
+
+      @media (max-width: 1600px) {
+        width: 1170px;
+      }
+
+      @media (max-width: 1200px) {
+        width: 970px;
+      }
+
+      @media (max-width: 991px) {
+        width: 750px;
+        padding: 0 20px;
+      }
+
+      @media (max-width: 767px) {
+        width:100%;
+      }
+    }
+  }
+
+  .summary {
+    padding-top: 0 !important;
+
+    .price span.amount {
+      font-size: 26.5625px;
+      color: $green-price;
+      font-weight: bold;
+    }
+
+    p.price {
+      padding-bottom: 0;
+
+      .woocommerce-price-suffix {
+        color: gray;
+      }
+    }
+
+    button.button {
+      width: auto;
+      display: inline-block;
+      vertical-align: top;
+
+      font-weight: bold;
+      padding: 10.5px 10.5px 10.5px 42px;
+      margin-right: 0;
+      margin-bottom: 21px;
+      line-height: 22.4px;
+      color: $white;
+      border: none;
+      background: url(/wp-content/themes/oxfam-webshop/images/shop.svg) no-repeat left 10.5px center $red-promo;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    .nm-quantity-wrap {
+      width: auto;
+      display: inline-block;
+      border: 1px solid #dadada;
+    }
+  }
+
+  p {
+    font-size: 17px;
+    line-height: 24px;
+
+    &.herkomst {
+
+    }
+
+    &.promotie {
+      margin: 28px 0;
+      padding: 14px;
+      color: $see-through-red;
+      border: 2px solid $see-through-red;
+      border-radius: 3px;
+      position: relative;
+      font-size: 14px;
+      line-height: 17.5px;
+
+      &:before {
+        content: 'Promo!';
+        position: absolute;
+        color: $pale-black;
+        font-family: 'Pacifico', cursive;
+        font-size: 17.5px;
+        line-height: 17.5px;
+        top: -26.25px;
+        right: 8.75px;
+        transform: rotate(-5deg);
+        z-index: 50;
+      }
+    }
+
+    &.weight,
+    &.unit-price {
+      display: inline-block;
+      color: gray;
+      font-size: 15.3px;
+      margin-right: 7.65px;
+    }
+  }
+
+  .product-origin-block {
+    margin-bottom: 30.6px;
+    margin-top: 30.6px;
+    font-weight: bold;
+  }
+
+  .wc-force-sells {
+    color: gray;
+    margin: 0 0 17px 0;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.4;
+
+    > p {
+      margin-bottom: 0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    > ul {
+      margin-left: 30px;
+    }
+  }
+}
+
+div.nm-single-product.product {
+  > .nm-single-product-bg {
+    background: transparent;
+    max-width: 1370px;
+    margin: 0 auto;
+
+    @media (min-width: 1601px) {
+      max-width: 1370px;
+    }
+
+    @media (max-width: 1600px) {
+      max-width: 1170px;
+    }
+
+    @media (max-width: 1200px) {
+      max-width: 970px;
+    }
+
+    > .nm-single-product-top {
+      padding-top: 0;
+      width: 1370px;
+      margin: 0 auto;
+
+      @media (max-width: 1600px) {
+        width: 1170px;
+      }
+
+      @media (max-width: 1200px) {
+        width: 970px;
+      }
+
+      @media (max-width: 991px) {
+        width: 710px;
+      }
+
+      @media (max-width: 768px) {
+        width: 750px;
+        padding: 0 20px;
+        max-width: calc(100% - 24px);
+      }
+
+      > .nm-row {
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: -12px;
+        margin-right: -12px;
+      }
+    }
+  }
+
+  .nm-single-product-summary-row {
+    padding: 0;
+
+    .nm-single-product-summary-col {
+      padding: 0 !important;
+
+      > .woocommerce-product-gallery {
+        width: 66.666666% !important;
+        margin: 0 auto;
+
+        @media (min-width: 992px) {
+          padding-right: 12px;
+          width: 33.333334% !important;
+        }
+
+        > .woocommerce-product-gallery__wrapper {
+          max-width: 100%;
+        }
+      }
+
+      > .summary {
+        width: 66.6666666%;
+        padding-left: 12px;
+
+        > .nm-product-summary-inner-col {
+          float: none;
+          width: 100%;
+
+          > .woocommerce-product-details__short-description[data-readmore=""] {
+            margin-bottom: 24px;
+            padding-bottom: 0;
+            position: relative;
+
+            &:after {
+              content: "";
+              background: linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              height: 24px;
+              opacity: 1;
+              transition: all .1s;
+            }
+          }
+
+          > .woocommerce-product-details__short-description[data-readmore=""][aria-expanded="true"] {
+            &:after {
+              opacity: 0;
+            }
+          }
+
+          > .woocommerce-product-details__short-description[data-readmore=""][aria-expanded="true"] + a[data-readmore-toggle]:after {
+            transform: rotate(180deg);
+          }
+
+          a[data-readmore-toggle] {
+            margin-bottom: 24px;
+            margin-top: 24px;
+
+            text-decoration: underline;
+
+            &:after {
+              background: url(/wp-content/themes/oxfam-webshop/images/arrow-down-black.svg) no-repeat center center transparent;
+              content: "";
+              display: inline-block;
+              line-height: 24px;
+              height: 24px;
+              vertical-align: top;
+              width: 24px;
+            }
+          }
+        }
+
+        @media (min-width: 768px) {
+          display: flex;
+          flex-wrap: wrap;
+
+          > .nm-product-summary-inner-col-1 {
+            width: 100%;
+          }
+
+          > .nm-product-summary-inner-col-2 {
+            padding-right: 12px;
+          }
+
+          > .nm-product-summary-inner-col-2 {
+            width: calc(100% - 290px);
+          }
+
+          > .selected-store {
+            margin-top: 6px;
+            width: 290px;
+          }
+        }
+      }
+    }
+  }
+
+  .woocommerce-breadcrumb {
+    font-size: 12.75px;
+    line-height: normal;
+    color: $black;
+  }
+
+  .product_title {
+    font-size: 34px;
+    margin-bottom: 28px;
+    line-height: 1.2;
+
+    @media (min-width: 992px) {
+      margin-top: 0;
+    }
+  }
+}
+
+// Product detail block
+.full-width-container {
+  background: whitesmoke;
+  margin: 0 auto;
+  padding: 17px 0;
+}
+
+.product-details-block {
+  font-size: 15.3px;
+
+  h4 {
+    font-size: 15.3px;
+    margin: 0;
+  }
+
+  h3 {
+    font-size: 19.125px;
+  }
+
+  table {
+    margin-top: 0.5em;
+
+    th,
+    td {
+      border-left: none;
+      border-right: none;
+      padding-right: 0;
+    }
+
+    td:first-child {
+      padding-left: 0;
+    }
+  }
+
+  .extra-info {
+    @media (min-width: 992px) {
+      margin-top: 30.6px;
+    }
+
+    ul {
+      margin: 0 0 7.65px 0;
+      padding-left: 2px;
+      list-style-position: inside;
+    }
+
+    .icons {
+      .icon {
+        display: inline-block;
+        margin-right: 0.5em;
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 30.6px;
+        height: 30.6px;
+      }
+    }
+
+    .ingredients {
+      .legend {
+        font-style: italic;
+        display: inline-block;
+        line-height: 15.3px;
+      }
+    }
+
+    ul.ingredients {
+      li {
+        list-style: inside disc;
+      }
+    }
+  }
+
+  .product-info-panel{
+    margin-top: 20px;
+  }
+
+  .partner-info {
+    margin-top: 30.6px;
+
+    @media (min-width: 992px) {
+      margin-bottom: 30.6px;
+    }
+
+    img {
+      height: 250px;
+      width: 100%;
+      max-width: 440px;
+      object-fit: cover;
+    }
+
+    ul {
+      margin: 15.3px 0;
+      padding-left: 2px;
+      list-style-position: inside;
+
+      li {
+        list-style: inside disc;
+      }
+    }
+
+    a {
+      color: $black;
+
+      @media (max-width: 991px) {
+        margin-bottom: 20px;
+        display: inline-block;
+      }
+    }
+
+    blockquote {
+      margin: 0;
+      padding: 0 0 19.125px 19.125px;
+      background-color: transparent;
+      color: #1b1b1b;
+      font-size: 19.125px;
+      font-weight: bold;
+
+      &:before {
+        display: none;
+      }
+
+      footer {
+        display: block;
+        margin-top: 1em;
+        font-size: 0.75em;
+        font-weight: normal;
+      }
+    }
+  }
+}
+
+// Related products
+.slick-track,
+.nm-products {
+  > .product {
+    .woocommerce-loop-product__title {
+      padding-right: 0;
+
+      > a {
+        display: inline-block;
+        font-size: 18px;
+        width: 100%;
+      }
+    }
+
+    .nm-shop-loop-details {
+      position: relative;
+    }
+
+    .nm-shop-loop-actions {
+      > .button {
+        display: inline-block;
+        width: 30px;
+        height: 26px;
+
+        text-indent: 100%;
+        overflow: hidden;
+
+        background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
+        background-size: 30px 26px;
+        border: 0;
+
+        position: absolute;
+        right: 0;
+        bottom: 3px;
+
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+}

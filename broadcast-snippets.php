@@ -2,6 +2,21 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
+	// Migreer productattributen naar metadata
+	$args = array(
+		'limit' => -1,
+	);
+	$all_products = wc_get_products( $args );
+	$to_migrate = array( 'shopplus' => '_shopplus_code', 'barcode' => '_cu_ean', 'ompak' => '_multiple', 'eenheid' => '_stat_uom', 'fairtrade' => '_fairtrade_share' );
+	foreach ( $all_products as $product ) {
+		if ( $product->get_meta('_in_bestelweb') !== 'ja' ) {
+			foreach ( $to_migrate as $attribute => $meta_key ) {
+				$product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
+			}
+			$product->save();
+		}
+	}
+
 	// Verwijder deprecated metadata op producten
 	global $wpdb;
 	$to_delete = array( 'fb_product_group_id', 'fb_product_item_id', 'fb_product_description', 'fb_visibility', 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean' );
@@ -11,26 +26,17 @@
 
 	// Verwijder deprecated productattributen
 	global $wpdb;	
-	$to_delete = array( 'choavl', 'ener', 'famscis', 'fapucis', 'fasat', 'fat', 'fibtg', 'polyl', 'pro', 'salteq', 'starch', 'sugar' );
+	$to_delete = array( 'shopplus', 'barcode', 'ompak', 'eenheid', 'fairtrade' );
 	foreach ( $to_delete as $slug ) {
-		$attribute_id = absint( wc_attribute_taxonomy_id_by_name($slug) );
-		// wc_delete_attribute($id) bestaat pas vanaf WC3.2+ dus code letterlijk overnemen (zonder check_admin_referer)
-		$attribute_name = $wpdb->get_var( "SELECT attribute_name FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_id = $attribute_id" );
-		$taxonomy = wc_attribute_taxonomy_name( $attribute_name );
-		do_action( 'woocommerce_before_attribute_delete', $attribute_id, $attribute_name, $taxonomy );
-		if ( $attribute_name && $wpdb->query( "DELETE FROM {$wpdb->prefix}woocommerce_attribute_taxonomies WHERE attribute_id = $attribute_id" ) ) {
-			if ( taxonomy_exists( $taxonomy ) ) {
-				$terms = get_terms( $taxonomy, 'orderby=name&hide_empty=0' );
-				foreach ( $terms as $term ) {
-					wp_delete_term( $term->term_id, $taxonomy );
-				}
+		$attribute_id = absint( wc_attribute_taxonomy_id_by_name( $slug ) );
+		if ( $attribute_id > 0 ) {
+			// Bestaat pas vanaf WC 3.2+
+			if ( wc_delete_attribute( $attribute_id ) ) {
+				write_log("DELETED ATTRIBUTE ".$slug);
+			} else {
+				write_log("COULD NOT DELETE ATTRIBUTE ".$slug);
 			}
-			do_action( 'woocommerce_attribute_deleted', $attribute_id, $attribute_name, $taxonomy );
-			delete_transient( 'wc_attribute_taxonomies' );
-			write_log("DELETED ".$attribute_name." (".$attribute_id.")<br/>");
-		} else {
-			write_log("COULD NOT DELETE ".$attribute_name." (".$attribute_id.")<br/>");
-		}	
+		}
 	}
 
 	// Verwijder producttags
@@ -47,18 +53,42 @@
 		}
 	}
 
+	// Werk productcategorie bij
+	$taxonomy = 'product_cat';
+	if ( taxonomy_exists( $taxonomy ) ) {
+		$terms = array( 'snacks-drinks' );
+		foreach ( $terms as $term ) {
+			$term_to_update = get_term_by( 'slug', $term, $taxonomy );
+			if ( $term_to_update !== false ) {
+				if ( is_wp_error( wp_update_term( $term_to_update->term_id, $taxonomy, array( 'slug' => 'snacks', 'name' => 'Snacks' ) ) ) ) {
+					write_log("COULD NOT UPDATE ".$term_to_update->name);
+				}
+			} else {
+				write_log("TERM ".$term." NOT FOUND");
+			}
+		}
+	}
+
 	// Verwijder productcategorieën
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'builtjes-thee', 'los-thee', 'repen-chocolade', 'tabletten-chocolade' );
+		$terms = array( 'koffie-thee', 'capsules', 'geen-categorie' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
-			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
-				// OK
+			if ( $term_to_update !== false ) {
+				if ( ! wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+					write_log("COULD NOT DELETE ".$term_to_delete->name);
+				}
 			} else {
-				write_log("COULD NOT DELETE ".$term_to_delete->name);
+				write_log("TERM ".$term." NOT FOUND");
 			}
 		}
+	}
+
+	// Stel default productcategorie in
+	$term = get_term_by( 'slug', 'geschenken', 'product_cat' );
+	if ( $term !== false ) {
+		update_option( 'default_product_cat', $term->term_id );
 	}
 
 	// Verwijder partners
@@ -208,7 +238,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '27057', '20610' );
+	$photos_to_delete = array( '20063', '20249', '20258', '24646', '25617' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
@@ -332,7 +362,7 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 	restore_current_blog();
 	if ( is_array($mail_settings) ) {
 		$mail_settings['enabled'] = 'yes';
-		$mail_settings['recipient'] =  get_company_email();
+		$mail_settings['recipient'] =  get_webshop_email();
 		$mail_settings['subject'] = 'Actie vereist: nieuwe online bestelling ({order_number}) – {order_date}';
 		$mail_settings['heading'] = 'Hoera, een nieuwe bestelling!';
 		update_option( 'woocommerce_new_order_settings', $mail_settings );
@@ -453,10 +483,16 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 
 	// Individuele Mollie-instelling wijzigen
 	// Tip: volgorde van betaalmethodes wordt bewaard in 'woocommerce_gateway_order'
-	$bancontact = get_option('mollie_wc_gateway_mistercash_settings');
-	if ( is_array( $bancontact ) ) {
-		$bancontact['description'] = 'Betaal snel en veilig met je Belgische bankkaart. Hou je kaartlezer klaar, of scan de QR-code met je Payconiq-app!';
-		update_option( 'mollie_wc_gateway_mistercash_settings', $bancontact );
+	$gateway = get_option('mollie_wc_gateway_bancontact_settings');
+	$gateway = get_option('mollie_wc_gateway_kbc_settings');
+	$gateway = get_option('mollie_wc_gateway_belfius_settings');
+	$gateway = get_option('mollie_wc_gateway_inghomepay_settings');
+	$gateway = get_option('mollie_wc_gateway_applepay_settings');
+	$gateway = get_option('mollie_wc_gateway_creditcard_settings');
+	$gateway = get_option('mollie_wc_gateway_ideal_settings');
+	if ( is_array( $gateway ) ) {
+		$gateway['description'] = 'Betaal snel en veilig met je Belgische bankkaart. Hou je kaartlezer klaar, of scan de QR-code met je Payconiq-app!';
+		update_option( 'mollie_wc_gateway_bancontact_settings', $gateway );
 	}
 
 	// Tabel met stopwoorden kopiëren

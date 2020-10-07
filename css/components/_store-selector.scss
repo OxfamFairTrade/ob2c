@@ -1,0 +1,178 @@
+
+
+// Store selector
+// --------------------------------------------------
+
+.selected-store {
+  background: #eeeded;
+  border: 1px solid $new-green;
+  color: #000000;
+  margin-top: 17px;
+  padding: 30px 20px 20px;
+  position: relative;
+  font-size: 15px;
+  line-height: 25px;
+
+  .pointer {
+    color: #FFFFFF;
+    font-size: 12px;
+    line-height: 12px;
+    padding: 7px 8px 7px 16px;
+    position: absolute;
+    text-transform: uppercase;
+    top: -13px;
+    left: 9px;
+
+    @media (max-width: 992px) {
+      left: 47px;
+    }
+
+    &:before {
+      content: "";
+      background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center $new-green;
+      background-size: 37px;
+      border-radius: 50%;
+      height: 37px;
+      width: 37px;
+      position: absolute;
+      left: -27px;
+      top: -5px;
+    }
+  }
+
+  &.ok {
+    border-color: $new-green;
+
+    .pointer {
+      background: $new-green;
+
+      &:before {
+        background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center $new-green;
+      }
+    }
+  }
+
+  &.not-ok {
+    border-color: $red-promo;
+
+    .pointer {
+      background: $red-promo;
+      left: 47px;
+      padding: 0;
+
+      &:before {
+        background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center $red-promo;
+      }
+    }
+
+    .store-selector-open {
+      opacity: 1;
+    }
+  }
+
+  .shop-name {
+    margin-bottom: 10px;
+    text-decoration: underline;
+  }
+
+  .shop-address {
+    margin-bottom: 10px;
+  }
+
+  .delivery-options {
+    margin-bottom: 10px;
+
+    > li {
+      padding: 0 !important;
+      margin: 0 5px 0 0 !important;
+      display: inline-block;
+
+      &:before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 24px;
+        vertical-align: top;
+        line-height: 24px;
+        margin-right: 4px;
+      }
+
+      &.active {
+        &:before {
+          background: url(/wp-content/themes/oxfam-webshop/images/checkmark-green.svg) no-repeat center center transparent;
+          background-size: contain;
+        }
+      }
+
+      &.inactive {
+        &:before {
+          background: url(/wp-content/themes/oxfam-webshop/images/x-red.svg) no-repeat center center transparent;
+          background-size: contain;
+        }
+      }
+    }
+  }
+
+  .store-selector-open {
+    opacity: 0.54;
+    text-decoration: underline;
+
+    button {
+      background-color: rgba(91, 91, 91, 1);
+      border: 0;
+      font-size: 15px;
+      color: #FFFFFF;
+      padding: 5px 20px;
+      border-radius: 4px;
+    }
+  }
+
+  .store-selector-erase {
+    position: absolute;
+    height: 37px;
+    width: 37px;
+    right: -17px;
+    top: -17px;
+    background-image: url(/wp-content/themes/oxfam-webshop/images/x.svg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 26px 26px;
+    border-radius: 50%;
+    background-color: red;
+  }
+
+  .opening-hours-title {
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    &:before {
+      content: "";
+      background: url(/wp-content/themes/oxfam-webshop/images/clock.svg) no-repeat center center transparent;
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      top: 2px;
+      position: relative;
+      margin-right: 6px;
+    }
+  }
+
+  table.wpsl-opening-hours {
+    margin-left: 20px;
+    margin-bottom: 10px;
+
+    td,
+    th,
+    tr {
+      border: none;
+    }
+
+    tr {
+      border-bottom: 10px solid transparent;
+    }
+  }
+
+  .next-steps {
+    font-weight: bold;
+  }
+}

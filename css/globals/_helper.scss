@@ -1,0 +1,47 @@
+
+
+// Helper classes
+// --------------------------------------------------
+
+.clearfix {
+  clear: both;
+}
+
+.hidden {
+  display: none;
+}
+
+.disabled {
+  opacity: 0.3;
+}
+
+.alignnone {
+  margin-bottom: 25px;
+}
+
+.alignleft {
+  float: left;
+  margin: 0 25px 25px 0;
+}
+
+.alignright {
+  float: right;
+  margin: 0 0 25px 25px;
+}
+
+.aligncenter {
+  display: block;
+  margin: 0 auto 25px;
+}
+
+.wp-caption {
+  max-width: 100%;
+  margin-bottom: 25px;
+}
+
+.wp-caption .wp-caption-text {
+  margin-bottom: 0;
+  padding: 5px;
+  font-style: italic;
+  text-align: center;
+}

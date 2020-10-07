@@ -1,0 +1,86 @@
+
+
+// Product slider
+// --------------------------------------------------
+
+.nm-product-slider {
+  .slick-dots {
+    padding: 1em;
+
+    li.slick-active button {
+      border-color: black;
+    }
+  }
+
+  $icon-dimension: 40px;
+
+  .slick-prev,
+  .slick-next {
+    color: transparent !important;
+    opacity: 1 !important;
+    margin-top: 0 !important;
+    width: $icon-dimension;
+    height: $icon-dimension;
+    background: $oxfam-green;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    top: 140px;
+
+    i {
+      display: none;
+    }
+
+    &:before {
+      font-family: 'nm-font';
+      content: "\e600";
+      color: $white;
+      position: relative;
+      font-size: $icon-dimension;
+      width: $icon-dimension;
+      height: 32px;
+      line-height: $icon-dimension;
+      text-align: center;
+    }
+  }
+
+  .slick-next:before {
+    content: "\e601";
+    left: 0;
+  }
+
+  .slick-slider {
+    &:hover {
+      .slick-prev {
+        left: 10px;
+      }
+
+      .slick-next {
+        right: 10px;
+      }
+    }
+  }
+}
+
+/* Arrows */
+.nm-product-slider .slick-slider:hover .slick-prev,
+.nm-product-slider .slick-prev {
+  left: -8px !important;
+}
+.nm-product-slider .slick-slider:hover .slick-next,
+.nm-product-slider .slick-next {
+  right: -8px !important;;
+}
+
+@media (max-width: 991px) {
+  /* Arrows */
+  .nm-product-slider .slick-slider:hover .slick-prev,
+  .nm-product-slider .slick-prev {
+    left: 10px !important;;
+  }
+  .nm-product-slider .slick-slider:hover .slick-next,
+  .nm-product-slider .slick-next {
+    right: 10px !important;;
+  }
+}

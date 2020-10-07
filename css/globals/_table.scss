@@ -1,0 +1,90 @@
+
+
+// Table elements
+// --------------------------------------------------
+
+
+table {
+  width: 100%;
+  margin: 0 0 30px;
+  padding: 0;
+  border-spacing: 0;
+  border-collapse: collapse;
+  border: none;
+
+  th, td {
+    padding: 0.6em 1.2em;
+    text-align: left;
+    font-size: 0.9em;
+    line-height: normal;
+  }
+
+  thead {
+    tr {
+      border-top: 1px solid $black;
+      border-bottom: 1px solid $black;
+
+      &:first-child {
+        border-top: none;
+      }
+    }
+
+    th {
+      font-weight: bold;
+      border-left: 1px solid $black;
+      border-right: 1px solid $black;
+
+      span {
+        // display: block;
+        // position: relative;
+      }
+
+      &:first-child {
+        border-left: none;
+        padding-left: 0;
+      }
+
+      &:last-child {
+        border-right: none;
+
+        span:after {
+          display: none;
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-top: 1px solid $black;
+      border-bottom: 1px solid $black;
+
+      &:nth-child(even) {
+        // background: #F3F3F3;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      border-left: 1px solid $black;
+      border-right: 1px solid $black;
+
+      span {
+        // display: block;
+        // min-height: 46px;
+      }
+
+      &:first-child {
+        border-left: none;
+        padding-left: 0;
+      }
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+}

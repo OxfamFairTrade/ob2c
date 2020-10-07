@@ -1,0 +1,73 @@
+
+
+// Tooltips
+// --------------------------------------------------
+
+.ui-tooltip {
+  padding: 0 !important;
+  position: absolute;
+  z-index: 9999;
+  max-width: 300px;
+  -webkit-box-shadow: 0 0 2px #aaa;
+  box-shadow: 0 0 2px #aaa;
+  border: 0 !important;
+
+  > .ui-tooltip-content {
+    background-color: #282828;
+    color: white;
+    font-size: 0.6em;
+    line-height: 1.2em;
+    border-radius: 3px;
+    padding: 0.6em 1em 1em 1em;
+  }
+}
+
+
+
+label,
+.shipping-explanation {
+  .tooltip {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    margin-left: 0.25em;
+    cursor: help;
+
+   /* &:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }*/
+
+    /*.tooltiptext {
+      visibility: hidden;
+      width: 250px;
+      background-color: #282828;
+      color: white;
+      font-size: 0.6em;
+      line-height: 1.2em;
+      border-radius: 3px;
+      padding: 0.6em 1em 1em 1em;
+
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      // Vermijd dat het uit beeld gaat op mobiel
+      margin-left: -240px;
+
+      opacity: 0;
+      transition: opacity 0.5s;
+
+      // Puntje van tooltip
+      &:after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        right: 15px;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #282828 transparent transparent transparent;
+      }
+    }*/
+  }
+}

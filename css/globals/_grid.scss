@@ -1,0 +1,86 @@
+
+
+// Grid classes
+// --------------------------------------------------
+
+// Import bootstrap grid
+@import url('/wp-content/themes/oxfam-webshop/css/grid.css');
+
+
+.container {
+  width: 1370px;
+  margin: 0 auto;
+
+  &:before,
+  &:after {
+    content: "";
+    display: table;
+  }
+
+  &:after {
+    clear: both;
+  }
+}
+
+.small-container {
+  max-width: 1140px;
+}
+
+.display-flex {
+  display: flex !important;
+}
+
+.align-self-start {
+  align-self: start !important;
+}
+
+.align-self-center {
+  align-self: center !important;
+}
+
+.align-self-end {
+  align-self: end !important;
+}
+
+@media (max-width: 1600px) {
+  .container {
+    width: 1170px;
+  }
+
+  .small-container {
+    max-width: 940px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .container {
+    width: 970px;
+  }
+}
+
+@media (min-width: 992px) {
+  .md-display-flex { display: flex !important; }
+  .md-align-self-start { align-self: start !important; }
+  .md-align-self-center { align-self: center !important; }
+  .md-align-self-end { align-self: flex-end !important; }
+}
+
+@media (max-width: 991px) {
+  .container {
+    width: 750px;
+    padding: 0 20px;
+  }
+}
+
+@media (min-width: 768px) {
+  .sm-display-flex { display: flex !important; }
+  .sm-align-self-start { align-self: start !important; }
+  .sm-align-self-center { align-self: center !important; }
+  .sm-align-self-end { align-self: end !important; }
+}
+
+@media (max-width: 767px) {
+  .container { width:100%; }
+}
+
+@media (max-width: 580px) {}

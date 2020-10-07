@@ -1,0 +1,45 @@
+
+
+// Local homepage template
+// --------------------------------------------------
+
+.page-template-local-homepage {
+  .nm-shop-search-inner {
+    margin-top: 53px !important;
+  }
+
+  .lh-intro {
+    p:last-child {
+      margin-bottom: 20px;
+    }
+  }
+
+  .lh-header {
+    margin-bottom: 30px;
+
+    @media (min-width: 768px) {
+      display: flex;
+    }
+
+    h2 {
+      margin-bottom: 0;
+    }
+
+    > div:nth-of-type(2) {
+      @media (min-width: 750px) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+    }
+
+    a {
+      text-decoration: underline;
+    }
+  }
+
+  .lh-banner {
+    margin-bottom: 50px;
+    text-align: center;
+  }
+}

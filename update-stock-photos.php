@@ -71,6 +71,8 @@
 								$content .= '</p>';
 								$content .= '<p><select id="'.get_the_ID().'-stockstatus">';
 									$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
+									// Nieuwe voorraadstatus!
+									$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>Tijdelijk uit voorraad</option>';
 									$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Uitverkocht</option>';
 								$content .= '</select></p>';
 								$content .= '<p class="output">&nbsp;</p>';

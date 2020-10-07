@@ -1,0 +1,121 @@
+
+
+// Store notices
+// --------------------------------------------------
+
+.woocommerce-notices-wrapper,
+.nm-shop-notices,
+.woocommerce-cart {
+  &:empty {
+    display: none !important;
+  }
+
+  > .nm-shop-notice {
+    padding: 12px !important;
+    margin: 0 0 12px 0 !important;
+    background-color: $new-green;
+
+    &.woocommerce-message {
+     background-color: $pale-blue;
+    }
+
+    &.woocommerce-error {
+      background-color: $bright-red;
+    }
+
+    > span {
+      color: $white !important;
+      font-size: 15px;
+      line-height: 26px;
+
+      a {
+        color: $white !important;
+        text-decoration: underline;
+        font-size: 15px;
+        line-height: 26px;
+      }
+    }
+  }
+}
+
+
+.general-store-notice {
+  clear: both;
+  color: white;
+
+  margin: 20px auto;
+  display: block;
+  max-width: calc(100% - 24px);
+
+  @media (max-width: 991px) {
+    padding: 0;
+  }
+
+  > div {
+    padding: 12px;
+    background-color: $pale-blue;
+  }
+
+  ul {
+    margin-bottom: 0;
+
+    li {
+      margin-bottom: 10px;
+      font-size: 15px;
+      line-height: 26px;
+
+      @media (min-width: 992px) {
+        margin-bottom: 0;
+        text-align: center;
+      }
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+
+      span {
+        position: relative;
+        padding-left: 24px;
+
+        &:before {
+          content: "";
+          background: url('/wp-content/themes/oxfam-webshop/images/checkmark-white.svg') no-repeat center center transparent;
+          display: inline-block;
+          margin-right: 5px;
+          width: 19px;
+          height: 19px;
+          line-height: 19px;
+          vertical-align: top;
+          position: absolute;
+          left: 0;
+          top: -1px;
+        }
+      }
+    }
+  }
+
+  p {
+    font-size: 16.8px;
+    line-height: 33.6px;
+    text-align: center;
+    margin: 0 auto;
+    max-width: 800px;
+    position: relative;
+
+    &.free-shipping {
+      line-height: 2em;
+
+      &:after {
+        content: '';
+        display: inline-block;
+        background-image: url('/wp-content/themes/oxfam-webshop/images/shipping-icon.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 33.6px;
+        height: 33.6px;
+        margin-left: 8.4px;
+        vertical-align: middle;
+      }
+    }
+  }
+}

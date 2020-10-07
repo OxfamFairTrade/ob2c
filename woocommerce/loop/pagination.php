@@ -2,70 +2,67 @@
 /**
  * Pagination - Show numbered pagination for catalog pages
  *
- * @see 	    https://docs.woocommerce.com/document/template-structure/
- * @author 		WooThemes
- * @package 	WooCommerce/Templates
- * @version     2.2.2
-*/
+ * @see     https://docs.woocommerce.com/document/template-structure/
+ * @package WooCommerce/Templates
+ * @version 3.3.1
+ NM: Modified */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit;
 }
 
 global $wp_query, $nm_theme_options;
 
-if ( $wp_query->max_num_pages <= 1 ) {
+$total   = isset( $total ) ? $total : wc_get_loop_prop( 'total_pages' );
+$current = isset( $current ) ? $current : wc_get_loop_prop( 'current_page' );
+$base    = isset( $base ) ? $base : esc_url_raw( str_replace( 999999999, '%#%', remove_query_arg( array( 'add-to-cart', 'shop_load', '_', 'infload', 'ajax_filters' ), get_pagenum_link( 999999999, false ) ) ) );
+$format  = isset( $format ) ? $format : '';
+
+if ( $total <= 1 ) {
 	return;
 }
 
-// Enable infinite loading via URL query
-// Note: This will not work with filters etc. (WooCommerce doesn't preserve all queries)
-if ( isset( $_GET['infload'] ) ) {
-	$nm_theme_options['shop_infinite_load'] = $_GET['infload'];
-}
-
-if ( $nm_theme_options['shop_infinite_load'] !== '0' ) {
+// Using "is_woocommerce()" since default pagination is used for product shortcodes
+if ( is_woocommerce() && $nm_theme_options['shop_infinite_load'] !== '0' ) {
 	$infload = true;
 	$infload_class = ' nm-infload';
 } else {
 	$infload = false;
 	$infload_class = '';
 }
-
-// GEWIJZIGD: Wijzig laadmodus indien het een categoriepagina met meer dan 2 pagina's is
-$mode = 'scroll';
-if ( current_user_can('update_core') ) {
-	write_log( "MAX NUM PAGES: ".$wp_query->max_num_pages );
-}
-if ( is_archive() and intval( $wp_query->max_num_pages ) > 2 ) {
-	// Probleem: de query van de oorspronkelijk geladen pagina bepaalt de scrollmodus ...
-	// URL wordt door AJAX-acties wel bijgewerkt, maar eigenlijk blijf je op de originale pagina zitten
-	// $mode = 'button';
-}
-
 ?>
-<nav class="woocommerce-pagination nm-pagination<?php echo $infload_class; ?>">
+<nav class="woocommerce-pagination nm-pagination<?php echo esc_attr( $infload_class ); ?>">
 	<?php
-		echo paginate_links( apply_filters( 'woocommerce_pagination_args', array(
-			'base'         	=> esc_url( str_replace( 999999999, '%#%', remove_query_arg( array( 'add-to-cart', 'shop_load', '_', 'infload', 'ajax_filters' ), get_pagenum_link( 999999999, false ) ) ) ),
-			'format'       	=> '',
-			'current'      	=> max( 1, get_query_var( 'paged' ) ),
-			'total'        	=> $wp_query->max_num_pages,
-			'prev_text'		=> '&larr;',
-			'next_text'    	=> '&rarr;',
-			'type'         	=> 'list',
-			'end_size'     	=> 3,
-			'mid_size'     	=> 3
-		) ) );
+    echo paginate_links(
+        apply_filters(
+            'woocommerce_pagination_args',
+            array( // WPCS: XSS ok.
+                'base'         => $base,
+                'format'       => $format,
+                'add_args'     => false,
+                'current'      => max( 1, $current ),
+                'total'        => $total,
+                'prev_text'    => '<i class="nm-font nm-font-angle-thin-left"></i>',
+                'next_text'    => '<i class="nm-font nm-font-angle-thin-right"></i>',
+                'type'         => 'list',
+                'end_size'     => 3,
+                'mid_size'     => 3,
+            )
+        )
+    );
 	?>
 </nav>
 
 <?php if ( $infload ) : ?>
 <div class="nm-infload-link"><?php next_posts_link( '&nbsp;' ); ?></div>
 
-<div class="nm-infload-controls <?php echo $mode; ?>-mode">
-    <a href="#" class="nm-infload-btn"><?php esc_html_e( 'Load More', 'nm-framework' ); ?></a>
-    
-    <a href="#" class="nm-infload-to-top"><?php esc_html_e( 'All products loaded.', 'nm-framework' ); ?></a>
+<div class="nm-infload-controls <?php echo esc_attr( $nm_theme_options['shop_infinite_load'] ); ?>-mode">
+    <!-- GEWIJZIGD: Toon progressie in productenlijst -->
+    <!-- Werkt niet, want dit stukje HTML wordt niet bijgewerkt door de AJAX-functie, dus aantallen 1ste pagina blijven staan ... -->
+    <?php if ( 1 === 2 and $current < $total ) : ?>
+        <p>Weergave <?php echo min( $wp_query->found_posts, max( 1, $current ) * $wp_query->get('posts_per_page') ); ?> van <?php echo $wp_query->found_posts; ?> producten</p>
+    <?php endif; ?>
+    <a href="#" class="nm-infload-btn">Meer producten laden</a>
+    <a href="#" class="nm-infload-to-top">Alle <?php echo $wp_query->found_posts; ?> producten zijn geladen</a>
 </div>
 <?php endif; ?>

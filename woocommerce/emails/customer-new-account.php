@@ -32,7 +32,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <?php if ( 'yes' === get_the_author_meta( 'blog_'.get_current_blog_id().'_is_b2b_customer', $customer->ID ) ) : ?>
 
-	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van webshop (%s).', 'oxfam-webshop' ), get_company_name() ); ?></p>
+	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van webshop (%s).', 'oxfam-webshop' ), get_webshop_name() ); ?></p>
 
 	<ul>
 		<?php
@@ -72,7 +72,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 			$b2b_coupon_id = intval( get_the_author_meta( 'blog_'.get_current_blog_id().'_has_b2b_coupon', $customer->ID ) );
 			if ( $b2b_coupon_id > 0 ) {
 				$b2b_coupon = get_post($b2b_coupon_id);
-				echo ' '.sprintf( __( 'Uitleg over algemeen kortingstarief, inclusief percentage (%1$s) en naam van webshop (%2$s).', 'oxfam-webshop' ), $b2b_coupon->coupon_amount.'%', get_company_name() );
+				echo ' '.sprintf( __( 'Uitleg over algemeen kortingstarief, inclusief percentage (%1$s) en naam van webshop (%2$s).', 'oxfam-webshop' ), $b2b_coupon->coupon_amount.'%', get_webshop_name() );
 			}
 		?>
 	</p>
@@ -93,7 +93,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <?php else : ?>	
 
-	<p><?php printf( __( 'Eerste alinea in de welkomstmail aan nieuwe gebruikers, inclusief naam van webshop (%1$s) en vetgedrukte gebruikersnaam (%2$s).', 'oxfam-webshop' ), get_company_name(), '<strong>' . esc_html( $user_login ) . '</strong>' ); ?></p>
+	<p><?php printf( __( 'Eerste alinea in de welkomstmail aan nieuwe gebruikers, inclusief naam van webshop (%1$s) en vetgedrukte gebruikersnaam (%2$s).', 'oxfam-webshop' ), get_webshop_name(), '<strong>' . esc_html( $user_login ) . '</strong>' ); ?></p>
 
 	<p><?php printf( __( 'Uitleg over de \'Mijn account\'-pagina, inclusief URL in webshop waar de gebruiker zich registreerde (%s).', 'oxfam-webshop' ), esc_url( wc_get_page_permalink( 'myaccount' ) ) ); ?></p>
 
@@ -101,6 +101,6 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <p><?php _e( 'Uitsmijter van het mailbericht bij nieuwe accounts.', 'oxfam-webshop' ); ?></p>
 
-<p><?php printf( __( 'Ondertekening van mails met accountinfo, inclusief regio van webshop (%s).', 'oxfam-webshop' ), str_replace( 'Oxfam-Wereldwinkel ', '', get_company_name() ) ); ?></p>
+<p><?php printf( __( 'Ondertekening van mails met accountinfo, inclusief regio van webshop (%s).', 'oxfam-webshop' ), get_webshop_name(true) ); ?></p>
 
 <?php do_action( 'woocommerce_email_footer', $email );

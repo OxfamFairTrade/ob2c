@@ -10,7 +10,7 @@
 	<form method="post" action="options.php">
 		<table class="form-table" id="oxfam-options">
 			<tr valign="top">
-				<th class='left'><a href='https://outlook.office.com/oww.be?login_hint=<?php echo get_option('admin_email'); ?>' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>
+				<th class='left'><a href='https://outlook.office.com/oww.be?login_hint=<?php echo get_webshop_email(); ?>' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>
 				<td class='right'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>
 			</tr>
 
@@ -66,7 +66,7 @@
 
 					$profiles = $mollie->profilesByPartnerId( $partner_id_customer );
 					if ( $profiles->resultcode == '10' ) {
-						if ( get_company_name() != trim_and_uppercase( $profiles->items->profile->name ) ) {
+						if ( get_webshop_name() != trim_and_uppercase( $profiles->items->profile->name ) ) {
 							// $name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
 						// Fix voor winkels met twee nummers (bv. Mariakerke)
@@ -81,7 +81,7 @@
 								$phone_warning = $warning;
 							}
 						}
-						if ( get_company_email() != $profiles->items->profile->email ) {
+						if ( get_webshop_email() != $profiles->items->profile->email ) {
 							$mail_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactadres geregistreerd!</small>";
 						}
 					}
@@ -266,12 +266,12 @@
 					<label for="oxfam_company" title="Dit is ook de titel van deze subsite en kan enkel door Frederik gewijzigd worden.">Bedrijfsnaam: <?php if ( isset($name_warning) ) echo $name_warning; ?></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_company" class="text-input" value="<?php echo get_company_name(); ?>" readonly>
+					<input type="text" name="oxfam_company" class="text-input" value="<?php echo get_webshop_name(); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_place" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Straat en huisnummer:</label>
+					<label for="oxfam_place" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels.">Straat en huisnummer:</label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_place" class="text-input" value="<?php echo get_oxfam_shop_data('place'); ?>" readonly>
@@ -279,7 +279,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_zipcode" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Postcode:</label>
+					<label for="oxfam_zipcode" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels.">Postcode:</label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_zipcode" class="text-input" value="<?php echo get_oxfam_shop_data('zipcode'); ?>" readonly>
@@ -287,7 +287,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_city" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Gemeente:</label>
+					<label for="oxfam_city" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels.">Gemeente:</label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_city" class="text-input" value="<?php echo get_oxfam_shop_data('city'); ?>" readonly>
@@ -295,7 +295,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_city" title="Zie je een fout staan? Werk je telefoonnummer bij op de publieke site van Oxfam-Wereldwinkels. Als XIO wat wil meewerken verschijnt de aanpassing meteen ook in de lokale webshop.">Telefoonnummer: <?php if ( isset($phone_warning) ) echo $phone_warning; ?></label>
+					<label for="oxfam_city" title="Zie je een fout staan? Werk je telefoonnummer bij op de publieke site van Oxfam-Wereldwinkels.">Telefoonnummer: <?php if ( isset($phone_warning) ) echo $phone_warning; ?></label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_telephone" class="text-input" value="<?php echo get_oxfam_shop_data('telephone'); ?>" readonly>
@@ -306,7 +306,7 @@
 					<label for="oxfam_email" title="Deze Office 365-mailbox wordt ingesteld als het algemene contactadres van deze subsite en is initieel ook ekoppeld aan de lokale beheeraccount. Opgelet: via de profielpagina kun je deze hoofdgebruiker aan een andere mailbox linken (of schakelen we dat uit? niet handig indien we voor meerdere lokale beheerders opteren!) maar het contactadres naar klanten blijft altijd dit e-mailadres!">E-mailadres: <?php if ( isset($mail_warning) ) echo $mail_warning; ?></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_email" class="text-input" value="<?php echo get_company_email(); ?>" readonly>
+					<input type="text" name="oxfam_email" class="text-input" value="<?php echo get_webshop_email(); ?>" readonly>
 				</td>
 			</tr>
 		</table>

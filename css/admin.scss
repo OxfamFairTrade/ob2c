@@ -1,0 +1,203 @@
+/*!
+	Theme Name:		Oxfam-Wereldwinkels Admin
+	Author:			Frederik Neirynck
+	Author URI:		https://www.oxfamfairtrade.be
+	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
+	Version:		1.2.5
+	Text Domain:	oxfam-admin
+*/
+
+// Veilige marges voor iPhone 10+
+#wpbody {
+	margin-right: env(safe-area-inset-right);
+}
+
+#woocommerce_dashboard_status .wc_status_list {
+	li.claimed-orders a::before {
+		font-family: 'Dashicons';
+		content: '\f513';
+		color: #e70052;
+	}
+
+	li.pending-orders a::before {
+		font-family: 'WooCommerce';
+		content: '\e012';
+		color: #ffba00;
+	}
+}
+
+.dashboard_page_relevanssi-premium-relevanssi .postbox-container {
+	width: 100%;
+}
+
+.dashboard_page_relevanssi-premium-relevanssi .postbox-container .widefat {
+	margin-bottom: 4em;
+}
+
+.dashboard_page_relevanssi-premium-relevanssi .postbox-container th,
+.dashboard_page_relevanssi-premium-relevanssi .postbox-container tr {
+	text-align: center;
+}
+
+#oxfam-products {
+	display: table;
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0px 25px;
+
+	.pane-left {
+		display: table-cell;
+		box-sizing: border-box;
+		text-align: center;
+		padding: 0px 25px;
+		width: 30%;
+	}
+
+	.pane-right {
+		display: table-cell;
+		box-sizing: border-box;
+		text-align: center;
+		vertical-align: middle;
+		min-height: 204px;
+		width: 20%;
+	}
+
+	.block {
+		display: inline-block;
+		box-sizing: border-box;
+		width: 50%;
+	}
+
+	.compact {
+		display: table-row;
+		box-sizing: border-box;
+		width: 100%;
+		height: 1em;
+		line-height: 1em;
+	}
+
+	.cell {
+		display: table-cell;
+		text-align: right;
+		width: 19%;
+		padding: 0.5em;
+		vertical-align: middle;
+	}
+
+	.new {
+		background-color: lightskyblue;
+	}
+
+	.old {
+		background-color: gold;
+	}
+
+	.color-green {
+		border-left: 4px solid #61a534;;
+	}
+
+	.color-orange {
+		border-left: 4px solid #fbc43a;
+	}
+
+	.color-red {
+		border-left: 4px solid #e70052;
+	}
+
+	.title {
+		font-weight: bold;
+	}
+
+	.output {
+		color: #f16e22;
+	}
+}
+
+#oxfam-options .left {
+	width: 40%;
+	min-width: 300px;
+}
+
+#oxfam-options .right {
+	width: 60%;
+	min-width: 300px;
+}
+
+#oxfam-options .text-input {
+	width: 50%;
+	min-width: 100px;
+}
+
+#oxfam-options .left {
+	width: 30%;
+	min-width: 400px;
+	text-align: right;
+}
+
+#oxfam-options .right {
+	width: 70%;
+	min-width: 300px;
+}
+
+#oxfam-options .text-input {
+	width: 70%;
+	max-width: 400px;
+}
+
+/* Handmatige knop 'Bestelling toevoegen' verbergen op overzichtsscherm (ondanks beperkte rechten) */
+body.post-type-shop_order div.wrap > a.page-title-action {
+	display: none;
+}
+
+/* Actieknop 'In behandeling' bij onbetaalde bestellingen verbergen */
+body.post-type-shop_order td.column-order_actions a.button.tips.processing {
+	display: none;
+}
+
+/* Verberg onnodige knoppen bij terugbetalingen */
+div.wc-order-item-bulk-edit,
+/* button.bulk-delete-items,
+button.bulk-decrease-stock,
+button.bulk-increase-stock, */
+[data-plugin-id="order_status_manager"] {
+	display: none !important;
+}
+
+/* Kan verbeterd worden m.b.v. wijziging in woocommerce/includes/admin/meta-boxes/views/html-order-items.php (= enkel getoond indien betaalmethode niet API-refundable) */
+button.do-manual-refund {
+	display: none !important;
+}
+
+/* Verberg link naar het volledige Jetpack-dashboard (vereist login die beheerders toch niet hebben) */
+div.gotonewdash {
+	display: none !important;
+}
+
+/* Verberg Jetpack-notificaties rechtsboven */
+li#wp-admin-bar-notes {
+	display: none;
+}
+
+/* Meldingen van framework voor WP Mail Log verbergen*/
+div.redux-notice {
+	display: none;
+}
+
+/* Geanimeerde profielvelden op zelfde breedte als gewone */
+input.show-if-b2b-checked {
+	width: 25em !important;
+}
+
+@media (max-width: 1024px) {
+	#oxfam-products .block {
+		display: block;
+		width: 100%;
+	}
+
+	#oxfam-options .left,
+	#oxfam-options .right {
+		display: block;
+		text-align: left;
+		width: 100%;
+	}
+}
