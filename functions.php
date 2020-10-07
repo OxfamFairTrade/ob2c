@@ -1619,7 +1619,11 @@
 	}
 
 	// Verhoog het aantal producten per winkelpagina
-	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return 20;' ), 20 );
+	add_filter( 'loop_shop_per_page', 'modify_number_of_products_per_page', 20, 1 );
+
+	function modify_number_of_products_per_page( $per_page ) {
+		return 20;
+	}
 
 	// Orden items in bestellingen volgens stijgend productnummer
 	add_filter( 'woocommerce_order_get_items', 'sort_order_by_sku', 10, 2 );
