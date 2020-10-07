@@ -72,7 +72,7 @@
 	// Verwijder productcategorieën
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'koffie-thee', 'capsules' );
+		$terms = array( 'koffie-thee', 'capsules', 'geen-categorie' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_update !== false ) {
