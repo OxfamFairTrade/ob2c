@@ -1729,7 +1729,7 @@
 	
 	function ob2c_constrain_assortment_to_b2b( $query ) {
 		// Verberg oude producten in lokale webshops
-		if ( get_current_blog_id() == 23 ) {
+		if ( ! is_main_site() ) {
 			$meta_query = (array) $query->get('meta_query');
 			// Toon het product enkel als het nog in de OFT-database zit OF als het lokaal nog voorradig is!
 			$meta_query[] = array(
@@ -1739,13 +1739,14 @@
 					'value' => 'ja',
 					'compare' => '=',
 				),
+				// Andere optie: != 'outofstock' als we ook niet-voorradig lokaal assortiment zichtbaar willen houden!
 				array(
 					'key' => '_stock_status',
 					'value' => 'instock',
 					'compare' => '=',
 				),
 			);
-			write_log( print_r( $meta_query, true ) );
+			// write_log( print_r( $meta_query, true ) );
 			$query->set( 'meta_query', $meta_query );
 		}
 
