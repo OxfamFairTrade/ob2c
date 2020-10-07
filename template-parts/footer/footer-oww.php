@@ -21,7 +21,7 @@
 		}
 	}
 
-	if ( ! array_key_exists( $current_store, $shops ) ) {
+	if ( $current_store === false or ! array_key_exists( $current_store, $shops ) ) {
 		// De cookie slaat op een winkel uit een andere subsite (bv. door rechtstreeks switchen)
 		// Stel de hoofdwinkel van de huidige subsite in als fallback
 		$current_store = get_option('oxfam_shop_post_id');
