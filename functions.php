@@ -6245,17 +6245,21 @@
 		// Hou enkel rekening met ingeschakelde zones
 		$locations = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."woocommerce_shipping_zone_locations LEFT JOIN ".$wpdb->prefix."woocommerce_shipping_zone_methods ON ".$wpdb->prefix."woocommerce_shipping_zone_methods.zone_id = ".$wpdb->prefix."woocommerce_shipping_zone_locations.zone_id WHERE ".$wpdb->prefix."woocommerce_shipping_zone_locations.location_type = 'postcode' AND ".$wpdb->prefix."woocommerce_shipping_zone_methods.is_enabled = 1" );
 		
-		foreach ( $locations as $row ) {
-			$zips[] = $row->location_code;
+		if ( count( $locations ) > 0 ) {
+			$zips = array();
+			foreach ( $locations as $row ) {
+				$zips[] = $row->location_code;
+			}
+			$zips = array_unique( $zips );
+
+			// Verwijder de default '9999'-waarde uit ongebruikte verzendmethodes
+			if ( ( $key = array_search( '9999', $zips ) ) !== false ) {
+				unset( $zips[ $key ] );
+			}
+			
+			sort( $zips, SORT_NUMERIC );
 		}
-		$zips = array_unique( $zips );
-		
-		// Verwijder de default '9999'-waarde uit ongebruikte verzendmethodes
-		if ( ( $key = array_search( '9999', $zips ) ) !== false ) {
-			unset( $zips[ $key ] );
-		}
-		
-		sort( $zips, SORT_NUMERIC );
+
 		return $zips;
 	}
 
