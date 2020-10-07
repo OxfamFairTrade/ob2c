@@ -53,6 +53,22 @@
 		}
 	}
 
+	// Werk productcategorie bij
+	$taxonomy = 'product_cat';
+	if ( taxonomy_exists( $taxonomy ) ) {
+		$terms = array( 'snacks-drinks' );
+		foreach ( $terms as $term ) {
+			$term_to_update = get_term_by( 'slug', $term, $taxonomy );
+			if ( $term_to_update !== false ) {
+				if ( is_wp_error( wp_update_term( $term_to_update->term_id, $taxonomy, array( 'slug' => 'snacks', 'name' => 'Snacks' ) ) ) ) {
+					write_log("COULD NOT UPDATE ".$term_to_update->name);
+				}
+			} else {
+				write_log("TERM ".$term." NOT FOUND");
+			}
+		}
+	}
+
 	// Verwijder productcategorieën
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
@@ -62,22 +78,6 @@
 			if ( $term_to_update !== false ) {
 				if ( ! wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
 					write_log("COULD NOT DELETE ".$term_to_delete->name);
-				}
-			} else {
-				write_log("TERM ".$term." NOT FOUND");
-			}
-		}
-	}
-
-	// Werk productcategorie bij
-	$taxonomy = 'product_cat';
-	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'snacks-drinks' );
-		foreach ( $terms as $term ) {
-			$term_to_update = get_term_by( 'slug', $term, $taxonomy );
-			if ( $term_to_update !== false ) {
-				if ( is_wp_error( wp_update_term( $term_to_update->$term_id, $taxonomy, array( 'slug' => 'snacks', 'name' => 'Snacks' ) ) ) ) {
-					write_log("COULD NOT UPDATE ".$term_to_update->name);
 				}
 			} else {
 				write_log("TERM ".$term." NOT FOUND");
