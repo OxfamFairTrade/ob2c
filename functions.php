@@ -5638,9 +5638,6 @@
 	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
 	// add_shortcode( 'scrolltext', 'print_scroll_text' );
-	// add_shortcode( 'widget_usp', 'print_widget_usp' );
-	add_shortcode( 'widget_delivery', 'print_widget_delivery' );
-	add_shortcode( 'widget_contact', 'print_widget_contact' );
 	add_shortcode( 'company_name', 'get_webshop_name' );
 	add_shortcode( 'contact_address', 'get_shop_contact' );
 	add_shortcode( 'map_address', 'get_shop_address' );
@@ -5650,27 +5647,6 @@
 
 	function show_product_search() {
 		wc_get_template( 'product-searchform_nm.php' );
-	}
-
-	function print_widget_usp() {
-		return do_shortcode('[nm_feature icon="pe-7s-timer" layout="centered" title="'.__( 'Titel van unique selling point in footer', 'oxfam-webshop' ).'"]'.__( 'Inhoud van unique selling point in footer.', 'oxfam-webshop' ).'[/nm_feature]');
-	}
-
-	function print_widget_delivery() {
-		if ( is_b2b_customer() ) {
-			$text = __( 'Inhoud van praktisch blokje in footer (indien B2B-klant).', 'oxfam-webshop' );
-		} elseif ( does_home_delivery() ) {
-			$text = __( 'Inhoud van praktisch blokje in footer (indien ook thuislevering).', 'oxfam-webshop' );
-		} else {
-			$text = __( 'Inhoud van praktisch blokje in footer (inden enkel afhaling).', 'oxfam-webshop' );
-		}
-		return do_shortcode('[nm_feature icon="pe-7s-global" layout="centered" title="'.__( 'Titel van praktisch blokje in footer', 'oxfam-webshop' ).'"]'.$text.'[/nm_feature]');
-	}
-
-	function print_widget_contact() {
-		$terms = get_page_by_title('Algemene voorwaarden');
-		$faq = get_page_by_title('Veelgestelde vragen');
-		return do_shortcode('[nm_feature icon="pe-7s-comment" layout="centered" title="'.__( 'Titel van contactblokje in footer', 'oxfam-webshop' ).'"]<p>Heb je een vraag? We geven je een eerlijk antwoord.<br/><a href="'.get_permalink( $terms->ID ).'">'.$terms->post_title.'</a><br/><a href="'.get_permalink( $faq->ID ).'">'.$faq->post_title.'</a></p><p>'.sprintf( __( 'Inhoud van het contactblokje in de footer. Bevat <a href="mailto:%1$s">een e-mailadres</a> en een aanklikbaar telefoonnummer (%2$s).', 'oxfam-webshop' ), get_webshop_email(), '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', get_oxfam_shop_data('telephone') ), 1 ).'">'.get_oxfam_shop_data('telephone').'</a>' ).'</p>[/nm_feature]');
 	}
 
 	function print_greeting() {

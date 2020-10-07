@@ -407,6 +407,7 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 	}
 
 	// Instellingen van Savoy kopiëren naar subsites
+	// Gelijkaardig voor 'wpsl_settings'
 	switch_to_blog(1);
 	$savoy_settings = get_option('nm_theme_options');
 	restore_current_blog();
