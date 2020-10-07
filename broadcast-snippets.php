@@ -56,13 +56,31 @@
 	// Verwijder productcategorieën
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'builtjes-thee', 'los-thee', 'repen-chocolade', 'tabletten-chocolade' );
+		$terms = array( 'koffie-thee', 'capsules' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
-			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
-				// OK
+			if ( $term_to_update !== false ) {
+				if ( ! wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+					write_log("COULD NOT DELETE ".$term_to_delete->name);
+				}
 			} else {
-				write_log("COULD NOT DELETE ".$term_to_delete->name);
+				write_log("TERM ".$term." NOT FOUND");
+			}
+		}
+	}
+
+	// Werk productcategorie bij
+	$taxonomy = 'product_cat';
+	if ( taxonomy_exists( $taxonomy ) ) {
+		$terms = array( 'snacks-drinks' );
+		foreach ( $terms as $term ) {
+			$term_to_update = get_term_by( 'slug', $term, $taxonomy );
+			if ( $term_to_update !== false ) {
+				if ( is_wp_error( wp_update_term( $term_to_update->$term_id, $taxonomy, array( 'slug' => 'snacks', 'name' => 'Snacks' ) ) ) ) {
+					write_log("COULD NOT UPDATE ".$term_to_update->name);
+				}
+			} else {
+				write_log("TERM ".$term." NOT FOUND");
 			}
 		}
 	}
@@ -220,7 +238,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '27057', '20610' );
+	$photos_to_delete = array( '20063', '20249', '20258', '24646', '25617' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
