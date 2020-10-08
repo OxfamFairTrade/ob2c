@@ -32,6 +32,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 					if ( count( $sale_products ) > 0 ) {
 						if ( is_product_tag('promotie') ) {
 							$class = 'chosen';
+						} else {
+							$class = '';
 						}
 						$term_link = get_term_link( 'promotie', 'product_tag' );
 						if ( ! is_wp_error( $term_link ) ) {
@@ -40,6 +42,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 					}
 					// if ( is_product_tag('sinterklaas') ) {
 					// 	$class = 'chosen';
+					// } else {
+					// 	$class = '';
 					// }
 					// $term_link = get_term_link( 'sinterklaas', 'product_tag' );
 					// if ( ! is_wp_error( $term_link ) ) {

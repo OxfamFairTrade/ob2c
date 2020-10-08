@@ -61,12 +61,12 @@
         </div>
 		<ul class="delivery-options">
 			<li class="pickup active">Afhalen in de winkel</li>
-			<li class="shipping <?php echo $home_delivery; ?>">​Levering aan huis</li>
+			<li class="shipping <?php echo $home_delivery; ?>">​Levering aan huis<?php if ( $current_location ) echo ' in '.$current_location; ?></li>
 		</ul>
 		<a href="#" class="store-selector-open" title="Open winkelkiezer">Winkel wijzigen</a>
 		<a href="#" class="store-selector-erase" title="Wis winkelkeuze"></a>
 
-		<?php if ( $args['context'] === 'cart' ) : ?>
+		<?php if ( array_key_exists( 'context', $args ) and $args['context'] === 'cart' ) : ?>
 			<?php
 				switch_to_blog(1);
 				
