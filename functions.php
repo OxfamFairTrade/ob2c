@@ -1466,8 +1466,8 @@
 		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		// Log wijzigingen aan metadata na het succesvol bijwerken
 		add_action( 'updated_post_metadata', 'log_product_changes', 100, 4 );
-		// Toon de lokale webshops die het product nog op voorraad hebben
-		add_action( 'woocommerce_product_options_inventory_product_data', 'add_inventory_fields', 5 );
+		// Toon de lokale webshops die het product nog op voorraad hebben ZEER TRAGE FUNCTIE
+		// add_action( 'woocommerce_product_options_inventory_product_data', 'add_inventory_fields', 5 );
 	}
 	
 	function add_product_revisions( $vars ) {
