@@ -19,7 +19,7 @@
 	} elseif ( ! is_main_site() and ! does_home_delivery() ) {
 
 		// Standaardboodschap voor winkels die geen thuislevering aanbieden
-		// $html = 'Omwille van het coronavirus kun je je bestelling momenteel enkel <b><u>op afspraak</u></b> afhalen in de winkel.';
+		$html = 'Gratis afhaling in de winkel';
 
 	}
 ?>

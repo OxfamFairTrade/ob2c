@@ -68,11 +68,15 @@ if ( isset( $nm_globals['is_categories_shortcode'] ) && $nm_globals['is_categori
                 do_action( 'nm_before_subcategory_title', $category );
 
                 if ( $category_image ) {
-                    // Prevent esc_url from breaking spaces in urls for image embeds
-                    // Ref: http://core.trac.wordpress.org/ticket/23605
-                    $category_image_src = str_replace( ' ', '%20', $category_image_src );
-
-                    echo '<img src="' . esc_url( $category_image_src ) . '" alt="' . esc_attr( $category->name ) . '" width="' . esc_attr( $category_image[1] ) . '" height="' . esc_attr( $category_image[2] ) . '" />';
+                    if ( is_array( $category_image ) ) {
+                        // Prevent esc_url from breaking spaces in urls for image embeds
+                        // Ref: http://core.trac.wordpress.org/ticket/23605
+                        $category_image_src = str_replace( ' ', '%20', $category_image_src );
+                        echo '<img src="' . esc_url( $category_image_src ) . '" alt="' . esc_attr( $category->name ) . '" width="' . esc_attr( $category_image[1] ) . '" height="' . esc_attr( $category_image[2] ) . '" />';
+                    } else {
+                        echo '<img src="' . esc_url( $category_image_src ) . '" alt="' . esc_attr( $category->name ) . '" />';
+                    }
+                    
                 } else {
                     echo '<img src="' . esc_url( wc_placeholder_img_src() ) . '" />';
                 }

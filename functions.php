@@ -5913,14 +5913,12 @@
 		return ( get_option('oxfam_does_risky_delivery') === 'yes' );
 	}
 
-	function does_home_delivery( $zipcode = 0, $blog_id = 0 ) {
+	function does_home_delivery( $zipcode = 0 ) {
 		if ( intval( $zipcode ) === 0 ) {
 			return boolval( get_oxfam_covered_zips() );
 		} else {
-			switch_to_blog( $blog_id );
 			// Check of de webshop thuislevering doet voor deze specifieke postcode
 			$response = in_array( $zipcode, get_oxfam_covered_zips() );
-			restore_current_blog();
 			return $response;
 		}
 	}
