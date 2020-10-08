@@ -207,8 +207,7 @@
         font-size: 14px;
         margin-right: 8px;
         line-height: normal;
-        padding: 0;
-        padding-left: 12px;
+        padding: 0 0 0 12px;
         position: relative;
 
         &:before {
@@ -216,7 +215,7 @@
           background: url(/wp-content/themes/oxfam-webshop/images/user.svg) no-repeat center center transparent;
           background-size: 12px;
           position: absolute;
-          left: 0;
+          left: -5px;
           top: 2px;
           height: 12px;
           width: 12px;

@@ -29,12 +29,12 @@
 								if ( is_user_logged_in() ) {
 									$user = wp_get_current_user();
 									if ( ! empty( $user->first_name ) ) {
-										echo ' Welkom '.$user->first_name;
+										echo 'Welkom '.$user->first_name;
 									} else {
-										echo ' Mijn account';
+										echo 'Mijn account';
 									}
 								} else {
-									echo ' Aanmelden';
+									echo 'Aanmelden';
 								}
 							?>
 						</a>

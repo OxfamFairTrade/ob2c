@@ -709,19 +709,15 @@
 	}
 
 	add_filter( 'wpsl_sql_placeholder_values', 'debug_no_results_for_antwerp', 10, 1 );
-	// add_filter( 'wpsl_sql', 'debug_no_results_for_antwerp', 10, 1 );
 
 	function debug_no_results_for_antwerp( $values ) {
-		if ( current_user_can('update_core') ) {
-			write_log("WP Store Locator SQL");
-			write_log( print_r( $values, true ) );
-		}
+		write_log("WP Store Locator Lat-Long Search: ".$values[1].",".$values[2]);
 		return $values;
 	}
 
 	// Deze filter zal misschien van pas komen indien er geen enkel resultaat gevonden werd
 	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
-
+	
 	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
 		write_log("Geen enkele winkel gevonden binnen de 30 kilometer!");
 		return $store_data;

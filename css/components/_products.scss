@@ -14,8 +14,8 @@
       position: absolute;
       top: 0;
       left: 0;
-      // Ook boven zoombox packshot laten verschijnen 
-      z-index: 10000;
+      // Eventueel ook boven zoombox packshot (= 1000) laten verschijnen, zeker onder mini-cart (= 1020) 
+      z-index: 999;
 
       .info-label {
         display: inline-block;
