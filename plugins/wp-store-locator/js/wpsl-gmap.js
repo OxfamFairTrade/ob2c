@@ -1148,8 +1148,27 @@ function codeAddress( infoWindow ) {
         request.address = $( "#wpsl-search-input" ).val();
 	}
 
-    geocoder.geocode( request, function( response, status ) {
-		if ( status == google.maps.GeocoderStatus.OK ) {
+	// Mogelijk problemen bij: 1500,1540,1541,1570,1600,1620,1630,1640,1650,1671,1673,1700,1701,1730,1740,1741,1745,1755,1760,1770,1790,1800,1818,1830,1840,1850,1852,1860,1861,1880,1931,1933,1934,1950,1970,1980,1981,2000,2018,2020,2242,3321,3501,3724
+	switch( request.componentRestrictions.postalCode ) {
+		case 2000:
+			request.componentRestrictions = { country:"BE", locality:"Antwerpen" };
+			break;
+		case 1931:
+			request.componentRestrictions = { country:"BE", locality:"Brucargo" };
+			break;
+		case 1934:
+			request.componentRestrictions = { country:"BE", locality:"Brussel X" };
+			break;
+		default:
+			console.log("No postal code fixing necessary");
+	}
+
+	geocoder.geocode( request, function( response, status ) {
+		console.log(request);
+		console.log("Executing codeAddress() request ...");
+		console.log(status);
+
+    	if ( status == google.maps.GeocoderStatus.OK ) {
 
 			if ( statistics.enabled ) {
 				collectStatsData( response );
