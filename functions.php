@@ -713,6 +713,7 @@
 			write_log("WP Store Locator SQL");
 			write_log( print_r( $values, true ) );
 		}
+		return $values;
 	}
 
 	// Deze filter zal misschien van pas komen indien er geen enkel resultaat gevonden werd
