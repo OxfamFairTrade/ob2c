@@ -680,20 +680,25 @@
 	add_filter( 'wpsl_store_meta', 'wpsl_add_delivery_parameters_to_meta', 2 );
 
 	function wpsl_add_delivery_parameters_to_meta( $store_meta, $store_id = 0 ) {
-		// Vreemd genoeg wordt $store_id meestal niet doorgegeven ...
-		
+		// Vreemd genoeg is $store_id altijd leeg ...
 		// Keys moeten altijd aanwezig zijn, anders loopt de Underscore.js-template vast
-		$store_meta['delivery'] = '<li class="delivery inactive">Géén levering aan huis</li>';
+		$store_meta['delivery'] = '<li class="delivery inactive">Geen levering aan huis</li>';
 		$store_meta['available'] = 'no'; 
 
+		// Haal de huidige postcode op
+		$current_location = false;
+		if ( ! empty( $_COOKIE['current_location'] ) ) {
+			$current_location = intval( $_COOKIE['current_location'] );
+			$store_meta['delivery'] = '<li class="delivery inactive">Geen levering aan huis in '.$current_location.'</li>';
+		}
+		
 		if ( $store_meta['webshopBlogId'] !== '' ) {
 			$store_meta['available'] = 'yes'; 
 			switch_to_blog( $store_meta['webshopBlogId'] );
-			if ( in_array( $_COOKIE['current_location'], get_oxfam_covered_zips() ) ) {
+			if ( $current_location !== false and in_array( $current_location, get_oxfam_covered_zips() ) ) {
 				$store_meta['delivery'] = '<li class="delivery active">Levering aan huis</li>';
 			} else {
-				write_log( $_COOKIE['current_location'] );
-				write_log( serialize( get_oxfam_covered_zips() ) );
+				// write_log( "Zipcode ".$current_location." is not in range: ".serialize( get_oxfam_covered_zips() ) );
 			}
 			restore_current_blog();
 		}
@@ -6240,13 +6245,12 @@
 
 	function get_oxfam_covered_zips() {
 		global $wpdb;
-		$zips = false;
+		$zips = array();
 		
 		// Hou enkel rekening met ingeschakelde zones
 		$locations = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."woocommerce_shipping_zone_locations LEFT JOIN ".$wpdb->prefix."woocommerce_shipping_zone_methods ON ".$wpdb->prefix."woocommerce_shipping_zone_methods.zone_id = ".$wpdb->prefix."woocommerce_shipping_zone_locations.zone_id WHERE ".$wpdb->prefix."woocommerce_shipping_zone_locations.location_type = 'postcode' AND ".$wpdb->prefix."woocommerce_shipping_zone_methods.is_enabled = 1" );
 		
 		if ( count( $locations ) > 0 ) {
-			$zips = array();
 			foreach ( $locations as $row ) {
 				$zips[] = $row->location_code;
 			}
