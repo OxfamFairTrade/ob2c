@@ -25,12 +25,10 @@
 	}
 
 	// Verwijder deprecated productattributen
-	global $wpdb;	
 	$to_delete = array( 'shopplus', 'barcode', 'ompak', 'eenheid', 'fairtrade' );
 	foreach ( $to_delete as $slug ) {
 		$attribute_id = absint( wc_attribute_taxonomy_id_by_name( $slug ) );
 		if ( $attribute_id > 0 ) {
-			// Bestaat pas vanaf WC 3.2+
 			if ( wc_delete_attribute( $attribute_id ) ) {
 				write_log("DELETED ATTRIBUTE ".$slug);
 			} else {

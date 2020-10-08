@@ -25,7 +25,7 @@
 	add_action( 'woocommerce_before_shop_loop', 'add_custom_dropdown_filters_per_category' );
 
 	function add_custom_dropdown_filters_per_category() {
-		if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
+		if ( is_main_site() and is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
 			echo '<div class="small-container"><div class="row">';
 			echo '<div class="col-md-3 supplementary-filter">';
 				$args = array(
@@ -703,6 +703,14 @@
 			restore_current_blog();
 		}
 		return $store_meta;
+	}
+
+	add_filter( 'wpsl_sql', 'debug_no_results_for_antwerp', 10, 1 );
+
+	function debug_no_results_for_antwerp( $sql ) {
+		if ( current_user_can('update_core') ) {
+			write_log( print_r( $sql, true ) );
+		}
 	}
 
 	// Deze filter zal misschien van pas komen indien er geen enkel resultaat gevonden werd

@@ -69,10 +69,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 					$args['after_title'] = '</h3>';
 					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
 					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'preferences' ), $args );
-					// Duidelijk een probleem met het tellen van de termen ...
-					// var_dump_pre( get_terms( 'pa_countries', array( 'hide_empty' => '0' ) ) );
-					// _wc_term_recount( get_terms( 'pa_countries', array( 'hide_empty' => '0' ) ), get_taxonomy('pa_countries'), true, false );
-					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );
+					
+					if ( is_main_site() ) {
+						// Duidelijk een probleem met het tellen van de termen ...
+						// var_dump_pre( get_terms( 'pa_countries', array( 'hide_empty' => '0' ) ) );
+						// _wc_term_recount( get_terms( 'pa_countries', array( 'hide_empty' => '0' ) ), get_taxonomy('pa_countries'), true, false );
+						the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Herkomstland', 'attribute' => 'countries', 'display_type' => 'dropdown' ), $args );
+					}
 				?>
 			</ul>
 
