@@ -479,7 +479,7 @@
 
 	function add_facebook_messenger() {
 		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and ( is_main_site() or is_front_page() or is_cart() ) ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and is_cart() ) {
 				?>
 				<div id='fb-root'></div>
 				<script>(function(d, s, id) {
@@ -705,11 +705,13 @@
 		return $store_meta;
 	}
 
-	add_filter( 'wpsl_sql', 'debug_no_results_for_antwerp', 10, 1 );
+	add_filter( 'wpsl_sql_placeholder_values', 'debug_no_results_for_antwerp', 10, 1 );
+	// add_filter( 'wpsl_sql', 'debug_no_results_for_antwerp', 10, 1 );
 
-	function debug_no_results_for_antwerp( $sql ) {
+	function debug_no_results_for_antwerp( $values ) {
 		if ( current_user_can('update_core') ) {
-			write_log( print_r( $sql, true ) );
+			write_log("WP Store Locator SQL");
+			write_log( print_r( $values, true ) );
 		}
 	}
 

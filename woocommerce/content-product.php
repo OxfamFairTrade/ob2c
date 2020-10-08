@@ -137,14 +137,9 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 
 <!-- We nemen de brakke Conversal-logica voorlopig over -->
 <?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 ) : ?>
-    <?php $term_link = get_term_link( 'promotie', 'product_tag' ); ?>
-    <?php if ( ! is_wp_error( $term_link ) ) : ?>
-        <li class="promo-banner horizontal">
-            <a href="<?php echo $term_link; ?>">
-                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2020-quinoa.png" />
-            </a>
-        </li>
-    <?php endif; ?>
+    <li class="promo-banner horizontal">
+        <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2020-quinoa.png" />
+    </li>
 <?php elseif ( $position_in_grid === 7 and is_shop() and wc_get_loop_prop('current_page') === 1 ) : ?>
     <?php $term_link = get_term_link( 'koffie', 'product_cat' ); ?>
     <?php if ( ! is_wp_error( $term_link ) ) : ?>
