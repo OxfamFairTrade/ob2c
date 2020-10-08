@@ -54,7 +54,7 @@
 		$labels['organic'] = 'Bioproduct';
 	}
 
-	if ( ! does_risky_delivery() ) {
+	if ( ! is_main_site() and ! does_risky_delivery() ) {
 		if ( $product->get_shipping_class() === 'breekbaar' ) {
 			$labels['pickup-only'] = 'Afhaling';
 		}

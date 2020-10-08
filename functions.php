@@ -5214,8 +5214,8 @@
 		$data['master_product']->save();
 	}
 
-	// Reset alle '_in_bestelweb' velden voor we aan de ERP-import beginnen
-	add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
+	// Reset alle '_in_bestelweb' velden voor we aan de ERP-import beginnen TIJDELIJK UITSCHAKELEN
+	// add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
 	
 	function before_xml_import( $import_id ) {
 		if ( $import_id == 7 ) {
@@ -5246,8 +5246,8 @@
 		}
 	}
 
-	// Hernoem het importbestand na afloop van de import zodat we een snapshot krijgen dat niet overschreven wordt
-	add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
+	// Hernoem het importbestand na afloop van de import zodat we een snapshot krijgen dat niet overschreven wordt TIJDELIJK UITSCHAKELEN
+	// add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
 	
 	function after_xml_import( $import_id ) {
 		if ( $import_id == 7 ) {
@@ -5956,17 +5956,19 @@
 		$store_data = false;
 		$shop_post_id = intval( $shop_post_id );
 
-		if ( false === ( $store_data = get_site_transient( $shop_post_id.'_store_data' ) ) ) {
-			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id );
-			
-			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
-				// Zet het JSON-object om in een PHP-array
-				$store_data = json_decode( wp_remote_retrieve_body( $response ), true );
-				set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
-			} else {
-				$logger = wc_get_logger();
-				$context = array( 'source' => 'WordPress API' );
-				$logger->notice( 'Could not retrieve shop data for ID '.$shop_post_id, $context );
+		if ( $shop_post_id > 0 ) {
+			if ( false === ( $store_data = get_site_transient( $shop_post_id.'_store_data' ) ) ) {
+				$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id );
+				
+				if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
+					// Zet het JSON-object om in een PHP-array
+					$store_data = json_decode( wp_remote_retrieve_body( $response ), true );
+					set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
+				} else {
+					$logger = wc_get_logger();
+					$context = array( 'source' => 'WordPress API' );
+					$logger->notice( 'Could not retrieve shop data for ID '.$shop_post_id, $context );
+				}
 			}
 		}
 
