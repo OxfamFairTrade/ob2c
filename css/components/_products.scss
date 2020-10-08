@@ -13,8 +13,9 @@
     .info-labels {
       position: absolute;
       top: 0;
-      right: 0;
-      z-index: 999;
+      left: 0;
+      // Ook boven zoombox packshot laten verschijnen 
+      z-index: 10000;
 
       .info-label {
         display: inline-block;
@@ -25,7 +26,8 @@
         background: $white;
         color: $black;
         border: 1px solid $black;
-        float: right;
+        // Of uitschakelen om naast elkaar te laten verschijnen?
+        float: left;
         clear: both;
 
         &.promotion {
