@@ -609,7 +609,7 @@
 		$listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
 
 		$listing_template .= "\t\t\t" . '<div class="wpsl-direction-wrap">' . "\r\n";
-		if ( ! $wpsl_settings['hide_distance'] ) {
+		if ( ! $wpsl_settings['hide_distance'] and 1 === 2 ) {
 			$listing_template .= "\t\t\t\t" . '+/- <%= distance %> ' . esc_html( $wpsl_settings['distance_unit'] ) . '' . "\r\n";
 		}
 		$listing_template .= "\t\t\t" . '</div>' . "\r\n";
