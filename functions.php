@@ -1533,12 +1533,6 @@
 	
 	function no_orders_on_main( $price, $product ) {
 		if ( ! is_admin() ) {
-			if ( is_main_site() ) {
-				if ( $product->get_meta('_woonet_publish_to_23') !== 'yes' ) {
-					// Het product wordt niet online verkocht (o.b.v. Oostende als test case)
-					$price = '<span class="unavailable">Niet online beschikbaar</span>';
-				}
-			}
 			if ( is_b2b_customer() ) {
 				$price .= ' per stuk';
 			}

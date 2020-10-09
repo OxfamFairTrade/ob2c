@@ -15,6 +15,11 @@ if ( ! $product->is_purchasable() ) {
 	return;
 }
 
+if ( is_main_site() and $product->get_meta('_woonet_publish_to_23') !== 'yes' ) {
+	// Het product wordt niet online verkocht (o.b.v. aanwezigheid in webshop Oostende als test case)
+	return '<span class="unavailable">Niet online beschikbaar</span>';
+}
+
 echo wc_get_stock_html( $product );
 
 // GEWIJZID: Ook verbergen indien 'onbackorder'
