@@ -8,6 +8,8 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	add_filter( 'big_image_size_threshold', '__return_false' );
+
 	// Wordt zowel doorlopen in woocommerce/ajax/shop-full.php als woocommerce/archive-product.php?
 	add_action( 'woocommerce_before_shop_loop', 'add_custom_dropdown_filters_per_category' );
 
