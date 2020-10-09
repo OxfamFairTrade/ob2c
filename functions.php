@@ -8,7 +8,30 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
-	add_filter( 'big_image_size_threshold', '__return_false' );
+	add_filter( 'woocommerce_products_admin_list_table_filters', 'sort_categories_by_menu_order', 10, 1 );
+
+	function sort_categories_by_menu_order( $filters ) {
+		$filters['product_category'] = wc_product_dropdown_categories(
+			array(
+				'option_select_text' => __( 'Filter by category', 'woocommerce' ),
+				'hide_empty' => 0,
+				// Sorteer volgens onze custom volgorde
+				'orderby' => 'menu_order',
+			)
+		);
+		return $filters;
+	}
+
+	// Limiteer de afbeeldingsgrootte op subsites
+	add_filter( 'big_image_size_threshold', 'reduce_maximum_size_on_subsites', 10, 1 );
+
+	function reduce_maximum_size_on_subsites( $threshold ) {
+		if ( is_main_site() ) {
+			return false;
+		} else {
+			return 1500;
+		}
+	}
 
 	// Wordt zowel doorlopen in woocommerce/ajax/shop-full.php als woocommerce/archive-product.php?
 	add_action( 'woocommerce_before_shop_loop', 'add_custom_dropdown_filters_per_category' );
@@ -1629,7 +1652,7 @@
 		}
 	}
 
-	// Verhoog het aantal producten per winkelpagina
+	// Verhoog het aantal producten per winkelpagina WORDT OVERRULED DOOR SAVOY
 	add_filter( 'loop_shop_per_page', 'modify_number_of_products_per_page', 20, 1 );
 
 	function modify_number_of_products_per_page( $per_page ) {
@@ -5498,28 +5521,29 @@
 			// 	echo '<p>Mails naar Microsoft-adressen (@htomail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>De promoties n.a.v. Week van de Fair Trade werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">Copain</a>). Opgelet: bij de 2+1-actie op de chocoladerepen kunnen witte en notenchocolade naar keuze gemengd worden. Bijgevolg wordt de korting pas verrekend van zodra er (een veelvoud van) <u>drie</u> geldige artikels in het winkelmandje zitten. We weten op voorhand immers niet welke smaak de klant verkiest voor de gratis reep. De kortingsregel in ShopPlus werd op een gelijkaardige manier opgezet.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>De talrijke promoties n.a.v. Week van de Fair Trade werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20606/1429/product-promoacties-week-vd-fair-trade.html" target="_blank">Copain</a>). Opgelet: net zoals in ShopPlus wordt de korting bij de 2+1, 3+1, 4+2 en 5+1 acties pas verrekend van zodra er een volledig veelvoud (dus inclusief het gratis product) toegevoegd werd aan het winkelmandje. Er is voor gekozen om de twee acties met kortingsbonnen (1,50 euro korting bij aankoop van 2 pakjes koffie, en een gratis pakje quinoa bij aankoop van 30 euro) online 1x automatisch toe te passen per klant. Je dient hiervoor uiteraard <u>geen bonnen in te leveren ter creditering</u>: eind deze maand bekijken we in de statistieken hoe vaak beide kortingen geactiveerd werden in jullie webshop. We tellen die aantallen op bij de papieren bonnen die jullie zullen terugsturen van klanten die in de fysieke winkel van de promotie profiteerden.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Last-minute voegden we ook de producten van Magasins du Monde toe waarop een promotie loopt toe aan de webshopdatabase:</p><ul style="margin-left: 2em;">';
+						// op jullie verzoek alvast enkele populaire non-foodproducten '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515'
+						$skus = array( '26321', '65224', '65225', '87339', '87352' );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku($sku);
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
+				echo '</div>';
 				echo '<div class="notice notice-info">';
 					echo '<p>Zoals <a href="https://copain.oww.be/k/nl/n118/news/view/20525/12894/prijs-notenchocolade-190g-wordt-tijdelijk-verlaagd.html" target="_blank">eerder aangekondigd</a> wordt de consumentenprijs van 24302 Notenchocolade 190 g (W14302) tijdens de maand oktober tijdelijk verlaagd naar 2,95 euro. Deze aanpassing werd ook doorgevoerd in jullie webshop.</p>';
 				echo '</div>';
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Deze maand slechts 1 nieuw product, maar wat voor één:</p><ul style="margin-left: 2em;">';
-				// 		$skus = array( '26321', '65224', '65225', '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515', '87339', '87352' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku($sku);
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_attribute('pa_shopplus').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten.</p>';
-				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';

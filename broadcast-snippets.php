@@ -245,6 +245,20 @@
 		}
 	}
 
+	// Een reeks (per ongeluk losgekoppelde) producten verwijderen
+	$products_to_delete = array( '65224', '87339' );
+	foreach ( $products_to_delete as $sku ) {
+		$product_id = wc_get_product_id_by_sku( $sku );
+		if ( $product_id !== false ) {
+			write_log("BLOG-ID ".get_current_blog_id()." ...");
+			$product = wc_get_product( $product_id );
+			if ( $product !== false and $product->get_status() === 'publish' ) {
+				write_log("ZAL PRODUCT-ID ".$product_id." VOLLEDIG VERWIJDEREN!");
+				$product->delete(true);
+			}
+		}
+	}
+
 	// Product weer linken aan juiste (geüpdatete) foto
 	$sku = '21515';
 	$product_id = wc_get_product_id_by_sku( $sku );

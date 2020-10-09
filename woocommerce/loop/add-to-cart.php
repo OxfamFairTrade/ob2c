@@ -29,7 +29,7 @@ if ( is_main_site() ) {
 	if ( $product->get_meta('_woonet_publish_to_23') === 'yes' ) {
 		if ( $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-1 month') ) ) {
 			//  Geef 1 maand buffer om lokale voorraad aan te leggen
-			echo 'Nog niet online beschikbaar';
+			echo 'Weldra online beschikbaar';
 		} else {
 			echo '<a rel="nofollow" href="#" class="button product_type_simple store-selector-open"></a>';
 		}
