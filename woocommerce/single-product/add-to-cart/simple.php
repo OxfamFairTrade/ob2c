@@ -15,10 +15,18 @@ if ( ! $product->is_purchasable() ) {
 	return;
 }
 
-if ( is_main_site() and $product->get_meta('_woonet_publish_to_23') !== 'yes' ) {
-	// Het product wordt niet online verkocht (o.b.v. aanwezigheid in webshop Oostende als test case)
-	echo '<span class="unavailable">Niet online beschikbaar</span>';
-	return;
+if ( is_main_site() ) {
+	if ( $product->get_meta('_woonet_publish_to_23') === 'yes' ) {
+		if ( $product->get_date_created()->date_i18n('Y-m-d') < date_i18n( 'Y-m-d', strtotime('-1 month') ) ) {
+			//  Geef 1 maand buffer om lokale voorraad aan te leggen
+			echo '<span class="soon-available">Nog niet online beschikbaar</span>';
+			return;
+		}
+	} else {
+		// Het product wordt niet online verkocht (o.b.v. aanwezigheid in webshop Oostende als test case)
+		echo '<span class="unavailable">Niet online beschikbaar</span>';
+		return;
+	}
 }
 
 echo wc_get_stock_html( $product );

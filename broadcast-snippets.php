@@ -274,7 +274,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '20610' );
+	$outofstocks = array( '26321', '65224', '65225', '87339', '87352' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
