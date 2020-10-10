@@ -5525,7 +5525,7 @@
 					echo '<p>De talrijke promoties n.a.v. Week van de Fair Trade werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20606/1429/product-promoacties-week-vd-fair-trade.html" target="_blank">Copain</a>). Opgelet: net zoals in ShopPlus wordt de korting bij de 2+1, 3+1, 4+2 en 5+1 acties pas verrekend van zodra er een volledig veelvoud (dus inclusief het gratis product) toegevoegd werd aan het winkelmandje. Er is voor gekozen om de twee acties met kortingsbonnen (1,50 euro korting bij aankoop van 2 pakjes koffie, en een gratis pakje quinoa bij aankoop van 30 euro) online 1x automatisch toe te passen per klant. Je dient hiervoor uiteraard <u>geen bonnen in te leveren ter creditering</u>: eind deze maand bekijken we in de statistieken hoe vaak beide kortingen geactiveerd werden in jullie webshop. We tellen die aantallen op bij de papieren bonnen die jullie zullen terugsturen van klanten die in de fysieke winkel van de promotie profiteerden.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>Last-minute voegden we ook de producten van Magasins du Monde waarop een promotie loopt toe aan de webshopdatabase:</p><ul style="margin-left: 2em;">';
+					echo '<p>Naast de stekelbessenconfituur voegden we last-minute ook de producten van Magasins du Monde waarop een promotie loopt toe aan de webshopdatabase:</p><ul style="margin-left: 2em;">';
 						// op jullie verzoek alvast enkele populaire non-foodproducten '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515'
 						$skus = array( '26321', '65224', '65225', '87339', '87352' );
 						foreach ( $skus as $sku ) {
