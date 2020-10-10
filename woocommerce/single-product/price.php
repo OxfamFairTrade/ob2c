@@ -21,7 +21,7 @@ global $product;
 <?php endif; ?>
 
 <?php
-	if ( floatval( $product->get_attribute('eprijs') ) !== 0 ) {
+	if ( floatval( $product->get_attribute('eprijs') ) !== 0.0 ) {
 		echo '<p class="unit-price">&euro;/'.strtolower( $product->get_meta('_stat_uom') ).' '.number_format_i18n( $product->get_attribute('eprijs'), 2 ).'</p>';
 	}
 
