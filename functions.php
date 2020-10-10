@@ -130,6 +130,7 @@
 	// Geautomatiseerde manier om instellingen van Savoy te kopiëren naar subsites
 	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wpsl_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wjecf_licence', 'sync_settings_to_subsites', 10, 3 );
 	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
