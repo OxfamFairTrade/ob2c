@@ -20,7 +20,7 @@
 				</div>
 				<div class="col-row lh-intro">
 					<div class="col-xs-12 col-md-6">
-						<h2>Oxfam Webshop <?php echo get_webshop_name(true); ?></h2>
+						<h2><?php echo ( ! is_main_site() ) ? 'Oxfam ' : ''; ?>Webshop <?php echo get_webshop_name(true); ?></h2>
 						<?php the_content(); ?>
 					</div>
 					<div class="col-xs-12 col-md-6">

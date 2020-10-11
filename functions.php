@@ -8,6 +8,21 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Pas winkelmandkorting WVDFT2020-QUINOA toe op totaal i.p.v. subtotaal
+	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
+
+	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
+		if ( $coupon->get_code() === 'wvdft2020-quinoa' ) {
+			$totals = WC()->cart->get_totals();
+			write_log( print_r( $totals, true ) );
+			if ( WC()->cart->get_total('edit') < 30 ) {
+				return false;	
+			}
+		}
+
+		return $can_be_applied;
+	}
+
 	add_filter( 'woocommerce_products_admin_list_table_filters', 'sort_categories_by_menu_order', 10, 1 );
 
 	function sort_categories_by_menu_order( $filters ) {
@@ -2216,7 +2231,7 @@
 	}
 
 	// Acties om uit te voeren AAN BEGIN VAN ELKE POGING TOT CHECKOUT
-	// add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
+	add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
 
 	function verify_min_max_age_postcode_vat() {
 		// Stel een bestelminimum (en fictief -maximum) in
@@ -3193,7 +3208,7 @@
 		}
 
 		function restrain_coupons_to_b2c( $can_be_applied, $coupon ) {
-			if ( strpos( $coupon->get_code(), 'b2b' ) === false ) {
+			if ( strpos( $coupon->get_code(), 'b2b-' ) === false ) {
 				return false;
 			} else {
 				return $can_be_applied;
