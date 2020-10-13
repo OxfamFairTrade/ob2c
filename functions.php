@@ -3425,11 +3425,15 @@
 	}
 
 	// Check tijdelijk de verstuurde bevestigingsmails door mezelf in BCC te zetten
-	// add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
+	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
 
 	function put_administrator_in_bcc( $headers, $object ) {
 		if ( $object === 'customer_processing_order' or $object === 'customer_completed_order' ) {
-			$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>\r\n';
+			if ( wp_get_environment_type() === 'production' ) {
+				$headers .= 'BCC: "Developer" <webshops@oxfamfairtrade.be>\r\n';
+			} else {
+				$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>\r\n';
+			}
 		}
 		return $headers;
 	}
@@ -5260,9 +5264,13 @@
 		 * @return array
 		 */
 		
-		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id', 'promo_text' );
+		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id', 'promo_text', '_main_thumbnail_id' );
 		foreach ( $keys_to_copy as $key ) {
-			$meta_data[ $key ] = $data['master_product']->get_meta( $key );
+			if ( $key === '_main_thumbnail_id' ) {
+				$meta_data[ $key ] = $data['master_product']->get_image_id();
+			} else {
+				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
+			}
 		}
 		
 		// '_upsell_ids' en '_crosssell_ids' worden in principe door WooMultistore zelf onderhouden
