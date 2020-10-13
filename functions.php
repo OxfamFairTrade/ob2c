@@ -3453,7 +3453,7 @@
 				// Vervang bestemmeling enkel indien niet leeg
 				// Dit heeft geen effect op eventuele (B)CC's in headers! 
 				if ( $params[0] !== '' ) {
-					$params[0] = get_webshop_email();
+					$params[0] = get_site_option('admin_email');
 				}
 				// Prefix onderwerp
 				$params[1] = 'TEST '.$params[1];
