@@ -568,10 +568,10 @@
 				<script>(function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];
 					js = d.createElement(s); js.id = id;
-					js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js#xfbml=1&version=v2.12&autoLogAppEvents=1';
+					js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js';
 					fjs.parentNode.insertBefore(js, fjs);
 					}(document, 'script', 'facebook-jssdk'));</script>
-				<div class='fb-customerchat' attribution="wordpress" page_id='116000561802704' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!'logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
+				<div class='fb-customerchat' attribution="wordpress" page_id='116000561802704' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!' logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
 				<?php
 			}
 		}
