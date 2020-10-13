@@ -8,6 +8,43 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Wordt gebruikt in o.a. loop, mini cart en email order items WORDT OVERRULED IN WOOCOMMERCE-TEMPLATE-FUNCTIONS.PHP
+	// add_filter( 'woocommerce_product_get_image', 'get_parent_image_if_non_set', 10, 5 );
+	
+	function get_parent_image_if_non_set( $image, $product, $size, $attr, $placeholder ) {
+		if ( ! is_main_site() ) {
+			// write_log( $image );
+			// Eventueel kunnen we de logica ook omdraaien en altijd vervangen indien '_main_thumbnail_id' niet-leeg is
+			if ( ! $image or strpos( $image, 'placeholder' ) !== false ) {
+				global $product;
+				$main_image_id = $product->get_meta('_main_thumbnail_id');
+				switch_to_blog(1);
+				$image = wp_get_attachment_image( $main_product_id, $size, false, $attr );
+				restore_current_blog();
+			}
+		}
+		return $image;
+	}
+
+	// Wordt gebruikt in o.a. single product
+	add_filter( 'woocommerce_single_product_image_thumbnail_html', 'get_single_parent_image_if_non_set', 10, 2 );
+	
+	function get_single_parent_image_if_non_set( $html, $image_id ) {
+		if ( ! is_main_site() ) {
+			// write_log( $image_id );
+			// Als er geen productafbeelding beschikbaar is, is op dit ogenblik reeds een placeholder ingevoegd
+			// Eventueel kunnen we de logica ook omdraaien en altijd vervangen indien '_main_thumbnail_id' niet-leeg is
+			global $product;
+			if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
+				$main_image_id = $product->get_meta('_main_thumbnail_id');
+				switch_to_blog(1);
+				$html = wc_get_gallery_image_html( $main_image_id, true );
+				restore_current_blog();
+			}
+		}
+		return $html;
+	}
+
 	// Pas winkelmandkorting WVDFT2020-QUINOA toe op totaal i.p.v. subtotaal
 	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
 
@@ -15,6 +52,9 @@
 		if ( $coupon->get_code() === 'wvdft2020-quinoa' ) {
 			$totals = WC()->cart->get_totals();
 			write_log( print_r( $totals, true ) );
+			write_log( "CART CONTENTS TOTAL: ".$totals['cart_contents_total'] );
+			write_log( "CART TOTAL: ".WC()->cart->get_total('edit') );
+			// Of $totals['cart_contents_total'] gebruiken?
 			if ( WC()->cart->get_total('edit') < 30 ) {
 				return false;	
 			}
@@ -143,16 +183,23 @@
 	}
 	
 	// Geautomatiseerde manier om instellingen van Savoy te kopiëren naar subsites
+	add_action( 'update_option_wp_mail_smtp', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wpsl_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_cookie_notice_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wjecf_licence', 'sync_settings_to_subsites', 10, 3 );
 	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
-		if ( get_current_blog_id() === 1 and current_user_can('update_core') ) {
+		if ( get_current_blog_id() === 1 and current_user_can('update_core') and is_array( $new_value ) ) {
 			$sites = get_sites( array( 'site__not_in' => array(1) ) );
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
+				if ( $option === 'wp_mail_smtp' ) {
+					// Instellingen van WP Mail SMTP lokaal maken
+					$new_value['mail']['from_email'] = get_option('admin_email');
+					$new_value['mail']['from_name'] = get_bloginfo('name');
+				}
 				if ( update_option( $option, $new_value ) ) {
 					write_log("Instelling '".$option."' gesynchroniseerd naar blog-ID ".$site->blog_id );
 				}
@@ -1235,8 +1282,12 @@
 			}
 		} elseif ( $column === 'excel_file_name' ) {
 			if ( strpos( $the_order->get_meta('_excel_file_name'), '.xlsx' ) > 10 ) {
-				$file = content_url( '/uploads/xlsx/'.$the_order->get_meta('_excel_file_name') );
-				echo '<a href="'.$file.'" target="_blank">Download</a>';
+				$file_path = '/uploads/xlsx/'.$the_order->get_meta('_excel_file_name');
+				if ( file_exists( WP_CONTENT_DIR . $file_path ) ) {
+					echo '<a href="'.content_url( $file_path ).'" download>Download</a>';
+				} else {
+					echo '<i>niet meer beschikbaar</i>';
+				}
 			} else {
 				echo '<i>niet beschikbaar</i>';
 			}

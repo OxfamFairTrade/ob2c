@@ -24,7 +24,6 @@
 					</div>
 					<div class="top-social logged-in-user">
 						<a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>">
-							<span class="fab"></span>
 							<?php
 								if ( is_user_logged_in() ) {
 									$user = wp_get_current_user();

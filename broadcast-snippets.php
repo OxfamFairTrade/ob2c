@@ -407,35 +407,7 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 	if ( is_array( $jetpack_stats_settings ) ) {
 		update_option( 'stats_options', $jetpack_stats_settings );
 	}
-
-	// Instellingen van WP Mail SMTP kopiëren naar subsites
-	switch_to_blog(1);
-	$wp_mail_smtp = get_option('wp_mail_smtp');
-	restore_current_blog();
-	if ( is_array( $wp_mail_smtp ) ) {
-		$wp_mail_smtp['mail']['from_email'] = get_option('admin_email');
-		$wp_mail_smtp['mail']['from_name'] = get_bloginfo('name');
-		update_option( 'wp_mail_smtp', $wp_mail_smtp );
-	}
-
-	// Instellingen van Savoy kopiëren naar subsites
-	// Gelijkaardig voor 'wpsl_settings'
-	switch_to_blog(1);
-	$savoy_settings = get_option('nm_theme_options');
-	restore_current_blog();
-	if ( is_array( $savoy_settings ) ) {
-		// Alle dynamische gegevens voor lokale winkels zijn in shortcodes gestopt, dus ik denk dat dit veilig is ...
-		update_option( 'nm_theme_options', $savoy_settings );
-	}
-
-	// Instellingen van Cookie Notice kopiëren naar subsites
-	switch_to_blog(1);
-	$cookie_settings = get_option('cookie_notice_options');
-	restore_current_blog();
-	if ( is_array( $cookie_settings ) ) {
-		update_option( 'cookie_notice_options', $cookie_settings );
-	}
-
+	
 	// Verzendkosten wijzigen
 	$shipping_methods = array(
 		'free_delivery_by_shop' => 'free_shipping_1',
