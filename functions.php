@@ -8,18 +8,22 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
-	// Wordt gebruikt in o.a. loop, mini cart en email order items WORDT OVERRULED IN WOOCOMMERCE-TEMPLATE-FUNCTIONS.PHP
-	// add_filter( 'woocommerce_product_get_image', 'get_parent_image_if_non_set', 10, 5 );
+	// Wordt gebruikt in o.a. mini cart en email order items
+	// Wordt overruled in loop door woocommerce-template-functions.php!
+	add_filter( 'woocommerce_product_get_image', 'get_parent_image_if_non_set', 10, 5 );
 	
 	function get_parent_image_if_non_set( $image, $product, $size, $attr, $placeholder ) {
 		if ( ! is_main_site() ) {
 			// write_log( $image );
-			// Eventueel kunnen we de logica ook omdraaien en altijd vervangen indien '_main_thumbnail_id' niet-leeg is
-			if ( ! $image or strpos( $image, 'placeholder' ) !== false ) {
-				global $product;
+			// Check of er een globaal beeld ingesteld is
+			if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
 				$main_image_id = $product->get_meta('_main_thumbnail_id');
 				switch_to_blog(1);
-				$image = wp_get_attachment_image( $main_product_id, $size, false, $attr );
+				// Check of de file nog bestaat
+				if ( get_post_type( $main_image_id ) === 'attachment' ) {
+					// Retourneert lege string indien beeld inmiddels verwijderd
+					$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
+				}
 				restore_current_blog();
 			}
 		}
@@ -31,14 +35,18 @@
 	
 	function get_single_parent_image_if_non_set( $html, $image_id ) {
 		if ( ! is_main_site() ) {
+			// Als er lokaal geen productafbeelding beschikbaar is, is op dit ogenblik reeds een placeholder ingevoegd
 			// write_log( $image_id );
-			// Als er geen productafbeelding beschikbaar is, is op dit ogenblik reeds een placeholder ingevoegd
-			// Eventueel kunnen we de logica ook omdraaien en altijd vervangen indien '_main_thumbnail_id' niet-leeg is
+			// Check of er een globaal beeld ingesteld is
 			global $product;
 			if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
 				$main_image_id = $product->get_meta('_main_thumbnail_id');
 				switch_to_blog(1);
-				$html = wc_get_gallery_image_html( $main_image_id, true );
+				// Check of de file nog bestaat
+				if ( get_post_type( $main_image_id ) === 'attachment' ) {
+					// Dit levert nog steeds een source op die de lokale shop bevat, waardoor het beeld fysiek wel identiek is maar toch niet in cache zit ...
+					$html = wc_get_gallery_image_html( $main_image_id, true );
+				}
 				restore_current_blog();
 			}
 		}
@@ -4520,10 +4528,10 @@
 	}
 
 	// Toon leeggoed en cadeauverpakking niet in de mini-cart (maar wordt wel meegeteld in subtotaal!)
-	add_filter( 'woocommerce_widget_cart_item_visible', 'wc_cp_cart_item_visible', 10, 3 );
+	add_filter( 'woocommerce_widget_cart_item_visible', 'hide_empties_in_mini_cart', 10, 3 );
 
-	function wc_cp_cart_item_visible( $visible, $cart_item, $cart_item_key ) {
-		if ( ! is_numeric( $cart_item['data']->get_sku() ) ) {
+	function hide_empties_in_mini_cart( $visible, $cart_item, $cart_item_key ) {
+		if ( in_array( $cart_item['data']->get_sku(), array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917', 'GIFT' ) ) ) {
 			$visible = false;
 		}
 		return $visible;

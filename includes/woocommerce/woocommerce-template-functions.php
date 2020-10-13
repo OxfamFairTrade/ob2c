@@ -355,12 +355,22 @@ if ( ! function_exists( 'woocommerce_get_product_thumbnail' ) ) {
         $image_size = apply_filters( 'single_product_archive_thumbnail_size', $size );
 
         if ( $nm_theme_options['product_image_lazy_loading'] ) {
-            $image_id = get_post_thumbnail_id();
-            
-            if ( $image_id ) {
-                $output = nm_product_get_thumbnail( $image_id, $image_size, '', $nm_globals['product_placeholder_image'] );
+            // GEWIJZIGD: Check of we de afbeelding moeten ophalen in hoofdniveau
+            $global_image_html = '';
+            if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
+                $main_image_id = $product->get_meta('_main_thumbnail_id');
+                $global_image_html = nm_product_get_thumbnail( $main_image_id, $image_size, '', $nm_globals['product_placeholder_image'], true );
+            }
+
+            if ( $global_image_html === '' ) {
+                $image_id = get_post_thumbnail_id();
+                if ( $image_id ) {
+                    $output = nm_product_get_thumbnail( $image_id, $image_size, '', $nm_globals['product_placeholder_image'] );
+                } else {
+                    $output = wc_placeholder_img();
+                }
             } else {
-                $output = wc_placeholder_img();
+                $output = $global_image_html;
             }
         } else {
             $output = $product ? $product->get_image( $image_size ) : '';
@@ -386,17 +396,18 @@ if ( ! function_exists( 'woocommerce_get_product_thumbnail' ) ) {
 /*
  * Shop (product loop): Get thumbnail/image
  */
-function nm_product_get_thumbnail( $image_id, $image_size, $image_class, $image_placeholder_url ) {
+function nm_product_get_thumbnail( $image_id, $image_size, $image_class, $image_placeholder_url, $switch_to_main = false ) {
     $product_thumbnail = '';
 
-    // GEWIJZIGD: Afbeelding ophalen in hoofdniveau
-    global $product;
-    if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
-        $main_image_id = $product->get_meta('_main_thumbnail_id');
+    // GEWIJZIGD: Haal afbeeldingseigenschappen op in hoofdniveau
+    $props = array( 'src' => '' );
+    if ( $switch_to_main ) {
         switch_to_blog(1);
-        $props = nm_product_get_thumbnail_props( $main_image_id, $image_size );
+        $props = nm_product_get_thumbnail_props( $image_id, $image_size );
         restore_current_blog();
-    } else {
+    }
+
+    if ( strlen( $props['src'] ) === 0 ) {
         $props = nm_product_get_thumbnail_props( $image_id, $image_size );
     }
 

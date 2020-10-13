@@ -13,8 +13,7 @@
 
 	<div id="oxfam-products" style="border-spacing: 0 10px;">
 		<?php
-			// Query alle gepubliceerde producten en stel voorraadstatus + uitlichting in
-			// Ordenen op artikelnummer, nieuwe producten van de afgelopen maand rood markeren?
+			// Query alle gepubliceerde producten, orden op ompaknummer
 			$args = array(
 				'post_type'			=> 'product',
 				'post_status'		=> array( 'publish' ),
@@ -36,7 +35,7 @@
 					$product = wc_get_product( get_the_ID() );
 					
 					// Verhinder dat leeggoed ook opduikt
-					if ( is_numeric( $product->get_sku() ) ) {
+					if ( ! in_array( $product->get_sku(), array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917') ) ) {
 						// Kleur de randen en tel de initiële waarde voor de tellers
 						if ( $product->is_on_backorder() ) {
 							$class = 'border color-orange';
@@ -55,13 +54,7 @@
 						// Voeg klasse toe indien recent gepubliceerd
 						if ( get_the_date('U') > strtotime('-3 months') ) $content .= ' new';
 						
-						// Check voorraadstatus van moederproduct, voeg klasse toe indien niet langer op stock
-						// VERTRAAGT ENORM? KAN NU VIA DE LOKALE META KEY
-						// $main_product_id = get_post_meta( get_the_ID(), '_woonet_network_is_child_product_id', true );
-						// switch_to_blog(1);
-						// $main_product = wc_get_product( $main_product_id );
-						// $bestelweb = get_post_meta( $main_product_id, '_in_bestelweb', true );
-						// restore_current_blog();
+						// Voeg klasse toe indien centraal niet langer op voorraad
 						if ( $product->get_meta('_in_bestelweb') === 'nee' ) {
 							$content .= ' old';
 						}
