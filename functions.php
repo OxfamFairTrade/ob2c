@@ -58,12 +58,10 @@
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
 		if ( $coupon->get_code() === 'wvdft2020-quinoa' ) {
+			// Dit geeft het totaal NA kortingen inclusief BTW als float MAAR bevat ook de verzendkosten!
+			// write_log( "CART TOTAL: ".WC()->cart->get_total('edit') );
 			$totals = WC()->cart->get_totals();
-			write_log( print_r( $totals, true ) );
-			write_log( "CART CONTENTS TOTAL: ".$totals['cart_contents_total'] );
-			write_log( "CART TOTAL: ".WC()->cart->get_total('edit') );
-			// Of $totals['cart_contents_total'] gebruiken?
-			if ( WC()->cart->get_total('edit') < 30 ) {
+			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] < $coupon->get_minimum_amount() ) {
 				return false;	
 			}
 		}
@@ -92,7 +90,8 @@
 		if ( is_main_site() ) {
 			return false;
 		} else {
-			return 1500;
+			// Komt overeen met thumbnail 1536x1536
+			return 1536;
 		}
 	}
 
