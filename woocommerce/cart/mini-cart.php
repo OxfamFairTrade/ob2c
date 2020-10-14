@@ -65,8 +65,7 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
                     ?>
                     <li id="nm-cart-panel-item-<?php echo esc_attr( $cart_item_key ); ?>" class="woocommerce-mini-cart-item <?php echo esc_attr( apply_filters( 'woocommerce_mini_cart_item_class', 'mini_cart_item', $cart_item, $cart_item_key ) ); ?>">
                         <div class="nm-cart-panel-item-thumbnail">
-                            <!-- GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed -->
-                            <div class="nm-cart-panel-thumbnail-wrap <?php echo ( ! $_product->is_visible() and $_product->get_sku() !== 'GIFT' ) ? 'empties' : ''; ?>">
+                            <div class="nm-cart-panel-thumbnail-wrap">
                                 <?php echo $thumbnail; ?>
                                 <div class="nm-cart-panel-thumbnail-loader nm-loader"></div>
                             </div>
@@ -90,13 +89,11 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
                             <?php // echo wc_get_formatted_cart_item_data( $cart_item ); ?>
                             
                             <div class="nm-cart-panel-quantity-pricing">
-                                <!-- GEWIJZIGD: Niet tonen bij individueel verkochte cadeauverpakking -->
-                                <?php if ( ! $nm_theme_options['cart_panel_quantity_arrows'] || ( $_product->is_sold_individually() ) and $_product->get_sku() !== 'GIFT' ) : ?>
+                                <?php if ( ! $nm_theme_options['cart_panel_quantity_arrows'] || $_product->is_sold_individually() ) : ?>
                                     <?php
                                         echo apply_filters( 'woocommerce_widget_cart_item_quantity', '<span class="quantity">' . esc_html__( 'Qty', 'woocommerce' ) . ': ' . $cart_item['quantity'] . '</span>', $cart_item, $cart_item_key );
                                     ?>
-                                <?php elseif ( $_product->is_visible() ) : ?>
-                                    <!-- GEWIJZIGD: Hoeveelheidsknoppen niet tonen bij onzichtbaar leeggoed -->
+                                <?php else: ?>
                                     <div class="product-quantity" data-title="<?php esc_html_e( 'Quantity', 'woocommerce' ); ?>">
                                         <?php
                                             $product_quantity = woocommerce_quantity_input( array(
@@ -127,7 +124,10 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
 
     <?php endif; ?>
 
-    <li class="empty"><?php esc_html_e( 'No products in the cart.', 'woocommerce' ); ?></li>
+    <li class="empty">
+        <i class="nm-font nm-font-close2"></i>
+        <span><?php esc_html_e( 'No products in the cart.', 'woocommerce' ); ?></span>
+    </li>
 
 </ul><!-- end product list -->
 
@@ -142,9 +142,9 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
         <p class="woocommerce-mini-cart__total total">
             <strong><?php
                 $empties = false;
-                foreach( WC()->cart->cart_contents as $item_key => $item_value ) {
-                    // Verzendklasse 'breekbaar' is niet op alle leeggoed geactiveerd, dus check of het ompaknummer met een 'W' begint
-                    if ( strpos( $item_value['data']->get_sku(), 'W' ) === 0 ) {
+                foreach( WC()->cart->get_cart_contents() as $item_key => $item_value ) {
+                    // Verzendklasse 'breekbaar' is niet op alle leeggoed geactiveerd, dus check leeggoed o.b.v. SKU
+                    if ( in_array( $item_value['data']->get_sku(), array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917' ) ) ) {
                         $empties = true;
                         break;
                     } 
