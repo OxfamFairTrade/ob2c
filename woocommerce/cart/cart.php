@@ -79,17 +79,17 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 				                                echo wp_kses_post( apply_filters( 'woocommerce_cart_item_backorder_notification', '<p class="backorder_notification">' . esc_html__( 'Available on backorder', 'woocommerce' ) . '</p>', $product_id ) );
 				                            }
 										?>
+
+										<?php if ( $nm_theme_options['cart_show_item_price'] ) : ?>
+					                        <div class="product-price" data-title="<?php esc_attr_e( 'Price', 'woocommerce' ); ?>">
+					                            <?php
+					                                echo apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key ); // PHPCS: XSS ok.
+					                            ?>
+					                        </div>
+					                    <?php endif; ?>
 									</td>
 
-									<?php if ( $nm_theme_options['cart_show_item_price'] ) : ?>
-				                        <td class="nm-product-quantity" data-title="<?php esc_attr_e( 'Price', 'woocommerce' ); ?>">
-				                            <?php
-				                                echo apply_filters( 'woocommerce_cart_item_price', WC()->cart->get_product_price( $_product ), $cart_item, $cart_item_key ); // PHPCS: XSS ok.
-				                            ?>
-				                        </td>
-				                    <?php endif; ?>
-
-		                            <td class="nm-product-quantity" data-title="<?php esc_attr_e( 'Quantity', 'woocommerce' ); ?>">
+									<td class="nm-product-quantity" data-title="<?php esc_attr_e( 'Quantity', 'woocommerce' ); ?>">
 		                                <?php
 		                                    if ( $_product->is_sold_individually() ) {
 		                                        $product_quantity = sprintf( '<span>%s</span>: 1 <input type="hidden" name="cart[%s][qty]" value="1" />', esc_html__( 'Qty', 'woocommerce' ), $cart_item_key );
