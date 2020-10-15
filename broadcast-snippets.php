@@ -236,7 +236,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '20063', '20249', '20258', '24646', '25617' );
+	$photos_to_delete = array( '65224', '65225', '87339', '87352', '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 		if ( $photo_id ) {
@@ -288,7 +288,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '26321', '65224', '65225', '87339', '87352' );
+	$outofstocks = array( '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -313,6 +313,13 @@
 		$slug = sanitize_title( $product->get_name() );
 		$product->set_slug( $slug );
 		$product->save();
+	}
+
+	// Verwijder een product
+	$product_id = wc_get_product_id_by_sku('87505');
+	if ( $product_id ) {
+		$product = wc_get_product( $product_id );
+		$product->delete(true);
 	}
 
 	// Stel de openingsuren in van een niet-OWW-afhaalpunt

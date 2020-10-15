@@ -4861,23 +4861,25 @@
 
 	// Laat de wachtwoordlinks in de resetmails langer leven dan 1 dag (= standaard)
 	add_filter( 'password_reset_expiration', function( $expiration ) {
-		return 2*WEEK_IN_SECONDS;
+		return 2 * WEEK_IN_SECONDS;
 	});
 
 	function oxfam_get_attachment_id_by_file_name( $post_title ) {
 		$args = array(
 			// We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
+			// TO DO: ondersteuning voor meerdere foto's toevoegen
 			'posts_per_page' => 1,
 			'post_type'	=> 'attachment',
 			// Moet erbij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
 			'post_status' => 'inherit',
 			// De titel is NA DE IMPORT NIET MEER gelijk aan de bestandsnaam, dus zoek op basis van het gekoppelde bestand
 			'meta_key' => '_wp_attached_file',
-			'meta_value' => trim($post_title).'.jpg',
+			'meta_value' => trim( $post_title ),
+			'meta_compare' => 'LIKE',
 		);
 
 		$attachment_id = false;
-		$attachments = new WP_Query($args);
+		$attachments = new WP_Query( $args );
 		if ( $attachments->have_posts() ) {
 			while ( $attachments->have_posts() ) {
 				$attachments->the_post();
@@ -5223,6 +5225,20 @@
 	#############
 	# MULTISITE #
 	#############
+
+	// Pas de opties van WooMultistore eenvoudig aan voor alle subsites
+	// add_filter( 'woo_mstore/options/options_save', 'change_woo_mstore_options_in_bulk' );
+
+	function change_woo_mstore_options_in_bulk( $options ) {
+		foreach ( $options['child_inherit_changes_fields_control__product_image'] as $key => $value ) {
+			$options['child_inherit_changes_fields_control__product_image'][ $key ] = 'no';
+			// $options['child_inherit_changes_fields_control__product_gallery'][ $key ] = 'no';
+			// $options['child_inherit_changes_fields_control__upsell'][ $key ] = 'yes';
+			// $options['child_inherit_changes_fields_control__cross_sells'][ $key ] = 'yes';
+		}
+		write_log( print_r( $options, true ) );
+		return $options;
+	}
 
 	// Verhinder dat de lokale voorraad overschreven wordt bij elke update ZIT NU IN PRINCIPE NETJES IN INSTELLING
 	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'do_not_overwrite_local_stock', 10, 2 );
@@ -5607,9 +5623,9 @@
 					echo '<p>De talrijke promoties n.a.v. Week van de Fair Trade werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20606/1429/product-promoacties-week-vd-fair-trade.html" target="_blank">Copain</a>). Opgelet: net zoals in ShopPlus wordt de korting bij de 2+1, 3+1, 4+2 en 5+1 acties pas verrekend van zodra er een volledig veelvoud (dus inclusief het gratis product) toegevoegd werd aan het winkelmandje. Er is voor gekozen om de twee acties met kortingsbonnen (1,50 euro korting bij aankoop van 2 pakjes koffie, en een gratis pakje quinoa bij aankoop van 30 euro) online 1x automatisch toe te passen per klant. Je dient hiervoor uiteraard <u>geen bonnen in te leveren ter creditering</u>: eind deze maand bekijken we in de statistieken hoe vaak beide kortingen geactiveerd werden in jullie webshop. We tellen die aantallen op bij de papieren bonnen die jullie zullen terugsturen van klanten die in de fysieke winkel van de promotie profiteerden.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>Naast de stekelbessenconfituur voegden we last-minute ook de producten van Magasins du Monde waarop een promotie loopt toe aan de webshopdatabase:</p><ul style="margin-left: 2em;">';
-						// op jullie verzoek alvast enkele populaire non-foodproducten '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515'
-						$skus = array( '26321', '65224', '65225', '87339', '87352' );
+					echo '<p>Naast de stekelbessenconfituur voegden we op jullie verzoek alvast enkele populaire non-foodproducten toe aan de webshopdatabase:</p><ul style="margin-left: 2em;">';
+						// 
+						$skus = array( '26321', '65224', '65225', '87339', '87352', '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515' );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
