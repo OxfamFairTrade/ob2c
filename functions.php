@@ -8,6 +8,15 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Parameter om winkelmandje te legen (tijdens debuggen)
+	add_action( 'init', 'woocommerce_clear_cart_url' );
+	
+	function woocommerce_clear_cart_url() {
+		if ( isset( $_GET['emptyCart'] ) ) {
+			WC()->cart->empty_cart(true);
+		}
+	}
+
 	// Wordt gebruikt in o.a. mini cart en email order items
 	// Wordt overruled in loop door woocommerce-template-functions.php!
 	add_filter( 'woocommerce_product_get_image', 'get_parent_image_if_non_set', 10, 5 );

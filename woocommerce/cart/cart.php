@@ -126,15 +126,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 						<!-- GEWIJZIGD: Laat rij staan om buttons te triggeren maar verberg altijd -->
 						<tr style="display: none;">
 							<td colspan="3" class="actions">
-
-								<?php if ( wc_coupons_enabled() ) { ?>
-									<div class="coupon">
-				                        <label for="coupon_code"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label> <input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" /> <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?></button>
-										<?php //do_action( 'woocommerce_cart_coupon' ); ?>
-									</div>
-								<?php } ?>
-				                
-				                <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
+								<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
 				                
 				                <button type="submit" class="button border" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
 
@@ -153,26 +145,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 				<?php do_action( 'woocommerce_before_cart_collaterals' ); ?>
 
 				<div class="cart-collaterals">
-				    
-				    <h2><?php _e( 'Cart totals', 'woocommerce' ); ?></h2>
-				    
-				    <?php if ( ! is_ajax() && wc_coupons_enabled() ) { ?>
-				        <div class="nm-coupon-wrap">
-				            <div class="nm-coupon-inner">
-				                <a href="#" id="nm-coupon-btn"><?php esc_html_e( 'Add coupon', 'woocommerce' ); ?></a>
-
-				                <div class="nm-coupon">
-				                    <input type="text" id="nm-coupon-code" class="input-text" name="nm_coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" />
-				                    
-				                    <input type="submit" id="nm-apply-coupon-btn" class="button" name="nm_apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>" />
-
-				                    <?php do_action( 'woocommerce_cart_coupon' ); ?>
-				                </div>
-				            </div>
-				        </div>
-				    <?php } ?>
-				    
-					<?php 
+				    <?php 
 				        /**
 						 * Cart collaterals hook.
 						 *
@@ -186,7 +159,6 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 						<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
 						<?php do_action( 'woocommerce_proceed_to_checkout' ); ?>
 					</div>
-
 				</div>
 			</form>	
 
