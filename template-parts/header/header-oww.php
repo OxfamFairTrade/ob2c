@@ -23,20 +23,22 @@
 						</ul>
 					</div>
 					<div class="top-social logged-in-user">
-						<a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>">
-							<?php
-								if ( is_user_logged_in() ) {
-									$user = wp_get_current_user();
-									if ( ! empty( $user->first_name ) ) {
-										echo 'Welkom '.$user->first_name;
+						<?php if ( ! is_main_site() ) : ?>
+							<a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>">
+								<?php
+									if ( is_user_logged_in() ) {
+										$user = wp_get_current_user();
+										if ( ! empty( $user->first_name ) ) {
+											echo 'Welkom '.$user->first_name;
+										} else {
+											echo 'Mijn account';
+										}
 									} else {
-										echo 'Mijn account';
+										echo 'Aanmelden';
 									}
-								} else {
-									echo 'Aanmelden';
-								}
-							?>
-						</a>
+								?>
+							</a>
+						<?php endif; ?>
 					</div>
 					<div class="top-search">
 						<form id="globalSearch" action="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/" method="get">
