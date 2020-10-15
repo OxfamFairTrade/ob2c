@@ -4864,31 +4864,23 @@
 		return 2 * WEEK_IN_SECONDS;
 	});
 
-	function oxfam_get_attachment_id_by_file_name( $post_title ) {
+	function oxfam_get_attachment_ids_by_file_name( $file_name ) {
 		$args = array(
-			// We gaan ervan uit dat ons proces waterdicht is en er dus maar één foto met dezelfde titel kan bestaan
-			// TO DO: ondersteuning voor meerdere foto's toevoegen
-			'posts_per_page' => 1,
+			// Beperkte ondersteuning voor meerdere foto's (er kan al eens een foto dubbel geüpload zijn met index of 'scaled' achteraan)
+			'posts_per_page' => 5,
 			'post_type'	=> 'attachment',
-			// Moet erbij, want anders wordt de default 'publish' gebruikt en die bestaat niet voor attachments!
+			// Default wordt 'publish' gebruikt en die bestaat niet voor attachments!
 			'post_status' => 'inherit',
-			// De titel is NA DE IMPORT NIET MEER gelijk aan de bestandsnaam, dus zoek op basis van het gekoppelde bestand
+			// Zoek op basis van het gekoppelde bestand i.p.v. titel (kan nadien gewijzigd zijn door import)
 			'meta_key' => '_wp_attached_file',
-			'meta_value' => trim( $post_title ),
+			// Eventueel kunnen we naar een specifieke extensie zoeken
+			'meta_value' => trim( $file_name ),
 			'meta_compare' => 'LIKE',
+			'fields' => 'ids',
 		);
 
-		$attachment_id = false;
 		$attachments = new WP_Query( $args );
-		if ( $attachments->have_posts() ) {
-			while ( $attachments->have_posts() ) {
-				$attachments->the_post();
-				$attachment_id = get_the_ID();
-			}
-			wp_reset_postdata();
-		}
-
-		return $attachment_id;
+		return $attachments->posts;
 	}
 
 	function register_photo( $filename, $filestamp, $main_filepath ) {			
@@ -4900,10 +4892,11 @@
 		// Check of er al een vorige versie bestaat
 		$updated = false;
 		$deleted = false;
-		$old_id = oxfam_get_attachment_id_by_file_name( $filetitle );
-		if ( $old_id ) {
+		$old_photo_ids = oxfam_get_attachment_ids_by_file_name( $filetitle );
+		if ( count( $old_photo_ids ) > 0 ) {
+			$old_photo_id = reset( $old_photo_ids );
 			// Bewaar de post_parent van het originele attachment
-			$product_id = wp_get_post_parent_id( $old_id );
+			$product_id = wp_get_post_parent_id( $old_photo_id );
 			// Check of de uploadlocatie op dit punt al ingegeven is!
 			if ( $product_id ) {
 				$product = wc_get_product( $product_id );
@@ -4912,7 +4905,7 @@
 			// Stel het originele high-res bestand veilig
 			rename( $main_filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg' );
 			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
-			if ( wp_delete_attachment( $old_id, true ) ) {
+			if ( wp_delete_attachment( $old_photo_id, true ) ) {
 				// Extra check op het succesvol verwijderen
 				$deleted = true;
 			}

@@ -238,10 +238,12 @@
 	// Een reeks foto's verwijderen
 	$photos_to_delete = array( '65224', '65225', '87339', '87352', '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515' );
 	foreach ( $photos_to_delete as $sku ) {
-		$photo_id = oxfam_get_attachment_id_by_file_name( $sku );
-		if ( $photo_id ) {
-			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
-			wp_delete_attachment( $photo_id, true );
+		$photo_ids = oxfam_get_attachment_ids_by_file_name( $sku );
+		if ( count( $photo_ids ) > 0 ) {
+			foreach ( $photo_ids as $photo_id ) {
+				// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
+				wp_delete_attachment( $photo_id, true );
+			}
 		}
 	}
 
