@@ -63,17 +63,6 @@
 						</div>
 					</div>
 				<?php endif; ?>
-				<div class="col-row lh-banner">
-					<div class="col-xs-12">
-						<?php
-							$term_link = get_term_link( 'promotie', 'product_tag' );
-							if ( ! is_wp_error( $term_link ) ) {
-								// echo get_the_post_thumbnail_url( get_the_ID(), 'full' );
-								echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_stylesheet_directory_uri().'/images/promoties/prodmo-wvdft-2020-algemeen.png" /></a>';
-							}
-						?>
-					</div>
-				</div>
 				<?php if ( count( wc_get_product_ids_on_sale() ) > 0 ) : ?>
 					<div class="col-row lh-header">
 						<div class="col-xs-12 col-sm-6">

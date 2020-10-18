@@ -39,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						// Maar wordt dan nog altijd niet automatisch opgenomen in actieve filters!
 						$term_link = get_term_link( 'promotie', 'product_tag' );
 						if ( ! is_wp_error( $term_link ) ) {
-							echo '<a href="'.$term_link.'#nm-shop-products" class="'.$class.'"><span>Promoties #WeekVanDeFairTrade</span></a>';
+							echo '<a href="'.$term_link.'#nm-shop-products" class="'.$class.'"><span>Promoties</span></a>';
 						}
 					}
 					// if ( is_product_tag('sinterklaas') ) {
