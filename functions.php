@@ -904,18 +904,7 @@
 		return $roles;
 	}
 
-	// Lokale beheerders geen toegang geven tot hoofdniveau
-	add_filter( 'woocommerce_disable_admin_bar', 'disable_admin_bar_for_locals', 10, 1 );
- 
-	function disable_admin_bar_for_locals( $prevent_admin_access ) {
-		if ( is_main_site() and ! current_user_can('create_sites') ) {
-			return true;
-		}
-
-		return $prevent_admin_access;
-	}
-
-	// Zorg ervoor dat lokale beheerders toch al hun gearchiveerde site kunnen bekijken HEEFT DIT NOG ZIN?
+	// Zorg ervoor dat lokale assistenten/beheerders hun gearchiveerde site toch al kunnen bekijken
 	add_filter( 'ms_site_check', 'allow_local_manager_on_archived' );
 
 	function allow_local_manager_on_archived() {
