@@ -5311,8 +5311,8 @@
 		return $meta_data;
 	}
 
-	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import GAAT BLIJKBAAR AUTOMATISCH
-	// add_action( 'pmxi_saved_post', 'execute_product_sync', 100, 1 );
+	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import GAAT DIT AUTOMATISCH?
+	add_action( 'pmxi_saved_post', 'execute_product_sync', 100, 1 );
 	
 	function execute_product_sync( $post_id ) {
 		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
@@ -5326,9 +5326,9 @@
 			 * @param string  $stock_sync Set stock sync option. Valid value is either yes or no.
 			 */
 
-			$stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
-			do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no');
-			write_log( "SYNC PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
+			// $stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
+			// do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no');
+			// write_log( "SYNC PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
 
 			/**
 			 * After sync option is set, now fire the sync hook.
@@ -5336,6 +5336,7 @@
 			 * @param integer $product_id WooCommerce product ID
 			 */
 			do_action( 'WOO_MSTORE_admin_product/process_product', $post_id );
+			write_log( "SYNC PRODUCT-ID ".$post_id." TO ALL STORES" );
 
 			// Gebruik eventueel 'WOO_MSTORE_admin_product/slave_product_updated' voor afsluitende save (indien attributen niet goed doorkomen)
 		}
@@ -5625,7 +5626,7 @@
 					echo '<p>De promoties van 19/10 t.e.m. 30/11 (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">Copain</a>) werden geactiveerd in alle webshops.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-info">';
-					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die aantallen tellen we op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
+					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>Naast de stekelbessenconfituur voegden we op jullie verzoek alvast enkele populaire non-foodproducten toe aan de webshopdatabase:</p><ul style="margin-left: 2em;">';

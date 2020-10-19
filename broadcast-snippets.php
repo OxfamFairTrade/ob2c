@@ -191,7 +191,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> 'publish',
-		'title'			=> 'chips-50',
+		'title'			=> 'noussines',
 	);
 
 	$all_coupons = new WP_Query( $args );
