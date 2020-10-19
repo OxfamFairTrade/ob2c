@@ -5311,7 +5311,7 @@
 		return $meta_data;
 	}
 
-	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import GAAT DIT AUTOMATISCH?
+	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import
 	add_action( 'pmxi_saved_post', 'execute_product_sync', 100, 1 );
 	
 	function execute_product_sync( $post_id ) {
@@ -5419,7 +5419,8 @@
 	* @param array $product_meta_item_row
 	*/	
 	function translate_main_to_local_ids( $local_product_id, $meta_key, $product_meta_item_row ) {
-		write_log( "MAAK POST ".get_the_ID()." LOKAAL IN BLOG ".get_current_blog_id() );
+		// write_log( "MAAK POST ".get_the_ID()." LOKAAL IN BLOG ".get_current_blog_id() );
+		
 		if ( $product_meta_item_row ) {
 			foreach ( $product_meta_item_row as $main_product_id ) {
 				switch_to_blog(1);
@@ -5440,7 +5441,7 @@
 	}
 
 	function translate_master_to_slave_ids( $meta_key, $main_product_ids, $master_blog_id, $master_product ) {
-		write_log( "MAAK EIGENSCHAP ".$meta_key." VAN SKU ".$master_product->get_sku()." LOKAAL IN BLOG ".get_current_blog_id() );
+		// write_log( "MAAK EIGENSCHAP ".$meta_key." VAN SKU ".$master_product->get_sku()." LOKAAL IN BLOG ".get_current_blog_id() );
 		
 		if ( is_array( $main_product_ids ) ) {
 			$slave_product_ids = array();
