@@ -939,6 +939,7 @@
 	}
 
 	add_action( 'woocommerce_order_status_pending_to_completed', 'warn_if_invalid_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_refunded_to_processing', 'warn_if_invalid_status_change', 10, 2 );
 	add_action( 'woocommerce_order_status_refunded_to_completed', 'warn_if_invalid_status_change', 10, 2 );
 	add_action( 'woocommerce_order_status_completed_to_processing', 'warn_if_invalid_status_change', 10, 2 );
 	add_action( 'woocommerce_order_status_completed_to_claimed', 'warn_if_invalid_status_change', 10, 2 );
