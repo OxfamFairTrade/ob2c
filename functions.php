@@ -5622,7 +5622,10 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
-					echo '<p>De talrijke promoties n.a.v. Week van de Fair Trade werden ingesteld (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20606/1429/product-promoacties-week-vd-fair-trade.html" target="_blank">Copain</a>). Opgelet: net zoals in ShopPlus wordt de korting bij de 2+1, 3+1, 4+2 en 5+1 acties pas verrekend van zodra er een volledig veelvoud (dus inclusief het gratis product) toegevoegd werd aan het winkelmandje. Er is voor gekozen om de twee acties met kortingsbonnen (1,50 euro korting bij aankoop van 2 pakjes koffie, en een gratis pakje quinoa bij aankoop van 30 euro) online 1x automatisch toe te passen per klant. Je dient hiervoor uiteraard <u>geen bonnen in te leveren ter creditering</u>: eind deze maand bekijken we in de statistieken hoe vaak beide kortingen geactiveerd werden in jullie webshop. We tellen die aantallen op bij de papieren bonnen die jullie zullen terugsturen van klanten die in de fysieke winkel van de promotie profiteerden.</p>';
+					echo '<p>De promoties van 19/10 t.e.m. 30/11 (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">Copain</a>) werden geactiveerd in alle webshops.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die aantallen tellen we op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>Naast de stekelbessenconfituur voegden we op jullie verzoek alvast enkele populaire non-foodproducten toe aan de webshopdatabase:</p><ul style="margin-left: 2em;">';
@@ -5642,7 +5645,7 @@
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-info">';
-					echo '<p>Zoals <a href="https://copain.oww.be/k/nl/n118/news/view/20525/12894/prijs-notenchocolade-190g-wordt-tijdelijk-verlaagd.html" target="_blank">eerder aangekondigd</a> wordt de consumentenprijs van 24302 Notenchocolade 190 g (W14302) tijdens de maand oktober tijdelijk verlaagd naar 2,95 euro. Deze aanpassing werd ook doorgevoerd in jullie webshop.</p>';
+					echo '<p>Zoals <a href="https://copain.oww.be/k/nl/n118/news/view/20525/12894/prijs-notenchocolade-190g-wordt-tijdelijk-verlaagd.html" target="_blank">eerder aangekondigd</a> wordt de consumentenprijs van 24302 Notenchocolade 190 g (W14302) tijdens de maand oktober tijdelijk verlaagd naar 2,95 euro. Deze aanpassing blijft tot 31 oktober actief in jullie webshop.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
@@ -5650,9 +5653,9 @@
 					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
 					// echo '</div>';
 				}
-				echo '<div class="notice notice-warning">';
-					echo '<p>5 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio).</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>5 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio).</p>';
+				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}

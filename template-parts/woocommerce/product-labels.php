@@ -9,39 +9,39 @@
 		// Zoek vervolgens de details van de actie op
 		// Handmatig beheerde lijst, want simpeler dan afleiden uit de kortingsregels!
 		
+		$fifty_percent_off_second_products = array( '22029', '22209', '24501', '26014' );
+		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
+			$labels['promotion'] = 'Promo 2de -50%';
+		}
+		
 		$one_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
 		
-		$fifty_percent_off_second_products = array( '23201', '23501', '24502', '24532', '24547', '25218', '65224', '65225' );
-		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
-			$labels['promotion'] = 'Promo 2de -50%';
-		}
-		
-		$two_plus_one_products = array( '24300', '24302', '24303', '87352' );
+		$two_plus_one_products = array( '24101', '24102', '24117' );
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
 		
-		$three_plus_one_products = array( '20808', '20810', '20812' );
+		$three_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $three_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 3+1 gratis';
 		}
 
-		$four_plus_two_products = array( '21498', '21499' );
+		$twentyfive_percent_off_products = array();
+		if ( in_array( $product->get_sku(), $twentyfive_percent_off_products ) ) {
+			$labels['promotion'] = 'Promo -25%';
+		}
+
+		$four_plus_two_products = array();
 		if ( in_array( $product->get_sku(), $four_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 4+2 gratis';
 		}
 		
-		$five_plus_one_products = array( '20031', '20060', '20070' );
+		$five_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $five_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 5+1 gratis';
-		}
-
-		$twentyfive_percent_off_products = array( '20807', '20809', '20811' );
-		if ( in_array( $product->get_sku(), $twentyfive_percent_off_products ) ) {
-			$labels['promotion'] = 'Promo -25%';
 		}
 	}
 
