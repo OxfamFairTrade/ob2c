@@ -290,7 +290,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515' );
+	$outofstocks = array( '24635', '24640', '24643', '26491' );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -300,7 +300,7 @@
 		}
 	}
 
-	// Werk de datum van een product bij
+	// Werk de datum van een product bij GEBEURT AUTOMATISCH BIJ UPDATE
 	$product_id = wc_get_product_id_by_sku('24634');
 	if ( $product_id ) {
 		$product = wc_get_product( $product_id );
