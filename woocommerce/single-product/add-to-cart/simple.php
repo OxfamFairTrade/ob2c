@@ -17,12 +17,15 @@ if ( ! $product->is_purchasable() ) {
 
 if ( is_main_site() ) {
 	if ( strstr( $product->get_name(), 'Geschenkencheque ' ) !== false ) {
-		echo '<a href="https://www.oxfamwereldwinkels.be/cadeaubon-voor-eerlijke-producten/" class="buy-btn btn">Bestel online</a>';
+		echo '<a href="https://www.oxfamwereldwinkels.be/cadeaubon-voor-eerlijke-producten/"><button type="button" class="button alt">Bestel online</button></a>';
+		return;
 	} elseif ( $product->get_meta('_woonet_publish_to_23') === 'yes' ) {
 		if ( $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-2 weeks') ) ) {
 			//  Geef 2 weken buffer om lokale voorraad aan te leggen
 			echo '<span class="soon-available">Weldra online beschikbaar</span>';
 			return;
+		} else {
+			// Toon de gebruikelijke button die in dit geval de store selector triggert
 		}
 	} else {
 		// Het product wordt niet online verkocht (o.b.v. aanwezigheid in webshop Oostende als test case)
