@@ -5241,6 +5241,7 @@
 			$options['child_inherit_changes_fields_control__product_gallery'][ $key ] = 'no';
 			// $options['child_inherit_changes_fields_control__upsell'][ $key ] = 'yes';
 			// $options['child_inherit_changes_fields_control__cross_sells'][ $key ] = 'yes';
+			// Onderstaande opties ontbreken in settings-page.php, dus onzichtbaar
 			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'no';
 			$options['child_inherit_changes_fields_control__shipping_class'][ $key ] = 'yes';
 		}
@@ -5272,8 +5273,19 @@
 		$meta_keys[] = '_wc_review_count';
 		$meta_keys[] = '_wc_rating_count';
 		$meta_keys[] = '_wc_average_rating';
-		write_log( implode( ',', $meta_keys ) );
+		write_log( print_r( $meta_keys, true ) );
 		return $meta_keys;
+	}
+
+	// Haal extra velden uit de automatische synchronisatie
+	add_filter( 'WOO_MSTORE_admin_product/master_slave_products_data_diff', 'unset_extra_products_data_diff', 10, 2 );
+
+	function unset_extra_products_data_diff( $products_data_diff, $data ) {
+		if ( 'no' === $data['options']['child_inherit_changes_fields_control__featured'][ get_current_blog_id() ] ) {
+			unset( $products_data_diff['featured'] );
+		}
+		// write_log( print_r( $products_data_diff, true ) );
+		return $products_data_diff;
 	}
 
 	// Geef aan welke metavelden we willen kopiëren MOET TEGENWOORDIG EXPLICIET AANGEGEVEN WORDEN
