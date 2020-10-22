@@ -46,8 +46,11 @@
 						'stock_status' => 'instock',
 						'include' => wc_get_featured_product_ids(),
 					);
+					var_dump_pre( wc_get_featured_product_ids() );
 					$featured_products = wc_get_products( $args );
-					var_dump_pre( $featured_products );
+					foreach ( $featured_products as $product ) {
+						var_dump_pre( $product->get_sku() );
+					}
 				?>
 				<?php if ( count( $featured_products ) > 0 ) : ?>
 					<div class="col-row lh-header">
@@ -69,8 +72,8 @@
  						<?php		
  							$term_link = get_term_link( 'sinterklaas', 'product_tag' );		
  							if ( ! is_wp_error( $term_link ) ) {		
- 								echo get_the_post_thumbnail_url( get_the_ID(), 'full' );		
- 								// echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_stylesheet_directory_uri().'/images/promoties/prodmo-wvdft-2020-algemeen.png" /></a>';		
+ 								echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_the_post_thumbnail_url( get_the_ID(), 'full' ).'" /></a>';
+ 								// echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_stylesheet_directory_uri().'/images/promoties/prodmo-wvdft-2020-algemeen.png" /></a>';
  							}		
  						?>		
  					</div>		
