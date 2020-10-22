@@ -42,31 +42,38 @@
 					</div>
 				</div>
 				<?php
-					$args = array(
-						'stock_status' => 'instock',
-						'include' => wc_get_featured_product_ids(),
-					);
 					var_dump_pre( wc_get_featured_product_ids() );
-					$featured_products = wc_get_products( $args );
-					foreach ( $featured_products as $product ) {
-						var_dump_pre( $product->get_sku() );
+					if ( count( wc_get_featured_product_ids() ) > 0 ) {
+						// Check of ze effectief op voorraad zijn
+						$args = array(
+							'stock_status' => 'instock',
+							'include' => wc_get_featured_product_ids(),
+						);
+						$featured_products = wc_get_products( $args );
+						
+						foreach ( $featured_products as $product ) {
+							var_dump_pre( $product->get_sku() );
+						}
+
+						if ( count( $featured_products ) > 0 ) {
+							?>
+							<div class="col-row lh-header">
+								<div class="col-xs-12 col-sm-6">
+									<h2>Producten in de kijker</h2>
+								</div>
+								<div class="col-xs-12 col-sm-6">
+									<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
+								</div>
+							</div>
+							<div class="col-row lh-featured">
+								<div class="col-xs-12">
+									<?php echo do_shortcode('[nm_product_slider shortcode="featured_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
+								</div>
+							</div>
+							<?php
+						}
 					}
 				?>
-				<?php if ( count( $featured_products ) > 0 ) : ?>
-					<div class="col-row lh-header">
-						<div class="col-xs-12 col-sm-6">
-							<h2>Producten in de kijker</h2>
-						</div>
-						<div class="col-xs-12 col-sm-6">
-							<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
-						</div>
-					</div>
-					<div class="col-row lh-featured">
-						<div class="col-xs-12">
-							<?php echo do_shortcode('[nm_product_slider shortcode="featured_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
-						</div>
-					</div>
-				<?php endif; ?>
 				<div class="col-row lh-banner">		
  					<div class="col-xs-12">		
  						<?php		
@@ -78,21 +85,39 @@
  						?>		
  					</div>		
  				</div>
-				<?php if ( count( wc_get_product_ids_on_sale() ) > 0 ) : ?>
-					<div class="col-row lh-header">
-						<div class="col-xs-12 col-sm-6">
-							<h2>Promoties</h2>
-						</div>
-						<div class="col-xs-12 col-sm-6">
-							<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
-						</div>
-					</div>
-					<div class="col-row lh-promo">
-						<div class="col-xs-12">
-							<?php echo do_shortcode('[nm_product_slider shortcode="sale_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
-						</div>
-					</div>
-				<?php endif; ?>
+				<?php
+					var_dump_pre( wc_get_product_ids_on_sale() );
+					if ( count( wc_get_product_ids_on_sale() ) > 0 ) {
+						// Check of ze effectief op voorraad zijn
+						$args = array(
+							'stock_status' => 'instock',
+							'include' => wc_get_product_ids_on_sale(),
+						);
+						$sale_products = wc_get_products( $args );
+						
+						foreach ( $sale_products as $product ) {
+							var_dump_pre( $product->get_sku() );
+						}
+
+						if ( count( $sale_products ) > 0 ) {
+							?>
+							<div class="col-row lh-header">
+								<div class="col-xs-12 col-sm-6">
+									<h2>Promoties</h2>
+								</div>
+								<div class="col-xs-12 col-sm-6">
+									<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
+								</div>
+							</div>
+							<div class="col-row lh-promo">
+								<div class="col-xs-12">
+									<?php echo do_shortcode('[nm_product_slider shortcode="sale_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
+								</div>
+							</div>
+							<?php
+						}
+					}
+				?>
 			</div>
 		</div>
 	<?php endwhile; ?>
