@@ -5238,9 +5238,11 @@
 	function change_woo_mstore_options_in_bulk( $options ) {
 		foreach ( $options['child_inherit_changes_fields_control__product_image'] as $key => $value ) {
 			$options['child_inherit_changes_fields_control__product_image'][ $key ] = 'no';
-			// $options['child_inherit_changes_fields_control__product_gallery'][ $key ] = 'no';
+			$options['child_inherit_changes_fields_control__product_gallery'][ $key ] = 'no';
 			// $options['child_inherit_changes_fields_control__upsell'][ $key ] = 'yes';
 			// $options['child_inherit_changes_fields_control__cross_sells'][ $key ] = 'yes';
+			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'no';
+			$options['child_inherit_changes_fields_control__shipping_class'][ $key ] = 'yes';
 		}
 		write_log( print_r( $options, true ) );
 		return $options;
