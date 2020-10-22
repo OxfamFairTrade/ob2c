@@ -42,7 +42,6 @@
 					</div>
 				</div>
 				<?php
-					var_dump_pre( wc_get_featured_product_ids() );
 					if ( count( wc_get_featured_product_ids() ) > 0 ) {
 						// Check of ze effectief op voorraad zijn
 						$args = array(
@@ -51,10 +50,6 @@
 						);
 						$featured_products = wc_get_products( $args );
 						
-						foreach ( $featured_products as $product ) {
-							var_dump_pre( $product->get_sku() );
-						}
-
 						if ( count( $featured_products ) > 0 ) {
 							?>
 							<div class="col-row lh-header">
@@ -79,14 +74,13 @@
  						<?php		
  							$term_link = get_term_link( 'sinterklaas', 'product_tag' );		
  							if ( ! is_wp_error( $term_link ) ) {		
- 								echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_the_post_thumbnail_url( get_the_ID(), 'full' ).'" /></a>';
- 								// echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_stylesheet_directory_uri().'/images/promoties/prodmo-wvdft-2020-algemeen.png" /></a>';
+ 								// echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_the_post_thumbnail_url( get_the_ID(), 'full' ).'" /></a>';
+ 								echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_stylesheet_directory_uri().'/images/promoties/sint-2020-webshop.png" /></a>';
  							}		
  						?>		
  					</div>		
  				</div>
 				<?php
-					var_dump_pre( wc_get_product_ids_on_sale() );
 					if ( count( wc_get_product_ids_on_sale() ) > 0 ) {
 						// Check of ze effectief op voorraad zijn
 						$args = array(
@@ -95,10 +89,6 @@
 						);
 						$sale_products = wc_get_products( $args );
 						
-						foreach ( $sale_products as $product ) {
-							var_dump_pre( $product->get_sku() );
-						}
-
 						if ( count( $sale_products ) > 0 ) {
 							?>
 							<div class="col-row lh-header">
