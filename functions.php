@@ -5644,13 +5644,10 @@
 				echo '<div class="notice notice-info">';
 					echo '<p>De promoties van 19/10 t.e.m. 30/11 (zie <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">Copain</a>) werden geactiveerd in alle webshops.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-info">';
-					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
-				echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>Naast de stekelbessenconfituur voegden we op jullie verzoek alvast enkele populaire non-foodproducten toe aan de webshopdatabase:</p><ul style="margin-left: 2em;">';
+					echo '<p>Nog meer producten! Na de solidariteitsagenda\'s werden ook de nieuwe sintfiguren, geschenkencheques en 11.11.11-kalenders toegevoegd aan de webshopdatabase:</p><ul style="margin-left: 2em;">';
 						// 
-						$skus = array( '26321', '65224', '65225', '87339', '87352', '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515' );
+						$skus = array( 24635, 24640, 24643, 26491, 19066, 19067, 19068, 88515, 88516 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -5664,8 +5661,11 @@
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
 				echo '</div>';
+				echo '<div class="notice notice-error">';
+					echo '<p>Bij de migratie begin oktober is de \'In de kijker\'-parameter in de lokale webshops kennelijk gewist. Gelieve een nieuwe selectie te maken als je op de hompage producten wil uitlichten.</p>';
+				echo '</div>';
 				echo '<div class="notice notice-info">';
-					echo '<p>Zoals <a href="https://copain.oww.be/k/nl/n118/news/view/20525/12894/prijs-notenchocolade-190g-wordt-tijdelijk-verlaagd.html" target="_blank">eerder aangekondigd</a> wordt de consumentenprijs van 24302 Notenchocolade 190 g (W14302) tijdens de maand oktober tijdelijk verlaagd naar 2,95 euro. Deze aanpassing blijft tot 31 oktober actief in jullie webshop.</p>';
+					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
