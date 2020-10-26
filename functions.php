@@ -8,6 +8,40 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	add_filter( 'product_type_selector', function( $types ) {
+		unset( $types['grouped'] );
+		unset( $types['external'] );
+		unset( $types['variable'] );
+		return $types;
+	}, 10, 1 );
+
+	add_filter( 'product_type_options', function( $options ) {
+		unset( $options['virtual'] );
+		unset( $options['downloadable'] );
+		return $options;
+	}, 10, 1 );
+
+	add_filter( 'woocommerce_product_stock_status_options', function( $statuses ) {
+		$statuses['instock'] = 'Op voorraad';
+		$statuses['onbackorder'] = 'Tijdelijk uit voorraad';
+		$statuses['outofstock'] = 'Niet in assortiment';
+		// Dit is toevallig de gewenste volgorde
+		ksort( $statuses );
+		return $statuses;
+	}, 10, 1 );
+
+	// VOEG VALIDATIE TOE OP SKU (GEEN OMPAKNUMMERS)
+	// VOORZIE SHOPPLUSVELD _shopplus_code
+	// VOORZIE EENHEID _stat_uom
+	// VOORZIE EENHEIDSPRIJS _unit_price
+	// VOORZIE BARCODE _cu_ean
+	// VOORZIE MULTIPLE _multiple
+
+	// Verberg voorlopig gewoon de hele <div>
+	add_action( 'pre_insert_term', function( $term, $taxonomy ) {
+		return ( 'product_tag' === $taxonomy ) ? new WP_Error( 'term_addition_blocked', 'Aanmaak van nieuwe producttags is verboden' ) : $term;
+	}, 1, 2 );
+
 	// Change the image size used for the WooCommerce product gallery image zoom
 	add_filter( 'woocommerce_gallery_full_size', function( $size ) {
 		return 'large';

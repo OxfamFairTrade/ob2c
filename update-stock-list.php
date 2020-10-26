@@ -29,6 +29,7 @@
 				$i = 0;
 				$instock_cnt = 0;
 				$featured_cnt = 0;
+				$stock_statuses = wc_get_product_stock_status_options();
 				$content = '<div style="display: table; width: 100%;">';
 				while ( $products->have_posts() ) {
 					$products->the_post();
@@ -67,9 +68,9 @@
 							}
 							$content .= '</span></div>';
 							$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
-								$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>Op voorraad</option>';
-								$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>Tijdelijk uit voorraad</option>';
-								$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>Niet in assortiment</option>';
+								$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>'.$stock_statuses['instock'].'</option>';
+								$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>'.$stock_statuses['onbackorder'].'</option>';
+								$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>'.$stock_statuses['outofstock'].'</option>';
 							$content .= '</select></div>';
 							$content .= '<div class="cell"><input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
 							$content .= ' <label for="'.get_the_ID().'-featured">In de kijker?</label></div>';
