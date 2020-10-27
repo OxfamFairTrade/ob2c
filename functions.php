@@ -172,10 +172,11 @@
 
 	// STUUR MAIL UIT BIJ PUBLICATIE NIEUW LOKAAL PRODUCT
 	add_action( 'draft_to_publish', 'notify_on_local_product_creation', 10, 1 );
+	// add_action( 'publish_product', 'notify_on_local_product_creation', 10, 2 );
 	
 	function notify_on_local_product_creation( $post ) {
 		if ( ! is_main_site() and $post->post_type === 'product' ) {
-			if ( get_post_meta( $post, '_woonet_network_is_child_site_id', true ) === '' ) {
+			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) === '' ) {
 				$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
 				$headers[] = 'Content-Type: text/html';
 				wp_mail( 'e-commerce@oft.be', 'Nieuw product gepubliceerd!', 'Te bekijken op '.get_permalink($post).'!' );
