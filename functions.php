@@ -13,9 +13,9 @@
 	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
 	function ure_modify_authors_list( $authors ) {
 		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
-		if ( count( $local_managers ) > 0 ) {
-			write_log( print_r( $local_managers, true ) );
-			return $authors . ',' . implode( ',', $local_managers );
+		if ( count( $local_managers->get_results() ) > 0 ) {
+			write_log( print_r( $local_managers->get_results(), true ) );
+			return $authors . ',' . implode( ',', $local_managers->get_results() );
 		} else {
 			return $authors;
 		}
