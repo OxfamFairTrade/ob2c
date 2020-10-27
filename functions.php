@@ -9,9 +9,10 @@
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
 	// Vergt het toekennen van 'edit_others_products'!
+	// Eventueel ook html-quick-edit-product.php nog vereenvoudigen?
 	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
 	function ure_modify_authors_list( $authors ) {
-		$local_managers = new WP_User_Query( array( 'role__in' => 'local_manager', 'fields' => 'ID' ) );
+		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
 		if ( count( $local_managers ) > 0 ) {
 			write_log( print_r( $local_managers, true ) );
 			return $authors . ',' . implode( ',', $local_managers );
