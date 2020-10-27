@@ -22,11 +22,16 @@
 		return $options;
 	}, 10, 1 );
 
-	add_action( 'woocommerce_product_options_inventory_product_data', 'add_oxfam_custom_product_fields', 5 );
+	add_action( 'woocommerce_product_options_general_product_data', 'add_oxfam_custom_product_fields', 5 );
 	add_action( 'woocommerce_process_product_meta_simple', 'save_oxfam_custom_fields' );
 
 	function add_oxfam_custom_product_fields() {
 		echo '<div class="options_group oxfam">';
+
+			global $product;
+			if ( $product->get_meta('_woonet_network_is_child_site_id') === '' ) {
+				echo 'Is gebroadcast, velden onbewerkbaar maken?';
+			}
 			
 			// In de subsites tonen we enkel 'hét' artikelnummer
 			if ( is_main_site() ) {
@@ -131,7 +136,7 @@
 		if ( get_option('oft_import_active') !== 'yes' ) {
 			$product = wc_get_product( $post_id );
 			if ( $product !== false ) {
-				$content = $product->get_attribute('_net_content');
+				// Waarde voor $content eventueel uit $product->get_attribute('_net_content') halen maar daar zit de eenheid ook al bij ...
 				if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
 					$unit_price = calculate_unit_price( $price, $content, $unit );
 					$product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
@@ -165,8 +170,20 @@
 		return $statuses;
 	}, 10, 1 );
 
-	// VOEG VALIDATIE TOE OP SKU (GEEN OMPAKNUMMERS)
 	// STUUR MAIL UIT BIJ PUBLICATIE NIEUW LOKAAL PRODUCT
+	add_action( 'draft_to_publish', 'notify_on_local_product_creation', 10, 1 );
+	
+	function notify_on_local_product_creation( $post ) {
+		if ( ! is_main_site() and $post->post_type === 'product' ) {
+			if ( get_post_meta( $post, '_woonet_network_is_child_site_id', true ) === '' ) {
+				$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
+				$headers[] = 'Content-Type: text/html';
+				wp_mail( 'e-commerce@oft.be', 'Nieuw product gepubliceerd!', 'Te bekijken op '.get_permalink($post).'!' );
+			}
+		}
+	}
+
+	// VOEG VALIDATIE TOE OP SKU (GEEN OMPAKNUMMERS)
 
 	// Verberg voorlopig gewoon de hele <div> voor tags!
 	// add_action( 'pre_insert_term', function( $term, $taxonomy ) {
