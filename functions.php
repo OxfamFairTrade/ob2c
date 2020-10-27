@@ -28,8 +28,8 @@
 	function add_oxfam_custom_product_fields() {
 		echo '<div class="options_group oxfam">';
 
-			global $product;
-			if ( $product->get_meta('_woonet_network_is_child_site_id') === '' ) {
+			global $product_object;
+			if ( $product_object->get_meta('_woonet_network_is_child_site_id') === '' ) {
 				echo 'Is gebroadcast, velden onbewerkbaar maken?';
 			}
 			
