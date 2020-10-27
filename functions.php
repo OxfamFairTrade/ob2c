@@ -29,8 +29,8 @@
 		echo '<div class="options_group oxfam">';
 
 			global $product_object;
-			if ( $product_object->get_meta('_woonet_network_is_child_site_id') === '' ) {
-				echo 'Is gebroadcast, velden onbewerkbaar maken?';
+			if ( $product_object->get_meta('_woonet_network_is_child_site_id') !== '' ) {
+				var_dump_pre('Is gebroadcast, velden onbewerkbaar maken?');
 			}
 			
 			// In de subsites tonen we enkel 'hét' artikelnummer
@@ -51,7 +51,7 @@
 					'wrapper_class' => 'wide',
 					'custom_attributes' => array(
 						'step' => '1',
-						'min' => '1000000000000',
+						'min' => '10000000',
 						'max' => '99999999999999',
 					),
 				)
@@ -65,7 +65,7 @@
 					'custom_attributes' => array(
 						'step' => '1',
 						'min' => '1',
-						'max' => '1000',
+						'max' => '100',
 					),
 				)
 			);
