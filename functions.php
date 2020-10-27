@@ -42,7 +42,7 @@
 		echo '<div class="options_group oxfam">';
 
 			global $product_object;
-			if ( $product_object->get_meta('_woonet_network_is_child_site_id') !== '' ) {
+			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == '1' ) {
 				var_dump_pre('Is gebroadcast, velden onbewerkbaar maken?');
 			}
 			
@@ -189,7 +189,7 @@
 	
 	function notify_on_local_product_creation( $post ) {
 		if ( ! is_main_site() and $post->post_type === 'product' ) {
-			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) === '' ) {
+			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != '1' ) {
 				$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
 				$headers[] = 'Content-Type: text/html';
 				wp_mail( 'e-commerce@oft.be', 'Nieuw product gepubliceerd!', 'Te bekijken op '.get_permalink($post).'!' );
