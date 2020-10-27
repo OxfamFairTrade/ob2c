@@ -39,11 +39,9 @@ class WOO_MSTORE_admin {
 	public function admin_init() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'wp_enqueue_woocommerce_style' ) );
 
-		//add quick options for Products
-		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit' ), 20, 2 );
-
-		// GEWIJZIGD: Actie uitschakelen, vertraagt het laden van de productpagina enorm
+		// GEWIJZIGD: Acties uitschakelen, vertraagt het laden van de productpagina enorm
 		// Zorgt er natuurlijk wel voor dat we geen quick edits meer kunnen/mogen doen!
+		// add_action( 'quick_edit_custom_box', array( $this, 'quick_edit' ), 20, 2 );
 		// add_action( 'add_inline_data', array( $this, 'add_quick_edit_inline_data' ) );
 
 		//hide certain menus and forms if don't have enough access
