@@ -8,6 +8,7 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Verwijder overbodige productopties
 	add_filter( 'product_type_selector', function( $types ) {
 		unset( $types['grouped'] );
 		unset( $types['external'] );
@@ -21,6 +22,140 @@
 		return $options;
 	}, 10, 1 );
 
+	add_action( 'woocommerce_product_options_inventory_product_data', 'add_oxfam_custom_product_fields', 5 );
+	add_action( 'woocommerce_process_product_meta_simple', 'save_oxfam_custom_fields' );
+
+	function add_oxfam_custom_product_fields() {
+		echo '<div class="options_group oxfam">';
+			
+			// In de subsites tonen we enkel 'hét' artikelnummer
+			if ( is_main_site() ) {
+				woocommerce_wp_text_input(
+					array( 
+						'id' => '_shopplus_code',
+						'label' => 'ShopPlus',
+					)
+				);
+			}
+
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_cu_ean',
+					'label' => 'Barcode',
+					'type' => 'number',
+					'wrapper_class' => 'wide',
+					'custom_attributes' => array(
+						'step' => '1',
+						'min' => '1000000000000',
+						'max' => '99999999999999',
+					),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_multiple',
+					'label' => 'Verpakt per',
+					'type' => 'number',
+					'custom_attributes' => array(
+						'step' => '1',
+						'min' => '1',
+						'max' => '1000',
+					),
+				)
+			);
+
+			woocommerce_wp_select(
+				array( 
+					'id' => '_stat_uom',
+					'label' => 'Inhoudsmaat',
+					'options' => array(
+						'' => '(selecteer)',
+						'g' => 'gram (vast product)',
+						'cl' => 'centiliter (vloeibaar product)',
+					),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_fairtrade_share',
+					'label' => 'Fairtradepercentage (%)',
+					'type' => 'number',
+					'custom_attributes' => array(
+						'step' => '1',
+						'min' => '10',
+						'max' => '100',
+					),
+				)
+			);
+
+		echo '</div>';
+	}
+
+	function save_oxfam_custom_fields( $post_id ) {
+		// Logica niet doorlopen tijdens imports, ontbreken van $_POST veroorzaakt verdwijnen van metadata
+		if ( get_site_option('oft_import_active') === 'yes' ) {
+			return;
+		}
+
+		// TO DO: Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
+		// update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'] );
+		
+		// Kopieer het artikelnummer naar het ShopPlus-nummer indien onbestaande
+		if ( empty( get_post_meta( $post_id, '_shopplus_code' ) ) and ! empty( $_POST['_sku'] ) ) {
+			update_post_meta( $post_id, '_shopplus_code', $_POST['_sku'] );
+		}
+
+		$regular_meta_keys = array(
+			'_cu_ean',
+			'_multiple',
+			'_stat_uom',
+			'_fairtrade_share',
+		);
+
+		if ( is_main_site() ) {
+			$regular_meta_keys[] = '_shopplus_code';
+		}
+
+		foreach ( $regular_meta_keys as $meta_key ) {
+			if ( isset( $_POST[ $meta_key ] ) ) {
+				update_post_meta( $post_id, $meta_key, sanitize_text_field( $_POST[$meta_key] ) );
+			} else {
+				update_post_meta( $post_id, $meta_key, '' );
+			}
+		}
+	}
+
+	function update_unit_price( $post_id, $price = false, $content = false, $unit = false ) {
+		if ( get_option('oft_import_active') !== 'yes' ) {
+			$product = wc_get_product( $post_id );
+			if ( $product !== false ) {
+				$content = $product->get_attribute('_net_content');
+				if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
+					$unit_price = calculate_unit_price( $price, $content, $unit );
+					$product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
+					$product->save();
+				} else {
+					// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
+					$product->delete_meta_data('_unit_price');
+					$product->save();
+				}
+			}
+		}
+	}
+
+	function calculate_unit_price( $price, $content, $unit ) {
+		$unit_price = floatval( str_replace( ',', '.', $price ) ) / floatval( $content );
+		if ( $unit === 'g' ) {
+			$unit_price *= 1000;
+		} elseif ( $unit === 'cl' ) {
+			$unit_price *= 100;
+		}
+		return $unit_price;
+	}
+
+	// Herbenoem de default voorraadstatussen
 	add_filter( 'woocommerce_product_stock_status_options', function( $statuses ) {
 		$statuses['instock'] = 'Op voorraad';
 		$statuses['onbackorder'] = 'Tijdelijk uit voorraad';
@@ -31,16 +166,12 @@
 	}, 10, 1 );
 
 	// VOEG VALIDATIE TOE OP SKU (GEEN OMPAKNUMMERS)
-	// VOORZIE SHOPPLUSVELD _shopplus_code
-	// VOORZIE EENHEID _stat_uom
-	// VOORZIE EENHEIDSPRIJS _unit_price
-	// VOORZIE BARCODE _cu_ean
-	// VOORZIE MULTIPLE _multiple
+	// STUUR MAIL UIT BIJ PUBLICATIE NIEUW LOKAAL PRODUCT
 
-	// Verberg voorlopig gewoon de hele <div>
-	add_action( 'pre_insert_term', function( $term, $taxonomy ) {
-		return ( 'product_tag' === $taxonomy ) ? new WP_Error( 'term_addition_blocked', 'Aanmaak van nieuwe producttags is verboden' ) : $term;
-	}, 1, 2 );
+	// Verberg voorlopig gewoon de hele <div> voor tags!
+	// add_action( 'pre_insert_term', function( $term, $taxonomy ) {
+	// 	return ( 'product_tag' === $taxonomy ) ? new WP_Error( 'term_addition_blocked', 'Aanmaak van nieuwe producttags is verboden' ) : $term;
+	// }, 1, 2 );
 
 	// Change the image size used for the WooCommerce product gallery image zoom
 	add_filter( 'woocommerce_gallery_full_size', function( $size ) {
@@ -235,7 +366,8 @@
 		return $new_crumbs;
 	}
 	
-	// Geautomatiseerde manier om instellingen van Savoy te kopiëren naar subsites
+	// Geautomatiseerde manier om diverse instellingen te kopiëren naar subsites
+	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wp_mail_smtp', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wpsl_settings', 'sync_settings_to_subsites', 10, 3 );
@@ -244,11 +376,11 @@
 	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
-		if ( get_current_blog_id() === 1 and current_user_can('update_core') and is_array( $new_value ) ) {
+		if ( get_current_blog_id() === 1 and current_user_can('update_core') ) {
 			$sites = get_sites( array( 'site__not_in' => array(1) ) );
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
-				if ( $option === 'wp_mail_smtp' ) {
+				if ( $option === 'wp_mail_smtp' and is_array( $new_value ) ) {
 					// Instellingen van WP Mail SMTP lokaal maken
 					$new_value['mail']['from_email'] = get_option('admin_email');
 					$new_value['mail']['from_name'] = get_bloginfo('name');
@@ -5401,17 +5533,19 @@
 		$data['master_product']->save();
 	}
 
-	// Reset alle '_in_bestelweb' velden voor we aan de ERP-import beginnen TIJDELIJK UITSCHAKELEN
-	// add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
+	// Reset alle '_in_bestelweb' velden voor we aan de ERP-import beginnen
+	add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
 	
 	function before_xml_import( $import_id ) {
+		update_site_option( 'oft_import_active', 'yes' );
+
 		if ( $import_id == 7 ) {
 			// Zet de key '_in_bestelweb' van alle producten op nee
 			$args = array(
 				'post_type'	=> 'product',
 				'post_status' => array( 'publish', 'draft', 'trash' ),
 				'posts_per_page' => -1,
-				// Behalve van producten die handmatig toegevoegd werden! + CRAFTS
+				// Behalve van producten die handmatig toegevoegd werden! B2B / BIERSETS / NON-FOOD
 				'meta_query' => array(
 					array(
 						'key' => '_sku',
@@ -5423,22 +5557,26 @@
 
 			$to_remove = new WP_Query( $args );
 
-			if ( $to_remove->have_posts() ) {
-				while ( $to_remove->have_posts() ) {
-					$to_remove->the_post();
-					update_post_meta( get_the_ID(), '_in_bestelweb', 'nee' );
-				}
-				wp_reset_postdata();
-			}
+			// TIJDELIJK UITSCHAKELEN
+			// if ( $to_remove->have_posts() ) {
+			// 	while ( $to_remove->have_posts() ) {
+			// 		$to_remove->the_post();
+			// 		update_post_meta( get_the_ID(), '_in_bestelweb', 'nee' );
+			// 	}
+			// 	wp_reset_postdata();
+			// }
 		}
 	}
 
-	// Hernoem het importbestand na afloop van de import zodat we een snapshot krijgen dat niet overschreven wordt TIJDELIJK UITSCHAKELEN
-	// add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
+	// Hernoem het importbestand na afloop van de import zodat we een snapshot krijgen dat niet overschreven wordt
+	add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
 	
 	function after_xml_import( $import_id ) {
+		update_site_option( 'oft_import_active', 'no' );
+
 		if ( $import_id == 7 ) {
-			// Vind alle producten waarvan de key '_in_bestelweb' onaangeroerd is (= zat niet in Odisy-import) NIET MEER DOEN, ECHTE VOORRAAD KOMT UIT OFT-SITE
+			// TIJDELIJK UITSCHAKELEN
+			// Vind alle producten waarvan de key '_in_bestelweb' onaangeroerd is (= zat niet in Odisy-import)
 			// $args = array(
 			// 	'post_type'			=> 'product',
 			// 	'post_status'		=> array( 'publish', 'draft', 'trash' ),

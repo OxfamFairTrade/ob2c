@@ -2,6 +2,35 @@
 
 	if ( ! defined('ABSPATH') ) exit;
 
+	// Verwijder overtollige BTW-schalen
+	$tax_classes = array( 'gereduceerd-tarief', 'nultarief' );
+	foreach ( $tax_classes as $tax_class ) {
+		// Verwijdert automatisch eventuele tax rates met deze klasse
+		if ( WC_Tax::delete_tax_class_by( 'slug', $tax_class ) ) {
+			write_log("Blog-ID ".get_current_blog_id().": deleted '".$tax_class."' tax class");
+		} else {
+			write_log("Blog-ID ".get_current_blog_id().": could not delete '".$tax_class."' tax class");
+		}
+	}
+
+	// Verwijder verzendklasses
+	$taxonomy = 'product_shipping_class';
+	if ( taxonomy_exists( $taxonomy ) ) {
+		$terms = array( 'retourneerbaar' );
+		foreach ( $terms as $term ) {
+			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
+			if ( $term_to_delete !== false ) {
+				if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+					write_log("Blog-ID ".get_current_blog_id().": deleted '".$term_to_delete->name."' shipping class");
+				} else {
+					write_log("Blog-ID ".get_current_blog_id().": could not delete '".$term_to_delete->name."' shipping class");
+				}
+			} else {
+				write_log("Blog-ID ".get_current_blog_id().": shipping class '".$term."' not found");
+			}
+		}
+	}
+
 	// Migreer productattributen naar metadata
 	$args = array(
 		'limit' => -1,
@@ -30,9 +59,9 @@
 		$attribute_id = absint( wc_attribute_taxonomy_id_by_name( $slug ) );
 		if ( $attribute_id > 0 ) {
 			if ( wc_delete_attribute( $attribute_id ) ) {
-				write_log("DELETED ATTRIBUTE ".$slug);
+				write_log("Blog-ID ".get_current_blog_id().": deleted '".$slug."' attribute");
 			} else {
-				write_log("COULD NOT DELETE ATTRIBUTE ".$slug);
+				write_log("Blog-ID ".get_current_blog_id().": could not delete '".$slug."' attribute");
 			}
 		}
 	}
@@ -43,10 +72,14 @@
 		$terms = array( 'gift-alcohol', 'gift-apero', 'gift-fris', 'gift-italiaans', 'gift-koffie', 'gift-oosters', 'gift-sterk', 'gift-thee', 'gift-tussendoor', 'gift-warm', 'gift-wereldkeuken', 'gift-wijn', 'gift-zoet' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
-			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
-				// OK
+			if ( $term_to_delete !== false ) {
+				if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+					write_log("Blog-ID ".get_current_blog_id().": deleted '".$term_to_delete->name."' product tag");
+				} else {
+					write_log("Blog-ID ".get_current_blog_id().": could not delete '".$term_to_delete->name."' product tag");
+				}
 			} else {
-				write_log("COULD NOT DELETE ".$term_to_delete->name);
+				write_log("Blog-ID ".get_current_blog_id().": product tag '".$term."' not found");
 			}
 		}
 	}
@@ -62,7 +95,7 @@
 					write_log("COULD NOT UPDATE ".$term_to_update->name);
 				}
 			} else {
-				write_log("TERM ".$term." NOT FOUND");
+				write_log("Blog-ID ".get_current_blog_id().": product category '".$term."' not found");
 			}
 		}
 	}
@@ -73,12 +106,14 @@
 		$terms = array( 'koffie-thee', 'capsules', 'geen-categorie' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
-			if ( $term_to_update !== false ) {
-				if ( ! wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
-					write_log("COULD NOT DELETE ".$term_to_delete->name);
+			if ( $term_to_delete !== false ) {
+				if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+					write_log("Blog-ID ".get_current_blog_id().": deleted '".$term_to_delete->name."' product category");
+				} else {
+					write_log("Blog-ID ".get_current_blog_id().": could not delete '".$term_to_delete->name."' product category");
 				}
 			} else {
-				write_log("TERM ".$term." NOT FOUND");
+				write_log("Blog-ID ".get_current_blog_id().": product category '".$term."' not found");
 			}
 		}
 	}
@@ -95,16 +130,20 @@
 		$terms = array( 'beni-ghreb', 'terrespoir', 'altertrade', 'anap', 'burke-agro', 'consorcio-vinicola', 'lomas-de-cauquenes', 'koman' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
-			if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
-				// OK
+			if ( $term_to_delete !== false ) {
+				if ( wp_delete_term( $term_to_delete->term_id, $taxonomy ) ) {
+					write_log("Blog-ID ".get_current_blog_id().": deleted '".$term_to_delete->name."' partner");
+				} else {
+					write_log("Blog-ID ".get_current_blog_id().": could not delete '".$term_to_delete->name."' partner");
+				}
 			} else {
-				write_log("COULD NOT DELETE ".$term_to_delete->name);
+				write_log("Blog-ID ".get_current_blog_id().": partner '".$term."' not found");
 			}
 		}
 	}
 
 	// Subsites afschermen en verbergen op kaart
-	$oxfam_blocked_sites = array( 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52 );
+	$oxfam_blocked_sites = array( 65 );
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
