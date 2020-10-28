@@ -2235,22 +2235,23 @@
 		?>
 		<script>
 			/* Disable hoofdcategorieën NIET DOEN */
-			// jQuery('#taxonomy-product_cat').find('.categorychecklist').children('li').prop( 'disabled', true );
+			// jQuery('#taxonomy-product_cat').find('.categorychecklist').children('li').children('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 			
-			/* Disable continenten IS IN ELKE SUBSITE ANDERS */
-			// jQuery( '#in-product_partner-162' ).prop( 'disabled', true );
-			// jQuery( '#in-product_partner-163' ).prop( 'disabled', true );
-			// jQuery( '#in-product_partner-164' ).prop( 'disabled', true );
-			// jQuery( '#in-product_partner-165' ).prop( 'disabled', true );
-			jQuery('#taxonomy-product_partner').find('.categorychecklist').children('li').prop( 'disabled', true );
+			/* Disable continenten */
+			jQuery('#taxonomy-product_partner').find('.categorychecklist').children('li').children('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 			
 			/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
 			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('input[type=checkbox]:checked').closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 
-			/* Disable/enable het bovenliggende land bij aan/afvinken van een partner */
+			/* Deselecteer én disable/enable het bovenliggende land bij aan/afvinken van een partner */
 			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('input[type=checkbox]').on( 'change', function() {
-				jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', jQuery(this).is(":checked") );
-				jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false );
+				jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'checked', false );
+				/* Enable enkel indien ALLE partners in een land afgevinkt zijn */
+				if ( jQuery(this).closest('ul.children').find('input[type=checkbox]:checked').length == 0 ) {
+					jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', false );
+				} else {
+					jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
+				}
 			});
 
 			/* Disbable prijswijzigingen bij terugbetalingen */
