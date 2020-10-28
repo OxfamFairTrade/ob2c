@@ -8,10 +8,10 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
-	// Vergt het toekennen van 'edit_others_products'!
+	// Vergt het activeren van de 'Posts edit access'-module én het toekennen van 'edit_others_products'!
 	// Eventueel ook html-quick-edit-product.php nog vereenvoudigen?
-	// DIT BLOKKEERT OOK HET INKIJKEN VAN ORDERS ...
 	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
+	
 	function ure_modify_authors_list( $authors ) {
 		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
 		if ( count( $local_managers->get_results() ) > 0 ) {
@@ -20,6 +20,20 @@
 		} else {
 			return $authors;
 		}
+	}
+
+	// 'Posts edit access'-module blokkeert ook het inkijken van andere post types zoals orders!
+	add_filter( 'ure_restrict_edit_post_type', 'exclude_posts_from_edit_restrictions' );
+	
+	function exclude_posts_from_edit_restrictions( $post_type ) {
+		$restrict_it = false;
+		if ( $post_type === 'product' ) {
+			$user = wp_get_current_user();
+			if ( in_array( 'local_manager', $user->roles ) ) {
+				$restrict_it = true;
+			}
+		}
+		return $restrict_it;
 	}
 
 	// Verwijder overbodige productopties
@@ -105,6 +119,7 @@
 					'label' => 'Barcode',
 					'type' => 'number',
 					'wrapper_class' => 'wide',
+					'desc_tip' => true,
 					'description' => 'Vul de barcode in zoals vermeld op de verpakking (optioneel). Deze barcode zal opgenomen worden in de pick-Excel voor import in ShopPlus.',
 					'custom_attributes' => array(
 						'step' => '1',
@@ -119,6 +134,7 @@
 					'id' => '_multiple',
 					'label' => 'Verpakt per',
 					'type' => 'number',
+					'desc_tip' => true,
 					'description' => 'Geef aan hoeveel consumenteneenheden er in één ompak zitten (optioneel). Enkel van belang voor geregistreerde B2B-klanten, die producten standaard per ompak toevoegen aan hun winkelmandje.',
 					'custom_attributes' => array(
 						'step' => '1',
@@ -152,7 +168,7 @@
 			// update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'] );
 			
 			// Kopieer het artikelnummer naar het ShopPlus-nummer indien onbestaande
-			if ( empty( get_post_meta( $post_id, '_shopplus_code' ) ) and ! empty( $_POST['_sku'] ) ) {
+			if ( empty( get_post_meta( $post_id, '_shopplus_code', true ) ) and ! empty( $_POST['_sku'] ) ) {
 				update_post_meta( $post_id, '_shopplus_code', $_POST['_sku'] );
 			}
 		}
@@ -2342,7 +2358,7 @@
 					jQuery('#order_line_items').find('.refund_line_total.wc_input_price').prop( 'disabled', true );
 					jQuery('#order_line_items').find('.refund_line_tax.wc_input_price').prop( 'disabled', true );
 					jQuery('.wc-order-totals').find ('#refund_amount').prop( 'disabled', true );
-					jQuery('label[for=restock_refunded_items]').closest('tr').hide();
+					// jQuery('label[for=restock_refunded_items]').closest('tr').hide();
 				});
 			</script>
 
