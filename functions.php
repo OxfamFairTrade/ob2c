@@ -2234,17 +2234,17 @@
 	function disable_custom_checkboxes() {
 		?>
 		<script>
-			/* Disable hoofdcategorieën NIET DOEN */
+			/* Disable hoofdcategorieën NIET DOEN, KAN HANDIG ZIJN */
 			// jQuery('#taxonomy-product_cat').find('.categorychecklist').children('li').children('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 			
 			/* Disable continenten */
 			jQuery('#taxonomy-product_partner').find('.categorychecklist').children('li').children('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 			
-			/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
+			/* Disable bovenliggende landen van alle aangevinkte partners */
 			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('input[type=checkbox]:checked').closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 
 			/* Deselecteer én disable/enable het bovenliggende land bij aan/afvinken van een partner */
-			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('input[type=checkbox]').on( 'change', function() {
+			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('.children .children').find('input[type=checkbox]').on( 'change', function() {
 				jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'checked', false );
 				/* Enable enkel indien ALLE partners in een land afgevinkt zijn */
 				if ( jQuery(this).closest('ul.children').find('input[type=checkbox]:checked').length == 0 ) {
