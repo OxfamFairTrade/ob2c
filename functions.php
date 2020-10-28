@@ -2328,13 +2328,17 @@
 								msg += '* Je hebt nog geen omschrijving ingevuld!\n';
 							}
 							
+							if ( jQuery('#general_product_data').find('input[name=_regular_price]').val().length == 0 ) {
+								msg += '* Je moet nog een reguliere verkoopprijs ingeven!\n';
+							}
+							
 							var sku = jQuery('#inventory_product_data').find('input[name=_sku]').val();
 							if ( sku.length == 0 ) {
 								msg += '* Je moet nog een artikelnummer ingeven!\n';
 							} else if ( ! isNaN( parseFloat( sku ) ) && isFinite( sku ) ) {
 								msg += '* Kies een niet-numeriek artikelnummer om conflicten met nationale producten te vermijden!\n';
 							}
-							
+
 							if ( jQuery('#product_cat-all').find('input[type=checkbox]:checked').length == 0 ) {
 								msg += '* Je moet nog een productcategorie aanvinken!\n';
 							}
