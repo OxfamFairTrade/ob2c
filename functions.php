@@ -8,6 +8,11 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	add_filter( 'woocommerce_hidden_order_itemmeta', function( $forbidden ) {
+		$forbidden[] = '_shipping_item_id';
+		return $forbidden;
+	}, 10, 1 );
+
 	// Vergt het activeren van de 'Posts edit access'-module én het toekennen van 'edit_others_products'!
 	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
 	
@@ -47,8 +52,8 @@
 
 	// Disable bulk edit van producten
 	add_filter( 'bulk_actions-edit-product', function( $actions ) {
-		// unset( $actions['mark_completed'] );
 		var_dump_pre( $actions);
+		unset( $actions['edit'] );
 		return $actions;
 	}, 10, 1 );
 
@@ -57,7 +62,7 @@
 
 	function remove_quick_edit( $actions, $post ) {
 		if ( get_post_type( $post ) === 'product' ) {
-			// write_log( print_r( $actions, true ) );
+			var_dump_pre( $actions );
 			if ( ! current_user_can('manage_options') and array_key_exists( 'inline hide-if-no-js', $actions ) ) {
 				unset( $actions['inline hide-if-no-js'] );
 			}
