@@ -36,10 +36,11 @@
 		return $options;
 	}, 10, 1 );
 
-	add_action( 'woocommerce_product_options_general_product_data', 'add_oxfam_custom_product_fields', 5 );
-	add_action( 'woocommerce_process_product_meta_simple', 'save_oxfam_custom_fields' );
+	add_action( 'woocommerce_product_options_general_product_data', 'add_oxfam_general_product_fields', 5 );
+	add_action( 'woocommerce_product_options_inventory_product_data', 'add_oxfam_inventory_product_fields', 5 );
+	add_action( 'woocommerce_process_product_meta_simple', 'save_oxfam_product_fields' );
 
-	function add_oxfam_custom_product_fields() {
+	function add_oxfam_general_product_fields() {
 		echo '<div class="options_group oxfam">';
 
 			global $product_object;
@@ -47,43 +48,6 @@
 				var_dump_pre('Is gebroadcast, velden onbewerkbaar maken?');
 			}
 			
-			// In de subsites tonen we enkel 'hét' artikelnummer
-			if ( is_main_site() ) {
-				woocommerce_wp_text_input(
-					array( 
-						'id' => '_shopplus_code',
-						'label' => 'ShopPlus',
-					)
-				);
-			}
-
-			woocommerce_wp_text_input(
-				array( 
-					'id' => '_cu_ean',
-					'label' => 'Barcode',
-					'type' => 'number',
-					'wrapper_class' => 'wide',
-					'custom_attributes' => array(
-						'step' => '1',
-						'min' => '10000000',
-						'max' => '99999999999999',
-					),
-				)
-			);
-
-			woocommerce_wp_text_input(
-				array( 
-					'id' => '_multiple',
-					'label' => 'Verpakt per',
-					'type' => 'number',
-					'custom_attributes' => array(
-						'step' => '1',
-						'min' => '1',
-						'max' => '100',
-					),
-				)
-			);
-
 			woocommerce_wp_select(
 				array( 
 					'id' => '_stat_uom',
@@ -112,18 +76,65 @@
 		echo '</div>';
 	}
 
-	function save_oxfam_custom_fields( $post_id ) {
+	function add_oxfam_inventory_product_fields() {
+		echo '<div class="options_group oxfam">';
+
+			// In de subsites tonen we enkel 'hét' artikelnummer
+			if ( is_main_site() ) {
+				woocommerce_wp_text_input(
+					array( 
+						'id' => '_shopplus_code',
+						'label' => 'ShopPlus',
+					)
+				);
+
+				woocommerce_wp_checkbox(
+					array( 
+						'id' => '_in_bestelweb',
+						'label' => 'In BestelWeb?',
+						'custom_attributes' => array(
+							'disabled' => true,
+						),
+					)
+				);
+			}
+
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_cu_ean',
+					'label' => 'Barcode',
+					'type' => 'number',
+					'wrapper_class' => 'wide',
+					'description' => 'Vul de barcode in zoals vermeld op de verpakking (optioneel). Deze barcode zal opgenomen worden in de pick-Excel voor import in ShopPlus.',
+					'custom_attributes' => array(
+						'step' => '1',
+						'min' => '10000000',
+						'max' => '99999999999999',
+					),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array( 
+					'id' => '_multiple',
+					'label' => 'Verpakt per',
+					'type' => 'number',
+					'description' => 'Geef aan hoeveel consumenteneenheden er in één ompak zitten (optioneel). Enkel van belang voor geregistreerde B2B-klanten, die producten standaard per ompak toevoegen aan hun winkelmandje.',
+					'custom_attributes' => array(
+						'step' => '1',
+						'min' => '1',
+						'max' => '100',
+					),
+				)
+			);
+
+		echo '</div>';
+	}
+
+	function save_oxfam_product_fields( $post_id ) {
 		// Logica niet doorlopen tijdens imports, ontbreken van $_POST veroorzaakt verdwijnen van metadata
 		if ( get_site_option('oft_import_active') === 'yes' ) {
 			return;
-		}
-
-		// TO DO: Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
-		// update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'] );
-		
-		// Kopieer het artikelnummer naar het ShopPlus-nummer indien onbestaande
-		if ( empty( get_post_meta( $post_id, '_shopplus_code' ) ) and ! empty( $_POST['_sku'] ) ) {
-			update_post_meta( $post_id, '_shopplus_code', $_POST['_sku'] );
 		}
 
 		$regular_meta_keys = array(
@@ -135,6 +146,15 @@
 
 		if ( is_main_site() ) {
 			$regular_meta_keys[] = '_shopplus_code';
+			$regular_meta_keys[] = '_in_bestelweb';
+		} else {
+			// TO DO: Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
+			// update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'] );
+			
+			// Kopieer het artikelnummer naar het ShopPlus-nummer indien onbestaande
+			if ( empty( get_post_meta( $post_id, '_shopplus_code' ) ) and ! empty( $_POST['_sku'] ) ) {
+				update_post_meta( $post_id, '_shopplus_code', $_POST['_sku'] );
+			}
 		}
 
 		foreach ( $regular_meta_keys as $meta_key ) {
@@ -2234,7 +2254,7 @@
 	function disable_custom_checkboxes() {
 		global $pagenow, $post_type;
 
-		if ( $post_type === 'product' ) { ?>
+		if ( $post_type === 'product' ) : ?>
 
 			<script>
 				jQuery(document).ready( function() {
@@ -2288,21 +2308,19 @@
 							var pass = true;
 							var msg = '';
 							
-							/* De iframes moeten reeds ingeladen zijn, op het moment van opslaan in principe altijd in orde! */
-							var content = jQuery('#postdivrich').find('iframe#content_ifr').contents().find('body#tinymce').text();
-							var excerpt = jQuery('#postexcerpt').find('iframe#excerpt_ifr').contents().find('body#tinymce').text();
-							if ( content.length == 0 && excerpt.length == 0 ) {
-								msg += '* Je hebt nog geen enkele omschrijving ingevuld!\n';
+							if ( jQuery('#titlediv').find('input[name=post_title]').val().length == 0 ) {
+								msg += '* Je hebt nog geen omschrijving ingevuld!\n';
 							}
 							
-							if ( jQuery('#inventory_product_data').find('input#_sku').val().length == 0 ) {
+							var sku = jQuery('#inventory_product_data').find('input[name=_sku]').val();
+							if ( sku.length == 0 ) {
 								msg += '* Je moet nog een artikelnummer ingeven!\n';
-							} else if ( jQuery('#inventory_product_data').find('input#_sku').val().isNumeric() ) {
-								msg += '* Je moet een niet-numeriek artikelnummer kiezen om conflicten met OFT-producten te vermijden!\n';
+							} else if ( ! isNaN( parseFloat( sku ) ) && isFinite( sku ) ) {
+								msg += '* Kies een niet-numeriek artikelnummer om conflicten met nationale producten te vermijden!\n';
 							}
 							
 							if ( jQuery('#product_cat-all').find('input[type=checkbox]:checked').length == 0 ) {
-								// msg += '* Je moet nog een productcategorie aanvinken!\n';
+								msg += '* Je moet nog een productcategorie aanvinken!\n';
 							}
 
 							if ( msg.length > 0 ) {
@@ -2330,7 +2348,7 @@
 
 		<?php endif; ?>
 
-		<?php }
+		<?php
 	}
 
 	// Label en layout de factuurgegevens ENKEL GEBRUIKEN OM NON-CORE-FIELDS TE BEWERKEN OF VELDEN TE UNSETTEN
