@@ -10,6 +10,7 @@
 
 	// Vergt het toekennen van 'edit_others_products'!
 	// Eventueel ook html-quick-edit-product.php nog vereenvoudigen?
+	// DIT BLOKKEERT OOK HET INKIJKEN VAN ORDERS ...
 	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
 	function ure_modify_authors_list( $authors ) {
 		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
@@ -846,7 +847,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.2.5' );
+		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.0' );
 	}
 
 	// Fixes i.v.m. cURL
@@ -2233,25 +2234,23 @@
 	function disable_custom_checkboxes() {
 		?>
 		<script>
-			/* Disable hoofdcategorieën */
-			jQuery( '#in-product_cat-200' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-204' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-210' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-213' ).prop( 'disabled', true );
-			jQuery( '#in-product_cat-224' ).prop( 'disabled', true );
+			/* Disable hoofdcategorieën NIET DOEN */
+			// jQuery('#taxonomy-product_cat').find('.categorychecklist').children('li').prop( 'disabled', true );
 			
-			/* Disable continenten */
-			jQuery( '#in-product_partner-162' ).prop( 'disabled', true );
-			jQuery( '#in-product_partner-163' ).prop( 'disabled', true );
-			jQuery( '#in-product_partner-164' ).prop( 'disabled', true );
-			jQuery( '#in-product_partner-165' ).prop( 'disabled', true );
+			/* Disable continenten IS IN ELKE SUBSITE ANDERS */
+			// jQuery( '#in-product_partner-162' ).prop( 'disabled', true );
+			// jQuery( '#in-product_partner-163' ).prop( 'disabled', true );
+			// jQuery( '#in-product_partner-164' ).prop( 'disabled', true );
+			// jQuery( '#in-product_partner-165' ).prop( 'disabled', true );
+			jQuery('#taxonomy-product_partner').find('.categorychecklist').children('li').prop( 'disabled', true );
 			
 			/* Disable bovenliggende landen/continenten van alle aangevinkte partners/landen */
-			jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]:checked' ).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', true );
+			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('input[type=checkbox]:checked').closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 
 			/* Disable/enable het bovenliggende land bij aan/afvinken van een partner */
-			jQuery( '#taxonomy-product_partner' ).find( 'input[type=checkbox]' ).on( 'change', function() {
+			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('input[type=checkbox]').on( 'change', function() {
 				jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'disabled', jQuery(this).is(":checked") );
+				jQuery(this).closest( 'ul.children' ).siblings( 'label.selectit' ).find( 'input[type=checkbox]' ).prop( 'checked', false );
 			});
 
 			/* Disbable prijswijzigingen bij terugbetalingen */

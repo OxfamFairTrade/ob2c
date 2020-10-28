@@ -3,7 +3,7 @@
 	Author:			Frederik Neirynck
 	Author URI:		https://www.oxfamfairtrade.be
 	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
-	Version:		1.2.5
+	Version:		1.3.0
 	Text Domain:	oxfam-admin
 */
 
@@ -186,6 +186,33 @@ div.redux-notice {
 /* Geanimeerde profielvelden op zelfde breedte als gewone */
 input.show-if-b2b-checked {
 	width: 25em !important;
+}
+
+#woocommerce-product-data {
+	
+	#linked_product_data {
+		/* Verberg waarschuwing over synchronisatie van gerelateerde producten */
+		.woomulti-linked-product-notice {
+			display: none !important;
+		}
+	}
+	
+	#product_attributes {
+		/* Verberg het bij ons nutteloze 'Toon op de productpagina'-vinkje */
+		.wc-metabox-content > table > tbody > tr > td:not(.attribute_name) > label {
+			display: none !important;
+		}
+
+		// Als het niet mogelijk is om lokale beheerders termen te laten aanmaken, verbergen we de button beter ...
+		button.add_new_attribute {
+			// display: none !important;
+		}
+	}
+
+	/* Verberg link naar tabblad 'Geavanceerd' */
+	#advanced_options {
+		display: none !important;
+	}
 }
 
 @media (max-width: 1024px) {
