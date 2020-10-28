@@ -2237,13 +2237,28 @@
 			/* Disable hoofdcategorieën NIET DOEN, KAN HANDIG ZIJN */
 			// jQuery('#taxonomy-product_cat').find('.categorychecklist').children('li').children('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 			
+			/* Disable bovenliggende categorie bij alle aangevinkte subcategorieën */
+			jQuery('#taxonomy-product_cat').find('.categorychecklist').find('input[type=checkbox]:checked').closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
+
+			/* Deselecteer én disable/enable de bovenliggende categorie bij aan/afvinken van een subcategorie */
+			jQuery('#taxonomy-product_cat').find('.categorychecklist').find('input[type=checkbox]').on( 'change', function() {
+				jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'checked', false );
+				/* Enable enkel indien ALLE subcategorieën in een categorie afgevinkt zijn */
+				if ( jQuery(this).closest('ul.children').find('input[type=checkbox]:checked').length == 0 ) {
+					jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', false );
+				} else {
+					jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
+				}
+			});
+
 			/* Disable continenten */
 			jQuery('#taxonomy-product_partner').find('.categorychecklist').children('li').children('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 			
-			/* Disable bovenliggende landen van alle aangevinkte partners */
+			/* Disable bovenliggend land bij alle aangevinkte partners */
 			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('input[type=checkbox]:checked').closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
 
 			/* Deselecteer én disable/enable het bovenliggende land bij aan/afvinken van een partner */
+			/* Exra .find('.children .children') zorgt ervoor dat de logica enkel op het 3de niveau werkt */
 			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('.children .children').find('input[type=checkbox]').on( 'change', function() {
 				jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'checked', false );
 				/* Enable enkel indien ALLE partners in een land afgevinkt zijn */
