@@ -4897,13 +4897,14 @@
 	}
 
 	// Vermijd dat leeggoedlijnen meegekopieerd worden vanuit een vorige bestelling
-	// WERKT NOG NIET OP DEZE MANIER IN WC 3.0.9, DOE VOORLOPIG CORE HACK
-	// add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
+	add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
 
 	function prevent_empties_from_being_copied( $cart_item_data, $cart_id ) {
 		if ( $cart_item_data['data'] !== false ) {
-			if ( strpos( $cart_item_data['data']->get_sku(), 'W' ) === 0 ) {
-				// Hopelijk is dit nog op tijd om te annuleren, de cart_id voor het product is al aangemaakt ...
+			if ( $cart_item_data['data']->get_catalog_visibility() === 'hidden' ) {
+				write_log("CANCEL ADDING EMPTIES");
+				write_log( print_r( $cart_item_data, true ) );
+				// cart_id is al aangemaakt, maar dit is toch nog op tijd om te annuleren
 				$cart_item_data['quantity'] = 0;
 			}
 		}
