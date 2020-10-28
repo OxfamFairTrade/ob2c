@@ -9,20 +9,21 @@
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
 	// Vergt het activeren van de 'Posts edit access'-module én het toekennen van 'edit_others_products'!
-	// Eventueel ook html-quick-edit-product.php nog vereenvoudigen?
 	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
 	
 	function ure_modify_authors_list( $authors ) {
+		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
+		// Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
 		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
 		if ( count( $local_managers->get_results() ) > 0 ) {
-			write_log( print_r( $local_managers->get_results(), true ) );
+			write_log( "Local managers blog-ID ".get_current_blog_id().": ".implode( ', ', $local_managers->get_results() ) );
 			return $authors . ',' . implode( ',', $local_managers->get_results() );
 		} else {
 			return $authors;
 		}
 	}
 
-	// 'Posts edit access'-module blokkeert ook het inkijken van andere post types zoals orders!
+	// 'Posts edit access'-module blokkeert automatisch ook het inkijken van andere post types zoals orders!
 	add_filter( 'ure_restrict_edit_post_type', 'exclude_posts_from_edit_restrictions' );
 	
 	function exclude_posts_from_edit_restrictions( $post_type ) {
@@ -34,6 +35,34 @@
 			}
 		}
 		return $restrict_it;
+	}
+
+	// Lijst ook de posts op die de gebruiker niét kan bewerken
+	add_filter( 'ure_posts_show_full_list', '__return_true' );
+
+	// Enkel admins mogen producten dupliceren
+	add_filter( 'woocommerce_duplicate_product_capability', function( $cap ) {
+		return 'manage_options';
+	}, 10, 1 );
+
+	// Disable bulk edit van producten
+	add_filter( 'bulk_actions-edit-product', function( $actions ) {
+		// unset( $actions['mark_completed'] );
+		var_dump_pre( $actions);
+		return $actions;
+	}, 10, 1 );
+
+	// Disable quick edit van producten
+	add_filter( 'post_row_actions', 'remove_quick_edit', 10, 2 );
+
+	function remove_quick_edit( $actions, $post ) {
+		if ( get_post_type( $post ) === 'product' ) {
+			// write_log( print_r( $actions, true ) );
+			if ( ! current_user_can('manage_options') and array_key_exists( 'inline hide-if-no-js', $actions ) ) {
+				unset( $actions['inline hide-if-no-js'] );
+			}
+		}
+		return $actions;
 	}
 
 	// Verwijder overbodige productopties
@@ -509,13 +538,6 @@
 		return $availability;
 	}
 
-	// Enkel admins mogen producten dupliceren
-	add_filter( 'woocommerce_duplicate_product_capability', 'define_wc_duplicate_product_capability', 10, 1 );
-
-	function define_wc_duplicate_product_capability( $cap ) {
-		return 'update_core';
-	}
-
 	// Verberg acties op orders (ook in bulk en preview)
 	add_filter( 'bulk_actions-edit-shop_order', 'remove_dangerous_bulk_actions', 10000, 1 );
 	add_filter( 'woocommerce_admin_order_actions', 'remove_dangerous_preview_actions', 100, 2 );
@@ -523,10 +545,10 @@
 	add_filter( 'woocommerce_order_actions', 'remove_dangerous_singular_actions', 100, 1 );
 
 	function remove_dangerous_bulk_actions( $actions ) {
-		// WERKT NIET, WELLICHT MOET WOOCOMMERCE ORDER STATUSES NOG BIJGEWERKT WORDEN (INJECTEERT STATUSSEN NOG VIA JAVASCRIPT?)
-		// var_dump_pre( $actions);
 		unset( $actions['mark_processing'] );
 		unset( $actions['mark_completed'] );
+		// WERKT NIET, WELLICHT MOET WOOCOMMERCE ORDER STATUSES NOG BIJGEWERKT WORDEN (INJECTEERT STATUSSEN NOG VIA JAVASCRIPT?)
+		var_dump_pre( $actions);
 		return $actions;
 	}
 
@@ -5333,7 +5355,7 @@
 			'show_in_nav_menus' => true,
 			'show_in_rest' => true,
 			'show_tagcloud' => true,
-			'show_in_quick_edit' => true,
+			'show_in_quick_edit' => false,
 			'show_admin_column' => true,
 			'query_var' => true,
 			'capabilities' => array( 'manage_terms' => 'create_sites', 'edit_terms' => 'create_sites', 'delete_terms' => 'create_sites', 'assign_terms' => 'edit_products' ),

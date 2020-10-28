@@ -35,49 +35,52 @@
 					$products->the_post();
 					$product = wc_get_product( get_the_ID() );
 					
-					// Verhinder dat leeggoed ook opduikt
-					if ( ! in_array( $product->get_sku(), array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917') ) ) {
-						// Kleur de randen en tel de initiële waarde voor de tellers
-						if ( $product->is_on_backorder() ) {
-							$class = 'border color-orange';
-						} elseif ( $product->is_in_stock() ) {
-							$class = 'border color-green';
-							$instock_cnt++;
-						} else {
-							$class = 'border color-red';
-						}
-						if ( $product->is_featured() ) {
-							$featured_cnt++;
-						}
-
-						$content .= '<div id="'.get_the_ID().'" class="compact';
-
-						// Voeg klasse toe indien recent gepubliceerd
-						if ( get_the_date('U') > strtotime('-3 months') ) $content .= ' new';
-						
-						// Voeg klasse toe indien centraal niet langer op voorraad
-						if ( $product->get_meta('_in_bestelweb') === 'nee' ) {
-							$content .= ' old';
-						}
-						
-						$content .= '">';
-							$content .= '<div class="cell" style="padding: 0.25em; width: 3%; text-align: center;"><a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'wc_order_status_icon', null, false ).'</a></div>';
-							$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().' ('.$product->get_meta('_shopplus_code').')';
-							if ( has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
-								$content .= ' <small>ENKEL ZICHTBAAR VOOR B2B-KLANTEN</small>';
-							}
-							$content .= '</span></div>';
-							$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
-								$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>'.$stock_statuses['instock'].'</option>';
-								$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>'.$stock_statuses['onbackorder'].'</option>';
-								$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>'.$stock_statuses['outofstock'].'</option>';
-							$content .= '</select></div>';
-							$content .= '<div class="cell"><input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
-							$content .= ' <label for="'.get_the_ID().'-featured">In de kijker?</label></div>';
-						$content .= '<div class="cell output"></div>';
-						$content .= '</div>';
-						$i++;
+					// Verhinder dat leeggoed (= steeds verborgen!) ook opduikt
+					$empties = wc_get_products( array( 'visibility' => 'hidden', 'return' => 'ids' ) );
+					if ( in_array( $product->get_id(), $empties ) ) {
+						continue;
 					}
+
+					// Kleur de randen en tel de initiële waarde voor de tellers
+					if ( $product->is_on_backorder() ) {
+						$class = 'border color-orange';
+					} elseif ( $product->is_in_stock() ) {
+						$class = 'border color-green';
+						$instock_cnt++;
+					} else {
+						$class = 'border color-red';
+					}
+					if ( $product->is_featured() ) {
+						$featured_cnt++;
+					}
+
+					$content .= '<div id="'.get_the_ID().'" class="compact';
+
+					// Voeg klasse toe indien recent gepubliceerd
+					if ( get_the_date('U') > strtotime('-3 months') ) $content .= ' new';
+					
+					// Voeg klasse toe indien centraal niet langer op voorraad
+					if ( $product->get_meta('_in_bestelweb') === 'no' ) {
+						$content .= ' old';
+					}
+					
+					$content .= '">';
+						$content .= '<div class="cell" style="padding: 0.25em; width: 3%; text-align: center;"><a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'wc_order_status_icon', null, false ).'</a></div>';
+						$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().' ('.$product->get_meta('_shopplus_code').')';
+						if ( has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
+							$content .= ' <small>ENKEL ZICHTBAAR VOOR B2B-KLANTEN</small>';
+						}
+						$content .= '</span></div>';
+						$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
+							$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>'.$stock_statuses['instock'].'</option>';
+							$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>'.$stock_statuses['onbackorder'].'</option>';
+							$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>'.$stock_statuses['outofstock'].'</option>';
+						$content .= '</select></div>';
+						$content .= '<div class="cell"><input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
+						$content .= ' <label for="'.get_the_ID().'-featured">In de kijker?</label></div>';
+					$content .= '<div class="cell output"></div>';
+					$content .= '</div>';
+					$i++;
 				}
 				$content .= '</div>';
 				wp_reset_postdata();
