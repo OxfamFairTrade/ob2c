@@ -2232,58 +2232,105 @@
 	add_action( 'admin_footer', 'disable_custom_checkboxes' );
 
 	function disable_custom_checkboxes() {
-		?>
-		<script>
-			/* Disable hoofdcategorieën NIET DOEN, KAN HANDIG ZIJN */
-			// jQuery('#taxonomy-product_cat').find('.categorychecklist').children('li').children('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
-			
-			/* Disable bovenliggende categorie bij alle aangevinkte subcategorieën */
-			jQuery('#taxonomy-product_cat').find('.categorychecklist').find('input[type=checkbox]:checked').closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
+		global $pagenow, $post_type;
 
-			/* Deselecteer én disable/enable de bovenliggende categorie bij aan/afvinken van een subcategorie */
-			jQuery('#taxonomy-product_cat').find('.categorychecklist').find('input[type=checkbox]').on( 'change', function() {
-				jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'checked', false );
-				/* Enable enkel indien ALLE subcategorieën in een categorie afgevinkt zijn */
-				if ( jQuery(this).closest('ul.children').find('input[type=checkbox]:checked').length == 0 ) {
-					jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', false );
-				} else {
-					jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
-				}
-			});
+		if ( $post_type === 'product' ) { ?>
 
-			/* Disable continenten */
-			jQuery('#taxonomy-product_partner').find('.categorychecklist').children('li').children('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
-			
-			/* Disable bovenliggend land bij alle aangevinkte partners */
-			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('input[type=checkbox]:checked').closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
-
-			/* Deselecteer én disable/enable het bovenliggende land bij aan/afvinken van een partner */
-			/* Exra .find('.children .children') zorgt ervoor dat de logica enkel op het 3de niveau werkt */
-			jQuery('#taxonomy-product_partner').find('.categorychecklist').find('.children .children').find('input[type=checkbox]').on( 'change', function() {
-				jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'checked', false );
-				/* Enable enkel indien ALLE partners in een land afgevinkt zijn */
-				if ( jQuery(this).closest('ul.children').find('input[type=checkbox]:checked').length == 0 ) {
-					jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', false );
-				} else {
-					jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
-				}
-			});
-
-			/* Disbable prijswijzigingen bij terugbetalingen */
-			jQuery( '#order_line_items' ).find( '.refund_line_total.wc_input_price' ).prop( 'disabled', true );
-			jQuery( '#order_line_items' ).find( '.refund_line_tax.wc_input_price' ).prop( 'disabled', true );
-			jQuery( '.wc-order-totals' ).find ( '#refund_amount' ).prop( 'disabled', true );
-			jQuery( 'label[for=restock_refunded_items]' ).closest( 'tr' ).hide();
-		</script>
-		<?php
-		if ( ! current_user_can('manage_options') ) {
-			?>
 			<script>
-				/* Orderstatus vastzetten NIET LANGER NODIG */
-				// jQuery( '#order_data' ).find( '#order_status' ).prop( 'disabled', true );
+				jQuery(document).ready( function() {
+					/* Disable bovenliggende categorie bij alle aangevinkte subcategorieën */
+					jQuery('#taxonomy-product_cat').find('.categorychecklist').find('input[type=checkbox]:checked').closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
+
+					/* Deselecteer én disable/enable de bovenliggende categorie bij aan/afvinken van een subcategorie */
+					jQuery('#taxonomy-product_cat').find('.categorychecklist').find('input[type=checkbox]').on( 'change', function() {
+						jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'checked', false );
+						/* Enable enkel indien ALLE subcategorieën in een categorie afgevinkt zijn */
+						if ( jQuery(this).closest('ul.children').find('input[type=checkbox]:checked').length == 0 ) {
+							jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', false );
+						} else {
+							jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
+						}
+					});
+
+					/* Disable continenten */
+					jQuery('#taxonomy-product_partner').find('.categorychecklist').children('li').children('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
+					
+					/* Disable bovenliggend land bij alle aangevinkte partners */
+					jQuery('#taxonomy-product_partner').find('.categorychecklist').find('input[type=checkbox]:checked').closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
+
+					/* Deselecteer én disable/enable het bovenliggende land bij aan/afvinken van een partner */
+					/* Exra .find('.children .children') zorgt ervoor dat de logica enkel op het 3de niveau werkt */
+					jQuery('#taxonomy-product_partner').find('.categorychecklist').find('.children .children').find('input[type=checkbox]').on( 'change', function() {
+						jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'checked', false );
+						/* Enable enkel indien ALLE partners in een land afgevinkt zijn */
+						if ( jQuery(this).closest('ul.children').find('input[type=checkbox]:checked').length == 0 ) {
+							jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', false );
+						} else {
+							jQuery(this).closest('ul.children').siblings('label.selectit').find('input[type=checkbox]').prop( 'disabled', true );
+						}
+					});
+				});
 			</script>
-			<?php
-		}
+			
+			<?php if ( ! current_user_can('manage_options') ) : ?>
+				<script>
+					jQuery(document).ready( function() {
+						/* Checks zowel doorlopen bij creatie als update */
+						jQuery('#major-publishing-actions input[type=submit]').click( function() {
+							var response = check_product_fields();
+							if ( response[0] == false ) {
+								alert( response[1] );
+							}
+							return response[0];
+						});
+
+						function check_product_fields() { 
+							var pass = true;
+							var msg = '';
+							
+							/* De iframes moeten reeds ingeladen zijn, op het moment van opslaan in principe altijd in orde! */
+							var content = jQuery('#postdivrich').find('iframe#content_ifr').contents().find('body#tinymce').text();
+							var excerpt = jQuery('#postexcerpt').find('iframe#excerpt_ifr').contents().find('body#tinymce').text();
+							if ( content.length == 0 && excerpt.length == 0 ) {
+								msg += '* Je hebt nog geen enkele omschrijving ingevuld!\n';
+							}
+							
+							if ( jQuery('#inventory_product_data').find('input#_sku').val().length == 0 ) {
+								msg += '* Je moet nog een artikelnummer ingeven!\n';
+							} else if ( jQuery('#inventory_product_data').find('input#_sku').val().isNumeric() ) {
+								msg += '* Je moet een niet-numeriek artikelnummer kiezen om conflicten met OFT-producten te vermijden!\n';
+							}
+							
+							if ( jQuery('#product_cat-all').find('input[type=checkbox]:checked').length == 0 ) {
+								// msg += '* Je moet nog een productcategorie aanvinken!\n';
+							}
+
+							if ( msg.length > 0 ) {
+								pass = false;
+								msg = 'Hold your horses, er zijn enkele issues:\n'+msg;
+							}
+
+							return [ pass, msg ];
+						}
+					});
+				</script>
+			<?php endif; ?>
+
+		<?php elseif ( $post_type === 'shop_order' ) : ?>
+
+			<script>
+				jQuery(document).ready( function() {
+					/* Disbable prijswijzigingen bij terugbetalingen */
+					jQuery('#order_line_items').find('.refund_line_total.wc_input_price').prop( 'disabled', true );
+					jQuery('#order_line_items').find('.refund_line_tax.wc_input_price').prop( 'disabled', true );
+					jQuery('.wc-order-totals').find ('#refund_amount').prop( 'disabled', true );
+					jQuery('label[for=restock_refunded_items]').closest('tr').hide();
+				});
+			</script>
+
+		<?php endif; ?>
+
+		<?php }
 	}
 
 	// Label en layout de factuurgegevens ENKEL GEBRUIKEN OM NON-CORE-FIELDS TE BEWERKEN OF VELDEN TE UNSETTEN
