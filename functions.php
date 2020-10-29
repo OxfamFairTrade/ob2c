@@ -261,9 +261,7 @@
 	function notify_on_local_product_creation( $post ) {
 		if ( ! is_main_site() and $post->post_type === 'product' ) {
 			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != '1' ) {
-				$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
-				$headers[] = 'Content-Type: text/html';
-				wp_mail( 'e-commerce@oft.be', 'Nieuw product gepubliceerd!', 'Te bekijken op '.get_permalink($post).'!' );
+				send_automated_mail_to_helpdesk( 'Nieuw product gepubliceerd: '.get_the_title( $post ), '<p>Bekijk het product <a href="'.get_permalink( $post ).'">in de front-end</a>.</p>' );
 			}
 		}
 	}
@@ -1184,9 +1182,7 @@
 	
 	function warn_if_processing_from_invalid_status( $order_id, $order ) {
 		if ( in_array( $order->get_status(), array( 'completed', 'cancelled', 'refunded' ) ) ) {
-			$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
-			$headers[] = 'Content-Type: text/html';
-			wp_mail( 'e-commerce@oft.be', $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>', $headers );
+			send_automated_mail_to_helpdesk( $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
 			// Dit zal verderop opgevangen worden, en de foutmelding wordt als melding getoond in de back-end 
 			// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L396
 			throw new Exception( $order->get_order_number().' is reeds afgewerkt en kan niet opnieuw in verwerking genomen worden.' );
@@ -1195,9 +1191,7 @@
 
 	function warn_if_completed_from_invalid_status( $order_id, $order ) {
 		if ( in_array( $order->get_status(), array( 'pending', 'cancelled', 'refunded' ) ) ) {
-			$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
-			$headers[] = 'Content-Type: text/html';
-			wp_mail( 'e-commerce@oft.be', $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>', $headers );
+			send_automated_mail_to_helpdesk( $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
 			throw new Exception( $order->get_order_number().' werd niet betaald en dient niet in verwerking genomen te worden.' );
 		}
 	}
@@ -1213,9 +1207,7 @@
 	add_action( 'woocommerce_order_status_cancelled_to_completed', 'warn_if_invalid_status_change', 10, 2 );
 	
 	function warn_if_invalid_status_change( $order_id, $order ) {
-		$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
-		$headers[] = 'Content-Type: text/html';
-		wp_mail( 'e-commerce@oft.be', 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), '<p>Gelieve de logs te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!</p>', $headers );
+		send_automated_mail_to_helpdesk( 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), '<p>Gelieve de logs te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!</p>' );
 	}
 
 	// Functie is niet gebaseerd op eigenschappen van gebruikers en dus al zeer vroeg al bepaald (geen 'init' nodig)
@@ -1343,7 +1335,7 @@
 		}
 
 		if ( ! isset( $owner ) ) {
-			wp_mail( 'e-commerce@oft.be', 'Geen eigenaar gevonden voor te claimen bestelling '.$order->get_order_number().'!', '' );
+			send_automated_mail_to_helpdesk( 'Geen eigenaar gevonden voor te claimen bestelling '.$order->get_order_number(), '<p>Gelieve het \'claimed_by\'-veld te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!</p>' );
 			// Koppel als laatste redmiddel aan de locatie van de hoofdwinkel
 			$owner = mb_strtolower( get_oxfam_shop_data('city') );
 		}
@@ -5024,7 +5016,7 @@
 		}
 
 		if ( $updated ) {
-			wp_mail( 'e-commerce@oft.be', get_webshop_name().' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
 		} 
 	}
 
@@ -5041,7 +5033,7 @@
 		}
 
 		if ( $body ) {
-			wp_mail( 'e-commerce@oft.be', get_webshop_name(true).' paste thuislevering van breekbare goederen aan', $body );
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' paste thuislevering van breekbare goederen aan', $body );
 		}
 	}
 
@@ -5054,16 +5046,16 @@
 		if ( strlen( $new_text ) > 0 ) {
 			$body = '"'.$new_text.'"';
 		}
-		wp_mail( 'e-commerce@oft.be', get_webshop_name(true)." paste '".$option."'-tekst aan", $body );
+		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', $body );
 	}
 
 	function text_field_option_was_updated( $old_text, $new_text, $option ) {
 		if ( strlen( $new_text ) > 0 ) {
 			$body = '"'.$new_text.'"';
 		} else {
-			$body = "Custom '".$option."'-tekst gewist!";
+			$body = 'Custom \''.$option.'\'-tekst gewist!';
 		}
-		wp_mail( 'e-commerce@oft.be', get_webshop_name(true)." paste '".$option."'-tekst aan", $body );
+		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', $body );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
@@ -6932,6 +6924,14 @@
 			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
 		}
 		return $access;
+	}
+
+	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
+	function send_automated_mail_to_helpdesk( $subject, $body ) {
+		$headers = array();
+		$headers[] = 'From: '.get_webshop_name().' <'.get_option('admin_email').'>';
+		$headers[] = 'Content-Type: text/html';
+		wp_mail( 'Helpdesk E-Commerce <e-commerce@oft.be>', $subject, $body, $headers );
 	}
 
 	// Print variabelen op een overzichtelijke manier naar debug.log
