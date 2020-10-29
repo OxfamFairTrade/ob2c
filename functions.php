@@ -4896,19 +4896,21 @@
 		echo 'waarvan XX euro leeggoed';
 	}
 
-	// Vermijd dat leeggoedlijnen meegekopieerd worden vanuit een vorige bestelling
+	// Vermijd dat leeggoedlijnen meegekopieerd worden vanuit een vorige bestelling (zonder juiste koppeling met moederproduct)
+	// TRIGGEREN VAN WC FORCE SELLS ACHTERAF LUKT NIET
 	add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
 
 	function prevent_empties_from_being_copied( $cart_item_data, $cart_id ) {
 		if ( $cart_item_data['data'] !== false ) {
+			// Eventueel ook gratis producten annuleren?
 			if ( $cart_item_data['data']->get_catalog_visibility() === 'hidden' ) {
-				write_log("CANCEL ADDING EMPTIES");
+				// write_log("CANCEL ADDING EMPTIES");
 				write_log( print_r( $cart_item_data, true ) );
-				// cart_id is al aangemaakt, maar dit is toch nog op tijd om te annuleren
+				// We zijn nog op tijd om het toevoegen te annuleren
 				$cart_item_data['quantity'] = 0;
 			}
 		}
-		
+
 		return $cart_item_data;
 	}
 	
