@@ -257,6 +257,23 @@
 		return $unit_price;
 	}
 
+	// Stuur mail uit bij publicatie van nieuw lokaal product
+	add_action( 'draft_to_publish', 'notify_on_local_product_creation', 10, 1 );
+	// add_action( 'publish_product', 'notify_on_local_product_creation', 10, 2 );
+	
+	function notify_on_local_product_creation( $post ) {
+		if ( ! is_main_site() and $post->post_type === 'product' ) {
+			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != 1 ) {
+				send_automated_mail_to_helpdesk( 'Nieuw product gepubliceerd: '.get_the_title( $post ), '<p>Bekijk het product <a href="'.get_permalink( $post ).'">in de front-end</a>.</p>' );
+			}
+		}
+	}
+
+	// Verberg voorlopig gewoon de hele <div> voor tags!
+	// add_action( 'pre_insert_term', function( $term, $taxonomy ) {
+	// 	return ( 'product_tag' === $taxonomy ) ? new WP_Error( 'term_addition_blocked', 'Aanmaak van nieuwe producttags is verboden' ) : $term;
+	// }, 1, 2 );
+
 	// Herbenoem de default voorraadstatussen
 	add_filter( 'woocommerce_product_stock_status_options', function( $statuses ) {
 		$statuses['instock'] = 'Op voorraad';
@@ -267,24 +284,12 @@
 		return $statuses;
 	}, 10, 1 );
 
-	// STUUR MAIL UIT BIJ PUBLICATIE NIEUW LOKAAL PRODUCT
-	add_action( 'draft_to_publish', 'notify_on_local_product_creation', 10, 1 );
-	// add_action( 'publish_product', 'notify_on_local_product_creation', 10, 2 );
-	
-	function notify_on_local_product_creation( $post ) {
-		if ( ! is_main_site() and $post->post_type === 'product' ) {
-			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != '1' ) {
-				send_automated_mail_to_helpdesk( 'Nieuw product gepubliceerd: '.get_the_title( $post ), '<p>Bekijk het product <a href="'.get_permalink( $post ).'">in de front-end</a>.</p>' );
-			}
-		}
-	}
-
-	// VOEG VALIDATIE TOE OP SKU (GEEN OMPAKNUMMERS)
-
-	// Verberg voorlopig gewoon de hele <div> voor tags!
-	// add_action( 'pre_insert_term', function( $term, $taxonomy ) {
-	// 	return ( 'product_tag' === $taxonomy ) ? new WP_Error( 'term_addition_blocked', 'Aanmaak van nieuwe producttags is verboden' ) : $term;
-	// }, 1, 2 );
+	// In de back-end worden de labels op een andere manier opgehaald ...
+	add_filter( 'woocommerce_admin_stock_html', function( $stock_html ) {
+		str_replace( 'In nabestelling', 'Tijdelijk uit voorraad', $stock_html );
+		str_replace( 'Uitverkocht', 'Niet in assortiment', $stock_html );
+		return $stock_html;
+	}, 10, 1 );
 
 	// Change the image size used for the WooCommerce product gallery image zoom
 	add_filter( 'woocommerce_gallery_full_size', function( $size ) {
