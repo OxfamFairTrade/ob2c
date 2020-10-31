@@ -19,7 +19,7 @@ global $product;
 <?php if ( ! empty( $product->get_attribute('inhoud') ) ) : ?>
 	<p class="weight"><?php echo $product->get_attribute('inhoud'); ?></p>
 <?php elseif ( ! empty( $product->get_meta('_net_content') ) ) : ?>
-	<p class="weight"><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_stat_uom'); ?></p>
+	<p class="weight"><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></p>
 <?php endif; ?>
 
 <?php
@@ -28,7 +28,7 @@ global $product;
 		echo '<p class="unit-price">&euro;/'.strtolower( $product->get_meta('_stat_uom') ).' '.number_format_i18n( $product->get_attribute('eprijs'), 2 ).'</p>';
 	} elseif ( floatval( $product->get_meta('_unit_price') ) !== 0.0 ) {
 		// Nieuwe systeem (lokaal), via metadata
-		if ( strtolower( $product->get_meta('_stat_uom') ) === 'cl' ) {
+		if ( strtolower( $product->get_meta('_net_unit') ) === 'cl' ) {
 			$unit = '&euro;/l';
 		} else {
 			$unit = '&euro;/kg';

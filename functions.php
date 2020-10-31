@@ -94,11 +94,11 @@
 	function add_oxfam_general_product_fields() {
 		echo '<div class="options_group oxfam">';
 
-			$stat_uom_args = array( 
-				'id' => '_stat_uom',
+			$net_unit_args = array( 
+				'id' => '_net_unit',
 				'label' => 'Inhoudsmaat',
 				'desc_tip' => true,
-				'description' => 'Selecteer de maateenheid (optioneel). Dit is noodzakelijk als je de eenheidsprijs wil laten berekenen en tonen op de productpagina (wettelijk verplicht bij voedingproducten).',
+				'description' => 'Selecteer de maateenheid (optioneel). Dit is noodzakelijk als je de eenheidsprijs wil laten berekenen en tonen op de productpagina (wettelijk verplicht bij voedingsproducten).',
 				'options' => array(
 					'' => '(selecteer)',
 					'g' => 'gram (vast product)',
@@ -137,7 +137,7 @@
 				$fairtrade_share_args['custom_attributes']['readonly'] = true;
 			}
 			
-			woocommerce_wp_select( $stat_uom_args );
+			woocommerce_wp_select( $net_unit_args );
 			woocommerce_wp_text_input( $net_content_args);
 			woocommerce_wp_text_input( $fairtrade_share_args);
 
@@ -219,7 +219,7 @@
 			// Deze velden zijn enkel bewerkbaar (en dus aanwezig in $_POST) indien lokaal product
 			$regular_meta_keys[] = '_cu_ean';
 			$regular_meta_keys[] = '_multiple';
-			$regular_meta_keys[] = '_stat_uom';
+			$regular_meta_keys[] = '_net_unit';
 			$regular_meta_keys[] = '_net_content';
 			$regular_meta_keys[] = '_fairtrade_share';
 		}
@@ -230,7 +230,7 @@
 			$regular_meta_keys[] = '_in_bestelweb';
 		} else {
 			// Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
-			update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_stat_uom'] );
+			update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'] );
 			
 			// Kopieer het artikelnummer naar het ShopPlus-nummer indien onbestaande
 			if ( empty( get_post_meta( $post_id, '_shopplus_code', true ) ) and ! empty( $_POST['_sku'] ) ) {
@@ -5664,6 +5664,7 @@
 		 * @return array
 		 */
 		
+		// TOE TE VOEGEN NA MIGRATIE: '_net_unit', '_net_content'
 		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id', 'promo_text', '_main_thumbnail_id' );
 		foreach ( $keys_to_copy as $key ) {
 			if ( $key === '_main_thumbnail_id' ) {
