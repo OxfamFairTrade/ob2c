@@ -94,42 +94,36 @@
 	function add_oxfam_general_product_fields() {
 		echo '<div class="options_group oxfam">';
 
+			$stat_uom_args = array( 
+				'id' => '_stat_uom',
+				'label' => 'Inhoudsmaat',
+				'options' => array(
+					'' => '(selecteer)',
+					'g' => 'gram (vast product)',
+					'cl' => 'centiliter (vloeibaar product)',
+				),
+			);
+
+			$fairtrade_share_args = array( 
+				'id' => '_fairtrade_share',
+				'label' => 'Fairtradepercentage (%)',
+				'type' => 'number',
+				'custom_attributes' => array(
+					'step' => '1',
+					'min' => '10',
+					'max' => '100',
+				),
+			);
+
 			global $product_object;
 			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
 				echo '<p>Is gebroadcast, velden onbewerkbaar maken!</p>';
-				$disabled = true;
-			} else {
-				$disabled = false;
+				$stat_uom_args['custom_attributes']['disabled'] = true;
+				$fairtrade_share_args['custom_attributes']['readonly'] = true;
 			}
 			
-			woocommerce_wp_select(
-				array( 
-					'id' => '_stat_uom',
-					'label' => 'Inhoudsmaat',
-					'options' => array(
-						'' => '(selecteer)',
-						'g' => 'gram (vast product)',
-						'cl' => 'centiliter (vloeibaar product)',
-					),
-					'custom_attributes' => array(
-						'disabled' => $disabled,
-					),
-				)
-			);
-
-			woocommerce_wp_text_input(
-				array( 
-					'id' => '_fairtrade_share',
-					'label' => 'Fairtradepercentage (%)',
-					'type' => 'number',
-					'custom_attributes' => array(
-						'step' => '1',
-						'min' => '10',
-						'max' => '100',
-						'readonly' => $disabled,
-					),
-				)
-			);
+			woocommerce_wp_select( $stat_uom_args );
+			woocommerce_wp_text_input( $fairtrade_share_args);
 
 		echo '</div>';
 	}
@@ -155,46 +149,40 @@
 				);
 			}
 
+			$cu_ean_args = array( 
+				'id' => '_cu_ean',
+				'label' => 'Barcode',
+				'type' => 'number',
+				'wrapper_class' => 'wide',
+				'desc_tip' => true,
+				'description' => 'Vul de barcode in zoals vermeld op de verpakking (optioneel). Deze barcode zal opgenomen worden in de pick-Excel voor import in ShopPlus.',
+				'custom_attributes' => array(
+					'min' => '100000',
+					'max' => '99999999999999',
+				),
+			);
+
+			$multiple_args = array( 
+				'id' => '_multiple',
+				'label' => 'Verpakt per',
+				'type' => 'number',
+				'desc_tip' => true,
+				'description' => 'Geef aan hoeveel consumenteneenheden er in één ompak zitten (optioneel). Enkel van belang voor geregistreerde B2B-klanten, die producten standaard per ompak toevoegen aan hun winkelmandje.',
+				'custom_attributes' => array(
+					'min' => '1',
+					'max' => '100',
+				),
+			);
+
 			global $product_object;
 			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
 				echo '<p>Is gebroadcast, velden onbewerkbaar maken!</p>';
-				$disabled = true;
-			} else {
-				$disabled = false;
+				$cu_ean_args['custom_attributes']['readonly'] = true;
+				$multiple_args['custom_attributes']['readonly'] = true;
 			}
 			
-			woocommerce_wp_text_input(
-				array( 
-					'id' => '_cu_ean',
-					'label' => 'Barcode',
-					'type' => 'number',
-					'wrapper_class' => 'wide',
-					'desc_tip' => true,
-					'description' => 'Vul de barcode in zoals vermeld op de verpakking (optioneel). Deze barcode zal opgenomen worden in de pick-Excel voor import in ShopPlus.',
-					'custom_attributes' => array(
-						'step' => '1',
-						'min' => '10000000',
-						'max' => '99999999999999',
-						'readonly' => $disabled,
-					),
-				)
-			);
-
-			woocommerce_wp_text_input(
-				array( 
-					'id' => '_multiple',
-					'label' => 'Verpakt per',
-					'type' => 'number',
-					'desc_tip' => true,
-					'description' => 'Geef aan hoeveel consumenteneenheden er in één ompak zitten (optioneel). Enkel van belang voor geregistreerde B2B-klanten, die producten standaard per ompak toevoegen aan hun winkelmandje.',
-					'custom_attributes' => array(
-						'step' => '1',
-						'min' => '1',
-						'max' => '100',
-						'readonly' => $disabled,
-					),
-				)
-			);
+			woocommerce_wp_text_input( $cu_ean_args );
+			woocommerce_wp_text_input( $multiple_args );
 
 		echo '</div>';
 	}
