@@ -8,6 +8,7 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Verberg extra metadata op het orderdetail in de back-end
 	add_filter( 'woocommerce_hidden_order_itemmeta', function( $forbidden ) {
 		$forbidden[] = '_shipping_item_id';
 		return $forbidden;
@@ -18,7 +19,7 @@
 	
 	function ure_modify_authors_list( $authors ) {
 		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
-		// Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
+		// TO DO: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
 		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
 		if ( count( $local_managers->get_results() ) > 0 ) {
 			write_log( "Local managers blog-ID ".get_current_blog_id().": ".implode( ', ', $local_managers->get_results() ) );
@@ -52,8 +53,10 @@
 
 	// Disable bulk edit van producten
 	add_filter( 'bulk_actions-edit-product', function( $actions ) {
-		var_dump_pre( $actions);
-		unset( $actions['edit'] );
+		// var_dump_pre( $actions);
+		if ( ! current_user_can('manage_options') and array_key_exists( 'edit', $actions ) ) {
+			unset( $actions['edit'] );
+		}
 		return $actions;
 	}, 10, 1 );
 
@@ -62,7 +65,7 @@
 
 	function remove_quick_edit( $actions, $post ) {
 		if ( get_post_type( $post ) === 'product' ) {
-			var_dump_pre( $actions );
+			// var_dump_pre( $actions );
 			if ( ! current_user_can('manage_options') and array_key_exists( 'inline hide-if-no-js', $actions ) ) {
 				unset( $actions['inline hide-if-no-js'] );
 			}
@@ -92,8 +95,11 @@
 		echo '<div class="options_group oxfam">';
 
 			global $product_object;
-			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == '1' ) {
-				var_dump_pre('Is gebroadcast, velden onbewerkbaar maken?');
+			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
+				echo '<p>Is gebroadcast, velden onbewerkbaar maken!</p>';
+				$disabled = true;
+			} else {
+				$disabled = false;
 			}
 			
 			woocommerce_wp_select(
@@ -104,6 +110,9 @@
 						'' => '(selecteer)',
 						'g' => 'gram (vast product)',
 						'cl' => 'centiliter (vloeibaar product)',
+					),
+					'custom_attributes' => array(
+						'disabled' => $disabled,
 					),
 				)
 			);
@@ -117,6 +126,7 @@
 						'step' => '1',
 						'min' => '10',
 						'max' => '100',
+						'readonly' => $disabled,
 					),
 				)
 			);
@@ -140,13 +150,19 @@
 					array( 
 						'id' => '_in_bestelweb',
 						'label' => 'In BestelWeb?',
-						'custom_attributes' => array(
-							'disabled' => true,
-						),
+						'cbvalue' => 'ja',
 					)
 				);
 			}
 
+			global $product_object;
+			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
+				echo '<p>Is gebroadcast, velden onbewerkbaar maken!</p>';
+				$disabled = true;
+			} else {
+				$disabled = false;
+			}
+			
 			woocommerce_wp_text_input(
 				array( 
 					'id' => '_cu_ean',
@@ -159,6 +175,7 @@
 						'step' => '1',
 						'min' => '10000000',
 						'max' => '99999999999999',
+						'readonly' => $disabled,
 					),
 				)
 			);
@@ -174,6 +191,7 @@
 						'step' => '1',
 						'min' => '1',
 						'max' => '100',
+						'readonly' => $disabled,
 					),
 				)
 			);
@@ -187,14 +205,19 @@
 			return;
 		}
 
-		$regular_meta_keys = array(
-			'_cu_ean',
-			'_multiple',
-			'_stat_uom',
-			'_fairtrade_share',
-		);
+		$regular_meta_keys = array();
+
+		// Of kijken naar waarde $_POST['_woonet_child_inherit_updates'] / werken met woocommerce_wp_hidden_input()?
+		if ( get_post_meta( $post_id, '_woonet_network_is_child_site_id', true ) != 1 ) {
+			// Deze velden zijn enkel bewerkbaar (en dus aanwezig in $_POST) indien lokaal product
+			$regular_meta_keys[] = '_cu_ean';
+			$regular_meta_keys[] = '_multiple';
+			$regular_meta_keys[] = '_stat_uom';
+			$regular_meta_keys[] = '_fairtrade_share';
+		}
 
 		if ( is_main_site() ) {
+			// Deze velden zijn enkel zichtbaar (en dus aanwezig in $_POST) op hoofdniveau
 			$regular_meta_keys[] = '_shopplus_code';
 			$regular_meta_keys[] = '_in_bestelweb';
 		} else {
@@ -4890,13 +4913,13 @@
 
 	// Vermijd dat leeggoedlijnen meegekopieerd worden vanuit een vorige bestelling (zonder juiste koppeling met moederproduct)
 	// TRIGGEREN VAN WC FORCE SELLS ACHTERAF LUKT NIET
-	add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
+	// add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
 
 	function prevent_empties_from_being_copied( $cart_item_data, $cart_id ) {
 		if ( $cart_item_data['data'] !== false ) {
 			// Eventueel ook gratis producten annuleren?
 			if ( $cart_item_data['data']->get_catalog_visibility() === 'hidden' ) {
-				// write_log("CANCEL ADDING EMPTIES");
+				write_log("CANCEL ADDING EMPTIES");
 				write_log( print_r( $cart_item_data, true ) );
 				// We zijn nog op tijd om het toevoegen te annuleren
 				$cart_item_data['quantity'] = 0;
