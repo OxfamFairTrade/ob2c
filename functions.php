@@ -286,8 +286,8 @@
 
 	// In de back-end worden de labels op een andere manier opgehaald ...
 	add_filter( 'woocommerce_admin_stock_html', function( $stock_html ) {
-		str_replace( 'In nabestelling', 'Tijdelijk uit voorraad', $stock_html );
-		str_replace( 'Uitverkocht', 'Niet in assortiment', $stock_html );
+		$stock_html = str_replace( 'In nabestelling', 'Tijdelijk uit voorraad', $stock_html );
+		$stock_html = str_replace( 'Uitverkocht', 'Niet in assortiment', $stock_html );
 		return $stock_html;
 	}, 10, 1 );
 
