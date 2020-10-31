@@ -60,7 +60,7 @@
 					if ( get_the_date('U') > strtotime('-3 months') ) $content .= ' new';
 					
 					// Voeg klasse toe indien centraal niet langer op voorraad
-					if ( $product->get_meta('_in_bestelweb') === 'no' ) {
+					if ( $product->get_meta('_in_bestelweb') === 'nee' ) {
 						$content .= ' old';
 					}
 					

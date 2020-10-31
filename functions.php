@@ -222,7 +222,11 @@
 			if ( isset( $_POST[ $meta_key ] ) ) {
 				update_post_meta( $post_id, $meta_key, sanitize_text_field( $_POST[$meta_key] ) );
 			} else {
-				update_post_meta( $post_id, $meta_key, '' );
+				if ( $meta_key === '_in_bestelweb' ) {
+					update_post_meta( $post_id, $meta_key, 'nee' );
+				} else {
+					update_post_meta( $post_id, $meta_key, '' );
+				}
 			}
 		}
 	}
