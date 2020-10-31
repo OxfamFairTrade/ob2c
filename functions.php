@@ -132,7 +132,7 @@
 
 			global $product_object;
 			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
-				$stat_uom_args['custom_attributes']['disabled'] = true;
+				$net_unit_args['custom_attributes']['disabled'] = true;
 				$net_content_args['custom_attributes']['readonly'] = true;
 				$fairtrade_share_args['custom_attributes']['readonly'] = true;
 			}
@@ -5557,8 +5557,8 @@
 		}
 	}
 
-	// Formatteer de gewichten in de attributen
-	add_filter( 'woocommerce_attribute', 'add_suffixes', 10, 3 );
+	// Formatteer de gewichten in de attributen DEPRECATED
+	// add_filter( 'woocommerce_attribute', 'add_suffixes', 10, 3 );
 
 	function add_suffixes( $wpautop, $attribute, $values ) {
 		global $product;

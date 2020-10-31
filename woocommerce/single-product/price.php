@@ -16,17 +16,14 @@ global $product;
 ?>
 <p class="<?php echo esc_attr( apply_filters( 'woocommerce_product_price_class', 'price' ) ); ?>"><?php echo $product->get_price_html(); ?></p>
 
-<?php if ( ! empty( $product->get_attribute('inhoud') ) ) : ?>
-	<p class="weight"><?php echo $product->get_attribute('inhoud'); ?></p>
-<?php elseif ( ! empty( $product->get_meta('_net_content') ) ) : ?>
+<?php if ( ! empty( $product->get_meta('_net_content') ) ) : ?>
 	<p class="weight"><?php echo $product->get_meta('_net_content').' '.$product->get_meta('_net_unit'); ?></p>
+<?php elseif ( ! empty( $product->get_attribute('inhoud') ) ) : ?>
+	<p class="weight"><?php echo $product->get_attribute('inhoud'); ?></p>
 <?php endif; ?>
 
 <?php
-	if ( floatval( $product->get_attribute('eprijs') ) !== 0.0 ) {
-		// Oude systeem (nationaal), via attribuut
-		echo '<p class="unit-price">&euro;/'.strtolower( $product->get_meta('_stat_uom') ).' '.number_format_i18n( $product->get_attribute('eprijs'), 2 ).'</p>';
-	} elseif ( floatval( $product->get_meta('_unit_price') ) !== 0.0 ) {
+	if ( floatval( $product->get_meta('_unit_price') ) !== 0.0 ) {
 		// Nieuwe systeem (lokaal), via metadata
 		if ( strtolower( $product->get_meta('_net_unit') ) === 'cl' ) {
 			$unit = '&euro;/l';
@@ -34,6 +31,9 @@ global $product;
 			$unit = '&euro;/kg';
 		}
 		echo '<p class="unit-price">'.$unit.' '.number_format_i18n( $product->get_meta('_unit_price'), 2 ).'</p>';
+	} elseif ( floatval( $product->get_attribute('eprijs') ) !== 0.0 ) {
+		// Oude systeem (nationaal), via attribuut
+		echo '<p class="unit-price">&euro;/'.strtolower( $product->get_meta('_stat_uom') ).' '.number_format_i18n( $product->get_attribute('eprijs'), 2 ).'</p>';
 	}
 
 /* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */
