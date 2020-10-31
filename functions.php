@@ -142,7 +142,7 @@
 				woocommerce_wp_select(
 					array( 
 						'id' => '_in_bestelweb',
-						'label' => 'Beschikbaar in BestelWeb?',
+						'label' => 'In BestelWeb?',
 						'options' => array(
 							'' => '(selecteer)',
 							'ja' => 'ja',
@@ -5699,68 +5699,43 @@
 		$data['master_product']->save();
 	}
 
-	// Reset alle '_in_bestelweb' velden voor we aan de ERP-import beginnen
+	// Doe leuke dingen voor de start van een import
 	add_action( 'pmxi_before_xml_import', 'before_xml_import', 10, 1 );
 	
 	function before_xml_import( $import_id ) {
 		update_site_option( 'oft_import_active', 'yes' );
-
-		if ( $import_id == 7 ) {
-			// Zet de key '_in_bestelweb' van alle producten op nee
-			$args = array(
-				'post_type'	=> 'product',
-				'post_status' => array( 'publish', 'draft', 'trash' ),
-				'posts_per_page' => -1,
-				// Behalve van producten die handmatig toegevoegd werden! B2B / BIERSETS / NON-FOOD
-				'meta_query' => array(
-					array(
-						'key' => '_sku',
-						'value' => array( '29297', '29298', '05246', '08808', '08809', '19236', '19237', '19238', '19239' ),
-						'compare' => 'NOT IN',
-					),
-				),
-			);
-
-			$to_remove = new WP_Query( $args );
-
-			// TIJDELIJK UITSCHAKELEN
-			// if ( $to_remove->have_posts() ) {
-			// 	while ( $to_remove->have_posts() ) {
-			// 		$to_remove->the_post();
-			// 		update_post_meta( get_the_ID(), '_in_bestelweb', 'nee' );
-			// 	}
-			// 	wp_reset_postdata();
-			// }
-		}
 	}
 
 	// Hernoem het importbestand na afloop van de import zodat we een snapshot krijgen dat niet overschreven wordt
 	add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
 	
 	function after_xml_import( $import_id ) {
-		update_site_option( 'oft_import_active', 'no' );
+		delete_option('oft_import_active');
 
 		if ( $import_id == 7 ) {
-			// TIJDELIJK UITSCHAKELEN
-			// Vind alle producten waarvan de key '_in_bestelweb' onaangeroerd is (= zat niet in Odisy-import)
-			// $args = array(
-			// 	'post_type'			=> 'product',
-			// 	'post_status'		=> array( 'publish', 'draft', 'trash' ),
-			// 	'posts_per_page'	=> -1,
-			// 	'meta_key'			=> '_in_bestelweb', 
-			// 	'meta_value'		=> 'nee',
-			// 	'meta_compare'		=> '=',
-			// );
-			// $to_outofstock = new WP_Query( $args );
-			// if ( $to_outofstock->have_posts() ) {
-			// 	while ( $to_outofstock->have_posts() ) {
-			// 		$to_outofstock->the_post();
-			// 		$productje = wc_get_product( get_the_ID() );
-			// 		$productje->set_stock_status('outofstock');
-			// 		$productje->save();
-			// 	}
-			// 	wp_reset_postdata();
-			// }
+			// Vind alle producten die vandaag niet bijgewerkt werden door de ERP-import
+			// Best een 2de import opzetten specifiek voor craftsproducten?
+			$args = array(
+				'post_type'			=> 'product',
+				'post_status'		=> array( 'publish', 'draft', 'trash' ),
+				'posts_per_page'	=> -1,
+				'meta_key'			=> 'touched_by_import', 
+				'meta_value'		=> date_i18n('Ymd'),
+				'meta_compare'		=> '<',
+			);
+			$to_outofstock = new WP_Query( $args );
+			if ( $to_outofstock->have_posts() ) {
+				write_log("DEPRECATED PRODUCTS:");
+				while ( $to_outofstock->have_posts() ) {
+					$to_outofstock->the_post();
+					$product = wc_get_product( get_the_ID() );
+					write_log( $product->get_sku() );
+					// $product->set_stock_status('outofstock');
+					// $product->update_meta_data( '_in_bestelweb', 'nee' );
+					// $product->save();
+				}
+				wp_reset_postdata();
+			}
 
 			$old = WP_CONTENT_DIR."/erp-import.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
