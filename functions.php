@@ -117,7 +117,6 @@
 
 			global $product_object;
 			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
-				echo '<p>Is gebroadcast, velden onbewerkbaar maken!</p>';
 				$stat_uom_args['custom_attributes']['disabled'] = true;
 				$fairtrade_share_args['custom_attributes']['readonly'] = true;
 			}
@@ -140,11 +139,15 @@
 					)
 				);
 
-				woocommerce_wp_checkbox(
+				woocommerce_wp_select(
 					array( 
 						'id' => '_in_bestelweb',
-						'label' => 'In BestelWeb?',
-						'cbvalue' => 'ja',
+						'label' => 'Beschikbaar in BestelWeb?',
+						'options' => array(
+							'' => '(selecteer)',
+							'ja' => 'ja',
+							'nee' => 'nee',
+						),
 					)
 				);
 			}
@@ -176,7 +179,6 @@
 
 			global $product_object;
 			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
-				echo '<p>Is gebroadcast, velden onbewerkbaar maken!</p>';
 				$cu_ean_args['custom_attributes']['readonly'] = true;
 				$multiple_args['custom_attributes']['readonly'] = true;
 			}
@@ -222,11 +224,7 @@
 			if ( isset( $_POST[ $meta_key ] ) ) {
 				update_post_meta( $post_id, $meta_key, sanitize_text_field( $_POST[$meta_key] ) );
 			} else {
-				if ( $meta_key === '_in_bestelweb' ) {
-					update_post_meta( $post_id, $meta_key, 'nee' );
-				} else {
-					update_post_meta( $post_id, $meta_key, '' );
-				}
+				update_post_meta( $post_id, $meta_key, '' );
 			}
 		}
 	}
