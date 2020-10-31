@@ -97,6 +97,8 @@
 			$stat_uom_args = array( 
 				'id' => '_stat_uom',
 				'label' => 'Inhoudsmaat',
+				'desc_tip' => true,
+				'description' => 'Selecteer de maateenheid (optioneel). Dit is noodzakelijk als je de eenheidsprijs wil laten berekenen en tonen op de productpagina (wettelijk verplicht bij voedingproducten).',
 				'options' => array(
 					'' => '(selecteer)',
 					'g' => 'gram (vast product)',
@@ -104,13 +106,26 @@
 				),
 			);
 
+			$net_content_args = array( 
+				'id' => '_net_content',
+				'label' => 'Netto-inhoud',
+				'type' => 'number',
+				'desc_tip' => true,
+				'description' => 'Geef de netto-inhoud van de verpakking in volgens de eenheid die je hierboven selecteerde. Reken kilo dus om naar gram (x1000), liter naar centiliter (x100), milliliter naar centiliter (:10), ... anders zal de automatische berekening van de eenheidsprijs niet werken. Is het product geen gewichtartikel maar wil je in de plaats aanduiden dat het bv. uit 10 delen bestaat? Gebruik dan het veld Netto-inhoud op het tabblad \'Eigenschappen\'.',
+				'custom_attributes' => array(
+					'min' => '0',
+					'max' => '10000',
+				),
+			);
+
 			$fairtrade_share_args = array( 
 				'id' => '_fairtrade_share',
 				'label' => 'Fairtradepercentage (%)',
 				'type' => 'number',
+				'desc_tip' => true,
+				'description' => 'Geef aan welk gewichtspercentage van de ingrediënten verhandeld is volgens de principes van eerlijke handel (optioneel).',
 				'custom_attributes' => array(
-					'step' => '1',
-					'min' => '10',
+					'min' => '0',
 					'max' => '100',
 				),
 			);
@@ -118,10 +133,12 @@
 			global $product_object;
 			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
 				$stat_uom_args['custom_attributes']['disabled'] = true;
+				$net_content_args['custom_attributes']['readonly'] = true;
 				$fairtrade_share_args['custom_attributes']['readonly'] = true;
 			}
 			
 			woocommerce_wp_select( $stat_uom_args );
+			woocommerce_wp_text_input( $net_content_args);
 			woocommerce_wp_text_input( $fairtrade_share_args);
 
 		echo '</div>';
@@ -203,6 +220,7 @@
 			$regular_meta_keys[] = '_cu_ean';
 			$regular_meta_keys[] = '_multiple';
 			$regular_meta_keys[] = '_stat_uom';
+			$regular_meta_keys[] = '_net_content';
 			$regular_meta_keys[] = '_fairtrade_share';
 		}
 
@@ -211,8 +229,8 @@
 			$regular_meta_keys[] = '_shopplus_code';
 			$regular_meta_keys[] = '_in_bestelweb';
 		} else {
-			// TO DO: Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
-			// update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'] );
+			// Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
+			update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_stat_uom'] );
 			
 			// Kopieer het artikelnummer naar het ShopPlus-nummer indien onbestaande
 			if ( empty( get_post_meta( $post_id, '_shopplus_code', true ) ) and ! empty( $_POST['_sku'] ) ) {
@@ -230,30 +248,32 @@
 	}
 
 	function update_unit_price( $post_id, $price = false, $content = false, $unit = false ) {
-		if ( get_option('oft_import_active') !== 'yes' ) {
-			$product = wc_get_product( $post_id );
-			if ( $product !== false ) {
-				// Waarde voor $content eventueel uit $product->get_attribute('_net_content') halen maar daar zit de eenheid ook al bij ...
-				if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
-					$unit_price = calculate_unit_price( $price, $content, $unit );
-					$product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
-					$product->save();
-				} else {
-					// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
-					$product->delete_meta_data('_unit_price');
-					$product->save();
-				}
+		$product = wc_get_product( $post_id );
+		if ( $product !== false ) {
+			// Waarde voor $content eventueel uit $product->get_attribute('inhoud') halen maar daar zit de eenheid ook al bij ...
+			if ( false !== ( $unit_price = calculate_unit_price( $price, $content, $unit ) ) ) {
+				$product->update_meta_data( '_unit_price', number_format( $unit_price, 2, '.', '' ) );
+			} else {
+				// Indien er een gegeven ontbreekt: verwijder sowieso de oude waarde
+				$product->delete_meta_data('_unit_price');
 			}
+			$product->save();
 		}
 	}
 
 	function calculate_unit_price( $price, $content, $unit ) {
-		$unit_price = floatval( str_replace( ',', '.', $price ) ) / floatval( $content );
-		if ( $unit === 'g' ) {
-			$unit_price *= 1000;
-		} elseif ( $unit === 'cl' ) {
-			$unit_price *= 100;
+		$unit_price = false;
+		
+		// empty() checkt meteen ook op nulwaardes!
+		if ( ! empty( $price ) and ! empty( $content ) and ! empty( $unit ) ) {
+			$unit_price = floatval( str_replace( ',', '.', $price ) ) / floatval( $content );
+			if ( $unit === 'g' ) {
+				$unit_price *= 1000;
+			} elseif ( $unit === 'cl' ) {
+				$unit_price *= 100;
+			}
 		}
+		
 		return $unit_price;
 	}
 
