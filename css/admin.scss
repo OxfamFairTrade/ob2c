@@ -189,7 +189,6 @@ input.show-if-b2b-checked {
 }
 
 #woocommerce-product-data {
-	
 	#linked_product_data {
 		/* Verberg waarschuwing over synchronisatie van gerelateerde producten */
 		.woomulti-linked-product-notice {
@@ -211,7 +210,7 @@ input.show-if-b2b-checked {
 
 	/* Verberg link naar tabblad 'Geavanceerd' */
 	.advanced_options.advanced_tab {
-		display: none !important;
+		// display: none !important;
 	}
 }
 

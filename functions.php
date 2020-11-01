@@ -245,6 +245,29 @@
 				update_post_meta( $post_id, $meta_key, '' );
 			}
 		}
+
+		if ( is_main_site() ) {
+			$product = wc_get_product( $post_id );
+			if ( $product !== false ) {
+				// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur
+				if ( $product->get_meta('_multiple') === '' ) {
+					write_log( "MIGRATING SKU ".$product->get_sku() );
+					$to_migrate = array(
+						'shopplus' => '_shopplus_code',
+						'barcode' => '_cu_ean',
+						'ompak' => '_multiple',
+						'eenheid' => '_stat_uom',
+						'fairtrade' => '_fairtrade_share',
+						'eprijs' => '_unit_price',
+					);
+					foreach ( $to_migrate as $attribute => $meta_key ) {
+						write_log( $meta_key." => ".$product->get_attribute( $attribute ) );
+						// $product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
+					}
+					// $product->save();
+				}
+			}
+		}
 	}
 
 	function update_unit_price( $post_id, $price = false, $content = false, $unit = false ) {
@@ -5736,7 +5759,7 @@
 	add_action( 'pmxi_after_xml_import', 'after_xml_import', 10, 1 );
 	
 	function after_xml_import( $import_id ) {
-		delete_option('oft_import_active');
+		delete_site_option('oft_import_active');
 
 		if ( $import_id == 7 ) {
 			// Vind alle producten die vandaag niet bijgewerkt werden door de ERP-import

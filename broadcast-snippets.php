@@ -36,7 +36,7 @@
 		'limit' => -1,
 	);
 	$all_products = wc_get_products( $args );
-	$to_migrate = array( 'shopplus' => '_shopplus_code', 'barcode' => '_cu_ean', 'ompak' => '_multiple', 'eenheid' => '_stat_uom', 'fairtrade' => '_fairtrade_share' );
+	$to_migrate = array( 'shopplus' => '_shopplus_code', 'barcode' => '_cu_ean', 'ompak' => '_multiple', 'eenheid' => '_stat_uom', 'fairtrade' => '_fairtrade_share', 'eprijs' => '_unit_price' );
 	foreach ( $all_products as $product ) {
 		if ( $product->get_meta('_in_bestelweb') !== 'ja' ) {
 			foreach ( $to_migrate as $attribute => $meta_key ) {
