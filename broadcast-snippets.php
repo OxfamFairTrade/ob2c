@@ -32,10 +32,7 @@
 	}
 
 	// Migreer productattributen naar metadata
-	$args = array(
-		'limit' => -1,
-	);
-	$all_products = wc_get_products( $args );
+	$all_products = wc_get_products( array( 'limit' => -1 ) );
 	$to_migrate = array( 'shopplus' => '_shopplus_code', 'barcode' => '_cu_ean', 'ompak' => '_multiple', 'eenheid' => '_stat_uom', 'fairtrade' => '_fairtrade_share', 'eprijs' => '_unit_price' );
 	foreach ( $all_products as $product ) {
 		if ( $product->get_meta('_in_bestelweb') !== 'ja' ) {
@@ -141,6 +138,16 @@
 		}
 	}
 
+	// Fix voorraadtermen voorradige producten
+	$products = wc_get_products( array( 'stock_status' => 'instock' ) );
+	foreach ( $products as $product ) {
+		if ( wp_remove_object_terms( $product->get_id(), 'outofstock', 'product_visibility' ) === true ) {
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'Fix stock terms' );
+			$logger->warning( 'SKU '.$product->get_sku().': incorrect outofstock term removed', $context );
+		}
+	}
+
 	// Verwijder partners
 	$taxonomy = 'product_partner';
 	if ( taxonomy_exists( $taxonomy ) ) {
@@ -189,8 +196,8 @@
 		'post_status'		=> array('publish'),
 		'posts_per_page'	=> -1,
 	);
-
 	$all_products = new WP_Query( $args );
+
 	if ( $all_products->have_posts() ) {
 		while ( $all_products->have_posts() ) {
 			$all_products->the_post();
@@ -214,8 +221,8 @@
 		'posts_per_page'	=> 100,
 		'paged'				=> 1,
 	);
-
 	$all_products = new WP_Query( $args );
+
 	if ( $all_products->have_posts() ) {
 		while ( $all_products->have_posts() ) {
 			$all_products->the_post();
@@ -249,7 +256,6 @@
 		'post_status'	=> 'publish',
 		'title'			=> 'b2b-5%',
 	);
-
 	$all_coupons = new WP_Query( $args );
 	
 	if ( $all_coupons->have_posts() ) {
@@ -277,10 +283,9 @@
 	// Wijziging aan een orderstatus doorvoeren
 	$args = array(
 		'post_type'		=> 'wc_order_status',
-		'post_status'	=> array('publish'),
+		'post_status'	=> 'publish',
 		'name'			=> 'on-hold',
 	);
-
 	$order_statuses = new WP_Query( $args );
 
 	if ( $order_statuses->have_posts() ) {
@@ -297,9 +302,24 @@
 		$photo_ids = oxfam_get_attachment_ids_by_file_name( $sku );
 		if ( count( $photo_ids ) > 0 ) {
 			foreach ( $photo_ids as $photo_id ) {
-				// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
+				// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!) volledig
 				wp_delete_attachment( $photo_id, true );
 			}
+		}
+	}
+
+	// Alle foto's in de mediabib verwijderen
+	$args = array(
+		'post_type'		=> 'attachment',
+		'post_status'	=> 'inherit',
+		'fields'		=> 'ids',
+	);
+	$photos_to_delete = new WP_Query( $args );
+
+	if ( $photo_to_delete->have_posts() ) {
+		foreach ( $photos_to_delete->posts as $photo_id ) {
+			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!) volledig
+			wp_delete_attachment( $photo_id, true );
 		}
 	}
 

@@ -8,6 +8,34 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	add_action( 'threewp_broadcast_broadcasting_modify_post', 'bc_threewp_broadcast_broadcasting_modify_post' );
+
+	function bc_threewp_broadcast_broadcasting_modify_post( $action ) {
+		if ( get_post_type( $action->broadcasting_data->id ) !== 'shop_coupon' ) {
+			// return
+		}
+
+		write_log( print_r( $action->broadcasting_data, true ) );
+
+		// $ids = get_post_meta( get_the_ID(), 'product_ids', true );
+		// if ( $ids !== '' ) {
+		// 	$global_ids = explode( ',', $ids );
+		// 	translate_main_to_local_ids( get_the_ID(), 'product_ids', $global_ids );
+		// }
+		// $exclude_ids = get_post_meta( get_the_ID(), 'exclude_product_ids', true );
+		// if ( $exclude_ids !== '' ) {
+		// 	$exclude_global_ids = explode( ',', $exclude_ids );
+		// 	translate_main_to_local_ids( get_the_ID(), 'exclude_product_ids', $exclude_global_ids );
+		// }
+		// $free_product_ids = get_post_meta( get_the_ID(), '_wjecf_free_product_ids', true );
+		// if ( $free_product_ids !== '' ) {
+		// 	$free_product_global_ids = explode( ',', $free_product_ids );
+		// 	translate_main_to_local_ids( get_the_ID(), '_wjecf_free_product_ids', $free_product_global_ids );
+		// }
+		
+		// $action->broadcasting_data->modified_post->exclude_product_ids = $blog_author[ get_current_blog_id() ];
+	}
+
 	// Verberg extra metadata op het orderdetail in de back-end
 	add_filter( 'woocommerce_hidden_order_itemmeta', function( $forbidden ) {
 		$forbidden[] = '_shipping_item_id';
