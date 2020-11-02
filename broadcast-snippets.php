@@ -124,6 +124,23 @@
 		update_option( 'default_product_cat', $term->term_id );
 	}
 
+	// Fix hoofdproductenpagina
+	$new_page = get_page_by_title('Producten');
+	if ( $new_page !== null ) {
+		update_option( 'woocommerce_shop_page_id', $new_page->ID );
+		$old_page = get_page_by_title('Onze producten');
+		if ( $old_page !== null ) {
+			if ( wp_delete_post( $old_page->ID, true ) ) {
+				wp_update_post( array(
+					'ID' => $new_page->ID,
+					'post_name' => 'producten',
+				) );
+			}
+			// Lost het probleem met de lege shoppagina op!
+			flush_rewrite_rules();
+		}
+	}
+
 	// Verwijder partners
 	$taxonomy = 'product_partner';
 	if ( taxonomy_exists( $taxonomy ) ) {
@@ -230,7 +247,7 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> 'publish',
-		'title'			=> 'duo-schuimwijn',
+		'title'			=> 'b2b-5%',
 	);
 
 	$all_coupons = new WP_Query( $args );

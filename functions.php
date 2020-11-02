@@ -8,6 +8,14 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	add_action( 'woocommerce_product_query', 'debug_missing_products' );
+
+	function debug_missing_products( $q, $wc_query ) {
+		if ( current_user_can('update_core') ) {
+			write_log( print_r( $q, true ) );
+		}
+	}
+
 	// Verberg extra metadata op het orderdetail in de back-end
 	add_filter( 'woocommerce_hidden_order_itemmeta', function( $forbidden ) {
 		$forbidden[] = '_shipping_item_id';
@@ -258,7 +266,7 @@
 						'ompak' => '_multiple',
 						'eenheid' => '_stat_uom',
 						'fairtrade' => '_fairtrade_share',
-						'eprijs' => '_unit_price',
+						// 'eprijs' => '_unit_price',
 					);
 					foreach ( $to_migrate as $attribute => $meta_key ) {
 						write_log( $meta_key." => ".$product->get_attribute( $attribute ) );
@@ -612,7 +620,7 @@
 		unset( $actions['mark_processing'] );
 		unset( $actions['mark_completed'] );
 		// WERKT NIET, WELLICHT MOET WOOCOMMERCE ORDER STATUSES NOG BIJGEWERKT WORDEN (INJECTEERT STATUSSEN NOG VIA JAVASCRIPT?)
-		var_dump_pre( $actions);
+		// var_dump_pre( $actions);
 		return $actions;
 	}
 
@@ -5687,7 +5695,7 @@
 		 * @return array
 		 */
 		
-		// TOE TE VOEGEN NA MIGRATIE: '_net_unit', '_net_content'
+		// TOE TE VOEGEN NA MIGRATIE: '_net_unit', '_net_content', '_unit_price'
 		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id', 'promo_text', '_main_thumbnail_id' );
 		foreach ( $keys_to_copy as $key ) {
 			if ( $key === '_main_thumbnail_id' ) {
@@ -6004,7 +6012,7 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
-					echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
+					echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>Nog meer producten! Na de solidariteitsagenda\'s werden ook de nieuwe sintfiguren, biowijn, geschenkencheques en 11.11.11-kalenders toegevoegd aan de webshopdatabase:</p><ul style="margin-left: 2em; column-count: 2;">';
@@ -6020,10 +6028,10 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten ook zichtbaar en bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-error">';
-					echo '<p>Bij de migratie begin oktober is de \'In de kijker\'-parameter in de lokale webshops kennelijk gewist. Gelieve een nieuwe selectie te maken als je op de hompage producten wil uitlichten.</p>';
+					echo '<p>Bij de migratie begin oktober is de \'In de kijker\'-parameter in de lokale webshops kennelijk gewist. Gelieve onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\' een nieuwe selectie aan te vinken als je op de hompage producten wil uitlichten.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-info">';
 					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
