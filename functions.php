@@ -11,11 +11,13 @@
 	add_action( 'threewp_broadcast_broadcasting_modify_post', 'bc_threewp_broadcast_broadcasting_modify_post' );
 
 	function bc_threewp_broadcast_broadcasting_modify_post( $action ) {
-		if ( get_post_type( $action->broadcasting_data->id ) !== 'shop_coupon' ) {
+		$bcd = $action->broadcasting_data;
+
+		if ( get_post_type( $bcd->post->id ) !== 'shop_coupon' ) {
 			// return
 		}
 
-		write_log( print_r( $action->broadcasting_data, true ) );
+		write_log( print_r( $bcd, true ) );
 
 		// $ids = get_post_meta( get_the_ID(), 'product_ids', true );
 		// if ( $ids !== '' ) {
@@ -33,7 +35,7 @@
 		// 	translate_main_to_local_ids( get_the_ID(), '_wjecf_free_product_ids', $free_product_global_ids );
 		// }
 		
-		// $action->broadcasting_data->modified_post->exclude_product_ids = $blog_author[ get_current_blog_id() ];
+		// $bcd->modified_post->exclude_product_ids = $blog_author[ get_current_blog_id() ];
 	}
 
 	// Verberg extra metadata op het orderdetail in de back-end
@@ -433,6 +435,19 @@
 		}
 
 		return $can_be_applied;
+	}
+
+	add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_even_pairs', 100, 4 );
+
+	function limit_coupon_to_even_pairs( $apply_quantity, $item, $coupon, $object ) {
+		if ( is_a( $object, 'WC_Cart' ) ) {
+			if ( strpos( $coupon->get_code(), 'wijnduo' ) === 0 ) {
+				// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
+				write_log("APPLY QUANTITY: ".$apply_quantity);
+				write_log( print_r( $item, true ) );
+			}
+		}
+		return $apply_quantity;
 	}
 
 	add_filter( 'woocommerce_products_admin_list_table_filters', 'sort_categories_by_menu_order', 10, 1 );
