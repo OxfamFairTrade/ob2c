@@ -8,10 +8,10 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
-	add_action( 'woocommerce_product_query', 'debug_missing_products' );
+	add_action( 'woocommerce_product_query', 'debug_missing_products', 10, 2 );
 
 	function debug_missing_products( $q, $wc_query ) {
-		if ( current_user_can('update_core') ) {
+		if ( current_user_can('update_core') and is_category('honing') ) {
 			write_log( print_r( $q, true ) );
 		}
 	}
