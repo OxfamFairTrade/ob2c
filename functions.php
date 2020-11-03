@@ -434,14 +434,14 @@
 		if ( strpos( $coupon->get_code(), 'wijnduo' ) === 0 ) {
 			// write_log( print_r( $item, true ) );
 			
-			// Bevat WC_Discounts Object met o.a. nogmaals de volledige cart content
+			// Bevat WC_Discounts Object met o.a. nogmaals de volledige (protected) items
 			// write_log( print_r( $wc_discounts, true ) );
 			
 			$old_apply_quantity = $apply_quantity;
 			write_log( print_r( $coupon->get_product_ids(), true ) );
 
 			// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
-			foreach ( $wc_discounts->items as $cart_item_key => $values ) {
+			foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
 				$product_in_cart = $values->product;
 				if ( in_array( $product_in_cart->get_id(), $coupon->get_product_ids() ) ) {
 					write_log( "PRODUCT GEVONDEN UIT ACTIE: ".$product_in_cart->get_sku() );
