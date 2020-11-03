@@ -15,8 +15,7 @@
 		$bcd = $action->broadcasting_data;
 
 		if ( 'shop_coupon' === $bcd->modified_post->post_type ) {
-			write_log( print_r( $bcd->parent_blog_id, true ) );
-			write_log( print_r( $bcd->parent_post_id, true ) );
+			write_log( "GLOBAL COUPON ID: ".$bcd->parent_post_id );
 			write_log( print_r( $bcd->modified_post, true ) );
 			
 			$custom_fields_to_translate = array( 'product_ids', 'exclude_product_ids', '_wjecf_free_product_ids' );
@@ -432,10 +431,23 @@
 	add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_even_pairs', 100, 4 );
 
 	function limit_coupon_to_even_pairs( $apply_quantity, $item, $coupon, $object ) {
-		// write_log( print_r( $object, true ) );
 		if ( strpos( $coupon->get_code(), 'wijnduo' ) === 0 ) {
+			write_log( print_r( $item, true ) );
+			write_log( print_r( $object, true ) );
 			// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
-			write_log( "APPLY QUANTITY ".$apply_quantity." TO ".$item->object['product_id']." FOR COUPON ".$coupon->get_code() );
+			$old_apply_quantity = $apply_quantity;
+			write_log( print_r( $coupon->get_product_ids(), true ) );
+
+			foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
+				$product_in_cart = $values['data'];
+				if ( in_array( $product_in_cart->get_id(), $coupon->get_product_ids() ) ) {
+					// 	$apply_quantity = min( $apply_quantity, floor( $values->get_quantity() / 2 ) );
+					$apply_quantity = 1;
+					break;
+				}
+			}
+
+			write_log( "APPLY QUANTITY FOR COUPON ".$coupon->get_code()." ON PRODUCT-ID ".$item->object['product_id'].": ".$old_apply_quantity." => ".$apply_quantity );
 		}
 		return $apply_quantity;
 	}
