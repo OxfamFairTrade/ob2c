@@ -366,7 +366,7 @@
 		}
 	} );
 
-	// Wordt gebruikt in o.a. mini cart en email order items
+	// Wordt gebruikt in o.a. mini cart en order items
 	// Wordt overruled in loop door woocommerce-template-functions.php!
 	add_filter( 'woocommerce_product_get_image', 'get_parent_image_if_non_set', 10, 5 );
 	
