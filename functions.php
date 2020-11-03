@@ -598,6 +598,7 @@
 	
 	// Geautomatiseerde manier om diverse instellingen te kopiëren naar subsites
 	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_woocommerce_local_pickup_plus_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wp_mail_smtp', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wpsl_settings', 'sync_settings_to_subsites', 10, 3 );
@@ -1036,12 +1037,12 @@
 		wp_dequeue_style('nm-grid');
 		wp_deregister_style('nm-grid');
 
-		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns
+		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns IS NODIG VOOR LOCAL PICKUP PLUS
 		if ( class_exists( 'woocommerce' ) ) {
-			wp_dequeue_style( 'select2' );
-			wp_deregister_style( 'select2' );
-			wp_dequeue_script( 'selectWoo');
-			wp_deregister_script('selectWoo');
+			// wp_dequeue_style( 'select2' );
+			// wp_deregister_style( 'select2' );
+			// wp_dequeue_script( 'selectWoo');
+			// wp_deregister_script('selectWoo');
 		}
 	}
 
@@ -3928,8 +3929,8 @@
 	# HELPER FUNCTIES #
 	###################
 
-	// Print de geschatte leverdatums onder de beschikbare verzendmethodes 
-	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
+	// Print de geschatte leverdatums onder de beschikbare verzendmethodes TIJDELIJK UITSCHAKELEN 
+	// add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
 	
 	function print_estimated_delivery( $label, $method ) {
 		$descr = '<small style="color: #61a534">';

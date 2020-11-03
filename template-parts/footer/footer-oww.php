@@ -6,7 +6,10 @@
 			$current_store = intval( $_COOKIE['latest_shop_id'] );
 		}
 
-		if ( $locations = get_option('woocommerce_pickup_locations') ) {
+		$shops = array();
+		if ( wc_local_pickup_plus()->get_pickup_locations_instance()->get_pickup_locations_count() > 0 ) {
+			$locations = wc_local_pickup_plus()->get_pickup_locations_instance()->get_sorted_pickup_locations( array( 'order' => 'ASC' ) );
+			var_dump_pre( $locations );
 			foreach ( $locations as $location ) {
 				$parts = explode( 'id=', $location['address_1'] );
 				if ( isset( $parts[1] ) ) {
