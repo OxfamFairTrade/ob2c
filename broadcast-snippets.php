@@ -142,9 +142,7 @@
 	$products = wc_get_products( array( 'stock_status' => 'instock', 'limit' => -1 ) );
 	foreach ( $products as $product ) {
 		if ( wp_remove_object_terms( $product->get_id(), 'outofstock', 'product_visibility' ) === true ) {
-			$logger = wc_get_logger();
-			$context = array( 'source' => 'Fix stock terms' );
-			$logger->warning( 'SKU '.$product->get_sku().': incorrect outofstock term removed', $context );
+			write_log( "Blog-ID ".get_current_blog_id().": incorrect outofstock term removed on SKU ".$product->get_sku() );
 		}
 	}
 

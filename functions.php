@@ -605,18 +605,29 @@
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( get_current_blog_id() === 1 and current_user_can('update_core') ) {
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'Options sync' );
 			$sites = get_sites( array( 'site__not_in' => array(1) ) );
+			
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
+				
+				$success = false;
 				if ( $option === 'wp_mail_smtp' and is_array( $new_value ) ) {
 					// Instellingen van WP Mail SMTP lokaal maken
 					$new_value['mail']['from_email'] = get_option('admin_email');
 					$new_value['mail']['from_name'] = get_bloginfo('name');
 				}
 				if ( update_option( $option, $new_value ) ) {
-					write_log("Instelling '".$option."' gesynchroniseerd naar blog-ID ".$site->blog_id );
+					$success = true;
 				}
+				
 				restore_current_blog();
+
+				// Log op het hoofdniveau!
+				if ( $success ) {
+					$logger->info( "Setting '".$option."' synced to subsite ".$site->path, $context );
+				}
 			}
 		}
 	}
