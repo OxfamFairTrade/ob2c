@@ -430,24 +430,31 @@
 	// Probeer wijnduo's enkel toe te passen op gelijke paren (dus niet 3+1, 5+1, 5+3, ...)
 	add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_even_pairs', 100, 4 );
 
-	function limit_coupon_to_even_pairs( $apply_quantity, $item, $coupon, $object ) {
+	function limit_coupon_to_even_pairs( $apply_quantity, $item, $coupon, $wc_discounts ) {
 		if ( strpos( $coupon->get_code(), 'wijnduo' ) === 0 ) {
-			write_log( print_r( $item, true ) );
-			write_log( print_r( $object, true ) );
-			// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
+			// write_log( print_r( $item, true ) );
+			
+			// Bevat WC_Discounts Object met o.a. nogmaals de volledige cart content
+			// write_log( print_r( $wc_discounts, true ) );
+			
 			$old_apply_quantity = $apply_quantity;
 			write_log( print_r( $coupon->get_product_ids(), true ) );
 
-			foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
-				$product_in_cart = $values['data'];
+			// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
+			foreach ( $wc_discounts->items as $cart_item_key => $values ) {
+				$product_in_cart = $values->product;
 				if ( in_array( $product_in_cart->get_id(), $coupon->get_product_ids() ) ) {
-					// 	$apply_quantity = min( $apply_quantity, floor( $values->get_quantity() / 2 ) );
-					$apply_quantity = 1;
-					break;
+					write_log( "PRODUCT GEVONDEN UIT ACTIE: ".$product_in_cart->get_sku() );
+					if ( $product_in_cart->get_id() !== $item->product->get_id() ) {
+						write_log( "ANDERE PRODUCT GEVONDEN UIT ACTIE: ".$product_in_cart->get_sku() );
+						// $item->quantity bevat de hoeveelheid van dit product
+						$apply_quantity = min( $apply_quantity, floor( $values->quantity / 2 ) );
+						break;
+					}
 				}
 			}
 
-			write_log( "APPLY QUANTITY FOR COUPON ".$coupon->get_code()." ON PRODUCT-ID ".$item->object['product_id'].": ".$old_apply_quantity." => ".$apply_quantity );
+			write_log( "APPLY QUANTITY FOR COUPON ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
 		}
 		return $apply_quantity;
 	}
