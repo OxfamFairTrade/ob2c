@@ -22,7 +22,7 @@ wc_print_notices();
 
 <div class="container">
     <div class="breadcrumb">
-        <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">Home</a> <span class="sep"></span> <a href="<?php echo get_site_url(); ?>">Webshop <?php echo get_webshop_name(true); ?></a> <span class="sep"></span> <a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Winkelmandje</span>
+        <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">Home</a> <span class="sep"></span> <a href="<?php echo get_site_url(); ?>">Webshop <?php echo get_webshop_name(true); ?></a> <span class="sep"></span> <a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a> <span class="sep"></span> <a href="<?php echo get_permalink( wc_get_page_id('cart') ); ?>">Winkelmandje</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Afrekenen</span>
     </div>
     <div class="col-row">
         <div class="col-md-12">
@@ -38,7 +38,7 @@ wc_print_notices();
         </div>
     </div>
 
-    <form name="checkout" method="post" class="checkout woocommerce-checkout clear col-row" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
+    <form name="checkout" method="post" style="margin-top: 0;" class="checkout woocommerce-checkout clear col-row" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
         <!-- @ToDo: Hier verschijnt een notices wrapper? Deze heeft volgende classe nodig: .col-xs-12  -->
         <div class="col-md-12">
             <ul class="nm-checkout-login-coupon nm-shop-notices">
