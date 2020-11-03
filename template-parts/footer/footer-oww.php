@@ -8,9 +8,9 @@
 
 		$shops = array();
 		if ( wc_local_pickup_plus()->get_pickup_locations_instance()->get_pickup_locations_count() > 0 ) {
+			// Zet de oudste winkels bovenaan
 			$locations = wc_local_pickup_plus()->get_pickup_locations_instance()->get_sorted_pickup_locations( array( 'order' => 'ASC' ) );
 			foreach ( $locations as $location ) {
-				var_dump_pre( $location );
 				$address = $location->get_address();
 				$parts = explode( 'id=', $location->get_description() );
 				if ( isset( $parts[1] ) ) {
@@ -24,6 +24,7 @@
 					$shops[ get_option('oxfam_shop_post_id') ] = $location->get_name();
 				}
 			}
+			var_dump_pre( $shops );
 		}
 
 		if ( $current_store === false or ! array_key_exists( $current_store, $shops ) ) {
