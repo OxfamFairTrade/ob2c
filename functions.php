@@ -8,10 +8,17 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
-	// In de klasse WC_Local_Pickup_Plus_Address zijn helaas geen filters beschikbaar!
 	add_filter( 'wc_local_pickup_plus_pickup_location_description', 'do_shortcode' );
 	add_filter( 'wc_local_pickup_plus_pickup_location_phone', 'do_shortcode' );
+	// In de klasse WC_Local_Pickup_Plus_Address zelf zijn helaas geen filters beschikbaar, dus core hack
 	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'do_shortcode' );
+	// Weinig de formattering van de dropdownopties
+	add_filter( 'wc_local_pickup_plus_pickup_location_option_label', 'change_pickup_location_options_formatting' );
+
+	function change_pickup_location_options_formatting( $name, $context, $pickup_location ) {
+		$name = $pickup_location->get_name();
+		return $name;
+	}
 
 	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
 	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
