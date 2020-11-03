@@ -8,8 +8,8 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
-	// Gebruik deze actie om de hoofddata te tweaken (na de switch_to_blog(), net voor het effectief opslaan in de subsite)
-	add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog', 'localize_broadcasted_custom_fields' );
+	// Gebruik deze actie om de hoofddata te tweaken (na de switch_to_blog(), net voor het effectief opslaan in de subsite) VOORLOPIG NOG UITSCHAKELEN
+	// add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog', 'localize_broadcasted_custom_fields' );
 
 	function localize_broadcasted_custom_fields( $action ) {
 		$bcd = $action->broadcasting_data;
@@ -428,37 +428,37 @@
 	}
 
 	// Probeer wijnduo's enkel toe te passen op gelijke paren (dus niet 3+1, 5+1, 5+3, ...)
-	add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_even_pairs', 100, 4 );
+	add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_equal_pairs', 100, 4 );
 
-	function limit_coupon_to_even_pairs( $apply_quantity, $item, $coupon, $wc_discounts ) {
+	function limit_coupon_to_equal_pairs( $apply_quantity, $item, $coupon, $wc_discounts ) {
 		if ( is_admin() ) {
 			return $apply_quantity;
 		}
 
-		if ( strpos( $coupon->get_code(), 'wijnduo' ) === 0 ) {
-			$old_apply_quantity = $apply_quantity;
+		if ( in_array( $coupon->get_code(), array( 'duo-argentinie', 'duo-chili', 'duo-zuid-afrika' ) ) ) {
+			$this_quantity = 0;
 			$other_quantity = 0;
-			$same_quantity = 0;
+			$old_apply_quantity = $apply_quantity;
 			
 			// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
 			foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
 				$product_in_cart = $values['data'];
+				
+				// Cart item maakt deel uit van de promotie
 				if ( in_array( $product_in_cart->get_id(), $coupon->get_product_ids() ) ) {
 					if ( $product_in_cart->get_id() === $item->product->get_id() ) {
-						// write_log( "ZELFDE PRODUCT GEVONDEN UIT ACTIE: ".$product_in_cart->get_sku()." x".$values['quantity'] );
-						$same_quantity = intval( $values['quantity'] );
-						$same_sku = intval( $product_in_cart->get_sku() );
+						$this_quantity = intval( $values['quantity'] );
+						$this_sku = intval( $product_in_cart->get_sku() );
 					} else {
-						// write_log( "ANDERE PRODUCT GEVONDEN UIT ACTIE: ".$product_in_cart->get_sku()." x".$values['quantity'] );
 						$other_quantity = intval( $values['quantity'] );
 						$other_sku = intval( $product_in_cart->get_sku() );
 					}
 
-					if ( $other_quantity !== 0 and $same_quantity !== 0 ) {
+					if ( $other_quantity !== 0 and $this_quantity !== 0 ) {
 						// We passen de korting VOLLEDIG toe op het kleinste artikelnummer van het duo
-						if ( $same_sku < $other_sku ) {
+						if ( $this_sku < $other_sku ) {
 							// Niet meer delen door twee!
-							$apply_quantity = min( $same_quantity, $other_quantity );
+							$apply_quantity = min( $this_quantity, $other_quantity );
 						} else {
 							$apply_quantity = 0;
 						}
@@ -1213,19 +1213,18 @@
 		return $store_meta;
 	}
 
-	add_filter( 'wpsl_sql_placeholder_values', 'debug_no_results_for_antwerp', 10, 1 );
-
-	function debug_no_results_for_antwerp( $values ) {
-		write_log("WP Store Locator Lat-Long Search: ".$values[1].",".$values[2]);
-		return $values;
-	}
-
-	// Deze filter zal misschien van pas komen indien er geen enkel resultaat gevonden werd
+	// Deze filters zullen misschien van pas komen indien er geen enkel resultaat gevonden werd
 	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
+	// add_filter( 'wpsl_sql_placeholder_values', 'debug_no_results_for_antwerp', 10, 1 );
 	
 	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
 		write_log("Geen enkele winkel gevonden binnen de 30 kilometer!");
 		return $store_data;
+	}
+
+	function debug_no_results_for_antwerp( $values ) {
+		write_log("WP Store Locator Lat-Long Search: ".$values[1].",".$values[2]);
+		return $values;
 	}
 
 	// Voeg o.a. post-ID toe als extra metadata op winkel
@@ -5933,7 +5932,7 @@
 		
 		// Verschijnt in de logs van de subsite!
 		$logger = wc_get_logger();
-		$context = array( 'source' => 'Broadcast' );
+		$context = array( 'source' => 'Oxfam Translate Broadcast Fields' );
 		$logger->debug( "Vertaal eigenschap '".$meta_key."' van ".implode( ', ', $main_product_ids )." naar ".implode( ', ', $slave_product_ids ), $context );
 		
 		return implode( ',', $slave_product_ids );
