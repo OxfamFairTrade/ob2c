@@ -13,10 +13,12 @@
 	// In de klasse WC_Local_Pickup_Plus_Address zelf zijn helaas geen filters beschikbaar, dus core hack
 	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'do_shortcode' );
 	// Weinig de formattering van de dropdownopties
-	add_filter( 'wc_local_pickup_plus_pickup_location_option_label', 'change_pickup_location_options_formatting' );
+	add_filter( 'wc_local_pickup_plus_pickup_location_option_label', 'change_pickup_location_options_formatting', 10, 3 );
 
 	function change_pickup_location_options_formatting( $name, $context, $pickup_location ) {
-		$name = $pickup_location->get_name();
+		if ( 'frontend' === $context ) {
+			$name = $pickup_location->get_name();
+		}
 		return $name;
 	}
 
