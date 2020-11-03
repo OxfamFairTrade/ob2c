@@ -606,7 +606,7 @@
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( get_current_blog_id() === 1 and current_user_can('update_core') ) {
 			$logger = wc_get_logger();
-			$context = array( 'source' => 'Options sync' );
+			$context = array( 'source' => 'Oxfam Options Sync' );
 			$sites = get_sites( array( 'site__not_in' => array(1) ) );
 			
 			foreach ( $sites as $site ) {
