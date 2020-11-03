@@ -308,13 +308,14 @@
 
 	// Alle foto's in de mediabib verwijderen
 	$args = array(
-		'post_type'		=> 'attachment',
-		'post_status'	=> 'inherit',
-		'fields'		=> 'ids',
+		'post_type'			=> 'attachment',
+		'post_status'		=> 'inherit',
+		'posts_per_page'	=> -1,
+		'fields'			=> 'ids',
 	);
 	$photos_to_delete = new WP_Query( $args );
 
-	if ( $photo_to_delete->have_posts() ) {
+	if ( $photos_to_delete->have_posts() ) {
 		foreach ( $photos_to_delete->posts as $photo_id ) {
 			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!) volledig
 			wp_delete_attachment( $photo_id, true );

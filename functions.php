@@ -290,7 +290,9 @@
 			if ( $product !== false ) {
 				// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur
 				if ( $product->get_meta('_multiple') === '' ) {
-					write_log( "MIGRATING SKU ".$product->get_sku() );
+					$logger = wc_get_logger();
+					$context = array( 'source' => 'Oxfam Options Sync' );
+					
 					$to_migrate = array(
 						'shopplus' => '_shopplus_code',
 						'barcode' => '_cu_ean',
@@ -299,11 +301,14 @@
 						'fairtrade' => '_fairtrade_share',
 						// 'eprijs' => '_unit_price',
 					);
+					
 					foreach ( $to_migrate as $attribute => $meta_key ) {
-						write_log( $meta_key." => ".$product->get_attribute( $attribute ) );
-						// $product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
+						$migrated_values[] =  $meta_key.': '.$product->get_attribute( $attribute );
+						$product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
 					}
-					// $product->save();
+					$product->save();
+
+					$logger->info( "Migrating SKU '".$product->get_sku()."' to new data structure (".implode( ', ', $migrated_values ).")", $context );
 				}
 			}
 		}
@@ -1056,10 +1061,10 @@
 
 		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns IS NODIG VOOR LOCAL PICKUP PLUS
 		if ( class_exists( 'woocommerce' ) ) {
-			wp_dequeue_style( 'select2' );
-			wp_deregister_style( 'select2' );
-			wp_dequeue_script( 'selectWoo');
-			wp_deregister_script('selectWoo');
+			// wp_dequeue_style( 'select2' );
+			// wp_deregister_style( 'select2' );
+			// wp_dequeue_script( 'selectWoo');
+			// wp_deregister_script('selectWoo');
 		}
 	}
 
