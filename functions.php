@@ -8,34 +8,25 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
-	add_action( 'threewp_broadcast_broadcasting_modify_post', 'bc_threewp_broadcast_broadcasting_modify_post' );
+	// Gebruik deze actie om de hoofddata te tweaken (na de switch_to_blog(), net voor het effectief opslaan in de subsite)
+	add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog', 'localize_broadcasted_custom_fields' );
 
-	function bc_threewp_broadcast_broadcasting_modify_post( $action ) {
+	function localize_broadcasted_custom_fields( $action ) {
 		$bcd = $action->broadcasting_data;
 
-		if ( get_post_type( $bcd->post->id ) !== 'shop_coupon' ) {
-			// return
+		if ( get_post_type( $bcd->parent_post_id ) === 'shop_coupon' ) {
+			write_log( print_r( $bcd->parent_blog_id, true ) );
+			write_log( print_r( $bcd->parent_post_id, true ) );
+			write_log( print_r( $bcd->modified_post, true ) );
+			
+			$custom_fields_to_translate = array( 'product_ids', 'exclude_product_ids', '_wjecf_free_product_ids' );
+			foreach ( $custom_fields_to_translate as $meta_key ) {
+				if ( array_key_exists( $meta_key, $bcd->post_custom_fields ) ) {
+					$localized_values = broadcast_master_to_slave_ids( $meta_key, $bcd->post_custom_fields[ $meta_key ][0] );
+					$bcd->custom_fields()->child_fields()->update_meta( $meta_key, $localized_values );
+				}
+			}
 		}
-
-		write_log( print_r( $bcd, true ) );
-
-		// $ids = get_post_meta( get_the_ID(), 'product_ids', true );
-		// if ( $ids !== '' ) {
-		// 	$global_ids = explode( ',', $ids );
-		// 	translate_main_to_local_ids( get_the_ID(), 'product_ids', $global_ids );
-		// }
-		// $exclude_ids = get_post_meta( get_the_ID(), 'exclude_product_ids', true );
-		// if ( $exclude_ids !== '' ) {
-		// 	$exclude_global_ids = explode( ',', $exclude_ids );
-		// 	translate_main_to_local_ids( get_the_ID(), 'exclude_product_ids', $exclude_global_ids );
-		// }
-		// $free_product_ids = get_post_meta( get_the_ID(), '_wjecf_free_product_ids', true );
-		// if ( $free_product_ids !== '' ) {
-		// 	$free_product_global_ids = explode( ',', $free_product_ids );
-		// 	translate_main_to_local_ids( get_the_ID(), '_wjecf_free_product_ids', $free_product_global_ids );
-		// }
-		
-		// $bcd->modified_post->exclude_product_ids = $blog_author[ get_current_blog_id() ];
 	}
 
 	// Verberg extra metadata op het orderdetail in de back-end
@@ -422,7 +413,7 @@
 	}
 
 	// Pas winkelmandkorting WVDFT2020-QUINOA toe op totaal i.p.v. subtotaal
-	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
+	// add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
 		if ( $coupon->get_code() === 'wvdft2020-quinoa' ) {
@@ -437,15 +428,14 @@
 		return $can_be_applied;
 	}
 
+	// Probeer wijnduo's enkel toe te passen op gelijke paren (dus niet 3+1, 5+1, 5+3, ...)
 	add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_even_pairs', 100, 4 );
 
 	function limit_coupon_to_even_pairs( $apply_quantity, $item, $coupon, $object ) {
-		if ( is_a( $object, 'WC_Cart' ) ) {
-			if ( strpos( $coupon->get_code(), 'wijnduo' ) === 0 ) {
-				// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
-				write_log("APPLY QUANTITY: ".$apply_quantity);
-				write_log( print_r( $item, true ) );
-			}
+		// write_log( print_r( $object, true ) );
+		if ( strpos( $coupon->get_code(), 'wijnduo' ) === 0 ) {
+			// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
+			write_log( "APPLY QUANTITY ".$apply_quantity." TO ".$item->object['product_id']." FOR COUPON ".$coupon->get_code() );
 		}
 		return $apply_quantity;
 	}
@@ -3622,19 +3612,10 @@
 
 	// Zorg ervoor dat wijzigingen aan klanten in kortingsbonnen ook gesynct worden met die profielen
 	// add_action( 'woocommerce_update_coupon', 'sync_reductions_with_users', 10, 1 );
-	// GEVAARLIJK, LOGS LOPEN VOL
-	// add_action( 'threewp_broadcast_broadcasting_after_switch_to_blog', 'check_broadcast_data', 5 );
 
 	function sync_reductions_with_users( $post_id ) {
 		write_log( get_post_meta( $post_id, 'exclude_product_ids', true ) );
 		write_log( "COUPON ".$post_id." WORDT BIJGEWERKT IN BLOG ".get_current_blog_id() );
-	}
-
-	function check_broadcast_data( $action ) {
-		$logger = wc_get_logger();
-		$context = array( 'source' => 'Broadcast' );
-		$logger->debug( wc_print_r( $action, true ), $context );
-		write_log( "GESWITCHED NAAR BLOG ".get_current_blog_id() );
 	}
 
 	// Functie geeft blijkbaar zeer vroeg al een zinnig antwoord
@@ -5885,6 +5866,32 @@
 		}
 		
 		return $slave_product_ids;
+	}
+
+	function broadcast_master_to_slave_ids( $meta_key, $main_product_ids ) {
+		$main_product_ids = explode( ',', $main_product_ids );
+		
+		if ( is_array( $main_product_ids ) ) {
+			$slave_product_ids = array();
+			foreach ( $main_product_ids as $main_product_id ) {
+				switch_to_blog(1);
+				$main_product = wc_get_product( $main_product_id );
+				restore_current_blog();
+				if ( $main_product !== false ) {
+					$slave_product_id = wc_get_product_id_by_sku( $main_product->get_sku() );
+					if ( intval( $slave_product_id ) > 0 ) {
+						$slave_product_ids[] = $slave_product_id;
+					}
+				}
+			}
+		}
+		
+		// Verschijnt in de logs van de subsite!
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'Broadcast' );
+		$logger->debug( "Vertaal eigenschap '".$meta_key."' van ".implode( ', ', $main_product_ids )." naar ".implode( ', ', $slave_product_ids ), $context );
+		
+		return implode( ',', $slave_product_ids );
 	}
 
 

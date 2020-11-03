@@ -139,7 +139,7 @@
 	}
 
 	// Fix voorraadtermen voorradige producten
-	$products = wc_get_products( array( 'stock_status' => 'instock' ) );
+	$products = wc_get_products( array( 'stock_status' => 'instock', 'limit' => -1 ) );
 	foreach ( $products as $product ) {
 		if ( wp_remove_object_terms( $product->get_id(), 'outofstock', 'product_visibility' ) === true ) {
 			$logger = wc_get_logger();
