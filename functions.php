@@ -14,7 +14,7 @@
 	function localize_broadcasted_custom_fields( $action ) {
 		$bcd = $action->broadcasting_data;
 
-		if ( get_post_type( $bcd->parent_post_id ) === 'shop_coupon' ) {
+		if ( 'shop_coupon' === $bcd->modified_post->post_type ) {
 			write_log( print_r( $bcd->parent_blog_id, true ) );
 			write_log( print_r( $bcd->parent_post_id, true ) );
 			write_log( print_r( $bcd->modified_post, true ) );
