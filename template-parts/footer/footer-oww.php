@@ -9,19 +9,19 @@
 		$shops = array();
 		if ( wc_local_pickup_plus()->get_pickup_locations_instance()->get_pickup_locations_count() > 0 ) {
 			$locations = wc_local_pickup_plus()->get_pickup_locations_instance()->get_sorted_pickup_locations( array( 'order' => 'ASC' ) );
-			var_dump_pre( $locations );
 			foreach ( $locations as $location ) {
-				$parts = explode( 'id=', $location['address_1'] );
-				if ( isset( $parts[1] ) ) {
-					// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
-					$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
-					if ( $shop_post_id > 0 ) {
-						$shops[ $shop_post_id ] = $location['shipping_company'];
-					}
-				} else {
-					// Geen argument, dus het is de hoofdwinkel, altijd opnemen!
-					$shops[ get_option('oxfam_shop_post_id') ] = $location['shipping_company'];
-				}
+				var_dump_pre( $location );
+				// $parts = explode( 'id=', $location['address_1'] );
+				// if ( isset( $parts[1] ) ) {
+				// 	// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
+				// 	$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
+				// 	if ( $shop_post_id > 0 ) {
+				// 		$shops[ $shop_post_id ] = $location['shipping_company'];
+				// 	}
+				// } else {
+				// 	// Geen argument, dus het is de hoofdwinkel, altijd opnemen!
+				// 	$shops[ get_option('oxfam_shop_post_id') ] = $location['shipping_company'];
+				// }
 			}
 		}
 
