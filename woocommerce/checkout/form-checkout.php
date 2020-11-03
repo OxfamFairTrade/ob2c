@@ -21,6 +21,9 @@ wc_print_notices();
 ?>
 
 <div class="container">
+    <div class="breadcrumb">
+        <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">Home</a> <span class="sep"></span> <a href="<?php echo get_site_url(); ?>">Webshop <?php echo get_webshop_name(true); ?></a> <span class="sep"></span> <a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Winkelmandje</span>
+    </div>
     <div class="col-row">
         <div class="col-md-12">
             <?php

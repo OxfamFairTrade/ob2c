@@ -1193,7 +1193,7 @@
 			$store_meta['available'] = 'yes'; 
 			switch_to_blog( $store_meta['webshopBlogId'] );
 			if ( $current_location !== false and in_array( $current_location, get_oxfam_covered_zips() ) ) {
-				$store_meta['delivery'] = '<li class="delivery active">Levering aan huis</li>';
+				$store_meta['delivery'] = '<li class="delivery active">Levering aan huis in '.$current_location.'</li>';
 			} else {
 				// write_log( "Zipcode ".$current_location." is not in range: ".serialize( get_oxfam_covered_zips() ) );
 			}
