@@ -8,6 +8,14 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// In de klasse WC_Local_Pickup_Plus_Address zijn helaas geen filters beschikbaar!
+	add_filter( 'wc_local_pickup_plus_pickup_location_description', 'do_shortcode' );
+	add_filter( 'wc_local_pickup_plus_pickup_location_phone', 'do_shortcode' );
+	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'do_shortcode' );
+
+	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
+	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
+
 	// Gebruik deze actie om de hoofddata te tweaken (na de switch_to_blog(), net voor het effectief opslaan in de subsite) VOORLOPIG NOG UITSCHAKELEN
 	// add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog', 'localize_broadcasted_custom_fields' );
 
