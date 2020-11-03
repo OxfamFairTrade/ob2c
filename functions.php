@@ -1056,10 +1056,10 @@
 
 		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns IS NODIG VOOR LOCAL PICKUP PLUS
 		if ( class_exists( 'woocommerce' ) ) {
-			// wp_dequeue_style( 'select2' );
-			// wp_deregister_style( 'select2' );
-			// wp_dequeue_script( 'selectWoo');
-			// wp_deregister_script('selectWoo');
+			wp_dequeue_style( 'select2' );
+			wp_deregister_style( 'select2' );
+			wp_dequeue_script( 'selectWoo');
+			wp_deregister_script('selectWoo');
 		}
 	}
 
