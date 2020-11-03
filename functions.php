@@ -42,7 +42,9 @@
 		// TO DO: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
 		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
 		if ( count( $local_managers->get_results() ) > 0 ) {
-			write_log( "Local managers blog-ID ".get_current_blog_id().": ".implode( ', ', $local_managers->get_results() ) );
+			if ( current_user_can('update_core') ) {
+				write_log( "Local managers blog-ID ".get_current_blog_id().": ".implode( ', ', $local_managers->get_results() ) );
+			}
 			return $authors . ',' . implode( ',', $local_managers->get_results() );
 		} else {
 			return $authors;
