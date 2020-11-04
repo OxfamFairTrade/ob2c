@@ -6292,7 +6292,6 @@
 	add_shortcode( 'contact_address', 'get_shop_contact' );
 	add_shortcode( 'map_address', 'get_shop_address' );
 	add_shortcode( 'email_footer', 'get_company_and_year' );
-	add_shortcode( 'email_header', 'get_local_logo_url' );
 	// add_shortcode( 'toon_zoekbalk_producten', 'show_product_search' );
 
 	function show_product_search() {
@@ -6872,16 +6871,6 @@
 
 	function get_company_and_year() {
 		return get_webshop_name().' &copy; 2017-'.date_i18n('Y');
-	}
-
-	function get_local_logo_url() {
-		if ( file_exists( get_stylesheet_directory().'/logo/'.get_option('oxfam_shop_node').'.png' ) ) {
-			// TO DO: Logo's hernummeren naar post-ID's
-			return get_stylesheet_directory_uri().'/logo/'.get_option('oxfam_shop_node').'.png';
-		} else {
-			// Fallback
-			return get_stylesheet_directory_uri().'/images/logo-green.svg';
-		}
 	}
 
 	function get_oxfam_covered_zips() {
