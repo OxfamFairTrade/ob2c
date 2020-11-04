@@ -1022,7 +1022,7 @@
 		$allowedtags['a']['target'] = 1;
 	}
 
-	// Voeg extra CSS-klasses toe aan body
+	// Voeg extra CSS-klasses toe aan body (front-end)
 	add_filter( 'body_class', 'add_main_site_class' );
 
 	function add_main_site_class( $classes ) {
@@ -1033,6 +1033,16 @@
 			$classes[] = 'is_b2b_customer';
 		}
 		return $classes;
+	}
+
+	// Voeg extra CSS-klasses toe aan body (back-end)
+	add_filter( 'admin_body_class', 'add_user_role_class' );
+
+	function add_user_role_class( $class_string ) {
+		if ( ! current_user_can('update_core') ) {
+			$class_string .= ' local_manager';
+		}
+		return $class_string;
 	}
 
 	// Laad het child theme
@@ -1075,7 +1085,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.0' );
+		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.1' );
 	}
 
 	// Fixes i.v.m. cURL
