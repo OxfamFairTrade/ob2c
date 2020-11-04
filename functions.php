@@ -278,11 +278,11 @@
 					
 					$to_migrate = array(
 						'shopplus' => '_shopplus_code',
-						'barcode' => '_cu_ean',
+						'ean' => '_cu_ean',
 						'ompak' => '_multiple',
 						'eenheid' => '_stat_uom',
 						'fairtrade' => '_fairtrade_share',
-						// 'eprijs' => '_unit_price',
+						'eprijs' => '_unit_price',
 					);
 					
 					foreach ( $to_migrate as $attribute => $meta_key ) {
