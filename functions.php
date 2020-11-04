@@ -379,25 +379,29 @@
 	
 	function get_parent_image_if_non_set( $image, $product, $size, $attr, $placeholder ) {
 		if ( ! is_main_site() ) {
-			// Check of er een globaal beeld ingesteld is
+			$main_image_id = false;
+
 			if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
+				// Er is een globaal beeld ingesteld
 				$main_image_id = $product->get_meta('_main_thumbnail_id');
 			} elseif ( in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) {
+				// Het is een leeggoedartikel
 				$main_image_id = 836;
 			}
 			
-			switch_to_blog(1);
-			// Check of de file nog bestaat én een afbeelding is
-			if ( wp_attachment_is_image( $main_image_id ) ) {
-				// Retourneert lege string bij error
-				$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
+			if ( $main_image_id ) {
+				switch_to_blog(1);
+				// Checkt of de file nog bestaat én een afbeelding is
+				if ( wp_attachment_is_image( $main_image_id ) ) {
+					// Retourneert lege string bij error
+					$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
+				}
+				restore_current_blog();
 			}
-			restore_current_blog();
-		}
 
-		// write_log( $image );
-		if ( $image === '' ) {
-			$image = wc_placeholder_img( $size, $attr );
+			if ( $image === '' ) {
+				// $image = wc_placeholder_img( $size, $attr );
+			}
 		}
 
 		return $image;
