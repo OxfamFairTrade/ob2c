@@ -52,7 +52,7 @@
 
 	<div style="width: 100%; height: 15%; max-height: 70px; position: absolute; bottom: 5%; text-align: center;">
 		<a href="https://www.oxfamwereldwinkels.be" title="Bezoek onze website">
-		<div style="background-image: url('https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/images/oww-webshop-groen-140px.png'); background-size: contain; background-position: center bottom; background-repeat: no-repeat; height: 100%; width: 100%;"></div>
+		<div style="background-image: url('https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/images/logo-green.svg'); background-size: contain; background-position: center bottom; background-repeat: no-repeat; height: 100%; width: 100%;"></div>
 		</a>
 	</div>
 
