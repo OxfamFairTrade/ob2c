@@ -161,7 +161,7 @@
 			
 			woocommerce_wp_select( $net_unit_args );
 			woocommerce_wp_text_input( $net_content_args);
-			echo '<small>Is het product geen gewichtartikel maar wil je wel aanduiden dat het bv. uit 3 onderdelen bestaat? Laat bovenstaande velden dan leeg en gebruik het veld \'Netto-inhoud\' op het tabblad \'Eigenschappen\'.</small>';
+			echo '<p class="form-field"><small>Is het product geen gewichtartikel maar wil je wel aanduiden dat het bv. uit 3 onderdelen bestaat? Laat bovenstaande velden dan leeg en gebruik het veld \'Netto-inhoud\' op het tabblad \'Eigenschappen\'.</small></p>';
 			woocommerce_wp_text_input( $fairtrade_share_args);
 
 		echo '</div>';
