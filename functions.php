@@ -335,12 +335,20 @@
 
 	// Stuur mail uit bij publicatie van nieuw lokaal product
 	add_action( 'draft_to_publish', 'notify_on_local_product_creation', 10, 1 );
-	// add_action( 'publish_product', 'notify_on_local_product_creation', 10, 2 );
+	add_action( 'publish_product', 'notify_on_local_product_creation_bis', 10, 2 );
 	
 	function notify_on_local_product_creation( $post ) {
 		if ( ! is_main_site() and $post->post_type === 'product' ) {
 			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != 1 ) {
-				send_automated_mail_to_helpdesk( 'Nieuw product gepubliceerd: '.get_the_title( $post ), '<p>Bekijk het product <a href="'.get_permalink( $post ).'">in de front-end</a>.</p>' );
+				send_automated_mail_to_helpdesk( 'Nieuw lokaal product gepubliceerd: '.get_the_title( $post ), '<p>Bekijk het product <a href="'.get_permalink( $post ).'">in de front-end</a>.</p>' );
+			}
+		}
+	}
+
+	function notify_on_local_product_creation_bis( $post_id, $post ) {
+		if ( ! is_main_site() and $post->post_type === 'product' ) {
+			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != 1 ) {
+				send_automated_mail_to_helpdesk( 'Nieuw lokaal product: '.get_the_title( $post ), '<p>Bekijk het product <a href="'.get_permalink( $post ).'">in de front-end</a>.</p>' );
 			}
 		}
 	}
