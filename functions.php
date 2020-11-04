@@ -272,11 +272,11 @@
 		if ( is_main_site() ) {
 			$product = wc_get_product( $post_id );
 			if ( $product !== false ) {
-				// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur
-				if ( $product->get_meta('_multiple') === '' ) {
-					$logger = wc_get_logger();
-					$context = array( 'source' => 'Oxfam Manual Product Sync' );
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'Oxfam Manual Product Sync' );
 					
+				if ( $product->get_meta('_multiple') === '' ) {
+					// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur IN PRINCIPE NIET MEER NODIG
 					$to_migrate = array(
 						'shopplus' => '_shopplus_code',
 						'ean' => '_cu_ean',
@@ -285,15 +285,20 @@
 						'fairtrade' => '_fairtrade_share',
 						'eprijs' => '_unit_price',
 					);
-					
-					foreach ( $to_migrate as $attribute => $meta_key ) {
-						$migrated_values[] =  $meta_key.': '.$product->get_attribute( $attribute );
-						$product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
-					}
-					$product->save();
-
-					$logger->info( "Migrating SKU ".$product->get_sku()." to new data structure (".implode( ', ', $migrated_values ).")", $context );
+				} else {
+					// Eenheidsprijs moet nog verhuisd worden in import!
+					$to_migrate = array(
+						'eprijs' => '_unit_price',
+					);
 				}
+
+				foreach ( $to_migrate as $attribute => $meta_key ) {
+					$migrated_values[] =  $meta_key.': '.$product->get_attribute( $attribute );
+					$product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
+				}
+
+				$logger->info( "Migrating SKU ".$product->get_sku()." to new data structure (".implode( ', ', $migrated_values ).")", $context );
+				$product->save();
 			}
 		}
 	}
