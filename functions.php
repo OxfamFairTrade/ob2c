@@ -133,7 +133,7 @@
 				'label' => 'Netto-inhoud',
 				'type' => 'number',
 				'desc_tip' => true,
-				'description' => 'Geef de netto-inhoud van de verpakking in volgens de eenheid die je hierboven selecteerde. Reken kilo dus om naar gram (x1000), liter naar centiliter (x100), milliliter naar centiliter (:10), ... anders zal de automatische berekening van de eenheidsprijs niet werken. Is het product geen gewichtartikel maar wil je in de plaats aanduiden dat het bv. uit 10 delen bestaat? Gebruik dan het veld Netto-inhoud op het tabblad \'Eigenschappen\'.',
+				'description' => 'Geef de netto-inhoud van de verpakking in volgens de eenheid die je hierboven selecteerde. Reken kilo dus om naar gram (x1000), liter naar centiliter (x100), milliliter naar centiliter (:10), ... anders zal de automatische berekening van de eenheidsprijs niet correct zijn.',
 				'custom_attributes' => array(
 					'min' => '0',
 					'max' => '10000',
@@ -161,6 +161,7 @@
 			
 			woocommerce_wp_select( $net_unit_args );
 			woocommerce_wp_text_input( $net_content_args);
+			echo '<small>Is het product geen gewichtartikel maar wil je wel aanduiden dat het bv. uit 3 onderdelen bestaat? Laat bovenstaande velden dan leeg en gebruik het veld \'Netto-inhoud\' op het tabblad \'Eigenschappen\'.</small>';
 			woocommerce_wp_text_input( $fairtrade_share_args);
 
 		echo '</div>';
@@ -1040,7 +1041,7 @@
 
 	function add_user_role_class( $class_string ) {
 		if ( ! current_user_can('update_core') ) {
-			$class_string .= ' local_manager';
+			$class_string .= ' local_manager ';
 		}
 		return $class_string;
 	}
