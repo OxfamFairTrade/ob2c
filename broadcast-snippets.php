@@ -33,7 +33,7 @@
 
 	// Migreer productattributen naar metadata
 	$all_products = wc_get_products( array( 'limit' => -1 ) );
-	$to_migrate = array( 'shopplus' => '_shopplus_code', 'barcode' => '_cu_ean', 'ompak' => '_multiple', 'eenheid' => '_stat_uom', 'fairtrade' => '_fairtrade_share', 'eprijs' => '_unit_price' );
+	$to_migrate = array( 'shopplus' => '_shopplus_code', 'ean' => '_cu_ean', 'ompak' => '_multiple', 'eenheid' => '_stat_uom', 'fairtrade' => '_fairtrade_share', 'eprijs' => '_unit_price' );
 	foreach ( $all_products as $product ) {
 		if ( $product->get_meta('_in_bestelweb') !== 'ja' ) {
 			foreach ( $to_migrate as $attribute => $meta_key ) {
@@ -45,13 +45,13 @@
 
 	// Verwijder deprecated metadata op producten
 	global $wpdb;
-	$to_delete = array( 'fb_product_group_id', 'fb_product_item_id', 'fb_product_description', 'fb_visibility', 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean' );
+	$to_delete = array( 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean', '_herkomst_nl' );
 	foreach ( $to_delete as $meta_key ) {
 		$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => $meta_key ) );
 	}
 
 	// Verwijder deprecated productattributen
-	$to_delete = array( 'shopplus', 'barcode', 'ompak', 'eenheid', 'fairtrade' );
+	$to_delete = array( 'shopplus', 'ean', 'ompak', 'eenheid', 'fairtrade' );
 	foreach ( $to_delete as $slug ) {
 		$attribute_id = absint( wc_attribute_taxonomy_id_by_name( $slug ) );
 		if ( $attribute_id > 0 ) {

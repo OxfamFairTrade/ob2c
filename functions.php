@@ -395,6 +395,13 @@
 		return $image;
 	}
 
+	// Vervang de (gewiste) lokale PNG-afbeelding door de globale versie GEREGELD VIA GESYNCHRONEERDE OPTIE
+	// add_filter( 'woocommerce_placeholder_img_src', 'custom_woocommerce_placeholder_img_src') ;
+
+	function custom_woocommerce_placeholder_img_src( $src ) {
+		return 'https://shop.oxfamwereldwinkels.be/wp-content/uploads/woocommerce-placeholder.png';
+	}
+
 	// Wordt gebruikt in o.a. single product
 	add_filter( 'woocommerce_single_product_image_thumbnail_html', 'get_single_parent_image_if_non_set', 10, 2 );
 	
@@ -603,6 +610,7 @@
 	
 	// Geautomatiseerde manier om diverse instellingen te kopiëren naar subsites
 	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_woocommerce_placeholder_image', 'sync_settings_to_subsites', 10, 3 );
 	// add_action( 'update_option_woocommerce_local_pickup_plus_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wp_mail_smtp', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
@@ -7007,7 +7015,7 @@
 		return $blocks;
 	}
 
-	// Voeg de bovenliggende categorie en de herkomstlanden toe aan de te indexeren content van een product (inclusief synoniemen)
+	// Voeg de bovenliggende categorie toe aan de te indexeren content van een product (inclusief synoniemen) NOG NODIG?
 	add_filter( 'relevanssi_content_to_index', 'ob2c_index_parent_category_and_origin', 10, 2 );
 
 	function ob2c_index_parent_category_and_origin( $content, $post ) {
@@ -7019,13 +7027,13 @@
 				if ( ! empty( $category->parent ) ) {
 					$parent = get_term( $category->parent, 'product_cat' );
 					if ( array_key_exists( 'synonyms', $relevanssi_variables ) ) {
-						// Laat de synoniemenlijst eerst nog even inwerken, ook op de herkomst
+						// Laat de synoniemenlijst eerst nog even inwerken
 						$search = array_keys($relevanssi_variables['synonyms']);
 						$replace = array_values($relevanssi_variables['synonyms']);
-						$content .= str_ireplace( $search, $replace, get_post_meta( $post->ID, '_herkomst_nl', true ).' '.$parent->name ).' ';
+						$content .= str_ireplace( $search, $replace, $parent->name ).' ';
 					} else {
-						// Voeg direct toe, samen met herkomst
-						$content .= get_post_meta( $post->ID, '_herkomst_nl', true ).' '.$parent->name.' ';
+						// Voeg direct toe
+						$content .= $parent->name.' ';
 					}
 				}
 			}
