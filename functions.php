@@ -274,7 +274,7 @@
 				// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur
 				if ( $product->get_meta('_multiple') === '' ) {
 					$logger = wc_get_logger();
-					$context = array( 'source' => 'Oxfam Options Sync' );
+					$context = array( 'source' => 'Oxfam Manual Product Sync' );
 					
 					$to_migrate = array(
 						'shopplus' => '_shopplus_code',
@@ -291,7 +291,7 @@
 					}
 					$product->save();
 
-					$logger->info( "Migrating SKU '".$product->get_sku()."' to new data structure (".implode( ', ', $migrated_values ).")", $context );
+					$logger->info( "Migrating SKU ".$product->get_sku()." to new data structure (".implode( ', ', $migrated_values ).")", $context );
 				}
 			}
 		}
