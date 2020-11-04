@@ -496,7 +496,7 @@
 						}
 
 						// We hebben beide producten gevonden en kunnen afsluiten
-						write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
+						// write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
 						break;
 					}
 				}
@@ -5814,8 +5814,8 @@
 		 * @return array
 		 */
 		
-		// Publieke metadata zoals 'oft_product_id', 'promo_text' en 'touched_by_import' worden automatisch gesynchroniseerd?
-		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_main_thumbnail_id', '_net_unit', '_net_content', '_unit_price' );
+		// Publieke metadata zoals 'touched_by_import' wordt automatisch gesynchroniseerd?
+		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_main_thumbnail_id', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text' );
 		foreach ( $keys_to_copy as $key ) {
 			if ( $key === '_main_thumbnail_id' ) {
 				$meta_data[ $key ] = $data['master_product']->get_image_id();
@@ -5830,9 +5830,9 @@
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
 
-		foreach ( $meta_data as $key => $value ) {
-			write_log( $key.' => '.$value );
-		}
+		// foreach ( $meta_data as $key => $value ) {
+		// 	write_log( $key.' => '.$value );
+		// }
 		
 		return $meta_data;
 	}
