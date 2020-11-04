@@ -200,7 +200,7 @@
 				'desc_tip' => true,
 				'description' => 'Vul de barcode in zoals vermeld op de verpakking (optioneel). Deze barcode zal opgenomen worden in de pick-Excel voor import in ShopPlus.',
 				'custom_attributes' => array(
-					'min' => '100000',
+					'min' => '10000',
 					'max' => '99999999999999',
 				),
 			);
@@ -3171,7 +3171,7 @@
 					// BTW erbij tellen bij particulieren
 					$line_total += $item['line_subtotal_tax'];
 				}
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
+				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_meta('_cu_ean') );
 				$i++;
 			}
 
@@ -3728,12 +3728,16 @@
 		}
 
 		function suggest_order_unit_multiple( $args, $product ) {
-			$multiple = intval( $product->get_attribute('ompak') );
+			$multiple = intval( $product->get_meta('_multiple') );
 			if ( $multiple < 2 ) {
-				$multiple = 1;
-			} else {
-				// Eventuele bestellimiet instellen
-				// $args['max_value'] = 4*$multiple;
+				$multiple = intval( $product->get_meta('_multiple') );
+				if ( $multiple < 2 ) {
+					$multiple = intval( $product->get_attribute('ompak') );
+				}
+
+				if ( $multiple < 2 ) {
+					$multiple = 1;
+				}
 			}
 
 			if ( is_cart() or ( array_key_exists( 'nm_mini_cart_quantity', $args ) and $args['nm_mini_cart_quantity'] === true ) ) {
@@ -3829,7 +3833,11 @@
 	
 	function add_multiple_to_add_to_cart_text( $text, $product ) {
 		if ( is_b2b_customer() ) {
-			$multiple = intval( $product->get_attribute('ompak') );
+			$multiple = intval( $product->get_meta('_multiple') );
+			if ( $multiple < 2 ) {
+				$multiple = intval( $product->get_attribute('ompak') );
+			}
+			
 			if ( $multiple < 2 ) {
 				$text = 'Voeg 1 stuk toe aan mandje';
 			} else {
@@ -5704,14 +5712,10 @@
 			$suffix = 'kilogram';
 		}
 
-		$percenty_attributes = array( 'pa_alcohol', 'pa_fairtrade' );
+		$percenty_attributes = array('pa_fairtrade');
 
 		if ( in_array( $attribute['name'], $percenty_attributes ) ) {
 			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' %';
-		} elseif ( $attribute['name'] === 'pa_eprijs' ) {
-			$values[0] = '&euro; '.number_format( str_replace( ',', '.', $values[0] ), 2, ',', '.' ).' per '.$suffix;
-		} elseif ( $attribute['name'] === 'pa_ompak' ) {
-			$values[0] = $values[0].' stuks';
 		}
 
 		$wpautop = wpautop( wptexturize( implode( ', ', $values ) ) );
