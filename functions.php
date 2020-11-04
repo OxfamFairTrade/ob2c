@@ -8,23 +8,6 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
-	add_filter( 'wc_local_pickup_plus_pickup_location_description', 'do_shortcode' );
-	add_filter( 'wc_local_pickup_plus_pickup_location_phone', 'do_shortcode' );
-	// In de klasse WC_Local_Pickup_Plus_Address zelf zijn helaas geen filters beschikbaar, dus core hack
-	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'do_shortcode' );
-	// Weinig de formattering van de dropdownopties
-	add_filter( 'wc_local_pickup_plus_pickup_location_option_label', 'change_pickup_location_options_formatting', 10, 3 );
-
-	function change_pickup_location_options_formatting( $name, $context, $pickup_location ) {
-		if ( 'frontend' === $context ) {
-			$name = $pickup_location->get_name();
-		}
-		return $name;
-	}
-
-	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
-	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
-
 	// Gebruik deze actie om de hoofddata te tweaken (na de switch_to_blog(), net voor het effectief opslaan in de subsite) VOORLOPIG NOG UITSCHAKELEN
 	// add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog', 'localize_broadcasted_custom_fields' );
 
@@ -1059,12 +1042,12 @@
 		wp_dequeue_style('nm-grid');
 		wp_deregister_style('nm-grid');
 
-		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns IS NODIG VOOR LOCAL PICKUP PLUS
+		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns
 		if ( class_exists( 'woocommerce' ) ) {
-			// wp_dequeue_style( 'select2' );
-			// wp_deregister_style( 'select2' );
-			// wp_dequeue_script( 'selectWoo');
-			// wp_deregister_script('selectWoo');
+			wp_dequeue_style( 'select2' );
+			wp_deregister_style( 'select2' );
+			wp_dequeue_script( 'selectWoo');
+			wp_deregister_script('selectWoo');
 		}
 	}
 
@@ -3951,8 +3934,8 @@
 	# HELPER FUNCTIES #
 	###################
 
-	// Print de geschatte leverdatums onder de beschikbare verzendmethodes TIJDELIJK UITSCHAKELEN 
-	// add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
+	// Print de geschatte leverdatums onder de beschikbare verzendmethodes
+	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
 	
 	function print_estimated_delivery( $label, $method ) {
 		$descr = '<small style="color: #61a534">';
