@@ -798,17 +798,6 @@ div.nm-feature.layout-centered {
 /*  BREAKPOINTS  */
 /*****************/
 
-@media (min-width: 881px) {
-  /* Maak de leeggoedicoontjes kleiner */
-  .shop_table.cart .product-thumbnail.empties {
-    padding: 20px;
-  }
-  .nm-cart-panel-thumbnail-wrap.empties {
-    /* Leeggoed wordt niet meer getoond in mini-cart! */
-    /* padding: 10px; */
-  }
-}
-
 @media (max-width: 1024px) {
   li.widget.widget_text:nth-child(2n) {
     border-right: none;

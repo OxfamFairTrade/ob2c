@@ -379,24 +379,32 @@
 	
 	function get_parent_image_if_non_set( $image, $product, $size, $attr, $placeholder ) {
 		if ( ! is_main_site() ) {
-			// write_log( $image );
 			// Check of er een globaal beeld ingesteld is
 			if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
 				$main_image_id = $product->get_meta('_main_thumbnail_id');
-				switch_to_blog(1);
-				// Check of de file nog bestaat
-				if ( get_post_type( $main_image_id ) === 'attachment' ) {
-					// Retourneert lege string indien beeld inmiddels verwijderd
-					$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
-				}
-				restore_current_blog();
+			} elseif ( in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) {
+				$main_image_id = 836;
 			}
+			
+			switch_to_blog(1);
+			// Check of de file nog bestaat én een afbeelding is
+			if ( wp_attachment_is_image( $main_image_id ) ) {
+				// Retourneert lege string bij error
+				$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
+			}
+			restore_current_blog();
 		}
+
+		// write_log( $image );
+		if ( $image === '' ) {
+			$image = wc_placeholder_img( $size, $attr );
+		}
+
 		return $image;
 	}
 
 	// Vervang de (gewiste) lokale PNG-afbeelding door de globale versie GEREGELD VIA GESYNCHRONEERDE OPTIE
-	// add_filter( 'woocommerce_placeholder_img_src', 'custom_woocommerce_placeholder_img_src') ;
+	// add_filter( 'wc_placeholder_img_src', 'custom_woocommerce_placeholder_img_src') ;
 
 	function custom_woocommerce_placeholder_img_src( $src ) {
 		return 'https://shop.oxfamwereldwinkels.be/wp-content/uploads/woocommerce-placeholder.png';
@@ -4724,6 +4732,10 @@
 		return $msg;
 	}
 
+	function get_oxfam_empties_skus_array() {
+		return array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917' );
+	}
+
 	// Voeg bakken leeggoed enkel toe per 6 of 24 flessen
 	add_filter( 'wc_force_sell_add_to_cart_product', 'check_plastic_empties_quantity', 10, 2 );
 
@@ -5004,7 +5016,7 @@
 	add_filter( 'woocommerce_widget_cart_item_visible', 'hide_empties_in_mini_cart', 10, 3 );
 
 	function hide_empties_in_mini_cart( $visible, $cart_item, $cart_item_key ) {
-		if ( in_array( $cart_item['data']->get_sku(), array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917', 'GIFT' ) ) ) {
+		if ( in_array( $cart_item['data']->get_sku(), get_oxfam_empties_skus_array() ) ) {
 			$visible = false;
 		}
 		return $visible;

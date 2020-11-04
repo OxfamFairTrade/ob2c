@@ -30,14 +30,15 @@
 				$instock_cnt = 0;
 				$featured_cnt = 0;
 				$stock_statuses = wc_get_product_stock_status_options();
+				$empties = get_oxfam_empties_skus_array();
 				$content = '<div style="display: table; width: 100%;">';
+				
 				while ( $products->have_posts() ) {
 					$products->the_post();
 					$product = wc_get_product( get_the_ID() );
 					
-					// Verhinder dat leeggoed (= steeds verborgen!) ook opduikt
-					$empties = wc_get_products( array( 'visibility' => 'hidden', 'return' => 'ids' ) );
-					if ( in_array( $product->get_id(), $empties ) ) {
+					// Verhinder dat leeggoed ook opduikt
+					if ( in_array( $product->get_sku(), $empties ) ) {
 						continue;
 					}
 

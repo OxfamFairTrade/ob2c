@@ -53,8 +53,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 								?>
 								<tr class="woocommerce-cart-form__cart-item <?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
 
-									<!-- GEWIJZIGD: Extra opmaakklasse toevoegen bij leeggoed -->
-									<td class="product-thumbnail <?php echo ( ! $_product->is_visible() and $_product->get_sku() !== 'GIFT' ) ? 'empties' : ''; ?>"><?php
+									<td class="product-thumbnail"><?php
 										$thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
 
 										if ( ! $product_permalink ) {

@@ -141,23 +141,25 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
         
         <p class="woocommerce-mini-cart__total total">
             <strong><?php
-                $empties = false;
+                $contains_empties = false;
+                $empties = get_oxfam_empties_skus_array();
+                
                 foreach( WC()->cart->get_cart_contents() as $item_key => $item_value ) {
                     // Verzendklasse 'breekbaar' is niet op alle leeggoed geactiveerd, dus check leeggoed o.b.v. SKU
-                    if ( in_array( $item_value['data']->get_sku(), array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917' ) ) ) {
-                        $empties = true;
+                    if ( in_array( $item_value['data']->get_sku(), $empties ) ) {
+                        $contains_empties = true;
                         break;
                     } 
                 }
                
                 if ( WC()->cart->get_discount_total() > 0 ) {
-                    if ( $empties ) {
+                    if ( $contains_empties ) {
                         echo 'Subtotaal (incl. leeggoed, excl. korting):';
                     } else {
                         echo 'Subtotaal (excl. korting):';
                     }
                 } else {
-                    if ( $empties ) {
+                    if ( $contains_empties ) {
                         echo 'Subtotaal (incl. leeggoed):';
                     } else {
                         echo 'Subtotaal:';
