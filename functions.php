@@ -501,7 +501,7 @@
 		return $apply_quantity;
 	}
 
-	add_filter( 'woocommerce_products_admin_list_table_filters', 'sort_categories_by_menu_order', 10, 1 );
+	add_filter( 'woocommerce_products_admin_list_table_filters', 'sort_categories_by_menu_order', 1000, 1 );
 
 	function sort_categories_by_menu_order( $filters ) {
 		$filters['product_category'] = wc_product_dropdown_categories(
@@ -512,6 +512,12 @@
 				'orderby' => 'menu_order',
 			)
 		);
+
+		// Verwijder de nutteloze filter van WooMultistore
+		if ( array_key_exists( 'parent_child', $filters ) ) {
+			unset( $filters['parent_child'] );
+		}
+
 		return $filters;
 	}
 
