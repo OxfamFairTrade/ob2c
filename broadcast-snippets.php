@@ -51,7 +51,7 @@
 	}
 
 	// Verwijder deprecated productattributen
-	$to_delete = array( 'shopplus', 'ean', 'ompak', 'eenheid', 'fairtrade' );
+	$to_delete = array( 'bio', 'shopplus', 'ean', 'ompak', 'eenheid', 'fairtrade' );
 	foreach ( $to_delete as $slug ) {
 		$attribute_id = absint( wc_attribute_taxonomy_id_by_name( $slug ) );
 		if ( $attribute_id > 0 ) {

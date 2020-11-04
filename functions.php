@@ -5790,7 +5790,7 @@
 		return $products_data_diff;
 	}
 
-	// Geef aan welke metavelden we willen kopiëren MOET TEGENWOORDIG EXPLICIET AANGEGEVEN WORDEN
+	// Geef aan welke verborgen metavelden we willen kopiëren
 	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 10, 2 );
 
 	function update_slave_product_meta( $meta_data, $data ) {
@@ -5809,8 +5809,8 @@
 		 * @return array
 		 */
 		
-		// TOE TE VOEGEN NA MIGRATIE: '_net_unit', '_net_content', '_unit_price'
-		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', 'oft_product_id', 'promo_text', '_main_thumbnail_id' );
+		// Publieke metadata zoals 'oft_product_id', 'promo_text' en 'touched_by_import' worden automatisch gesynchroniseerd?
+		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_main_thumbnail_id', '_net_unit', '_net_content', '_unit_price' );
 		foreach ( $keys_to_copy as $key ) {
 			if ( $key === '_main_thumbnail_id' ) {
 				$meta_data[ $key ] = $data['master_product']->get_image_id();
@@ -5825,9 +5825,9 @@
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
 
-		// foreach ( $meta_data as $key => $value ) {
-		// 	write_log( $key.' => '.$value );
-		// }
+		foreach ( $meta_data as $key => $value ) {
+			write_log( $key.' => '.$value );
+		}
 		
 		return $meta_data;
 	}
