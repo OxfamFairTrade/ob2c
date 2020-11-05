@@ -340,7 +340,10 @@
 	function notify_on_local_product_creation( $post ) {
 		if ( ! is_main_site() and $post->post_type === 'product' ) {
 			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != 1 ) {
-				send_automated_mail_to_helpdesk( 'Nieuw lokaal product: '.get_the_title( $post ), '<p>Bekijk het product <a href="'.get_permalink( $post ).'">in de front-end</a>.</p>' );
+				$product = wc_get_product( $post->ID );
+				if ( $product !== false ) {
+					send_automated_mail_to_helpdesk( 'Nieuw lokaal product: '.$product->get_name().' ('.$product->get_sku().')', '<p>Bekijk het product <a href="'.$product->get_permalink().'">in de front-end</a>.</p>' );
+				}
 			}
 		}
 	}
