@@ -334,7 +334,7 @@
 	}
 
 	// Stuur mail uit bij publicatie van nieuw lokaal product
-	add_action( 'draft_to_publish', 'notify_on_local_product_creation', 10, 1 );
+	// add_action( 'draft_to_publish', 'notify_on_local_product_creation', 10, 1 );
 	add_action( 'publish_product', 'notify_on_local_product_creation_bis', 10, 2 );
 	
 	function notify_on_local_product_creation( $post ) {
