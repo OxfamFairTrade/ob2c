@@ -6,6 +6,12 @@
 			$current_location = intval( $_COOKIE['current_location'] );
 		}
 
+		if ( does_local_pickup() ) {
+			$local_pickup = 'active';
+		} else {
+			$local_pickup = 'inactive';
+		}
+
 		// Indien we false doorgeven, wordt er niet gefilterd op postcode
 		if ( does_home_delivery( $current_location ) ) {
 			$home_delivery = 'active';
@@ -60,7 +66,7 @@
 		    <p><?php echo get_shop_address( array( 'id' => $current_store ) ); ?></p>
         </div>
 		<ul class="delivery-options">
-			<li class="pickup active">Afhalen in de winkel</li>
+			<li class="pickup <?php echo $local_pickup; ?>">Afhalen in de winkel</li>
 			<li class="shipping <?php echo $home_delivery; ?>">​Levering aan huis<?php if ( $current_location ) echo ' in '.$current_location; ?></li>
 		</ul>
 		<a href="#" class="store-selector-open" title="Open winkelkiezer">Winkel wijzigen</a>

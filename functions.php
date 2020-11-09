@@ -1185,7 +1185,7 @@
 
 		$listing_template .= "\t\t\t\t" . '<div class="wpsl-delivery-wrap">' . "\r\n";
 		$listing_template .= "\t\t\t\t\t" . '<ul class="delivery-options">' . "\r\n";
-		$listing_template .= "\t\t\t\t\t\t" . '<li class="pickup active">Afhalen in de winkel</li>' . "\r\n";
+		$listing_template .= "\t\t\t\t\t\t" . '<%= pickup %>' . "\r\n";
 		$listing_template .= "\t\t\t\t\t\t" . '<%= delivery %>' . "\r\n";
 		$listing_template .= "\t\t\t\t\t" . '</ul>' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '</div>' . "\r\n";
@@ -1251,6 +1251,7 @@
 	function wpsl_add_delivery_parameters_to_meta( $store_meta, $store_id = 0 ) {
 		// Vreemd genoeg is $store_id altijd leeg ...
 		// Keys moeten altijd aanwezig zijn, anders loopt de Underscore.js-template vast
+		$store_meta['pickup'] = '<li class="pickup inactive">Afhalen in de winkel</li>';
 		$store_meta['delivery'] = '<li class="delivery inactive">Geen levering aan huis</li>';
 		$store_meta['available'] = 'no'; 
 
@@ -1263,14 +1264,22 @@
 		
 		if ( $store_meta['webshopBlogId'] !== '' ) {
 			$store_meta['available'] = 'yes'; 
+			
 			switch_to_blog( $store_meta['webshopBlogId'] );
-			if ( $current_location !== false and in_array( $current_location, get_oxfam_covered_zips() ) ) {
+			
+			if ( does_local_pickup() ) {
+				$store_meta['pickup'] = '<li class="delivery active">Afhalen in de winkel</li>';
+			}
+			
+			if ( $current_location !== false and does_home_delivery( $current_location ) ) {
 				$store_meta['delivery'] = '<li class="delivery active">Levering aan huis in '.$current_location.'</li>';
 			} else {
 				// write_log( "Zipcode ".$current_location." is not in range: ".serialize( get_oxfam_covered_zips() ) );
 			}
+
 			restore_current_blog();
 		}
+
 		return $store_meta;
 	}
 
@@ -6602,6 +6611,15 @@
 			// Check of de webshop thuislevering doet voor deze specifieke postcode
 			$response = in_array( $zipcode, get_oxfam_covered_zips() );
 			return $response;
+		}
+	}
+
+	function does_local_pickup() {
+		$pickup_settings = get_option('woocommerce_local_pickup_plus_settings');
+		if ( is_array( $pickup_settings ) ) {
+			return ( 'yes' === $pickup_settings['enabled'] );
+		} else {
+			return false;
 		}
 	}
 
