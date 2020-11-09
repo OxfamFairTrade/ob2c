@@ -2386,7 +2386,7 @@
 			$product = wc_get_product( get_the_ID() );
 			$available = apply_filters( 'ob2c_product_is_available', get_the_ID(), is_b2b_customer(), true );
 			
-			if ( ! $available or strpos( $product->get_sku(), 'W' ) === 0 ) {
+			if ( ! $available or ( $product !== false and in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) ) {
 				// Als de klant nog niets in het winkelmandje zitten heeft, is er nog geen sessie om notices aan toe te voegen!
 				if ( ! WC()->session->has_session() ) {
 					WC()->session->set_customer_session_cookie(true);
@@ -4993,7 +4993,7 @@
 				return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
 			}
 
-			if ( strpos( $product->get_sku(), 'W' ) === 0 ) {
+			if ( in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) {
 				$qty = intval( $product_quantity );
 				switch ( $product->get_sku() ) {
 					case 'WLFSK':
