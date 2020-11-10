@@ -4750,23 +4750,21 @@
 	add_action( 'woocommerce_cart_totals_before_shipping', 'explain_why_shipping_option_is_lacking' );
 	
 	function explain_why_shipping_option_is_lacking() {
-		// if ( current_user_can('update_core') ) {
-			// Als er slechts één methode beschikbaar is, moet het wel afhaling zijn!
-			if ( count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
-			    if ( ! does_home_delivery() ) {
-					$title = 'Deze winkel organiseert geen thuislevering. Ga naar de webshop die voor jouw postcode aan huis levert.';
-				} elseif ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
-					// Dit werkt enkel indien blokkage omwille van leeggoed reeds getoond
-					$title = 'Omdat er producten in je winkelmandje zitten die niet beschikbaar zijn voor thuislevering.';
-				} elseif ( strlen( WC()->customer->get_shipping_postcode() ) < 4 ) {
-					// WC()->customer->has_calculated_shipping() werkt niet zoals verwacht
-					$title = 'Omdat de postcode nog niet ingevuld is.';
-				} else {
-					$title = 'Omdat deze webshop niet thuislevert in de huidige postcode.';
-				}
-				echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <a class="dashicons dashicons-editor-help tooltip" title="'.$title.'"></a></td></tr>';
+		// Als er slechts één methode beschikbaar is in een webshop mét afhaling in de winkel, moet het wel die afhaling zijn!
+		if ( does_local_pickup() and count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
+		    if ( ! does_home_delivery() ) {
+				$title = 'Deze winkel organiseert geen thuislevering. Ga naar de webshop die voor jouw postcode aan huis levert.';
+			} elseif ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
+				// Dit werkt enkel indien blokkage omwille van leeggoed reeds getoond
+				$title = 'Omdat er producten in je winkelmandje zitten die niet beschikbaar zijn voor thuislevering.';
+			} elseif ( strlen( WC()->customer->get_shipping_postcode() ) < 4 ) {
+				// WC()->customer->has_calculated_shipping() werkt niet zoals verwacht
+				$title = 'Omdat de postcode nog niet ingevuld is.';
+			} else {
+				$title = 'Omdat deze webshop niet thuislevert in de huidige postcode.';
 			}
-		// }
+			echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <a class="dashicons dashicons-editor-help tooltip" title="'.$title.'"></a></td></tr>';
+		}
 	}
 
 	// Voeg instructietekst toe boven de locaties
