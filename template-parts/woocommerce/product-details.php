@@ -82,15 +82,19 @@
 				<h3>Extra informatie</h3>
 				<?php get_template_part( 'template-parts/woocommerce/product-icons' ); ?>
 
-				<div id="product-brand" class="product-info-panel brand">
-					<h4>Merk</h4>
-					<p><?php echo $product->get_attribute('merk'); ?></p>
-				</div>
+				<?php if ( $product->get_attribute('merk') !== '' ) : ?>
+					<div id="product-brand" class="product-info-panel brand">
+						<h4>Merk</h4>
+						<p><?php echo $product->get_attribute('merk'); ?></p>
+					</div>
+				<?php endif; ?>
 
-				<div id="product-sku" class="product-info-panel sku">
-					<h4>Artikelnummer</h4>
-					<p><?php echo $product->get_meta('_shopplus_code'); ?></p>
-				</div>
+				<?php if ( $product->get_meta('_shopplus_code') !== '' ) : ?>
+					<div id="product-sku" class="product-info-panel sku">
+						<h4>Artikelnummer</h4>
+						<p><?php echo $product->get_meta('_shopplus_code'); ?></p>
+					</div>
+				<?php endif; ?>
 
 				<?php
 					if ( $featured_partner ) {
