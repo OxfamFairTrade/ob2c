@@ -24,7 +24,7 @@
 					$shops[ get_option('oxfam_shop_post_id') ] = $location->get_name();
 				}
 			}
-			var_dump_pre( $shops );
+			// var_dump_pre( $shops );
 		}
 
 		if ( $current_store === false or ! array_key_exists( $current_store, $shops ) ) {
