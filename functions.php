@@ -986,6 +986,7 @@
 	function add_facebook_pixel_js() {
 		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+				global $post;
 				?>
 				<script>!function(f,b,e,v,n,t,s)
 				{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -997,6 +998,16 @@
 				'https://connect.facebook.net/en_US/fbevents.js');
 				fbq('init', '1964131620531187');
 				fbq('track', 'PageView');</script>
+				
+				<?php if ( is_product() ) : ?>
+					<script>
+						fbq('track', 'ViewContent', {
+							content_ids: ['<?php echo get_post_meta( $post->ID, '_sku', true ); ?>'],
+							content_type: 'product',
+						});
+					</script>
+				<?php endif; ?>
+
 				<?php
 			}
 		}

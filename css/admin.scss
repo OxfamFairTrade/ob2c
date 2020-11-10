@@ -165,7 +165,7 @@ button.bulk-increase-stock, */
 
 /* Kan verbeterd worden m.b.v. wijziging in woocommerce/includes/admin/meta-boxes/views/html-order-items.php (= enkel getoond indien betaalmethode niet API-refundable) */
 button.do-manual-refund {
-	display: none !important;
+	// display: none !important;
 }
 
 /* Verberg link naar het volledige Jetpack-dashboard (vereist login die beheerders toch niet hebben) */
