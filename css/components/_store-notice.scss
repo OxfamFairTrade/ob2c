@@ -45,9 +45,9 @@
 
   margin: 20px auto;
   display: block;
-  max-width: calc(100% - 24px);
+  max-width: calc(100% - 40px);
 
-  @media (max-width: 991px) {
+  @media (max-width: 767px) {
     padding: 0;
   }
 

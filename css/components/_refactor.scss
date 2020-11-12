@@ -608,21 +608,12 @@ li.widget.widget_text:not(:last-child) {
   }
 }
 
-.nm-footer-widgets.has-border {
-  padding: 2em 0;
-  border-top: 1px solid $light-grey;
-}
-
 .header-border-1 .nm-header {
   border-bottom: 1px solid $light-grey;
 }
 
 .vc_sep_line {
   border-top: 1px solid $light-grey !important;
-}
-
-.nm-footer-widgets a {
-  color: $oxfam-green !important;
 }
 
 @mixin icon( $image: 'always-open' ) {
