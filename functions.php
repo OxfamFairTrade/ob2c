@@ -1002,8 +1002,8 @@
 				<?php if ( is_product() ) : ?>
 					<script>
 						fbq('track', 'ViewContent', {
-							content_ids: ['<?php echo get_post_meta( $post->ID, '_sku', true ); ?>'],
-							content_type: 'product',
+							content_ids: '<?php echo get_post_meta( $post->ID, '_sku', true ); ?>',
+							content_type: 'product'
 						});
 					</script>
 				<?php endif; ?>
@@ -1756,11 +1756,14 @@
 					}
 					echo '<span style="color: '.$color.';">'.get_date_from_gmt( $delivery, 'd-m-Y' ).'</span>';
 				} elseif ( in_array( $the_order->get_status(), $completed_statusses ) ) {
-					// Veroorzaakt fatale error indien get_date_completed() niet ingesteld
-					if ( $the_order->get_date_completed()->date_i18n( 'Y-m-d H:i:s' ) < $delivery ) {
-						echo '<i>op tijd geleverd</i>';
+					if ( $the_order->get_date_completed() !== NULL ) {
+						if ( $the_order->get_date_completed()->date_i18n( 'Y-m-d H:i:s' ) < $delivery ) {
+							echo '<i>op tijd geleverd</i>';
+						} else {
+							echo '<i>te laat geleverd</i>';
+						}
 					} else {
-						echo '<i>te laat geleverd</i>';
+						echo '<i>afwerkdatum ontbreekt</i>';
 					}
 				}
 			} else {
@@ -4750,7 +4753,7 @@
 	// Zorg dat afhalingen in de winkel als standaard levermethode geselecteerd worden
 	// Nodig omdat Local Pickup Plus geen verzendzones gebruikt maar alles overkoepelt
 	// Documentatie in class-wc-shipping.php: "If not set, not available, or available methods have changed, set to the DEFAULT option" UITSCHAKELEN
-	// add_filter( 'woocommerce_shipping_chosen_method', 'set_pickup_as_default_shipping', 10, 3 );
+	add_filter( 'woocommerce_shipping_chosen_method', 'set_pickup_as_default_shipping', 10, 3 );
 
 	function set_pickup_as_default_shipping( $default, $rates, $chosen_method ) {
 		return 'local_pickup_plus';
@@ -5467,7 +5470,7 @@
 		}
 		
 		// Creëer de parameters voor de foto
-		$wp_filetype = wp_check_filetype( $filename, null );
+		$wp_filetype = wp_check_filetype( $filename, NULL );
 		$attachment = array(
 			'post_mime_type' => $wp_filetype['type'],
 			'post_title' => $filetitle,
@@ -5972,7 +5975,7 @@
 			update_post_meta( $local_product_id, $meta_key, $local_product_ids );
 		} else {
 			// Zorg ervoor dat het veld ook bij de child geleegd wordt!
-			update_post_meta( $local_product_id, $meta_key, null );
+			update_post_meta( $local_product_id, $meta_key, NULL );
 		}
 	}
 
@@ -7193,6 +7196,6 @@
 		echo '<pre>';
 		var_dump($variable);
 		echo '</pre>';
-		return null;
+		return NULL;
 	}
 ?>
