@@ -3360,6 +3360,8 @@
 			// Verwijder indien gewenst de header met klantgegevens, zodat de Excel meteen bruikbaar is voor ShopPlus
 			if ( get_option('oxfam_remove_excel_header') === 'yes' ) {
 				$pick_sheet->removeRow( 1, 6 );
+				// Cellen rond voorziene plaats voor logo blijven samenklitten! 
+				$pick_sheet->unmergeCells('D1:G6');
 			}
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
