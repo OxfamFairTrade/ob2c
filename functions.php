@@ -5,6 +5,11 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	// Was vroeger 6.5566;
+	define( 'STANDARD_SHIPPING_COST_EXCL_VAT', 4.6698 );
+	// Was vroeger 5.7438;
+	define( 'RECUDED_SHIPPING_COST_EXCL_VAT', 4.0909 );
+
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
@@ -646,6 +651,7 @@
 	// Geautomatiseerde manier om diverse instellingen te kopiëren naar subsites
 	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_placeholder_image', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_woocommerce_google_analytics_settings', 'sync_settings_to_subsites', 10, 3 );
 	// add_action( 'update_option_woocommerce_local_pickup_plus_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wp_mail_smtp', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
@@ -2843,16 +2849,10 @@
 	add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
 
 	function verify_min_max_age_postcode_vat() {
-		// Stel een bestelminimum (en fictief -maximum) in
+		// Stel een bestelminimum in
 		$min = 10;
-		$max = 10000;
-		// WC()->cart->get_cart_subtotal() geeft het subtotaal vòòr korting, verzending en (indien B2B) BTW
-		// WC()->cart->cart_contents_total geeft het subtotaal vòor BTW en verzending maar nà korting
-		// Gebruik in de toekomst WC()->cart->get_total('edit') om het totaalbedrag als float op te vragen (WC3.2+)
 		if ( floatval( WC()->cart->get_total('edit') ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
-		} elseif ( floatval( WC()->cart->get_total('edit') ) > $max ) {
-			wc_add_notice( sprintf( __( 'Foutmelding bij te grote bestellingen, inclusief maximumbedrag in euro (%d).', 'oxfam-webshop' ), $max ), 'error' );
 		}
 	}
 
@@ -4688,42 +4688,36 @@
 			// 	wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht in kilogram (%s).', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
 			// }
 
-			$low_vat_slug = 'voeding';
-			$low_vat_rates = WC_Tax::get_rates_for_tax_class( $low_vat_slug );
-			$low_vat_rate = reset( $low_vat_rates );
+			$reduced_vat_slug = 'voeding';
+			$reduced_vat_rates = WC_Tax::get_rates_for_tax_class( $reduced_vat_slug );
+			$reduced_vat_rate = reset( $reduced_vat_rates );
 			
 			// Slug voor 'standard rate' is een lege string!
-			$standard_vat_rates = WC_Tax::get_rates_for_tax_class( '' );
+			$standard_vat_rates = WC_Tax::get_rates_for_tax_class('');
 			$standard_vat_rate = reset( $standard_vat_rates );
 			
 			$tax_classes = WC()->cart->get_cart_item_tax_classes();
-			if ( ! in_array( $low_vat_slug, $tax_classes ) ) {
+			if ( ! in_array( $reduced_vat_slug, $tax_classes ) ) {
 				// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
-				// $cost = 5.7438;
-				$cost = 4.0909;
+				$cost = STANDARD_SHIPPING_COST_EXCL_VAT;
 				// Ook belastingen expliciet herberekenen!
-				$taxes = $cost*0.21;
-				$tax_id_free = $low_vat_rate->tax_rate_id;
-				$tax_id_cost = $standard_vat_rate->tax_rate_id;
+				$tax_cost = 0.21 * $cost;
+				$tax_rate = $standard_vat_rate;
 			} else {
-				// $cost = 6.5566;
-				$cost = 4.6698;
-				// Deze stap doen we vooral omwille van het wispelturige gedrag van deze tax
-				$taxes = $cost*0.06;
-				$tax_id_free = $standard_vat_rate->tax_rate_id;
-				$tax_id_cost = $low_vat_rate->tax_rate_id;
+				$cost = RECUDED_SHIPPING_COST_EXCL_VAT;
+				$tax_cost = 0.06 * $cost;
+				$tax_rate = $reduced_vat_rate;
 			}
 			
 			// Overschrijf alle verzendprijzen (dus niet enkel in 'uitsluitend 21%'-geval -> te onzeker) indien betalende thuislevering
-			// DIT VOLSTAAT OM ALLE PRIJZEN DYNAMISCH TE WIJZIGEN
 			if ( ! $free_home_available ) {
 				foreach ( $rates as $rate_key => $rate ) {
 					switch ( $rate_key ) {
 						case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method' ) ):
-							$rate->cost = $cost;
-							// Unset i.p.v. op nul te zetten ZORGT VOOR ERROR I.V.M. OVERLOADED PROPERTY
-							unset($rate->taxes[$tax_id_free]);
-							$rate->taxes[$tax_id_cost] = $taxes;
+							// Zie WC_Shipping_Rate-klasse, geen save() nodig
+							$rate->set_cost( $cost );
+							// Dit verwijdert meteen ook het andere BTW-tarief 
+							$rate->set_taxes( array( $tax_rate->tax_rate_id => $tax_cost ) );
 							break;
 						default:
 							// Dit zijn de gratis pick-ups (+ eventueel thuisleveringen), niets mee doen
@@ -4740,7 +4734,7 @@
 					foreach ( $non_b2b_methods as $shipping_method ) {
 						// Behalve afhalingen en B2B-leveringen maar die vallen niet onder een zone!
 						$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
-						unset($rates[$method_key]);
+						unset( $rates[ $method_key ] );
 					}
 				}
 			}
@@ -6193,6 +6187,7 @@
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>Nog meer producten! Na de solidariteitsagenda\'s werden ook de nieuwe sintfiguren, biowijn, geschenkencheques en 11.11.11-kalenders toegevoegd aan de webshopdatabase:</p><ul style="margin-left: 2em; column-count: 2;">';
+						// 23706, 27152, 27153
 						$skus = array( 24635, 24640, 24643, 26491, 20266, 19066, 19067, 19068, 88515, 88516 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
@@ -6207,9 +6202,9 @@
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-error">';
-					echo '<p>Bij de migratie begin oktober is de \'In de kijker\'-parameter in de lokale webshops kennelijk gewist. Gelieve onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\' een nieuwe selectie aan te vinken als je op de hompage producten wil uitlichten.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-error">';
+				// 	echo '<p>Bij de migratie begin oktober is de \'In de kijker\'-parameter in de lokale webshops kennelijk gewist. Gelieve onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\' een nieuwe selectie aan te vinken als je op de hompage producten wil uitlichten.</p>';
+				// echo '</div>';
 				echo '<div class="notice notice-info">';
 					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
 				echo '</div>';
