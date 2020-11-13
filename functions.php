@@ -3188,25 +3188,27 @@
 			// LEVERT UTC-TIMESTAMP OP, DUS VERGELIJKEN MET GLOBALE TIME() 
 			$order_timestamp = $order->get_date_created()->getTimestamp();
 			
-			// Laad PHPExcel en het bestelsjabloon in, en selecteer het eerste werkblad
-			require_once WP_CONTENT_DIR.'/plugins/phpexcel/PHPExcel.php';
-			$objPHPExcel = PHPExcel_IOFactory::load( get_stylesheet_directory().'/picklist.xlsx' );
-			$objPHPExcel->setActiveSheetIndex(0);
+			// Laad PhpSpreadsheet en het bestelsjabloon in, en selecteer het eerste werkblad
+			require_once WP_PLUGIN_DIR.'/phpspreadsheet/autoload.php';
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$spreadsheet = $reader->load( get_stylesheet_directory().'/picklist-no-logo.xlsx' );
+			$spreadsheet->setActiveSheetIndex(0);
+			$pick_sheet = $spreadsheet->getActiveSheet();
 
 			// Sla de levermethode op
 			$shipping_methods = $order->get_shipping_methods();
 			$shipping_method = reset($shipping_methods);
 			
 			// Bestelgegevens invullen
-			$objPHPExcel->getActiveSheet()->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
-			$objPHPExcel->getActiveSheet()->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
+			$pick_sheet->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
+			$pick_sheet->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
 
 			// Factuuradres invullen
-			$objPHPExcel->getActiveSheet()->setCellValue( 'A2', $order->get_billing_phone() )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
+			$pick_sheet->setCellValue( 'A2', $order->get_billing_phone() )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
 			// Logistieke gegevens invullen
 			$logistics = get_logistic_params( $order );
-			$objPHPExcel->getActiveSheet()->setCellValue( 'A5', number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$logistics['maximum'].' cm' );
+			$pick_sheet->setCellValue( 'A5', number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$logistics['maximum'].' cm' );
 
 			$i = 8;
 			// Vul de artikeldata item per item in vanaf rij 8
@@ -3233,7 +3235,7 @@
 					// BTW erbij tellen bij particulieren
 					$line_total += $item['line_subtotal_tax'];
 				}
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_meta('_cu_ean') );
+				$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
 				$i++;
 			}
 
@@ -3241,8 +3243,8 @@
 			// Deze $order->get_meta() is hier reeds beschikbaar!
 			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
 				// Switch suffix naar 'excl. BTW'
-				$label = $objPHPExcel->getActiveSheet()->getCell('D5')->getValue();
-				$objPHPExcel->getActiveSheet()->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
+				$label = $pick_sheet->getCell('D5')->getValue();
+				$pick_sheet->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
 			} else {
 				// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD
 				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
@@ -3253,7 +3255,7 @@
 				case stristr( $shipping_method['method_id'], 'flat_rate' ):
 					
 					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
+					$pick_sheet->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -3266,7 +3268,7 @@
 							} else {
 								$tax = 0.21;
 							}
-							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
+							$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 						}
 					}
 					break;
@@ -3276,7 +3278,7 @@
 				case stristr( $shipping_method['method_id'], 'b2b_home_delivery' ):
 
 					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
+					$pick_sheet->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 					break;
 
 				case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
@@ -3284,7 +3286,7 @@
 					// Verwijzen naar postpunt
 					$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
 					$service_point_info = explode ( '|', $service_point['extra'] );
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
+					$pick_sheet->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 
 					// Verzendkosten vermelden
 					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
@@ -3298,7 +3300,7 @@
 							} else {
 								$tax = 0.21;
 							}
-							$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
+							$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 						}
 					}
 					break;
@@ -3306,19 +3308,19 @@
 				default:
 					$meta_data = $shipping_method->get_meta_data();
 					$pickup_data = reset($meta_data);
-					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
+					$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
 			}
 
 			// Vermeld de totale korting (inclusief/exclusief BTW)
 			// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
-			$used_coupons = $order->get_used_coupons();
+			$used_coupons = $order->get_coupon_codes();
 			if ( count( $used_coupons ) >= 1 ) {
 				$discount = $order->get_discount_total();
 				if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
 					$discount += $order->get_discount_tax();
 				}
 				$i++;
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Kortingen' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
+				$pick_sheet->setCellValue( 'A'.$i, 'Kortingen' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
 				$i++;
 			}
 
@@ -3326,46 +3328,58 @@
 			if ( strlen( $order->get_customer_note() ) > 5 ) {
 				$i++;
 				$customer_text = $order->get_customer_note();
-				$objPHPExcel->getActiveSheet()->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $customer_text );
-				$objPHPExcel->getActiveSheet()->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
-				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+				$pick_sheet->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $customer_text );
+				$pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+				$pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 				// Merge resterende kolommen en wrap tekst in opmerkingenvak 
-				$objPHPExcel->getActiveSheet()->mergeCells('B'.$i.':G'.$i);
-				$objPHPExcel->getActiveSheet()->getStyle('B'.$i)->getAlignment()->setWrapText(true);
+				$pick_sheet->mergeCells('B'.$i.':G'.$i);
+				$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
 
 				// setRowHeight(-1) voor autoheight werkt niet, dus probeer goeie hoogte te berekenen bij lange teksten
 				// if ( strlen( $customer_text ) > 125 ) {
 				// 	$row_padding = 4;
-				// 	$row_height = $objPHPExcel->getActiveSheet()->getRowDimension($i)->getRowHeight() - $row_padding;
-				// 	$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight( ceil( strlen( $customer_text ) / 120 ) * $row_height + $row_padding );
+				// 	$row_height = $pick_sheet->getRowDimension($i)->getRowHeight() - $row_padding;
+				// 	$pick_sheet->getRowDimension($i)->setRowHeight( ceil( strlen( $customer_text ) / 120 ) * $row_height + $row_padding );
 				// }
 
 				// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
-				$objPHPExcel->getActiveSheet()->getRowDimension($i)->setRowHeight(80);
+				$pick_sheet->getRowDimension($i)->setRowHeight(80);
 				$i++;
 			}
 
 			// Bereken en selecteer het totaalbedrag
-			$objPHPExcel->getActiveSheet()->setSelectedCell('F5')->setCellValue( 'F5', $objPHPExcel->getActiveSheet()->getCell('F5')->getCalculatedValue() );
+			$pick_sheet->setSelectedCell('F5')->setCellValue( 'F5', $pick_sheet->getCell('F5')->getCalculatedValue() );
+
+			// Verwijder indien gewenst de header met klantgegevens, zodat de Excel meteen bruikbaar is voor ShopPlus
+			if ( get_option('oxfam_remove_excel_header') === 'yes' ) {
+				$pick_sheet->removeRow( 1, 6 );
+			}
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
 			$filename = $order->get_meta('_excel_file_name');
-			if ( $filename === false or strlen($filename) < 10 ) {
+			if ( strlen( $filename ) < 10 ) {
 				$folder = generate_pseudo_random_string();
 				mkdir( WP_CONTENT_DIR.'/uploads/xlsx/'.$folder, 0755 );
 				$filename = $folder.'/'.$order_number.'.xlsx';
+			}
+
+			try {
+				// Bewaar de nieuwe file (Excel 2007+)
+				$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx( $spreadsheet );
+				$writer->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
 				
 				// Bewaar de locatie van de file (random file!) als metadata
 				$order->add_meta_data( '_excel_file_name', $filename, true );
 				$order->save_meta_data();
-			}
 
-			$objWriter = PHPExcel_IOFactory::createWriter( $objPHPExcel, 'Excel2007' );
-			$objWriter->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
-			
-			// Bijlage enkel meesturen in 'new_order'-mail aan admin
-			if ( $status === 'new_order' ) {
-				$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
+				// Bijlage enkel meesturen in 'new_order'-mail aan admin
+				if ( $status === 'new_order' ) {
+					$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
+				}
+			} catch ( InvalidArgumentException $e ) {
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'PhpSpreadsheet' );
+				$logger->error( $order_number.": ".$e->getMessage(), $context );
 			}
 		}
 
