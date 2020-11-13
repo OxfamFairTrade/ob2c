@@ -3191,7 +3191,14 @@
 			// Laad PhpSpreadsheet en het bestelsjabloon in, en selecteer het eerste werkblad
 			require_once WP_PLUGIN_DIR.'/phpspreadsheet/autoload.php';
 			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-			$spreadsheet = $reader->load( get_stylesheet_directory().'/picklist-no-logo.xlsx' );
+
+			if ( get_option('oxfam_remove_excel_header') === 'yes' ) {
+				// Neem de versie zonder afbeelding, anders wordt de file corrupt na het wissen van de koprijen
+				$spreadsheet = $reader->load( get_stylesheet_directory().'/picklist-no-logo.xlsx' );
+			} else {
+				$spreadsheet = $reader->load( get_stylesheet_directory().'/picklist.xlsx' );
+			}
+
 			$spreadsheet->setActiveSheetIndex(0);
 			$pick_sheet = $spreadsheet->getActiveSheet();
 
