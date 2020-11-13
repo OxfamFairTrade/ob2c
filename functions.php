@@ -6,9 +6,9 @@
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
 	// Was vroeger 6.5566;
-	define( 'STANDARD_SHIPPING_COST_EXCL_VAT', 4.6698 );
+	define( 'REDUCED_VAT_SHIPPING_COST', 4.6698 );
 	// Was vroeger 5.7438;
-	define( 'RECUDED_SHIPPING_COST_EXCL_VAT', 4.0909 );
+	define( 'STANDARD_VAT_SHIPPING_COST', 4.0909 );
 
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
@@ -4716,12 +4716,12 @@
 			$tax_classes = WC()->cart->get_cart_item_tax_classes();
 			if ( ! in_array( $reduced_vat_slug, $tax_classes ) ) {
 				// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
-				$cost = STANDARD_SHIPPING_COST_EXCL_VAT;
+				$cost = STANDARD_VAT_SHIPPING_COST;
 				// Ook belastingen expliciet herberekenen!
 				$tax_cost = 0.21 * $cost;
 				$tax_rate = $standard_vat_rate;
 			} else {
-				$cost = RECUDED_SHIPPING_COST_EXCL_VAT;
+				$cost = REDUCED_VAT_SHIPPING_COST;
 				$tax_cost = 0.06 * $cost;
 				$tax_rate = $reduced_vat_rate;
 			}
