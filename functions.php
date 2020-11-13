@@ -3261,8 +3261,7 @@
 						$total_excl_tax = floatval( $shipping->get_total() );
 						// Enkel printen indien nodig
 						if ( $total_tax > 0.01 ) {
-							// TE VERALGEMENEN MAAR WERKT OOK BIJ VERZENDKOST VAN 4,95 EURO
-							if ( $total_tax < 1.00 ) {
+							if ( $shipping->get_tax_class() === 'voeding' ) {
 								$tax = 0.06;
 							} else {
 								$tax = 0.21;
