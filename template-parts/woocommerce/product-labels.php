@@ -45,7 +45,7 @@
 		}
 	}
 
-	if ( $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
+	if ( $product->get_date_created() !== NULL and $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
 		$labels['newbee'] = 'Nieuw';
 	}
 
