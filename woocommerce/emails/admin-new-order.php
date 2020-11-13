@@ -31,7 +31,7 @@ if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
 
 $tax_classes = $order->get_items_tax_classes();
 if ( in_array( 'voeding', $tax_classes ) === false and $order->get_shipping_total() > 0 ) {
-	echo sprintf( '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.</p>', wc_price( STANDARD_VAT_SHIPPING_COST ), wc_price( REDUCED_VAT_SHIPPING_COST ) );
+	echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( STANDARD_VAT_SHIPPING_COST ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
 }
 
 /**
