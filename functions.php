@@ -6178,31 +6178,30 @@
 				echo '</div>';
 			}
 			// echo '<div class="notice notice-error">';
-			// 	echo '<p>Mails naar Microsoft-adressen (@htomail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
+			// 	echo '<p>Mails naar Microsoft-adressen (@hotmail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-info">';
-					echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
+				echo '<div class="notice notice-warning">';
+					echo '<p>We voorzien deze week nog extra (sub)categorieën die je kunt gebruiken tijdens de toevoegen van <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">lokale producten</a>. Bovendien zit de bulkaanmaak van een 150-tal centraal beheerde non-foodproducten, bovenop de bestaande agenda\'s en kalenders, in de laatste rechte lijn. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>Nog meer producten! Na de solidariteitsagenda\'s werden ook de nieuwe sintfiguren, biowijn, geschenkencheques en 11.11.11-kalenders toegevoegd aan de webshopdatabase:</p><ul style="margin-left: 2em; column-count: 2;">';
-						// 23706, 27152, 27153
-						$skus = array( 24635, 24640, 24643, 26491, 20266, 19066, 19067, 19068, 88515, 88516 );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
-				echo '</div>';
-				// echo '<div class="notice notice-error">';
-				// 	echo '<p>Bij de migratie begin oktober is de \'In de kijker\'-parameter in de lokale webshops kennelijk gewist. Gelieve onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\' een nieuwe selectie aan te vinken als je op de hompage producten wil uitlichten.</p>';
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
+				// echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Nog meer producten! Na de solidariteitsagenda\'s werden ook de nieuwe sintfiguren, biowijn, geschenkencheques en 11.11.11-kalenders toegevoegd aan de webshopdatabase:</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 		$skus = array( 23706, 27152, 27153 );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku( $sku );
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
 				// echo '</div>';
 				echo '<div class="notice notice-info">';
 					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
@@ -6433,21 +6432,12 @@
 		
 		// Boodschap over afhaling op afspraak enkel toevoegen indien hele week gesloten
 		if ( strpos( $output, ' - ' ) === false ) {
-			if ( get_current_blog_id() === 13 ) {
-				// Uitzondering voor Evergem
-				$output = '<p class="corona-notice">Wegens onze verhuis is de winkel momenteel gesloten, maar onze webshop blijft open! Na het plaatsen van je bestelling contacteren we je om een afspraak te maken voor afhaling.</p>';
-			} elseif ( get_current_blog_id() === 44 ) {
+			if ( get_current_blog_id() === 44 ) {
 				// Uitzondering voor Diksmuide
 				$output = '<p class="corona-notice">Tijdens de lockdown van De Stoasje: gratis thuislevering op donderdag tussen 18u en 20u!</p>';
 			} else {
-				// UITSCHAKELEN
-				// $locations = get_option('woocommerce_pickup_locations');
-				// if ( count( $locations ) > 1 ) {
-				// 	$text = 'Om de verspreiding van het coronavirus tegen te gaan, zijn al onze winkels momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
-				// } else {
-				// 	$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
-				// }
-				// $output = '<p class="corona-notice">'.$text.'</p>';
+				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
+				$output = '<p class="corona-notice">'.$text.'</p>';
 			}
 		} else {
 			// if ( $atts['id'] === 'brugge' ) {
