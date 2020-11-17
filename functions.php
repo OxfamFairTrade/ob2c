@@ -970,6 +970,14 @@
 				<?php
 			}
 		}
+
+		// Verhinder het indexeren van lokale productpagina's (zorgt voor enorm veel duplicate content)
+		if ( ! is_main_site() ) {
+			if ( is_product() ) {
+				// Eventueel niet doen bij lokaal assortiment? 
+				wp_no_robots();
+			}
+		}
 	}
 
 	// Activeer Google Tag Manager (no JS)
@@ -5244,7 +5252,7 @@
 		}
 
 		if ( $updated ) {
-			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de limiet voor gratis verzending', 'Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!' );
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de limiet voor gratis verzending', '<p>Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!</p>' );
 		} 
 	}
 
@@ -5261,7 +5269,7 @@
 		}
 
 		if ( $body ) {
-			send_automated_mail_to_helpdesk( get_webshop_name(true).' paste thuislevering van breekbare goederen aan', $body );
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' paste thuislevering van breekbare goederen aan', '<p>'.$body.'</p>' );
 		}
 	}
 
@@ -5274,7 +5282,7 @@
 		if ( strlen( $new_text ) > 0 ) {
 			$body = '"'.$new_text.'"';
 		}
-		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', $body );
+		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', '<p>'.$body.'</p>' );
 	}
 
 	function text_field_option_was_updated( $old_text, $new_text, $option ) {
@@ -5283,7 +5291,7 @@
 		} else {
 			$body = 'Custom \''.$option.'\'-tekst gewist!';
 		}
-		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', $body );
+		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', '<p>'.$body.'</p>' );
 	}
 
 	// Voeg een custom pagina toe onder de algemene opties
@@ -7146,6 +7154,7 @@
 		$headers = array();
 		$headers[] = 'From: '.get_webshop_name().' <'.get_option('admin_email').'>';
 		$headers[] = 'Content-Type: text/html';
+		// $body moét effectief HTML-code bevatten, anders werpt WP Mail Log soms een error op!
 		wp_mail( 'Helpdesk E-Commerce <e-commerce@oft.be>', $subject, $body, $headers );
 	}
 
