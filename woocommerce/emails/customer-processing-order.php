@@ -17,25 +17,29 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 do_action( 'woocommerce_email_header', $email_heading, $email );
 
+$logger = wc_get_logger();
+$context = array( 'source' => 'Oxfam Emails' );
+
 // Is altijd ingevuld, dus geen check doen
 echo '<p>Dag '.$order->get_billing_first_name().'</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$methods = $order->get_shipping_methods();
-	$method = reset($methods);
+	$method = reset( $methods );
 	$pickup_location = $method->get_meta('pickup_location');
 	
 	if ( $order->get_meta('is_b2b_sale') === 'no' ) {
 		// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD
 		$delivery = get_post_meta( $order->get_id(), 'estimated_delivery', true );
-		// We gaan ervan uit dat deze waarde altijd bestaat maar toch even loggen bij calamiteiten
-		if ( $delivery === false ) {
-			write_log("AFHAALMAIL VERSTUURD TERWIJL TIJDSSCHATTING ONTBREEKT");
+		$logger->debug( $order->get_order_number().': estimated delivery returns '.$order->get_meta('estimated_delivery').' via get_meta()', $context );
+		
+		if ( $delivery === '' ) {
+			// Aangepast bericht zonder tijdsinschatting indien waarde ontbreekt (bv. door ontbreken van openingsuren tijdens lockdown)
+			echo '<p>' . sprintf( 'We hebben je bestelling goed ontvangen. Onze vrijwilligers zetten je boodschappen klaar in %1$s. We sturen je een tweede bericht van zodra alles klaarstaat.', $pickup_location['shipping_company'] ) . '</p>';
+			$logger->info( $order->get_order_number().': pickup mail sent without time indication', $context );
+		} else {
+			echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling), inclusief afhaallocatie (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ), $pickup_location['shipping_company'], date_i18n( 'l d/m', $delivery ), date_i18n( 'G\ui', $delivery ) ) . '</p>';
 		}
-
-		echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling), inclusief afhaallocatie (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ), $pickup_location['shipping_company'], date_i18n( 'l d/m', $delivery ), date_i18n( 'G\ui', $delivery ) ) . '</p>';
-		// Aangepast bericht (zonder tijdsinschatting) voor coronaperiode
-		// echo '<p>' . sprintf( 'We hebben je bestelling goed ontvangen. Onze vrijwilligers zetten je boodschappen klaar in %1$s. We sturen je een tweede bericht van zodra alles klaarstaat.', $pickup_location['shipping_company'] ) . '</p>';
 	} else {
 		echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail van een B2B-bestelling (indien afhaling), inclusief afhaallocatie (%s).', 'oxfam-webshop' ), $pickup_location['shipping_company'] ) . '</p>';
 	}

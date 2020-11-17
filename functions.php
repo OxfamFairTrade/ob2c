@@ -260,8 +260,8 @@
 			// Bereken - indien mogelijk - de eenheidsprijs a.d.h.v. alle data in $_POST
 			update_unit_price( $post_id, $_POST['_regular_price'], $_POST['_net_content'], $_POST['_net_unit'] );
 			
-			// Kopieer het artikelnummer naar het ShopPlus-nummer indien onbestaande
-			if ( empty( get_post_meta( $post_id, '_shopplus_code', true ) ) and ! empty( $_POST['_sku'] ) ) {
+			// Synchroniseer niet-numerieke artikelnummers naar het ShopPlus-nummer
+			if ( ! empty( $_POST['_sku'] ) and ! is_numeric( $_POST['_sku'] ) ) {
 				update_post_meta( $post_id, '_shopplus_code', $_POST['_sku'] );
 			}
 		}
@@ -302,7 +302,7 @@
 					$product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
 				}
 
-				$logger->info( "Migrating SKU ".$product->get_sku()." to new data structure (".implode( ', ', $migrated_values ).")", $context );
+				$logger->info( 'Migrating SKU '.$product->get_sku().' to new data structure ('.implode( ', ', $migrated_values ).')', $context );
 				$product->save();
 			}
 		}
@@ -1491,7 +1491,7 @@
 						<?php
 							echo '<select name="'.$key.'" id="'.$key.'">';
 								$member_of = get_the_author_meta( $key, $user->ID );
-								$shops = get_option( 'oxfam_member_shops' );
+								$shops = get_option('oxfam_member_shops');
 								$selected = empty( $member_of ) ? ' selected' : '';
 								echo '<option value=""'.$selected.'>(selecteer)</option>';
 								foreach ( $shops as $shop ) {
@@ -1533,6 +1533,9 @@
 	}
 
 	function register_claiming_member_shop( $order_id, $order ) {
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'Oxfam Regional Webshop' );
+
 		if ( get_current_user_id() > 1 ) {
 			// Een gewone klant heeft deze eigenschap niet en retourneert dus sowieso 'false'
 			$owner = get_the_author_meta( 'blog_'.get_current_blog_id().'_member_of_shop', get_current_user_id() );
@@ -1540,22 +1543,28 @@
 			// Indien het order rechtstreeks afgerond wordt vanuit SendCloud gebeurt het onder de user met ID 1 (= Frederik)
 			if ( get_current_blog_id() == 24 ) {
 				$owner = 'antwerpen';
-				write_log("Ongeclaimde bestelling ".$order->get_order_number()." afgewerkt vanuit SendCloud en gekoppeld aan Antwerpen!");
+				$logger->info( $order->get_order_number().': order completed from SendCloud and attributed to '.$owner, $context );
 			}
 		}
 		
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
 			// Koppel automatisch aan de winkel waar de afhaling zal gebeuren
 			$methods = $order->get_shipping_methods();
-			$method = reset($methods);
+			$method = reset( $methods );
+			
 			$meta_data = $method->get_meta_data();
 			$pickup_data = reset($meta_data);
+			// OF NIEUWE MANIER?
+			// $pickup_location = $method->get_meta('pickup_location');
+			// $pickup_location['shipping_company']
 			$city = mb_strtolower( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) );
-			if ( in_array( $city, get_option( 'oxfam_member_shops' ) ) ) {
+			if ( in_array( $city, get_option('oxfam_member_shops') ) ) {
 				// Dubbelcheck of deze stad wel tussen de deelnemende winkels zit
 				$owner = $city;
 			} elseif ( strpos( $city, 'boortmeerbeek' ) !== false ) {
+				// HABOBIB Boortmeerbeek is zelf geen lid van de regio!
 				$owner = 'boortmeerbeek';
+				$logger->info( $order->get_order_number().': HABOBIB order attributed to '.$owner, $context );
 			}
 		}
 
@@ -1575,7 +1584,7 @@
 	function add_claimed_by_filtering() {
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' ) {
-			$shops = get_option( 'oxfam_member_shops' );
+			$shops = get_option('oxfam_member_shops');
 			echo '<select name="claimed_by" id="claimed_by">';
 				$all = ( ! empty($_GET['claimed_by']) and sanitize_text_field($_GET['claimed_by']) === 'all' ) ? ' selected' : '';
 				echo '<option value="all" '.$all.'>Alle winkels uit de regio</option>';
@@ -1750,7 +1759,7 @@
 		if ( $column === 'estimated_delivery' ) {
 			$processing_statusses = array( 'processing', 'claimed' );
 			$completed_statusses = array( 'completed' );
-			if ( $the_order->meta_exists('estimated_delivery') ) {
+			if ( $the_order->get_meta('estimated_delivery') !== '' ) {
 				$delivery = date( 'Y-m-d H:i:s', intval( $the_order->get_meta('estimated_delivery') ) );
 				if ( in_array( $the_order->get_status(), $processing_statusses ) ) {
 					if ( get_date_from_gmt( $delivery, 'Y-m-d' ) < date_i18n( 'Y-m-d' ) ) {
@@ -1854,7 +1863,7 @@
 					echo "<div style='background-color: red; color: white; padding: 0.25em 1em;'>";
 						echo "<p>Opgelet: momenteel bekijk je een gefilterd rapport met enkel de bestellingen die verwerkt werden door <b>OWW ".trim_and_uppercase( $_GET['claimed_by'] )."</b>.</p>";
 						echo "<p style='text-align: right;'>";
-							$members = get_option( 'oxfam_member_shops' );
+							$members = get_option('oxfam_member_shops');
 							foreach ( $members as $member ) {
 								if ( $member !== $_GET['claimed_by'] ) {
 									echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk ".trim_and_uppercase( $member )." »</a><br/>";
@@ -1869,7 +1878,7 @@
 					echo "<div style='background-color: green; color: white; padding: 0.25em 1em;'>";
 						echo "<p>Momenteel bekijk je het rapport met de bestellingen van alle winkels uit de regio. Klik hieronder om de omzet te filteren op een bepaalde winkel.</p>";
 						echo "<p style='text-align: right;'>";
-							$members = get_option( 'oxfam_member_shops' );
+							$members = get_option('oxfam_member_shops');
 							foreach ( $members as $member ) {
 								echo "<a href='".esc_url( add_query_arg( 'claimed_by', $member ) )."' style='color: black;'>Bekijk enkel ".trim_and_uppercase( $member )." »</a><br/>";
 							}
@@ -3289,6 +3298,9 @@
 				default:
 					$meta_data = $shipping_method->get_meta_data();
 					$pickup_data = reset($meta_data);
+					// OF NIEUWE MANIER?
+					// $pickup_location = $method->get_meta('pickup_location');
+					// $pickup_location['shipping_company']
 					$objPHPExcel->getActiveSheet()->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
 			}
 
@@ -3961,7 +3973,7 @@
 
 	function put_shop_manager_in_bcc( $headers, $type, $object ) {
 		$logger = wc_get_logger();
-		$context = array( 'source' => 'WooCommerce' );
+		$context = array( 'source' => 'Oxfam Emails' );
 		$logger->debug( 'Mail van type '.$type.' getriggerd', $context );
 		
 		$extra_recipients = array();
@@ -6017,7 +6029,7 @@
 		// Verschijnt in de logs van de subsite!
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'Oxfam Translate Broadcast Fields' );
-		$logger->debug( "Vertaal eigenschap '".$meta_key."' van ".implode( ', ', $main_product_ids )." naar ".implode( ', ', $slave_product_ids ), $context );
+		$logger->debug( "Translated property '".$meta_key."' from ".implode( ', ', $main_product_ids )." to ".implode( ', ', $slave_product_ids ), $context );
 		
 		return implode( ',', $slave_product_ids );
 	}
