@@ -18,6 +18,7 @@
 				<div class="breadcrumb">
 					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">Home</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Webshop <?php echo get_webshop_name(true); ?></span>
 				</div>
+				<?php wc_print_notices(); ?>
 				<div class="col-row lh-intro">
 					<div class="col-xs-12 col-md-6">
 						<h2><?php echo ( ! is_main_site() ) ? 'Oxfam ' : ''; ?>Webshop <?php echo get_webshop_name(true); ?></h2>

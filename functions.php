@@ -838,38 +838,25 @@
 			}
 		}
 
-		// Stuur Digizine-lezers meteen door op basis van postcode in hun profiel
-		if ( is_main_site() ) {
-			$suffix = '';
-			if ( ! empty( $_GET['addSku'] ) ) {
-				$suffix = 'addSku='.$_GET['addSku'];
-			}
-			if ( isset( $_GET['landingZip'] ) ) {
-				$zip = str_replace( ',', '', str_replace( '%2C', '', $_GET['landingZip'] ) );
-				$global_zips = get_shops();
-				if ( strlen( $zip ) === 4 ) {
-					if ( array_key_exists( $zip, $global_zips ) ) {
-						wp_safe_redirect( $global_zips[$zip].'?referralZip='.$zip.'&'.$suffix );
-						exit();
-					}
-				}
-			}
-			// Redirect mag vanaf nu altijd gebeuren! WACHT NOG EVEN
-			if ( isset( $_GET['addSku'] ) and 1 === 2 ) {
-				if ( isset( $_COOKIE['latest_blog_id'] ) ) {
+		// Voeg producten toe o.b.v. parameters in URL
+		if ( ! empty( $_GET['addSkus'] ) ) {
+			if ( is_main_site() ) {
+				// Redirect mag vanaf nu altijd gebeuren!
+				if ( ! empty( $_COOKIE['latest_blog_id'] ) ) {
 					$destination_blog = get_blog_details( $_COOKIE['latest_blog_id'], false );
+					write_log( print_r( $destination_blog, true ) );
 					if ( $destination_blog->path !== '/' ) {
-						wp_safe_redirect( network_site_url( $destination_blog->path.'?'.$suffix ) );
+						wp_safe_redirect( network_site_url( $destination_blog->path.'?addSkus='.$_GET['addSkus'] ) );
 						exit();
 					}
 				} else {
 					// Vermijd dubbele output (door heen-en-weer navigeren?)
 					wc_clear_notices();
 					wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen. We bewaren je keuze in deze browser maar via de knop rechtsboven kun je steeds een andere webshop selecteren.', 'oxfam-webshop' ), 'error' );
+					wp_safe_redirect( network_site_url() );
+					exit();
 				}
-			}
-		} else {
-			if ( ! empty( $_GET['addSku'] ) ) {
+			} else {
 				add_action( 'template_redirect', 'add_product_to_cart_by_get_parameter' );
 			}
 		}
@@ -884,75 +871,65 @@
 	}
 
 	function add_product_to_cart_by_get_parameter() {
-		if ( ! is_admin() ) {
-			$skus = explode( ',', $_GET['addSku'] );
-			$already_added = 0;
+		if ( is_admin() ) {
+			return;
+		}
 
-			foreach ( $skus as $sku ) {
-				$product_to_add = wc_get_product( wc_get_product_id_by_sku( $sku ) );
-				
-				// Enkel proberen toevoegen indien het artikelnummer bestaat
-				if ( $product_to_add !== false ) {
-					// Voorkom opnieuw toevoegen bij het terugkeren!
-					
-					// VIA WINKELMANDJE
-					$found = false;
-					if ( WC()->session->has_session() ) {
-						foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
-							$product_in_cart = $values['data'];
-							if ( $product_in_cart->get_id() == $product_to_add->get_id() ) {
-								$found = true;
-								break;
-							}
-						}
-					}
+		if ( WC()->session->has_session() ) {
+			$executed = WC()->session->get( 'recipe_products_ordered', 'no' );
+		} else {
+			$executed = 'no';
+		}
 
-					// VIA SESSIEPARAMETER
-					// WC()->session->set( 'addsku_action_'.$_GET['addSku'].'_executed', 0 );
-					// if ( WC()->session->has_session() ) {
-					// 	$already_added = WC()->session->get( 'addsku_action_'.$_GET['addSku'].'_executed', 0 );
-					// } else {
-					// 	$already_added = 0;
-					// }
-					
-					if ( ! $found ) {
-						if ( WC()->cart->add_to_cart( $product_to_add->get_id(), 1 ) === false ) {
-							// Ga naar de productdetailpagina indien de poging mislukte (wegens geen voorraad)
-							// Notice over uitgeputte voorraad verschijnt automatisch!
-							wp_safe_redirect( $product_to_add->get_permalink() );
-							exit();
-						} else {
-							$already_added++;
+		$recept = 'Oliebollen';
 
-							// PHP-functie add_to_cart() veroorzaakt niet automatisch een GA-event!
-							// $parameters = array();
-							// $parameters['category'] = "'" . __( 'Products', 'woocommerce-google-analytics-integration' ) . "'";
-							// $parameters['action'] = "'" . __( 'Add to Cart', 'woocommerce-google-analytics-integration' ) . "'";
-							// $parameters['label'] = $product_to_add->get_sku();
-							// $code = "" . WC_Google_Analytics_JS::get_instance()->tracker_var() . "( 'ec:addProduct', {";
-							// $code .= "'id': ".$product_to_add->get_sku().",";
-							// $code .= "'quantity': 1,";
-							// $code .= "} );";
-							// $parameters['enhanced'] = $code;
-							// " . $parameters['enhanced'] . "
-							// " . self::tracker_var() . "( 'ec:setAction', 'add' );
-							// " . self::tracker_var() . "( 'send', 'event', 'UX', 'click', 'add to cart' );
-							// Makkelijker om gewoon klik op 'add_to_cart'-button te simuleren?
-						}
-					}
+		// Voorkom opnieuw toevoegen bij het terugkeren
+		if ( $executed === 'no' ) {
+			$products_added = 0;
+			$total_products = 0;
+
+			// Géén urldecode() nodig, de globals $_GET en $_REQUEST ondergingen dit reeds! 
+			$articles = explode( ',', $_GET['addSkus'] );
+
+			foreach ( $articles as $article ) {
+				$parts = explode( '|', $article );
+			
+				$sku = $parts[0];
+				if ( count( $parts ) > 1 ) {
+					$quantity = intval( $parts[1] );
 				} else {
-					wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop.', 'oxfam-webshop' ), $sku ), 'error' );
-					wp_safe_redirect( wc_get_page_permalink('shop') );
-					exit();
+					$quantity = 1;
+				}	
+				$total_products += $quantity;
+				
+				if ( $quantity > 0 ) {
+					$product_id = wc_get_product_id_by_sku( $sku );
+					if ( $product_id > 0 ) {
+						$product = wc_get_product( $product_id );
+						if ( WC()->cart->add_to_cart( $product_id, $quantity ) !== false ) {
+							$products_added += $quantity;
+						} else {
+							// In dit geval zal add_to_cart() zelf al een notice uitspuwen!
+							// Redirect eventueel naar productpagina (problematisch indien meerdere producten)
+							// wp_safe_redirect( $product->get_permalink() );
+							// exit();
+						}
+					} else {
+						wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop.', 'oxfam-webshop' ), $sku ), 'error' );
+					}
 				}
 			}
 
-			if ( $already_added === count( $skus ) and $already_added > 1 ) {
-				// Redirect naar het winkelmandje, zodat kortingsbonnen op combinatiepromo's zeker verschijnen
-				wp_safe_redirect( wc_get_cart_url() );
-				exit();
+			if ( $products_added === $total_products ) {
+				wc_add_notice( sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje.', 'oxfam-webshop' ), $recept ), 'success' );
 			}
+		} else {
+			wc_add_notice( sprintf( __( 'De ingrediënten voor "%s" waren reeds toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recept ), 'error' );
 		}
+
+		// Redirect naar het winkelmandje, zodat eventuele foutmeldingen en kortingsbonnen zeker verschijnen
+		wp_safe_redirect( wc_get_cart_url() );
+		exit();
 	}
 	
 	// Schakel Google Analytics uit in bepaalde gevallen
@@ -1008,8 +985,8 @@
 	add_action( 'woocommerce_thankyou', 'add_fb_purchase_event', 10, 1 );
 
 	function add_facebook_pixel_js() {
-		// if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			// if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
 				global $post;
 				?>
 				<script>!function(f,b,e,v,n,t,s)
@@ -1034,8 +1011,8 @@
 					</script>
 					<?php
 				}
-			// }
-		// }
+			}
+		}
 	}
 
 	function add_fb_purchase_event( $order_id ) {
@@ -1050,13 +1027,6 @@
 			return;
 		}
 
-		// Vermijd dubbel tracken (bv. bij meerdere betaalpogingen)
-		// METADATA KUNNEN WE HIER NIET MEER OPSLAAN BIJ HET ORDER ...
-		// $purchase_tracked_meta = '_fb_pixel_purchase_tracked';
-		// if ( 'yes' === $order->get_meta( $purchase_tracked_meta ) ) {
-		// 	return;
-		// }
-
 		$contents = array();
 		$content_ids = array();
 
@@ -1064,7 +1034,6 @@
 			if ( $product = isset( $item['product_id'] ) ? wc_get_product( $item['product_id'] ) : NULL ) {
 				$content_ids[] = $product->get_sku();
 				
-				// IS DIT NIET DUBBELOP?
 				$content = new \stdClass();
 				$content->id = $product->get_sku();
 				$content->quantity = $item->get_quantity();
@@ -1072,9 +1041,9 @@
 			}
 		}
 
+		// Als Facebook Pixel niet ingeladen is, zal dit gewoon zacht falen (geen extra check nodig)
 		?>
 		<script>
-			// Als Facebook Pixel niet ingeladen is, zal dat gewoon zacht falen, geen extra checks nodig!
 			fbq('track', 'Purchase', {
 				content_ids: <?php echo wp_json_encode( $content_ids ); ?>,
 				contents: <?php echo wp_json_encode( $contents ); ?>,
@@ -2276,7 +2245,7 @@
 		// add_filter( 'update_user_metadata', 'sanitize_woocommerce_customer_fields', 10, 5 );
 
 		if ( isset( $_GET['referralZip'] ) ) {
-			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar WORDT NIET INGESTELD NA JAVASCRIPT REDIRECT
+			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar
 			WC()->customer->set_billing_postcode( intval( $_GET['referralZip'] ) );
 			WC()->customer->set_shipping_postcode( intval( $_GET['referralZip'] ) );
 		}
@@ -4526,7 +4495,7 @@
 								}
 							}
 							if ( count( $skus ) > 0 ) {
-								$url .= '?addSku='.implode( ',', $skus );
+								$url .= '?addSkus='.implode( ',', $skus );
 							}
 							// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices('error') retourneert te checken
 							wc_add_notice( sprintf( __('Foutmelding na het ingeven van postcode %1$s waar deze webshop geen thuislevering voor organiseert, inclusief URL %2$s van webshop die dat wel doet.', 'oxfam-webshop' ), $zip, $url ), 'error' );

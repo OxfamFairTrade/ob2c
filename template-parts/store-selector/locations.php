@@ -99,7 +99,7 @@
 			setCookie( 'latest_blog_id', jQuery(this).data('webshop-blog-id') );
 			/* Probeer het huidige pad te bewaren! */
 			var current_url = window.location.href;
-			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+jQuery('#wpsl-search-input').val() );
+			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+jQuery('#wpsl-search-input').val()+'&referralCity='+zips.jQuery('#wpsl-search-input').val() );
 		});
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
