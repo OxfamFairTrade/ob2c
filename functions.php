@@ -916,14 +916,14 @@
 				if ( $quantity > 0 ) {
 					$product_id = wc_get_product_id_by_sku( $sku );
 					if ( $product_id > 0 ) {
+						$product = wc_get_product( $product_id );
 						if ( WC()->cart->add_to_cart( $product_id, $quantity ) !== false ) {
 							$products_added += $quantity;
-							wc_add_notice( sprintf( __( 'Hoera, artikelnummer %s toegevoegd aan winkelmandje!', 'oxfam-webshop' ), $sku ), 'success' );
+							wc_add_notice( sprintf( __( '<i>%s</i> werd toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $product->get_name() ), 'success' );
 						} else {
-							// In dit geval zal add_to_cart() zelf al een notice uitspuwen! TENZIJ HET GEWOON NIET OP VOORRAAD IS?
+							// In dit geval zal add_to_cart() zelf al een notice uitspuwen, bv. indien uit voorraad
 							
 							if ( count( $articles ) === 1 ) {
-								$product = wc_get_product( $product_id );
 								// Redirect naar productpagina
 								wp_safe_redirect( $product->get_permalink() );
 								exit();
@@ -935,8 +935,10 @@
 				}
 			}
 
-			if ( $products_added === $total_products ) {
-				if ( $recipe ) {
+			if ( $recipe ) {
+				if ( $products_added < $total_products ) {
+					wc_add_notice( sprintf( __( 'Sommige Oxfam-ingrediënten voor "%s" konden niet toegevoegd worden aan je winkelmandje.', 'oxfam-webshop' ), $recipe ), 'success' );
+				} else {
 					wc_add_notice( sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje.', 'oxfam-webshop' ), $recipe ), 'success' );
 					WC()->session->set( 'recipe_'.$recipe_id.'_products_ordered', 'yes' );
 				}
