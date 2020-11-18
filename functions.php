@@ -839,7 +839,8 @@
 		}
 
 		// Voeg producten toe o.b.v. parameters in URL
-		if ( ! empty( $_GET['addSkus'] ) ) {
+		// Vermijd eindeloze loop indien we de store locator nog moeten openen
+		if ( ! empty( $_GET['addSkus'] ) and ! isset( $_GET['triggerStoreLocator'] ) ) {
 			if ( is_main_site() ) {
 				// Redirect mag vanaf nu altijd gebeuren!
 				if ( ! empty( $_COOKIE['latest_blog_id'] ) ) {

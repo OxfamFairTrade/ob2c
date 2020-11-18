@@ -59,6 +59,7 @@
 		const urlParams = new URLSearchParams( window.location.search );
 		if ( urlParams.has('triggerStoreLocator') ) {
 			console.log("SHOULD OPEN STORE MODAL");
+			jQuery('.store-selector-modal').toggleClass('open');
 		}
 		
 		/* Gebruik event delegation, de buttons in .nm-shop-products-col zijn niet noodzakelijk al aanwezig bij DOM load! */
