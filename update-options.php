@@ -178,7 +178,7 @@
 						</tr>
 						<tr valign="top">
 							<th class="left">
-								<label for="oxfam_does_risky_delivery">Schakel beperkingen op thuislevering uit:<br/><small>Als je dit aanvinkt, wordt de logica uitgeschakeld die de thuislevering van grote flessen fruitsap en volledige bakken fruitsap/bier verhindert in gewone bestellingen van particulieren (experimenteel).</small></label>
+								<label for="oxfam_does_risky_delivery">Schakel beperkingen op thuislevering uit:<br/><small>Als je dit aanvinkt, wordt de logica uitgeschakeld die de thuislevering van grote flessen fruitsap en volledige bakken fruitsap/bier verhindert in gewone bestellingen van particulieren.</small></label>
 							</th>
 							<td class="right">
 								<input type="checkbox" name="oxfam_does_risky_delivery" value="yes" <?php checked( get_option('oxfam_does_risky_delivery'), 'yes' ); ?> <?php if ( current_user_can('create_sites') ) echo ' disabled'; ?>>
@@ -187,6 +187,14 @@
 					<?php
 				}
 			?>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_remove_excel_header">Laat de header met de klantgegevens weg uit de pick-Excel:<br/><small>Hierdoor kun je de Excel zonder tussenstap overnemen in ShopPlus (druk op F12, op de kassacomputer moet Microsoft Excel geïnstalleerd zijn). Voordeel: je hoeft de producten niet meer handmatig in te scannen. Nadeel: je verliest zo de dubbelcheck op de compleetheid van de bestelling en ziet de naam van klant niet meer staan.</small></label>
+				</th>
+				<td class="right">
+					<input type="checkbox" name="oxfam_remove_excel_header" value="yes" <?php checked( get_option('oxfam_remove_excel_header'), 'yes' ); ?> <?php if ( current_user_can('create_sites') ) echo ' disabled'; ?>>
+				</td>
+			</tr>
 			<!-- Deze instelling maakt geen deel meer uit van de geregistreerde opties en worden dus niet automatisch bijgewerkt! -->
 			<tr valign="top">
 				<th class="left">

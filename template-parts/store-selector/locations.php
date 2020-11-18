@@ -52,15 +52,9 @@
 			}
 		});
 
-		// var zips = <?php json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
-		/* Licht gewijzigde vorm voor autocomplete (per deelgemeente een nieuwe regel) */
+		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
+		/* Licht gewijzigde vorm voor autocomplete */
 		var autocomplete_zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
-		
-		const urlParams = new URLSearchParams( window.location.search );
-		if ( urlParams.has('triggerStoreLocator') ) {
-			console.log("SHOULD OPEN STORE MODAL");
-			jQuery('.store-selector-modal').toggleClass('open');
-		}
 		
 		/* Gebruik event delegation, de buttons in .nm-shop-products-col zijn niet noodzakelijk al aanwezig bij DOM load! */
 		/* Let op dat elementen niet dubbel getarget worden, dan zal preventDefault() roet in het eten gooien! */
@@ -69,11 +63,16 @@
 			jQuery('.store-selector-modal').toggleClass('open');
 			
 			var zip = jQuery('#wpsl-search-input').val();
-			if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in autocomplete_zips) ) {
+			if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
 				jQuery('#wpsl-search-btn').prop( 'disabled', false ).parent().addClass('is-valid');
 			}
 		});
 
+		const urlParams = new URLSearchParams( window.location.search );
+		if ( urlParams.has('triggerStoreLocator') ) {
+			jQuery('.store-selector-modal').toggleClass('open');
+		}
+		
 		jQuery('.store-selector-close').on( 'click', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
@@ -111,7 +110,7 @@
 			var current_url = window.location.href;
 			var current_zip = jQuery('#wpsl-search-input').val();
 			/* Nog beter zou zijn om de effectief geselecteerde gemeente door te geven ... */
-			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+current_zip+'&referralCity='+autocomplete_zips[current_zip]+'&addSkus='+urlParams.get('addSkus')+'&recipeId='+urlParams.get('recipeId') );
+			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+current_zip + '&referralCity='+zips[current_zip] + '&addSkus='+urlParams.get('addSkus') + '&recipeId='+urlParams.get('recipeId') );
 		});
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
