@@ -877,13 +877,22 @@
 			return;
 		}
 
+		if ( ! empty( $_GET['recipeRef'] ) ) {
+			$recipe_ref = $_GET['recipeRef'];
+		} else {
+			$recipe_ref = '1';
+		}
+		$recipes = array(
+			'1' => 'Oliebollen',
+			'2' => 'Frietjes,'
+		);
+		$recipe = $recipes[ $recipe_ref ];
+
 		if ( WC()->session->has_session() ) {
-			$executed = WC()->session->get( 'recipe_products_ordered', 'no' );
+			$executed = WC()->session->get( 'recipe_'.$recipe_ref.'_products_ordered', 'no' );
 		} else {
 			$executed = 'no';
 		}
-
-		$recept = 'Oliebollen';
 
 		// Voorkom opnieuw toevoegen bij het terugkeren
 		if ( $executed === 'no' ) {
@@ -923,10 +932,11 @@
 			}
 
 			if ( $products_added === $total_products ) {
-				wc_add_notice( sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje.', 'oxfam-webshop' ), $recept ), 'success' );
+				wc_add_notice( sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje.', 'oxfam-webshop' ), $recipe ), 'success' );
+				WC()->session->set( 'recipe_'.$recipe_ref.'_products_ordered', 'yes' );
 			}
 		} else {
-			wc_add_notice( sprintf( __( 'De ingrediënten voor "%s" waren reeds toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recept ), 'error' );
+			wc_add_notice( sprintf( __( 'De ingrediënten voor "%s" waren reeds toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recipe ), 'error' );
 		}
 
 		// Redirect naar het winkelmandje, zodat eventuele foutmeldingen en kortingsbonnen zeker verschijnen
@@ -2246,15 +2256,17 @@
 		// Uniformeer de gebruikersdata net voor we ze opslaan in de database STAAT GEEN WIJZIGINGEN TOE
 		// add_filter( 'update_user_metadata', 'sanitize_woocommerce_customer_fields', 10, 5 );
 
-		if ( isset( $_GET['referralZip'] ) ) {
+		// WORDT NIET DOORLOPEN NA JAVASCRIPT REDIRECT
+		if ( ! empty( $_GET['referralZip'] ) ) {
 			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar
 			WC()->customer->set_billing_postcode( intval( $_GET['referralZip'] ) );
 			WC()->customer->set_shipping_postcode( intval( $_GET['referralZip'] ) );
+			write_log( print_r( $_GET['referralZip'], true ) );
 		}
-
-		if ( isset( $_GET['referralCity'] ) ) {
+		if ( ! empty( $_GET['referralCity'] ) ) {
 			WC()->customer->set_billing_city( $_GET['referralCity'] );
 			WC()->customer->set_shipping_city( $_GET['referralCity'] );
+			write_log( print_r( $_GET['referralCity'], true ) );
 		}
 	}
 

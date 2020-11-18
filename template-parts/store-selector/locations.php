@@ -100,7 +100,7 @@
 			/* Probeer het huidige pad te bewaren! */
 			var current_url = window.location.href;
 			var current_zip = jQuery('#wpsl-search-input').val();
-			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+current_zip+'&referralCity='+zips.current_zip );
+			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+current_zip+'&referralCity='+zips[current_zip] );
 		});
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
