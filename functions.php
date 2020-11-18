@@ -888,6 +888,7 @@
 		}
 
 		if ( WC()->session->has_session() and $recipe ) {
+			// VOORLOPIG UITSCHAKELEN
 			// $executed = WC()->session->get( 'recipe_'.$recipe_id.'_products_ordered', 'no' );
 			$executed = 'no';
 		} else {
