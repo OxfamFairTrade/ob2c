@@ -919,7 +919,7 @@
 						$product = wc_get_product( $product_id );
 						if ( WC()->cart->add_to_cart( $product_id, $quantity ) !== false ) {
 							$products_added += $quantity;
-							wc_add_notice( sprintf( __( '<i>%s</i> werd toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $product->get_name() ), 'success' );
+							wc_add_notice( sprintf( __( '"%s" werd toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $product->get_name() ), 'success' );
 						} else {
 							// In dit geval zal add_to_cart() zelf al een notice uitspuwen, bv. indien uit voorraad
 							
