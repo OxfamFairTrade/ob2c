@@ -1004,11 +1004,12 @@
 	}
 
 	// Activeer Facebook Pixel (JS)
-	add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
+	add_action( 'wp_head', 'add_facebook_pixel_js', 200 );
+	add_action( 'woocommerce_thankyou', 'add_fb_purchase_event', 10, 1 );
 
 	function add_facebook_pixel_js() {
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+		// if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			// if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
 				global $post;
 				?>
 				<script>!function(f,b,e,v,n,t,s)
@@ -1021,23 +1022,72 @@
 				'https://connect.facebook.net/en_US/fbevents.js');
 				fbq('init', '1964131620531187');
 				fbq('track', 'PageView');</script>
-				
-				<?php if ( is_product() ) : ?>
+				<?php
+
+				if ( is_product() ) {
+					?>
 					<script>
 						fbq('track', 'ViewContent', {
 							content_ids: '<?php echo get_post_meta( $post->ID, '_sku', true ); ?>',
 							content_type: 'product'
 						});
 					</script>
-				<?php endif; ?>
+					<?php
+				}
+			// }
+		// }
+	}
 
-				<?php
+	function add_fb_purchase_event( $order_id ) {
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return;
+		}
+
+		// Track geen onbetaalde bestellingen
+		if ( ! $order->is_paid() ) {
+			return;
+		}
+
+		// Vermijd dubbel tracken (bv. bij meerdere betaalpogingen)
+		// METADATA KUNNEN WE HIER NIET MEER OPSLAAN BIJ HET ORDER ...
+		// $purchase_tracked_meta = '_fb_pixel_purchase_tracked';
+		// if ( 'yes' === $order->get_meta( $purchase_tracked_meta ) ) {
+		// 	return;
+		// }
+
+		$contents = array();
+		$content_ids = array();
+
+		foreach ( $order->get_items() as $item ) {
+			if ( $product = isset( $item['product_id'] ) ? wc_get_product( $item['product_id'] ) : NULL ) {
+				$content_ids[] = $product->get_sku();
+				
+				// IS DIT NIET DUBBELOP?
+				$content = new \stdClass();
+				$content->id = $product->get_sku();
+				$content->quantity = $item->get_quantity();
+				$contents[] = $content;
 			}
 		}
+
+		?>
+		<script>
+			// Als Facebook Pixel niet ingeladen is, zal dat gewoon zacht falen, geen extra checks nodig!
+			fbq('track', 'Purchase', {
+				content_ids: <?php echo wp_json_encode( $content_ids ); ?>,
+				contents: <?php echo wp_json_encode( $contents ); ?>,
+				content_type: 'product',
+				value: <?php echo $order->get_total(); ?>,
+				currency: 'EUR'
+			});
+		</script>
+		<?php
 	}
 
 	// Activeer Facebook Pixel (no JS)
-	add_action( 'wp_footer', 'add_facebook_pixel_no_js', 200 );
+	add_action( 'wp_head', 'add_facebook_pixel_no_js', 200 );
 
 	function add_facebook_pixel_no_js() {
 		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
