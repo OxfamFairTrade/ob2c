@@ -919,7 +919,7 @@
 						$product = wc_get_product( $product_id );
 						if ( WC()->cart->add_to_cart( $product_id, $quantity ) !== false ) {
 							$products_added += $quantity;
-							wc_add_notice( sprintf( __( '"%s" werd toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $product->get_name() ), 'success' );
+							wc_add_notice( sprintf( __( '"%s" werd toegevoegd aan je winkelmandje.', 'oxfam-webshop' ), $product->get_name() ), 'success' );
 						} else {
 							// In dit geval zal add_to_cart() zelf al een notice uitspuwen, bv. indien uit voorraad
 							
@@ -939,7 +939,7 @@
 				if ( $products_added < $total_products ) {
 					wc_add_notice( sprintf( __( 'Sommige Oxfam-ingrediënten voor "%s" konden niet toegevoegd worden aan je winkelmandje.', 'oxfam-webshop' ), $recipe ), 'success' );
 				} else {
-					wc_add_notice( sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje.', 'oxfam-webshop' ), $recipe ), 'success' );
+					wc_add_notice( sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recipe ), 'success' );
 					WC()->session->set( 'recipe_'.$recipe_id.'_products_ordered', 'yes' );
 				}
 			}
