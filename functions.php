@@ -828,7 +828,7 @@
 				// Nooit redirecten: inlog-, reset-, activatiepagina en WC API calls
 				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wc_lostpassword_url() ) and ! strpos( $url, 'activate.php' ) and ! strpos( $url, 'wc-api' ) ) {
 					// Stuur gebruiker na inloggen terug naar huidige pagina
-					wp_safe_redirect( wp_login_url($url) );
+					wp_safe_redirect( wp_login_url( $url ) );
 					exit();
 				}
 			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) and ! is_super_admin() ) {
@@ -846,16 +846,12 @@
 					$destination_blog = get_blog_details( $_COOKIE['latest_blog_id'], false );
 					write_log( print_r( $destination_blog, true ) );
 					if ( $destination_blog->path !== '/' ) {
-						wp_safe_redirect( network_site_url( $destination_blog->path.'?addSkus='.$_GET['addSkus'] ) );
+						wp_safe_redirect( network_site_url( $destination_blog->path.'?addSkus='.$_GET['addSkus'].'&recipeRef='.$_GET['recipeRef'] ) );
 						exit();
 					}
 				} else {
-					// Vermijd dubbele output (door heen-en-weer navigeren?)
-					// wc_clear_notices();
-					
-					wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen. We bewaren je keuze in deze browser maar via de knop rechtsboven kun je steeds een andere webshop selecteren.', 'oxfam-webshop' ), 'error' );
-					// TRIGGER STORE SELECTOR
-					wp_safe_redirect( get_permalink( wc_get_page_id('shop') ) );
+					// Trigger de store locator met uitleg bovenaan (over het waarom van de tussenstap)
+					wp_safe_redirect( get_permalink( wc_get_page_id('shop').'?addSkus='.$_GET['addSkus'].'&recipeRef='.$_GET['recipeRef'].'&triggerStoreLocator' ) );
 					exit();
 				}
 			} else {
@@ -883,8 +879,8 @@
 			$recipe_ref = '1';
 		}
 		$recipes = array(
-			'1' => 'Oliebollen',
-			'2' => 'Frietjes,'
+			'1' => 'Oliebollen met kaas',
+			'2' => 'Frietjes zonder mayonaise',
 		);
 		$recipe = $recipes[ $recipe_ref ];
 
@@ -2256,17 +2252,16 @@
 		// Uniformeer de gebruikersdata net voor we ze opslaan in de database STAAT GEEN WIJZIGINGEN TOE
 		// add_filter( 'update_user_metadata', 'sanitize_woocommerce_customer_fields', 10, 5 );
 
-		// WORDT NIET DOORLOPEN NA JAVASCRIPT REDIRECT
 		if ( ! empty( $_GET['referralZip'] ) ) {
 			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar
 			WC()->customer->set_billing_postcode( intval( $_GET['referralZip'] ) );
 			WC()->customer->set_shipping_postcode( intval( $_GET['referralZip'] ) );
-			write_log( print_r( $_GET['referralZip'], true ) );
 		}
 		if ( ! empty( $_GET['referralCity'] ) ) {
 			WC()->customer->set_billing_city( $_GET['referralCity'] );
 			WC()->customer->set_shipping_city( $_GET['referralCity'] );
-			write_log( print_r( $_GET['referralCity'], true ) );
+			// WORDT TOCH NIET INGESTELD INDIEN WINKELMANDJE ONTBREEKT?
+			// write_log( print_r( $_GET['referralCity'], true ) );
 		}
 	}
 

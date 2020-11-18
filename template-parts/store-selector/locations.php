@@ -10,7 +10,10 @@
 	<div class="store-selector-inner">
         <a href="#" class="store-selector-close"></a>
 		<h2>Selecteer jouw Oxfam-winkel</h2>
-		<p>Vul de postcode in waar jij de producten wil <b>afhalen</b> of waar ze <b>geleverd</b> moeten worden. Je bestelling wordt opgevolgd door de vrijwilligers van een Oxfam-Wereldwinkel in jouw buurt.</p>
+		<p>
+			<?php if ( isset( $_GET['triggerStoreLocator'] ) ) echo '<strong>Vooraleer we de ingrediënten in je winkelmandje kunnen leggen, dien je eerst nog een winkel te kiezen.</strong> '; ?>
+			Vul de postcode in waar jij de producten wil <b>afhalen</b> of waar ze <b>geleverd</b> moeten worden. Je bestelling wordt opgevolgd door de vrijwilligers van een Oxfam-Wereldwinkel in jouw buurt.
+		</p>
 		<?php
 			// Door core hack halen we altijd de winkels in het hoofdniveau op, werkt anders niet in subsites!
 			// Opgelet: instelling "Zodra een gebruiker op 'route' klikt, open een nieuwe venster en toon de route op google.com/maps" ingeschakeld laten
@@ -49,7 +52,14 @@
 			}
 		});
 
-		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
+		// var zips = <?php json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
+		/* Licht gewijzigde vorm voor autocomplete (per deelgemeente een nieuwe regel) */
+		var autocomplete_zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
+		
+		const urlParams = new URLSearchParams( window.location.search );
+		if ( urlParams.has('triggerStoreLocator') ) {
+			console.log("SHOULD OPEN STORE MODAL");
+		}
 		
 		/* Gebruik event delegation, de buttons in .nm-shop-products-col zijn niet noodzakelijk al aanwezig bij DOM load! */
 		/* Let op dat elementen niet dubbel getarget worden, dan zal preventDefault() roet in het eten gooien! */
@@ -58,7 +68,7 @@
 			jQuery('.store-selector-modal').toggleClass('open');
 			
 			var zip = jQuery('#wpsl-search-input').val();
-			if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
+			if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in autocomplete_zips) ) {
 				jQuery('#wpsl-search-btn').prop( 'disabled', false ).parent().addClass('is-valid');
 			}
 		});
@@ -80,8 +90,7 @@
 		});
 
 		jQuery('.autocomplete-postcodes').autocomplete({
-			/* Dit is een licht andere vorm dan var zips! */
-			source: <?php echo json_encode( get_flemish_zips_and_cities() ); ?>,
+			source: autocomplete_zips,
 			minLength: 1,
 			autoFocus: true,
 			position: { my : "right top", at: "right bottom" },
@@ -100,7 +109,8 @@
 			/* Probeer het huidige pad te bewaren! */
 			var current_url = window.location.href;
 			var current_zip = jQuery('#wpsl-search-input').val();
-			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+current_zip+'&referralCity='+zips[current_zip] );
+			/* Nog beter zou zijn om de effectief geselecteerde gemeente door te geven ... */
+			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+current_zip+'&referralCity='+autocomplete_zips[current_zip] );
 		});
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
