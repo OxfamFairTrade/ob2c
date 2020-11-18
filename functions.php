@@ -851,7 +851,7 @@
 					}
 				} else {
 					// Trigger de store locator met uitleg bovenaan (over het waarom van de tussenstap)
-					wp_safe_redirect( get_permalink( wc_get_page_id('shop').'?addSkus='.$_GET['addSkus'].'&recipeId='.$_GET['recipeId'].'&triggerStoreLocator' ) );
+					wp_safe_redirect( get_permalink( wc_get_page_id('shop') ).'?addSkus='.$_GET['addSkus'].'&recipeId='.$_GET['recipeId'].'&triggerStoreLocator' );
 					exit();
 				}
 			} else {
