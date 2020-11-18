@@ -122,6 +122,12 @@ get_header( 'shop' ); ?>
         }
     ?>
 
+    <?php 
+        // wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen. We bewaren je keuze in deze browser maar via de knop rechtsboven kun je steeds een andere webshop selecteren.', 'oxfam-webshop' ), 'error' );
+        
+        var_dump_pre( WC()->session->get('wc_notices') );
+        // wc_print_notices();
+    ?>
     <?php nm_print_shop_notices(); // Note: Don't remove, WooCommerce will output multiple messages otherwise ?>
 
     <div id="nm-shop-products" class="nm-shop-products">

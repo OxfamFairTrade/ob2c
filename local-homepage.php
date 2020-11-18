@@ -18,7 +18,12 @@
 				<div class="breadcrumb">
 					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">Home</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Webshop <?php echo get_webshop_name(true); ?></span>
 				</div>
-				<?php wc_print_notices(); ?>
+				<?php 
+					// wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen. We bewaren je keuze in deze browser maar via de knop rechtsboven kun je steeds een andere webshop selecteren.', 'oxfam-webshop' ), 'error' );
+					
+					var_dump_pre( WC()->session->get('wc_notices') );
+					wc_print_notices();
+				?>
 				<div class="col-row lh-intro">
 					<div class="col-xs-12 col-md-6">
 						<h2><?php echo ( ! is_main_site() ) ? 'Oxfam ' : ''; ?>Webshop <?php echo get_webshop_name(true); ?></h2>

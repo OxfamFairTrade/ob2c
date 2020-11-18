@@ -851,9 +851,11 @@
 					}
 				} else {
 					// Vermijd dubbele output (door heen-en-weer navigeren?)
-					wc_clear_notices();
+					// wc_clear_notices();
+					
 					wc_add_notice( __( 'Vooraleer we dit product in je winkelmandje kunnen leggen, dien je hieronder nog even je favoriete winkel / postcode te kiezen. We bewaren je keuze in deze browser maar via de knop rechtsboven kun je steeds een andere webshop selecteren.', 'oxfam-webshop' ), 'error' );
-					wp_safe_redirect( network_site_url() );
+					// TRIGGER STORE SELECTOR
+					wp_safe_redirect( get_permalink( wc_get_page_id('shop') ) );
 					exit();
 				}
 			} else {
