@@ -846,12 +846,12 @@
 					$destination_blog = get_blog_details( $_COOKIE['latest_blog_id'], false );
 					write_log( print_r( $destination_blog, true ) );
 					if ( $destination_blog->path !== '/' ) {
-						wp_safe_redirect( network_site_url( $destination_blog->path.'?addSkus='.$_GET['addSkus'].'&recipeRef='.$_GET['recipeRef'] ) );
+						wp_safe_redirect( network_site_url( $destination_blog->path.'?addSkus='.$_GET['addSkus'].'&recipeId='.$_GET['recipeId'] ) );
 						exit();
 					}
 				} else {
 					// Trigger de store locator met uitleg bovenaan (over het waarom van de tussenstap)
-					wp_safe_redirect( get_permalink( wc_get_page_id('shop').'?addSkus='.$_GET['addSkus'].'&recipeRef='.$_GET['recipeRef'].'&triggerStoreLocator' ) );
+					wp_safe_redirect( get_permalink( wc_get_page_id('shop').'?addSkus='.$_GET['addSkus'].'&recipeId='.$_GET['recipeId'].'&triggerStoreLocator' ) );
 					exit();
 				}
 			} else {
@@ -873,14 +873,15 @@
 			return;
 		}
 
-		if ( ! empty( $_GET['recipeRef'] ) ) {
-			$recipe_ref = $_GET['recipeRef'];
+		if ( ! empty( $_GET['recipeId'] ) ) {
+			$recipe_ref = $_GET['recipeId'];
 		} else {
 			$recipe_ref = '1';
 		}
 		$recipes = array(
 			'1' => 'Oliebollen met kaas',
 			'2' => 'Frietjes zonder mayonaise',
+			'28237' => 'Tartelettes van rode biet met (kerst)kroketjes',
 		);
 		$recipe = $recipes[ $recipe_ref ];
 

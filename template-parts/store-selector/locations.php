@@ -110,7 +110,7 @@
 			var current_url = window.location.href;
 			var current_zip = jQuery('#wpsl-search-input').val();
 			/* Nog beter zou zijn om de effectief geselecteerde gemeente door te geven ... */
-			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+current_zip+'&referralCity='+autocomplete_zips[current_zip] );
+			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+current_zip+'&referralCity='+autocomplete_zips[current_zip]+'&addSkus='+urlParams.get('addSkus')+'&recipeId='+urlParams.get('recipeId') );
 		});
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
