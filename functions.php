@@ -887,10 +887,8 @@
 			}
 		}
 
-		if ( WC()->session->has_session() ) {
-			if ( $recipe ) {
-				$executed = WC()->session->get( 'recipe_'.$recipe_id.'_products_ordered', 'no' );
-			}
+		if ( WC()->session->has_session() and $recipe ) {
+			$executed = WC()->session->get( 'recipe_'.$recipe_id.'_products_ordered', 'no' );
 		} else {
 			$executed = 'no';
 		}
