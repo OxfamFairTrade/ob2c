@@ -874,20 +874,23 @@
 			return;
 		}
 
-		if ( ! empty( $_GET['recipeId'] ) ) {
-			$recipe_ref = $_GET['recipeId'];
-		} else {
-			$recipe_ref = '1';
-		}
+		$recipe = false;
 		$recipes = array(
-			'1' => 'Oliebollen met kaas',
-			'2' => 'Frietjes zonder mayonaise',
+			'28168' => 'Kerststronk met Bite to Fight-chocolade',
 			'28237' => 'Tartelettes van rode biet met (kerst)kroketjes',
 		);
-		$recipe = $recipes[ $recipe_ref ];
+
+		if ( ! empty( $_GET['recipeId'] ) ) {
+			$recipe_id = $_GET['recipeId'];
+			if ( array_key_exists( $recipe_id, $recipes ) ) {
+				$recipe = $recipes[ $recipe_id ];
+			}
+		}
 
 		if ( WC()->session->has_session() ) {
-			$executed = WC()->session->get( 'recipe_'.$recipe_ref.'_products_ordered', 'no' );
+			if ( $recipe ) {
+				$executed = WC()->session->get( 'recipe_'.$recipe_id.'_products_ordered', 'no' );
+			}
 		} else {
 			$executed = 'no';
 		}
@@ -917,6 +920,7 @@
 						$product = wc_get_product( $product_id );
 						if ( WC()->cart->add_to_cart( $product_id, $quantity ) !== false ) {
 							$products_added += $quantity;
+							wc_add_notice( sprintf( __( 'Hoera, artikelnummer %s toegevoegd aan winkelmandje!', 'oxfam-webshop' ), $sku ), 'success' );
 						} else {
 							// In dit geval zal add_to_cart() zelf al een notice uitspuwen!
 							// Redirect eventueel naar productpagina (problematisch indien meerdere producten)
@@ -930,11 +934,15 @@
 			}
 
 			if ( $products_added === $total_products ) {
-				wc_add_notice( sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje.', 'oxfam-webshop' ), $recipe ), 'success' );
-				WC()->session->set( 'recipe_'.$recipe_ref.'_products_ordered', 'yes' );
+				if ( $recipe ) {
+					wc_add_notice( sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje.', 'oxfam-webshop' ), $recipe ), 'success' );
+					WC()->session->set( 'recipe_'.$recipe_id.'_products_ordered', 'yes' );
+				}
 			}
 		} else {
-			wc_add_notice( sprintf( __( 'De ingrediënten voor "%s" waren reeds toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recipe ), 'error' );
+			if ( $recipe ) {
+				wc_add_notice( sprintf( __( 'De ingrediënten voor "%s" waren reeds toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recipe ), 'error' );
+			}
 		}
 
 		// Redirect naar het winkelmandje, zodat eventuele foutmeldingen en kortingsbonnen zeker verschijnen
