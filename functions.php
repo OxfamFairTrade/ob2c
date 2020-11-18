@@ -4225,17 +4225,6 @@
 
 					// Skip check op uitzonderlijke sluitingsdagen
 					return find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
-				} elseif ( $shop_post_id === 'evergem' ) {
-					if ( date_i18n( 'N', $from ) > 2 ) {
-						// Na de deadline van dinsdag 23u59: begin pas bij 3de werkdag, kwestie van zeker op volgende week uit te komen
-						$from = strtotime( '+3 weekdays', $from );
-					}
-
-					// Zoek de eerste donderdag na de volgende middagdeadline (wordt wegens openingsuren automatisch vrijdagochtend)
-					$timestamp = strtotime( 'next Thursday', $from );
-
-					// Skip check op uitzonderlijke sluitingsdagen
-					return find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
 				} elseif ( intval( $shop_post_id ) === 3478 ) {
 					// Meer marge voor Hoogstraten
 					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
@@ -4279,15 +4268,6 @@
 
 					// Zoek de eerste woensdag
 					$timestamp = strtotime( 'next Wednesday', $from );
-				} elseif ( intval( $shop_post_id ) === 3409 ) {
-					// Voorlopig enkel thuislevering op vrijdag bij Evergem 
-					if ( date_i18n( 'N', $from ) > 2 ) {
-						// Na de deadline van dinsdag 23u59: begin pas bij 3de werkdag, kwestie van zeker op volgende week uit te komen
-						$from = strtotime( '+3 weekdays', $from );
-					}
-
-					// Zoek de eerste vrijdag
-					$timestamp = strtotime( 'next Friday', $from );
 				} else {
 					// Zoek de eerste werkdag na de volgende middagdeadline
 					$timestamp = get_first_working_day( $from );
@@ -6403,9 +6383,9 @@
 
 		$days = get_office_hours( NULL, $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
-		$exceptions = array( 'evergem' );
+		$exceptions = array();
 		if ( in_array( $atts['id'], $exceptions ) ) {
-			$holidays = array( '2020-11-01', '2020-11-11' );
+			$holidays = array( '2020-12-25', '2021-01-01' );
 		} else {
 			// Uitzondering voor Borgerhout en Merksem
 			if ( $atts['id'] == 3316 or $atts['id'] == 3646 ) {
