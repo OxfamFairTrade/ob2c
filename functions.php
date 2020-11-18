@@ -917,15 +917,18 @@
 				if ( $quantity > 0 ) {
 					$product_id = wc_get_product_id_by_sku( $sku );
 					if ( $product_id > 0 ) {
-						$product = wc_get_product( $product_id );
 						if ( WC()->cart->add_to_cart( $product_id, $quantity ) !== false ) {
 							$products_added += $quantity;
 							wc_add_notice( sprintf( __( 'Hoera, artikelnummer %s toegevoegd aan winkelmandje!', 'oxfam-webshop' ), $sku ), 'success' );
 						} else {
-							// In dit geval zal add_to_cart() zelf al een notice uitspuwen!
-							// Redirect eventueel naar productpagina (problematisch indien meerdere producten)
-							// wp_safe_redirect( $product->get_permalink() );
-							// exit();
+							// In dit geval zal add_to_cart() zelf al een notice uitspuwen! TENZIJ HET GEWOON NIET OP VOORRAAD IS?
+							
+							if ( count( $articles ) === 1 ) {
+								$product = wc_get_product( $product_id );
+								// Redirect naar productpagina
+								wp_safe_redirect( $product->get_permalink() );
+								exit();
+							}
 						}
 					} else {
 						wc_add_notice( sprintf( __( 'Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop.', 'oxfam-webshop' ), $sku ), 'error' );
