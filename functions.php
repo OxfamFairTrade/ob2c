@@ -845,7 +845,6 @@
 				// Redirect mag vanaf nu altijd gebeuren!
 				if ( ! empty( $_COOKIE['latest_blog_id'] ) ) {
 					$destination_blog = get_blog_details( $_COOKIE['latest_blog_id'], false );
-					write_log( print_r( $destination_blog, true ) );
 					if ( $destination_blog->path !== '/' ) {
 						wp_safe_redirect( network_site_url( $destination_blog->path.'?addSkus='.$_GET['addSkus'].'&recipeId='.$_GET['recipeId'] ) );
 						exit();
@@ -876,7 +875,12 @@
 
 		$recipe = false;
 		$recipes = array(
+			'26373' => 'Toastjes met cashewcrème en gemarineerde wortel',
+			'28156' => 'Mediterraanse focaccia met rozemarijn',
 			'28168' => 'Kerststronk met Bite to Fight-chocolade',
+			'28186' => 'Gevulde pompoen met quinoa en tahinsaus',
+			'28211' => 'Rode ui-taartjes',
+			'28206' => 'Pittig gevulde champignons',
 			'28237' => 'Tartelettes van rode biet met (kerst)kroketjes',
 		);
 
@@ -936,18 +940,24 @@
 				}
 			}
 
-			if ( $recipe ) {
-				if ( $products_added < $total_products ) {
-					wc_add_notice( sprintf( __( 'Sommige Oxfam-ingrediënten voor "%s" konden niet toegevoegd worden aan je winkelmandje.', 'oxfam-webshop' ), $recipe ), 'success' );
+			if ( $products_added < $total_products ) {
+				if ( $recipe ) {
+					$message = sprintf( __( 'Sommige Oxfam-ingrediënten voor "%s" konden niet toegevoegd worden aan je winkelmandje.', 'oxfam-webshop' ), $recipe );
 				} else {
-					wc_add_notice( sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recipe ), 'success' );
-					WC()->session->set( 'recipe_'.$recipe_id.'_products_ordered', 'yes' );
+					$message = __( 'Sommige producten konden niet toegevoegd worden aan je winkelmandje.', 'oxfam-webshop' );
 				}
+				wc_add_notice( $message, 'success' );
+			} else {
+				if ( $recipe ) {
+					$message = sprintf( __( 'Alle Oxfam-ingrediënten voor "%s" zijn toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recipe );
+					WC()->session->set( 'recipe_'.$recipe_id.'_products_ordered', 'yes' );
+				} else {
+					$message = __( 'Alle producten zijn toegevoegd aan je winkelmandje!', 'oxfam-webshop' );
+				}
+				wc_add_notice( $message, 'success' );
 			}
 		} else {
-			if ( $recipe ) {
-				wc_add_notice( sprintf( __( 'De ingrediënten voor "%s" waren reeds toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recipe ), 'error' );
-			}
+			wc_add_notice( sprintf( __( 'De ingrediënten voor "%s" waren reeds toegevoegd aan je winkelmandje!', 'oxfam-webshop' ), $recipe ), 'error' );
 		}
 
 		// Redirect naar het winkelmandje, zodat eventuele foutmeldingen en kortingsbonnen zeker verschijnen
@@ -6268,9 +6278,9 @@
 				echo '<div class="notice notice-warning">';
 					echo '<p>We voorzien deze week nog extra (sub)categorieën die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Bovendien zit de bulkaanmaak van een 150-tal centraal beheerde non-foodproducten, bovenop de bestaande agenda\'s en kalenders, in de laatste rechte lijn. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
 				echo '</div>';
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
+				echo '</div>';
 				// echo '<div class="notice notice-success">';
 				// 	echo '<p>Nog meer producten! Na de solidariteitsagenda\'s werden ook de nieuwe sintfiguren, biowijn, geschenkencheques en 11.11.11-kalenders toegevoegd aan de webshopdatabase:</p><ul style="margin-left: 2em; column-count: 2;">';
 				// 		$skus = array( 23706, 27152, 27153 );
