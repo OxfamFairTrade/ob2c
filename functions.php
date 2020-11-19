@@ -33,7 +33,7 @@
 	function disable_manual_product_removal( $post_id ) {
 		if ( get_post_type( $post_id ) == 'product' ) {
 			if ( ! wp_doing_cron() and ! current_user_can('update_core') ) {
-				if ( ! in_array( the_author_meta( $post_id ), get_local_manager_user_ids() ) ) {
+				if ( ! in_array( get_post_field( 'post_author', $post_id ), get_local_manager_user_ids() ) ) {
 					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van nationale producten niet toegestaan door lokale beheerders! Oude producten worden verwijderd vanuit het NS van zodra de uiterste uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn. Mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
 				}
 			}
