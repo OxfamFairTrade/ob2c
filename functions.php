@@ -27,14 +27,14 @@
 		return $name;
 	}
 
-	// Laat lokale beheerders enkel lokale producten verwijderen
-	add_action( 'before_delete_post', 'disable_manual_product_removal', 10, 1 );
+	// Laat lokale beheerders enkel lokale producten verwijderen (eventueel vervangen door 'pre_trash_post'-filter, maar die eindigt ook gewoon met wp_die() ...)
+	add_action( 'wp_trash_post', 'disable_manual_product_removal', 10, 1 );
 
 	function disable_manual_product_removal( $post_id ) {
 		if ( get_post_type( $post_id ) == 'product' ) {
 			if ( ! wp_doing_cron() and ! current_user_can('update_core') ) {
 				if ( ! in_array( get_post_field( 'post_author', $post_id ), get_local_manager_user_ids() ) ) {
-					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van nationale producten niet toegestaan door lokale beheerders! Oude producten worden verwijderd vanuit het NS van zodra de uiterste uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn. Mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
+					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van nationale producten door lokale beheerders niet toegestaan! Oude producten worden verwijderd van zodra de laatst uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn.<br/><br/>Keer terug naar %s of mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="'.wp_get_referer().'">de vorige pagina</a>', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
 				}
 			}
 		}
