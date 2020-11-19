@@ -49,6 +49,11 @@
 
   @media (max-width: 767px) {
     padding: 0;
+    max-width: calc(100% - 24px);
+  }
+
+  @media (max-width: 991px) {
+    width: 770px;
   }
 
   > div {

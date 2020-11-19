@@ -15,6 +15,15 @@
         padding-right: 0;
       }
     }
+
+    .page.type-page {
+      > .woocommerce {
+        > .container {
+          padding: 0;
+          max-width: 100%;
+        }
+      }
+    }
   }
 
   &.woocommerce-checkout {
@@ -102,8 +111,37 @@
       > table.shop_table {
         margin-bottom: 20px;
 
+        @media (max-width: 767px) {
+          display: flex;
+        }
+
+        tbody {
+          width: 100%;
+        }
+
         tr {
           border-top: 0;
+          border-bottom: 0;
+
+          @media (max-width: 767px) {
+            &,
+            th,
+            td {
+              display: inline-block;
+              width: 100%;
+            }
+
+            &.cart-subtotal,
+            &.order-total {
+              display: flex;
+              flex-wrap: wrap;
+
+              th,
+              td {
+                width: 50%;
+              }
+            }
+          }
 
           &.cart-subtotal {
             th,
@@ -150,6 +188,23 @@
 
         #shipping_method {
           margin-bottom: 0;
+
+          > li {
+            position: relative;
+
+            > input {
+              position: absolute;
+              top: 4px;
+            }
+
+            > label {
+              padding-left: 20px;
+            }
+
+            > .pickup-location-field {
+              margin: 15px 0;
+            }
+          }
         }
 
         .woocommerce-shipping-destination {

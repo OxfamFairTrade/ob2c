@@ -227,13 +227,8 @@
   cursor: pointer;
   z-index: 111;
   bottom: auto;
-  top: 20px;
-  right: 15px;
-
-  @media(max-width: 450px){
-    top: auto;
-    bottom: 40px;
-  }
+  right: 12px;
+  bottom: 36px;
 
   img {
     margin: 0;

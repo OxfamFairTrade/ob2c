@@ -45,7 +45,11 @@
             > .textwidget {
               > .nm-feature {
                 @media (max-width: 400px) {
-                  padding: 0 20px;
+                  //padding: 0 20px;
+                }
+
+                @media (max-width: 767px) {
+                  padding: 0 12px;
                 }
               }
             }

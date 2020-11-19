@@ -16,6 +16,10 @@ form.woocommerce-checkout {
       float: none;
       width: 50%;
 
+      @media (max-width: 524px) {
+        width: 100%;
+      }
+
       &.form-row-wide {
         width: 100%;
       }
@@ -39,6 +43,22 @@ form.woocommerce-checkout {
     padding-bottom: 0 !important;
     margin-bottom: 20px !important;
   }
+
+  .woocommerce-shipping-fields__field-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -12px;
+
+    .form-row-first,
+    .form-row-last {
+      padding: 0 12px;
+      width: 50%;
+
+      @media (max-width: 450px) {
+        width: 100%;
+      }
+    }
+  }
 }
 
 #order_review_heading {
@@ -49,19 +69,87 @@ form.woocommerce-checkout {
 #order_review {
   width: 100% !important;
 
+  #shipping_method {
+    margin-bottom: 0;
+
+    > li {
+      position: relative;
+
+      > input {
+        position: absolute;
+        top: 4px;
+      }
+
+      > label {
+        padding-left: 20px;
+      }
+
+      > .pickup-location-field {
+        margin: 15px 0;
+      }
+    }
+  }
+
   .shop_table {
     tbody tr:last-child td {
       padding-bottom: 14px !important;
+      border: 0 !important;
+    }
+
+    tr {
+      border-top: 0;
+      border-bottom: 0;
+    }
+
+    @media (max-width: 767px) {
+      display: flex;
+
+      &,
+      tbody,
+      tfoot,
+      tr,
+      th,
+      td {
+        width: 100%;
+        display: block;
+      }
+
+      tr {
+        &.cart-subtotal,
+        &.order-total {
+          display: flex;
+          flex-wrap: wrap;
+
+          th,
+          td {
+            width: 50%;
+          }
+        }
+      }
     }
 
     tfoot {
       tr {
+        .woocommerce-shipping-totals {
+          border-top: 0 !important;
+
+          > th {
+            display: none;
+          }
+        }
+
         th,
         td {
           background: 0 !important;
           padding: 15px 8px !important;
           border: 0 !important;
           border-bottom: 1px solid #eaeaea !important;
+
+          &[data-title="Verzending"] {
+            border-bottom: 0 !important;
+            padding-bottom: 0 !important;
+            padding-top: 0 !important;
+          }
 
           &:first-of-type {
             padding-left: 0 !important;
@@ -118,4 +206,10 @@ form.woocommerce-checkout {
         }
       }
     }
+}
+
+#order_comments-description {
+  font-style: italic;
+  margin-top: 5px;
+  display: inline-block;
 }

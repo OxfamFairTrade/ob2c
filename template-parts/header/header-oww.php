@@ -78,7 +78,7 @@
 
 <div id="header" class="visible-sm visible-xs" style="display: none;">
 	<div class="container">
-		<div class="col-row display-flex">
+		<div class="col-row">
 			<div class="col-xs-6 align-self-center">
 				<div class="logo">
 					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>

@@ -74,6 +74,11 @@
   }
 
   #nm-shop-widgets-ul {
+    @media (max-width: 991px) {
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
     .nm-widget-title {
       color: $black;
       font-size: 21.25px;
@@ -505,6 +510,7 @@
 
 .toggle-filter {
   margin-bottom: 35px;
+  margin-top: 35px;
 }
 
 .close-filter {
