@@ -2699,6 +2699,11 @@ div.nm-single-product.product .product_title {
   position: relative;
   font-size: 15px;
 }
+@media (max-width: 767px) {
+  .store-selector-modal .store-selector-inner {
+    padding: 15px;
+  }
+}
 .store-selector-modal .store-selector-inner h2 {
   font-size: 18px;
 }
@@ -2809,8 +2814,19 @@ div.nm-single-product.product .product_title {
   display: flex;
   justify-content: space-between;
 }
+@media (max-width: 767px) {
+  #wpsl-stores .wpsl-store-location {
+    flex-direction: column;
+  }
+}
 #wpsl-stores .wpsl-store-location > .wpsl-store-wrap {
   padding-right: 20px;
+}
+@media (max-width: 767px) {
+  #wpsl-stores .wpsl-store-location > .wpsl-store-wrap {
+    padding-right: 0;
+    margin-bottom: 20px;
+  }
 }
 #wpsl-stores .wpsl-store-location .wpsl-delivery-wrap .delivery-options > li {
   padding: 0 !important;

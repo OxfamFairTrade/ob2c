@@ -37,8 +37,11 @@
     margin: 12px;
     padding: 30px;
     position: relative;
-
     font-size: 15px;
+
+    @media (max-width: 767px) {
+      padding: 15px;
+    }
 
     h2 {
       font-size: 18px;
@@ -179,8 +182,17 @@
     display: flex;
     justify-content: space-between;
 
+    @media (max-width: 767px) {
+      flex-direction: column;
+    }
+
     > .wpsl-store-wrap {
       padding-right: 20px;
+
+      @media (max-width: 767px) {
+        padding-right: 0;
+        margin-bottom: 20px;
+      }
     }
 
     .wpsl-delivery-wrap {
