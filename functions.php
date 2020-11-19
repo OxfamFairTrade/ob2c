@@ -5234,6 +5234,7 @@
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_sitewide_banner_top', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_disable_local_pickup', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_remove_excel_header', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_b2b_invitation_text', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
@@ -5330,36 +5331,61 @@
 		} 
 	}
 
-	add_action( 'update_option_oxfam_does_risky_delivery', 'does_risky_delivery_was_updated', 10, 3 );
+	add_action( 'update_option_oxfam_disable_local_pickup', 'oxfam_disable_local_pickup', 10, 3 );
 
-	function does_risky_delivery_was_updated( $old_value, $new_value, $option ) {
+	function oxfam_disable_local_pickup( $old_value, $new_value, $option ) {
+		$updated = false;
+		
+		$option_key = 'woocommerce_local_pickup_plus_settings';
+		$settings = get_option( $option_key );
+		if ( is_array( $settings ) ) {
+			if ( $new_value !== 'yes' ) {
+				$new_value = 'no';
+			}
+			$settings['enabled'] = $new_value;
+
+			if ( update_option( $option_key, $settings ) ) {
+				$updated = true;
+			}
+		}
+
+		if ( $updated ) {
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' schakelde afhaling in de winkel uit', '<p>Vanaf nu kunnen klanten enkel nog opteren voor thuislevering in '.implode( ', ', get_oxfam_covered_zips() ).'!</p>' );
+		}
+	}
+
+	add_action( 'update_option_oxfam_does_risky_delivery', 'oxfam_boolean_field_option_was_updated', 10, 3 );
+	add_action( 'update_option_oxfam_disable_local_pickup', 'oxfam_boolean_field_option_was_updated', 10, 3 );
+	add_action( 'update_option_oxfam_remove_excel_header', 'oxfam_boolean_field_option_was_updated', 10, 3 );
+
+	function oxfam_boolean_field_option_was_updated( $old_value, $new_value, $option ) {
 		$body = false;
 
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( $new_value == 'yes' ) {
-			$body = 'Breekbare leveringen ingeschakeld!';
+			$body = 'ingeschakeld';
 		} elseif ( $old_value !== 'no' and $new_value === '' ) {
-			$body = 'Breekbare leveringen uitgeschakeld!';
+			$body = 'uitgeschakeld';
 		}
 
 		if ( $body ) {
-			send_automated_mail_to_helpdesk( get_webshop_name(true).' paste thuislevering van breekbare goederen aan', '<p>'.$body.'</p>' );
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-vinkje aan', '<p>Nieuwe waarde: '.$body.'</p>' );
 		}
 	}
 
-	add_action( 'add_option_oxfam_sitewide_banner_top', 'text_field_option_was_created', 10, 2 );
-	add_action( 'update_option_oxfam_sitewide_banner_top', 'text_field_option_was_updated', 10, 3 );
-	add_action( 'add_option_oxfam_b2b_invitation_text', 'text_field_option_was_created', 10, 2 );
-	add_action( 'update_option_oxfam_b2b_invitation_text', 'text_field_option_was_updated', 10, 3 );
+	add_action( 'add_option_oxfam_sitewide_banner_top', 'oxfam_text_field_option_was_created', 10, 2 );
+	add_action( 'update_option_oxfam_sitewide_banner_top', 'oxfam_text_field_option_was_updated', 10, 3 );
+	add_action( 'add_option_oxfam_b2b_invitation_text', 'oxfam_text_field_option_was_created', 10, 2 );
+	add_action( 'update_option_oxfam_b2b_invitation_text', 'oxfam_text_field_option_was_updated', 10, 3 );
 
-	function text_field_option_was_created( $option, $new_text ) {
+	function oxfam_text_field_option_was_created( $option, $new_text ) {
 		if ( strlen( $new_text ) > 0 ) {
 			$body = '"'.$new_text.'"';
 		}
 		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', '<p>'.$body.'</p>' );
 	}
 
-	function text_field_option_was_updated( $old_text, $new_text, $option ) {
+	function oxfam_text_field_option_was_updated( $old_text, $new_text, $option ) {
 		if ( strlen( $new_text ) > 0 ) {
 			$body = '"'.$new_text.'"';
 		} else {
