@@ -93,7 +93,7 @@
 						<span>Zoek</span>
 					</div>
 					<div class="header__item header__item_shop">
-						<?php echo get_permalink( wc_get_page_id('shop') ); ?>
+						<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a>
 					</div>
 					<div class="header__item header__item_cart">
 						<?php
