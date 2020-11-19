@@ -365,11 +365,13 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( 19066, 19067, 19068, 20266 );
+	$outofstocks = array( 23706, 27152, 27153 );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
 			$product = wc_get_product( $product_id );
+			$product->set_stock_quantity(0);
+			$product->set_backorders('no');
 			$product->set_stock_status('outofstock');
 			$product->save();
 		}
