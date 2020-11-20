@@ -995,7 +995,8 @@
 	}
 
 	// Activeer Facebook Pixel (JS)
-	add_action( 'wp_footer', 'add_facebook_pixel_js', 200 );
+	add_action( 'wp_head', 'add_facebook_pixel_js', 200 );
+	add_action( 'woocommerce_thankyou', 'add_fb_purchase_event', 10, 1 );
 
 	function add_facebook_pixel_js() {
 		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
@@ -1012,19 +1013,60 @@
 				'https://connect.facebook.net/en_US/fbevents.js');
 				fbq('init', '1964131620531187');
 				fbq('track', 'PageView');</script>
-				
-				<?php if ( is_product() ) : ?>
+				<?php
+
+				if ( is_product() ) {
+					?>
 					<script>
 						fbq('track', 'ViewContent', {
 							content_ids: '<?php echo get_post_meta( $post->ID, '_sku', true ); ?>',
 							content_type: 'product'
 						});
 					</script>
-				<?php endif; ?>
-
-				<?php
+					<?php
+				}
 			}
 		}
+	}
+
+	function add_fb_purchase_event( $order_id ) {
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return;
+		}
+
+		// Track geen onbetaalde bestellingen
+		if ( ! $order->is_paid() ) {
+			return;
+		}
+
+		$contents = array();
+		$content_ids = array();
+
+		foreach ( $order->get_items() as $item ) {
+			if ( $product = isset( $item['product_id'] ) ? wc_get_product( $item['product_id'] ) : NULL ) {
+				$content_ids[] = $product->get_sku();
+				
+				$content = new \stdClass();
+				$content->id = $product->get_sku();
+				$content->quantity = $item->get_quantity();
+				$contents[] = $content;
+			}
+		}
+
+		// Als Facebook Pixel niet ingeladen is, zal dit gewoon zacht falen (geen extra check nodig)
+		?>
+		<script>
+			fbq('track', 'Purchase', {
+				content_ids: <?php echo wp_json_encode( $content_ids ); ?>,
+				contents: <?php echo wp_json_encode( $contents ); ?>,
+				content_type: 'product',
+				value: <?php echo $order->get_total(); ?>,
+				currency: 'EUR'
+			});
+		</script>
+		<?php
 	}
 
 	// Activeer Facebook Pixel (no JS)
