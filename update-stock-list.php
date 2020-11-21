@@ -136,21 +136,25 @@
 								success: function(msg) {
 									tries = 0;
 									
-									// Pas de gekleurde rand aan na een succesvolle voorraadwijziging
-									if ( value == 'onbackorder' ) {
-										jQuery("#"+id).find('.border').removeClass('color-red color-green').addClass('color-orange');
-									} else if ( value == 'outofstock' ) {
-										jQuery("#"+id).find('.border').removeClass('color-green color-orange').addClass('color-red');
-									} else if ( value == 'instock' ) {
-										jQuery("#"+id).find('.border').removeClass('color-red color-orange').addClass('color-green');
+									if ( msg != 'ERROR' ) {
+										// Pas de gekleurde rand aan na een succesvolle voorraadwijziging
+										if ( value == 'onbackorder' ) {
+											jQuery("#"+id).find('.border').removeClass('color-red color-green').addClass('color-orange');
+										} else if ( value == 'outofstock' ) {
+											jQuery("#"+id).find('.border').removeClass('color-green color-orange').addClass('color-red');
+										} else if ( value == 'instock' ) {
+											jQuery("#"+id).find('.border').removeClass('color-red color-orange').addClass('color-green');
+										}
+
+										// Werk de tellers bij
+										jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border.color-green").length);
+										jQuery(".onbackorder-cnt").html(jQuery("#oxfam-products").find(".border-color-orange").length);
+										jQuery(".featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
+									} else {
+										msg = 'Niets gedaan!';
 									}
 
-									// Werk de tellers bij
-									jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border.color-green").length);
-									jQuery(".onbackorder-cnt").html(jQuery("#oxfam-products").find(".border-color-orange").length);
-									jQuery(".featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
-
-									jQuery("#"+id).find(".output").html("Wijzigingen opgeslagen!").delay(5000).animate({
+									jQuery("#"+id).find(".output").html(msg).delay(5000).animate({
 										opacity: 0,
 									}, 1000, function(){
 										jQuery(this).html("&nbsp;").css('opacity', 1);

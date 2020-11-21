@@ -1056,6 +1056,7 @@
 		}
 
 		// Als Facebook Pixel niet ingeladen is, zal dit gewoon zacht falen (geen extra check nodig)
+		// Door een event-ID mee te geven worden dubbel verstuurde events (bv. door heen en weer navigeren) weggefilterd
 		?>
 		<script>
 			fbq('track', 'Purchase', {
@@ -1064,7 +1065,7 @@
 				content_type: 'product',
 				value: <?php echo $order->get_total(); ?>,
 				currency: 'EUR'
-			});
+			}, { eventID: '<?php echo $order->get_order_number() ?>' });
 		</script>
 		<?php
 	}
@@ -5408,19 +5409,25 @@
 		wp_die();
 	}
 
-	function save_local_product_details( $id, $meta, $value ) {			
-		$msg = "";
-		$product = wc_get_product($id);
-		if ( $meta === 'stockstatus' ) {
-			$product->set_stock_status($value);
-			$msg .= "Voorraadstatus opgeslagen!";
-		} elseif ( $meta === 'featured' ) {
-			$product->set_featured($value);
-			$msg .= "Uitlichting opgeslagen!";
+	function save_local_product_details( $product_id, $meta, $value ) {			
+		$output = 'ERROR';
+		
+		$product = wc_get_product( $product_id );
+		if ( $product ) {
+			if ( $meta === 'stockstatus' ) {
+				$product->set_stock_status( $value );
+				$message = 'Voorraadstatus opgeslagen!';
+			} elseif ( $meta === 'featured' ) {
+				$product->set_featured($value);
+				$message = 'Uitlichting opgeslagen!';
+			}
+			
+			if ( $product->save() ) {
+				$output = $message;
+			}
 		}
-		// Retourneert product-ID on success?
-		$product->save();
-		return $msg;
+		
+		return $output;
 	}
 
 	function oxfam_photo_action_callback() {
@@ -5881,7 +5888,6 @@
 		 * @return array
 		 */
 		
-		// Publieke metadata zoals 'touched_by_import' wordt automatisch gesynchroniseerd?
 		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_main_thumbnail_id', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text' );
 		foreach ( $keys_to_copy as $key ) {
 			if ( $key === '_main_thumbnail_id' ) {
@@ -5897,9 +5903,14 @@
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
 
-		// foreach ( $meta_data as $key => $value ) {
-		// 	write_log( $key.' => '.$value );
-		// }
+		foreach ( $meta_data as $key => $value ) {
+			write_log( $key.' => '.$value );
+		}
+
+		// Publieke metadata zoals 'touched_by_import' wordt automatisch gesynchroniseerd?
+		if ( array_key_exists( 'touched_by_import', $meta_data ) ) {
+			unset( $meta_data['touched_by_import'] );
+		}
 		
 		return $meta_data;
 	}
@@ -6229,24 +6240,24 @@
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
 				// echo '</div>';
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Nog meer producten! Na de solidariteitsagenda\'s werden ook de nieuwe sintfiguren, biowijn, geschenkencheques en 11.11.11-kalenders toegevoegd aan de webshopdatabase:</p><ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 23706, 27152, 27153 );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Alvast 3 nieuwe voedingsproducten:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 23706, 27152, 27153 );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. (Deze producten zaten sinds donderdag 19/11 in de database maar konden door een conflict lokaal pas vanaf vrijdagavond op voorraad gezet worden.)</p>';
+				echo '</div>';
 				echo '<div class="notice notice-info">';
-					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
+					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. In november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen

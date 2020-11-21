@@ -84,11 +84,14 @@
 	// Werk productcategorie bij
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'snacks-drinks' );
-		foreach ( $terms as $term ) {
-			$term_to_update = get_term_by( 'slug', $term, $taxonomy );
+		$terms = array(
+			'wonen-mode-speelgoed' => 'Wonen',
+			'geschenken' => 'Geschenken & wenskaarten',
+		);
+		foreach ( $terms as $old_term_slug => $new_term_name ) {
+			$term_to_update = get_term_by( 'slug', $old_term_slug, $taxonomy );
 			if ( $term_to_update !== false ) {
-				if ( is_wp_error( wp_update_term( $term_to_update->term_id, $taxonomy, array( 'slug' => 'snacks', 'name' => 'Snacks' ) ) ) ) {
+				if ( is_wp_error( wp_update_term( $term_to_update->term_id, $taxonomy, array( 'slug' => sanitize_title( $new_term_name ), 'name' => $new_term_name ) ) ) ) {
 					write_log("COULD NOT UPDATE ".$term_to_update->name);
 				}
 			} else {
@@ -365,11 +368,13 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( 19066, 19067, 19068, 20266 );
+	$outofstocks = array( 23706, 27152, 27153 );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
 			$product = wc_get_product( $product_id );
+			// On first publish wordt voorraadbeheer van nationaal ook lokaal geactiveerd!
+			$product->set_manage_stock('no');
 			$product->set_stock_status('outofstock');
 			$product->save();
 		}
