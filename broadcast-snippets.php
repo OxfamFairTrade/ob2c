@@ -95,7 +95,7 @@
 					write_log("COULD NOT UPDATE ".$term_to_update->name);
 				}
 			} else {
-				write_log("Blog-ID ".get_current_blog_id().": product category '".$term."' not found");
+				write_log("Blog-ID ".get_current_blog_id().": product category '".$old_term_slug."' not found");
 			}
 		}
 	}
@@ -103,7 +103,7 @@
 	// Verwijder productcategorieën
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'koffie-thee', 'capsules', 'geen-categorie' );
+		$terms = array( 'cadeaubonnen' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {

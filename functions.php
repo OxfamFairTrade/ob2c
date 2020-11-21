@@ -6235,13 +6235,13 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-warning">';
-					echo '<p>We voorzien deze week nog extra (sub)categorieën die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Bovendien zit de bulkaanmaak van een 150-tal centraal beheerde non-foodproducten, bovenop de bestaande agenda\'s en kalenders, in de laatste rechte lijn. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
+					echo '<p>Er werden 13 extra categorieën toegevoegd die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Opgelet: alle producten die vroeger in de megacategorie \'Wonen, mode & speelgoed\' zaten, zitten nu onder \'Wonen\'. Pas de categorie indien nodig aan naar een geschiktere (sub)categorie. Daarnaast zit de bulkaanmaak van een 150-tal centraal beheerde non-foodproducten, bovenop de bestaande agenda\'s en kalenders, in de laatste rechte lijn. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
 				echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
 				// echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>Alvast 3 nieuwe voedingsproducten:</p><ul style="margin-left: 2em; column-count: 2;">';
+					echo '<p>Er verschenen alvast 3 nieuwe voedingsproducten:</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 23706, 27152, 27153 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
