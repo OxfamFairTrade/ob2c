@@ -158,7 +158,7 @@
 			);
 
 			global $product_object;
-			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
+			if ( is_national_product( $product_object ) ) {
 				$net_unit_args['custom_attributes']['disabled'] = true;
 				$net_content_args['custom_attributes']['readonly'] = true;
 				$fairtrade_share_args['custom_attributes']['readonly'] = true;
@@ -223,7 +223,7 @@
 			);
 
 			global $product_object;
-			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
+			if ( is_national_product( $product_object ) ) {
 				$cu_ean_args['custom_attributes']['readonly'] = true;
 				$multiple_args['custom_attributes']['readonly'] = true;
 			}
@@ -243,7 +243,7 @@
 		$regular_meta_keys = array();
 
 		// Of kijken naar waarde $_POST['_woonet_child_inherit_updates'] / werken met woocommerce_wp_hidden_input()?
-		if ( get_post_meta( $post_id, '_woonet_network_is_child_site_id', true ) != 1 ) {
+		if ( ! is_national_product( $product_object ) ) {
 			// Deze velden zijn enkel bewerkbaar (en dus aanwezig in $_POST) indien lokaal product
 			$regular_meta_keys[] = '_cu_ean';
 			$regular_meta_keys[] = '_multiple';
@@ -344,7 +344,7 @@
 	
 	function notify_on_local_product_creation( $post ) {
 		if ( ! is_main_site() and $post->post_type === 'product' ) {
-			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != 1 ) {
+			if ( ! is_national_product( $post ) ) {
 				$product = wc_get_product( $post->ID );
 				if ( $product !== false ) {
 					send_automated_mail_to_helpdesk( 'Nieuw lokaal product ('.$product->get_sku().'): '.$product->get_name(), '<p>Bekijk het product <a href="'.$product->get_permalink().'">in de front-end</a>.</p>' );
@@ -354,8 +354,8 @@
 	}
 
 	function notify_on_local_product_creation_bis( $post_id, $post ) {
-		if ( ! is_main_site() and $post->post_type === 'product' ) {
-			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != 1 ) {
+		if ( ! is_main_site() ) {
+			if ( ! is_national_product( $post ) ) {
 				send_automated_mail_to_helpdesk( 'Nieuw lokaal product: '.get_the_title( $post ), '<p>Bekijk het product <a href="'.get_permalink( $post ).'">in de front-end</a>.</p>' );
 			}
 		}
@@ -6697,6 +6697,15 @@
 		$regions = array( 24, 28, 40, 53 );
 		// Opgelet: vergeet de custom orderstatus 'claimed' niet te publiceren naar deze subsites!
 		return in_array( get_current_blog_id(), $regions );
+	}
+
+	// Kan zowel product- als postobjecten ontvangen
+	function is_national_product( $object ) {
+		if ( $object instanceof WC_Product ) {
+			return ( intval( $object->get_meta('_woonet_network_is_child_site_id') ) === 1 );
+		} else {
+			return ( intval( get_post_meta( $object->ID, '_woonet_network_is_child_site_id', true ) ) === 1 );
+		}
 	}
 
 	function get_external_wpsl_store( $shop_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
