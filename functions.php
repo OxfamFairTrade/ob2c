@@ -1176,7 +1176,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.1' );
+		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.2' );
 	}
 
 	// Fixes i.v.m. cURL
@@ -6241,7 +6241,8 @@
 				// 	echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
 				// echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>Er verschenen alvast 3 nieuwe voedingsproducten:</p><ul style="margin-left: 2em; column-count: 2;">';
+					// column-count: 2;
+					echo '<p>Er verschenen alvast 3 nieuwe voedingsproducten:</p><ul style="margin-left: 2em;">';
 						$skus = array( 23706, 27152, 27153 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
@@ -6254,7 +6255,7 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. (Deze producten zaten sinds donderdag 19/11 in de database maar konden door een conflict lokaal pas vanaf vrijdagavond op voorraad gezet worden.)</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. (Deze producten zaten sinds donderdag 19/11 in de database maar konden door een conflict lokaal pas vanaf zaterdag 21/11 op voorraad gezet worden.)</p>';
 				echo '</div>';
 				echo '<div class="notice notice-info">';
 					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. In november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
