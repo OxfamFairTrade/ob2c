@@ -10,7 +10,7 @@
 			<div class="col-md-3 md-align-self-center">
 				<div class="logo">
 					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">
-						<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
+						<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green-christmas.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
 					</a>
 				</div>
 			</div>
@@ -80,7 +80,7 @@
 		<div class="col-row display-flex">
 			<div class="col-xs-6 align-self-center">
 				<div class="logo">
-					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
+					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green-christmas.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
 				</div>
 			</div> 
 			<div class="col-xs-6 align-self-center">
