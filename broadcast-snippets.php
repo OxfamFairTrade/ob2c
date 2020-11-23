@@ -128,17 +128,8 @@
 	$new_page = get_page_by_title('Producten');
 	if ( $new_page !== null ) {
 		update_option( 'woocommerce_shop_page_id', $new_page->ID );
-		$old_page = get_page_by_title('Onze producten');
-		if ( $old_page !== null ) {
-			if ( wp_delete_post( $old_page->ID, true ) ) {
-				wp_update_post( array(
-					'ID' => $new_page->ID,
-					'post_name' => 'producten',
-				) );
-			}
-			// Lost het probleem met de lege shoppagina op!
-			flush_rewrite_rules();
-		}
+		// Lost het probleem met de lege shoppagina op na het toevoegen van nieuwe categorieën via Broadcast sync!
+		flush_rewrite_rules();
 	}
 
 	// Fix voorraadtermen voorradige producten
