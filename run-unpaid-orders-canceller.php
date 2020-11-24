@@ -54,7 +54,7 @@
 				$unfinished_args = array(
 					'type' => 'shop_order',
 					'status' => 'processing',
-					'date_paid' => '<'.strtotime('-3 weekdays'),
+					'date_paid' => '<'.strtotime('-4 weekdays'),
 					'limit' => -1,
 				);
 				$unfinished_orders = wc_get_orders( $unfinished_args );
@@ -87,6 +87,28 @@
 									unset( $attachments );
 								}
 							}
+						}
+					}
+				}
+
+				// DOOR EEN BUG IN DE MOLLIE-PLUGIN WORDEN GEDEELTELIJK TERUGBETAALDE BESTELLINGEN OP ON-HOLD GEZET
+				$refunded_args = array(
+					'type' => 'shop_order',
+					'status' => 'on-hold',
+					'limit' => -1,
+				);
+				$refunded_orders = wc_get_orders( $refunded_args );
+
+				if ( count( $refunded_orders ) > 0 ) {
+					echo 'REFUNDED ORDERS<br/>';
+					foreach ( $refunded_orders as $order ) {
+						echo $order->get_order_number().'<br/>';
+						// We gebruiken geen $order->update_status() om te vermijden dat we nogmaals een mail naar de klant triggeren
+						if ( wp_update_post( array( 'ID' => $order->get_id(), 'post_status' => 'wc-completed' ) ) == $order->get_id() ) {
+							$order->add_order_note( 'Fix automatisch heropenen van bestelling door bug in Mollie-plugin na gedeeltelijke terugbetaling.' );
+							$logger->info( $order->get_order_number().": opnieuw afgerond na gedeeltelijke terugbetaling", $context );
+						} else {
+							$logger->warning( $order->get_order_number().": opnieuw afronden mislukt", $context );
 						}
 					}
 				}
