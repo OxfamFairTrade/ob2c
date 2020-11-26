@@ -5,7 +5,9 @@
 
 .page-template-local-homepage {
   .nm-shop-search-inner {
-    margin-top: 53px !important;
+    @media (min-width: 992px) {
+      margin-top: 53px !important;
+    }
   }
 
   .lh-intro {

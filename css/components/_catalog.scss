@@ -12,6 +12,7 @@
 
   @media (max-width: 991px) {
     margin-top: 32px !important;
+    margin-bottom: 32px !important;
   }
 
   .catalog-filters > .nm-shop-widget-col {
@@ -353,8 +354,20 @@
       margin-right: -12px;
       zoom: 1;
       padding: 0;
+
+      @media (max-width: 991px) {
+        display: flex;
+        flex-direction: column;
+
+        > .nm-shop-sidebar-col {
+          order: 2;
+        }
+      }
     }
   }
+
+
+  @media (max-width: 767px) {}
 }
 
 .nm-shop-search-inner {

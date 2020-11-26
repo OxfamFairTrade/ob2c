@@ -1002,7 +1002,7 @@ table tbody td:last-child {
   background-image: url(/wp-content/themes/oxfam-webshop/images/icon-location.svg);
 }
 .header__item_shop:before {
-  background-image: url(/wp-content/themes/oxfam-webshop/images/icon-location.svg);
+  background-image: url(/wp-content/themes/oxfam-webshop/images/icons/products.svg);
 }
 .header__item_cart:before {
   content: none;
@@ -1010,26 +1010,26 @@ table tbody td:last-child {
 .header__item_cart > a {
   padding-top: 0;
   display: inline-block;
-  width: 40px;
-  height: 40px;
+  width: 47px;
+  height: 47px;
   vertical-align: top;
-  background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
+  background: url(/wp-content/themes/oxfam-webshop/images/icons/cart.svg) no-repeat center center transparent;
   background-size: 40px 40px;
   position: relative;
 }
 .header__item_cart > a > .nm-menu-cart-count {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   display: block;
-  font-size: 12px;
-  background: #1b1b1B;
+  font-size: 14px;
+  background: #fd3444;
   color: #ffffff;
   text-align: center;
-  line-height: 20px;
+  line-height: 22px;
   border-radius: 50%;
   position: absolute;
   top: 0;
-  right: 5px;
+  right: 0;
   padding-top: 0;
 }
 .header__item_search {
@@ -1255,11 +1255,6 @@ table tbody td:last-child {
   font-size: 12.75px;
   line-height: normal;
 }
-@media (max-width: 991px) {
-  .breadcrumb {
-    display: none;
-  }
-}
 .breadcrumb .sep:after {
   margin: 0 5px;
   content: "/";
@@ -1296,8 +1291,10 @@ table tbody td:last-child {
   color: #696767;
 }
 
-.page-template-local-homepage .nm-shop-search-inner {
-  margin-top: 53px !important;
+@media (min-width: 992px) {
+  .page-template-local-homepage .nm-shop-search-inner {
+    margin-top: 53px !important;
+  }
 }
 .page-template-local-homepage .lh-intro p:last-child {
   margin-bottom: 20px;
@@ -1434,6 +1431,7 @@ table tbody td:last-child {
 @media (max-width: 991px) {
   .nm-shop-sidebar-default #nm-shop-sidebar {
     margin-top: 32px !important;
+    margin-bottom: 32px !important;
   }
 }
 .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col {
@@ -1730,7 +1728,15 @@ table tbody td:last-child {
   zoom: 1;
   padding: 0;
 }
-
+@media (max-width: 991px) {
+  #nm-shop #nm-shop-products > .nm-row {
+    display: flex;
+    flex-direction: column;
+  }
+  #nm-shop #nm-shop-products > .nm-row > .nm-shop-sidebar-col {
+    order: 2;
+  }
+}
 .nm-shop-search-inner {
   border: 0;
   padding: 0;
@@ -3081,7 +3087,7 @@ div.nm-single-product.product .product_title {
   color: white;
   margin: 20px auto;
   display: block;
-  max-width: calc(100% - 40px);
+  max-width: calc(100% - 24px);
 }
 @media (max-width: 767px) {
   .general-store-notice {
@@ -3091,6 +3097,7 @@ div.nm-single-product.product .product_title {
 @media (max-width: 991px) {
   .general-store-notice {
     width: 770px;
+    padding: 0;
   }
 }
 .general-store-notice > div {

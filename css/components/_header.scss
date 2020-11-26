@@ -373,7 +373,7 @@
   }
 
   &_shop:before {
-    background-image: url(/wp-content/themes/oxfam-webshop/images/icon-location.svg);
+    background-image: url(/wp-content/themes/oxfam-webshop/images/icons/products.svg);
   }
 
   &_cart {
@@ -384,26 +384,26 @@
     > a {
       padding-top: 0;
       display: inline-block;
-      width: 40px;
-      height: 40px;
+      width: 47px;
+      height: 47px;
       vertical-align: top;
-      background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
+      background: url(/wp-content/themes/oxfam-webshop/images/icons/cart.svg) no-repeat center center transparent;
       background-size: 40px 40px;
       position: relative;
 
       > .nm-menu-cart-count {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
         display: block;
-        font-size: 12px;
-        background: $black;
+        font-size: 14px;
+        background: $red-cart;
         color: $white;
         text-align: center;
-        line-height: 20px;
+        line-height: 22px;
         border-radius: 50%;
         position: absolute;
         top: 0;
-        right: 5px;
+        right: 0;
         padding-top: 0;
       }
     }
