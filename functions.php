@@ -202,7 +202,7 @@
 			);
 
 			global $product_object;
-			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
+			if ( is_national_product( $product_object ) ) {
 				$net_unit_args['custom_attributes']['disabled'] = true;
 				$net_content_args['custom_attributes']['readonly'] = true;
 				$fairtrade_share_args['custom_attributes']['readonly'] = true;
@@ -267,7 +267,7 @@
 			);
 
 			global $product_object;
-			if ( $product_object->get_meta('_woonet_network_is_child_site_id') == 1 ) {
+			if ( is_national_product( $product_object ) ) {
 				$cu_ean_args['custom_attributes']['readonly'] = true;
 				$multiple_args['custom_attributes']['readonly'] = true;
 			}
@@ -287,7 +287,7 @@
 		$regular_meta_keys = array();
 
 		// Of kijken naar waarde $_POST['_woonet_child_inherit_updates'] / werken met woocommerce_wp_hidden_input()?
-		if ( get_post_meta( $post_id, '_woonet_network_is_child_site_id', true ) != 1 ) {
+		if ( ! is_national_product( $post_id ) ) {
 			// Deze velden zijn enkel bewerkbaar (en dus aanwezig in $_POST) indien lokaal product
 			$regular_meta_keys[] = '_cu_ean';
 			$regular_meta_keys[] = '_multiple';
@@ -388,7 +388,7 @@
 	
 	function notify_on_local_product_creation( $post ) {
 		if ( ! is_main_site() and $post->post_type === 'product' ) {
-			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != 1 ) {
+			if ( ! is_national_product( $post->ID ) ) {
 				$product = wc_get_product( $post->ID );
 				if ( $product !== false ) {
 					send_automated_mail_to_helpdesk( 'Nieuw lokaal product ('.$product->get_sku().'): '.$product->get_name(), '<p>Bekijk het product <a href="'.$product->get_permalink().'">in de front-end</a>.</p>' );
@@ -398,8 +398,8 @@
 	}
 
 	function notify_on_local_product_creation_bis( $post_id, $post ) {
-		if ( ! is_main_site() and $post->post_type === 'product' ) {
-			if ( get_post_meta( $post->ID, '_woonet_network_is_child_site_id', true ) != 1 ) {
+		if ( ! is_main_site() ) {
+			if ( ! is_national_product( $post_id ) ) {
 				send_automated_mail_to_helpdesk( 'Nieuw lokaal product: '.get_the_title( $post ), '<p>Bekijk het product <a href="'.get_permalink( $post ).'">in de front-end</a>.</p>' );
 			}
 		}
@@ -1110,6 +1110,7 @@
 		}
 
 		// Als Facebook Pixel niet ingeladen is, zal dit gewoon zacht falen (geen extra check nodig)
+		// Door een event-ID mee te geven worden dubbel verstuurde events (bv. door heen en weer navigeren) weggefilterd
 		?>
 		<script>
 			fbq('track', 'Purchase', {
@@ -1118,7 +1119,7 @@
 				content_type: 'product',
 				value: <?php echo $order->get_total(); ?>,
 				currency: 'EUR'
-			});
+			}, { eventID: '<?php echo $order->get_order_number() ?>' });
 		</script>
 		<?php
 	}
@@ -1229,7 +1230,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.1' );
+		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.2' );
 	}
 
 	// Fixes i.v.m. cURL
@@ -5513,19 +5514,25 @@
 		wp_die();
 	}
 
-	function save_local_product_details( $id, $meta, $value ) {			
-		$msg = "";
-		$product = wc_get_product($id);
-		if ( $meta === 'stockstatus' ) {
-			$product->set_stock_status($value);
-			$msg .= "Voorraadstatus opgeslagen!";
-		} elseif ( $meta === 'featured' ) {
-			$product->set_featured($value);
-			$msg .= "Uitlichting opgeslagen!";
+	function save_local_product_details( $product_id, $meta, $value ) {			
+		$output = 'ERROR';
+		
+		$product = wc_get_product( $product_id );
+		if ( $product ) {
+			if ( $meta === 'stockstatus' ) {
+				$product->set_stock_status( $value );
+				$message = 'Voorraadstatus opgeslagen!';
+			} elseif ( $meta === 'featured' ) {
+				$product->set_featured($value);
+				$message = 'Uitlichting opgeslagen!';
+			}
+			
+			if ( $product->save() ) {
+				$output = $message;
+			}
 		}
-		// Retourneert product-ID on success?
-		$product->save();
-		return $msg;
+		
+		return $output;
 	}
 
 	function oxfam_photo_action_callback() {
@@ -5986,7 +5993,6 @@
 		 * @return array
 		 */
 		
-		// Publieke metadata zoals 'touched_by_import' wordt automatisch gesynchroniseerd?
 		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_main_thumbnail_id', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text' );
 		foreach ( $keys_to_copy as $key ) {
 			if ( $key === '_main_thumbnail_id' ) {
@@ -6005,6 +6011,12 @@
 		// foreach ( $meta_data as $key => $value ) {
 		// 	write_log( $key.' => '.$value );
 		// }
+
+		// Publieke metadata zoals 'touched_by_import' wordt automatisch gesynchroniseerd?
+		if ( array_key_exists( 'touched_by_import', $meta_data ) ) {
+			write_log( 'touched_by_import => '.$meta_data['touched_by_import'] );
+			unset( $meta_data['touched_by_import'] );
+		}
 		
 		return $meta_data;
 	}
@@ -6200,7 +6212,7 @@
 	function dashboard_pilot_news_widget_function() {
 		echo '<div class="rss-widget">';
 		echo '<p>De <a href="https://github.com/OxfamFairTrade/ob2c/wiki" target="_blank">online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Gebruik eventueel de zoekfunctie bovenaan rechts.</p>';
-		echo '<p>Daarnaast kun je de nieuwe slides van de voorbije opleidingssessies raadplegen voor een overzicht van alle afspraken en praktische details: <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-concept.pdf" target="_blank">Deel 1: Concept</a> (16/05/2020) en <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-praktisch.pdf" target="_blank">Deel 2: Praktisch</a> (30/05/2020). Op <a href="https://copain.oww.be/webshop" target="_blank">de webshoppagina op Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
+		echo '<p>Daarnaast kun je de nieuwe slides van de voorbije opleidingssessies raadplegen voor een overzicht van alle afspraken en praktische details: <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-concept.pdf" download>Deel 1: Concept</a> (16/05/2020) en <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-praktisch.pdf" download>Deel 2: Praktisch</a> (30/05/2020). Op <a href="https://copain.oww.be/webshop" target="_blank">de webshoppagina op Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
 		echo '<p>Stuur een mailtje naar de <a href="mailto:e-commerce@oft.be?">Helpdesk E-Commerce</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Tineke, Ive, Elien en Frederik helpen je zo snel mogelijk verder.</p>';
 		echo '</div>';
 	}
@@ -6329,29 +6341,30 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-warning">';
-					echo '<p>We voorzien deze week nog extra (sub)categorieën die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Bovendien zit de bulkaanmaak van een 150-tal centraal beheerde non-foodproducten, bovenop de bestaande agenda\'s en kalenders, in de laatste rechte lijn. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
+					echo '<p>Er werden 13 extra categorieën toegevoegd die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Duiding bij welke producten we in welke categorie verwachten vind je in <a href="https://shop.oxfamwereldwinkels.be/structuur-crafts.pdf" download>deze nota</a>. Opgelet: alle producten die vroeger in de megacategorie \'Wonen, mode & speelgoed\' zaten, zitten nu onder \'Wonen\'. Pas de categorie indien nodig aan naar een geschiktere (sub)categorie. De cadeaubonnen werden verhuisd naar de algemenere categorie \'Geschenken & wenskaarten\'.</p><p>Daarnaast zit de bulkaanmaak van een 150-tal centraal beheerde non-foodproducten, bovenop de bestaande agenda\'s en kalenders, in de laatste rechte lijn. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
 				echo '</div>';
-				echo '<div class="notice notice-info">';
-					echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
-				echo '</div>';
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Nog meer producten! Na de solidariteitsagenda\'s werden ook de nieuwe sintfiguren, biowijn, geschenkencheques en 11.11.11-kalenders toegevoegd aan de webshopdatabase:</p><ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 23706, 27152, 27153 );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De promoties op de handzeep en de tissues zullen meteen actief worden.</p>';
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
 				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					// column-count: 2;
+					echo '<p>Er verschenen alvast 3 nieuwe voedingsproducten:</p><ul style="margin-left: 2em;">';
+						$skus = array( 23706, 27152, 27153 );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. (Deze producten zaten sinds donderdag 19/11 in de database maar konden door een conflict lokaal pas vanaf zaterdag 21/11 op voorraad gezet worden.)</p>';
+				echo '</div>';
 				echo '<div class="notice notice-info">';
-					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Begin november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
+					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. In november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
@@ -6791,6 +6804,15 @@
 		$regions = array( 24, 28, 40, 53 );
 		// Opgelet: vergeet de custom orderstatus 'claimed' niet te publiceren naar deze subsites!
 		return in_array( get_current_blog_id(), $regions );
+	}
+
+	// Kan zowel productobject als post-ID ontvangen
+	function is_national_product( $object ) {
+		if ( $object instanceof WC_Product ) {
+			return ( intval( $object->get_meta('_woonet_network_is_child_site_id') ) === 1 );
+		} else {
+			return ( intval( get_post_meta( $object, '_woonet_network_is_child_site_id', true ) ) === 1 );
+		}
 	}
 
 	function get_external_wpsl_store( $shop_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {

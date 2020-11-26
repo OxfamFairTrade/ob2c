@@ -84,15 +84,18 @@
 	// Werk productcategorie bij
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'snacks-drinks' );
-		foreach ( $terms as $term ) {
-			$term_to_update = get_term_by( 'slug', $term, $taxonomy );
+		$terms = array(
+			'wonen-mode-speelgoed' => 'Wonen',
+			'geschenken' => 'Geschenken & wenskaarten',
+		);
+		foreach ( $terms as $old_term_slug => $new_term_name ) {
+			$term_to_update = get_term_by( 'slug', $old_term_slug, $taxonomy );
 			if ( $term_to_update !== false ) {
-				if ( is_wp_error( wp_update_term( $term_to_update->term_id, $taxonomy, array( 'slug' => 'snacks', 'name' => 'Snacks' ) ) ) ) {
+				if ( is_wp_error( wp_update_term( $term_to_update->term_id, $taxonomy, array( 'slug' => sanitize_title( $new_term_name ), 'name' => $new_term_name ) ) ) ) {
 					write_log("COULD NOT UPDATE ".$term_to_update->name);
 				}
 			} else {
-				write_log("Blog-ID ".get_current_blog_id().": product category '".$term."' not found");
+				write_log("Blog-ID ".get_current_blog_id().": product category '".$old_term_slug."' not found");
 			}
 		}
 	}
@@ -100,7 +103,7 @@
 	// Verwijder productcategorieën
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'koffie-thee', 'capsules', 'geen-categorie' );
+		$terms = array( 'cadeaubonnen' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {
@@ -125,17 +128,8 @@
 	$new_page = get_page_by_title('Producten');
 	if ( $new_page !== null ) {
 		update_option( 'woocommerce_shop_page_id', $new_page->ID );
-		$old_page = get_page_by_title('Onze producten');
-		if ( $old_page !== null ) {
-			if ( wp_delete_post( $old_page->ID, true ) ) {
-				wp_update_post( array(
-					'ID' => $new_page->ID,
-					'post_name' => 'producten',
-				) );
-			}
-			// Lost het probleem met de lege shoppagina op!
-			flush_rewrite_rules();
-		}
+		// Lost het probleem met de lege shoppagina op na het toevoegen van nieuwe categorieën via Broadcast sync!
+		flush_rewrite_rules();
 	}
 
 	// Fix voorraadtermen voorradige producten
@@ -370,8 +364,8 @@
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
 			$product = wc_get_product( $product_id );
-			$product->set_stock_quantity(0);
-			$product->set_backorders('no');
+			// On first publish wordt voorraadbeheer van nationaal ook lokaal geactiveerd!
+			$product->set_manage_stock('no');
 			$product->set_stock_status('outofstock');
 			$product->save();
 		}
