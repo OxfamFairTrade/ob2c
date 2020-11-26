@@ -89,11 +89,11 @@
 					<div class="header__item header__item_winkel">
 						<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/winkels/">Winkels</a>
 					</div>
-					<div class="header__item header__item_search">
-						<span>Zoek</span>
-					</div>
 					<div class="header__item header__item_shop">
 						<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a>
+					</div>
+					<div class="header__item header__item_search">
+						<span>Zoek</span>
 					</div>
 					<div class="header__item header__item_cart">
 						<?php
