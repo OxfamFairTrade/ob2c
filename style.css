@@ -665,6 +665,11 @@ table tbody td:last-child {
   padding: 0;
   margin: 20px 0;
 }
+@media (min-width: 550px) {
+  #header.visible-sm.visible-xs > .container > .col-row {
+    display: flex;
+  }
+}
 @media (max-width: 549px) {
   #header > .container > .col-row .col-xs-6 {
     width: 100%;
@@ -760,7 +765,7 @@ table tbody td:last-child {
   background: #3da969;
 }
 #header .nav .mini-acc-btn {
-  margin-left: 20px;
+  margin-left: 15px;
   padding-top: 0;
   display: inline-block;
   width: 40px;
@@ -774,7 +779,7 @@ table tbody td:last-child {
   text-indent: 100%;
 }
 #header .nav .mini-cart-btn {
-  margin-left: 20px;
+  margin-left: 15px;
   display: inline-block;
   width: 40px;
   height: 40px;

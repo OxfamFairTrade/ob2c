@@ -8,6 +8,12 @@
   padding: 0;
   margin: 20px 0;
 
+  &.visible-sm.visible-xs > .container > .col-row {
+    @media (min-width: 550px) {
+      display: flex;
+    }
+  }
+
   @media (max-width: 549px) {
     > .container {
       > .col-row {
@@ -128,7 +134,7 @@
     }
 
     .mini-acc-btn {
-      margin-left: 20px;
+      margin-left: 15px;
       padding-top: 0;
       display: inline-block;
       width: 40px;
@@ -143,7 +149,7 @@
     }
 
     .mini-cart-btn {
-      margin-left: 20px;
+      margin-left: 15px;
       display: inline-block;
       width: 40px;
       height: 40px;
