@@ -52,8 +52,9 @@
   }
 
   @media (max-width: 991px) {
-    width: 770px;
+    width: 710px;
     padding: 0;
+    max-width: calc(100% - 40px);
   }
 
   > div {

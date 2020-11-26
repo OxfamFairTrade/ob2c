@@ -8,7 +8,7 @@
   padding: 0;
   margin: 20px 0;
 
-  @media (max-width: 470px) {
+  @media (max-width: 549px) {
     > .container {
       > .col-row {
         .col-xs-6 {
@@ -105,8 +105,13 @@
           background: $new-orange;
           color: white;
           font-size: 16px;
-          width: 180px;
           border: none;
+          border-radius: 5px;
+          padding: 0 8px;
+
+          @media (min-width: 1201px) {
+            padding: 0 15px;
+          }
 
           &:hover {
             color: white;
@@ -122,29 +127,44 @@
       }
     }
 
+    .mini-acc-btn {
+      margin-left: 20px;
+      padding-top: 0;
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      vertical-align: top;
+      background: url(/wp-content/themes/oxfam-webshop/images/icons/my-account.svg) no-repeat center center transparent;
+      background-size: 36px 36px;
+      position: relative;
+      line-height: 40px;
+      overflow: hidden;
+      text-indent: 100%;
+    }
+
     .mini-cart-btn {
       margin-left: 20px;
       display: inline-block;
       width: 40px;
       height: 40px;
       vertical-align: top;
-      background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
-      background-size: 40px 40px;
+      background: url(/wp-content/themes/oxfam-webshop/images/icons/cart.svg) no-repeat center center transparent;
+      background-size: 36px 36px;
       position: relative;
 
       > .nm-menu-cart-count {
         width: 20px;
         height: 20px;
         display: block;
-        font-size: 12px;
-        background: $black;
+        font-size: 13px;
+        background: $red-cart;
         color: $white;
         text-align: center;
         line-height: 20px;
         border-radius: 50%;
         position: absolute;
         top: 0;
-        right: 5px;
+        right: 0;
       }
     }
   }
@@ -157,8 +177,9 @@
 
     .top-menu {
       display: inline-block;
-      margin: 0 30px 0 0;
+      margin: 0 20px 0 0;
       padding: 0;
+      vertical-align: top;
 
       ul {
         display: block;
@@ -167,15 +188,15 @@
 
         li {
           display: block;
-          margin: 0 15px;
+          margin: 0 10px;
           padding: 0;
           float: left;
 
           a {
             display: block;
             font-size: 14px;
-            line-height: normal;
             color:#8F8F8F;
+            line-height: 36px;
           }
 
           &:first-child {
@@ -196,13 +217,15 @@
 
     .top-search {
       display: inline-block;
-      margin: 0 30px 0 0;
+      margin: 0;
       padding: 0;
       position: relative;
+      vertical-align: top;
 
       input[type=text] {
         width: 260px;
         padding: 8px 15px;
+        height: 36px;
       }
 
       input[type=submit] {
@@ -221,34 +244,38 @@
       display: inline-block;
       margin: 0;
       padding: 0;
-      vertical-align: text-bottom;
+      vertical-align: top;
 
-      a {
-        color:#8F8F8F;
-        display: block;
-        font-size: 14px;
-        margin-right: 8px;
-        line-height: normal;
-        padding: 0 0 0 12px;
-        position: relative;
+      $social-icon-size: 28px;
 
-        &:before {
-          content: "";
-          background: url(/wp-content/themes/oxfam-webshop/images/user.svg) no-repeat center center transparent;
-          background-size: 12px;
-          position: absolute;
-          left: -5px;
-          top: 2px;
-          height: 12px;
-          width: 12px;
+      .top-social--menu {
+        display: flex;
+        margin: 0 0 0 10px;
+        line-height: 36px;
+      }
+
+      .top-social--item {
+        margin-left: 10px;
+
+        > a {
+          background: url(/wp-content/themes/oxfam-webshop/images/icons/facebook.svg) no-repeat center center transparent;
+          background-size: $social-icon-size;
+          display: inline-block;
+          height: $social-icon-size;
+          width: $social-icon-size;
+          vertical-align: middle;
         }
 
-        a:first-child {
-          margin-left: 0;
+        &.facebook > a {
+          background: url(/wp-content/themes/oxfam-webshop/images/icons/facebook.svg) no-repeat center center transparent;
         }
 
-        a:last-child {
-          margin-right: 0;
+        &.instagram > a {
+          background: url(/wp-content/themes/oxfam-webshop/images/icons/instagram.svg) no-repeat center center transparent;
+        }
+
+        &.twitter > a {
+          background: url(/wp-content/themes/oxfam-webshop/images/icons/twitter.svg) no-repeat center center transparent;
         }
       }
     }
@@ -299,17 +326,19 @@
 
 @media (max-width: 1600px) {
   #header .nav ul li { margin:0 0 0 20px; }
-  #header .nav ul li.orange-btn a { width:150px; }
-  #header .nav ul li.green-btn a { width:150px; }
+  //#header .nav ul li.orange-btn a { width:150px; }
+  //#header .nav ul li.green-btn a { width:150px; }
   #header .nav .mini-cart-btn { margin-left: 20px; }
+  #header .nav .mini-acc-btn { margin-left: 20px; }
 }
 
 @media (max-width: 1200px) {
   #header .nav ul li { margin:0 0 0 15px; }
   #header .nav ul li a { font-size:14px; }
-  #header .nav ul li.orange-btn a { width:140px; }
-  #header .nav ul li.green-btn a { width:140px; }
+  //#header .nav ul li.orange-btn a { width:140px; }
+  //#header .nav ul li.green-btn a { width:140px; }
   #header .nav .mini-cart-btn { margin-left: 15px; }
+  #header .nav .mini-acc-btn { margin-left: 15px; }
 
   #header .top-menu ul li { margin:0 10px; }
   #header .top-search input[type="text"] { width:200px; }
@@ -341,6 +370,10 @@
   color: #000;
   margin-left: 20px;
   position: relative;
+
+  @media(max-width: 390px){
+    margin-left: 15px;
+  }
 
   a,
   span{
@@ -376,6 +409,7 @@
     background-image: url(/wp-content/themes/oxfam-webshop/images/icons/products.svg);
   }
 
+  &_account,
   &_cart {
     &:before {
       content: none;
@@ -406,6 +440,15 @@
         right: 0;
         padding-top: 0;
       }
+    }
+  }
+
+  &_account {
+    > a {
+      background: url(/wp-content/themes/oxfam-webshop/images/icons/my-account.svg) no-repeat center center transparent;
+      line-height: 47px;
+      overflow: hidden;
+      text-indent: 100%;
     }
   }
 

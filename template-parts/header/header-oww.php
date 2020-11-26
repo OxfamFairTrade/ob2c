@@ -22,7 +22,7 @@
 							<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Voor bedrijven</a></li>
 						</ul>
 					</div>
-					<div class="top-social logged-in-user">
+					<!--<div class="top-social logged-in-user">
 						<?php if ( ! is_main_site() ) : ?>
 							<a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>">
 								<?php
@@ -39,13 +39,20 @@
 								?>
 							</a>
 						<?php endif; ?>
-					</div>
+					</div>-->
 					<div class="top-search">
 						<form id="globalSearch" action="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/" method="get">
 							<input type="text" name="s" placeholder="Zoeken">
 							<input type="submit" value="">
 						</form>
 					</div>
+                    <div class="top-social">
+                        <ul class="top-social--menu">
+                            <li class="top-social--item facebook"><a href=""></a></li>
+                            <li class="top-social--item instagram"><a href=""></a></li>
+                            <li class="top-social--item twitter"><a href=""></a></li>
+                        </ul>
+                    </div>
 				</div>
 				<div id="nav" class="nav">
 					<ul id="menu-main-menu" class="menu">
@@ -56,6 +63,22 @@
 						<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/winkels/">Vind winkel</a></li>
 						<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/word-vrijwilliger/">Word vrijwilliger</a></li>
 					</ul>
+                    <?php if ( ! is_main_site() ) : ?>
+                        <a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>" class="mini-acc-btn">
+                            <?php
+                            if ( is_user_logged_in() ) {
+                                $user = wp_get_current_user();
+                                if ( ! empty( $user->first_name ) ) {
+                                    echo 'Welkom '.$user->first_name;
+                                } else {
+                                    echo 'Mijn account';
+                                }
+                            } else {
+                                echo 'Aanmelden';
+                            }
+                            ?>
+                        </a>
+                    <?php endif; ?>
 					<?php
 						$cart_url = ( $nm_globals['cart_panel'] ) ? '#' : wc_get_cart_url();
 						if ( is_main_site() ) {
@@ -95,7 +118,25 @@
 					<div class="header__item header__item_search">
 						<span>Zoek</span>
 					</div>
-					<div class="header__item header__item_cart">
+                    <?php if ( ! is_main_site() ) : ?>
+                        <div class="header__item header__item_account">
+                            <a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>">
+                                <?php
+                                if ( is_user_logged_in() ) {
+                                    $user = wp_get_current_user();
+                                    if ( ! empty( $user->first_name ) ) {
+                                        echo 'Welkom '.$user->first_name;
+                                    } else {
+                                        echo 'Mijn account';
+                                    }
+                                } else {
+                                    echo 'Aanmelden';
+                                }
+                                ?>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                    <div class="header__item header__item_cart">
 						<?php
 							echo sprintf(
 								'<a href="%s" %s>%s</a>',
