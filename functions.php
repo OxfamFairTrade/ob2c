@@ -27,6 +27,19 @@
 		return $name;
 	}
 
+	// Laat lokale beheerders enkel lokale producten verwijderen (eventueel vervangen door 'pre_trash_post'-filter, maar die eindigt ook gewoon met wp_die() ...)
+	add_action( 'wp_trash_post', 'disable_manual_product_removal', 10, 1 );
+
+	function disable_manual_product_removal( $post_id ) {
+		if ( get_post_type( $post_id ) == 'product' ) {
+			if ( ! wp_doing_cron() and ! current_user_can('update_core') ) {
+				if ( ! in_array( get_post_field( 'post_author', $post_id ), get_local_manager_user_ids() ) ) {
+					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van nationale producten door lokale beheerders niet toegestaan! Oude producten worden verwijderd van zodra de laatst uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn.<br/><br/>Keer terug naar %s of mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="'.wp_get_referer().'">de vorige pagina</a>', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
+				}
+			}
+		}
+	}
+
 	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
 	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
 
@@ -62,14 +75,28 @@
 	function ure_modify_authors_list( $authors ) {
 		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
 		// TO DO: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
+		if ( count( get_local_manager_user_ids() ) > 0 ) {
+			return $authors . ',' . get_local_manager_user_ids( true );
+		} else {
+			return $authors;
+		}
+	}
+
+	function get_local_manager_user_ids( $implode = false ) {
 		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
 		if ( count( $local_managers->get_results() ) > 0 ) {
 			if ( current_user_can('update_core') ) {
 				write_log( "Local managers blog-ID ".get_current_blog_id().": ".implode( ', ', $local_managers->get_results() ) );
 			}
-			return $authors . ',' . implode( ',', $local_managers->get_results() );
+
+			if ( $implode ) {
+				return implode( ',', $local_managers->get_results() );
+			} else {
+				return $local_managers->get_results();
+			}
 		} else {
-			return $authors;
+			// In principe is er altijd minstens één lokale beheerder, maar wie weet!
+			return array();
 		}
 	}
 
