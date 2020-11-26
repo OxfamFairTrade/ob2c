@@ -102,12 +102,14 @@
 				if ( count( $refunded_orders ) > 0 ) {
 					echo 'REFUNDED ORDERS<br/>';
 					foreach ( $refunded_orders as $order ) {
-						echo $order->get_order_number().'<br/>';
-						// We gebruiken geen $order->update_status() om te vermijden dat we nogmaals een mail naar de klant triggeren
+						// We gebruiken bewust geen $order->update_status() om te vermijden dat we nogmaals een mail naar de klant triggeren
 						if ( wp_update_post( array( 'ID' => $order->get_id(), 'post_status' => 'wc-completed' ) ) == $order->get_id() ) {
 							$order->add_order_note( 'Fix automatisch heropenen van bestelling door bug in Mollie-plugin na gedeeltelijke terugbetaling.' );
+							$order->save();
+							echo $order->get_order_number().' OK<br/>';
 							$logger->info( $order->get_order_number().": opnieuw afgerond na gedeeltelijke terugbetaling", $context );
 						} else {
+							echo $order->get_order_number().' NOT OK<br/>';
 							$logger->warning( $order->get_order_number().": opnieuw afronden mislukt", $context );
 						}
 					}
