@@ -46,13 +46,13 @@
 							<input type="submit" value="">
 						</form>
 					</div>
-                    <div class="top-social">
-                        <ul class="top-social--menu">
-                            <li class="top-social--item facebook"><a href=""></a></li>
-                            <li class="top-social--item instagram"><a href=""></a></li>
-                            <li class="top-social--item twitter"><a href=""></a></li>
-                        </ul>
-                    </div>
+					<div class="top-social">
+						<ul class="top-social--menu">
+							<li class="top-social--item facebook"><a href="https://www.facebook.com/OxfamWereldwinkels"></a></li>
+							<li class="top-social--item instagram"><a href="https://www.instagram.com/oxfam.wereldwinkels/"></a></li>
+							<li class="top-social--item twitter"><a href="https://twitter.com/oxfamfairtrade"></a></li>
+						</ul>
+					</div>
 				</div>
 				<div id="nav" class="nav">
 					<ul id="menu-main-menu" class="menu">
