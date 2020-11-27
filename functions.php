@@ -5931,9 +5931,19 @@
 			 * @param string  $stock_sync Set stock sync option. Valid value is either yes or no.
 			 */
 
-			// $stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
-			// do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no');
-			// write_log( "SYNC PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
+			$stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
+			write_log("BEFORE:");
+			write_log( print_r( $stores, true ) );
+			foreach ( $stores as $key => $store_id ) {
+				if ( in_array( $store_id, get_site_option('oxfam_blocked_sites') ) ) {
+					unset( $stores[ $key ] );
+				}
+			}
+			write_log("AFTER:");
+			write_log( print_r( $stores, true ) );
+			
+			do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no' );
+			write_log( "SYNC PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
 
 			/**
 			 * After sync option is set, now fire the sync hook.
