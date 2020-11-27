@@ -5931,27 +5931,23 @@
 			 * @param string  $stock_sync Set stock sync option. Valid value is either yes or no.
 			 */
 
+			write_log( "PRODUCT-ID ".$post_id." WAS IMPORTED, PROCESSING UPDATE IN LOCAL STORES ..." );
+
 			$stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
-			write_log("BEFORE:");
-			write_log( print_r( $stores, true ) );
 			foreach ( $stores as $key => $store_id ) {
 				if ( in_array( $store_id, get_site_option('oxfam_blocked_sites') ) ) {
 					unset( $stores[ $key ] );
 				}
 			}
-			write_log("AFTER:");
-			write_log( print_r( $stores, true ) );
-			
+			write_log( "PUBLISH PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
 			do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no' );
-			write_log( "SYNC PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
-
+			
 			/**
 			 * After sync option is set, now fire the sync hook.
 			 *
 			 * @param integer $product_id WooCommerce product ID
 			 */
 			do_action( 'WOO_MSTORE_admin_product/process_product', $post_id );
-			write_log( "SYNC PRODUCT-ID ".$post_id." TO ALL STORES" );
 
 			// Gebruik eventueel 'WOO_MSTORE_admin_product/slave_product_updated' voor afsluitende save (indien attributen niet goed doorkomen)
 		}
