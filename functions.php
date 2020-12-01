@@ -4097,23 +4097,27 @@
 		}
 	}
 
-	// Zet webshopbeheerder in BCC bij versturen uitnodigingsmails
-	// add_filter( 'woocommerce_email_headers', 'put_shop_manager_in_bcc', 10, 3 );
+	// Zet webshopbeheerder in BCC bij versturen van B2B-uitnodigingsmails
+	add_filter( 'woocommerce_email_headers', 'put_shop_manager_in_bcc', 10, 3 );
 
 	function put_shop_manager_in_bcc( $headers, $type, $object ) {
-		$logger = wc_get_logger();
-		$context = array( 'source' => 'Oxfam Emails' );
-		$logger->debug( 'Mail van type '.$type.' getriggerd', $context );
-		
 		$extra_recipients = array();
-		$extra_recipients[] = 'Helpdesk E-Commerce <'.get_site_option('admin_email').'>';
-		
+
 		// We hernoemden de 'customer_new_account'-template maar het type blijft ongewijzigd!
 		if ( $type === 'customer_reset_password' ) {
-			// Bij dit type mogen we ervan uit gaan dat $oject een WP_User bevat met de property ID
+			// Bij dit type mogen we ervan uit gaan dat $object een WP_User bevat met de property ID
 			if ( is_b2b_customer( $object->ID ) ) {
-				// Hoe voorkomen we dat kopie verstuurd wordt bij échte wachtwoordreset van B2B-gebruiker?
-				$extra_recipients[] = get_webshop_name().' <'.get_webshop_email().'>';
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'Oxfam Emails' );
+			
+				// Door bestaan van tijdelijke file te checken, vermijden we om ook in BCC te belanden bij échte wachtwoordresets van B2B-gebruikers
+				if ( file_exists( get_stylesheet_directory().'/woocommerce/emails/temporary.php' ) ) {
+					$extra_recipients[] = 'Helpdesk E-Commerce <'.get_site_option('admin_email').'>';
+					$extra_recipients[] = get_webshop_name().' <'.get_webshop_email().'>';
+					$logger->debug( 'B2B-uitnodiging getriggerd mét beheerders in BCC', $context );
+				} else {
+					$logger->debug( 'B2B-uitnodiging getriggerd zónder beheerders in BCC', $context );
+				}
 			}
 		}
 
