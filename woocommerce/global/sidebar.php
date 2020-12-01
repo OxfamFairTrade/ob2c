@@ -30,13 +30,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 					);
 					$sale_products = wc_get_products( $args );
 					if ( count( $sale_products ) > 0 ) {
-						// Of toch liever iets proberen m.b.v. add_query_arg( 'filter_product_tag', 'promotie' )?
+						// Of toch liever iets proberen m.b.v. add_query_arg( 'filter_product_tag', 'promotie' ) / remove_query_arg( 'filter_product_tag' ) ?
 						// Maar wordt dan nog altijd niet automatisch opgenomen in actieve filters!
 						$term_link = get_term_link( 'promotie', 'product_tag' );
 						if ( ! is_wp_error( $term_link ) ) {
 							if ( is_product_tag('promotie') ) {
 								$class = 'chosen';
-								$url = remove_query_arg( 'filter_product_tag' );
+								$url = get_permalink( wc_get_page_id('shop') );
 							} else {
 								$class = '';
 								$url = $term_link.'#nm-shop-products';
@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					if ( ! is_wp_error( $term_link ) ) {
 						if ( is_product_tag('sinterklaas') ) {
 							$class = 'chosen';
-							$url = remove_query_arg( 'filter_product_tag' );
+							$url = get_permalink( wc_get_page_id('shop') );
 						} else {
 							$class = '';
 							$url = $term_link.'#nm-shop-products';
