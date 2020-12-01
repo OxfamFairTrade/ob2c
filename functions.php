@@ -6265,11 +6265,28 @@
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-info">';
+					$correctie = '';
 					$koffie_count = get_number_of_times_coupon_was_used('wvdft2020-koffie');
+					if ( get_current_blog_id() === 15 ) {
+						// Correctie voor Gentbrugge
+						$koffie_extra = 4;
+						$koffie_count += $koffie_extra;
+						$correctie = ' Dit totaal bevat '.$koffie_extra.' koffiebonnen extra ter compensatie van de foutief toegekende kortingen in OWW07715, waarvoor nogmaals onze excuses.';
+					}
+					if ( get_current_blog_id() === 19 ) {
+						// Correctie voor Lichtaart
+						$koffie_extra = 2;
+						$koffie_count += $koffie_extra;
+						$correctie = ' Dit totaal bevat '.$koffie_extra.' koffiebonnen extra ter compensatie van de foutief toegekende kortingen in OWW07781 en OWW07823, waarvoor nogmaals onze excuses.';
+					}
 					$koffie_amount = 1.4151 * $koffie_count;
 					$quinoa_count = get_number_of_times_coupon_was_used('wvdft2020-quinoa');
 					$quinoa_amount = 3.8972 * $quinoa_count;
-					echo '<p>Zoals eerder gemeld dien je voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon de webshopstatistieken om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Voor jullie webshop werden '.$koffie_count.' koffiebonnen (t.w.v. '.wc_price( $koffie_amount ).') en '.$quinoa_count.' quinoabonnen (t.w.v. '.wc_price( $quinoa_amount ).') geregistreerd. Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, array( 'ex_tax_label' => true ) ).' zal terugbetaald worden bij de volgende crediteringsronde, rond Nieuwjaar.</p>';
+					echo '<p>Zoals eerder gemeld dien je voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon de webshopstatistieken om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Voor jullie webshop werden '.$koffie_count.' koffiebonnen (t.w.v. '.wc_price( $koffie_amount ).') en '.$quinoa_count.' quinoabonnen (t.w.v. '.wc_price( $quinoa_amount ).') geregistreerd.';
+					if ( $koffie_amount+$quinoa_amount > 0 ) {
+						echo ' Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, array( 'ex_tax_label' => true ) ).' zal terugbetaald worden bij de volgende crediteringsronde, rond Nieuwjaar.';
+					}
+					echo $correctie.'</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
