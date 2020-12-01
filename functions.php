@@ -6269,8 +6269,7 @@
 					$koffie_amount = 1.4151 * $koffie_count;
 					$quinoa_count = get_number_of_times_coupon_was_used('wvdft2020-quinoa');
 					$quinoa_amount = 3.8972 * $quinoa_count;
-					$args = array( 'ex_tax_label' => true );
-					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Voor jullie webshop werden '.$koffie_count.' koffiebonnen (t.w.v. '.wc_price( $koffie_amount, $args ).') en '.$quinoa_count.' quinoabonnen (t.w.v. '.wc_price( $quinoa_amount, $args ).') geregistreerd. Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, $args ).' zal terugbetaald worden bij de volgende crediteringsronde, rond Nieuwjaar.</p>';
+					echo '<p>Zoals eerder gemeld dien je voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon de webshopstatistieken om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Voor jullie webshop werden '.$koffie_count.' koffiebonnen (t.w.v. '.wc_price( $koffie_amount ).') en '.$quinoa_count.' quinoabonnen (t.w.v. '.wc_price( $quinoa_amount ).') geregistreerd. Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, array( 'ex_tax_label' => true ) ).' zal terugbetaald worden bij de volgende crediteringsronde, rond Nieuwjaar.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
@@ -6306,8 +6305,6 @@
 						foreach ( $coupons as $coupon ) {
 							if ( $coupon->get_code() == $coupon_code ) {
 								$total_count += $coupon->get_quantity();
-								echo $coupon->get_code().': '.$coupon->get_quantity().'<br/>';
-								// var_dump_pre( $coupon->get_meta('coupon_data') );
 							}
 						}
 					}
