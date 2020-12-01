@@ -804,22 +804,22 @@
 	add_action( 'init', 'force_user_login' );
 	
 	function force_user_login() {
-		// Demosite tijdelijk openstellen: or get_current_site()->domain !== 'shop.oxfamwereldwinkels.be'
-		if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
-			if ( ! is_user_logged_in() ) {
-				$url = get_current_url();
-				// Nooit redirecten: inlog-, reset-, activatiepagina en WC API calls
-				if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wc_lostpassword_url() ) and ! strpos( $url, 'activate.php' ) and ! strpos( $url, 'wc-api' ) ) {
-					// Stuur gebruiker na inloggen terug naar huidige pagina
-					wp_safe_redirect( wp_login_url($url) );
-					exit();
-				}
-			} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) and ! is_super_admin() ) {
-				// Toon tijdelijke boodschap, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
-				wp_safe_redirect( network_site_url('/wp-content/blog-suspended.php') );
-				exit();
-			}
-		}
+		// Demosite tijdelijk openstellen
+		// if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
+		// 	if ( ! is_user_logged_in() ) {
+		// 		$url = get_current_url();
+		// 		// Nooit redirecten: inlog-, reset-, activatiepagina en WC API calls
+		// 		if ( preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wp_login_url() ) and preg_replace( '/\?.*/', '', $url ) != preg_replace( '/\?.*/', '', wc_lostpassword_url() ) and ! strpos( $url, 'activate.php' ) and ! strpos( $url, 'wc-api' ) ) {
+		// 			// Stuur gebruiker na inloggen terug naar huidige pagina
+		// 			wp_safe_redirect( wp_login_url($url) );
+		// 			exit();
+		// 		}
+		// 	} elseif ( ! is_user_member_of_blog( get_current_user_id(), get_current_blog_id() ) and ! is_super_admin() ) {
+		// 		// Toon tijdelijke boodschap, het heeft geen zin om deze gebruiker naar de inlogpagina te sturen!
+		// 		wp_safe_redirect( network_site_url('/wp-content/blog-suspended.php') );
+		// 		exit();
+		// 	}
+		// }
 
 		// Stuur Digizine-lezers meteen door op basis van postcode in hun profiel
 		if ( is_main_site() ) {
@@ -3357,7 +3357,7 @@
 
 			// Vermeld de totale korting (inclusief/exclusief BTW)
 			// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
-			$used_coupons = $order->get_used_coupons();
+			$used_coupons = $order->get_coupon_codes();
 			if ( count( $used_coupons ) >= 1 ) {
 				$discount = $order->get_discount_total();
 				if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
@@ -6229,7 +6229,7 @@
 		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
 			if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
 				echo '<div class="notice notice-error">';
-					echo '<p>Deze site is momentaal afgeschermd voor het grote publiek (inloggen verplicht) en verschijnt niet op de kaart!</p>';
+					echo '<p>Deze webshop is momenteel reeds bereikbaar (voor o.a. Mollie-controle) maar verschijnt nog niet in de winkelzoeker!</p>';
 				echo '</div>';
 			}
 			if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
@@ -6241,16 +6241,16 @@
 			// 	echo '<p>Mails naar Microsoft-adressen (@hotmail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-warning">';
-					echo '<p>Er werden 13 extra categorieën toegevoegd die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Duiding bij welke producten we in welke categorie verwachten vind je in <a href="https://shop.oxfamwereldwinkels.be/structuur-crafts.pdf" download>deze nota</a>. Opgelet: alle producten die vroeger in de megacategorie \'Wonen, mode & speelgoed\' zaten, zitten nu onder \'Wonen\'. Pas de categorie indien nodig aan naar een geschiktere (sub)categorie. De cadeaubonnen werden verhuisd naar de algemenere categorie \'Geschenken & wenskaarten\'.</p><p>Daarnaast zit de bulkaanmaak van een 150-tal centraal beheerde non-foodproducten, bovenop de bestaande agenda\'s en kalenders, in de laatste rechte lijn. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
-				echo '</div>';
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>De <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> zijn geactiveerd in alle webshops. Creditering verloopt ook voor online bestellingen via het turfblad in de winkel. De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-oktober-november-update.html" target="_blank">promoties van 19/10 t.e.m. 30/11</a> blijven actief.</p>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>Er werden 13 extra categorieën toegevoegd die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Duiding bij welke producten we in welke categorie verwachten vind je in <a href="https://shop.oxfamwereldwinkels.be/structuur-crafts.pdf" download>deze nota</a>. Opgelet: alle producten die vroeger in de megacategorie \'Wonen, mode & speelgoed\' zaten, zitten nu onder \'Wonen\'. Pas de categorie indien nodig aan naar een geschiktere (sub)categorie. De cadeaubonnen werden verhuisd naar de algemenere categorie \'Geschenken & wenskaarten\'.</p><p>Daarnaast zit de bulkaanmaak van een 150-tal centraal beheerde non-foodproducten, bovenop de bestaande agenda\'s en kalenders, in de laatste rechte lijn. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
 				// echo '</div>';
 				echo '<div class="notice notice-success">';
+					echo '<p>De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-december-update-wijnduo-s.html" target="_blank">decemberpromo\'s</a> werden geactiveerd in alle webshops. Ook de <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> blijven actief tot en met 31 december. Creditering verloopt ook voor online wijnduo\'s via het turfblad in de winkel. Raadpleeg indien nodig <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a>.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-success">';
 					// column-count: 2;
-					echo '<p>Er verschenen alvast 3 nieuwe voedingsproducten:</p><ul style="margin-left: 2em;">';
-						$skus = array( 23706, 27152, 27153 );
+					echo '<p>De nieuwe assortimentsdoos thee werd toegevoegd (opgelet, iets lagere prijs dan de voorgaande referentie!):</p><ul style="margin-left: 2em;">';
+						$skus = array( 23508 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -6262,10 +6262,15 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. (Deze producten zaten sinds donderdag 19/11 in de database maar konden door een conflict lokaal pas vanaf zaterdag 21/11 op voorraad gezet worden.)</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-info">';
-					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. In november communiceren we deze aantallen ter controle. Die tellen we vervolgens op bij de papieren bonnen die jullie terugsturen van klanten die in de winkel van de promotie profiteerden.</p>';
+					$koffie_count = get_number_of_times_coupon_was_used('wvdft2020-koffie');
+					$koffie_amount = 1.4151 * $koffie_count;
+					$quinoa_count = get_number_of_times_coupon_was_used('wvdft2020-quinoa');
+					$quinoa_amount = 3.8972 * $quinoa_count;
+					$args = array( 'ex_tax_label' => true );
+					echo '<p>Voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen dien je <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a> om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Voor jullie webshop werden '.$koffie_count.' koffiebonnen (t.w.v. '.wc_price( $koffie_amount, $args ).') en '.$quinoa_count.' quinoabonnen (t.w.v. '.wc_price( $quinoa_amount, $args ).') geregistreerd. Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, $args ).' zal terugbetaald worden bij de volgende crediteringsronde, rond Nieuwjaar.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
@@ -6280,6 +6285,40 @@
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}
 			}
+		}
+	}
+
+	function get_number_of_times_coupon_was_used( $coupon_code, $start_date = '2020-10-01', $end_date = '2020-10-31', $return_orders = false ) {
+		global $wpdb;
+		$total_count = 0;
+		$objOrders = array();
+
+		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-completed' ) ) . "') AND woi.order_item_type = 'coupon' AND woi.order_item_name = '" . $coupon_code . "' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
+		$orders = $wpdb->get_results( $query );
+
+		if ( count( $orders ) > 0 ) {
+			foreach ( $orders as $key => $order ) {
+				$objOrder = wc_get_order( $order->order_id );
+				if ( $objOrder !== false ) {
+					$objOrders[] = $objOrder; 
+					$coupons = $objOrder->get_items('coupon');
+					if ( $coupons ) {
+						foreach ( $coupons as $coupon ) {
+							if ( $coupon->get_code() == $coupon_code ) {
+								$total_count += $coupon->get_quantity();
+								echo $coupon->get_code().': '.$coupon->get_quantity().'<br/>';
+								// var_dump_pre( $coupon->get_meta('coupon_data') );
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if ( $return_orders ) {
+			return $objOrders;
+		} else {
+			return $total_count;
 		}
 	}
 
@@ -6701,8 +6740,8 @@
 	}
 
 	function is_regional_webshop() {
-		// Antwerpen, Leuven, Mechelen en Wetteren
-		$regions = array( 24, 28, 40, 53 );
+		// Gentbrugge, Antwerpen, Leuven, Mechelen en Wetteren
+		$regions = array( 15, 24, 28, 40, 53 );
 		// Opgelet: vergeet de custom orderstatus 'claimed' niet te publiceren naar deze subsites!
 		return in_array( get_current_blog_id(), $regions );
 	}
