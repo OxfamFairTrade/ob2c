@@ -30,27 +30,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 					);
 					$sale_products = wc_get_products( $args );
 					if ( count( $sale_products ) > 0 ) {
-						if ( is_product_tag('promotie') ) {
-							$class = 'chosen';
-						} else {
-							$class = '';
-						}
-						// Of toch liever iets proberen m.b.v. add_query_arg( 'filter_product_tag', 'promotie' )?
+						// Of toch liever iets proberen m.b.v. add_query_arg( 'filter_product_tag', 'promotie' ) / remove_query_arg( 'filter_product_tag' ) ?
 						// Maar wordt dan nog altijd niet automatisch opgenomen in actieve filters!
 						$term_link = get_term_link( 'promotie', 'product_tag' );
 						if ( ! is_wp_error( $term_link ) ) {
-							echo '<a href="'.$term_link.'#nm-shop-products" class="'.$class.'"><span>Promoties</span></a>';
+							if ( is_product_tag('promotie') ) {
+								$class = 'chosen';
+								$url = get_permalink( wc_get_page_id('shop') );
+							} else {
+								$class = '';
+								$url = $term_link.'#nm-shop-products';
+							}
+							echo '<a href="'.$url.'" class="'.$class.'"><span>Promoties</span></a>';
 						}
 					}
-					// if ( is_product_tag('sinterklaas') ) {
-					// 	$class = 'chosen';
-					// } else {
-					// 	$class = '';
-					// }
-					// $term_link = get_term_link( 'sinterklaas', 'product_tag' );
-					// if ( ! is_wp_error( $term_link ) ) {
-					// 	echo '<a href="'.$term_link.'#nm-shop-products" class="'.$class.'"><span>Sinterklaas</span></a>';
-					// }
+					
+					$term_link = get_term_link( 'sinterklaas', 'product_tag' );
+					if ( ! is_wp_error( $term_link ) ) {
+						if ( is_product_tag('sinterklaas') ) {
+							$class = 'chosen';
+							$url = get_permalink( wc_get_page_id('shop') );
+						} else {
+							$class = '';
+							$url = $term_link.'#nm-shop-products';
+						}
+						echo '<a href="'.$url.'" class="'.$class.'"><span>Sinterklaas</span></a>';
+					}
 				?>
 			</div>
 
