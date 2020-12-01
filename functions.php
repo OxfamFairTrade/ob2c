@@ -5933,14 +5933,14 @@
 
 			write_log( "PRODUCT-ID ".$post_id." WAS IMPORTED, PROCESSING UPDATE IN LOCAL STORES ..." );
 
-			$stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
-			foreach ( $stores as $key => $store_id ) {
-				if ( in_array( $store_id, get_site_option('oxfam_blocked_sites') ) ) {
-					unset( $stores[ $key ] );
-				}
-			}
-			write_log( "PUBLISH PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
-			do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no' );
+			// $stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
+			// foreach ( $stores as $key => $store_id ) {
+			// 	if ( in_array( $store_id, get_site_option('oxfam_blocked_sites') ) ) {
+			// 		unset( $stores[ $key ] );
+			// 	}
+			// }
+			// write_log( "PUBLISH PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
+			// do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no' );
 			
 			/**
 			 * After sync option is set, now fire the sync hook.
