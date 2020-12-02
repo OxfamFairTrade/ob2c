@@ -3795,9 +3795,6 @@
 				$_POST[$name] = trim_and_uppercase($_POST[$name]);
 			}
 		}
-		$logger = wc_get_logger();
-		$context = array( 'source' => 'WP User' );
-		$logger->debug( wc_print_r( $_POST, true ), $context );
 
 		if ( isset($_POST['billing_email']) ) {
 			// Retourneert false indien ongeldig e-mailformaat
@@ -4114,9 +4111,9 @@
 				if ( file_exists( get_stylesheet_directory().'/woocommerce/emails/temporary.php' ) ) {
 					$extra_recipients[] = 'Helpdesk E-Commerce <'.get_site_option('admin_email').'>';
 					$extra_recipients[] = get_webshop_name().' <'.get_webshop_email().'>';
-					$logger->debug( 'B2B-uitnodiging getriggerd mét beheerders in BCC', $context );
+					$logger->debug( 'B2B-uitnodiging getriggerd naar user-ID '.$object->ID.' mét beheerders in BCC', $context );
 				} else {
-					$logger->debug( 'B2B-uitnodiging getriggerd zónder beheerders in BCC', $context );
+					$logger->debug( 'B2B-uitnodiging getriggerd naar user-ID '.$object->ID.' zónder beheerders in BCC', $context );
 				}
 			}
 		}
