@@ -6288,7 +6288,8 @@
 						}
 					echo '</ul><p>';
 					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+						// echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+						echo 'Opgelet: om te vermijden dat deze producten allemaal als \'nieuw\' zouden verschijnen, kreeg alle non-food de publicatiedatum van aanmaak in fairtradecrafts.be mee. Hierdoor verschijnen deze producten niét in het blauw onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 					echo '<p>Woensdagnacht 02/12 zal (eindelijk) de bulkaanmaak van 149 centraal beheerde non-foodproducten plaatsvinden, bovenop de bestaande agenda\'s, kalenders en doppers. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg alvast de Excel met alle voorziene producten.</a> Naast een beperkte selectie \'vast assortiment\' van MDM voorzien we vanaf nu ook om elk kwartaal alle producten uit het FAIR-magazine beschikbaar te maken. Voor het januaripakket zal dit reeds eind december gebeuren. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
