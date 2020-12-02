@@ -5986,11 +5986,11 @@
 			);
 			$to_outofstock = new WP_Query( $args );
 			if ( $to_outofstock->have_posts() ) {
-				write_log("DEPRECATED PRODUCTS:");
+				write_log( $to_outofstock->found_posts." DEPRECATED PRODUCTS" );
 				while ( $to_outofstock->have_posts() ) {
 					$to_outofstock->the_post();
 					$product = wc_get_product( get_the_ID() );
-					write_log( $product->get_sku() );
+					// write_log( $product->get_sku() );
 					// $product->set_stock_status('outofstock');
 					// $product->update_meta_data( '_in_bestelweb', 'nee' );
 					// $product->save();
