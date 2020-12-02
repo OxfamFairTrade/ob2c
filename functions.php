@@ -1526,6 +1526,9 @@
 		// Laat de custom statusfilter verschijnen volgens de normale flow van de verwerking
 		add_filter( 'views_edit-shop_order', 'put_claimed_after_processing' );
 
+		// Zorg ervoor dat refunds aan dezelfde winkel toegekend worden als het oorspronkelijke bestelling, zodat ze correct getoond worden in de gefilterde rapporten NOG TE TESTEN
+		// add_action( 'woocommerce_order_refunded', 'ob2c_copy_metadata_from_order_to_refund', 10, 2 );
+
 		// Maak de boodschap om te filteren op winkel beschikbaar bij de rapporten
 		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
 	}
@@ -1889,6 +1892,15 @@
 
 	function disable_wc_actions() {
 		remove_action( 'bulk_actions-edit-shop_order', array( WC_Admin_CPT_Shop_Order::getInstance(), 'admin_footer' ), 10 );
+	}
+
+	function ob2c_copy_metadata_from_order_to_refund( $order_id, $refund_id ) {
+		$order = wc_get_order( $order_id );
+		$refund = wc_get_order( $refund_id );
+		if ( $order !== false and $refund !== false ) {
+			$refund->update_meta_data( 'claimed_by', $order->get_meta('claimed_by') );
+			$refund->save();
+		}
 	}
 
 	// Global om ervoor te zorgen dat de boodschap enkel in de eerste loop geëchood wordt
@@ -5884,7 +5896,6 @@
 		 *      array       options                     Plugin options
 		 *      WC_Product  slave_product               Slave product
 		 * )
-		 *
 		 * @return array
 		 */
 		
@@ -5906,14 +5917,38 @@
 		// foreach ( $meta_data as $key => $value ) {
 		// 	write_log( $key.' => '.$value );
 		// }
-
-		// Publieke metadata zoals 'touched_by_import' wordt automatisch gesynchroniseerd?
-		if ( array_key_exists( 'touched_by_import', $meta_data ) ) {
-			write_log( 'touched_by_import => '.$meta_data['touched_by_import'] );
-			unset( $meta_data['touched_by_import'] );
-		}
 		
 		return $meta_data;
+	}
+
+	// Publieke metadata zoals 'touched_by_import' wordt automatisch gekopieerd bij eerste lokale publicatie ... PAS BESCHIKBAAR VANAF WOOMULTISTORE 4.1.5
+	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
+
+	function exclude_slave_product_meta( $meta_keys, $data ) {
+		/**
+		 * @param array $meta_keys          Metadata keys to exclude from slave product
+		 * @param array $data array(
+		 *      WC_Product  master_product              Master product
+		 *      array       master_product_attributes   Master product attributes
+		 *      integer     master_product_blog_id      Master product blog ID
+		 *      array       master_product_terms        Master product terms
+		 *      array       master_product_upload_dir   Master product uploads directory information ( see wp_get_upload_dir() )
+		 *      array       options                     Plugin options
+		 *      WC_Product  slave_product               Slave product
+		 * )
+		 * @return array
+		 */
+		
+		// Voorraadbeheer standaard uitschakelen?
+		// $meta_keys[] = '_manage_stock';
+
+		if ( $data['slave_product']->get_meta('touched_by_import') ) {
+			$meta_keys[] = 'touched_by_import';
+		}
+
+		write_log( implode( ', ', $meta_keys ) );
+
+		return $meta_keys;
 	}
 
 	// Zorg dat productupdates ook gesynchroniseerd worden via WP All Import
@@ -6241,16 +6276,9 @@
 			// 	echo '<p>Mails naar Microsoft-adressen (@hotmail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Er werden 13 extra categorieën toegevoegd die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Duiding bij welke producten we in welke categorie verwachten vind je in <a href="https://shop.oxfamwereldwinkels.be/structuur-crafts.pdf" download>deze nota</a>. Opgelet: alle producten die vroeger in de megacategorie \'Wonen, mode & speelgoed\' zaten, zitten nu onder \'Wonen\'. Pas de categorie indien nodig aan naar een geschiktere (sub)categorie. De cadeaubonnen werden verhuisd naar de algemenere categorie \'Geschenken & wenskaarten\'.</p><p>Daarnaast zit de bulkaanmaak van een 150-tal centraal beheerde non-foodproducten, bovenop de bestaande agenda\'s en kalenders, in de laatste rechte lijn. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
-				// echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-december-update-wijnduo-s.html" target="_blank">decemberpromo\'s</a> werden geactiveerd in alle webshops. Ook de <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> blijven actief tot en met 31 december. Creditering verloopt ook voor online wijnduo\'s via het turfblad in de winkel. Raadpleeg indien nodig <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a>.</p>';
-				echo '</div>';
-				echo '<div class="notice notice-success">';
-					// column-count: 2;
-					echo '<p>De nieuwe assortimentsdoos thee werd toegevoegd (opgelet, iets lagere prijs dan de voorgaande referentie!):</p><ul style="margin-left: 2em;">';
-						$skus = array( 23508 );
+					echo '<p>De nieuwe assortimentsdoos thee werd toegevoegd (opgelet, iets lagere prijs dan de voorgaande referentie!), samen met de doppers en wasnoten:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 23508, 12034, 12076, 12093, 12094, 12095, 12108, 48566, 48712, 65762, 87142, 87143, 87144, 87169, 87170, 87171, 87172, 87231, 87232, 87233, 87234, 91702, 91703, 91704 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -6263,6 +6291,10 @@
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+					echo '<p>Woensdagnacht 02/12 zal (eindelijk) de bulkaanmaak van 149 centraal beheerde non-foodproducten plaatsvinden, bovenop de bestaande agenda\'s, kalenders en doppers. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg alvast de Excel met alle voorziene producten.</a> Naast een beperkte selectie \'vast assortiment\' van MDM voorzien we vanaf nu ook om elk kwartaal alle producten uit het FAIR-magazine beschikbaar te maken. Voor het januaripakket zal dit reeds eind december gebeuren. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
+				echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-december-update-wijnduo-s.html" target="_blank">decemberpromo\'s</a> werden geactiveerd in alle webshops. Ook de <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> blijven actief tot en met 31 december. Creditering verloopt ook voor online wijnduo\'s via het turfblad in de winkel. Raadpleeg indien nodig <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a>.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-info">';
 					$correctie = '';
@@ -6284,9 +6316,12 @@
 					$quinoa_amount = 3.8972 * $quinoa_count;
 					echo '<p>Zoals eerder gemeld dien je voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon de webshopstatistieken om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Voor jullie webshop werden '.$koffie_count.' koffiebonnen (t.w.v. '.wc_price( $koffie_amount ).') en '.$quinoa_count.' quinoabonnen (t.w.v. '.wc_price( $quinoa_amount ).') geregistreerd.';
 					if ( $koffie_amount+$quinoa_amount > 0 ) {
-						echo ' Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, array( 'ex_tax_label' => true ) ).' zal terugbetaald worden bij de volgende crediteringsronde, rond Nieuwjaar.';
+						echo ' Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, array( 'ex_tax_label' => true ) ).' zal terugbetaald worden bij de volgende crediteringsronde, half december. <a href="https://shop.oxfamwereldwinkels.be/online-creditering-wvdft2020.pdf" download>Raadpleeg de exacte verdeling per winkel in deze PDF.</a>';
 					}
 					echo $correctie.'</p>';
+				echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>Er werden 13 extra categorieën toegevoegd die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Duiding bij welke producten we in welke categorie verwachten vind je in <a href="https://shop.oxfamwereldwinkels.be/structuur-crafts.pdf" download>deze nota</a>. Opgelet: alle producten die vroeger in de megacategorie \'Wonen, mode & speelgoed\' zaten, zitten nu onder \'Wonen\'. Pas de categorie indien nodig aan naar een geschiktere (sub)categorie. De cadeaubonnen werden verhuisd naar de algemenere categorie \'Geschenken & wenskaarten\'.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
