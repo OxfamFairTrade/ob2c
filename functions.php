@@ -4177,11 +4177,11 @@
 	# HELPER FUNCTIES #
 	###################
 
-	// Print de geschatte leverdatums onder de beschikbare verzendmethodes TIJDELIJK UITSCHAKELEN 
-	// add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
+	// Print de geschatte leverdatums onder de beschikbare verzendmethodes
+	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
 	
 	function print_estimated_delivery( $label, $method ) {
-		$descr = '<small style="color: #61a534">';
+		$descr = '<small>';
 		$timestamp = estimate_delivery_date( $method->id );
 		
 		switch ( $method->id ) {
