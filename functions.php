@@ -602,28 +602,30 @@
 	add_action( 'woocommerce_before_shop_loop', 'add_custom_dropdown_filters_per_category' );
 
 	function add_custom_dropdown_filters_per_category() {
-		if ( is_main_site() and is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
+		if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
 			echo '<div class="small-container"><div class="row">';
-			echo '<div class="col-md-3 supplementary-filter">';
-				$args = array(
-					'display_type' => 'dropdown',
-					'title' => 'Druivenrassen',
-					'attribute' => 'grapes',
-				);
-				the_widget( 'WC_Widget_Layered_Nav', $args );
-			echo '</div>';
-			echo '<div class="col-md-3 supplementary-filter">';
-				$args['title'] = 'Gerechten';
-				$args['attribute'] = 'recipes';
-				the_widget( 'WC_Widget_Layered_Nav', $args );
-			echo '</div>';
-			echo '<div class="col-md-3 supplementary-filter">';
-				$args['title'] = 'Smaken';
-				$args['attribute'] = 'tastes';
-				the_widget( 'WC_Widget_Layered_Nav', $args );
-			echo '</div>';
-			// Wordt niet zichtbaar door harde CSS ...
-			// echo '<div class="col-md-3 supplementary-filter">'.woocommerce_catalog_ordering().'</div>';
+				echo '<div class="col-md-3 supplementary-filter">';
+					$args = array(
+						'display_type' => 'dropdown',
+						'title' => 'Druivenrassen',
+						'attribute' => 'grapes',
+					);
+					the_widget( 'WC_Widget_Layered_Nav', $args );
+				echo '</div>';
+				echo '<div class="col-md-3 supplementary-filter">';
+					$args['title'] = 'Gerechten';
+					$args['attribute'] = 'recipes';
+					the_widget( 'WC_Widget_Layered_Nav', $args );
+				echo '</div>';
+				echo '<div class="col-md-3 supplementary-filter">';
+					$args['title'] = 'Smaken';
+					$args['attribute'] = 'tastes';
+					the_widget( 'WC_Widget_Layered_Nav', $args );
+				echo '</div>';
+				// Wordt niet zichtbaar door 'display: none' op .woocommerce-ordering!
+				echo '<div class="col-md-3 supplementary-filter">';
+					woocommerce_catalog_ordering();
+				echo '</div>';
 			echo '</div></div>';
 		}
 	}
@@ -1217,12 +1219,15 @@
 		wp_dequeue_style('nm-grid');
 		wp_deregister_style('nm-grid');
 
-		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns IS NODIG VOOR LOCAL PICKUP PLUS
+		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns
 		if ( class_exists( 'woocommerce' ) ) {
-			// wp_dequeue_style( 'select2' );
-			// wp_deregister_style( 'select2' );
-			// wp_dequeue_script( 'selectWoo');
-			// wp_deregister_script('selectWoo');
+			// Niet uitschakelen op checkoutpagina, library is noodzakelijk voor WooCommerce Local Pickup Plus 2.9+
+			if ( ! is_checkout() ) {
+				wp_dequeue_style( 'select2' );
+				wp_deregister_style( 'select2' );
+				wp_dequeue_script( 'selectWoo');
+				wp_deregister_script('selectWoo');
+			}
 		}
 	}
 
