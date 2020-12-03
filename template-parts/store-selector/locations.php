@@ -117,7 +117,7 @@
 
 	function setCookie(cname, cvalue) {
 		var d = new Date();
-		d.setTime( d.getTime() + 365*24*60*60*1000 );
+		d.setTime( d.getTime() + 30*24*60*60*1000 );
 		var expires = "expires="+ d.toUTCString();
 		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;domain=<?php echo OXFAM_COOKIE_DOMAIN; ?>";
 	}

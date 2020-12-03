@@ -103,7 +103,7 @@
 	// Verwijder productcategorieën
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'cadeaubonnen' );
+		$terms = array( 'kinderen-wonen', 'keuken-tafelen-mode' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {
@@ -143,7 +143,7 @@
 	// Verwijder partners
 	$taxonomy = 'product_partner';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'beni-ghreb', 'terrespoir', 'altertrade', 'anap', 'burke-agro', 'consorcio-vinicola', 'lomas-de-cauquenes', 'koman' );
+		$terms = array( 'altertrade', 'anap', 'beni-ghreb', 'burke-agro', 'consorcio-vinicola', 'fruittiland', 'koman', 'lomas-de-cauquenes', 'miel-maya', 'surin-ricefund', 'terrespoir' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {

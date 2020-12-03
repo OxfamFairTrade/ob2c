@@ -618,9 +618,9 @@
 			// Check of de huidige cookie overeenkomt met de huidige blog-ID
 			if ( isset( $_COOKIE['latest_blog_id'] ) and $_COOKIE['latest_blog_id'] == get_current_blog_id() ) {
 				$current_blog = get_blog_details();
-				setcookie( 'latest_blog_path', str_replace( '/', '', $current_blog->path ), time() + YEAR_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
+				setcookie( 'latest_blog_path', str_replace( '/', '', $current_blog->path ), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
 				if ( is_object( WC()->cart ) ) {
-					setcookie( 'blog_'.get_current_blog_id().'_items_in_cart', WC()->cart->get_cart_contents_count(), time() + YEAR_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
+					setcookie( 'blog_'.get_current_blog_id().'_items_in_cart', WC()->cart->get_cart_contents_count(), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
 				}
 				// Stel shipping_city in op gemeente die overeenkomt met current_location?
 			}
