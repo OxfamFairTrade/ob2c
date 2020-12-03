@@ -602,8 +602,8 @@
 	add_action( 'woocommerce_before_shop_loop', 'add_custom_dropdown_filters_per_category' );
 
 	function add_custom_dropdown_filters_per_category() {
-		if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
-			echo '<div class="small-container"><div class="row">';
+		echo '<div class="small-container"><div class="row">';
+			if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
 				echo '<div class="col-md-3 supplementary-filter">';
 					$args = array(
 						'display_type' => 'dropdown',
@@ -622,12 +622,13 @@
 					$args['attribute'] = 'tastes';
 					the_widget( 'WC_Widget_Layered_Nav', $args );
 				echo '</div>';
-				// Wordt niet zichtbaar door 'display: none' op .woocommerce-ordering!
-				echo '<div class="col-md-3 supplementary-filter">';
-					woocommerce_catalog_ordering();
-				echo '</div>';
-			echo '</div></div>';
-		}
+			}
+
+			// Wordt niet zichtbaar door 'display: none' op .woocommerce-ordering!
+			echo '<div class="col-md-3 supplementary-filter">';
+				woocommerce_catalog_ordering();
+			echo '</div>';
+		echo '</div></div>';
 	}
 
 	// Pas de labels bij non-selectie van een dropdown aan
