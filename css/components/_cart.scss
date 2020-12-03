@@ -133,6 +133,7 @@
       width: auto;
       display: inline-block;
       border: 1px solid #dadada;
+      border-radius: 5px;
       vertical-align: top;
 
       .qty {
@@ -374,5 +375,30 @@
 
   > p {
     font-weight: 500;
+  }
+}
+
+
+.widget-panel-dark #nm-widget-panel {
+  .product_list_widget {
+    padding-bottom: 24px;
+  }
+
+  .buttons .button {
+    &.add-gift {
+      margin-top: 12px;
+
+      &:after {
+        content: "";
+        background: url(/wp-content/themes/oxfam-webshop/images/icons/gift.svg) no-repeat center center transparent;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        margin-left: 10px;
+        top: 0;
+        position: relative;
+        vertical-align: top;
+      }
+    }
   }
 }

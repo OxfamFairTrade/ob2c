@@ -22,7 +22,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 17px;
   line-height: 24px;
-  color: #1b1b1B;
+  color: #292929;
   letter-spacing: 0.02em;
   letter-spacing: 0.34px;
 }
@@ -207,7 +207,7 @@ h6,
 }
 
 a {
-  color: #1b1b1B;
+  color: #292929;
   text-decoration: none;
 }
 a:hover {
@@ -486,16 +486,16 @@ table th, table td {
   line-height: normal;
 }
 table thead tr {
-  border-top: 1px solid #1b1b1B;
-  border-bottom: 1px solid #1b1b1B;
+  border-top: 1px solid #292929;
+  border-bottom: 1px solid #292929;
 }
 table thead tr:first-child {
   border-top: none;
 }
 table thead th {
   font-weight: bold;
-  border-left: 1px solid #1b1b1B;
-  border-right: 1px solid #1b1b1B;
+  border-left: 1px solid #292929;
+  border-right: 1px solid #292929;
 }
 table thead th:first-child {
   border-left: none;
@@ -508,15 +508,15 @@ table thead th:last-child span:after {
   display: none;
 }
 table tbody tr {
-  border-top: 1px solid #1b1b1B;
-  border-bottom: 1px solid #1b1b1B;
+  border-top: 1px solid #292929;
+  border-bottom: 1px solid #292929;
 }
 table tbody tr:last-child {
   border-bottom: none;
 }
 table tbody td {
-  border-left: 1px solid #1b1b1B;
-  border-right: 1px solid #1b1b1B;
+  border-left: 1px solid #292929;
+  border-right: 1px solid #292929;
 }
 table tbody td:first-child {
   border-left: none;
@@ -762,7 +762,7 @@ table tbody td:last-child {
   opacity: 0.9;
 }
 #header .nav ul li.green-btn a {
-  background: #3da969;
+  background: #61A534;
 }
 #header .nav .mini-acc-btn {
   margin-left: 15px;
@@ -1197,7 +1197,7 @@ table tbody td:last-child {
   opacity: 0.9;
 }
 #side-menu .nav ul li.green-btn a {
-  background: #3da969;
+  background: #61A534;
 }
 #side-menu .nav.items ul li.orange-btn, #side-menu .nav.items ul li.green-btn {
   display: none;
@@ -1298,10 +1298,10 @@ table tbody td:last-child {
   content: "/";
 }
 .breadcrumb a {
-  color: #1b1b1B;
+  color: #292929;
 }
 .breadcrumb a:hover {
-  color: #1b1b1B;
+  color: #292929;
 }
 
 .breadcrumb-mobile {
@@ -1498,13 +1498,13 @@ table tbody td:last-child {
   width: 100%;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col a:hover {
-  color: #1b1b1B;
+  color: #292929;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col a:before {
   content: "";
   display: inline-block;
   background-color: white;
-  border: 1px solid #1b1b1B;
+  border: 1px solid #292929;
   border-radius: 3px;
   width: 16px;
   height: 16px;
@@ -1513,12 +1513,12 @@ table tbody td:last-child {
   top: 2.4px;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col a.chosen:before {
-  background-color: #3da969;
-  border-color: #3da969;
+  background-color: #61A534;
+  border-color: #61A534;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar .catalog-filters > .nm-shop-widget-col a.chosen:after {
   content: "X";
-  color: #ff1d34;
+  color: #FD3444;
   display: inline-block;
   padding-left: 10px;
   position: absolute;
@@ -1531,7 +1531,7 @@ table tbody td:last-child {
   }
 }
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .nm-widget-title {
-  color: #1b1b1B;
+  color: #292929;
   font-size: 21.25px;
   font-weight: 400;
   line-height: 25.5px;
@@ -1594,16 +1594,16 @@ table tbody td:last-child {
 }
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget ul li.chosen > a {
   border-width: 0;
-  color: #3da969;
+  color: #61A534;
   width: 100%;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget ul li.chosen > a:before {
-  background-color: #3da969;
-  border-color: #3da969;
+  background-color: #61A534;
+  border-color: #61A534;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget ul li.chosen > a:after {
   content: "X";
-  color: #ff1d34;
+  color: #FD3444;
   display: inline-block;
   padding-left: 10px;
   position: absolute;
@@ -1619,13 +1619,13 @@ table tbody td:last-child {
   text-decoration: none;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget a:hover {
-  color: #1b1b1B;
+  color: #292929;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul .widget a:before {
   content: "";
   display: inline-block;
   background-color: white;
-  border: 1px solid #1b1b1B;
+  border: 1px solid #292929;
   border-radius: 3px;
   width: 16px;
   height: 16px;
@@ -1643,18 +1643,18 @@ table tbody td:last-child {
   display: none;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul li.current-cat > a {
-  color: #3da969;
+  color: #61A534;
   position: relative;
   padding-right: 20px;
   width: 100%;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul li.current-cat > a:before {
-  background-color: #3da969;
-  border-color: #3da969;
+  background-color: #61A534;
+  border-color: #61A534;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar #nm-shop-widgets-ul li.current-cat > a:after {
   content: "X";
-  color: #ff1d34;
+  color: #FD3444;
   display: inline-block;
   padding-left: 10px;
   position: absolute;
@@ -1672,7 +1672,7 @@ table tbody td:last-child {
   text-decoration: none;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar .widget_recently_viewed_products a:hover {
-  color: #1b1b1B;
+  color: #292929;
 }
 .nm-shop-sidebar-default #nm-shop-sidebar .widget_recently_viewed_products a:before {
   content: none;
@@ -1713,12 +1713,25 @@ table tbody td:last-child {
   font-weight: normal;
   font-size: 21.25px;
   line-height: 25.5px;
+  display: none;
 }
 .nm-shop-products-col .supplementary-filter select,
 .woocommerce-widget-layered-nav-dropdown select {
   font-size: 16px;
-  background-color: lightgrey;
-  padding: 5px 15px;
+  padding: 5px 35px 5px 10px;
+  border: 1px solid #868686;
+  border-radius: 5px;
+  background: url(/wp-content/themes/oxfam-webshop/images/icons/close.svg) no-repeat right 10px center #ffffff;
+  background-size: 14px;
+}
+.nm-shop-products-col .supplementary-filter .woocommerce-ordering,
+.woocommerce-widget-layered-nav-dropdown .woocommerce-ordering {
+  display: block;
+}
+.nm-shop-products-col .supplementary-filter .woocommerce-ordering > select,
+.woocommerce-widget-layered-nav-dropdown .woocommerce-ordering > select {
+  color: #ffffff;
+  background: url(/wp-content/themes/oxfam-webshop/images/icons/close-white.svg) no-repeat right 10px center #868686;
 }
 
 #nm-shop {
@@ -1822,6 +1835,10 @@ table tbody td:last-child {
 #nm-shop-browse-wrap {
   margin-top: 50px;
 }
+#nm-shop-browse-wrap > .small-container > .row {
+  margin-left: -12px;
+  margin-right: -12px;
+}
 #nm-shop-browse-wrap .nm-products {
   display: flex;
   flex-wrap: wrap;
@@ -1856,7 +1873,7 @@ table tbody td:last-child {
 }
 #nm-shop-browse-wrap .nm-infload-controls a.nm-infload-btn,
 #nm-shop-browse-wrap .nm-infload-controls a.nm-infload-to-top {
-  background: #1b1b1B;
+  background: #292929;
   border: 0;
   color: #ffffff;
   font-size: 12px;
@@ -1866,7 +1883,7 @@ table tbody td:last-child {
 }
 #nm-shop-browse-wrap .nm-infload-controls a.nm-infload-btn:hover,
 #nm-shop-browse-wrap .nm-infload-controls a.nm-infload-to-top:hover {
-  background: #353535;
+  background: #434343;
   border: 0;
 }
 #nm-shop-browse-wrap .nm-infload-controls:not(.hide-btn) a.nm-infload-btn {
@@ -2049,6 +2066,7 @@ table tbody td:last-child {
   width: auto;
   display: inline-block;
   border: 1px solid #dadada;
+  border-radius: 5px;
   vertical-align: top;
 }
 .woocommerce-cart-form > .shop_table.cart .nm-quantity-wrap .qty,
@@ -2139,7 +2157,7 @@ table tbody td:last-child {
 }
 .cart-collaterals > .cart_totals > table.shop_table tr th.shipping-explanation,
 .cart-collaterals > .cart_totals > table.shop_table tr td.shipping-explanation {
-  color: #1b1b1B;
+  color: #292929;
 }
 .cart-collaterals > .cart_totals > table.shop_table #shipping_method {
   margin-bottom: 0;
@@ -2246,6 +2264,24 @@ table tbody td:last-child {
 }
 .storeselector-wrapper > p {
   font-weight: 500;
+}
+
+.widget-panel-dark #nm-widget-panel .product_list_widget {
+  padding-bottom: 24px;
+}
+.widget-panel-dark #nm-widget-panel .buttons .button.add-gift {
+  margin-top: 12px;
+}
+.widget-panel-dark #nm-widget-panel .buttons .button.add-gift:after {
+  content: "";
+  background: url(/wp-content/themes/oxfam-webshop/images/icons/gift.svg) no-repeat center center transparent;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-left: 10px;
+  top: 0;
+  position: relative;
+  vertical-align: top;
 }
 
 form.woocommerce-checkout .woocommerce-billing-fields__field-wrapper {
@@ -2389,11 +2425,11 @@ form.woocommerce-checkout span.optional {
 }
 #order_review .shop_table tfoot tr th.shipping-explanation,
 #order_review .shop_table tfoot tr td.shipping-explanation {
-  color: #1b1b1B !important;
+  color: #292929 !important;
 }
 #order_review .shop_table tfoot tr th.shipping-explanation .shipping-explanation,
 #order_review .shop_table tfoot tr td.shipping-explanation .shipping-explanation {
-  color: #1b1b1B;
+  color: #292929;
   background: 0;
 }
 #order_review .shop_table tfoot > tbody > tr {
@@ -2412,7 +2448,7 @@ form.woocommerce-checkout span.optional {
   font-weight: normal;
 }
 #order_review #payment .payment_methods li.wc_payment_method.active {
-  background-color: #3da969;
+  background-color: #61A534;
   color: white;
 }
 #order_review #payment .payment_methods li.wc_payment_method.active label {
@@ -2512,15 +2548,16 @@ label .tooltip,
   font-size: 14px;
   line-height: 16px;
   background: #ffffff;
-  color: #1b1b1B;
-  border: 1px solid #1b1b1B;
+  color: #292929;
+  border: 1px solid #292929;
+  border-radius: 5px;
   float: left;
   clear: both;
 }
 .product .nm-shop-loop-thumbnail-link .info-labels .info-label.promotion,
 .product .woocommerce-product-gallery .info-labels .info-label.promotion {
-  color: #ff1d34;
-  border-color: #ff1d34;
+  color: #FD3444;
+  border-color: #FD3444;
 }
 .product .nm-shop-loop-thumbnail-link .info-labels .info-label.newbee,
 .product .woocommerce-product-gallery .info-labels .info-label.newbee {
@@ -2588,7 +2625,7 @@ label .tooltip,
 }
 .product .summary .price span.amount {
   font-size: 26.5625px;
-  color: #77a464;
+  color: #292929;
   font-weight: bold;
 }
 .product .summary p.price {
@@ -2602,13 +2639,14 @@ label .tooltip,
   display: inline-block;
   vertical-align: top;
   font-weight: bold;
-  padding: 10.5px 10.5px 10.5px 42px;
+  padding: 10.5px 10.5px 10.5px 50px;
   margin-right: 0;
   margin-bottom: 21px;
   line-height: 22.4px;
   color: #ffffff;
   border: none;
-  background: url(/wp-content/themes/oxfam-webshop/images/shop.svg) no-repeat left 10.5px center #ff1d34;
+  border-radius: 5px;
+  background: url(/wp-content/themes/oxfam-webshop/images/icons/add-to-cart.svg) no-repeat left 6px center #FD3444;
 }
 .product .summary button.button:hover {
   opacity: 0.9;
@@ -2617,6 +2655,7 @@ label .tooltip,
   width: auto;
   display: inline-block;
   border: 1px solid #dadada;
+  border-radius: 5px;
 }
 .product p {
   font-size: 17px;
@@ -2819,7 +2858,7 @@ div.nm-single-product.product .nm-single-product-summary-row .nm-single-product-
 div.nm-single-product.product .woocommerce-breadcrumb {
   font-size: 12.75px;
   line-height: normal;
-  color: #1b1b1B;
+  color: #292929;
 }
 div.nm-single-product.product .product_title {
   font-size: 34px;
@@ -2913,7 +2952,7 @@ div.nm-single-product.product .product_title {
   list-style: inside disc;
 }
 .product-details-block .partner-info a {
-  color: #1b1b1B;
+  color: #292929;
 }
 @media (max-width: 991px) {
   .product-details-block .partner-info a {
@@ -2953,19 +2992,23 @@ div.nm-single-product.product .product_title {
 .nm-products > .product .nm-shop-loop-details {
   position: relative;
 }
+.slick-track > .product .nm-shop-loop-details > .nm-shop-loop-title-price .price,
+.nm-products > .product .nm-shop-loop-details > .nm-shop-loop-title-price .price {
+  padding-top: 20px;
+}
 .slick-track > .product .nm-shop-loop-actions > .button,
 .nm-products > .product .nm-shop-loop-actions > .button {
   display: inline-block;
-  width: 30px;
-  height: 26px;
+  width: 38px;
+  height: 38px;
   text-indent: 100%;
   overflow: hidden;
-  background: url(/wp-content/themes/oxfam-webshop/images/shop-2.svg) no-repeat center center transparent;
-  background-size: 30px 26px;
+  background: url(/wp-content/themes/oxfam-webshop/images/icons/add-to-cart.svg) no-repeat center center transparent;
+  background-size: 38px 38px;
   border: 0;
   position: absolute;
   right: 0;
-  bottom: 3px;
+  bottom: 0;
   margin: 0;
   padding: 0;
 }
@@ -3028,7 +3071,7 @@ div.nm-single-product.product .product_title {
 }
 
 .ui-autocomplete {
-  color: #1b1b1B;
+  color: #292929;
   font-size: 95%;
   background: white;
   border: 1px solid #e0e0e0;
@@ -3058,7 +3101,7 @@ div.nm-single-product.product .product_title {
 }
 #wpsl-wrap #wpsl-search-wrap .wpsl-input label {
   width: initial;
-  color: #1b1b1B;
+  color: #292929;
 }
 #wpsl-wrap #wpsl-search-wrap .wpsl-input #wpsl-search-input {
   height: 40px;
@@ -3076,7 +3119,7 @@ div.nm-single-product.product .product_title {
   width: 40px;
   text-indent: 100%;
   overflow: hidden;
-  color: #1b1b1B;
+  color: #292929;
   background: url(/wp-content/themes/oxfam-webshop/images/search.svg) no-repeat center center transparent;
   padding: 0;
   border: none;
@@ -3179,7 +3222,7 @@ div.nm-single-product.product .product_title {
 .woocommerce-cart > .nm-shop-notice {
   padding: 12px !important;
   margin: 0 0 12px 0 !important;
-  background-color: #3da969;
+  background-color: #61A534;
 }
 .woocommerce-notices-wrapper > .nm-shop-notice.woocommerce-message,
 .nm-shop-notices > .nm-shop-notice.woocommerce-message,
@@ -3289,8 +3332,8 @@ div.nm-single-product.product .product_title {
 }
 
 .selected-store {
-  background: #eeeded;
-  border: 1px solid #3da969;
+  border: 1px solid #61A534;
+  border-radius: 5px;
   color: #000000;
   margin-top: 17px;
   padding: 30px 20px 20px;
@@ -3299,57 +3342,25 @@ div.nm-single-product.product .product_title {
   line-height: 25px;
 }
 .selected-store .pointer {
-  color: #FFFFFF;
-  font-size: 12px;
-  line-height: 12px;
-  padding: 7px 8px 7px 16px;
-  position: absolute;
-  text-transform: uppercase;
-  top: -13px;
-  left: 9px;
-}
-@media (max-width: 992px) {
-  .selected-store .pointer {
-    left: 47px;
-  }
-}
-.selected-store .pointer:before {
-  content: "";
-  background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center #3da969;
-  background-size: 37px;
-  border-radius: 50%;
-  height: 37px;
-  width: 37px;
-  position: absolute;
-  left: -27px;
-  top: -5px;
+  font-size: 21px;
+  margin-bottom: 24px;
 }
 .selected-store.ok {
-  border-color: #3da969;
-}
-.selected-store.ok .pointer {
-  background: #3da969;
-}
-.selected-store.ok .pointer:before {
-  background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center #3da969;
+  border-color: #61A534;
 }
 .selected-store.not-ok {
-  border-color: #ff1d34;
+  border-color: #FC9700;
 }
 .selected-store.not-ok .pointer {
-  background: #ff1d34;
-  left: 47px;
-  padding: 0;
-}
-.selected-store.not-ok .pointer:before {
-  background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center #ff1d34;
+  font-size: 26px;
+  font-weight: bold;
+  line-height: 32px;
 }
 .selected-store.not-ok .store-selector-open {
   opacity: 1;
 }
-.selected-store .shop-name {
-  margin-bottom: 10px;
-  text-decoration: underline;
+.selected-store.not-ok .store-selector-open button {
+  background: #FC9700;
 }
 .selected-store .shop-address {
   margin-bottom: 10px;
@@ -3380,7 +3391,7 @@ div.nm-single-product.product .product_title {
   background-size: contain;
 }
 .selected-store .store-selector-open {
-  opacity: 0.54;
+  opacity: 1;
   text-decoration: underline;
 }
 .selected-store .store-selector-open button {
@@ -3388,21 +3399,37 @@ div.nm-single-product.product .product_title {
   border: 0;
   font-size: 15px;
   color: #FFFFFF;
-  padding: 5px 20px;
-  border-radius: 4px;
+  padding: 6px 20px;
+  border-radius: 5px;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+.selected-store .store-selector-open button:after {
+  content: "";
+  background: url(/wp-content/themes/oxfam-webshop/images/icon-location-white.svg) no-repeat center center transparent;
+  display: inline-block;
+  width: 14px;
+  height: 30px;
+  top: 2px;
+  position: absolute;
+  right: 20px;
+  background-size: 30px;
+}
+.selected-store .store-selector-open:hover {
+  opacity: 0.82;
 }
 .selected-store .store-selector-erase {
   position: absolute;
   height: 30px;
   width: 30px;
-  right: -15px;
-  top: -15px;
+  right: 5px;
+  top: 5px;
   background-image: url(/wp-content/themes/oxfam-webshop/images/x.svg);
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 26px 26px;
   border-radius: 50%;
-  background-color: lightgrey;
 }
 .selected-store .opening-hours-title {
   margin-top: 10px;
@@ -3534,7 +3561,7 @@ div.nm-single-product.product .product_title {
   text-decoration: none !important;
 }
 #footer .footer .menu a {
-  color: #1b1b1B;
+  color: #292929;
 }
 #footer .footer .footer-menu,
 #footer .footer .footer-info {
@@ -3542,7 +3569,7 @@ div.nm-single-product.product .product_title {
   margin-bottom: 3em;
 }
 #footer .footer .footer-info a:not(.btn) {
-  color: #1b1b1B;
+  color: #292929;
 }
 #footer .footer .btn {
   padding: 1em;
@@ -3850,10 +3877,10 @@ select.ui-datepicker-year {
   width: 2em;
 }
 .nm-shop-header .nm-shop-menu ul.nm-shop-categories li:hover, .nm-shop-header .nm-shop-menu ul.nm-shop-categories li:focus, .nm-shop-header .nm-shop-menu ul.nm-shop-categories li:active {
-  border-bottom-color: #1b1b1B;
+  border-bottom-color: #292929;
 }
 .nm-shop-header .nm-shop-menu ul.nm-shop-categories li:hover > a, .nm-shop-header .nm-shop-menu ul.nm-shop-categories li:focus > a, .nm-shop-header .nm-shop-menu ul.nm-shop-categories li:active > a {
-  color: #1b1b1B !important;
+  color: #292929 !important;
 }
 .nm-shop-header .nm-shop-menu ul.nm-shop-categories li:hover > a:before, .nm-shop-header .nm-shop-menu ul.nm-shop-categories li:focus > a:before, .nm-shop-header .nm-shop-menu ul.nm-shop-categories li:active > a:before {
   filter: saturate(0%) brightness(0%);
@@ -3863,10 +3890,10 @@ select.ui-datepicker-year {
   border-right: 2px solid;
   padding-left: 0;
   padding-right: 0;
-  border-color: #1b1b1B;
+  border-color: #292929;
 }
 .nm-shop-header .nm-shop-menu ul.nm-shop-categories li.current-cat > a, .nm-shop-header .nm-shop-menu ul.nm-shop-categories li.current-parent-cat > a {
-  color: #1b1b1B;
+  color: #292929;
 }
 .nm-shop-header .nm-shop-menu ul.nm-shop-categories li.current-cat > a:before, .nm-shop-header .nm-shop-menu ul.nm-shop-categories li.current-parent-cat > a:before {
   filter: saturate(0%) brightness(0%);
@@ -4162,7 +4189,7 @@ tr.shipping .woocommerce-Price-amount {
 .textwidget i,
 .textwidget h2,
 .textwidget p {
-  color: #1b1b1B;
+  color: #292929;
 }
 
 li.widget.widget_text:not(:last-child) {

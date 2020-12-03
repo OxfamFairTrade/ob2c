@@ -51,8 +51,7 @@
 
 <?php if ( empty( $current_store ) ) : ?>
 	<div class="selected-store not-ok">
-		<div class="pointer"></div>
-		<p>Online shoppen?</p>
+		<div class="pointer">Online shoppen in jouw Oxfam-winkel?</div>
 		<a href="#" class="store-selector-open"><button>Selecteer winkel</button></a>
 	</div>
 <?php else : ?>
