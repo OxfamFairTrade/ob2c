@@ -54,17 +54,56 @@
     margin-top: 20px;
     margin-bottom: 0;
 
+    &.shop_table_responsive {
+      @media (max-width: 767px) {
+        display: block;
+
+        tbody {
+          display: block;
+
+          tr {
+            display: flex;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: space-between;
+
+            .product-thumbnail {
+              width: 100px;
+            }
+
+            .nm-product-details {
+              width: calc(100% - 100px);
+
+              > a {
+                padding-right: 0;
+              }
+            }
+
+            .nm-product-quantity {
+              line-height: 42px;
+            }
+
+            .nm-product-subtotal {
+              span {
+                line-height: 42px;
+              }
+            }
+          }
+        }
+      }
+    }
+
     tr td {
       padding: 15px 8px !important;
       border: 0 !important;
       border-bottom: 1px solid #eaeaea !important;
 
       &:first-of-type {
-        padding-left: 0 !important;
+        //padding-left: 0 !important;
       }
 
       &:last-of-type {
-        padding-right: 0 !important;;
+        //padding-right: 0 !important;;
       }
     }
 
@@ -94,6 +133,7 @@
       width: auto;
       display: inline-block;
       border: 1px solid #dadada;
+      vertical-align: top;
 
       .qty {
         font-size: 18px;
@@ -146,10 +186,18 @@
 
         .lpp-shipping-package-wrapper {
           tr td[data-title="Verzending"] {
-            padding-top: 0 !important;
             padding-bottom: 0 !important;
             border-bottom: 0 !important;
+
+            @media (min-width: 768px) {
+              padding-top: 0 !important;
+            }
           }
+        }
+
+        .woocommerce-shipping-calculator {
+          padding-left: 0;
+          padding-right: 0;
         }
 
         &.cart-subtotal {
@@ -160,7 +208,7 @@
           }
 
           & + tr > th {
-            display: none;
+            //display: none;
           }
         }
 

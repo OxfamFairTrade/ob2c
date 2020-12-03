@@ -176,6 +176,12 @@ form.woocommerce-checkout {
     }
   }
 
+  .nm-checkout-product-name {
+    .product-quantity {
+      display: inline-block;
+    }
+  }
+
   .nm-checkout-product-total,
   .nm-checkout-product-name {
     font-size: 18px;

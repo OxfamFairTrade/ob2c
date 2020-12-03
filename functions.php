@@ -1223,7 +1223,7 @@
 		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns
 		if ( class_exists( 'woocommerce' ) ) {
 			// Niet uitschakelen op checkoutpagina, library is noodzakelijk voor WooCommerce Local Pickup Plus 2.9+
-			if ( ! is_checkout() ) {
+			if ( !is_checkout() && !is_cart() ) {
 				wp_dequeue_style( 'select2' );
 				wp_deregister_style( 'select2' );
 				wp_dequeue_script( 'selectWoo');

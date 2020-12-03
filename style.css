@@ -848,15 +848,20 @@ table tbody td:last-child {
   width: 260px;
   padding: 8px 15px;
   height: 36px;
+  background: #F2F3F5;
+  border: 0;
+  border-radius: 5px;
+  color: #868686;
 }
 #header .topbar .top-search input[type=submit] {
   padding: 0;
-  width: 28px;
-  height: 29px;
-  background: url(/wp-content/themes/oxfam-webshop/images/search.svg) no-repeat;
+  width: 22px;
+  height: 22px;
+  background: url(/wp-content/themes/oxfam-webshop/images/icons/search.svg) no-repeat;
+  background-size: 100%;
   border: none;
   position: absolute;
-  top: 4px;
+  top: 7px;
   right: 10px;
 }
 #header .topbar .top-social {
@@ -1973,19 +1978,48 @@ table tbody td:last-child {
   margin-top: 20px;
   margin-bottom: 0;
 }
+@media (max-width: 767px) {
+  .woocommerce-cart-form > .shop_table.cart.shop_table_responsive,
+.woocommerce-cart-form > .shop_table.shop_table_responsive {
+    display: block;
+  }
+  .woocommerce-cart-form > .shop_table.cart.shop_table_responsive tbody,
+.woocommerce-cart-form > .shop_table.shop_table_responsive tbody {
+    display: block;
+  }
+  .woocommerce-cart-form > .shop_table.cart.shop_table_responsive tbody tr,
+.woocommerce-cart-form > .shop_table.shop_table_responsive tbody tr {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .woocommerce-cart-form > .shop_table.cart.shop_table_responsive tbody tr .product-thumbnail,
+.woocommerce-cart-form > .shop_table.shop_table_responsive tbody tr .product-thumbnail {
+    width: 100px;
+  }
+  .woocommerce-cart-form > .shop_table.cart.shop_table_responsive tbody tr .nm-product-details,
+.woocommerce-cart-form > .shop_table.shop_table_responsive tbody tr .nm-product-details {
+    width: calc(100% - 100px);
+  }
+  .woocommerce-cart-form > .shop_table.cart.shop_table_responsive tbody tr .nm-product-details > a,
+.woocommerce-cart-form > .shop_table.shop_table_responsive tbody tr .nm-product-details > a {
+    padding-right: 0;
+  }
+  .woocommerce-cart-form > .shop_table.cart.shop_table_responsive tbody tr .nm-product-quantity,
+.woocommerce-cart-form > .shop_table.shop_table_responsive tbody tr .nm-product-quantity {
+    line-height: 42px;
+  }
+  .woocommerce-cart-form > .shop_table.cart.shop_table_responsive tbody tr .nm-product-subtotal span,
+.woocommerce-cart-form > .shop_table.shop_table_responsive tbody tr .nm-product-subtotal span {
+    line-height: 42px;
+  }
+}
 .woocommerce-cart-form > .shop_table.cart tr td,
 .woocommerce-cart-form > .shop_table tr td {
   padding: 15px 8px !important;
   border: 0 !important;
   border-bottom: 1px solid #eaeaea !important;
-}
-.woocommerce-cart-form > .shop_table.cart tr td:first-of-type,
-.woocommerce-cart-form > .shop_table tr td:first-of-type {
-  padding-left: 0 !important;
-}
-.woocommerce-cart-form > .shop_table.cart tr td:last-of-type,
-.woocommerce-cart-form > .shop_table tr td:last-of-type {
-  padding-right: 0 !important;
 }
 .woocommerce-cart-form > .shop_table.cart > tbody > tr,
 .woocommerce-cart-form > .shop_table > tbody > tr {
@@ -2015,6 +2049,7 @@ table tbody td:last-child {
   width: auto;
   display: inline-block;
   border: 1px solid #dadada;
+  vertical-align: top;
 }
 .woocommerce-cart-form > .shop_table.cart .nm-quantity-wrap .qty,
 .woocommerce-cart-form > .shop_table .nm-quantity-wrap .qty {
@@ -2060,17 +2095,22 @@ table tbody td:last-child {
   }
 }
 .cart-collaterals > .cart_totals > table.shop_table tr .lpp-shipping-package-wrapper tr td[data-title=Verzending] {
-  padding-top: 0 !important;
   padding-bottom: 0 !important;
   border-bottom: 0 !important;
+}
+@media (min-width: 768px) {
+  .cart-collaterals > .cart_totals > table.shop_table tr .lpp-shipping-package-wrapper tr td[data-title=Verzending] {
+    padding-top: 0 !important;
+  }
+}
+.cart-collaterals > .cart_totals > table.shop_table tr .woocommerce-shipping-calculator {
+  padding-left: 0;
+  padding-right: 0;
 }
 .cart-collaterals > .cart_totals > table.shop_table tr.cart-subtotal th,
 .cart-collaterals > .cart_totals > table.shop_table tr.cart-subtotal td {
   font-weight: bold;
   font-size: 18px;
-}
-.cart-collaterals > .cart_totals > table.shop_table tr.cart-subtotal + tr > th {
-  display: none;
 }
 .cart-collaterals > .cart_totals > table.shop_table tr.order-total th,
 .cart-collaterals > .cart_totals > table.shop_table tr.order-total td {
@@ -2359,6 +2399,9 @@ form.woocommerce-checkout span.optional {
 #order_review .shop_table tfoot > tbody > tr {
   border-top: 0;
 }
+#order_review .nm-checkout-product-name .product-quantity {
+  display: inline-block;
+}
 #order_review .nm-checkout-product-total,
 #order_review .nm-checkout-product-name {
   font-size: 18px;
@@ -2581,25 +2624,11 @@ label .tooltip,
 }
 .product p.promotie {
   margin: 28px 0;
-  padding: 14px;
   color: rgba(250, 22, 50, 0.9);
-  border: 2px solid rgba(250, 22, 50, 0.9);
   border-radius: 3px;
   position: relative;
   font-size: 14px;
   line-height: 17.5px;
-}
-.product p.promotie:before {
-  content: "Promo!";
-  position: absolute;
-  color: #434343;
-  font-family: "Pacifico", cursive;
-  font-size: 17.5px;
-  line-height: 17.5px;
-  top: -26.25px;
-  right: 8.75px;
-  transform: rotate(-5deg);
-  z-index: 50;
 }
 .product p.weight, .product p.unit-price {
   display: inline-block;
@@ -3200,6 +3229,7 @@ div.nm-single-product.product .product_title {
 .general-store-notice > div {
   padding: 12px;
   background-color: #60aafd;
+  border-radius: 5px;
 }
 .general-store-notice ul {
   margin-bottom: 0;
@@ -3224,7 +3254,7 @@ div.nm-single-product.product .product_title {
 }
 .general-store-notice ul li span:before {
   content: "";
-  background: url("/wp-content/themes/oxfam-webshop/images/checkmark-white.svg") no-repeat center center transparent;
+  background: url("/wp-content/themes/oxfam-webshop/images/icons/check-white.svg") no-repeat center center transparent;
   display: inline-block;
   margin-right: 5px;
   width: 19px;

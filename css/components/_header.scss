@@ -232,16 +232,21 @@
         width: 260px;
         padding: 8px 15px;
         height: 36px;
+        background: #F2F3F5;
+        border: 0;
+        border-radius: 5px;
+        color: #868686;
       }
 
       input[type=submit] {
         padding: 0;
-        width: 28px;
-        height: 29px;
-        background: url(/wp-content/themes/oxfam-webshop/images/search.svg) no-repeat;
+        width: 22px;
+        height: 22px;
+        background: url(/wp-content/themes/oxfam-webshop/images/icons/search.svg) no-repeat;
+        background-size: 100%;
         border: none;
         position: absolute;
-        top: 4px;
+        top: 7px;
         right: 10px;
       }
     }

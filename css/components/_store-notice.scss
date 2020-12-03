@@ -60,6 +60,7 @@
   > div {
     padding: 12px;
     background-color: $pale-blue;
+    border-radius: 5px;
   }
 
   ul {
@@ -85,7 +86,7 @@
 
         &:before {
           content: "";
-          background: url('/wp-content/themes/oxfam-webshop/images/checkmark-white.svg') no-repeat center center transparent;
+          background: url('/wp-content/themes/oxfam-webshop/images/icons/check-white.svg') no-repeat center center transparent;
           display: inline-block;
           margin-right: 5px;
           width: 19px;
