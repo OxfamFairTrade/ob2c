@@ -194,6 +194,16 @@
               padding-top: 0 !important;
             }
           }
+
+          // Openingsuren luid en duidelijk vermelden
+          .pickup-location-address {
+            font-size: 1em;
+          }
+
+          // Itemlijst bij afhalingen in de winkel verbergen (geen split packages mogelijk)
+          #pickup-items-field-for-0 {
+            display: none;
+          }
         }
 
         .woocommerce-shipping-calculator {
