@@ -5143,7 +5143,7 @@
 	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
 		$product = wc_get_product( $cart_item['product_id'] );
 		if ( $product !== false ) {
-			if ( $product->get_sku() === 'GIFT' ) {
+			if ( $product->get_sku() === 'WGIFT' ) {
 				return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
 			}
 
@@ -5181,7 +5181,7 @@
 		$plastic_items = array();
 
 		foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
-			if ( $cart_item['data']->get_sku() === 'GIFT' ) {
+			if ( $cart_item['data']->get_sku() === 'WGIFT' ) {
 				// Sla het item van de cadeauverpakking op en verwijder het
 				$gift_item = $cart_item;
 				unset($cart_sorted[$cart_item_key]);

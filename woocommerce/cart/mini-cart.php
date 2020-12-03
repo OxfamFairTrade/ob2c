@@ -171,10 +171,23 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
             </span>
         </p>
 
-        <?php do_action( 'woocommerce_widget_shopping_cart_before_buttons' ); ?>
+        <?php
+            // Schakel de extra buttons via deze actie tijdelijk uit
+            // do_action( 'woocommerce_widget_shopping_cart_before_buttons' );
+        ?>
 
         <p class="woocommerce-mini-cart__buttons buttons">
             <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="button border wc-forward"><?php esc_html_e( 'View cart', 'woocommerce' ); ?></a>
+            <?php
+                if ( class_exists( 'WCGW_Wrapping' ) ) {
+                    $wcgw_wrapping = new WCGW_Wrapping();
+                    if ( $wcgw_wrapping->count_giftwrapped_products() and $wcgw_wrapping->giftwrap_in_cart !== true ) {
+                        ?>
+                        <a href="<?php echo esc_url( wc_get_cart_url().'?triggerGiftWrapper' ); ?>" class="button add-gift wc-forward"><?php esc_html_e( 'Voeg geschenkverpakking toe', 'oxfam-webshop' ); ?></a>
+                        <?php
+                    }
+                }
+            ?>
             <a href="<?php echo esc_url( wc_get_checkout_url() ); ?>" class="button checkout wc-forward"><?php esc_html_e( 'Checkout', 'woocommerce' ); ?></a>
         </p>
         
