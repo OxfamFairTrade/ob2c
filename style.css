@@ -3223,6 +3223,7 @@ div.nm-single-product.product .product_title {
   padding: 12px !important;
   margin: 0 0 12px 0 !important;
   background-color: #61A534;
+  border-radius: 5px;
 }
 .woocommerce-notices-wrapper > .nm-shop-notice.woocommerce-message,
 .nm-shop-notices > .nm-shop-notice.woocommerce-message,
