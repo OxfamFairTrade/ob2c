@@ -1210,7 +1210,7 @@
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		wp_enqueue_script( 'jquery-ui-tooltip' );
 
-		// Inladen in de footer om dependecy issues met jQuery te vermijden 
+		// Inladen in de footer om dependency issues met jQuery te vermijden 
 		wp_enqueue_script( 'readmore', get_stylesheet_directory_uri() . '/libraries/readmore/readmore.min.js', array(), false, true );
 		wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts-min.js', array(), false, true );
 	}
@@ -1221,12 +1221,12 @@
 		wp_deregister_style('nm-grid');
 
 		// Verhinder het automatisch activeren van SelectWoo op filter dropdowns
-		if ( class_exists( 'woocommerce' ) ) {
-			// Niet uitschakelen op checkoutpagina, library is noodzakelijk voor WooCommerce Local Pickup Plus 2.9+
-			if ( !is_checkout() && !is_cart() ) {
-				wp_dequeue_style( 'select2' );
-				wp_deregister_style( 'select2' );
-				wp_dequeue_script( 'selectWoo');
+		if ( class_exists('woocommerce') ) {
+			// Niet uitschakelen op winkelmandje/checkout, library is noodzakelijk voor WooCommerce Local Pickup Plus 2.9+
+			if ( ! is_cart() and ! is_checkout() ) {
+				wp_dequeue_style('select2');
+				wp_deregister_style('select2');
+				wp_dequeue_script('selectWoo');
 				wp_deregister_script('selectWoo');
 			}
 		}
@@ -4177,11 +4177,11 @@
 	# HELPER FUNCTIES #
 	###################
 
-	// Print de geschatte leverdatums onder de beschikbare verzendmethodes TIJDELIJK UITSCHAKELEN 
-	// add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
+	// Print de geschatte leverdatums onder de beschikbare verzendmethodes
+	add_filter( 'woocommerce_cart_shipping_method_full_label', 'print_estimated_delivery', 10, 2 );
 	
 	function print_estimated_delivery( $label, $method ) {
-		$descr = '<small style="color: #61a534">';
+		$descr = '<small>';
 		$timestamp = estimate_delivery_date( $method->id );
 		
 		switch ( $method->id ) {
@@ -4892,6 +4892,9 @@
 		return 'local_pickup_plus';
 	}
 
+	// Verberg shipping calculator onderaan winkelmandje
+	add_filter( 'woocommerce_shipping_show_shipping_calculator', '__return_false' );
+
 	// Eventueel kunnen we ook 'woocommerce_after_shipping_rate' gebruiken (na elke verzendmethode) WORDT NETJES BIJGEWERKT BIJ AJAX-ACTIE UPDATE_SHIPPING
 	add_action( 'woocommerce_review_order_before_shipping', 'explain_why_shipping_option_is_lacking' );
 	add_action( 'woocommerce_cart_totals_before_shipping', 'explain_why_shipping_option_is_lacking' );
@@ -4933,6 +4936,22 @@
 
 	function get_oxfam_empties_skus_array() {
 		return array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917' );
+	}
+
+	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_add_gift_wrap_message', 10, 1 );
+
+	function ob2c_change_add_gift_wrap_message( $html ) {
+		return '<b>Geef een boodschap mee aan de gelukkige. Wij zorgen ervoor dat dit op het geschenkkaartje verschijnt. Uiteraard voegen we ook geen kassaticket toe!</b>';
+	}
+
+	function ob2c_product_is_gift_wrapper( $sku ) {
+		// @toDo: Lijst dynamisch ophalen m.b.v. WCGW_Wrapping-klasse!
+		$gift_wrappers = array('WGIFT');
+		if ( in_array( $sku, $gift_wrappers ) ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	// Voeg bakken leeggoed enkel toe per 6 of 24 flessen
@@ -5143,7 +5162,7 @@
 	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
 		$product = wc_get_product( $cart_item['product_id'] );
 		if ( $product !== false ) {
-			if ( $product->get_sku() === 'WGIFT' ) {
+			if ( ob2c_product_is_gift_wrapper( $product->get_sku() ) ) {
 				return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
 			}
 
@@ -5181,7 +5200,7 @@
 		$plastic_items = array();
 
 		foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
-			if ( $cart_item['data']->get_sku() === 'WGIFT' ) {
+			if ( ob2c_product_is_gift_wrapper( $cart_item['data']->get_sku() ) ) {
 				// Sla het item van de cadeauverpakking op en verwijder het
 				$gift_item = $cart_item;
 				unset($cart_sorted[$cart_item_key]);
@@ -5215,7 +5234,7 @@
 	add_filter( 'woocommerce_widget_cart_item_visible', 'hide_empties_in_mini_cart', 10, 3 );
 
 	function hide_empties_in_mini_cart( $visible, $cart_item, $cart_item_key ) {
-		if ( in_array( $cart_item['data']->get_sku(), get_oxfam_empties_skus_array() ) ) {
+		if ( in_array( $cart_item['data']->get_sku(), get_oxfam_empties_skus_array() ) or ob2c_product_is_gift_wrapper( $cart_item['data']->get_sku() ) ) {
 			$visible = false;
 		}
 		return $visible;
