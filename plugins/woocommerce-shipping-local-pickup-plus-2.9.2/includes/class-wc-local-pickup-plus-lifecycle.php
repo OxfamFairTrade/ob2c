@@ -325,7 +325,7 @@ CREATE TABLE {$wpdb->prefix}woocommerce_pickup_locations_geodata (
 				$post_id = wp_insert_post( [
 					'post_type'    => 'wc_pickup_location',
 					'post_status'  => isset( $legacy_pickup_location['country'] ) ? 'publish'                                                 : 'draft',
-					// FIX ARRAY KEY COMPANY => SHIPPING_COMPANY
+					// GEWIJZIGD: Fix array key 'company' => 'shipping_company' voor correcte migratie
 					'post_title'   => isset( $legacy_pickup_location['shipping_company'] ) ? sanitize_text_field( $legacy_pickup_location['shipping_company'] ) : '',
 					'post_content' => isset( $legacy_pickup_location['note'] )    ? wp_kses_post( $legacy_pickup_location['note'] )           : '',
 				] );
@@ -334,7 +334,7 @@ CREATE TABLE {$wpdb->prefix}woocommerce_pickup_locations_geodata (
 
 					$pickup_location = new \WC_Local_Pickup_Plus_Pickup_Location( $post_id );
 					$pickup_location->set_address( [
-						// FIX ARRAY KEY COMPANY => SHIPPING_COMPANY
+						// GEWIJZIGD: Fix array key 'company' => 'shipping_company' voor correcte migratie
 						'name'      => isset( $legacy_pickup_location['shipping_company'] )   ? sanitize_text_field( $legacy_pickup_location['shipping_company'] ) : '',
 						'country'   => isset( $legacy_pickup_location['country'] )   ? strtoupper( sanitize_text_field( $legacy_pickup_location['country'] ) ) : '',
 						'state'     => isset( $legacy_pickup_location['state'] )     ? strtoupper( sanitize_text_field( $legacy_pickup_location['state'] ) )   : '',

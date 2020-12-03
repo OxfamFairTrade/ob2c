@@ -15,9 +15,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div class="cart_totals <?php if ( WC()->customer->has_calculated_shipping() ) echo 'calculated_shipping'; ?>">
 
-	<!-- GEWIJZIGD: Shipping calculator volledig verwijderen -->
-
 	<?php do_action( 'woocommerce_before_cart_totals' ); ?>
+
+	<!-- GEWIJZIGD: Tussentitel verwijderen -->
 
 	<table cellspacing="0" class="shop_table shop_table_responsive">
 
@@ -83,7 +83,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 		?>
 
-		<?php // do_action( 'woocommerce_cart_totals_before_order_total' ); ?>
+		<?php
+			// GEWIJZIGD: Actie uitgeschakeld (waarom?)
+			// do_action( 'woocommerce_cart_totals_before_order_total' );
+		?>
 
 		<tr class="order-total">
 			<th><?php _e( 'Total', 'woocommerce' ); ?></th>
