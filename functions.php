@@ -7401,11 +7401,13 @@
 	add_filter( 'site_transient_update_plugins', 'disable_plugin_updates' );
 
 	function disable_plugin_updates( $value ) {
-		if ( isset( $value ) and is_object( $value ) ) {
-			$disabled_plugin_updates = array( 'woocommerce-force-sells', 'woocommerce-multistore', 'woocommerce-shipping-local-pickup-plus', 'wp-store-locator' );
-			foreach ( $disabled_plugin_updates as $slug ) {
-				if ( isset( $value->response[ $slug.'/'.$slug.'.php' ] ) ) {
-					unset( $value->response[ $slug.'/'.$slug.'.php' ] );
+		if ( wp_get_environment_type() === 'production' ) {
+			if ( isset( $value ) and is_object( $value ) ) {
+				$disabled_plugin_updates = array( 'woocommerce-force-sells', 'woocommerce-multistore', 'woocommerce-shipping-local-pickup-plus', 'wp-store-locator' );
+				foreach ( $disabled_plugin_updates as $slug ) {
+					if ( isset( $value->response[ $slug.'/'.$slug.'.php' ] ) ) {
+						unset( $value->response[ $slug.'/'.$slug.'.php' ] );
+					}
 				}
 			}
 		}
