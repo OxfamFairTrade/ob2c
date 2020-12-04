@@ -6,27 +6,7 @@
 			$current_store = intval( $_COOKIE['latest_shop_id'] );
 		}
 
-		$shops = array();
-		if ( wc_local_pickup_plus()->get_pickup_locations_instance()->get_pickup_locations_count() > 0 ) {
-			// Zet de oudste winkels bovenaan
-			$locations = wc_local_pickup_plus()->get_pickup_locations_instance()->get_sorted_pickup_locations( array( 'order' => 'ASC' ) );
-			foreach ( $locations as $location ) {
-				$address = $location->get_address();
-				$parts = explode( 'id=', $location->get_description() );
-				if ( isset( $parts[1] ) ) {
-					// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
-					$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
-					if ( $shop_post_id > 0 ) {
-						$shops[ $shop_post_id ] = $location->get_name();
-					}
-				} else {
-					// Geen argument, dus het is de hoofdwinkel, altijd opnemen!
-					$shops[ get_option('oxfam_shop_post_id') ] = $location->get_name();
-				}
-			}
-			// var_dump_pre( $shops );
-		}
-
+		$shops = ob2c_get_pickup_locations();
 		if ( $current_store === false or ! array_key_exists( $current_store, $shops ) ) {
 			// De cookie slaat op een winkel uit een andere subsite (bv. door rechtstreeks switchen)
 			// Stel de hoofdwinkel van de huidige subsite in als fallback
