@@ -1595,16 +1595,11 @@
 		// Laat de custom statusfilter verschijnen volgens de normale flow van de verwerking
 		add_filter( 'views_edit-shop_order', 'put_claimed_after_processing' );
 
-		// Zorg ervoor dat refunds aan dezelfde winkel toegekend worden als het oorspronkelijke bestelling, zodat ze correct getoond worden in de gefilterde rapporten NOG TE TESTEN
-		// add_action( 'woocommerce_order_refunded', 'ob2c_copy_metadata_from_order_to_refund', 10, 2 );
-
 		// Tel geclaimde orders bij de nog te behandelen bestellingen
 		add_filter( 'woocommerce_menu_order_count', 'ob2c_add_claimed_to_open_orders_count', 10, 1 );
 
-		function ob2c_add_claimed_to_open_orders_count( $count ) {
-			$count += wc_orders_count('claimed');
-			return $count;
-		}
+		// Zorg ervoor dat refunds aan dezelfde winkel toegekend worden als het oorspronkelijke bestelling, zodat ze correct getoond worden in de gefilterde rapporten NOG TE TESTEN
+		// add_action( 'woocommerce_order_refunded', 'ob2c_copy_metadata_from_order_to_refund', 10, 2 );
 
 		// Maak de boodschap om te filteren op winkel beschikbaar bij de rapporten
 		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
@@ -1969,6 +1964,11 @@
 
 	function disable_wc_actions() {
 		remove_action( 'bulk_actions-edit-shop_order', array( WC_Admin_CPT_Shop_Order::getInstance(), 'admin_footer' ), 10 );
+	}
+
+	function ob2c_add_claimed_to_open_orders_count( $count ) {
+		$count += wc_orders_count('claimed');
+		return $count;
 	}
 
 	function ob2c_copy_metadata_from_order_to_refund( $order_id, $refund_id ) {
