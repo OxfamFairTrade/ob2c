@@ -6767,8 +6767,8 @@
 				// Zet de oudste winkels bovenaan
 				$locations = wc_local_pickup_plus()->get_pickup_locations_instance()->get_sorted_pickup_locations( array( 'order' => 'ASC' ) );
 				foreach ( $locations as $location ) {
-					// Of $location->get_description() gebruiken?
-					$parts = explode( 'id=', $location->get_address() );
+					// We kunnen ook $location->get_address() gebruiken (zoals vroeger) maar dat is een object, geen string
+					$parts = explode( 'id=', $location->get_description() );
 					if ( isset( $parts[1] ) ) {
 						// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
 						$shop_post_id = str_replace( ']', '', $parts[1] );
