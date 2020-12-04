@@ -712,6 +712,7 @@
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'Oxfam Options Sync' );
 			$sites = get_sites( array( 'site__not_in' => array(1) ) );
+			// write_log( print_r( $new_value, true ) );
 			
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
@@ -722,8 +723,16 @@
 					$new_value['mail']['from_email'] = get_option('admin_email');
 					$new_value['mail']['from_name'] = get_bloginfo('name');
 				}
-				if ( update_option( $option, $new_value ) ) {
-					$success = true;
+
+				if ( $option === 'cookie_notice_options' ) {
+					// Boolean waardes worden niet goed overgenomen m.b.v. update_option() ...
+					// Manipuleer de database rechtstreeks, blog-ID zit reeds vervat in prefix!
+					global $wpdb;
+					$success = $wpdb->update( $wpdb->prefix.'options', array( 'option_value' => serialize( $new_value ) ), array( 'option_name' => $option ) );
+				} else {
+					if ( update_option( $option, $new_value ) ) {
+						$success = true;
+					}
 				}
 				
 				restore_current_blog();
