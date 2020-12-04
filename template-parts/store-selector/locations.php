@@ -38,7 +38,6 @@
 		/* In wpsl-gmap.js staat in searchLocationBtn() een $( "#wpsl-search-btn" ).unbind( "click" ) die dit verhindert */
 		/* Voorlopig daar hard verwijderd maar wellicht beter om zelf een custom event te verzinnen en binden? */
 		jQuery('#wpsl-search-btn').on( 'click', function() {
-			console.log("Executing click binding by OB2C ...");
 			jQuery('#default-content').hide();
 			/* Maak de resultatenlijst zéker zichtbaar */
 			jQuery('#wpsl-result-list').show();
@@ -80,7 +79,7 @@
 
 		jQuery('.store-selector-erase').on( 'click', function(event) {
 			event.preventDefault();
-			console.log( "Reset cookies en doe redirect naar overeenkomstige URL zonder /<?php echo $_COOKIE['latest_blog_path'] ?>/" );
+			console.log("Reset cookies en doe redirect naar overeenkomstige URL op hoofdniveau");
 			eraseCookie('latest_shop_id');
 			eraseCookie('latest_blog_id');
 			eraseCookie('latest_blog_path');
@@ -115,7 +114,6 @@
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
 			e.preventDefault();
-			console.log("Wis de huidige categorie");
 			// Kijk naar wat er gebeurt in nm-shop-filters.js
 			// Het 'href'-attribuut wijzigen naar '/producten/' lijkt te volstaan om te wissen!
 			// jQuery(this).attr( 'href', 'https://dev.oxfamwereldwinkels.be/oostende/producten/' );
