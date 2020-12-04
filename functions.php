@@ -1598,6 +1598,14 @@
 		// Zorg ervoor dat refunds aan dezelfde winkel toegekend worden als het oorspronkelijke bestelling, zodat ze correct getoond worden in de gefilterde rapporten NOG TE TESTEN
 		// add_action( 'woocommerce_order_refunded', 'ob2c_copy_metadata_from_order_to_refund', 10, 2 );
 
+		// Tel geclaimde orders bij de nog te behandelen bestellingen
+		add_filter( 'woocommerce_menu_order_count', 'ob2c_add_claimed_to_open_orders_count', 10, 1 );
+
+		function ob2c_add_claimed_to_open_orders_count( $count ) {
+			$count += wc_orders_count('claimed');
+			return $count;
+		}
+
 		// Maak de boodschap om te filteren op winkel beschikbaar bij de rapporten
 		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
 	}
@@ -1651,7 +1659,7 @@
 		$order = wc_get_order( $order_id );
 		// Check of de betaling wel succesvol was door enkel te claimen indien status reeds op 'In behandeling' staat
 		if ( $order->has_shipping_method('local_pickup_plus') and $order->get_status() === 'processing' ) {
-			$order->update_status( 'claimed' );
+			$order->update_status('claimed');
 		}
 	}
 
