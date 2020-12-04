@@ -108,15 +108,16 @@
 			/* Probeer het huidige pad te bewaren! */
 			var current_url = window.location.href;
 			var current_zip = jQuery('#wpsl-search-input').val();
-			/* Nog beter zou zijn om de effectief geselecteerde gemeente door te geven ... */
-			var new_url = jQuery(this).data('webshop-url') + '?referralZip=' + current_zip + '&referralCity=' + autocomplete_zips[current_zip];
+			/* Geen enkel de hoofdgemeente mee (nog beter zou zijn om de effectief geselecteerde gemeente door te geven!) */
+			var cities = zips[current_zip].split( " / ", 1 );
+			var url_suffix = '?referralZip=' + current_zip + '&referralCity=' + cities[0];
 			if ( urlParams.has('addSkus') ) {
-				new_url += '&addSkus=' + urlParams.get('addSkus');
+				url_suffix += '&addSkus=' + urlParams.get('addSkus');
 			}
 			if ( urlParams.has('recipeId') ) {
-				new_url += '&recipeId=' + urlParams.get('recipeId');
+				url_suffix += '&recipeId=' + urlParams.get('recipeId');
 			}
-			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', new_url ) );
+			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + url_suffix );
 		});
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
