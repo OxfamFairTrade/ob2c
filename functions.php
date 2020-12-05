@@ -5,6 +5,22 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	// Verwijder originelen uit srcset (wordt opgepikt door zoekmachines!)
+	add_filter( 'wp_calculate_image_srcset_meta', 'ob2c_remove_large_images_from_srcset' );
+
+	function ob2c_remove_large_images_from_srcset( $image_meta ) {
+		if ( ! is_array( $image_meta ) ) {
+			return $image_meta;
+		}
+		if ( ! empty($image_meta['sizes'] ) ) {
+			write_log( print_r( $image_meta['size'], true ) );
+			if ( ! empty( $image_meta['sizes']['full'] ) ) {
+				unset( $image_meta['sizes']['full'] );
+			}
+		}
+		return $image_meta;
+	}
+
 	// Was vroeger 6.5566;
 	define( 'REDUCED_VAT_SHIPPING_COST', 4.6698 );
 	// Was vroeger 5.7438;
