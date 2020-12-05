@@ -12,12 +12,20 @@
 		if ( ! is_array( $image_meta ) ) {
 			return $image_meta;
 		}
+		
+		// write_log( print_r( $image_meta['sizes'], true ) );
 		if ( ! empty($image_meta['sizes'] ) ) {
-			write_log( print_r( $image_meta['size'], true ) );
-			if ( ! empty( $image_meta['sizes']['full'] ) ) {
-				unset( $image_meta['sizes']['full'] );
+			if ( ! empty( $image_meta['sizes']['wc_order_status_icon'] ) ) {
+				unset( $image_meta['sizes']['wc_order_status_icon'] );
+			}
+			if ( ! empty( $image_meta['sizes']['nm_quick_view'] ) ) {
+				unset( $image_meta['sizes']['nm_quick_view'] );
+			}
+			if ( ! empty( $image_meta['sizes']['large'] ) ) {
+				unset( $image_meta['sizes']['large'] );
 			}
 		}
+		
 		return $image_meta;
 	}
 
@@ -443,20 +451,36 @@
 		return $stock_html;
 	}, 10, 1 );
 
-	// Change the image size used for the WooCommerce product gallery image zoom
+	// Limiteer de grootte van het ingezoomde packshot in de WooCommerce galerij
 	add_filter( 'woocommerce_gallery_full_size', function( $size ) {
 		return 'large';
 	} );
 
-	// Parameter om winkelmandje te legen (tijdens debuggen)
-	add_action( 'init', function() {
-		if ( isset( $_GET['emptyCart'] ) ) {
-			WC()->cart->empty_cart(true);
-		}
+	// Limiteer de grootte van packshots in de loop
+	add_filter( 'woocommerce_product_thumbnails_large_size', function( $size ) {
+		return 'medium';
 	} );
 
+	// Neem supergrote afbeeldingen nooit mee in de srcset's (kan geïndexeerd geraken door zoekmachines!) 
+	add_filter( 'wp_calculate_image_srcset', function( $sources ) {
+		foreach ( $sources as $key => $value ) {
+			if ( $key > 2000 ) {
+				unset( $sources[ $key ] );
+			}
+		}
+		// write_log( print_r( $sources, true ) );
+		return $sources;
+	} );
+
+	// Parameter om winkelmandje te legen (tijdens debuggen)
+	// add_action( 'init', function() {
+	// 	if ( isset( $_GET['emptyCart'] ) ) {
+	// 		WC()->cart->empty_cart(true);
+	// 	}
+	// } );
+
 	// Wordt gebruikt in o.a. mini cart en order items
-	// Wordt overruled in loop door woocommerce-template-functions.php!
+	// Wordt op cataloguspagina's overruled door woocommerce-template-functions.php!
 	add_filter( 'woocommerce_product_get_image', 'get_parent_image_if_non_set', 10, 5 );
 	
 	function get_parent_image_if_non_set( $image, $product, $size, $attr, $placeholder ) {
@@ -475,6 +499,21 @@
 				switch_to_blog(1);
 				// Checkt of de file nog bestaat én een afbeelding is
 				if ( wp_attachment_is_image( $main_image_id ) ) {
+					// Als we de standaard WooCommerce-formaten oproepen, krijgen we steeds het originele beeld terug ...
+					// Heel vreemd, dus switch naar de Savoy-formaten, die volledig identiek zijn!
+					switch ( $size ) {
+						case 'woocommerce_gallery_thumbnail':
+							$size = 'shop_thumbnail';
+							break;
+
+						case 'woocommerce_thumbnail':
+							$size = 'shop_catalog';
+							break;
+
+						case 'woocommerce_single':
+							$size = 'shop_single';
+							break;
+					}
 					// Retourneert lege string bij error
 					$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
 				}
@@ -487,13 +526,6 @@
 		}
 
 		return $image;
-	}
-
-	// Vervang de (gewiste) lokale PNG-afbeelding door de globale versie GEREGELD VIA GESYNCHRONEERDE OPTIE
-	// add_filter( 'wc_placeholder_img_src', 'custom_woocommerce_placeholder_img_src') ;
-
-	function custom_woocommerce_placeholder_img_src( $src ) {
-		return 'https://shop.oxfamwereldwinkels.be/wp-content/uploads/woocommerce-placeholder.png';
 	}
 
 	// Wordt gebruikt in o.a. single product

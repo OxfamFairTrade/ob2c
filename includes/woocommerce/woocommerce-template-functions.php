@@ -91,7 +91,7 @@ if ( ! function_exists( 'nm_category_menu_output' ) ) {
         $current_top_cat_id = null;
         $all_categories_class = '';
 
-        // Is this a category page?																
+        // Is this a category page?                                                             
         if ( $is_category ) {
             $hide_sub = false;
 
@@ -104,10 +104,10 @@ if ( ! function_exists( 'nm_category_menu_output' ) ) {
             // Get current category's direct children
             $current_cat_direct_children = get_terms( 'product_cat',
                 array(
-                    'fields'       	=> 'ids',
-                    'parent'       	=> $current_cat_id,
-                    'hierarchical'	=> true,
-                    'hide_empty'   	=> $hide_empty
+                    'fields'        => 'ids',
+                    'parent'        => $current_cat_id,
+                    'hierarchical'  => true,
+                    'hide_empty'    => $hide_empty
                 )
             );
             $category_has_children = ( empty( $current_cat_direct_children ) ) ? false : true;
@@ -129,12 +129,12 @@ if ( ! function_exists( 'nm_category_menu_output' ) ) {
         }
         
         $args = array(
-            'taxonomy'		=> 'product_cat',
-            'type'			=> 'post',
-            'orderby'		=> $orderby, // Note: 'name' sorts by product category "menu/sort order"
-            'order'			=> strtoupper( $order ),
-            'hide_empty'	=> $hide_empty,
-            'hierarchical'	=> 0
+            'taxonomy'      => 'product_cat',
+            'type'          => 'post',
+            'orderby'       => $orderby, // Note: 'name' sorts by product category "menu/sort order"
+            'order'         => strtoupper( $order ),
+            'hide_empty'    => $hide_empty,
+            'hierarchical'  => 0
         );
         // Note: The "force_menu_order_sort" parameter added in WooCommerce 3.6 must be set to make "orderby" work (the "name" option doesn't work otherwise)
         // - See the "../woocommerce/includes/wc-term-functions.php" file
@@ -207,13 +207,13 @@ if ( ! function_exists( 'nm_sub_category_menu_output' ) ) {
         }
 
         $args = array(
-            'type'			=> 'post',
-            'parent'       	=> $current_cat_id,
-            'orderby'		=> $orderby, // Note: 'name' sorts by product category "menu/sort order"
-            'order'			=> $order,
-            'hide_empty'	=> $hide_empty,
-            'hierarchical'	=> 1,
-            'taxonomy'		=> 'product_cat'
+            'type'          => 'post',
+            'parent'        => $current_cat_id,
+            'orderby'       => $orderby, // Note: 'name' sorts by product category "menu/sort order"
+            'order'         => $order,
+            'hide_empty'    => $hide_empty,
+            'hierarchical'  => 1,
+            'taxonomy'      => 'product_cat'
         );
         // Note: The "force_menu_order_sort" parameter added in WooCommerce 3.6 must be set to make "orderby" work (the "name" option doesn't work otherwise)
         // - See the "../woocommerce/includes/wc-term-functions.php" file
@@ -403,6 +403,21 @@ function nm_product_get_thumbnail( $image_id, $image_size, $image_class, $image_
     $props = array( 'src' => '' );
     if ( $switch_to_main ) {
         switch_to_blog(1);
+        // Als we de standaard WooCommerce-formaten oproepen, krijgen we steeds het originele beeld terug ...
+        // Heel vreemd, dus switch naar de Savoy-formaten, die volledig identiek zijn!
+        switch ( $image_size ) {
+            case 'woocommerce_gallery_thumbnail':
+                $image_size = 'shop_thumbnail';
+                break;
+
+            case 'woocommerce_thumbnail':
+                $image_size = 'shop_catalog';
+                break;
+
+            case 'woocommerce_single':
+                $image_size = 'shop_single';
+                break;
+        }
         $props = nm_product_get_thumbnail_props( $image_id, $image_size );
         restore_current_blog();
     }
@@ -507,10 +522,10 @@ function nm_product_variations_list( $product ) {
                                     }
                                 }
                             } else {
-								foreach ( $options as $option ) {
-									echo '<span>' . esc_html( apply_filters( 'woocommerce_variation_option_name', $option ) ) . '</span>';
-								}
-							}
+                                foreach ( $options as $option ) {
+                                    echo '<span>' . esc_html( apply_filters( 'woocommerce_variation_option_name', $option ) ) . '</span>';
+                                }
+                            }
                         }
                     ?>
                 </div>
