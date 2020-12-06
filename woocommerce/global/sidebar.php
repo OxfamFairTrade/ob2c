@@ -45,17 +45,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 						}
 					}
 					
-					$term_link = get_term_link( 'sinterklaas', 'product_tag' );
-					if ( ! is_wp_error( $term_link ) ) {
-						if ( is_product_tag('sinterklaas') ) {
-							$class = 'chosen';
-							$url = get_permalink( wc_get_page_id('shop') );
-						} else {
-							$class = '';
-							$url = $term_link.'#nm-shop-products';
-						}
-						echo '<a href="'.$url.'" class="'.$class.'"><span>Sinterklaas</span></a>';
-					}
+					// $term_link = get_term_link( 'sinterklaas', 'product_tag' );
+					// if ( ! is_wp_error( $term_link ) ) {
+					// 	if ( is_product_tag('sinterklaas') ) {
+					// 		$class = 'chosen';
+					// 		$url = get_permalink( wc_get_page_id('shop') );
+					// 	} else {
+					// 		$class = '';
+					// 		$url = $term_link.'#nm-shop-products';
+					// 	}
+					// 	echo '<a href="'.$url.'" class="'.$class.'"><span>Sinterklaas</span></a>';
+					// }
 				?>
 			</div>
 
