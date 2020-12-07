@@ -267,11 +267,14 @@
 		wp_reset_postdata();
 	}
 
-	// Product-ID's in kortingsbon lokaal maken
+	// Product-ID's in kortingsbonnen lokaal maken
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> 'publish',
-		'title'			=> 'b2b-5%',
+		// Opgelet: dit kijkt naar de (onzichtbare) slug, die lichtjes kan afwijken van de titel!
+		// WERKT NIET BIJ 'b2b-5%' en 'b2b-10%' (ZELFS MET 'b2b5' en 'b2b10')
+		// GEBRUIK DAARVOOR 'title' => 'b2b-5%' en 'title' => 'b2b-10%'
+		'post_name__in'	=> array( 'b2b-wereldwinkel', 'worldmix', 'kleine-chips', 'honingbiscuits', 'appelsap', 'sinaasappelsap', 'duo-zuid-afrika', 'duo-chili', 'duo-argentinie', 'duo-schuimwijn' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	
@@ -293,6 +296,7 @@
 				$free_product_global_ids = explode( ',', $free_product_ids );
 				translate_main_to_local_ids( get_the_ID(), '_wjecf_free_product_ids', $free_product_global_ids );
 			}
+			write_log( "Blog-ID ".get_current_blog_id().": made coupon '".get_the_title()."' local" );
 		}
 		wp_reset_postdata();
 	}
