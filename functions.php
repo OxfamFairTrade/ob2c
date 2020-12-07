@@ -5890,7 +5890,7 @@
 		return $products_data_diff;
 	}
 
-	// Geef aan welke verborgen metavelden we willen kopiëren
+	// Geef aan welke metavelden we willen kopiëren
 	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 10, 2 );
 
 	function update_slave_product_meta( $meta_data, $data ) {
@@ -5979,9 +5979,13 @@
 
 			$stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
 			foreach ( $stores as $key => $store_id ) {
-				if ( in_array( $store_id, get_site_option('oxfam_blocked_sites') ) ) {
+				// Producten sowieso nooit publiceren naar sjabloon!
+				if ( $store_id == 5 ) {
 					unset( $stores[ $key ] );
 				}
+				// if ( in_array( $store_id, get_site_option('oxfam_blocked_sites') ) ) {
+				// 	unset( $stores[ $key ] );
+				// }
 			}
 			write_log( "PUBLISH PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
 			do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no' );
@@ -6301,7 +6305,7 @@
 						echo 'Opgelet: om te vermijden dat al deze producten als \'nieuw\' zouden verschijnen, kreeg de non-food als creatiedatum de dag van aanmaak in fairtradecrafts.be mee. Hierdoor verschijnen deze producten niét in het blauw onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-					echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit reeds eind december gebeuren. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
+					echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit begin januari gebeuren, samen met de levering in de winkel. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-december-update-wijnduo-s.html" target="_blank">decemberpromo\'s</a> werden geactiveerd in alle webshops. Ook de <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> blijven actief tot en met 31 december. Creditering verloopt ook voor online wijnduo\'s via het turfblad in de winkel. Raadpleeg indien nodig <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a>.</p>';
@@ -6340,7 +6344,7 @@
 					// echo '</div>';
 				}
 				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>5 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. Het gaat om 20063 Groot Eiland Shiraz-Pinotage, 20249 Chenin Blanc BOX 3 l (nieuwe referentie: 20248), 20258 RAZA Torrontés Reserva, 24646 Beertje melkchocolade, 25617 Medjoul dadels (nieuwe referentie: 25618, bio).</p>';
+				// 	echo '<p>5 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. 25721 BIO Cashew chili.</p>';
 				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud

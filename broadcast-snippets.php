@@ -51,7 +51,7 @@
 	}
 
 	// Verwijder deprecated productattributen
-	$to_delete = array( 'bio', 'shopplus', 'ean', 'ompak', 'eenheid', 'fairtrade' );
+	$to_delete = array( 'bio', 'ean', 'eenheid', 'eprijs', 'fairtrade', 'ompak', 'shopplus' );
 	foreach ( $to_delete as $slug ) {
 		$attribute_id = absint( wc_attribute_taxonomy_id_by_name( $slug ) );
 		if ( $attribute_id > 0 ) {
@@ -289,7 +289,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '65224', '65225', '87339', '87352', '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515' );
+	$photos_to_delete = array( 'SINT-webshop', '20410', '20260' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_ids = oxfam_get_attachment_ids_by_file_name( $sku );
 		if ( count( $photo_ids ) > 0 ) {
