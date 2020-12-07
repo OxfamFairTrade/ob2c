@@ -19,10 +19,10 @@
 		die( "Access prohibited!" );
 	}
 
-	$blog_id_not_wp = 64;
+	$blog_id_not_wp = 77;
 	$login = '';
 	$email = '';
-	$shop_id = 3383;
+	$shop_id = 0;
 	$fname = '';
 	$lname = '';
 
@@ -44,15 +44,15 @@
 			'last_name' => $lname,
 			'role' => 'local_manager',
 		);
-		// Creër onmiddellijk user
+		// Creëer onmiddellijk user
 		$user_id = wp_insert_user( $user_args );
 		if ( is_numeric( $user_id ) ) {
 			echo 'User-ID '.$user_id.' aangemaakt<br/>';
-			$new_user = get_user_by( 'ID', $user_id );
-			if ( $new_user ) {
-				// Wordt automatisch toegevoegd ...
-				$new_user->remove_role('customer');
-			}
+			// Klantenrol wordt niet langer automatisch toegevoegd!
+			// $new_user = get_user_by( 'ID', $user_id );
+			// if ( $new_user ) {
+			// 	$new_user->remove_role('customer');
+			// }
 		}
 		
 		if ( update_option( 'admin_email', $email ) ) {
@@ -141,10 +141,10 @@
 		
 		// $bic = 'NICABEBB';
 		// $bic = 'AXABBE22';
-		$bic = 'GEBABEBB';
+		// $bic = 'GEBABEBB';
 		// $bic = 'GKCCBEBB';
 		// $bic = 'HBKABE22';
-		// $bic = 'KREDBEBB';
+		$bic = 'KREDBEBB';
 		// $bic = 'VDSPBE91';
 		// $bic = 'ARSPBE22';
 		// $bic = 'TRIOBEBB';
