@@ -45,13 +45,13 @@
 
 	// Verwijder deprecated metadata op producten
 	global $wpdb;
-	$to_delete = array( 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean', '_herkomst_nl' );
+	$to_delete = array( 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean', '_herkomst_nl', 'touched_by_import' );
 	foreach ( $to_delete as $meta_key ) {
 		$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => $meta_key ) );
 	}
 
 	// Verwijder deprecated productattributen
-	$to_delete = array( 'bio', 'shopplus', 'ean', 'ompak', 'eenheid', 'fairtrade' );
+	$to_delete = array( 'bio', 'ean', 'eenheid', 'eprijs', 'fairtrade', 'ompak', 'shopplus' );
 	foreach ( $to_delete as $slug ) {
 		$attribute_id = absint( wc_attribute_taxonomy_id_by_name( $slug ) );
 		if ( $attribute_id > 0 ) {
@@ -119,17 +119,9 @@
 	}
 
 	// Stel default productcategorie in
-	$term = get_term_by( 'slug', 'geschenken', 'product_cat' );
+	$term = get_term_by( 'slug', 'geschenken-wenskaarten', 'product_cat' );
 	if ( $term !== false ) {
 		update_option( 'default_product_cat', $term->term_id );
-	}
-
-	// Fix hoofdproductenpagina
-	$new_page = get_page_by_title('Producten');
-	if ( $new_page !== null ) {
-		update_option( 'woocommerce_shop_page_id', $new_page->ID );
-		// Lost het probleem met de lege shoppagina op na het toevoegen van nieuwe categorieën via Broadcast sync!
-		flush_rewrite_rules();
 	}
 
 	// Fix voorraadtermen voorradige producten
@@ -159,7 +151,7 @@
 	}
 
 	// Subsites afschermen en verbergen op kaart
-	$oxfam_blocked_sites = array( 65 );
+	$oxfam_blocked_sites = array( 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76 );
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
@@ -170,16 +162,24 @@
 	// jQuery("#woocommerce-multistore-fields").find("input[name*='_child_inheir']").prop('checked',true);
 
 	// Startpagina instellen
-	$homepage = get_page_by_title( 'Startpagina' );
-	if ( $homepage ) {
+	$homepage = get_page_by_title('Startpagina');
+	if ( $homepage !== NULL ) {
 		update_option( 'show_on_front', 'page' );
 		update_option( 'page_on_front', $homepage->ID );
 	}
 
-	// Voorwaardenpagina opsnorren
-	$terms = get_page_by_title( 'Algemene voorwaarden' );
-	if ( $terms ) {
+	// Voorwaardenpagina instellen
+	$terms = get_page_by_title('Algemene voorwaarden');
+	if ( $terms !== NULL ) {
 		update_option( 'woocommerce_terms_page_id', $terms->ID );
+	}
+
+	// Hoofdwinkelpagina instellen
+	$shop_page = get_page_by_title('Producten');
+	if ( $shop_page !== NULL ) {
+		update_option( 'woocommerce_shop_page_id', $shop_page->ID );
+		// Lost het probleem met de lege shoppagina op na het toevoegen van nieuwe categorieën via Broadcast sync!
+		flush_rewrite_rules();
 	}
 
 	// Leeggoed verbergen en op voorraad zetten
@@ -194,9 +194,34 @@
 		while ( $all_products->have_posts() ) {
 			$all_products->the_post();
 			$product = wc_get_product( get_the_ID() );
-			if ( $product !== false and strpos( $product->get_sku(), 'W' ) === 0 ) {
+			// Ook themafuncties kunnen opgeroepen worden vanuit snippets!
+			if ( $product !== false and in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) {
 				$product->set_stock_status('instock');
+				// Wordt sinds WooMultistore 2.0+ automatisch gekopieerd bij aanmaak
 				$product->set_catalog_visibility('hidden');
+				$product->save();
+			}
+		}
+		wp_reset_postdata();
+	}
+
+	// Alles behalve leeggoed uit voorraad zetten
+	$args = array(
+		'post_type'			=> 'product',
+		'post_status'		=> array('publish'),
+		'posts_per_page'	=> -1,
+	);
+	$all_products = new WP_Query( $args );
+
+	if ( $all_products->have_posts() ) {
+		while ( $all_products->have_posts() ) {
+			$all_products->the_post();
+			$product = wc_get_product( get_the_ID() );
+			// Ook themafuncties kunnen opgeroepen worden vanuit snippets!
+			if ( $product !== false and ! in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) {
+				$product->set_stock_status('outofstock');
+				// On first publish wordt voorraadbeheer van nationaal ook lokaal geactiveerd!
+				$product->set_manage_stock('no');
 				$product->save();
 			}
 		}
@@ -242,11 +267,14 @@
 		wp_reset_postdata();
 	}
 
-	// Product-ID's in kortingsbon lokaal maken
+	// Product-ID's in kortingsbonnen lokaal maken
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> 'publish',
-		'title'			=> 'b2b-5%',
+		// Opgelet: dit kijkt naar de (onzichtbare) slug, die lichtjes kan afwijken van de titel!
+		// WERKT NIET BIJ 'b2b-5%' en 'b2b-10%' (ZELFS MET 'b2b5' en 'b2b10')
+		// GEBRUIK DAARVOOR 'title' => 'b2b-5%' en 'title' => 'b2b-10%'
+		'post_name__in'	=> array( 'b2b-wereldwinkel', 'worldmix', 'kleine-chips', 'honingbiscuits', 'appelsap', 'sinaasappelsap', 'duo-zuid-afrika', 'duo-chili', 'duo-argentinie', 'duo-schuimwijn' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	
@@ -268,6 +296,7 @@
 				$free_product_global_ids = explode( ',', $free_product_ids );
 				translate_main_to_local_ids( get_the_ID(), '_wjecf_free_product_ids', $free_product_global_ids );
 			}
+			write_log( "Blog-ID ".get_current_blog_id().": made coupon '".get_the_title()."' local" );
 		}
 		wp_reset_postdata();
 	}
@@ -289,7 +318,7 @@
 	}
 
 	// Een reeks foto's verwijderen
-	$photos_to_delete = array( '65224', '65225', '87339', '87352', '87500', '87501', '87502', '87503', '87504', '87505', '87506', '87507', '87508', '87509', '87510', '87511', '87512', '87513', '87514', '87515' );
+	$photos_to_delete = array( 'SINT-webshop', '20410', '20260' );
 	foreach ( $photos_to_delete as $sku ) {
 		$photo_ids = oxfam_get_attachment_ids_by_file_name( $sku );
 		if ( count( $photo_ids ) > 0 ) {
@@ -371,7 +400,8 @@
 		}
 	}
 
-	// Werk de datum van een product bij GEBEURT AUTOMATISCH BIJ UPDATE
+	// Werk de datum van een product bij
+	// Gebeurt sinds WooMultistore 2.0+ automatisch bij update
 	$product_id = wc_get_product_id_by_sku('24634');
 	if ( $product_id ) {
 		$product = wc_get_product( $product_id );

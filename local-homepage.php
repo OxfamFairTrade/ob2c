@@ -73,7 +73,7 @@
 					// Check of ze effectief op voorraad zijn
 					$args = array(
 						'stock_status' => 'instock',
-						'tag' => array('sinterklaas'),
+						'tag' => array('promotie'),
 					);
 					$sint_products = wc_get_products( $args );
 
@@ -82,10 +82,10 @@
 						<div class="col-row lh-banner">		
 		 					<div class="col-xs-12">		
 		 						<?php		
-		 							$term_link = get_term_link( 'sinterklaas', 'product_tag' );		
+		 							$term_link = get_term_link( 'promotie', 'product_tag' );		
 		 							if ( ! is_wp_error( $term_link ) ) {		
 		 								// echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_the_post_thumbnail_url( get_the_ID(), 'full' ).'" /></a>';
-		 								echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_stylesheet_directory_uri().'/images/promoties/sint-2020-webshop.png" /></a>';
+		 								echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2020-webshop.png" /></a>';
 		 							}
 		 						?>
 		 					</div>
