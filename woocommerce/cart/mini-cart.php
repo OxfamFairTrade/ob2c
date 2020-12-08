@@ -181,10 +181,16 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
             <?php
                 if ( class_exists( 'WCGW_Wrapping' ) ) {
                     $wcgw_wrapping = new WCGW_Wrapping();
-                    if ( $wcgw_wrapping->count_giftwrapped_products() and $wcgw_wrapping->giftwrap_in_cart !== true ) {
-                        ?>
-                        <a href="<?php echo esc_url( wc_get_cart_url().'?triggerGiftWrapper' ); ?>" class="button add-gift wc-forward"><?php esc_html_e( 'Voeg geschenkverpakking toe', 'oxfam-webshop' ); ?></a>
-                        <?php
+                    if ( $wcgw_wrapping->count_giftwrapped_products() ) {
+                        if ( $wcgw_wrapping->giftwrap_in_cart ) {
+                            ?>
+                            <a class="button border add-gift wc-forward"><?php esc_html_e( 'We pakken dit in als een cadeautje', 'oxfam-webshop' ); ?></a>
+                            <?php
+                        } else {
+                            ?>
+                            <a href="<?php echo esc_url( wc_get_cart_url().'?triggerGiftWrapper' ); ?>" class="button border add-gift wc-forward"><?php esc_html_e( 'Voeg geschenkverpakking toe', 'oxfam-webshop' ); ?></a>
+                            <?php
+                        }
                     }
                 }
             ?>

@@ -489,12 +489,12 @@
 		return $sources;
 	} );
 
-	// Parameter om winkelmandje te legen (tijdens debuggen)
-	// add_action( 'init', function() {
-	// 	if ( isset( $_GET['emptyCart'] ) ) {
-	// 		WC()->cart->empty_cart(true);
-	// 	}
-	// } );
+	// Parameter om winkelmandje te legen (zonder nonce, dus enkel tijdens debuggen)
+	add_action( 'init', function() {
+		if ( isset( $_GET['emptyCart'] ) and wp_get_environment_type() !== 'production' ) {
+			WC()->cart->empty_cart(true);
+		}
+	} );
 
 	// Wordt gebruikt in o.a. mini cart en order items
 	// Wordt op cataloguspagina's overruled door woocommerce-template-functions.php!
@@ -2664,7 +2664,8 @@
 	function cart_update_qty_script() {
 		if ( is_cart() ) {
 			?>
-				<script>
+			<script type="text/javascript">
+				jQuery(document).ready( function() {
 					var wto;
 					jQuery('div.woocommerce').on( 'change', '.qty', function() {
 						clearTimeout(wto);
@@ -2672,9 +2673,12 @@
 						wto = setTimeout(function() {
 							jQuery("[name='update_cart']").trigger('click');
 						}, 1000);
-
 					});
-				</script>
+					<?php if ( isset( $_GET['triggerGiftWrapper'] ) ) : ?>
+						jQuery('.wcgwp-modal-toggle').trigger('click');
+					<?php endif; ?>
+				});
+			</script>
 			<?php
 		} elseif ( is_account_page() and is_user_logged_in() ) {
 			$current_user = wp_get_current_user();
@@ -2682,38 +2686,38 @@
 			$user_roles = $user_meta->roles;
 			if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_webshop_email() ) {
 				?>
-					<script type="text/javascript">
-						jQuery(document).ready( function() {
-							jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').prop('readonly', true);
-							jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
-						});
-					</script>
+				<script type="text/javascript">
+					jQuery(document).ready( function() {
+						jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').prop('readonly', true);
+						jQuery("form.woocommerce-EditAccountForm").find('input[name=account_email]').after('<span class="description">De lokale beheerder dient altijd gekoppeld te blijven aan de webshopmailbox, dus dit veld kun je niet bewerken.</span>');
+					});
+				</script>
 				<?php
 			}
 		}
 
 		?>
-			<script type="text/javascript">
-				jQuery(document).ready( function() {
-					function hidePlaceholder( dateText, inst ) {
-						// Placeholder onmiddellijk verwijderen
-						jQuery(this).attr('placeholder', '');
-						// Datum is sowieso geldig, verwijder de eventuele foutmelding
-						jQuery('#datepicker_field').removeClass('woocommerce-invalid woocommerce-invalid-required-field');
-					}
+		<script type="text/javascript">
+			jQuery(document).ready( function() {
+				function hidePlaceholder( dateText, inst ) {
+					// Placeholder onmiddellijk verwijderen
+					jQuery(this).attr('placeholder', '');
+					// Datum is sowieso geldig, verwijder de eventuele foutmelding
+					jQuery('#datepicker_field').removeClass('woocommerce-invalid woocommerce-invalid-required-field');
+				}
 
-					jQuery("#datepicker").datepicker({
-						dayNamesMin: [ "Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za" ],
-						monthNamesShort: [ "Jan", "Feb", "Maart", "April", "Mei", "Juni", "Juli", "Aug", "Sep", "Okt", "Nov", "Dec" ],
-						changeMonth: true,
-						changeYear: true,
-						yearRange: "c-50:c+32",
-						defaultDate: "-50y",
-						maxDate: "-18y",
-						onSelect: hidePlaceholder,
-					});
+				jQuery("#datepicker").datepicker({
+					dayNamesMin: [ "Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za" ],
+					monthNamesShort: [ "Jan", "Feb", "Maart", "April", "Mei", "Juni", "Juli", "Aug", "Sep", "Okt", "Nov", "Dec" ],
+					changeMonth: true,
+					changeYear: true,
+					yearRange: "c-50:c+32",
+					defaultDate: "-50y",
+					maxDate: "-18y",
+					onSelect: hidePlaceholder,
 				});
-			</script>
+			});
+		</script>
 		<?php
 	}
 
