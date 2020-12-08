@@ -171,26 +171,18 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
             </span>
         </p>
 
-        <?php
-            // Schakel de extra buttons via deze actie tijdelijk uit
-            // do_action( 'woocommerce_widget_shopping_cart_before_buttons' );
-        ?>
+        <?php do_action( 'woocommerce_widget_shopping_cart_before_buttons' ); ?>
 
         <p class="woocommerce-mini-cart__buttons buttons">
             <a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="button border wc-forward"><?php esc_html_e( 'View cart', 'woocommerce' ); ?></a>
             <?php
-                if ( class_exists( 'WCGW_Wrapping' ) ) {
+                if ( class_exists('WCGW_Wrapping') ) {
                     $wcgw_wrapping = new WCGW_Wrapping();
-                    if ( $wcgw_wrapping->count_giftwrapped_products() ) {
-                        if ( $wcgw_wrapping->giftwrap_in_cart ) {
-                            ?>
-                            <a class="button border add-gift wc-forward"><?php esc_html_e( 'We pakken dit in als een cadeautje', 'oxfam-webshop' ); ?></a>
-                            <?php
-                        } else {
-                            ?>
-                            <a href="<?php echo esc_url( wc_get_cart_url().'?triggerGiftWrapper' ); ?>" class="button border add-gift wc-forward"><?php esc_html_e( 'Voeg geschenkverpakking toe', 'oxfam-webshop' ); ?></a>
-                            <?php
-                        }
+                    // De 2de conditie lijkt geen effect te hebben, misschien omdat de template niet volledig ververst wordt?
+                    if ( $wcgw_wrapping->count_giftwrapped_products() > 0 and $wcgw_wrapping->giftwrap_in_cart ) {
+                        ?>
+                        <a href="<?php echo esc_url( wc_get_cart_url().'?triggerGiftWrapper' ); ?>" class="button border add-gift wc-forward"><?php esc_html_e( 'Voeg geschenkverpakking toe', 'oxfam-webshop' ); ?></a>
+                        <?php
                     }
                 }
             ?>

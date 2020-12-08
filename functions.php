@@ -4696,7 +4696,7 @@
 					$msg = WC()->session->get('no_home_delivery');
 					// Enkel tonen indien thuislevering effectief beschikbaar is voor het huidige winkelmandje
 					if ( $cnt % 7 === 0 and $msg !== 'SHOWN' ) {
-						wc_print_notice( 'Tip: als je nog '.wc_price( $threshold - $current ).' toevoegt, kom je in aanmerking voor gratis thuislevering.', 'success' );
+						wc_add_notice( 'Tip: als je nog '.wc_price( $threshold - $current ).' toevoegt, kom je in aanmerking voor gratis thuislevering.', 'success' );
 					}
 				}
 			} else {
@@ -5020,17 +5020,25 @@
 	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_add_gift_wrap_message', 10, 1 );
 
 	function ob2c_change_add_gift_wrap_message( $html ) {
-		return '<b>Geef een boodschap mee aan de gelukkige. Wij zorgen ervoor dat dit op het geschenkkaartje verschijnt. Uiteraard voegen we ook geen kassaticket toe!</b>';
+		return '<b>Optioneel: een boodschap mee aan de gelukkige (max. '.get_option( 'wcgwp_textarea_limit', '1000' ).' tekens). Wij schrijven dit in ons mooiste handschrift op een geschenkkaartje. Uiteraard voegen we geen kassaticket toe.</b>';
 	}
 
-	function ob2c_product_is_gift_wrapper( $sku ) {
-		// @toDo: Lijst dynamisch ophalen m.b.v. WCGW_Wrapping-klasse!
-		$gift_wrappers = array('WGIFT');
-		if ( in_array( $sku, $gift_wrappers ) ) {
-			return true;
+	function ob2c_product_is_gift_wrapper( $object ) {
+		if ( is_array( $object ) ) {
+			// Het is een cart item
+			if ( class_exists('WCGW_Wrapping') ) {
+				// Dynamisch ophalen m.b.v. WCGW_Wrapping-klasse
+				$wcgw_wrapping = new WCGW_Wrapping();
+				return $wcgw_wrapping->check_item_for_giftwrap_cat( $object );
+			}
 		} else {
-			return false;
+			// Het is een SKU
+			$gift_wrappers = array('WGIFT');
+			if ( in_array( $object, $gift_wrappers ) ) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	// Voeg bakken leeggoed enkel toe per 6 of 24 flessen
@@ -5279,34 +5287,32 @@
 		$plastic_items = array();
 
 		foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
-			if ( ob2c_product_is_gift_wrapper( $cart_item['data']->get_sku() ) ) {
+			if ( ob2c_product_is_gift_wrapper( $cart_item ) ) {
 				// Sla het item van de cadeauverpakking op en verwijder het
 				$gift_item = $cart_item;
-				unset($cart_sorted[$cart_item_key]);
+				unset( $cart_sorted[ $cart_item_key ] );
 			}
 
 			if ( strpos( $cart_item['data']->get_sku(), 'WLF' ) === 0 or $cart_item['data']->get_sku() === 'W19916' ) {
-				$glass_items[$cart_item_key] = $cart_item;
-				unset($cart_sorted[$cart_item_key]);
+				$glass_items[ $cart_item_key ] = $cart_item;
+				unset( $cart_sorted[ $cart_item_key ] );
 			}
 
 			if ( strpos( $cart_item['data']->get_sku(), 'WLB' ) === 0 or $cart_item['data']->get_sku() === 'W29917' ) {
-				$plastic_items[$cart_item_key] = $cart_item;
-				unset($cart_sorted[$cart_item_key]);
+				$plastic_items[ $cart_item_key ] = $cart_item;
+				unset( $cart_sorted[ $cart_item_key ] );
 			}
 		}
 
 		$cart_sorted = array_merge( $cart_sorted, $glass_items, $plastic_items );
 
-		if ( isset($gift_item) ) {
+		if ( isset( $gift_item ) ) {
 			// Voeg de cadeauverpakking opnieuw toe helemaal achteraan (indien het voorkwam)
-			$cart_sorted[$cart_item_key] = $gift_item;
+			$cart_sorted[ $cart_item_key ] = $gift_item;
 		}
 
 		// Vervang de itemlijst door de nieuwe array
-		$cart->cart_contents = $cart_sorted;
-		// Vanaf WC 3.2+ gebruiken
-		// $cart->set_cart_contents($cart_sorted);
+		$cart->set_cart_contents( $cart_sorted );
 	}
 
 	// Toon leeggoed en cadeauverpakking niet in de mini-cart (maar wordt wel meegeteld in subtotaal!)
