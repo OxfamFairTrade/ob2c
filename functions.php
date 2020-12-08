@@ -5609,15 +5609,21 @@
 
 	// Registreer de AJAX-acties
 	add_action( 'wp_ajax_oxfam_stock_action', 'oxfam_stock_action_callback' );
+	add_action( 'wp_ajax_oxfam_bulk_stock_action', 'oxfam_bulk_stock_action_callback' );
 	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
 	add_action( 'wp_ajax_oxfam_invitation_action', 'oxfam_invitation_action_callback' );
 
 	function oxfam_stock_action_callback() {
-		echo save_local_product_details($_POST['id'], $_POST['meta'], $_POST['value']);
+		echo ob2c_save_local_product_details( $_POST['id'], $_POST['meta'], $_POST['value'] );
 		wp_die();
 	}
 
-	function save_local_product_details( $product_id, $meta, $value ) {			
+	function oxfam_bulk_stock_action_callback() {
+		echo ob2c_change_regular_products_stock_status( $_POST['value'] );
+		wp_die();
+	}
+
+	function ob2c_save_local_product_details( $product_id, $meta, $value ) {			
 		$output = 'ERROR';
 		
 		$product = wc_get_product( $product_id );
@@ -5633,6 +5639,25 @@
 			if ( $product->save() ) {
 				$output = $message;
 			}
+		}
+		
+		return $output;
+	}
+
+	function ob2c_change_regular_products_stock_status( $status ) {			
+		$output = 'ERROR';
+		
+		if ( array_key_exists( $status, wc_get_product_stock_status_options() ) ) {
+			$product = wc_get_product( $product_id );
+			if ( $product ) {
+				$product->set_stock_status( $status );
+				// $product->set_manage_stock('no');
+				if ( $product->save() ) {
+					$output = 'Voorraadstatus opgeslagen!';
+				}
+			}
+		} else {
+			$output = 'INVALID STOCK STATUS PASSED';
 		}
 		
 		return $output;

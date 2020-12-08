@@ -187,40 +187,34 @@
 						}
 
 						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
-							if ( jQuery(this).find(":selected").val() == 'instock' ) {
-								var to_change = jQuery("#oxfam-products").find(".border.color-red").length; 
-								var go = confirm("Ben je zeker dat je "+to_change+" producten op voorraad wil zetten?");
-								if ( go == true ) {
-									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
-									jQuery("#oxfam-products").find(".border.color-red").parent().find("select.toggle").val('instock').each( function() {
-										jQuery(this).delay(25).trigger('change');	
-									});
-									jQuery(this).parent().parent().find(".output").delay(10000).animate({
-										opacity: 0,
-									}, 1000, function(){
-										jQuery(this).html("&nbsp;").css('opacity', 1);
-									});
-								} else {
-									alert("Begrepen, we wijzigen niets!");
-									jQuery(this).val('');
-								}
-							} else if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
-								var to_change = jQuery("#oxfam-products").find(".border.color-green").length; 
-								var go = confirm("Ben je zeker dat je "+to_change+" producten uit assortiment wil zetten?");
-								if ( go == true ) {
-									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
-									jQuery("#oxfam-products").find(".border.color-green").parent().find("select.toggle").val('outofstock').each( function() {
-										jQuery(this).delay(25).trigger('change');	
-									});
-									jQuery(this).parent().parent().find(".output").delay(10000).animate({
-										opacity: 0,
-									}, 1000, function(){
-										jQuery(this).html("&nbsp;").css('opacity', 1);
-									});
-								} else {
-									alert("Begrepen, we wijzigen niets!");
-									jQuery(this).val('');
-								}
+							var go = confirm("Ben je zeker dat je "+to_change+" producten op voorraad wil zetten?");
+							if ( go == true ) {
+								var value = jQuery(this).find(":selected").val();
+								var input = {
+									'action': 'oxfam_bulk_stock_action',
+									'value': value,
+								};
+
+								jQuery.ajax({
+									type: 'POST',
+									url: ajaxurl,
+									data: input,
+									dataType: 'html',
+									success: function(msg) {
+										if ( msg != 'ERROR' ) {
+											// HERLAAD PAGINA
+										} else {
+											msg = 'Niets gedaan!';
+										}
+									},
+									error: function(jqXHR, statusText, errorThrown) {
+										alert("Er liep iets mis, probeer het later eens opnieuw!");
+										jQuery(this).val('');
+									},
+								});
+							} else {
+								alert("Begrepen, we wijzigen niets!");
+								jQuery(this).val('');
 							}
 						});
 					});
