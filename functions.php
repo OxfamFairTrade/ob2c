@@ -5619,7 +5619,7 @@
 	}
 
 	function oxfam_bulk_stock_action_callback() {
-		echo ob2c_change_regular_products_stock_status( $_POST['value'] );
+		echo ob2c_change_regular_products_stock_status( $_POST['status'] );
 		wp_die();
 	}
 
@@ -5687,6 +5687,8 @@
 			$output = 'ERROR - NO PRODUCTS FOUND';
 		}
 		
+		write_log("ob2c_change_regular_products_stock_status()");
+		write_log($output);
 		return $output;
 	}
 

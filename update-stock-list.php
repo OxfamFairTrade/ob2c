@@ -193,7 +193,7 @@
 								var value = jQuery(this).find(":selected").val();
 								var input = {
 									'action': 'oxfam_bulk_stock_action',
-									'value': value,
+									'status': value,
 								};
 
 								jQuery.ajax({
@@ -223,7 +223,7 @@
 				</script>
 			<?php }
 		?>
-		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black; display: none;">
+		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black;">
 			<div class="cell" style="width: 3%;"></div>
 			<div class="cell" style="width: 40%; text-align: center;">
 				<select class="global-toggle">';
