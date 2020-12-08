@@ -5647,17 +5647,44 @@
 	function ob2c_change_regular_products_stock_status( $status ) {			
 		$output = 'ERROR';
 		
-		if ( array_key_exists( $status, wc_get_product_stock_status_options() ) ) {
-			$product = wc_get_product( $product_id );
-			if ( $product ) {
+		if ( ! array_key_exists( $status, wc_get_product_stock_status_options() ) ) {
+			return 'ERROR - INVALID STOCK STATUS PASSED';
+		}
+
+		// Query alle gepubliceerde producten, orden op ompaknummer
+		$args = array(
+			'post_type'			=> 'product',
+			'post_status'		=> array('publish'),
+			'posts_per_page'	=> -1,
+			'meta_key'			=> '_sku',
+			'orderby'			=> 'meta_value_num',
+			'order'				=> 'ASC',
+		);
+		$products = new WP_Query( $args );
+
+		if ( $products->have_posts() ) {
+			$i = 0;
+			$empties = get_oxfam_empties_skus_array();
+			
+			while ( $products->have_posts() ) {
+				$products->the_post();
+				$product = wc_get_product( get_the_ID() );
+				
+				// Verhinder dat leeggoed ook bewerkt wordt
+				if ( $product !== false or in_array( $product->get_sku(), $empties ) ) {
+					continue;
+				}
+
 				$product->set_stock_status( $status );
-				// $product->set_manage_stock('no');
 				if ( $product->save() ) {
-					$output = 'Voorraadstatus opgeslagen!';
+					$i++;
 				}
 			}
+			wp_reset_postdata();
+
+			$output = $i.' voorraadstatussen bijgewerkt!';
 		} else {
-			$output = 'INVALID STOCK STATUS PASSED';
+			$output = 'ERROR - NO PRODUCTS FOUND';
 		}
 		
 		return $output;

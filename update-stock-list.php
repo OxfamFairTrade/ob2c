@@ -16,13 +16,12 @@
 			// Query alle gepubliceerde producten, orden op ompaknummer
 			$args = array(
 				'post_type'			=> 'product',
-				'post_status'		=> array( 'publish' ),
+				'post_status'		=> array('publish'),
 				'posts_per_page'	=> -1,
 				'meta_key'			=> '_sku',
 				'orderby'			=> 'meta_value_num',
 				'order'				=> 'ASC',
 			);
-
 			$products = new WP_Query( $args );
 			
 			if ( $products->have_posts() ) {
@@ -38,7 +37,7 @@
 					$product = wc_get_product( get_the_ID() );
 					
 					// Verhinder dat leeggoed ook opduikt
-					if ( in_array( $product->get_sku(), $empties ) ) {
+					if ( $product === false or in_array( $product->get_sku(), $empties ) ) {
 						continue;
 					}
 
@@ -187,8 +186,10 @@
 						}
 
 						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
-							var go = confirm("Ben je zeker dat je "+to_change+" producten op voorraad wil zetten?");
+							var go = confirm("Weet je zeker dat je dit wil doen?");
 							if ( go == true ) {
+								jQuery(this).parent().parent().find(".output").html("Aan het verwerken, pagina wordt opnieuw geladen van zodra klaar ...");
+
 								var value = jQuery(this).find(":selected").val();
 								var input = {
 									'action': 'oxfam_bulk_stock_action',
@@ -201,10 +202,11 @@
 									data: input,
 									dataType: 'html',
 									success: function(msg) {
-										if ( msg != 'ERROR' ) {
-											// HERLAAD PAGINA
+										if ( msg.substr(0, 5) == 'ERROR' ) {
+											alert("Er liep iets mis, probeer het later eens opnieuw! "+msg);
+											jQuery(this).val('');
 										} else {
-											msg = 'Niets gedaan!';
+											window.location.reload();
 										}
 									},
 									error: function(jqXHR, statusText, errorThrown) {
@@ -227,6 +229,7 @@
 				<select class="global-toggle">';
 					<option value="" selected>(bulkwijziging)</option>
 					<option value="instock">Zet ALLE producten op voorraad</option>
+					<option value="onbackorder">Zet ALLE producten op tijdelijk uit voorraad</option>
 					<option value="outofstock">Haal ALLE producten uit assortiment</option>
 				</select>
 			</div>
