@@ -188,7 +188,7 @@
 						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
 							var go = confirm("Weet je zeker dat je dit wil doen?");
 							if ( go == true ) {
-								jQuery(this).parent().parent().find(".output").html("Aan het verwerken, pagina wordt opnieuw geladen van zodra klaar ...");
+								jQuery(this).parent().parent().find(".output").html("Aan het verwerken, sluit de pagina nog niet! Na afloop wordt deze pagina automatisch opnieuw geladen.");
 
 								var value = jQuery(this).find(":selected").val();
 								var input = {
