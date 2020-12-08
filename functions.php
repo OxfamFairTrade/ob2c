@@ -5669,6 +5669,7 @@
 			while ( $products->have_posts() ) {
 				$products->the_post();
 				$product = wc_get_product( get_the_ID() );
+				write_log( "SKU ".$product->get_sku()." aan het checken ..." );
 				
 				// Verhinder dat leeggoed ook bewerkt wordt
 				if ( $product !== false or in_array( $product->get_sku(), $empties ) ) {
@@ -5677,6 +5678,7 @@
 
 				$product->set_stock_status( $status );
 				if ( $product->save() ) {
+					write_log( "SKU ".$product->get_sku()." opgeslagen" );
 					$i++;
 				}
 			}
@@ -5688,7 +5690,7 @@
 		}
 		
 		write_log("ob2c_change_regular_products_stock_status()");
-		write_log($output);
+		write_log( $output );
 		return $output;
 	}
 
