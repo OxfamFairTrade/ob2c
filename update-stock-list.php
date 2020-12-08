@@ -188,7 +188,7 @@
 						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
 							var go = confirm("Weet je zeker dat je dit wil doen?");
 							if ( go == true ) {
-								jQuery(this).parent().parent().find(".output").html("Aan het verwerken, sluit de pagina nog niet! Na afloop wordt deze pagina automatisch opnieuw geladen.");
+								jQuery(this).parent().parent().find(".output").html("Bezig met verwerken, wacht op automatische refresh ...");
 
 								var value = jQuery(this).find(":selected").val();
 								var input = {
@@ -234,7 +234,7 @@
 				</select>
 			</div>
 			<div class="cell" style="width: 40%; text-align: left;">
-				Opgelet: deze bewerking kan enkele tientallen seconden in beslag nemen! Verlaat deze pagina niet zolang de tellers lopen.
+				Opgelet: deze bewerking kan, afhankelijk van het aantal producten, ettelijke seconden in beslag nemen! Sluit de pagina niet zolang de oranje boodschap zichtbaar is. Na afloop wordt de pagina opnieuw geladen.
 			</div>
 			<div class="cell output" style="width: 17%;"></div>
 		</div>

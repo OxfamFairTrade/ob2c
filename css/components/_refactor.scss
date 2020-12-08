@@ -1,5 +1,6 @@
-
-
+.delivery-estimate {
+  color: $green-price;
+}
 
 form.woocommerce-checkout {
   padding-top: 0 !important;
@@ -23,8 +24,6 @@ select.ui-datepicker-year {
   background-color: lightseagreen;
   color: white;
 }
-
-
 
 // Veilige marges voor iPhone 10+
 @supports( padding: max(0px) ) {
@@ -480,11 +479,6 @@ tr.shipping .woocommerce-Price-amount {
   float: right;
 }
 
-/* Geef meer ruimte aan beschrijving promoactie TH-BREEDTE MANIPULEREN IS MISERIE, ZOEK ANDERE MANIER */
-.cart-collaterals .shop_table .cart-discount > th,
-.cart-collaterals .shop_table .cart-discount > td {
-}
-
 /* Geef meer ruimte aan totaalprijzen en plaats de belastingen op een nieuwe regel bij het winkelmandje */
 .cart-collaterals .shop_table .order-total > th,
 .cart-collaterals .shop_table .order-total > td {
@@ -557,21 +551,6 @@ tr.shipping .woocommerce-Price-amount {
   small.ingredients {
     display: block;
     text-align: right;
-  }
-}
-
-
-/*************/
-/*  SIDEBAR  */
-/*************/
-
-.nm-shop-sidebar {
-  .ob2c-sale-banner {
-    padding: 0.5em 1em;
-    font-weight: bold;
-    color: white;
-    background-color: $see-through-red;
-    margin-bottom: 2em;
   }
 }
 
@@ -728,11 +707,6 @@ i.pe-7s-comment {
 .widget_product_tag_cloud,
 .nm_widget_price_filter {
   display: none !important;
-}
-
-/* Verberg Jetpack-notificaties rechtsboven */
-li#wp-admin-bar-notes {
-  display: none;
 }
 
 /* Verberg lelijk opgemaakte 'Verzendkosten bijgewerkt' */

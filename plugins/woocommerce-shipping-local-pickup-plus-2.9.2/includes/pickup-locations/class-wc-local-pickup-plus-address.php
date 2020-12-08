@@ -310,8 +310,7 @@ class WC_Local_Pickup_Plus_Address {
 	 * @return string
 	 */
 	public function get_postcode() {
-		// GEWIJZIGD: Voer shortcodes uit
-		return do_shortcode( stripslashes( $this->postcode ) );
+		return stripslashes( $this->postcode );
 	}
 
 
@@ -338,8 +337,7 @@ class WC_Local_Pickup_Plus_Address {
 	 * @return string
 	 */
 	public function get_address_line_1() {
-		// GEWIJZIGD: Voer shortcodes uit
-		return do_shortcode( stripslashes( $this->address_1 ) );
+		return stripslashes( $this->address_1 );
 	}
 
 
@@ -350,8 +348,7 @@ class WC_Local_Pickup_Plus_Address {
 	 * @return string
 	 */
 	public function get_address_line_2() {
-		// GEWIJZIGD: Voer shortcodes uit
-		return do_shortcode( stripslashes( $this->address_2 ) );
+		return stripslashes( $this->address_2 );
 	}
 
 
@@ -404,8 +401,7 @@ class WC_Local_Pickup_Plus_Address {
 	 * @return string
 	 */
 	public function get_city() {
-		// GEWIJZIGD: Voer shortcodes uit
-		return do_shortcode( stripslashes( $this->city ) );
+		return stripslashes( $this->city );
 	}
 
 

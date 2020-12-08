@@ -56,6 +56,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				}
 			}
 
+			// Veroorzaakt dit de overtollige lege <tr> onder het besteloverzicht?
 			do_action( 'woocommerce_review_order_after_cart_contents' );
 		?>
 	</tbody>

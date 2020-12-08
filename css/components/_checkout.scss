@@ -96,6 +96,11 @@ form.woocommerce-checkout {
       border: 0 !important;
     }
 
+    // Fix voor overtollig extra leeg item
+    // tbody tr:not(.cart-item) {
+    //   display: none !important;
+    // }
+
     tr {
       border-top: 0;
       border-bottom: 0;
@@ -166,6 +171,16 @@ form.woocommerce-checkout {
               color: $black;
               background: 0;
             }
+          }
+
+          // Openingsuren luid en duidelijk vermelden
+          .pickup-location-address {
+            font-size: 1em;
+          }
+
+          // Itemlijst bij afhalingen in de winkel verbergen (geen split packages mogelijk)
+          #pickup-items-field-for-0 {
+            display: none;
           }
         }
       }
