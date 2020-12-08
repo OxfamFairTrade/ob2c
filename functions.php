@@ -63,7 +63,7 @@
 
 	function change_pickup_location_options_formatting( $name, $context, $pickup_location ) {
 		if ( 'frontend' === $context ) {
-			$name = $pickup_location->get_name();
+			$name = 'Oxfam-Wereldwinkel '.$pickup_location->get_name();
 		}
 		return $name;
 	}
@@ -2675,7 +2675,8 @@
 						}, 1000);
 					});
 					<?php if ( isset( $_GET['triggerGiftWrapper'] ) ) : ?>
-						jQuery('.wcgwp-modal-toggle').trigger('click');
+						// jQuery('.wcgwp-modal-toggle').trigger('click') werkt niet
+						jQuery('.wcgwp-modal-toggle')[0].click();
 					<?php endif; ?>
 				});
 			</script>
