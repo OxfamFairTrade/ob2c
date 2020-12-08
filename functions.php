@@ -1863,20 +1863,11 @@
 		$shop_address = get_shop_address();
 		
 		if ( $order->get_meta('claimed_by') !== '' ) {
-			if ( $locations = get_option('woocommerce_pickup_locations') ) {
-				foreach ( $locations as $location ) {
-					if ( stristr( $location['shipping_company'], $order->get_meta('claimed_by') ) ) {
-						$parts = explode( 'id=', $location['address_1'] );
-						if ( isset( $parts[1] ) ) {
-							// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
-							$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
-							if ( $shop_post_id > 0 ) {
-								// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de straatnaam
-								$shop_address = get_shop_address( array( 'id' => $shop_post_id ) );
-							}
-						}
-						break;
-					}
+			foreach ( ob2c_get_pickup_locations() as $shop_post_id => $shop_name ) {
+				if ( stristr( $shop_name, $order->get_meta('claimed_by') ) ) {
+					// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de straatnaam
+					$shop_address = get_shop_address( array( 'id' => $shop_post_id ) );
+					break;
 				}
 			}
 		}
@@ -4379,39 +4370,40 @@
 		$timestamp = $from;
 		
 		// Standaard: bereken a.d.h.v. de hoofdwinkel
-		$shop_post_id = get_option('oxfam_shop_post_id');
+		$chosen_shop_post_id = get_option('oxfam_shop_post_id');
 		
 		switch ( $shipping_id ) {
 			// Alle instances van winkelafhalingen
 			case stristr( $shipping_id, 'local_pickup' ):
 
-				if ( $locations = get_option('woocommerce_pickup_locations') ) {
+				$locations = ob2c_get_pickup_locations( true, true );
+				if ( count( $locations ) > 0 ) {
 					if ( $order_id === false ) {
+						// Werkt dit nog in WooCommerce Local Pickup Plus 2.9+?
 						$pickup_locations = WC()->session->get('chosen_pickup_locations');
+						write_log( print_r( $pickup_locations, true ) );
 						if ( isset( $pickup_locations ) ) {
-							$pickup_id = reset($pickup_locations);
+							$chosen_pickup_id = reset( $pickup_locations );
 						} else {
-							$pickup_id = 'ERROR';
+							$chosen_pickup_id = 'ERROR';
 						}
 					} else {
 						$methods = $order->get_shipping_methods();
-						$method = reset($methods);
-						$pickup_location = $method->get_meta('pickup_location');
-						$pickup_id = $pickup_location['id'];
+						$method = reset( $methods );
+						// Werkt dit nog in WooCommerce Local Pickup Plus 2.9+?
+						$chosen_pickup_location = $method->get_meta('pickup_location');
+						write_log( print_r( $chosen_pickup_location, true ) );
+						$chosen_pickup_id = $chosen_pickup_location['id'];
 					}
-					foreach ( $locations as $location ) {
-						if ( $location['id'] == $pickup_id ) {
-							$parts = explode( 'id=', $location['note'] );
-							if ( isset( $parts[1] ) ) {
-								// Afwijkend punt geselecteerd: bereken a.d.h.v. de post-ID in de openingsuren
-								$shop_post_id = str_replace( ']', '', $parts[1] );
-							}
+					foreach ( $locations as $shop_post_id => $pickup_id ) {
+						if ( $pickup_id == $chosen_pickup_id ) {
+							$chosen_shop_post_id = $shop_post_id;
 							break;
 						}
 					}
 				}
 
-				if ( $shop_post_id === 'tuincentrum' ) {
+				if ( $chosen_shop_post_id === 'tuincentrum' ) {
 					if ( date_i18n( 'N', $from ) > 4 or ( date_i18n( 'N', $from ) == 4 and date_i18n( 'G', $from ) >= 12 ) ) {
 						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
@@ -4419,7 +4411,7 @@
 
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
-				} elseif ( $shop_post_id === 'vorselaar' ) {
+				} elseif ( $chosen_shop_post_id === 'vorselaar' ) {
 					if ( date_i18n( 'N', $from ) > 4 ) {
 						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
@@ -4429,8 +4421,8 @@
 					$timestamp = strtotime( 'next Friday', $from );
 
 					// Skip check op uitzonderlijke sluitingsdagen
-					return find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
-				} elseif ( intval( $shop_post_id ) === 3478 ) {
+					return find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
+				} elseif ( intval( $chosen_shop_post_id ) === 3478 ) {
 					// Meer marge voor Hoogstraten
 					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
 						// Na de deadline van zondag 22u00: begin pas bij 4de werkdag, kwestie van zeker op volgende week uit te komen
@@ -4443,25 +4435,25 @@
 					$timestamp = get_first_working_day( $from );
 
 					// Geef nog twee extra werkdagen voor afhaling in niet-OWW-punten
-					if ( ! is_numeric( $shop_post_id ) ) {
+					if ( ! is_numeric( $chosen_shop_post_id ) ) {
 						$timestamp = strtotime( '+2 weekdays', $timestamp );
 					}
 				}
 
 				// Check of de winkel op deze dag effectief nog geopend is na 12u (tel er indien nodig dagen bij)
-				$timestamp = find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
+				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
 
 				// Tel alle sluitingsdagen die in de verwerkingsperiode vallen (inclusief de eerstkomende openingsdag!) erbij
 				$timestamp = move_date_on_holidays( $from, $timestamp );
 
 				// Check of de winkel ook op de nieuwe dag effectief nog geopend is na 12u
-				$timestamp = find_first_opening_hour( get_office_hours( NULL, $shop_post_id ), $timestamp );
+				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
 
 				break;
 
 			// Alle (gratis/betalende) instances van postpuntlevering en thuislevering
 			default:
-				if ( intval( $shop_post_id ) === 3338 ) {
+				if ( intval( $chosen_shop_post_id ) === 3338 ) {
 					// Voorlopig enkel thuislevering op woensdag bij Brussel 
 					if ( ( date_i18n( 'N', $from ) == 5 and date_i18n( 'G', $from ) >= 15 ) or date_i18n( 'N', $from ) > 5 ) {
 						// Na de deadline van vrijdag 15u00: begin pas bij 4de werkdag, kwestie van zeker op volgende week uit te komen
@@ -6860,19 +6852,17 @@
 	}
 
 	function print_all_shops() {
-		$shops = ob2c_get_pickup_locations();
-
 		$output = '[vc_tta_tour spacing="5" autoplay="10" active_section="1"]';
-		foreach ( $shops as $shop_id => $shop_name ) {
-			$shop_address = get_shop_address( array( 'id' => $shop_id ) );
-			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_id.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address id="'.$shop_id.'"][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" id="'.$shop_id.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
+		foreach ( ob2c_get_pickup_locations() as $shop_post_id => $shop_name ) {
+			$shop_address = get_shop_address( array( 'id' => $shop_post_id ) );
+			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_post_id.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address id="'.$shop_post_id.'"][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" id="'.$shop_post_id.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
 		}
 		$output .= '[/vc_tta_tour]';
 		
 		return do_shortcode( $output );
 	}
 
-	function ob2c_get_pickup_locations( $include_external_locations = false ) {
+	function ob2c_get_pickup_locations( $include_external_locations = false, $return_internal_id = false ) {
 		$shops = array();
 		
 		if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
@@ -6886,16 +6876,25 @@
 					$parts = explode( 'id=', $location->get_description() );
 					if ( isset( $parts[1] ) ) {
 						// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
-						$shop_post_id = str_replace( ']', '', $parts[1] );
-						if ( is_numeric( $shop_post_id ) ) {
-							$shop_post_id = intval( $shop_post_id );
-							$shops[ $shop_post_id ] = $location->get_name();
+						$temporary_shop_post_id = str_replace( ']', '', $parts[1] );
+						if ( is_numeric( $temporary_shop_post_id ) ) {
+							$shop_post_id = intval( $temporary_shop_post_id );
 						} elseif ( $include_external_locations ) {
-							$shops[ $shop_post_id ] = $location->get_name();
+							// Externe locatie toch opnemen
+							$shop_post_id = $temporary_shop_post_id;
+						} else {
+							// Sla locatie definitief over
+							continue;
 						}
 					} else {
 						// Geen argument, dus het is de hoofdwinkel, altijd opnemen!
-						$shops[ get_option('oxfam_shop_post_id') ] = $location->get_name();
+						$shop_post_id = get_option('oxfam_shop_post_id');
+					}
+
+					if ( $return_internal_id ) {
+						$shops[ $shop_post_id ] = $location->get_id();
+					} else {
+						$shops[ $shop_post_id ] = $location->get_name();
 					}
 				}
 			}
