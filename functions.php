@@ -40,19 +40,22 @@
 	// Schrijf shortcodes uit in WooCommerce Local Pickup Plus 2.9+
 	add_filter( 'wc_local_pickup_plus_pickup_location_description', 'do_shortcode' );
 	add_filter( 'wc_local_pickup_plus_pickup_location_phone', 'do_shortcode' );
-	// In de klasse WC_Local_Pickup_Plus_Address zelf zijn helaas geen filters beschikbaar!
-	// Core hack gedaan, tenzij we loopen over dit object?
-	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'ob2c_do_shortcode_on_object' );
+	// In de 'WC_Local_Pickup_Plus_Address'-klasse zelf zijn geen filters beschikbaar!
+	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'ob2c_do_shortcode_on_pickup_address_object' );
 
-	function ob2c_do_shortcode_on_object( $object ) {
-		write_log( print_r( $object, true ) );
-		foreach ( $object as $property => $value ) {
-			if ( is_string( $value ) ) {
-				$object->$value = do_shortcode( $value );
-			}
+	function ob2c_do_shortcode_on_pickup_address_object( $address ) {
+		if ( $address instanceof WC_Local_Pickup_Plus_Address ) {
+			$array = $address->get_array();
+			// Deze key wordt niet opgehaald door get_array(), voorkom dat we de naam wissen door ze opnieuw op te vullen!
+			$array['name'] = $address->get_name();
+			$array['address_1'] = do_shortcode( $address->get_address_line_1() );
+			$array['postcode'] = do_shortcode( $address->get_postcode() );
+			$array['city'] = do_shortcode( $address->get_city() );
+			$address->set_address( $array );
 		}
-		write_log( print_r( $object, true ) );
-		return $object;
+
+		// write_log( print_r( $address, true ) );
+		return $address;
 	}
 
 	// Wijzig de formattering van de dropdownopties
