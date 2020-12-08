@@ -37,27 +37,19 @@
 				switch_to_blog( $site->blog_id );
 
 				if ( ! is_main_site() ) {
-					// Maak de lokale kaart aan met alle deelnemende winkelpunten, inclusief externen
-					if ( $locations = get_option('woocommerce_pickup_locations') ) {
-						$local_file = fopen("../../maps/site-".$site->blog_id.".kml", "w");
+					// Maak de lokale kaart aan met alle deelnemende winkelpunten, exclusief externen
+					$locations = ob2c_get_pickup_locations();
+					if ( count( $locations ) > 0 ) {
+						$local_file = fopen( "../../maps/site-".$site->blog_id.".kml", "w" );
 						$txt = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 						// Icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin
 						$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 						
-						foreach ( $locations as $location ) {
-							$shop_post_id = intval( get_option('oxfam_shop_post_id') );
-							$parts = explode( 'id=', $location['address_1'] );
-							if ( isset( $parts[1] ) ) {
-								$custom_shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
-								if ( $custom_shop_post_id > 0 ) {
-									$shop_post_id = $custom_shop_post_id;
-								}
-							}
-
+						foreach ( $locations as $shop_post_id => $shop_name ) {
 							// Want get_shop_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
 							if ( $shop_post_id > 0 ) {
 								$txt .= "<Placemark>";
-								$txt .= "<name><![CDATA[".$location['shipping_company']."]]></name>";
+								$txt .= "<name><![CDATA[".$shop_name."]]></name>";
 								$txt .= "<styleUrl>#pickup</styleUrl>";
 								$oww_store_data = get_external_wpsl_store( $shop_post_id );
 								$txt .= "<description><![CDATA[<p>".get_shop_address( array( 'id' => $shop_post_id ) )."</p><p><a href=".$oww_store_data['link']." target=_blank>Naar de winkelpagina »</a></p>]]></description>";
@@ -65,6 +57,7 @@
 								$txt .= "</Placemark>";
 
 								// Maak een handige lijst met alle shop-ID's en hun bijbehorende blog-ID
+								// Ook als we de kaarten volledig zouden uitschakelen blijft deze stap nodig voor de rest van het script!
 								$site_ids_vs_blog_ids[ $shop_post_id ] = array(
 									'blog_id' => get_current_blog_id(),
 									'blog_url' => get_site_url().'/',
@@ -74,9 +67,8 @@
 						}
 
 						$txt .= "</Document></kml>";
-						// Aanmaak van kaarten niet langer nodig?
-						fwrite($local_file, $txt);
-						fclose($local_file);
+						fwrite( $local_file, $txt );
+						fclose( $local_file );
 					}
 				}
 					
@@ -125,7 +117,7 @@
 						'wpsl_lng' => $ll[0],
 						'wpsl_phone' => $oww_store_data['location']['telephone'],
 						'wpsl_url' => $oww_store_data['link'],
-						// DIT MOET UIT DE LIJST MET SITES KOMEN (DATA IN OWW-SITE KAN VERVUILD ZIJN MET ANDERE WEBSHOPS)
+						// Dit moét uit de lijst met sites komen (data in OWW-site kan vervuild zijn met andere webshops!)
 						'wpsl_webshop' => $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_url'],
 						'wpsl_webshop_blog_id' => $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_id'],
 						// Vul hier bewust het algemene mailadres in (ook voor winkels mét webshop)

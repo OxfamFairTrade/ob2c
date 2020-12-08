@@ -96,6 +96,7 @@
 				echo "Afzendadres mislukte bestelling gewijzigd naar ".$email."!<br/>";
 			}
 		}
+		// @toDo: Aanpassen aan nieuwe datastructuur WooCommerce Local Pickup Plus 2.9+
 		$pickup_locations = get_option('woocommerce_pickup_locations');
 		if ( is_array( $pickup_locations ) ) {
 			// We wijzigen per definitie de eerste locatie

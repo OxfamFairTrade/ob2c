@@ -37,11 +37,25 @@
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
+	// Schrijf shortcodes uit in WooCommerce Local Pickup Plus 2.9+
 	add_filter( 'wc_local_pickup_plus_pickup_location_description', 'do_shortcode' );
 	add_filter( 'wc_local_pickup_plus_pickup_location_phone', 'do_shortcode' );
-	// In de klasse WC_Local_Pickup_Plus_Address zelf zijn helaas geen filters beschikbaar, dus core hack
-	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'do_shortcode' );
-	// Weinig de formattering van de dropdownopties
+	// In de klasse WC_Local_Pickup_Plus_Address zelf zijn helaas geen filters beschikbaar!
+	// Core hack gedaan, tenzij we loopen over dit object?
+	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'ob2c_do_shortcode_on_object' );
+
+	function ob2c_do_shortcode_on_object( $object ) {
+		write_log( print_r( $object, true ) );
+		foreach ( $object as $property => $value ) {
+			if ( is_string( $value ) ) {
+				$object->$value = do_shortcode( $value );
+			}
+		}
+		write_log( print_r( $object, true ) );
+		return $object;
+	}
+
+	// Wijzig de formattering van de dropdownopties
 	add_filter( 'wc_local_pickup_plus_pickup_location_option_label', 'change_pickup_location_options_formatting', 10, 3 );
 
 	function change_pickup_location_options_formatting( $name, $context, $pickup_location ) {
@@ -5637,12 +5651,12 @@
 	}
 
 	function ob2c_change_regular_products_stock_status( $status ) {			
-		$output = 'ERROR';
-		
 		if ( ! array_key_exists( $status, wc_get_product_stock_status_options() ) ) {
 			return 'ERROR - INVALID STOCK STATUS PASSED';
 		}
 
+		$output = 'ERROR';
+		
 		// Query alle gepubliceerde producten, orden op ompaknummer
 		$args = array(
 			'post_type'			=> 'product',
@@ -6902,7 +6916,6 @@
 		} else {
 			
 			// Oude versie
-			// @toDo: Check alle locaties waar 'woocommerce_pickup_locations' nog rechtstreeks voorkomt in de code
 			if ( $locations = get_option('woocommerce_pickup_locations') ) {
 				foreach ( $locations as $location ) {
 					$parts = explode( 'id=', $location['address_1'] );
