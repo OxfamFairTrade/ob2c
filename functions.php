@@ -700,13 +700,21 @@
 	add_filter( 'woocommerce_product_categories_widget_args', 'ob2c_hide_gift_wrapper_category', 10, 1 );
 
 	function ob2c_hide_gift_wrapper_category( $args ) {
-		// $default_term_id = get_option('default_product_cat');
-		$gift_category_id = get_option( 'wcgwp_category_id', 0 );
+		$gift_category_id = get_option('wcgwp_category_id');
 		if ( intval( $gift_category_id ) > 0 ) {
+			// Na aanklikken van hoofdcategorie is de categorie reeds expliciet opgenomen in 'include'
+			$include_ids = explode( ',', $args['include'] );
+			foreach ( $include_ids as $key => $value ) {
+				if ( $gift_category_id == $value ) {
+					unset( $include_ids[ $key ] );
+					break;
+				}
+			}
+			$args['include'] = implode( ',', $include_ids );
 			$args['exclude'] = $gift_category_id;
-			write_log("GIFT CATEGORY EXCLUDED");
-			write_log( print_r( $args, true ) );
 		}
+
+		// write_log( print_r( $args, true ) );
 		return $args;
 	}
 
