@@ -3437,6 +3437,7 @@
 			// Sla de levermethode op
 			$shipping_methods = $order->get_shipping_methods();
 			$shipping_method = reset( $shipping_methods );
+			$gift_wrap_text = false;
 			
 			$i = 1;
 			if ( get_option('oxfam_remove_excel_header') !== 'yes' ) {
@@ -3479,6 +3480,13 @@
 					// BTW erbij tellen bij particulieren
 					$line_total += $item['line_subtotal_tax'];
 				}
+
+				// Of toch wc_get_order_item_meta( $order_item_id, 'wcgwp_note' ) gebruiken?
+				if ( $item->get_meta('wcgwp_note') !== '' ) {
+					// We gaan ervan uit dat er slechts 1 boodschap kan zijn
+					$gift_wrap_text = $item->get_meta('wcgwp_note');
+				}
+
 				$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
 				$i++;
 			}
@@ -3575,8 +3583,7 @@
 				// Druk eventuele opmerkingen af
 				if ( strlen( $order->get_customer_note() ) > 5 ) {
 					$i++;
-					$customer_text = $order->get_customer_note();
-					$pick_sheet->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $customer_text );
+					$pick_sheet->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $order->get_customer_note() );
 					$pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
 					$pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 					// Merge resterende kolommen en wrap tekst in opmerkingenvak 
@@ -3592,6 +3599,21 @@
 
 					// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
 					$pick_sheet->getRowDimension($i)->setRowHeight(80);
+					$i++;
+				}
+
+				// Druk eventuele persoonlijke boodschap af
+				if ( $gift_wrap_text !== false ) {
+					$i++;
+					$pick_sheet->setCellValue( 'A'.$i, 'Geschenkkaartje' )->setCellValue( 'B'.$i, $gift_wrap_text );
+					$pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+					$pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+					// Merge resterende kolommen en wrap tekst in opmerkingenvak 
+					$pick_sheet->mergeCells('B'.$i.':G'.$i);
+					$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
+
+					// Probeer autoheight nog eens uit
+					$pick_sheet->getRowDimension($i)->setRowHeight(-1);
 					$i++;
 				}
 
