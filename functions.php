@@ -3413,7 +3413,7 @@
 		// Excel altijd bijwerken wanneer de mail opnieuw verstuurd wordt, ook bij refunds
 		$create_statuses = array( 'new_order', 'customer_refunded_order' );
 		
-		if ( isset($status) and in_array( $status, $create_statuses ) ) {
+		if ( isset( $status ) and in_array( $status, $create_statuses ) ) {
 
 			// Sla de besteldatum op
 			$order_number = $order->get_order_number();
@@ -3436,23 +3436,28 @@
 
 			// Sla de levermethode op
 			$shipping_methods = $order->get_shipping_methods();
-			$shipping_method = reset($shipping_methods);
+			$shipping_method = reset( $shipping_methods );
 			
-			// Bestelgegevens invullen
-			$pick_sheet->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
-			$pick_sheet->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
+			$i = 1;
+			if ( get_option('oxfam_remove_excel_header') !== 'yes' ) {
+				// Bestelgegevens invullen
+				$pick_sheet->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
+				$pick_sheet->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
 
-			// Factuuradres invullen
-			$pick_sheet->setCellValue( 'A2', $order->get_billing_phone() )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
+				// Factuuradres invullen
+				$pick_sheet->setCellValue( 'A2', $order->get_billing_phone() )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
-			// Logistieke gegevens invullen
-			$logistics = get_logistic_params( $order );
-			$pick_sheet->setCellValue( 'A5', number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$logistics['maximum'].' cm' );
+				// Logistieke gegevens invullen
+				$logistics = get_logistic_params( $order );
+				$pick_sheet->setCellValue( 'A5', number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$logistics['maximum'].' cm' );
 
-			$i = 8;
-			// Vul de artikeldata item per item in vanaf rij 8
+				// Begin pas met items vanaf rij 8
+				$i = 8;
+			}
+
+			// Vul de artikeldata item per item in
 			foreach ( $order->get_items() as $order_item_id => $item ) {
-				$product = $order->get_product_from_item($item);
+				$product = $order->get_product_from_item( $item );
 				switch ( $product->get_tax_class() ) {
 					case 'voeding':
 						$tax = '0.06';
@@ -3478,125 +3483,120 @@
 				$i++;
 			}
 
-			$pickup_text = 'Afhaling in winkel';
-			// Deze $order->get_meta() is hier reeds beschikbaar!
-			if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
-				// Switch suffix naar 'excl. BTW'
-				$label = $pick_sheet->getCell('D5')->getValue();
-				$pick_sheet->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
-			} else {
-				// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD
-				$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
-				$pickup_text .= ' vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp );
-			} 
+			if ( get_option('oxfam_remove_excel_header') !== 'yes' ) {
+				$pickup_text = 'Afhaling in winkel';
+				// Deze $order->get_meta() is hier reeds beschikbaar!
+				if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
+					// Switch suffix naar 'excl. BTW'
+					$label = $pick_sheet->getCell('D5')->getValue();
+					$pick_sheet->setCellValue( 'D5', str_replace( 'incl', 'excl', $label ) );
+				} else {
+					// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD
+					$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
+					$pickup_text .= ' vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp );
+				} 
 
-			switch ( $shipping_method['method_id'] ) {
-				case stristr( $shipping_method['method_id'], 'flat_rate' ):
-					
-					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$pick_sheet->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
+				switch ( $shipping_method['method_id'] ) {
+					case stristr( $shipping_method['method_id'], 'flat_rate' ):
+						
+						// Leveradres invullen (is in principe zeker beschikbaar!)
+						$pick_sheet->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 
-					// Verzendkosten vermelden
-					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
-						$total_tax = floatval( $shipping->get_total_tax() );
-						$total_excl_tax = floatval( $shipping->get_total() );
-						// Enkel printen indien nodig
-						if ( $total_tax > 0.01 ) {
-							if ( $shipping->get_tax_class() === 'voeding' ) {
-								$tax = 0.06;
-							} else {
-								$tax = 0.21;
+						// Verzendkosten vermelden
+						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
+							$total_tax = floatval( $shipping->get_total_tax() );
+							$total_excl_tax = floatval( $shipping->get_total() );
+							// Enkel printen indien nodig
+							if ( $total_tax > 0.01 ) {
+								if ( $shipping->get_tax_class() === 'voeding' ) {
+									$tax = 0.06;
+								} else {
+									$tax = 0.21;
+								}
+								$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 							}
-							$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 						}
-					}
-					break;
+						break;
 
-				case stristr( $shipping_method['method_id'], 'free_shipping' ):
-				// KAN IN DE TOEKOMST OOK BETALEND ZIJN
-				case stristr( $shipping_method['method_id'], 'b2b_home_delivery' ):
+					case stristr( $shipping_method['method_id'], 'free_shipping' ):
+					// KAN IN DE TOEKOMST OOK BETALEND ZIJN
+					case stristr( $shipping_method['method_id'], 'b2b_home_delivery' ):
 
-					// Leveradres invullen (is in principe zeker beschikbaar!)
-					$pick_sheet->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
-					break;
+						// Leveradres invullen (is in principe zeker beschikbaar!)
+						$pick_sheet->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
+						break;
 
-				case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
+					case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
 
-					// Verwijzen naar postpunt
-					$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
-					$service_point_info = explode ( '|', $service_point['extra'] );
-					$pick_sheet->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
+						// Verwijzen naar postpunt
+						$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
+						$service_point_info = explode ( '|', $service_point['extra'] );
+						$pick_sheet->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 
-					// Verzendkosten vermelden
-					foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
-						$total_tax = floatval( $shipping->get_total_tax() );
-						$total_excl_tax = floatval( $shipping->get_total() );
-						// Enkel printen indien nodig
-						if ( $total_tax > 0.01 ) {
-							// TE VERALGEMENEN MAAR WERKT OOK BIJ VERZENDKOST VAN 4,95 EURO
-							if ( $total_tax < 1.00 ) {
-								$tax = 0.06;
-							} else {
-								$tax = 0.21;
+						// Verzendkosten vermelden
+						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
+							$total_tax = floatval( $shipping->get_total_tax() );
+							$total_excl_tax = floatval( $shipping->get_total() );
+							// Enkel printen indien nodig
+							if ( $total_tax > 0.01 ) {
+								// TE VERALGEMENEN MAAR WERKT OOK BIJ VERZENDKOST VAN 4,95 EURO
+								if ( $total_tax < 1.00 ) {
+									$tax = 0.06;
+								} else {
+									$tax = 0.21;
+								}
+								$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 							}
-							$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 						}
-					}
-					break;
+						break;
 
-				default:
-					$meta_data = $shipping_method->get_meta_data();
-					$pickup_data = reset( $meta_data );
-					// OF NIEUWE MANIER?
-					// $pickup_location = $method->get_meta('pickup_location');
-					// $pickup_location['shipping_company']
-					$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
-			}
-
-			// Vermeld de totale korting (inclusief/exclusief BTW)
-			// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
-			$used_coupons = $order->get_coupon_codes();
-			if ( count( $used_coupons ) >= 1 ) {
-				$discount = $order->get_discount_total();
-				if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
-					$discount += $order->get_discount_tax();
+					default:
+						$meta_data = $shipping_method->get_meta_data();
+						$pickup_data = reset( $meta_data );
+						// OF NIEUWE MANIER?
+						// $pickup_location = $method->get_meta('pickup_location');
+						// $pickup_location['shipping_company']
+						$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
 				}
-				$i++;
-				$pick_sheet->setCellValue( 'A'.$i, 'Kortingen' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
-				$i++;
-			}
 
-			// Druk eventuele opmerkingen af
-			if ( strlen( $order->get_customer_note() ) > 5 ) {
-				$i++;
-				$customer_text = $order->get_customer_note();
-				$pick_sheet->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $customer_text );
-				$pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
-				$pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-				// Merge resterende kolommen en wrap tekst in opmerkingenvak 
-				$pick_sheet->mergeCells('B'.$i.':G'.$i);
-				$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
+				// Vermeld de totale korting (inclusief/exclusief BTW)
+				// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
+				$used_coupons = $order->get_coupon_codes();
+				if ( count( $used_coupons ) >= 1 ) {
+					$discount = $order->get_discount_total();
+					if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
+						$discount += $order->get_discount_tax();
+					}
+					$i++;
+					$pick_sheet->setCellValue( 'A'.$i, 'Kortingen' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
+					$i++;
+				}
 
-				// setRowHeight(-1) voor autoheight werkt niet, dus probeer goeie hoogte te berekenen bij lange teksten
-				// if ( strlen( $customer_text ) > 125 ) {
-				// 	$row_padding = 4;
-				// 	$row_height = $pick_sheet->getRowDimension($i)->getRowHeight() - $row_padding;
-				// 	$pick_sheet->getRowDimension($i)->setRowHeight( ceil( strlen( $customer_text ) / 120 ) * $row_height + $row_padding );
-				// }
+				// Druk eventuele opmerkingen af
+				if ( strlen( $order->get_customer_note() ) > 5 ) {
+					$i++;
+					$customer_text = $order->get_customer_note();
+					$pick_sheet->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $customer_text );
+					$pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+					$pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+					// Merge resterende kolommen en wrap tekst in opmerkingenvak 
+					$pick_sheet->mergeCells('B'.$i.':G'.$i);
+					$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
 
-				// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
-				$pick_sheet->getRowDimension($i)->setRowHeight(80);
-				$i++;
-			}
+					// setRowHeight(-1) voor autoheight werkt niet, dus probeer goeie hoogte te berekenen bij lange teksten
+					// if ( strlen( $customer_text ) > 125 ) {
+					// 	$row_padding = 4;
+					// 	$row_height = $pick_sheet->getRowDimension($i)->getRowHeight() - $row_padding;
+					// 	$pick_sheet->getRowDimension($i)->setRowHeight( ceil( strlen( $customer_text ) / 120 ) * $row_height + $row_padding );
+					// }
 
-			// Bereken en selecteer het totaalbedrag
-			$pick_sheet->setSelectedCell('F5')->setCellValue( 'F5', $pick_sheet->getCell('F5')->getCalculatedValue() );
+					// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
+					$pick_sheet->getRowDimension($i)->setRowHeight(80);
+					$i++;
+				}
 
-			// Verwijder indien gewenst de header met klantgegevens, zodat de Excel meteen bruikbaar is voor ShopPlus
-			if ( get_option('oxfam_remove_excel_header') === 'yes' ) {
-				$pick_sheet->removeRow( 1, 6 );
-				// Cellen rond voorziene plaats voor logo blijven samenklitten! 
-				$pick_sheet->unmergeCells('D1:G6');
+				// Bereken en selecteer het totaalbedrag
+				$pick_sheet->setSelectedCell('F5')->setCellValue( 'F5', $pick_sheet->getCell('F5')->getCalculatedValue() );
 			}
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
