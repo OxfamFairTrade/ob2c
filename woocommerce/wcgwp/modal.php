@@ -104,10 +104,8 @@ defined( 'ABSPATH' ) || exit;
                             // GEWIJZIGD: Expliciet vermelden of thuislevering mogelijk is (indien leverbeperkingen actief)
                             $product_name = $product->get_name();
                             if ( ! does_risky_delivery() ) {
-                                if ( $product->get_shipping_class === 'breekbaar' ) {
+                                if ( $product->get_shipping_class() === 'breekbaar' ) {
                                     $product_name .= ' (enkel afhalen)';
-                                } else {
-                                    $product_name .= ' (thuislevering mogelijk)';
                                 }
                             }
 

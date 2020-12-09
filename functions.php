@@ -510,6 +510,9 @@
 			} elseif ( in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) {
 				// Het is een leeggoedartikel
 				$main_image_id = 836;
+			} elseif ( in_array( get_option( 'wcgwp_category_id', 0 ), $product->get_category_ids() ) ) {
+				// Het is een geschenkverpakking
+				$main_image_id = 3974;
 			}
 			
 			if ( $main_image_id ) {
@@ -535,10 +538,6 @@
 					$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
 				}
 				restore_current_blog();
-			}
-
-			if ( $image === '' ) {
-				// $image = wc_placeholder_img( $size, $attr );
 			}
 		}
 
@@ -700,7 +699,7 @@
 	add_filter( 'woocommerce_product_categories_widget_args', 'ob2c_hide_gift_wrapper_category', 10, 1 );
 
 	function ob2c_hide_gift_wrapper_category( $args ) {
-		$gift_category_id = get_option('wcgwp_category_id');
+		$gift_category_id = get_option( 'wcgwp_category_id', 0 );
 		if ( intval( $gift_category_id ) > 0 ) {
 			// Na aanklikken van hoofdcategorie is de categorie reeds expliciet opgenomen in 'include'
 			$include_ids = explode( ',', $args['include'] );
