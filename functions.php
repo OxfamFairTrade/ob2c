@@ -6072,6 +6072,9 @@
 
 	// Wat is dit?
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_sharing', 50 );
+
+	// Voorlopig geen upsells tonen
+	remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_upsell_display', 15 );
 	
 	// Toon een boodschap op de detailpagina indien het product niet thuisgeleverd wordt
 	// Icoontje wordt toegevoegd op basis van CSS-klasse .product_shipping_class-breekbaar
