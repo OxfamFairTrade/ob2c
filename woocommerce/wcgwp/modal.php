@@ -51,7 +51,9 @@ defined( 'ABSPATH' ) || exit;
                 }
             </style>
 
-            <a href="#" class="button btn giftwrap_cancel" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
+            <div class="modal-header">
+                <a href="#" class="giftwrap_cancel" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
+            </div>
             
             <form class="giftwrapper_products modal_form wcgwp_form" method="post">
                 <div class="modal-body wcgwp_modal_body">
