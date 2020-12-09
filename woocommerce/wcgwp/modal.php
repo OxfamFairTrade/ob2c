@@ -14,11 +14,11 @@ defined( 'ABSPATH' ) || exit;
 <div id="giftwrap_modal<?php echo $label; ?>" class="giftwrapper_products_modal giftwrapper_products_modal<?php echo $label; ?> fusion-modal modal" tabindex="-1" role="dialog">
     <div class="modal-dialog <?php echo apply_filters( 'wcgwp_modal_size', 'modal-lg'); ?> modal-dialog-centered" role="document">
         <div class="modal-content fusion-modal-content">
-            <a href="#" class="giftwrap_cancel gift-wrapper-close" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
+            <a href="#" class="giftwrap_cancel" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
             
             <form class="giftwrapper_products modal_form wcgwp_form" method="post">
-                <h3>Oxfam pakt (voor) je in!</h3>
                 <div class="modal-body wcgwp_modal_body">
+                    <h3>Oxfam pakt (voor) je in!</h3>
                     <?php if ( ! apply_filters( 'wcgwp_hide_details', FALSE ) ) { ?>
                         <p class="giftwrap_details">
                         <?php echo wp_kses_post( apply_filters( 'wcgwp_wrap_offerings', __( $giftwrap_details, 'woocommerce-gift-wrapper' ) ) ); ?>
@@ -78,13 +78,10 @@ defined( 'ABSPATH' ) || exit;
                         </label>
                         <textarea name="wcgwp_note<?php echo $label; ?>" id="wcgwp_notes<?php echo $label; ?>" cols="30" rows="4" maxlength="<?php echo esc_attr( get_option( 'wcgwp_textarea_limit', '1000' ) ); ?>" class="wc_giftwrap_notes"></textarea>	
                     </div>
-               
-                </div>
-    
-                <div class="modal-footer">
+
                     <button type="submit" class="button btn alt giftwrap_submit replace_wrap fusion-button fusion-button-default fusion-button-default-size" name="wcgwp_submit<?php echo $label; ?>">
                         <?php echo wp_kses_post( apply_filters( 'wcgwp_add_wrap_button_text', __( 'Add Gift Wrap to Order', 'woocommerce-gift-wrapper' ) ) ); ?>
-                    </button>                    
+                    </button>
                 </div>
             </form>
         </div>

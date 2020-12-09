@@ -388,8 +388,8 @@
   }
 }
 
-.modal-content {
-  .gift-wrapper-close {
+.giftwrapper_products_modal {
+  .giftwrap_cancel {
     position: absolute;
     height: 30px;
     width: 30px;
@@ -400,6 +400,24 @@
     background-repeat: no-repeat;
     background-size: 26px 26px;
     border-radius: 50%;
+  }
+
+  .giftwrap_submit {
+    background-color: #282828;
+    border: 0 none;
+    border-radius: 0;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 22px;
+    opacity: 1;
+    padding: 10px 14px;
+    transition: opacity 0.2s ease;
+    text-decoration: none;
+    text-align: center;
+    width: auto;
   }
 }
 

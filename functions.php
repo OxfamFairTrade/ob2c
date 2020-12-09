@@ -5725,7 +5725,6 @@
 
 	function oxfam_photo_action_callback() {
 		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
-		// NIET IN LOKALE BIBLIOTHEKEN REGISTREREN, PUBLICATIE NAAR CHILD SITE GEBEURT VANZELF BIJ EERSTVOLGENDE SYNC (ID'S UPDATEN)
 		echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
 		wp_die();
 	}
