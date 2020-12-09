@@ -45,9 +45,13 @@ defined( 'ABSPATH' ) || exit;
                     text-align: center;
                     width: auto;
                 }
+
+                .wc_giftwrap_notes_container {
+                    margin-bottom: 1em;
+                }
             </style>
 
-            <a href="#" class="giftwrap_cancel" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
+            <a href="#" class="button btn giftwrap_cancel" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
             
             <form class="giftwrapper_products modal_form wcgwp_form" method="post">
                 <div class="modal-body wcgwp_modal_body">
