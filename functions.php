@@ -5081,11 +5081,21 @@
 		return array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917' );
 	}
 
-	// Of gewoon rechtstreeks aanpassen in template?
-	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_add_gift_wrap_message', 10, 1 );
+	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_gift_wrap_explainer', 10, 1 );
+	add_filter( 'wcgwp_add_wrap_prompt', 'ob2c_change_gift_wrap_button', 10, 1 );
 
-	function ob2c_change_add_gift_wrap_message( $html ) {
+	function ob2c_change_gift_wrap_explainer( $html ) {
 		return '<b>Geef een boodschap mee aan de gelukkige (optioneel, maximum '.get_option( 'wcgwp_textarea_limit', '1000' ).' tekens). We schrijven dit in ons mooiste handschrift op een geschenkkaartje. Uiteraard voegen we geen kassaticket toe.</b>';
+	}
+
+	function ob2c_change_gift_wrap_button( $html ) {
+		// Klasse bestaat sowieso als filter doorlopen wordt
+		$wcgw_wrapping = new WCGW_Wrapping();
+		if ( $wcgw_wrapping->giftwrap_in_cart ) {
+			return 'Geschenkverpakking wijzigen?';
+		} else {
+			return 'Geschenkverpakking toevoegen?';
+		}
 	}
 
 	function ob2c_product_is_gift_wrapper( $cart_item ) {

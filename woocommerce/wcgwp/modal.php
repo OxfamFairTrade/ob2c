@@ -85,9 +85,9 @@ defined( 'ABSPATH' ) || exit;
                             $checked = '';
                             $note = '';
                             // Selecteer de verpakking die al in het winkelmandje zit
-                            foreach ( WC()->cart->cart_contents as $item_key => $item_value ) {
-                                if ( $item_value['data']->get_id() === $product->get_id() ) {
-                                    if ( intval( $item_value['quantity'] ) > 0 ) {
+                            foreach ( WC()->cart->cart_contents as $cart_item ) {
+                                if ( ob2c_product_is_gift_wrapper( $cart_item ) ) {
+                                    if ( intval( $cart_item['quantity'] ) > 0 ) {
                                         $checked = 'checked';
                                         $note = $cart_item['wcgwp_cart_note'];
                                     }
