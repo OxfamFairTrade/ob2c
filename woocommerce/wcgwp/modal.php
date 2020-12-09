@@ -80,7 +80,7 @@ defined( 'ABSPATH' ) || exit;
                     </div>
 
                     <button type="submit" class="button btn alt giftwrap_submit replace_wrap fusion-button fusion-button-default fusion-button-default-size" name="wcgwp_submit<?php echo $label; ?>">
-                        <?php echo wp_kses_post( apply_filters( 'wcgwp_add_wrap_button_text', __( 'Add Gift Wrap to Order', 'woocommerce-gift-wrapper' ) ) ); ?>
+                        <?php echo wp_kses_post( apply_filters( 'wcgwp_add_wrap_button_text', __( 'Voeg toe aan bestelling', 'oxfam-webshop' ) ) ); ?>
                     </button>
                 </div>
             </form>

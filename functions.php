@@ -701,9 +701,11 @@
 
 	function ob2c_hide_gift_wrapper_category( $args ) {
 		// $default_term_id = get_option('default_product_cat');
-		$gift_category_id = intval( get_option( 'wcgwp_category_id', 0 ) );
-		if ( $gift_category_id > 0 ) {
+		$gift_category_id = get_option( 'wcgwp_category_id', 0 );
+		if ( intval( $gift_category_id ) > 0 ) {
 			$args['exclude'] = $gift_category_id;
+			write_log("GIFT CATEGORY EXCLUDED");
+			write_log( print_r( $args, true ) );
 		}
 		return $args;
 	}
@@ -2449,7 +2451,7 @@
 		if ( ! empty( $_GET['referralCity'] ) ) {
 			WC()->customer->set_billing_city( $_GET['referralCity'] );
 			WC()->customer->set_shipping_city( $_GET['referralCity'] );
-			// WORDT TOCH NIET INGESTELD INDIEN WINKELMANDJE ONTBREEKT?
+			// @toDo: Check of dit ingesteld wordt indien winkelmandje ontbreekt
 			// write_log( print_r( $_GET['referralCity'], true ) );
 		}
 	}
@@ -4429,9 +4431,9 @@
 				$locations = ob2c_get_pickup_locations( true, true );
 				if ( count( $locations ) > 0 ) {
 					if ( $order_id === false ) {
-						// Werkt dit nog in WooCommerce Local Pickup Plus 2.9+?
+						// @toDo: Werkt dit nog in WooCommerce Local Pickup Plus 2.9+?
 						$pickup_locations = WC()->session->get('chosen_pickup_locations');
-						write_log( print_r( $pickup_locations, true ) );
+						// write_log( print_r( $pickup_locations, true ) );
 						if ( isset( $pickup_locations ) ) {
 							$chosen_pickup_id = reset( $pickup_locations );
 						} else {
@@ -4440,9 +4442,9 @@
 					} else {
 						$methods = $order->get_shipping_methods();
 						$method = reset( $methods );
-						// Werkt dit nog in WooCommerce Local Pickup Plus 2.9+?
+						// @toDo: Werkt dit nog in WooCommerce Local Pickup Plus 2.9+?
 						$chosen_pickup_location = $method->get_meta('pickup_location');
-						write_log( print_r( $chosen_pickup_location, true ) );
+						// write_log( print_r( $chosen_pickup_location, true ) );
 						$chosen_pickup_id = $chosen_pickup_location['id'];
 					}
 					foreach ( $locations as $shop_post_id => $pickup_id ) {
@@ -5309,7 +5311,6 @@
 				// Sla het item van de cadeauverpakking op en verwijder het
 				$gift_item = $cart_item;
 				unset( $cart_sorted[ $cart_item_key ] );
-				write_log("PLAATS CADEAUVERPAKKING ONDERAAN");
 			}
 
 			if ( strpos( $cart_item['data']->get_sku(), 'WLF' ) === 0 or $cart_item['data']->get_sku() === 'W19916' ) {
@@ -6239,7 +6240,6 @@
 		}
 
 		write_log( implode( ', ', $meta_keys ) );
-
 		return $meta_keys;
 	}
 
