@@ -689,10 +689,10 @@
 				echo '</div>';
 			}
 
-			// Wordt niet zichtbaar door 'display: none' op .woocommerce-ordering!
-			echo '<div class="col-md-3 supplementary-filter">';
-				woocommerce_catalog_ordering();
-			echo '</div>';
+			// @toDo: Lay-out tweaken en inschakelen
+			// echo '<div class="col-md-3 supplementary-filter">';
+			// 	woocommerce_catalog_ordering();
+			// echo '</div>';
 		echo '</div></div>';
 	}
 
