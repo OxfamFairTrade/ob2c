@@ -74,7 +74,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					);
 					the_widget( 'WC_Widget_Layered_Nav_Filters', array(), $args );
 					$args['after_title'] = '</h3>';
-					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1, 'exclude' => get_option( 'wcgwp_category_id', 0 ) ), $args );
+					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
 					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'preferences' ), $args );
 					
 					if ( is_main_site() ) {

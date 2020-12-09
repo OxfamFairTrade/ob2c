@@ -696,6 +696,18 @@
 		echo '</div></div>';
 	}
 
+	// Verberg categorie 'Geschenkverpakkingen' in widgets
+	add_filter( 'woocommerce_product_categories_widget_args', 'ob2c_hide_gift_wrapper_category', 10, 1 );
+
+	function ob2c_hide_gift_wrapper_category( $args ) {
+		// $default_term_id = get_option('default_product_cat');
+		$gift_category_id = intval( get_option( 'wcgwp_category_id', 0 ) );
+		if ( $gift_category_id > 0 ) {
+			$args['exclude'] = $gift_category_id;
+		}
+		return $args;
+	}
+
 	// Pas de labels bij non-selectie van een dropdown aan
 	add_filter( 'woocommerce_layered_nav_any_label', 'tweak_layered_nav_any_labels', 10, 3 );
 
