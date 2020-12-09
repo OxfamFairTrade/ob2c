@@ -2895,7 +2895,7 @@
 
 		if ( ! in_array( '', WC()->cart->get_cart_item_tax_classes() ) ) {
 			// Als er geen producten à 21% BTW in het mandje zitten (= standaardtarief) wordt er geen alcohol gekocht en wordt het veld optioneel
-			// Met het oog op toevoegen non-food wellicht beter af te handelen via verzendklasses (maar get_shipping_class() moet loopen over alle items ...)
+			// @toDo: Sinds het toevoegen van non-food wellicht beter af te handelen via verzendklasses (maar get_shipping_class() moet loopen over alle items ...)
 			$address_fields['billing_birthday']['required'] = false;
 		}
 		
@@ -4811,7 +4811,7 @@
 						),
 						'default' => '0',
 					),
-					// TO DO: Verificatie toevoegen op bereiken van bestelminimum (ofwel in woocommerce_package_rates, ofwel in woocommerce_checkout_process)
+					// @toDo: Verificatie toevoegen op bereiken van bestelminimum (ofwel in woocommerce_package_rates, ofwel in woocommerce_checkout_process)
 					'limit' => array(
 						'title' => 'Bestelminimum?',
 						'type' => 'number',
@@ -4898,7 +4898,7 @@
 				// Verberg alle betalende methodes indien er een gratis thuislevering beschikbaar is
 				foreach ( $rates as $rate_key => $rate ) {
 					if ( floatval( $rate->cost ) > 0.0 ) {
-						unset( $rates[$rate_key] );
+						unset( $rates[ $rate_key ] );
 					}
 				}
 			} else {
@@ -4915,23 +4915,28 @@
 				// Verhinder alle externe levermethodes indien er een product aanwezig is dat niet thuisgeleverd wordt
 				$glass_cnt = 0;
 				$plastic_cnt = 0;
+				$gift_cnt = 0;
 				foreach ( WC()->cart->cart_contents as $item_key => $item_value ) {
 					if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
 						// Omwille van de icoontjes is niet alleen het leeggoed maar ook het product als breekbaar gemarkeerd!
 						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
-							$glass_cnt += intval($item_value['quantity']);
+							$glass_cnt += intval( $item_value['quantity'] );
 						}
 						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29917') ) {
-							$plastic_cnt += intval($item_value['quantity']);
+							$plastic_cnt += intval( $item_value['quantity'] );
+						}
+						if ( in_array( get_option( 'wcgwp_category_id', 0 ), $item_value['data']->get_category_ids() ) ) {
+							write_log("GIFT WRAPPER GEVONDEN, DISABLE THUISLEVERING");
+							$gift_cnt += intval( $item_value['quantity'] );
 						}
 					} 
 				}
 				
-				if ( $glass_cnt + $plastic_cnt > 0 ) {
+				if ( $glass_cnt + $plastic_cnt + $gift_cnt > 0 ) {
 					foreach ( $rates as $rate_key => $rate ) {
 						// Blokkeer alle methodes behalve afhalingen
 						if ( $rate->method_id !== 'local_pickup_plus' ) {
-							unset( $rates[$rate_key] );
+							unset( $rates[ $rate_key ] );
 						}
 					}
 					// Boodschap heeft enkel zin als thuislevering aangeboden wordt!
