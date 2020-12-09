@@ -5090,8 +5090,10 @@
 
 	function ob2c_change_gift_wrap_button( $html ) {
 		// Klasse bestaat sowieso als filter doorlopen wordt
-		$wcgw_wrapping = new WCGW_Wrapping();
-		if ( $wcgw_wrapping->giftwrap_in_cart ) {
+		$wc_gift_wrap = WC_Gift_Wrap();
+		// $wcgw_wrapping = new WCGW_Wrapping();
+		// Conditie lijkt geen effect te hebben?
+		if ( $wc_gift_wrap->wrapping->giftwrap_in_cart ) {
 			return 'Geschenkverpakking wijzigen?';
 		} else {
 			return 'Geschenkverpakking toevoegen?';

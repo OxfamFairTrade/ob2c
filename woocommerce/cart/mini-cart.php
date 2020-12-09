@@ -178,8 +178,7 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
             <?php
                 if ( class_exists('WCGW_Wrapping') ) {
                     $wcgw_wrapping = new WCGW_Wrapping();
-                    // De 2de conditie lijkt geen effect te hebben, misschien omdat de template niet volledig ververst wordt?
-                    if ( $wcgw_wrapping->count_giftwrapped_products() > 0 and ! $wcgw_wrapping->giftwrap_in_cart ) {
+                    if ( $wcgw_wrapping->count_giftwrapped_products() > 0 ) {
                         ?>
                         <a href="<?php echo esc_url( wc_get_cart_url().'?triggerGiftWrapper' ); ?>" class="button border add-gift wc-forward"><?php echo apply_filters( 'wcgwp_add_wrap_prompt', esc_html__( 'Add gift wrap?', 'woocommerce-gift-wrapper' ) ); ?></a>
                         <?php

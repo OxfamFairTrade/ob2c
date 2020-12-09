@@ -141,7 +141,7 @@ defined( 'ABSPATH' ) || exit;
                         <label for="wcgwp_notes<?php echo $label; ?>">
                             <?php echo wp_kses_post( apply_filters( 'wcgwp_add_wrap_message', __( 'Add Gift Wrap Message:', 'woocommerce-gift-wrapper' ) ) ); ?>
                         </label>
-                        <textarea name="wcgwp_note<?php echo $label; ?>" id="wcgwp_notes<?php echo $label; ?>" cols="30" rows="4" maxlength="<?php echo esc_attr( get_option( 'wcgwp_textarea_limit', '1000' ) ); ?>" class="wc_giftwrap_notes"><?php esc_textarea( $note ); ?></textarea>	
+                        <textarea name="wcgwp_note<?php echo $label; ?>" id="wcgwp_notes<?php echo $label; ?>" cols="30" rows="4" maxlength="<?php echo esc_attr( get_option( 'wcgwp_textarea_limit', '1000' ) ); ?>" class="wc_giftwrap_notes"><?php echo esc_textarea( $note ); ?></textarea>	
                     </div>
 
                     <button type="submit" class="button btn alt giftwrap_submit replace_wrap fusion-button fusion-button-default fusion-button-default-size" name="wcgwp_submit<?php echo $label; ?>">
