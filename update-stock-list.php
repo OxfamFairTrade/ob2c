@@ -63,11 +63,11 @@
 						continue;
 					}
 
-					if ( $current_tab = 'national' ) {
+					if ( $current_tab === 'national' ) {
 						if ( ! is_national_product( $product ) ) {
 							continu;
 						}
-					} elseif ( $current_tab = 'local' ) {
+					} elseif ( $current_tab === 'local' ) {
 						if ( is_national_product( $product ) ) {
 							continu;
 						}
