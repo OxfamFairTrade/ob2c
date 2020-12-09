@@ -5,6 +5,12 @@
 <div class="wrap">
 	<h1>Stel de voorraad van je lokale webshop in</h1>
 
+	<nav class="nav-tab-wrapper">
+		<a href="<?php echo admin_url('admin.php?page=oxfam-products-list'); ?>" class="nav-tab nav-tab-active">Alle producten</a>
+		<a href="<?php echo admin_url('admin.php?page=oxfam-products-list&assortment=national'); ?>" class="nav-tab">Nationaal assortiment</a>
+		<a href="<?php echo admin_url('admin.php?page=oxfam-products-list&assortment=local'); ?>" class="nav-tab">Lokaal assortiment</a>
+	</nav>
+
 	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Met de knop onderaan de pagina kun je alle producten in één keer in/uit voorraad halen. Een bevestigingsvenster behoedt je daarbij voor onbedoelde wijzigingen. <b>Tip: met Ctrl+F kun je snel zoeken naar een product.</b></p>
 
 	<p>Nieuwe producten, die in de loop van de voorbije 3 maanden beschikbaar werden op BestelWeb, hebben <span style="background-color: lightskyblue;">een blauwe achtergrond</span>. Ze verschijnen aanvankelijk als 'niet in assortiment' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden. Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen <span style="background-color: gold;">een gele achtergrond</span>, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt.</p>
