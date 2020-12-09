@@ -4926,7 +4926,6 @@
 							$plastic_cnt += intval( $item_value['quantity'] );
 						}
 						if ( in_array( get_option( 'wcgwp_category_id', 0 ), $item_value['data']->get_category_ids() ) ) {
-							write_log("GIFT WRAPPER GEVONDEN, DISABLE THUISLEVERING");
 							$gift_cnt += intval( $item_value['quantity'] );
 						}
 					} 

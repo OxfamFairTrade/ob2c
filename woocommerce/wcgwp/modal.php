@@ -83,11 +83,14 @@ defined( 'ABSPATH' ) || exit;
                             $giftwrap_label = strtolower( preg_replace( '/\s*/', '', $product->get_title() ) );
                             $show_thumbs_class = ' no_giftwrap_thumbs';
                             $checked = '';
+                            $note = '';
                             // Selecteer de verpakking die al in het winkelmandje zit
-                            foreach ( WC()->cart->get_cart_item_quantities() as $product_id => $qty ) {
+                            foreach ( WC()->cart->cart_contents as $cart_item ) {
+                                $product_id = $cart_item['product_id']; 
                                 if ( $product_id === $product->get_id() ) {
                                     if ( $qty > 0 ) {
                                         $checked = 'checked';
+                                        $note = $cart_item['wcgwp_cart_note'];
                                     }
                                     // Ga de rest van de lijst niet meer af, we hebben gevonden wat we zochten
                                     break;
@@ -139,7 +142,7 @@ defined( 'ABSPATH' ) || exit;
                         <label for="wcgwp_notes<?php echo $label; ?>">
                             <?php echo wp_kses_post( apply_filters( 'wcgwp_add_wrap_message', __( 'Add Gift Wrap Message:', 'woocommerce-gift-wrapper' ) ) ); ?>
                         </label>
-                        <textarea name="wcgwp_note<?php echo $label; ?>" id="wcgwp_notes<?php echo $label; ?>" cols="30" rows="4" maxlength="<?php echo esc_attr( get_option( 'wcgwp_textarea_limit', '1000' ) ); ?>" class="wc_giftwrap_notes"></textarea>	
+                        <textarea name="wcgwp_note<?php echo $label; ?>" id="wcgwp_notes<?php echo $label; ?>" cols="30" rows="4" maxlength="<?php echo esc_attr( get_option( 'wcgwp_textarea_limit', '1000' ) ); ?>" class="wc_giftwrap_notes"><?php esc_textarea( $note ); ?></textarea>	
                     </div>
 
                     <button type="submit" class="button btn alt giftwrap_submit replace_wrap fusion-button fusion-button-default fusion-button-default-size" name="wcgwp_submit<?php echo $label; ?>">
