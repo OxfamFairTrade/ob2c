@@ -6,26 +6,34 @@
 	<h1>Stel de voorraad van je lokale webshop in</h1>
 
 	<nav class="nav-tab-wrapper">
-		<a href="<?php echo admin_url('admin.php?page=oxfam-products-list'); ?>" class="nav-tab nav-tab-active">Alle producten</a>
-		<a href="<?php echo admin_url('admin.php?page=oxfam-products-list&assortment=national'); ?>" class="nav-tab">Nationaal assortiment</a>
-		<a href="<?php echo admin_url('admin.php?page=oxfam-products-list&assortment=local'); ?>" class="nav-tab">Lokaal assortiment</a>
-	</nav>
+		<?php
+			$current_tab = 'general';
+			if ( isset( $_GET['assortment'] ) ) {
+				if ( $_GET['assortment'] === 'national' ) {
+					$current_tab = 'national';
+					echo '<p>SHOULD ONLY SHOW NATIONAL PRODUCTS</p>';
+				} elseif ( $_GET['assortment'] === 'local' ) {
+					$current_tab = 'local';
+					echo '<p>SHOULD ONLY SHOW LOCAL PRODUCTS</p>';
+				}
+			}
 
+			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment' );
+			foreach ( $tabs as $key => $title ) {
+				$active = '';
+				if ( $current_tab === $key ) {
+					$active = 'nav-tab-active';
+				}
+				echo '<a href="'.admin_url( 'admin.php?page=oxfam-products-list&assortment='.$key ).'" class="nav-tab '.$active.'">'.$title.'</a>';
+			}
+		?>
+	</nav>
+	
 	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Met de knop onderaan de pagina kun je alle producten in één keer in/uit voorraad halen. Een bevestigingsvenster behoedt je daarbij voor onbedoelde wijzigingen. <b>Tip: met Ctrl+F kun je snel zoeken naar een product.</b></p>
 
 	<p>Nieuwe producten, die in de loop van de voorbije 3 maanden beschikbaar werden op BestelWeb, hebben <span style="background-color: lightskyblue;">een blauwe achtergrond</span>. Ze verschijnen aanvankelijk als 'niet in assortiment' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden. Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen <span style="background-color: gold;">een gele achtergrond</span>, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt.</p>
 
 	<p>Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
-
-	<?php
-		if ( isset( $_GET['assortment'] ) ) {
-			if ( $_GET['assortment'] === 'local' ) {
-				echo '<p>SHOULD ONLY SHOW LOCAL PRODUCTS</p>';
-			} elseif ( $_GET['assortment'] === 'national' ) {
-				echo '<p>SHOULD ONLY SHOW NATIONAL PRODUCTS</p>';
-			}
-		}
-	?>
 
 	<div id="oxfam-products" style="border-spacing: 0 10px;">
 		<?php
