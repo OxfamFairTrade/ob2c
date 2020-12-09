@@ -14,9 +14,9 @@ defined( 'ABSPATH' ) || exit;
 <div id="giftwrap_modal<?php echo $label; ?>" class="giftwrapper_products_modal giftwrapper_products_modal<?php echo $label; ?> fusion-modal modal" tabindex="-1" role="dialog">
     <div class="modal-dialog <?php echo apply_filters( 'wcgwp_modal_size', 'modal-lg'); ?> modal-dialog-centered" role="document">
         <div class="modal-content fusion-modal-content">
-            <div class="modal-header">
-                <button class="button btn giftwrap_cancel fusion-button fusion-button-default fusion-button-default-size" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><?php echo wp_kses_post( __( 'Cancel', 'woocommerce-gift-wrapper' ) ); ?></span></button>
-            </div>
+            <button class="button btn giftwrap_cancel fusion-button fusion-button-default fusion-button-default-size" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><?php echo wp_kses_post( __( 'Cancel', 'woocommerce-gift-wrapper' ) ); ?></span></button>
+
+            <h2>Oxfam pakt (voor) je in!</h2>
             <a href="#" class="giftwrap_cancel gift-wrapper-close" data-dismiss="modal" title="Annuleer"></a>
 
             <form class="giftwrapper_products modal_form wcgwp_form" method="post">
@@ -42,9 +42,10 @@ defined( 'ABSPATH' ) || exit;
                             $giftwrap_label = strtolower( preg_replace( '/\s*/', '', $product->get_title() ) );
                             $show_thumbs_class = ' no_giftwrap_thumbs';
 
-                            if ( $show_thumbs == TRUE ) {
+                            // $show_thumbs = false;
+                            if ( $show_thumbs === true ) {
                                 // GEWIJZIGD: Vervangen door standaard WooCommerce-call, zodat de fotologica gerespecteerd wordt 
-                                $product_image = $product->get_image('woocommerce_thumbnail');
+                                $product_image = $product->get_image('thumbnail');
                                 $image_output = '<div class="giftwrap_thumb">';
                                 if ( $show_link == 'yes' ) {
                                     $giftwrapper_product_URL = get_permalink( $giftwrapper_product );

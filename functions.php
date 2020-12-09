@@ -5032,6 +5032,7 @@
 		return array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917' );
 	}
 
+	// Of gewoon rechtstreeks aanpassen in template?
 	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_add_gift_wrap_message', 10, 1 );
 
 	function ob2c_change_add_gift_wrap_message( $html ) {
@@ -5257,8 +5258,7 @@
 	
 	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
 		if ( ob2c_product_is_gift_wrapper( $cart_item ) ) {
-			write_log("PAS HOEVEELHEIDSVELD CADEAUVERPAKKING AAN");
-			return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
+			return $product_quantity.' pakjes';
 		}
 
 		$product = wc_get_product( $cart_item['product_id'] );
@@ -5326,15 +5326,15 @@
 		$cart->set_cart_contents( $cart_sorted );
 	}
 
-	// Toon leeggoed en cadeauverpakking niet in de mini-cart (maar wordt wel meegeteld in subtotaal!)
+	// Toon leeggoed niet in de mini-cart (maar wordt wel meegeteld in subtotaal!)
 	add_filter( 'woocommerce_widget_cart_item_visible', 'hide_empties_in_mini_cart', 10, 3 );
 
 	function hide_empties_in_mini_cart( $visible, $cart_item, $cart_item_key ) {
 		if ( in_array( $cart_item['data']->get_sku(), get_oxfam_empties_skus_array() ) ) {
 			$visible = false;
 		} elseif ( ob2c_product_is_gift_wrapper( $cart_item ) ) {
-			$visible = false;
-			write_log("VERBERG CADEAUVERPAKKING IN MINI-CART");
+			// Zichtbaar laten zolang we 'woocommerce_cart_contents_count' niet aanpassen
+			// $visible = false;
 		}
 		return $visible;
 	}
