@@ -5257,10 +5257,6 @@
 	add_filter( 'woocommerce_cart_item_quantity', 'add_bottles_to_quantity', 10, 3 );
 	
 	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
-		if ( ob2c_product_is_gift_wrapper( $cart_item ) ) {
-			return $product_quantity.' pakjes';
-		}
-
 		$product = wc_get_product( $cart_item['product_id'] );
 		if ( $product !== false ) {
 			if ( in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) {

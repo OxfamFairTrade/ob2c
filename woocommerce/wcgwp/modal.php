@@ -14,12 +14,10 @@ defined( 'ABSPATH' ) || exit;
 <div id="giftwrap_modal<?php echo $label; ?>" class="giftwrapper_products_modal giftwrapper_products_modal<?php echo $label; ?> fusion-modal modal" tabindex="-1" role="dialog">
     <div class="modal-dialog <?php echo apply_filters( 'wcgwp_modal_size', 'modal-lg'); ?> modal-dialog-centered" role="document">
         <div class="modal-content fusion-modal-content">
-            <button class="button btn giftwrap_cancel fusion-button fusion-button-default fusion-button-default-size" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><?php echo wp_kses_post( __( 'Cancel', 'woocommerce-gift-wrapper' ) ); ?></span></button>
-
-            <h2>Oxfam pakt (voor) je in!</h2>
-            <a href="#" class="giftwrap_cancel gift-wrapper-close" data-dismiss="modal" title="Annuleer"></a>
-
+            <a href="#" class="giftwrap_cancel gift-wrapper-close" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
+            
             <form class="giftwrapper_products modal_form wcgwp_form" method="post">
+                <h3>Oxfam pakt (voor) je in!</h3>
                 <div class="modal-body wcgwp_modal_body">
                     <?php if ( ! apply_filters( 'wcgwp_hide_details', FALSE ) ) { ?>
                         <p class="giftwrap_details">
@@ -42,8 +40,8 @@ defined( 'ABSPATH' ) || exit;
                             $giftwrap_label = strtolower( preg_replace( '/\s*/', '', $product->get_title() ) );
                             $show_thumbs_class = ' no_giftwrap_thumbs';
 
-                            // $show_thumbs = false;
-                            if ( $show_thumbs === true ) {
+                            // Dit wordt bepaald door de verwarrende 'Toon cadeauverpakking in winkelwagen'-instelling
+                            if ( $show_thumbs == TRUE ) {
                                 // GEWIJZIGD: Vervangen door standaard WooCommerce-call, zodat de fotologica gerespecteerd wordt 
                                 $product_image = $product->get_image('thumbnail');
                                 $image_output = '<div class="giftwrap_thumb">';
