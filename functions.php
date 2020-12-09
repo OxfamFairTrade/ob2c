@@ -4706,7 +4706,7 @@
 						$global_zips = get_shops();
 						if ( isset( $global_zips[$zip] ) ) {
 							$url = $global_zips[$zip];
-							// TO DO: COMMANDO TOEVOEGEN OM WINKELMANDJE OVER TE ZETTEN
+							// @toDo: Commando toevoegen om winkelmandje over te zetten
 							$skus = array();
 							if ( WC()->session->has_session() and current_user_can('update_core') ) {
 								foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {

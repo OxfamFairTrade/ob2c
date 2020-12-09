@@ -78,11 +78,21 @@ defined( 'ABSPATH' ) || exit;
 
                     <ul class="giftwrap_ul">
                         <?php foreach ( $list as $giftwrapper_product ) {
-                            $checked = $wrap_count == 0 ? 'checked' : '';
-                            $product = new WC_Product( $giftwrapper_product->ID );
+                            $product = wc_get_product( $giftwrapper_product->ID );
                             $price_html = $product->get_price_html();
                             $giftwrap_label = strtolower( preg_replace( '/\s*/', '', $product->get_title() ) );
                             $show_thumbs_class = ' no_giftwrap_thumbs';
+                            $checked = '';
+                            // Selecteer de verpakking die al in het winkelmandje zit
+                            foreach ( WC()->cart->get_cart_item_quantities() as $product_id => $qty ) {
+                                if ( $product_id === $product->get_id() ) {
+                                    if ( $qty > 0 ) {
+                                        $checked = 'checked';
+                                    }
+                                    // Ga de rest van de lijst niet meer af, we hebben gevonden wat we zochten
+                                    break;
+                                }
+                            }
 
                             // Dit wordt bepaald door de verwarrende 'Toon cadeauverpakking in winkelwagen'-instelling
                             if ( $show_thumbs == TRUE ) {
