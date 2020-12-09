@@ -52,7 +52,7 @@ defined( 'ABSPATH' ) || exit;
             </style>
 
             <form class="giftwrapper_products modal_form wcgwp_form" method="post">
-                <div class="modal-header wcgwp_modal_body">
+                <div class="modal-header modal-body wcgwp_modal_body">
                     <!-- Opgelet: klasse .modal-header hierboven is nodig om de knop te laten werken! -->
                     <a href="#" class="giftwrap_cancel" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
                     <h3>Oxfam pakt (voor) je in!</h3>
