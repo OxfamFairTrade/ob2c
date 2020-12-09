@@ -68,6 +68,9 @@
 		return $name;
 	}
 
+	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
+	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
+
 	// Laat lokale beheerders enkel lokale producten verwijderen (eventueel vervangen door 'pre_trash_post'-filter, maar die eindigt ook gewoon met wp_die() ...)
 	add_action( 'wp_trash_post', 'disable_manual_product_removal', 10, 1 );
 
@@ -80,9 +83,6 @@
 			}
 		}
 	}
-
-	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
-	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
 
 	// Gebruik deze actie om de hoofddata te tweaken (na de switch_to_blog(), net voor het effectief opslaan in de subsite) VOORLOPIG NOG UITSCHAKELEN
 	// add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog', 'localize_broadcasted_custom_fields' );
@@ -103,12 +103,6 @@
 			}
 		}
 	}
-
-	// Verberg extra metadata op het orderdetail in de back-end
-	add_filter( 'woocommerce_hidden_order_itemmeta', function( $forbidden ) {
-		$forbidden[] = '_shipping_item_id';
-		return $forbidden;
-	}, 10, 1 );
 
 	// Vergt het activeren van de 'Posts edit access'-module én het toekennen van 'edit_others_products'!
 	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
@@ -3481,7 +3475,6 @@
 					$line_total += $item['line_subtotal_tax'];
 				}
 
-				// Of toch wc_get_order_item_meta( $order_item_id, 'wcgwp_note' ) gebruiken?
 				if ( $item->get_meta('wcgwp_note') !== '' ) {
 					// We gaan ervan uit dat er slechts 1 boodschap kan zijn
 					$gift_wrap_text = $item->get_meta('wcgwp_note');
@@ -3547,8 +3540,7 @@
 							$total_excl_tax = floatval( $shipping->get_total() );
 							// Enkel printen indien nodig
 							if ( $total_tax > 0.01 ) {
-								// TE VERALGEMENEN MAAR WERKT OOK BIJ VERZENDKOST VAN 4,95 EURO
-								if ( $total_tax < 1.00 ) {
+								if ( $shipping->get_tax_class() === 'voeding' ) {
 									$tax = 0.06;
 								} else {
 									$tax = 0.21;
@@ -3584,8 +3576,6 @@
 				if ( strlen( $order->get_customer_note() ) > 5 ) {
 					$i++;
 					$pick_sheet->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $order->get_customer_note() );
-					$pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
-					$pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 					// Merge resterende kolommen en wrap tekst in opmerkingenvak 
 					$pick_sheet->mergeCells('B'.$i.':G'.$i);
 					$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
@@ -3599,6 +3589,8 @@
 
 					// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
 					$pick_sheet->getRowDimension($i)->setRowHeight(80);
+					// $pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+					// $pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 					$i++;
 				}
 
@@ -3606,14 +3598,14 @@
 				if ( $gift_wrap_text !== false ) {
 					$i++;
 					$pick_sheet->setCellValue( 'A'.$i, 'Geschenkkaartje' )->setCellValue( 'B'.$i, $gift_wrap_text );
-					$pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
-					$pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 					// Merge resterende kolommen en wrap tekst in opmerkingenvak 
 					$pick_sheet->mergeCells('B'.$i.':G'.$i);
 					$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
 
-					// Probeer autoheight nog eens uit
+					// Probeer autoheight
 					$pick_sheet->getRowDimension($i)->setRowHeight(-1);
+					// $pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+					// $pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 					$i++;
 				}
 
@@ -4219,6 +4211,12 @@
 			echo '<p><strong>'.__( 'BTW-nummer', 'oxfam-webshop' ).':</strong><br/>'.$order->get_meta('_billing_vat').'</p>';
 		}
 	}
+
+	// Verberg extra metadata op het orderdetail in de back-end
+	add_filter( 'woocommerce_hidden_order_itemmeta', function( $forbidden ) {
+		$forbidden[] = '_shipping_item_id';
+		return $forbidden;
+	}, 10, 1 );
 
 	// Geef de adresregels binnen 'Mijn account' een logische volgorde
 	add_action( 'woocommerce_my_account_my_address_formatted_address', 'show_custom_address_fields', 10, 3 );
@@ -5060,13 +5058,6 @@
 		}
 	}
 
-	// Voeg instructietekst toe boven de locaties
-	// add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' );
-	
-	function add_local_pickup_instructions() {
-		echo '<br/><p>Je kunt kiezen uit volgende winkels ...</p>';
-	}
-
 	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
 	add_filter( 'woocommerce_checkout_coupon_message', 'remove_msg_filter' );
 
@@ -5617,8 +5608,8 @@
 
 	function custom_oxfam_options() {
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
-		// add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Lijstweergave', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
-		// add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Fotoweergave', 'manage_network_users', 'oxfam-products-photos', 'oxfam_products_photos_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Nationaal assortiment', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_national_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_local_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
@@ -5639,6 +5630,14 @@
 
 	function oxfam_products_list_callback() {
 		include get_stylesheet_directory().'/update-stock-list.php';
+	}
+
+	function oxfam_products_list_national_callback() {
+		include get_stylesheet_directory().'/update-stock-list.php?assortment=national';
+	}
+
+	function oxfam_products_list_local_callback() {
+		include get_stylesheet_directory().'/update-stock-list.php?assortment=local';
 	}
 
 	// Vervang onnutige links in netwerkmenu door Oxfam-pagina's

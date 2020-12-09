@@ -11,6 +11,16 @@
 
 	<p>Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 
+	<?php
+		if ( isset( $_GET['assortment'] ) ) {
+			if ( $_GET['assortment'] === 'local' ) {
+				echo '<p>SHOULD ONLY SHOW LOCAL PRODUCTS</p>';
+			} elseif ( $_GET['assortment'] === 'national' ) {
+				echo '<p>SHOULD ONLY SHOW NATIONAL PRODUCTS</p>';
+			}
+		}
+	?>
+
 	<div id="oxfam-products" style="border-spacing: 0 10px;">
 		<?php
 			// Query alle gepubliceerde producten, orden op ompaknummer
