@@ -1287,7 +1287,7 @@
 	add_action( 'wp_enqueue_scripts', 'dequeue_unwanted_styles_and_scripts', 100 );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '2.1' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '2.1.1' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 
@@ -1678,7 +1678,8 @@
 		// Tel geclaimde orders bij de nog te behandelen bestellingen
 		add_filter( 'woocommerce_menu_order_count', 'ob2c_add_claimed_to_open_orders_count', 10, 1 );
 
-		// Zorg ervoor dat refunds aan dezelfde winkel toegekend worden als het oorspronkelijke bestelling, zodat ze correct getoond worden in de gefilterde rapporten NOG TE TESTEN
+		// Zorg ervoor dat refunds aan dezelfde winkel toegekend worden als het oorspronkelijke bestelling, zodat ze correct getoond worden in de gefilterde rapporten
+		// @toDo: Te testen
 		// add_action( 'woocommerce_order_refunded', 'ob2c_copy_metadata_from_order_to_refund', 10, 2 );
 
 		// Maak de boodschap om te filteren op winkel beschikbaar bij de rapporten
@@ -5012,7 +5013,7 @@
 	}
 
 	// Voeg instructietekst toe boven de locaties
-	add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' );
+	// add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' );
 	
 	function add_local_pickup_instructions() {
 		echo '<br/><p>Je kunt kiezen uit volgende winkels ...</p>';
@@ -5036,16 +5037,15 @@
 	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_add_gift_wrap_message', 10, 1 );
 
 	function ob2c_change_add_gift_wrap_message( $html ) {
-		return '<b>Optioneel: een boodschap mee aan de gelukkige (max. '.get_option( 'wcgwp_textarea_limit', '1000' ).' tekens). Wij schrijven dit in ons mooiste handschrift op een geschenkkaartje. Uiteraard voegen we geen kassaticket toe.</b>';
+		return '<b>Optioneel: geef een boodschap mee aan de gelukkige (max. '.get_option( 'wcgwp_textarea_limit', '1000' ).' tekens). Wij schrijven dit in ons mooiste handschrift op een geschenkkaartje. Uiteraard voegen we geen kassaticket toe.</b>';
 	}
 
-	function ob2c_product_is_gift_wrapper( $object ) {
-		if ( is_array( $object ) ) {
-			// Het is een cart item
+	function ob2c_product_is_gift_wrapper( $cart_item ) {
+		if ( is_array( $cart_item ) ) {
 			if ( class_exists('WCGW_Wrapping') ) {
 				// Dynamisch ophalen m.b.v. WCGW_Wrapping-klasse
 				$wcgw_wrapping = new WCGW_Wrapping();
-				return $wcgw_wrapping->check_item_for_giftwrap_cat( $object );
+				return $wcgw_wrapping->check_item_for_giftwrap_cat( $cart_item );
 			}
 		}
 		return false;
