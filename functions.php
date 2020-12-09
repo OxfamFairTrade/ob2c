@@ -5091,8 +5091,6 @@
 	function ob2c_change_gift_wrap_button( $html ) {
 		// Klasse bestaat sowieso als filter doorlopen wordt
 		$wc_gift_wrap = WC_Gift_Wrap();
-		// $wcgw_wrapping = new WCGW_Wrapping();
-		// Conditie lijkt geen effect te hebben?
 		if ( $wc_gift_wrap->wrapping->giftwrap_in_cart ) {
 			return 'Geschenkverpakking wijzigen?';
 		} else {
@@ -5102,10 +5100,10 @@
 
 	function ob2c_product_is_gift_wrapper( $cart_item ) {
 		if ( is_array( $cart_item ) ) {
-			if ( class_exists('WCGW_Wrapping') ) {
-				// Dynamisch ophalen m.b.v. WCGW_Wrapping-klasse
-				$wcgw_wrapping = new WCGW_Wrapping();
-				return $wcgw_wrapping->check_item_for_giftwrap_cat( $cart_item );
+			// Check of de plugin actief is
+			if ( class_exists('WC_Gift_Wrapper') ) {
+				$wc_gift_wrap = WC_Gift_Wrap();
+				return $wc_gift_wrap->wrapping->check_item_for_giftwrap_cat( $cart_item );
 			}
 		}
 		return false;
