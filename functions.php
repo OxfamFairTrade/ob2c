@@ -770,6 +770,14 @@
 	add_action( 'update_option_wpsl_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_cookie_notice_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wjecf_licence', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wcgwp_category_id', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wcgwp_details', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wcgwp_display', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wcgwp_link', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wcgwp_number', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wcgwp_modal', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wcgwp_show_thumb', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_wcgwp_textarea_limit', 'sync_settings_to_subsites', 10, 3 );
 	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
@@ -787,6 +795,13 @@
 					// Instellingen van WP Mail SMTP lokaal maken
 					$new_value['mail']['from_email'] = get_option('admin_email');
 					$new_value['mail']['from_name'] = get_bloginfo('name');
+				}
+
+				if ( $option === 'wcgwp_category_id' ) {
+					$gift_category = get_term_by( 'slug', 'geschenkverpakkingen', 'product_cat' );
+					if ( $gift_category !== false ) {
+						$new_value = $gift_category->term_id;
+					}
 				}
 
 				if ( $option === 'cookie_notice_options' ) {
@@ -4997,10 +5012,10 @@
 	}
 
 	// Voeg instructietekst toe boven de locaties
-	// add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' );
+	add_action( 'woocommerce_review_order_before_local_pickup_location', 'add_local_pickup_instructions' );
 	
 	function add_local_pickup_instructions() {
-		echo '<br/><p style="width: 350px; float: right;">Je kunt kiezen uit volgende winkels ...</p>';
+		echo '<br/><p>Je kunt kiezen uit volgende winkels ...</p>';
 	}
 
 	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
@@ -5030,12 +5045,6 @@
 				// Dynamisch ophalen m.b.v. WCGW_Wrapping-klasse
 				$wcgw_wrapping = new WCGW_Wrapping();
 				return $wcgw_wrapping->check_item_for_giftwrap_cat( $object );
-			}
-		} else {
-			// Het is een SKU
-			$gift_wrappers = array('WGIFT');
-			if ( in_array( $object, $gift_wrappers ) ) {
-				return true;
 			}
 		}
 		return false;
@@ -5247,12 +5256,13 @@
 	add_filter( 'woocommerce_cart_item_quantity', 'add_bottles_to_quantity', 10, 3 );
 	
 	function add_bottles_to_quantity( $product_quantity, $cart_item_key, $cart_item ) {
+		if ( ob2c_product_is_gift_wrapper( $cart_item ) ) {
+			write_log("PAS HOEVEELHEIDSVELD CADEAUVERPAKKING AAN");
+			return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
+		}
+
 		$product = wc_get_product( $cart_item['product_id'] );
 		if ( $product !== false ) {
-			if ( ob2c_product_is_gift_wrapper( $product->get_sku() ) ) {
-				return __( 'Oxfam pakt (voor) je in!', 'oxfam-webshop' );
-			}
-
 			if ( in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) {
 				$qty = intval( $product_quantity );
 				switch ( $product->get_sku() ) {
@@ -5291,6 +5301,7 @@
 				// Sla het item van de cadeauverpakking op en verwijder het
 				$gift_item = $cart_item;
 				unset( $cart_sorted[ $cart_item_key ] );
+				write_log("PLAATS CADEAUVERPAKKING ONDERAAN");
 			}
 
 			if ( strpos( $cart_item['data']->get_sku(), 'WLF' ) === 0 or $cart_item['data']->get_sku() === 'W19916' ) {
@@ -5319,8 +5330,11 @@
 	add_filter( 'woocommerce_widget_cart_item_visible', 'hide_empties_in_mini_cart', 10, 3 );
 
 	function hide_empties_in_mini_cart( $visible, $cart_item, $cart_item_key ) {
-		if ( in_array( $cart_item['data']->get_sku(), get_oxfam_empties_skus_array() ) or ob2c_product_is_gift_wrapper( $cart_item['data']->get_sku() ) ) {
+		if ( in_array( $cart_item['data']->get_sku(), get_oxfam_empties_skus_array() ) ) {
 			$visible = false;
+		} elseif ( ob2c_product_is_gift_wrapper( $cart_item ) ) {
+			$visible = false;
+			write_log("VERBERG CADEAUVERPAKKING IN MINI-CART");
 		}
 		return $visible;
 	}
