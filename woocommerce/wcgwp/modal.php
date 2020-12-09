@@ -80,7 +80,7 @@ defined( 'ABSPATH' ) || exit;
                         <?php foreach ( $list as $giftwrapper_product ) {
                             $checked = $wrap_count == 0 ? 'checked' : '';
                             $product = new WC_Product( $giftwrapper_product->ID );
-                            $price_html     = $product->get_price_html();
+                            $price_html = $product->get_price_html();
                             $giftwrap_label = strtolower( preg_replace( '/\s*/', '', $product->get_title() ) );
                             $show_thumbs_class = ' no_giftwrap_thumbs';
 
@@ -100,16 +100,27 @@ defined( 'ABSPATH' ) || exit;
                                 $image_output .= '</div>';
                                 $show_thumbs_class = ' show_thumb';
                             }
+                            
+                            // GEWIJZIGD: Expliciet vermelden of thuislevering mogelijk is (indien leverbeperkingen actief)
+                            $product_name = $product->get_name();
+                            if ( ! does_risky_delivery() ) {
+                                if ( $product->get_shipping_class === 'breekbaar' ) {
+                                    $product_name .= ' (enkel afhalen)';
+                                } else {
+                                    $product_name .= ' (thuislevering mogelijk)';
+                                }
+                            }
+
                             if ( $list_count ) { 
                                 echo '<li class="giftwrap_li' . $show_thumbs_class . '"><input type="radio" name="wcgwp_product' . $label . '" id="' . $giftwrap_label . $label . '" value="' . $giftwrapper_product->ID . '"' . $checked . ' class="wcgwp_product_input">';
-                                echo '<label for="' . $giftwrap_label . $label . '" class="giftwrap_desc"><span class="giftwrap_title"> ' . $giftwrapper_product->post_title . '</span> ' . $price_html;
+                                echo '<label for="' . $giftwrap_label . $label . '" class="giftwrap_desc"><span class="giftwrap_title"> ' . $product_name . '</span> ' . $price_html;
                                 if ( $show_link == 'yes' ) {
                                     echo '</label>' . $image_output . '</li>';
                                 } else {
                                     echo $image_output . '</label></li>';
                                 }
                             } else {
-                                echo '<li class="giftwrap_li' . $show_thumbs_class . '"><label for="' . $giftwrap_label . $label . '" class="giftwrap_desc singular_label"><span class="giftwrap_title"> ' . $giftwrapper_product->post_title . '</span> ' . $price_html . '</label>' . $image_output . '</li>';
+                                echo '<li class="giftwrap_li' . $show_thumbs_class . '"><label for="' . $giftwrap_label . $label . '" class="giftwrap_desc singular_label"><span class="giftwrap_title"> ' . $product_name . '</span> ' . $price_html . '</label>' . $image_output . '</li>';
                                 echo '<input type="hidden" name="wcgwp_product' . $label . '" value="' . $giftwrapper_product->ID . '" id="' . $giftwrap_label . $label . '">';
                             } 
                             ++$wrap_count;
