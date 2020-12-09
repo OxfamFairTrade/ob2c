@@ -15,6 +15,10 @@ defined( 'ABSPATH' ) || exit;
     <div class="modal-dialog <?php echo apply_filters( 'wcgwp_modal_size', 'modal-lg'); ?> modal-dialog-centered" role="document">
         <div class="modal-content fusion-modal-content">
             <style>
+                .modal-header {
+                    border-bottom: none;
+                }
+
                 .giftwrap_cancel {
                     position: absolute;
                     height: 30px;
@@ -26,7 +30,11 @@ defined( 'ABSPATH' ) || exit;
                     background-repeat: no-repeat;
                     background-size: 26px 26px;
                     border-radius: 50%;
-                    }
+                }
+
+                .wc_giftwrap_notes_container {
+                    margin-bottom: 1em;
+                }
 
                 .giftwrap_submit {
                     background-color: #282828;
@@ -45,16 +53,15 @@ defined( 'ABSPATH' ) || exit;
                     text-align: center;
                     width: auto;
                 }
-
-                .wc_giftwrap_notes_container {
-                    margin-bottom: 1em;
-                }
             </style>
 
+            <!-- Opgelet: klasse .modal-header is nodig om de knop te laten werken! -->
+            <div class="modal-header">
+                <a href="#" class="giftwrap_cancel" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
+            </div>
+            
             <form class="giftwrapper_products modal_form wcgwp_form" method="post">
-                <div class="modal-header modal-body wcgwp_modal_body">
-                    <!-- Opgelet: klasse .modal-header hierboven is nodig om de knop te laten werken! -->
-                    <a href="#" class="giftwrap_cancel" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
+                <div class="modal-body wcgwp_modal_body">
                     <h3>Oxfam pakt (voor) je in!</h3>
                     <?php if ( ! apply_filters( 'wcgwp_hide_details', FALSE ) ) { ?>
                         <p class="giftwrap_details">
