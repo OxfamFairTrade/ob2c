@@ -7,19 +7,19 @@
 
 	<nav class="nav-tab-wrapper">
 		<?php
-			$assortment = 'general';
+			$current_tab = 'general';
 			if ( isset( $_GET['assortment'] ) ) {
 				if ( $_GET['assortment'] === 'national' ) {
-					$assortment = 'national';
+					$current_tab = 'national';
 				} elseif ( $_GET['assortment'] === 'local' ) {
-					$assortment = 'local';
+					$current_tab = 'local';
 				}
 			}
 
 			$tabs = array( 'general' => 'Alle producten', 'national' => 'Enkel nationale', 'local' => 'Enkel lokale' );
 			foreach ( $tabs as $key => $title ) {
 				$active = '';
-				if ( $assortment === $key ) {
+				if ( $current_tab === $key ) {
 					$active = 'nav-tab-active';
 				}
 				echo '<a href="'.admin_url( 'admin.php?page=oxfam-products-list&assortment='.$key ).'" class="nav-tab '.$active.'">'.$title.'</a>';
@@ -64,13 +64,13 @@
 					}
 
 					// Logica eventueel reeds toepassen in WP_Query voor performantie?
-					if ( $assortment === 'national' ) {
+					if ( $current_tab === 'national' ) {
 						if ( ! is_national_product( $product ) ) {
-							continu;
+							continue;
 						}
-					} elseif ( $assortment === 'local' ) {
+					} elseif ( $current_tab === 'local' ) {
 						if ( is_national_product( $product ) ) {
-							continu;
+							continue;
 						}
 					}
 
