@@ -11,14 +11,12 @@
 			if ( isset( $_GET['assortment'] ) ) {
 				if ( $_GET['assortment'] === 'national' ) {
 					$current_tab = 'national';
-					echo '<p>SHOULD ONLY SHOW NATIONAL PRODUCTS</p>';
 				} elseif ( $_GET['assortment'] === 'local' ) {
 					$current_tab = 'local';
-					echo '<p>SHOULD ONLY SHOW LOCAL PRODUCTS</p>';
 				}
 			}
 
-			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment' );
+			$tabs = array( 'general' => 'Alle producten', 'national' => 'Enkel nationale', 'local' => 'Enkel lokale' );
 			foreach ( $tabs as $key => $title ) {
 				$active = '';
 				if ( $current_tab === $key ) {
@@ -28,7 +26,7 @@
 			}
 		?>
 	</nav>
-	
+
 	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Met de knop onderaan de pagina kun je alle producten in één keer in/uit voorraad halen. Een bevestigingsvenster behoedt je daarbij voor onbedoelde wijzigingen. <b>Tip: met Ctrl+F kun je snel zoeken naar een product.</b></p>
 
 	<p>Nieuwe producten, die in de loop van de voorbije 3 maanden beschikbaar werden op BestelWeb, hebben <span style="background-color: lightskyblue;">een blauwe achtergrond</span>. Ze verschijnen aanvankelijk als 'niet in assortiment' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden. Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen <span style="background-color: gold;">een gele achtergrond</span>, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt.</p>
@@ -63,6 +61,16 @@
 					// Verhinder dat leeggoed ook opduikt
 					if ( $product === false or in_array( $product->get_sku(), $empties ) ) {
 						continue;
+					}
+
+					if ( $current_tab = 'national' ) {
+						if ( ! is_national_product( $product ) ) {
+							continu;
+						}
+					} elseif ( $current_tab = 'local' ) {
+						if ( is_national_product( $product ) ) {
+							continu;
+						}
 					}
 
 					// Kleur de randen en tel de initiële waarde voor de tellers
