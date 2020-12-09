@@ -14,6 +14,39 @@ defined( 'ABSPATH' ) || exit;
 <div id="giftwrap_modal<?php echo $label; ?>" class="giftwrapper_products_modal giftwrapper_products_modal<?php echo $label; ?> fusion-modal modal" tabindex="-1" role="dialog">
     <div class="modal-dialog <?php echo apply_filters( 'wcgwp_modal_size', 'modal-lg'); ?> modal-dialog-centered" role="document">
         <div class="modal-content fusion-modal-content">
+            <style>
+                .giftwrap_cancel {
+                    position: absolute;
+                    height: 30px;
+                    width: 30px;
+                    right: 5px;
+                    top: 5px;
+                    background-image: url(/wp-content/themes/oxfam-webshop/images/x.svg);
+                    background-position: center center;
+                    background-repeat: no-repeat;
+                    background-size: 26px 26px;
+                    border-radius: 50%;
+                    }
+
+                .giftwrap_submit {
+                    background-color: #282828;
+                    border: 0 none;
+                    border-radius: 0;
+                    color: #fff;
+                    cursor: pointer;
+                    display: inline-block;
+                    font-size: 16px;
+                    font-weight: normal;
+                    line-height: 22px;
+                    opacity: 1;
+                    padding: 10px 14px;
+                    transition: opacity 0.2s ease;
+                    text-decoration: none;
+                    text-align: center;
+                    width: auto;
+                }
+            </style>
+
             <a href="#" class="giftwrap_cancel" data-dismiss="modal" aria-label="Close" title="Annuleer"></a>
             
             <form class="giftwrapper_products modal_form wcgwp_form" method="post">
