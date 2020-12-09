@@ -800,6 +800,7 @@
 	add_action( 'update_option_wcgwp_modal', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wcgwp_show_thumb', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wcgwp_textarea_limit', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_heartbeat_control_settings', 'sync_settings_to_subsites', 10, 3 );
 	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
@@ -5081,7 +5082,7 @@
 	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_add_gift_wrap_message', 10, 1 );
 
 	function ob2c_change_add_gift_wrap_message( $html ) {
-		return '<b>Optioneel: geef een boodschap mee aan de gelukkige (max. '.get_option( 'wcgwp_textarea_limit', '1000' ).' tekens). Wij schrijven dit in ons mooiste handschrift op een geschenkkaartje. Uiteraard voegen we geen kassaticket toe.</b>';
+		return '<b>Geef een boodschap mee aan de gelukkige (optioneel, maximum '.get_option( 'wcgwp_textarea_limit', '1000' ).' tekens). We schrijven dit in ons mooiste handschrift op een geschenkkaartje. Uiteraard voegen we geen kassaticket toe.</b>';
 	}
 
 	function ob2c_product_is_gift_wrapper( $cart_item ) {
@@ -7668,6 +7669,10 @@
 
 	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
 	function send_automated_mail_to_helpdesk( $subject, $body ) {
+		if ( wp_get_environment_type() !== 'production' ) {
+			return;
+		}
+
 		$headers = array();
 		$headers[] = 'From: '.get_webshop_name().' <'.get_option('admin_email').'>';
 		$headers[] = 'Content-Type: text/html';
