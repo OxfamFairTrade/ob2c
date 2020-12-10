@@ -47,8 +47,8 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>' . __( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ) . '</p>';
 }
 
-// Tijdelijke waarschuwing
-// echo '<p>Het is momenteel erg druk in onze webshop maar we doen onze uiterste best om je bestelling zo snel mogelijk rond te krijgen. Alvast bedankt voor je begrip!</p>';
+// Eventueel array( 'id' => ... ) doorgeven als argument voor de juiste $pickup_location?
+echo '<p>Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op '.print_telephone().' en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.</p>';
 
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.

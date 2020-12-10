@@ -165,6 +165,9 @@ get_header( 'shop' ); ?>
                         wc_get_template( 'product-searchform_nm.php' );
                     }
                 ?>
+                <div class="nm-shop-widget-col">
+                    <span class="btn toggle-filter">Filteren</span>
+                </div>
 
                 <div id="nm-shop-browse-wrap" class="nm-shop-description-<?php echo esc_attr( $nm_theme_options['shop_description_layout'] ); ?>">
                     <?php

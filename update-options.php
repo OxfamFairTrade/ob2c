@@ -178,15 +178,31 @@
 						</tr>
 						<tr valign="top">
 							<th class="left">
-								<label for="oxfam_does_risky_delivery">Schakel beperkingen op thuislevering uit:<br/><small>Als je dit aanvinkt, wordt de logica uitgeschakeld die de thuislevering van grote flessen fruitsap en volledige bakken fruitsap/bier verhindert in gewone bestellingen van particulieren (experimenteel).</small></label>
+								<label for="oxfam_does_risky_delivery">Schakel beperkingen op thuislevering uit:<br/><small>Als je dit aanvinkt, wordt de logica uitgeschakeld die de thuislevering van grote flessen fruitsap en volledige bakken fruitsap/bier verhindert in gewone bestellingen van particulieren.</small></label>
 							</th>
 							<td class="right">
 								<input type="checkbox" name="oxfam_does_risky_delivery" value="yes" <?php checked( get_option('oxfam_does_risky_delivery'), 'yes' ); ?> <?php if ( current_user_can('create_sites') ) echo ' disabled'; ?>>
 							</td>
 						</tr>
+						<!-- tr valign="top">
+							<th class="left">
+								<label for="oxfam_disable_local_pickup">Schakel afhalingen in de winkel tijdelijk uit:<br/><small>Opgelet: klanten zullen enkel nog kunnen afrekenen als ze een postcode ingeven die in jullie levergebied ligt! Als je afhaling op afspraak wil behouden tijdens een lockdown/vakantie is het beter om dit niet aan te vinken en gewoon uitzondelijke sluitingsdagen toe te voegen aan je winkelpagina op oxfamwereldwinkels.be. Indien de winkel de komende 7 dagen niet geopend is, verschijnt bij het afrekenen en in de mails automatisch een tekst dat jullie de klant zullen contacteren om een afspraak te maken.</small></label>
+							</th>
+							<td class="right">
+								<input type="checkbox" name="oxfam_disable_local_pickup" value="yes" <?php // checked( get_option('oxfam_disable_local_pickup'), 'yes' ); ?> <?php // if ( current_user_can('create_sites') ) echo ' disabled'; ?>>
+							</td>
+						</tr -->
 					<?php
 				}
 			?>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_remove_excel_header">Laat header met klantgegevens weg uit pick-Excel:<br/><small>Hierdoor kun je de file zonder aanpassingen overnemen in ShopPlus (druk F10, op de kassacomputer moet Microsoft Excel geïnstalleerd zijn). Zo hoef je de producten niet meer handmatig in te scannen. Je verliest wel de dubbelcheck op de compleetheid van de bestelling en ziet het adres van de klant niet meer op het document.</small></label>
+				</th>
+				<td class="right">
+					<input type="checkbox" name="oxfam_remove_excel_header" value="yes" <?php checked( get_option('oxfam_remove_excel_header'), 'yes' ); ?> <?php if ( current_user_can('create_sites') ) echo ' disabled'; ?>>
+				</td>
+			</tr>
 			<!-- Deze instelling maakt geen deel meer uit van de geregistreerde opties en worden dus niet automatisch bijgewerkt! -->
 			<tr valign="top">
 				<th class="left">

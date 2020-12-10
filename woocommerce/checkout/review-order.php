@@ -56,6 +56,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				}
 			}
 
+			// Veroorzaakt dit de overtollige lege <tr> onder het besteloverzicht?
 			do_action( 'woocommerce_review_order_after_cart_contents' );
 		?>
 	</tbody>
@@ -93,7 +94,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</tr>
 		<?php endforeach; ?>
 
-		<?php if ( wc_tax_enabled() && 'excl' === WC()->cart->tax_display_cart ) : ?>
+		<?php if ( wc_tax_enabled() && 'excl' === WC()->cart->get_tax_price_display_mode() ) : ?>
 			<?php if ( 'itemized' === get_option( 'woocommerce_tax_total_display' ) ) : ?>
 				<?php foreach ( WC()->cart->get_tax_totals() as $code => $tax ) : ?>
 					<tr class="tax-rate tax-rate-<?php echo sanitize_title( $code ); ?>">

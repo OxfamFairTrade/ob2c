@@ -5,6 +5,25 @@
 <div class="wrap">
 	<h1>Stel de voorraad van je lokale webshop in</h1>
 
+	<nav class="nav-tab-wrapper">
+		<?php
+			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'crafts' => 'Crafts' );
+			if ( isset( $_GET['assortment'] ) and array_key_exists( $_GET['assortment'], $tabs ) ) {
+				$current_tab = $_GET['assortment'];
+			} else {
+				$current_tab = 'general';
+			}
+
+			foreach ( $tabs as $key => $title ) {
+				$active = '';
+				if ( $current_tab === $key ) {
+					$active = 'nav-tab-active';
+				}
+				echo '<a href="'.admin_url( 'admin.php?page=oxfam-products-list&assortment='.$key ).'" class="nav-tab '.$active.'">'.$title.'</a>';
+			}
+		?>
+	</nav>
+
 	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Met de knop onderaan de pagina kun je alle producten in één keer in/uit voorraad halen. Een bevestigingsvenster behoedt je daarbij voor onbedoelde wijzigingen. <b>Tip: met Ctrl+F kun je snel zoeken naar een product.</b></p>
 
 	<p>Nieuwe producten, die in de loop van de voorbije 3 maanden beschikbaar werden op BestelWeb, hebben <span style="background-color: lightskyblue;">een blauwe achtergrond</span>. Ze verschijnen aanvankelijk als 'niet in assortiment' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden. Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen <span style="background-color: gold;">een gele achtergrond</span>, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt.</p>
@@ -16,13 +35,12 @@
 			// Query alle gepubliceerde producten, orden op ompaknummer
 			$args = array(
 				'post_type'			=> 'product',
-				'post_status'		=> array( 'publish' ),
+				'post_status'		=> array('publish'),
 				'posts_per_page'	=> -1,
 				'meta_key'			=> '_sku',
 				'orderby'			=> 'meta_value_num',
 				'order'				=> 'ASC',
 			);
-
 			$products = new WP_Query( $args );
 			
 			if ( $products->have_posts() ) {
@@ -38,8 +56,23 @@
 					$product = wc_get_product( get_the_ID() );
 					
 					// Verhinder dat leeggoed ook opduikt
-					if ( in_array( $product->get_sku(), $empties ) ) {
+					if ( $product === false or in_array( $product->get_sku(), $empties ) ) {
 						continue;
+					}
+
+					// Logica eventueel reeds toepassen in WP_Query voor performantie?
+					if ( $current_tab === 'national' ) {
+						if ( ! is_national_product( $product ) ) {
+							continue;
+						}
+					} elseif ( $current_tab === 'local' ) {
+						if ( is_national_product( $product ) ) {
+							continue;
+						}
+					} elseif ( $current_tab === 'crafts' ) {
+						if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) !== 0 ) {
+							continue;
+						}
 					}
 
 					// Kleur de randen en tel de initiële waarde voor de tellers
@@ -77,8 +110,11 @@
 							$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>'.$stock_statuses['onbackorder'].'</option>';
 							$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>'.$stock_statuses['outofstock'].'</option>';
 						$content .= '</select></div>';
-						$content .= '<div class="cell"><input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
-						$content .= ' <label for="'.get_the_ID().'-featured">In de kijker?</label></div>';
+						$content .= '<div class="cell">';
+						if ( $product->get_catalog_visibility() !== 'hidden' and ! has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
+							$content .= '<input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'> <label for="'.get_the_ID().'-featured">In de kijker?</label>';
+						}
+						$content .= '</div>';
 					$content .= '<div class="cell output"></div>';
 					$content .= '</div>';
 					$i++;
@@ -187,57 +223,55 @@
 						}
 
 						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
-							if ( jQuery(this).find(":selected").val() == 'instock' ) {
-								var to_change = jQuery("#oxfam-products").find(".border.color-red").length; 
-								var go = confirm("Ben je zeker dat je "+to_change+" producten op voorraad wil zetten?");
-								if ( go == true ) {
-									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
-									jQuery("#oxfam-products").find(".border.color-red").parent().find("select.toggle").val('instock').each( function() {
-										jQuery(this).delay(25).trigger('change');	
-									});
-									jQuery(this).parent().parent().find(".output").delay(10000).animate({
-										opacity: 0,
-									}, 1000, function(){
-										jQuery(this).html("&nbsp;").css('opacity', 1);
-									});
-								} else {
-									alert("Begrepen, we wijzigen niets!");
-									jQuery(this).val('');
-								}
-							} else if ( jQuery(this).find(":selected").val() == 'outofstock' ) {
-								var to_change = jQuery("#oxfam-products").find(".border.color-green").length; 
-								var go = confirm("Ben je zeker dat je "+to_change+" producten uit assortiment wil zetten?");
-								if ( go == true ) {
-									jQuery(this).parent().parent().find(".output").html("Aan het verwerken ...");
-									jQuery("#oxfam-products").find(".border.color-green").parent().find("select.toggle").val('outofstock').each( function() {
-										jQuery(this).delay(25).trigger('change');	
-									});
-									jQuery(this).parent().parent().find(".output").delay(10000).animate({
-										opacity: 0,
-									}, 1000, function(){
-										jQuery(this).html("&nbsp;").css('opacity', 1);
-									});
-								} else {
-									alert("Begrepen, we wijzigen niets!");
-									jQuery(this).val('');
-								}
+							var go = confirm("Weet je zeker dat je dit wil doen?");
+							if ( go == true ) {
+								jQuery(this).parent().parent().find(".output").html("Bezig met verwerken, wacht op automatische refresh ...");
+
+								var value = jQuery(this).find(":selected").val();
+								var input = {
+									'action': 'oxfam_bulk_stock_action',
+									'status': value,
+								};
+
+								jQuery.ajax({
+									type: 'POST',
+									url: ajaxurl,
+									data: input,
+									dataType: 'html',
+									success: function(msg) {
+										if ( msg.substr(0, 5) == 'ERROR' ) {
+											alert("Er liep iets mis, probeer het later eens opnieuw! "+msg);
+											jQuery(this).val('');
+										} else {
+											window.location.reload();
+										}
+									},
+									error: function(jqXHR, statusText, errorThrown) {
+										alert("Er liep iets mis, probeer het later eens opnieuw!");
+										jQuery(this).val('');
+									},
+								});
+							} else {
+								alert("Begrepen, we wijzigen niets!");
+								jQuery(this).val('');
 							}
 						});
 					});
 				</script>
 			<?php }
 		?>
-		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black; display: none;">
+		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black;">
 			<div class="cell" style="width: 3%;"></div>
 			<div class="cell" style="width: 40%; text-align: center;">
 				<select class="global-toggle">';
 					<option value="" selected>(bulkwijziging)</option>
 					<option value="instock">Zet ALLE producten op voorraad</option>
+					<option value="onbackorder">Zet ALLE producten op tijdelijk uit voorraad</option>
 					<option value="outofstock">Haal ALLE producten uit assortiment</option>
 				</select>
 			</div>
 			<div class="cell" style="width: 40%; text-align: left;">
-				Opgelet: deze bewerking kan enkele tientallen seconden in beslag nemen! Verlaat deze pagina niet zolang de tellers lopen.
+				Opgelet: deze bewerking kan, afhankelijk van het aantal producten, ettelijke seconden in beslag nemen! Sluit de pagina niet zolang de oranje boodschap zichtbaar is. Na afloop wordt de pagina opnieuw geladen.
 			</div>
 			<div class="cell output" style="width: 17%;"></div>
 		</div>

@@ -14,6 +14,7 @@
     padding: 12px !important;
     margin: 0 0 12px 0 !important;
     background-color: $new-green;
+    border-radius: 5px;
 
     &.woocommerce-message {
      background-color: $pale-blue;
@@ -47,13 +48,20 @@
   display: block;
   max-width: calc(100% - 24px);
 
-  @media (max-width: 991px) {
+  @media (max-width: 767px) {
     padding: 0;
+  }
+
+  @media (max-width: 991px) {
+    width: 710px;
+    padding: 0;
+    max-width: calc(100% - 40px);
   }
 
   > div {
     padding: 12px;
     background-color: $pale-blue;
+    border-radius: 5px;
   }
 
   ul {
@@ -79,7 +87,7 @@
 
         &:before {
           content: "";
-          background: url('/wp-content/themes/oxfam-webshop/images/checkmark-white.svg') no-repeat center center transparent;
+          background: url('/wp-content/themes/oxfam-webshop/images/icons/check-white.svg') no-repeat center center transparent;
           display: inline-block;
           margin-right: 5px;
           width: 19px;

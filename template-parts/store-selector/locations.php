@@ -10,7 +10,10 @@
 	<div class="store-selector-inner">
         <a href="#" class="store-selector-close"></a>
 		<h2>Selecteer jouw Oxfam-winkel</h2>
-		<p>Vul de postcode in waar jij de producten wil <b>afhalen</b> of waar ze <b>geleverd</b> moeten worden. Je bestelling wordt opgevolgd door de vrijwilligers van een Oxfam-Wereldwinkel in jouw buurt.</p>
+		<p>
+			<?php if ( isset( $_GET['triggerStoreLocator'] ) ) echo '<strong>Vooraleer we de ingrediënten in je winkelmandje kunnen leggen, dien je eerst nog een winkel te kiezen.</strong> '; ?>
+			Vul de postcode in waar jij de producten wil <b>afhalen</b> of waar ze <b>geleverd</b> moeten worden. Je bestelling wordt opgevolgd door de vrijwilligers van een Oxfam-Wereldwinkel in jouw buurt.
+		</p>
 		<?php
 			// Door core hack halen we altijd de winkels in het hoofdniveau op, werkt anders niet in subsites!
 			// Opgelet: instelling "Zodra een gebruiker op 'route' klikt, open een nieuwe venster en toon de route op google.com/maps" ingeschakeld laten
@@ -35,7 +38,6 @@
 		/* In wpsl-gmap.js staat in searchLocationBtn() een $( "#wpsl-search-btn" ).unbind( "click" ) die dit verhindert */
 		/* Voorlopig daar hard verwijderd maar wellicht beter om zelf een custom event te verzinnen en binden? */
 		jQuery('#wpsl-search-btn').on( 'click', function() {
-			console.log("Executing click binding by OB2C ...");
 			jQuery('#default-content').hide();
 			/* Maak de resultatenlijst zéker zichtbaar */
 			jQuery('#wpsl-result-list').show();
@@ -50,6 +52,8 @@
 		});
 
 		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
+		/* Licht gewijzigde vorm voor autocomplete */
+		var autocomplete_zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
 		
 		/* Gebruik event delegation, de buttons in .nm-shop-products-col zijn niet noodzakelijk al aanwezig bij DOM load! */
 		/* Let op dat elementen niet dubbel getarget worden, dan zal preventDefault() roet in het eten gooien! */
@@ -63,6 +67,11 @@
 			}
 		});
 
+		const urlParams = new URLSearchParams( window.location.search );
+		if ( urlParams.has('triggerStoreLocator') ) {
+			jQuery('.store-selector-modal').toggleClass('open');
+		}
+		
 		jQuery('.store-selector-close').on( 'click', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
@@ -70,7 +79,7 @@
 
 		jQuery('.store-selector-erase').on( 'click', function(event) {
 			event.preventDefault();
-			console.log( "Reset cookies en doe redirect naar overeenkomstige URL zonder /<?php echo $_COOKIE['latest_blog_path'] ?>/" );
+			console.log("Reset cookies en doe redirect naar overeenkomstige URL op hoofdniveau");
 			eraseCookie('latest_shop_id');
 			eraseCookie('latest_blog_id');
 			eraseCookie('latest_blog_path');
@@ -80,8 +89,7 @@
 		});
 
 		jQuery('.autocomplete-postcodes').autocomplete({
-			/* Dit is een licht andere vorm dan var zips! */
-			source: <?php echo json_encode( get_flemish_zips_and_cities() ); ?>,
+			source: autocomplete_zips,
 			minLength: 1,
 			autoFocus: true,
 			position: { my : "right top", at: "right bottom" },
@@ -99,12 +107,21 @@
 			setCookie( 'latest_blog_id', jQuery(this).data('webshop-blog-id') );
 			/* Probeer het huidige pad te bewaren! */
 			var current_url = window.location.href;
-			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + '?referralZip='+jQuery('#wpsl-search-input').val() );
+			var current_zip = jQuery('#wpsl-search-input').val();
+			/* Geen enkel de hoofdgemeente mee (nog beter zou zijn om de effectief geselecteerde gemeente door te geven!) */
+			var cities = zips[current_zip].split( " / ", 1 );
+			var url_suffix = '?referralZip=' + current_zip + '&referralCity=' + cities[0];
+			if ( urlParams.has('addSkus') ) {
+				url_suffix += '&addSkus=' + urlParams.get('addSkus');
+			}
+			if ( urlParams.has('recipeId') ) {
+				url_suffix += '&recipeId=' + urlParams.get('recipeId');
+			}
+			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + url_suffix );
 		});
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
 			e.preventDefault();
-			console.log("Wis de huidige categorie");
 			// Kijk naar wat er gebeurt in nm-shop-filters.js
 			// Het 'href'-attribuut wijzigen naar '/producten/' lijkt te volstaan om te wissen!
 			// jQuery(this).attr( 'href', 'https://dev.oxfamwereldwinkels.be/oostende/producten/' );

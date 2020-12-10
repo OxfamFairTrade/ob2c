@@ -90,9 +90,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 
 		<?php the_widget( 'WC_Widget_Recently_Viewed', array( 'title' => 'Laatst bekeken', 'number' => 4 ) ); ?>
-
-		<div class="nm-shop-widget-col">
-			<span class="btn toggle-filter">Filteren</span>
-		</div>
 	</div>
 </div>
