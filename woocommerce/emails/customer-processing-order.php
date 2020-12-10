@@ -48,7 +48,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 }
 
 // Eventueel array( 'id' => ... ) doorgeven als argument voor de juiste $pickup_location?
-echo '<p>Heb je nog een vraag? Beantwoord gewoon deze mail of bel ons op '.print_telephone().' en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.</p>';
+echo '<p>Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op '.print_telephone().' en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.</p>';
 
 /**
  * @hooked WC_Emails::order_details() Shows the order details table.

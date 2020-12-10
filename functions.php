@@ -3602,8 +3602,8 @@
 					$pick_sheet->setCellValue( 'A'.$i, 'Geschenkkaartje' )->setCellValue( 'B'.$i, $gift_wrap_text );
 					// Merge resterende kolommen en wrap tekst in opmerkingenvak met autoheight
 					$pick_sheet->mergeCells('B'.$i.':G'.$i);
-					$pick_sheet->getRowDimension( strval($i) )->setRowHeight(-1);
 					$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
+					$pick_sheet->getRowDimension($i)->setRowHeight(80);
 					$i++;
 				}
 

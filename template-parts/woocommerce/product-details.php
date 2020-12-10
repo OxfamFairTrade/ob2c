@@ -70,6 +70,20 @@
 											<?php echo $product->get_description(); ?>
 										</div>
 									<?php endif; ?>
+									<?php
+										if ( $product->get_attribute('merk') !== '' ) {
+											if ( false !== ( $term = get_term_by( 'name', $product->get_attribute('merk'), 'pa_merk' ) ) ) {
+												if ( strlen( $term->description ) > 5 ) {
+												?>
+													<h3>Over <?php echo $product->get_attribute('merk'); ?></h3>
+													<div class="woocommerce-product-details__brand">
+														<?php echo $term->description; ?>
+													</div>
+												<?php
+												}
+											}
+										}
+									?>
 								</div>
 							</div>
 							<?php
