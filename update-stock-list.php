@@ -7,16 +7,13 @@
 
 	<nav class="nav-tab-wrapper">
 		<?php
-			$current_tab = 'general';
-			if ( isset( $_GET['assortment'] ) ) {
-				if ( $_GET['assortment'] === 'national' ) {
-					$current_tab = 'national';
-				} elseif ( $_GET['assortment'] === 'local' ) {
-					$current_tab = 'local';
-				}
+			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'crafts' => 'Crafts' );
+			if ( isset( $_GET['assortment'] ) and array_key_exists( $_GET['assortment'], $tabs ) ) {
+				$current_tab = $_GET['assortment'];
+			} else {
+				$current_tab = 'general';
 			}
 
-			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'crafts' => 'Crafts' );
 			foreach ( $tabs as $key => $title ) {
 				$active = '';
 				if ( $current_tab === $key ) {
