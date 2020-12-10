@@ -3574,36 +3574,39 @@
 					$i++;
 				}
 
-				// Druk eventuele opmerkingen af
-				if ( strlen( $order->get_customer_note() ) > 5 ) {
-					$i++;
-					$pick_sheet->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $order->get_customer_note() );
-					// Merge resterende kolommen en wrap tekst in opmerkingenvak 
-					$pick_sheet->mergeCells('B'.$i.':G'.$i);
-					$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
-
-					// setRowHeight(-1) voor autoheight werkt niet, dus probeer goeie hoogte te berekenen bij lange teksten
-					// if ( strlen( $customer_text ) > 125 ) {
-					// 	$row_padding = 4;
-					// 	$row_height = $pick_sheet->getRowDimension($i)->getRowHeight() - $row_padding;
-					// 	$pick_sheet->getRowDimension($i)->setRowHeight( ceil( strlen( $customer_text ) / 120 ) * $row_height + $row_padding );
-					// }
-
-					// Bovenstaande houdt geen rekening met line breaks, dus gebruik voorlopig vaste (ruime) hoogte
-					$pick_sheet->getRowDimension($i)->setRowHeight(80);
-					// $pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
-					// $pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
-					$i++;
-				}
-
 				// Druk eventuele persoonlijke boodschap af
 				if ( $gift_wrap_text !== false ) {
 					$i++;
 					$pick_sheet->setCellValue( 'A'.$i, 'Geschenkkaartje' )->setCellValue( 'B'.$i, $gift_wrap_text );
 					// Merge resterende kolommen en wrap tekst in opmerkingenvak met autoheight
 					$pick_sheet->mergeCells('B'.$i.':G'.$i);
+					
+					$pick_sheet->getRowDimension($i)->setRowHeight(60);
+					$pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+					$pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 					$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
-					$pick_sheet->getRowDimension($i)->setRowHeight(80);
+					$i++;
+				}
+
+				// Druk eventuele opmerkingen af
+				if ( strlen( $order->get_customer_note() ) > 5 ) {
+					$i++;
+					$pick_sheet->setCellValue( 'A'.$i, 'Opmerking' )->setCellValue( 'B'.$i, $order->get_customer_note() );
+					// Merge resterende kolommen en wrap tekst in opmerkingenvak 
+					$pick_sheet->mergeCells('B'.$i.':G'.$i);
+
+					// setRowHeight(-1) voor autoheight werkt niet, dus probeer goeie hoogte te berekenen bij lange teksten (houdt geen rekening met line breaks ...)
+					// if ( strlen( $customer_text ) > 125 ) {
+					// 	$row_padding = 4;
+					// 	$row_height = $pick_sheet->getRowDimension($i)->getRowHeight() - $row_padding;
+					// 	$pick_sheet->getRowDimension($i)->setRowHeight( ceil( strlen( $customer_text ) / 120 ) * $row_height + $row_padding );
+					// }
+
+					// Gebruik voorlopig vaste (ruime) hoogte
+					$pick_sheet->getRowDimension($i)->setRowHeight(60);
+					$pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+					$pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+					$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
 					$i++;
 				}
 
