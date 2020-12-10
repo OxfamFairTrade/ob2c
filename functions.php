@@ -6620,22 +6620,25 @@
 			// 	echo '<p>Mails naar Microsoft-adressen (@hotmail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook beschikbaar voor thuislevering). Door minstens één product op voorraad te zetten activeer je de module. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden. Opmerking: indien je thuislevering van breekbare goederen inschakelde onder '<a href="admin.php?page=oxfam-options">Winkelgegevens</a>', zal ook de geschenkmand thuisgeleverd kunnen worden.</a></p>';
+				// echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe assortimentsdoos thee werd toegevoegd (opgelet, iets lagere prijs dan de voorgaande referentie!), samen met de doppers en wasnoten:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 23508, 12034, 12076, 12093, 12094, 12095, 12108, 48566, 48712, 65762, 87142, 87143, 87144, 87169, 87170, 87171, 87172, 87231, 87232, 87233, 87234, 91702, 91703, 91704 );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						// echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-						echo 'Opgelet: om te vermijden dat al deze producten als \'nieuw\' zouden verschijnen, kreeg de non-food als creatiedatum de dag van aanmaak in fairtradecrafts.be mee. Hierdoor verschijnen deze producten niét in het blauw onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+					// echo '<p>De nieuwe assortimentsdoos thee werd toegevoegd (opgelet, iets lagere prijs dan de voorgaande referentie!), samen met de doppers en wasnoten:</p><ul style="margin-left: 2em; column-count: 2;">';
+					// 	$skus = array( 23508, 12034, 12076, 12093, 12094, 12095, 12108, 48566, 48712, 65762, 87142, 87143, 87144, 87169, 87170, 87171, 87172, 87231, 87232, 87233, 87234, 91702, 91703, 91704 );
+					// 	foreach ( $skus as $sku ) {
+					// 		$product_id = wc_get_product_id_by_sku( $sku );
+					// 		if ( $product_id ) {
+					// 			$product = wc_get_product($product_id);
+					// 			echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+					// 		}
+					// 	}
+					// echo '</ul><p>';
+					// if ( current_user_can('manage_network_users') ) {
+					// 	// echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					// 	echo 'Opgelet: om te vermijden dat al deze producten als \'nieuw\' zouden verschijnen, kreeg de non-food als creatiedatum de dag van aanmaak in fairtradecrafts.be mee. Hierdoor verschijnen deze producten niét in het blauw onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					// }
+					// echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 					echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit begin januari gebeuren, samen met de levering in de winkel. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
@@ -6664,9 +6667,6 @@
 						echo ' Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, array( 'ex_tax_label' => true ) ).' zal terugbetaald worden bij de volgende crediteringsronde, half december. <a href="https://shop.oxfamwereldwinkels.be/online-creditering-WVDFT2020.pdf" download>Raadpleeg de exacte verdeling per winkel in deze PDF.</a>';
 					}
 					echo $correctie.'</p>';
-				echo '</div>';
-				echo '<div class="notice notice-info">';
-					echo '<p>Er werden 13 extra categorieën toegevoegd die je kunt gebruiken tijdens <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment" target="_blank">het toevoegen van lokale producten</a>. Duiding bij welke producten we in welke categorie verwachten vind je in <a href="https://shop.oxfamwereldwinkels.be/structuur-crafts.pdf" download>deze nota</a>. Opgelet: alle producten die vroeger in de megacategorie \'Wonen, mode & speelgoed\' zaten, zitten nu onder \'Wonen\'. Pas de categorie indien nodig aan naar een geschiktere (sub)categorie. De cadeaubonnen werden verhuisd naar de algemenere categorie \'Geschenken & wenskaarten\'.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen

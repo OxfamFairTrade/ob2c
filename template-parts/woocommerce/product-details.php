@@ -59,7 +59,7 @@
 					if ( $featured_partner !== false ) {
 						get_template_part( 'template-parts/woocommerce/single-product/featured-partner' );
 					} else {
-						if ( ! is_national_product( $product->get_id() ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
+						if ( ! is_national_product( $product ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
 							// Toon de lange beschrijving bij lokale producten altijd (indien beschikbaar)
 							?>
 							<div class="col-row">
@@ -114,7 +114,7 @@
 				<h3>Extra informatie</h3>
 				<?php get_template_part( 'template-parts/woocommerce/product-icons' ); ?>
 
-				<?php if ( $product->has_dimensions() and ( ! is_national_product( $product->get_id() ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) ) : ?>
+				<?php if ( $product->has_dimensions() and ( ! is_national_product( $product ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) ) : ?>
 					<div id="product-dimensions" class="product-info-panel dimensions">
 						<h4>Afmetingen</h4>
 						<p><?php echo wc_format_dimensions( $product->get_dimensions( false ) ); ?></p>
