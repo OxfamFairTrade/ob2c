@@ -66,7 +66,7 @@
 								<div class="col-md-12">
 									<?php if ( strlen( $product->get_description() ) > 5 ) : ?>
 										<h3>Beschrijving</h3>
-										<div class="woocommerce-product-details__long-description entry-content">
+										<div class="product-info-panel woocommerce-product-details__long-description">
 											<?php echo $product->get_description(); ?>
 										</div>
 									<?php endif; ?>
@@ -76,7 +76,7 @@
 												if ( strlen( $term->description ) > 5 ) {
 												?>
 													<h3>Over <?php echo $product->get_attribute('merk'); ?></h3>
-													<div class="woocommerce-product-details__brand">
+													<div class="product-info-panel woocommerce-product-details__brand">
 														<?php echo $term->description; ?>
 													</div>
 												<?php
