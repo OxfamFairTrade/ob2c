@@ -24,7 +24,8 @@ echo '<p>In bijlage vind je een Excel met alle gegevens in printvriendelijk form
 if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$methods = $order->get_shipping_methods();
 	$method = reset( $methods );
-	echo '<p>Dit is een afhaling voor '.$method->get_meta('pickup_location').'. Vergeet de bestelling in de webshop niet als \'Afgerond\' te markeren van zodra het pakje samengesteld is. Pas dan ontvangt de klant een tweede mail waarin hij/zij op de hoogte gebracht wordt dat de bestelling klaarstaat voor afhaling in de winkel.</p>';
+	$pickup_location = $method->get_meta('pickup_location');
+	echo '<p>Dit is een afhaling voor '.$pickup_location['shipping_company'].'. Vergeet de bestelling in de webshop niet als \'Afgerond\' te markeren van zodra het pakje samengesteld is. Pas dan ontvangt de klant een tweede mail waarin hij/zij op de hoogte gebracht wordt dat de bestelling klaarstaat voor afhaling in de winkel.</p>';
 } elseif ( $order->get_shipping_total() > 0 ) {
 	if ( in_array( 'voeding', $order->get_items_tax_classes() ) === false ) {
 		echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( STANDARD_VAT_SHIPPING_COST ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
