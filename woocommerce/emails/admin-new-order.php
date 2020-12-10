@@ -22,16 +22,17 @@ printf( '<p>Je hebt een bestelling ontvangen van %s.</p>', $order->get_formatted
 echo '<p>In bijlage vind je een Excel met alle gegevens in printvriendelijk formaat. Bezorg dit eventueel aan een winkelier zodat hij/zij de bestelling kan klaarzetten. In de laatste kolom is ruimte voorzien om de effectief geleverde aantallen te noteren.</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
-	echo '<p>Vergeet de bestelling in de webshop niet als \'Afgerond\' te markeren van zodra het pakje samengesteld is. Pas dan ontvangt de klant een tweede mail waarin hij/zij op de hoogte gebracht wordt dat de bestelling klaarstaat voor afhaling in de winkel.</p>';
+	$methods = $order->get_shipping_methods();
+	$method = reset( $methods );
+	echo '<p>Dit is een afhaling voor '.$method->get_meta('pickup_location').'. Vergeet de bestelling in de webshop niet als \'Afgerond\' te markeren van zodra het pakje samengesteld is. Pas dan ontvangt de klant een tweede mail waarin hij/zij op de hoogte gebracht wordt dat de bestelling klaarstaat voor afhaling in de winkel.</p>';
+} elseif ( $order->get_shipping_total() > 0 ) {
+	if ( in_array( 'voeding', $order->get_items_tax_classes() ) === false ) {
+		echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( STANDARD_VAT_SHIPPING_COST ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
+	}
 }
 
 if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
 	echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een B2B-bestelling die nog niet betaald werd! Je zult geen bedrag ontvangen via Mollie. Stel een factuur op voor de effectief geleverde goederen en volg zelf de betaling op.</p>';
-}
-
-$tax_classes = $order->get_items_tax_classes();
-if ( in_array( 'voeding', $tax_classes ) === false and $order->get_shipping_total() > 0 ) {
-	echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( STANDARD_VAT_SHIPPING_COST ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
 }
 
 /**
