@@ -1163,8 +1163,10 @@
 		// }
 	}
 
-	// Vervangen canonical tag door hoofdproduct bij nationale producten
-	add_filter( 'get_canonical_url', function( $url, $post ) {
+	// Vervang canonical tag door hoofdproduct bij nationale producten
+	add_filter( 'get_canonical_url', 'ob2c_tweak_canonical_url', 10, 2 );
+
+	function ob2c_tweak_canonical_url( $url, $post ) {
 		if ( ! is_main_site() ) {
 			if ( get_post_type( $post ) === 'product' ) {
 				if ( is_national_product( $post->ID ) ) {
@@ -1176,16 +1178,18 @@
 			}
 		}
 		return $url;
-	} );
+	}
 
 	// Verbeter de gestructureerde productdata voor Google
-	add_filter( 'woocommerce_structured_data_product', function( $markup, $product ) {
+	add_filter( 'woocommerce_structured_data_product', 'ob2c_tweak_structured_data', 10, 2 );
+
+	function ob2c_tweak_structured_data( $markup, $product ) {
 		if ( is_main_site() ) {
 			$markup['sku'] = $product->get_meta('_shopplus_code');
 			$markup['gtin'] = $product->get_meta('_cu_ean');
 		}
 		return $markup;
-	} );
+	}
 
 	// Activeer Google Tag Manager (no JS)
 	add_action( 'wp_head', 'add_google_tag_manager_no_js', 100 );
