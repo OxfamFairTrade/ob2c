@@ -227,10 +227,10 @@
 							if ( go == true ) {
 								jQuery(this).parent().parent().find(".output").html("Bezig met verwerken, wacht op automatische refresh ...");
 
-								var value = jQuery(this).find(":selected").val();
 								var input = {
 									'action': 'oxfam_bulk_stock_action',
-									'status': value,
+									'status': jQuery(this).find(":selected").val(),
+									'assortment': '<?php echo $current_tab; ?>',
 								};
 
 								jQuery.ajax({

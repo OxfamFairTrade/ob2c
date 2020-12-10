@@ -5691,7 +5691,7 @@
 	}
 
 	function oxfam_bulk_stock_action_callback() {
-		echo ob2c_change_regular_products_stock_status( $_POST['status'] );
+		echo ob2c_change_regular_products_stock_status( $_POST['status'], $_POST['assortment'] );
 		wp_die();
 	}
 
@@ -5716,7 +5716,7 @@
 		return $output;
 	}
 
-	function ob2c_change_regular_products_stock_status( $status ) {			
+	function ob2c_change_regular_products_stock_status( $status, $assortment = 'general' ) {			
 		if ( ! array_key_exists( $status, wc_get_product_stock_status_options() ) ) {
 			return 'ERROR - INVALID STOCK STATUS PASSED';
 		}
@@ -5745,6 +5745,21 @@
 				// Verhinder dat leeggoed ook bewerkt wordt
 				if ( $product === false or in_array( $product->get_sku(), $empties ) ) {
 					continue;
+				}
+
+				// Logica eventueel reeds toepassen in WP_Query voor performantie?
+				if ( $assortment === 'national' ) {
+					if ( ! is_national_product( $product ) ) {
+						continue;
+					}
+				} elseif ( $assortment === 'local' ) {
+					if ( is_national_product( $product ) ) {
+						continue;
+					}
+				} elseif ( $assortment === 'crafts' ) {
+					if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) !== 0 ) {
+						continue;
+					}
 				}
 
 				if ( $product->get_stock_status() !== $status ) {
