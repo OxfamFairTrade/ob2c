@@ -110,8 +110,11 @@
 							$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>'.$stock_statuses['onbackorder'].'</option>';
 							$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>'.$stock_statuses['outofstock'].'</option>';
 						$content .= '</select></div>';
-						$content .= '<div class="cell"><input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'>';
-						$content .= ' <label for="'.get_the_ID().'-featured">In de kijker?</label></div>';
+						$content .= '<div class="cell">';
+						if ( $product->get_catalog_visibility() !== 'hidden' and ! has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
+							$content .= '<input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'> <label for="'.get_the_ID().'-featured">In de kijker?</label>';
+						}
+						$content .= '</div>';
 					$content .= '<div class="cell output"></div>';
 					$content .= '</div>';
 					$i++;
