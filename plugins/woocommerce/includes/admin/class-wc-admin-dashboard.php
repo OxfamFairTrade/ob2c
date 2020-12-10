@@ -180,37 +180,45 @@ if ( ! class_exists( 'WC_Admin_Dashboard', false ) ) :
 				}
 			}
 			?>
-			<li class="processing-orders">
-				<a href="<?php echo esc_url( admin_url( 'edit.php?post_status=wc-processing&post_type=shop_order' ) ); ?>">
-				<?php
-					printf(
-						/* translators: %s: order count */
-						_n( '<strong>%s order</strong> awaiting processing', '<strong>%s orders</strong> awaiting processing', $processing_count, 'woocommerce' ),
-						$processing_count
-					); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-				?>
-				</a>
-			</li>
-			<?php if ( ! is_regional_webshop() ) : ?>
+			<?php if ( is_regional_webshop() ) : ?>
+				<li class="processing-orders">
+					<a href="<?php echo esc_url( admin_url( 'edit.php?post_status=wc-processing&post_type=shop_order' ) ); ?>">
+					<?php
+						printf(
+							_n( '<strong>%s bestelling</strong> wacht op bevestiging', '<strong>%s bestellingen</strong> wachten op bevestiging', $processing_count, 'woocommerce' ),
+							$processing_count
+						);
+					?>
+					</a>
+				</li>
 				<li class="claimed-orders">
 					<a href="<?php echo esc_url( admin_url( 'edit.php?post_status=wc-claimed&post_type=shop_order' ) ); ?>">
 					<?php
 						printf(
-							_n( '<strong>%s bestelling</strong> wacht op bevestiging', '<strong>%s bestellingen</strong> wachten op bevestiging', $on_hold_count, 'woocommerce' ),
+							_n( '<strong>%s order</strong> awaiting processing', '<strong>%s orders</strong> awaiting processing', $on_hold_count, 'woocommerce' ),
 							$on_hold_count
 						);
 					?>
 					</a>
 				</li>
 			<?php else : ?>
+				<li class="processing-orders">
+					<a href="<?php echo esc_url( admin_url( 'edit.php?post_status=wc-processing&post_type=shop_order' ) ); ?>">
+					<?php
+						printf(
+							_n( '<strong>%s order</strong> awaiting processing', '<strong>%s orders</strong> awaiting processing', $processing_count, 'woocommerce' ),
+							$processing_count
+						);
+					?>
+					</a>
+				</li>
 				<li class="on-hold-orders">
 					<a href="<?php echo esc_url( admin_url( 'edit.php?post_status=wc-on-hold&post_type=shop_order' ) ); ?>">
 					<?php
 						printf(
-							/* translators: %s: order count */
 							_n( '<strong>%s order</strong> on-hold', '<strong>%s orders</strong> on-hold', $on_hold_count, 'woocommerce' ),
 							$on_hold_count
-						); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+						);
 					?>
 					</a>
 				</li>
