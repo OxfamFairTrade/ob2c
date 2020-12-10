@@ -114,6 +114,13 @@
 				<h3>Extra informatie</h3>
 				<?php get_template_part( 'template-parts/woocommerce/product-icons' ); ?>
 
+				<?php if ( $product->has_dimensions() and ( ! is_national_product( $product->get_id() ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) ) : ?>
+					<div id="product-dimensions" class="product-info-panel dimensions">
+						<h4>Afmetingen</h4>
+						<p><?php echo wc_format_dimensions( $product->get_dimensions( false ) ); ?></p>
+					</div>
+				<?php endif; ?>
+
 				<?php if ( $product->get_attribute('merk') !== '' ) : ?>
 					<div id="product-brand" class="product-info-panel brand">
 						<h4>Merk</h4>
@@ -125,13 +132,6 @@
 					<div id="product-sku" class="product-info-panel sku">
 						<h4>Artikelnummer</h4>
 						<p><?php echo $product->get_meta('_shopplus_code'); ?></p>
-					</div>
-				<?php endif; ?>
-
-				<?php if ( $product->has_dimensions() and ( ! is_national_product( $product->get_id() ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) ) : ?>
-					<div id="product-dimensions" class="product-info-panel dimensions">
-						<h4>Afmetingen</h4>
-						<p><?php echo wc_format_dimensions( $product->get_dimensions( false ) ); ?></p>
 					</div>
 				<?php endif; ?>
 
