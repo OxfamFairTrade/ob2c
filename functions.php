@@ -5369,8 +5369,7 @@
 		if ( in_array( $cart_item['data']->get_sku(), get_oxfam_empties_skus_array() ) ) {
 			$visible = false;
 		} elseif ( ob2c_product_is_gift_wrapper( $cart_item ) ) {
-			// Zichtbaar laten zolang we 'woocommerce_cart_contents_count' niet aanpassen
-			// $visible = false;
+			$visible = false;
 		}
 		return $visible;
 	}
