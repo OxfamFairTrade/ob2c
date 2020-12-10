@@ -3600,14 +3600,10 @@
 				if ( $gift_wrap_text !== false ) {
 					$i++;
 					$pick_sheet->setCellValue( 'A'.$i, 'Geschenkkaartje' )->setCellValue( 'B'.$i, $gift_wrap_text );
-					// Merge resterende kolommen en wrap tekst in opmerkingenvak 
+					// Merge resterende kolommen en wrap tekst in opmerkingenvak met autoheight
 					$pick_sheet->mergeCells('B'.$i.':G'.$i);
+					$pick_sheet->getRowDimension( strval($i) )->setRowHeight(-1);
 					$pick_sheet->getStyle('B'.$i)->getAlignment()->setWrapText(true);
-
-					// Probeer autoheight
-					$pick_sheet->getRowDimension($i)->setRowHeight(-1);
-					// $pick_sheet->getStyle('A'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
-					// $pick_sheet->getStyle('B'.$i)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 					$i++;
 				}
 
