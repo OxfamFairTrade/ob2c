@@ -7,7 +7,8 @@
 			<?php
 				$icons = explode( ', ', $product->get_attribute('preferences') );
 				foreach ( $icons as $icon_name ) {
-					echo '<a href="'.get_post_type_archive_link('product').'?swoof=1&pa_preferences='.sanitize_title( $icon_name ).'#result">';
+					// @toDo: Icoontje voor 'biologisch' toevoegen
+					echo '<a href="'.get_post_type_archive_link('product').'?filter_preferences='.sanitize_title( $icon_name ).'#result">';
 						echo '<div class="icon" style="background-image: url('.get_stylesheet_directory_uri().'/images/voedingsvoorkeuren/'.sanitize_title( $icon_name ).'.svg);" alt="'.$icon_name.'" title="Bekijk alles '.strtolower( $icon_name ).'"></div>';
 					echo '</a>';
 				}
