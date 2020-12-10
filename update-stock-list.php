@@ -16,7 +16,7 @@
 				}
 			}
 
-			$tabs = array( 'general' => 'Alle producten', 'national' => 'Enkel nationale', 'local' => 'Enkel lokale' );
+			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'crafts' => 'Crafts' );
 			foreach ( $tabs as $key => $title ) {
 				$active = '';
 				if ( $current_tab === $key ) {
@@ -70,6 +70,10 @@
 						}
 					} elseif ( $current_tab === 'local' ) {
 						if ( is_national_product( $product ) ) {
+							continue;
+						}
+					} elseif ( $current_tab === 'crafts' ) {
+						if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) !== 0 ) {
 							continue;
 						}
 					}
