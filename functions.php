@@ -495,6 +495,22 @@
 	add_filter( 'woocommerce_product_get_image', 'get_parent_image_if_non_set', 10, 5 );
 	
 	function get_parent_image_if_non_set( $image, $product, $size, $attr, $placeholder ) {
+		// GEWIJZIGD: Switch naar de Savoy-formaten, die volledig identiek zijn!
+		// Als we de standaard WooCommerce-formaten oproepen, krijgen we steeds het originele beeld terug ...
+		switch ( $size ) {
+			case 'woocommerce_gallery_thumbnail':
+				$size = 'shop_thumbnail';
+				break;
+
+			case 'woocommerce_thumbnail':
+				$size = 'shop_catalog';
+				break;
+
+			case 'woocommerce_single':
+				$size = 'shop_single';
+				break;
+		}
+
 		if ( ! is_main_site() ) {
 			$main_image_id = false;
 
@@ -513,21 +529,6 @@
 				switch_to_blog(1);
 				// Checkt of de file nog bestaat én een afbeelding is
 				if ( wp_attachment_is_image( $main_image_id ) ) {
-					// Als we de standaard WooCommerce-formaten oproepen, krijgen we steeds het originele beeld terug ...
-					// Heel vreemd, dus switch naar de Savoy-formaten, die volledig identiek zijn!
-					switch ( $size ) {
-						case 'woocommerce_gallery_thumbnail':
-							$size = 'shop_thumbnail';
-							break;
-
-						case 'woocommerce_thumbnail':
-							$size = 'shop_catalog';
-							break;
-
-						case 'woocommerce_single':
-							$size = 'shop_single';
-							break;
-					}
 					// Retourneert lege string bij error
 					$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
 				}

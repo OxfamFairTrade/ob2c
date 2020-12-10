@@ -399,25 +399,27 @@ if ( ! function_exists( 'woocommerce_get_product_thumbnail' ) ) {
 function nm_product_get_thumbnail( $image_id, $image_size, $image_class, $image_placeholder_url, $switch_to_main = false ) {
     $product_thumbnail = '';
 
-    // GEWIJZIGD: Haal afbeeldingseigenschappen op in hoofdniveau
+    // GEWIJZIGD: Switch naar de Savoy-formaten, die volledig identiek zijn!
+    // Als we de standaard WooCommerce-formaten oproepen, krijgen we steeds het originele beeld terug ...
+    switch ( $image_size ) {
+        case 'woocommerce_gallery_thumbnail':
+            $image_size = 'shop_thumbnail';
+            break;
+
+        case 'woocommerce_thumbnail':
+            $image_size = 'shop_catalog';
+            break;
+
+        case 'woocommerce_single':
+            $image_size = 'shop_single';
+            break;
+    }
+
     $props = array( 'src' => '' );
+    
+    // GEWIJZIGD: Haal afbeeldingseigenschappen op in hoofdniveau
     if ( $switch_to_main ) {
         switch_to_blog(1);
-        // Als we de standaard WooCommerce-formaten oproepen, krijgen we steeds het originele beeld terug ...
-        // Heel vreemd, dus switch naar de Savoy-formaten, die volledig identiek zijn!
-        switch ( $image_size ) {
-            case 'woocommerce_gallery_thumbnail':
-                $image_size = 'shop_thumbnail';
-                break;
-
-            case 'woocommerce_thumbnail':
-                $image_size = 'shop_catalog';
-                break;
-
-            case 'woocommerce_single':
-                $image_size = 'shop_single';
-                break;
-        }
         $props = nm_product_get_thumbnail_props( $image_id, $image_size );
         restore_current_blog();
     }
