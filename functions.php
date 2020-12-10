@@ -7348,6 +7348,12 @@
 						case 'telephone':
 							return call_user_func( 'format_'.$key, '0475596166', '.' );
 					}
+				} elseif ( intval( $shop_post_id ) === 3249 ) {
+					// Uitzonderingen voor Belsele
+					switch ($key) {
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '0471997223', '.' );
+					}
 				}
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[$key] !== '' ) {
