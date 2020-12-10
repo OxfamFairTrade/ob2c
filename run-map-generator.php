@@ -118,6 +118,7 @@
 						'wpsl_phone' => $oww_store_data['location']['telephone'],
 						'wpsl_url' => $oww_store_data['link'],
 						// Dit moét uit de lijst met sites komen (data in OWW-site kan vervuild zijn met andere webshops!)
+						// Dit veroorzaakt notices over onbestaande array keys
 						'wpsl_webshop' => $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_url'],
 						'wpsl_webshop_blog_id' => $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_id'],
 						// Vul hier bewust het algemene mailadres in (ook voor winkels mét webshop)

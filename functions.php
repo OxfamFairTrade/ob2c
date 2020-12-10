@@ -695,16 +695,18 @@
 	function ob2c_hide_gift_wrapper_category( $args ) {
 		$gift_category_id = get_option( 'wcgwp_category_id', 0 );
 		if ( intval( $gift_category_id ) > 0 ) {
-			// Na aanklikken van hoofdcategorie is de categorie reeds expliciet opgenomen in 'include'
-			$include_ids = explode( ',', $args['include'] );
-			foreach ( $include_ids as $key => $value ) {
-				if ( $gift_category_id == $value ) {
-					unset( $include_ids[ $key ] );
-					break;
-				}
-			}
-			$args['include'] = implode( ',', $include_ids );
 			$args['exclude'] = $gift_category_id;
+			if ( array_key_exists( 'include', $args ) ) {
+				// Na aanklikken van hoofdcategorie is de categorie reeds expliciet opgenomen in 'include'
+				$include_ids = explode( ',', $args['include'] );
+				foreach ( $include_ids as $key => $value ) {
+					if ( $gift_category_id == $value ) {
+						unset( $include_ids[ $key ] );
+						break;
+					}
+				}
+				$args['include'] = implode( ',', $include_ids );
+			}
 		}
 
 		// write_log( print_r( $args, true ) );
@@ -5340,11 +5342,12 @@
 		$cart_sorted = $cart->cart_contents;
 		$glass_items = array();
 		$plastic_items = array();
+		$gift_items = array();
 
 		foreach ( $cart->cart_contents as $cart_item_key => $cart_item ) {
 			if ( ob2c_product_is_gift_wrapper( $cart_item ) ) {
 				// Sla het item van de cadeauverpakking op en verwijder het
-				$gift_item = $cart_item;
+				$gift_items[ $cart_item_key ] = $cart_item;
 				unset( $cart_sorted[ $cart_item_key ] );
 			}
 
@@ -5359,15 +5362,8 @@
 			}
 		}
 
-		$cart_sorted = array_merge( $cart_sorted, $glass_items, $plastic_items );
-
-		if ( isset( $gift_item ) ) {
-			// Voeg de cadeauverpakking opnieuw toe helemaal achteraan (indien het voorkwam)
-			$cart_sorted[ $cart_item_key ] = $gift_item;
-		}
-
 		// Vervang de itemlijst door de nieuwe array
-		$cart->set_cart_contents( $cart_sorted );
+		$cart->set_cart_contents( array_merge( $cart_sorted, $glass_items, $plastic_items, $gift_items ) );
 	}
 
 	// Toon leeggoed niet in de mini-cart (maar wordt wel meegeteld in subtotaal!)
