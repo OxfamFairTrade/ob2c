@@ -71,14 +71,33 @@
 	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
 	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
 
-	// Laat lokale beheerders enkel lokale producten verwijderen (eventueel vervangen door 'pre_trash_post'-filter, maar die eindigt ook gewoon met wp_die() ...)
-	add_action( 'wp_trash_post', 'disable_manual_product_removal', 10, 1 );
+	// Laat lokale beheerders enkel lokale producten verwijderen
+	// Eventueel vervangen door 'pre_trash_post'-filter, maar die eindigt ook gewoon met wp_die() ...
+	add_action( 'wp_trash_post', 'ob2c_disable_national_product_removal', 10, 1 );
 
-	function disable_manual_product_removal( $post_id ) {
-		if ( get_post_type( $post_id ) == 'product' ) {
+	function ob2c_disable_national_product_removal( $post_id ) {
+		if ( get_post_type( $post_id ) === 'product' ) {
 			if ( ! wp_doing_cron() and ! current_user_can('update_core') ) {
 				if ( ! in_array( get_post_field( 'post_author', $post_id ), get_local_manager_user_ids() ) ) {
 					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van nationale producten door lokale beheerders niet toegestaan! Oude producten worden verwijderd van zodra de laatst uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn.<br/><br/>Keer terug naar %s of mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="'.wp_get_referer().'">de vorige pagina</a>', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
+				}
+			}
+		}
+	}
+
+	// Verwijder het gekoppelde packshot
+	add_action( 'before_delete_post', 'ob2c_delete_coupled_packshot', 10, 1 );
+
+	function ob2c_delete_coupled_packshot( $post_id ) {
+		if ( get_post_type( $post_id ) === 'product' ) {
+			if ( has_post_thumbnail( $post_id ) ) {
+				$logger = wc_get_logger();
+				$context = array( 'source' => 'Oxfam Cleanup' );
+				
+				// Wis het packshot dat aan het product gekoppeld is
+				$attachment_id = intval( get_post_thumbnail_id( $post_id ) );
+				if ( $attachment_id > 0 and wp_delete_attachment( $attachment_id, true ) ) {
+					$logger->debug( 'Deleted packshot for SKU '.get_post_meta( $post_id, '_sku', true ), $context );
 				}
 			}
 		}
@@ -1137,13 +1156,36 @@
 		}
 
 		// Verhinder het indexeren van lokale productpagina's (zorgt voor enorm veel duplicate content)
+		// if ( ! is_main_site() ) {
+		// 	if ( is_product() ) {
+		// 		wp_no_robots();
+		// 	}
+		// }
+	}
+
+	// Vervangen canonical tag door hoofdproduct bij nationale producten
+	add_filter( 'get_canonical_url', function( $url, $post ) {
 		if ( ! is_main_site() ) {
-			if ( is_product() ) {
-				// Eventueel niet doen bij lokaal assortiment? 
-				wp_no_robots();
+			if ( get_post_type( $post ) === 'product' ) {
+				if ( is_national_product( $post->ID ) ) {
+					$national_post_id = get_meta( $post->ID, '_woonet_network_is_child_product_id', true );
+					switch_to_blog(1);
+					$url = get_permalink( $national_post_id );
+					restore_current_blog();
+				}
 			}
 		}
-	}
+		return $url;
+	} );
+
+	// Verbeter de gestructureerde productdata voor Google
+	add_filter( 'woocommerce_structured_data_product', function( $markup, $product ) {
+		if ( is_main_site() ) {
+			$markup['sku'] = $product->get_meta('_shopplus_code');
+			$markup['gtin'] = $product->get_meta('_cu_ean');
+		}
+		return $markup;
+	} );
 
 	// Activeer Google Tag Manager (no JS)
 	add_action( 'wp_head', 'add_google_tag_manager_no_js', 100 );
@@ -1462,26 +1504,6 @@
 		return $listing_template;
 	}
 
-	// Voorbeeld van 'featured' winkels: https://wpstorelocator.co/document/create-featured-store-that-shows-up-first-in-search-results/
-	add_filter( 'wpsl_store_data', 'wpsl_change_results_sorting', 1000 );
-
-	function wpsl_change_results_sorting( $store_meta ) {
-		$custom_sort = array();
-		foreach ( $store_meta as $key => $row ) {
-			// In plaats van sorteren op 'distance'
-			// Key bestaat niet indien de winkel geen webshop heeft!
-			$custom_sort[ $key ] = ! empty( $row['webshop'] ) ? $row['webshop'] : '';
-			
-			// Formatteer de afstand op z'n Belgisch
-			$store_meta[ $key ]['distance'] = round( $row['distance'], 0 );
-		}
-
-		// Winkels zonder webshop-URL (= lege string) belanden onderaan
-		// array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_meta );
-		// write_log( print_r( $store_meta, true ) );
-		return $store_meta;
-	}
-
 	add_filter( 'wpsl_store_meta', 'wpsl_add_delivery_parameters_to_meta', 2 );
 
 	function wpsl_add_delivery_parameters_to_meta( $store_meta, $store_id = 0 ) {
@@ -1519,12 +1541,45 @@
 		return $store_meta;
 	}
 
+	// Voorbeeld van 'featured' winkels: https://wpstorelocator.co/document/create-featured-store-that-shows-up-first-in-search-results/
+	add_filter( 'wpsl_store_data', 'wpsl_change_results_sorting', 1000 );
+
+	function wpsl_change_results_sorting( $store_data ) {
+		$custom_sort = array();
+		foreach ( $store_data as $key => $row ) {
+			// In plaats van sorteren op 'distance'
+			// Key bestaat niet indien de winkel geen webshop heeft!
+			$custom_sort[ $key ] = ! empty( $row['webshop'] ) ? $row['webshop'] : '';
+			
+			// Formatteer de afstand op z'n Belgisch
+			$store_data[ $key ]['distance'] = round( $row['distance'], 0 );
+		}
+
+		// Winkels zonder webshop-URL (= lege string) onderaan plaatsen
+		// Nogal drastisch, beter om enkel de thuisleverwinkel naar boven te trekken?
+		// array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_data );
+		
+		if ( current_user_can('update_core') ) {
+			write_log( print_r( $store_data, true ) );
+		}
+		return $store_data;
+	}
+
 	// Deze filters zullen misschien van pas komen indien er geen enkel resultaat gevonden werd
 	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
 	// add_filter( 'wpsl_sql_placeholder_values', 'debug_no_results_for_antwerp', 10, 1 );
 	
 	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
-		write_log("Geen enkele winkel gevonden binnen de 30 kilometer!");
+		write_log("Geen enkele winkel gevonden binnen de 50 kilometer!");
+		
+		// @toDo: Injecteer de thuisleverwinkel, ongeacht de afstand
+		$store_data = array(
+			'name' => 'Testwinkel',
+		); 
+		
+		if ( current_user_can('update_core') ) {
+			write_log( print_r( $store_data, true ) );
+		}
 		return $store_data;
 	}
 
@@ -1562,12 +1617,12 @@
 	}
 
 	// Kan nog van pas komen om gewenst artikelnummer door te geven aan subsite
-	function append_get_parameter_to_href( $str, $get_param ) {
-		if ( isset( $_GET[$get_param] ) ) {
+	function append_get_parameter_to_href( $string, $key ) {
+		if ( isset( $_GET[ $key ] ) ) {
 			// Check inbouwen op reeds aanwezige parameters in $2-fragment? 
-			$str = preg_replace( '/<a(.*)href="([^"]*)"(.*)>/','<a$1href="$2?'.$get_param.'='.$_GET[$get_param].'"$3>', $str );
+			$string = preg_replace( '/<a(.*)href="([^"]*)"(.*)>/','<a$1href="$2?'.$key.'='.$_GET[ $key ].'"$3>', $string );
 		}
-		return $str;
+		return $string;
 	}
 
 
@@ -2327,7 +2382,7 @@
 		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
 		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_weight', '_length', '_width', '_height', '_thumbnail_id', '_force_sell_synced_ids', '_product_attributes' );
 		// Deze actie vuurt bij 'single value meta keys' enkel indien er een wezenlijke wijziging was, dus check hoeft niet meer
-		if ( get_post_type($post_id) === 'product' and in_array( $meta_key, $watched_metas ) ) {
+		if ( get_post_type( $post_id ) === 'product' and in_array( $meta_key, $watched_metas ) ) {
 			// Schrijf weg in log per weeknummer (zonder leading zero's)
 			$user = wp_get_current_user();
 			$str = date_i18n('d/m/Y H:i:s') . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . $user->user_firstname . "\t" . $meta_key . " gewijzigd in " . serialize($new_meta_value) . "\t" . get_the_title( $post_id ) . "\n";
@@ -6620,9 +6675,9 @@
 			// 	echo '<p>Mails naar Microsoft-adressen (@hotmail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook beschikbaar voor thuislevering). Door minstens één product op voorraad te zetten activeer je de module. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden. Opmerking: indien je thuislevering van breekbare goederen inschakelde onder '<a href="admin.php?page=oxfam-options">Winkelgegevens</a>', zal ook de geschenkmand thuisgeleverd kunnen worden.</a></p>';
-				// echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook beschikbaar voor thuislevering). Door minstens één product op voorraad te zetten activeer je de module. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden. Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</a></p>';
+				echo '</div>';
 				echo '<div class="notice notice-success">';
 					// echo '<p>De nieuwe assortimentsdoos thee werd toegevoegd (opgelet, iets lagere prijs dan de voorgaande referentie!), samen met de doppers en wasnoten:</p><ul style="margin-left: 2em; column-count: 2;">';
 					// 	$skus = array( 23508, 12034, 12076, 12093, 12094, 12095, 12108, 48566, 48712, 65762, 87142, 87143, 87144, 87169, 87170, 87171, 87172, 87231, 87232, 87233, 87234, 91702, 91703, 91704 );
@@ -6639,7 +6694,7 @@
 					// 	echo 'Opgelet: om te vermijden dat al deze producten als \'nieuw\' zouden verschijnen, kreeg de non-food als creatiedatum de dag van aanmaak in fairtradecrafts.be mee. Hierdoor verschijnen deze producten niét in het blauw onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					// }
 					// echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-					echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit begin januari gebeuren, samen met de levering in de winkel. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ...</p>';
+					echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit begin januari gebeuren, samen met de levering in de winkel. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-december-update-wijnduo-s.html" target="_blank">decemberpromo\'s</a> werden geactiveerd in alle webshops. Ook de <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> blijven actief tot en met 31 december. Creditering verloopt ook voor online wijnduo\'s via het turfblad in de winkel. Raadpleeg indien nodig <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a>.</p>';
@@ -7189,6 +7244,11 @@
 
 	// Kan zowel productobject als post-ID ontvangen
 	function is_national_product( $object ) {
+		if ( is_main_site() ) {
+			// Producten op het hoofdniveau zijn per definitie nationaal!
+			return true;
+		}
+
 		if ( $object instanceof WC_Product ) {
 			return ( intval( $object->get_meta('_woonet_network_is_child_site_id') ) === 1 );
 		} else {

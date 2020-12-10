@@ -135,6 +135,13 @@
 					</div>
 				<?php endif; ?>
 
+				<?php if ( intval( $product->get_meta('_multiple') ) > 1 ) : ?>
+					<div id="product-multiple" class="product-info-panel multiple">
+						<h4>Bulkverpakking</h4>
+						<p><?php echo 'Bevat '.$product->get_meta('_multiple').' stuks'; ?></p>
+					</div>
+				<?php endif; ?>
+
 				<?php
 					if ( $featured_partner ) {
 						get_template_part( 'template-parts/woocommerce/single-product/ingredients' );
