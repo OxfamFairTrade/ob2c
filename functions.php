@@ -1170,7 +1170,7 @@
 		if ( ! is_main_site() ) {
 			if ( get_post_type( $post ) === 'product' ) {
 				if ( is_national_product( $post->ID ) ) {
-					$national_post_id = get_meta( $post->ID, '_woonet_network_is_child_product_id', true );
+					$national_post_id = get_post_meta( $post->ID, '_woonet_network_is_child_product_id', true );
 					switch_to_blog(1);
 					$url = get_permalink( $national_post_id );
 					restore_current_blog();
