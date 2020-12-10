@@ -1,0 +1,57 @@
+
+
+// Widgets
+// --------------------------------------------------
+
+.nm-footer-widgets {
+  width: 1370px;
+  margin: 0 auto;
+
+  @media (max-width: 1600px) {
+    width: 1170px;
+  }
+
+  @media (max-width: 1200px) {
+    width: 970px;
+  }
+
+  @media (max-width: 991px) {
+    width: 750px;
+  }
+
+  @media (max-width: 767px) {
+    width: 100%;
+  }
+
+
+  &.has-border {
+    padding: 2em 0;
+    border-top: 1px solid $light-grey;
+  }
+
+  a {
+    color: $oxfam-green !important;
+  }
+
+  > .nm-footer-widgets-inner {
+    > .nm-row {
+      padding: 0;
+
+      > .col-xs-12 {
+        padding: 0 !important;
+
+        > .nm-footer-block-grid {
+          > .widget {
+            > .textwidget {
+              > .nm-feature {
+                @media (max-width: 767px) {
+                  padding: 0 20px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -70,8 +70,8 @@
 						if ( $order->get_meta('is_b2b_sale') !== 'yes' and $order->get_meta('estimated_delivery') !== '' ) {
 							// Check of de deadline al gepasseerd is
 							if ( current_time('timestamp') > $order->get_meta('estimated_delivery') ) {
-								// Verstuur meldingen slechts om de 2 werkdagen
-								if ( $order->get_meta('_overdue_reminder_sent') === '' or $order->get_meta('_overdue_reminder_sent') < strtotime('-2 weekdays') ) {
+								// Verstuur meldingen slechts om de 3 werkdagen
+								if ( $order->get_meta('_overdue_reminder_sent') === '' or $order->get_meta('_overdue_reminder_sent') < strtotime('-3 weekdays') ) {
 									echo $order->get_order_number().'<br/>';
 									$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$order->get_meta('_excel_file_name');
 									$body = '<html><p>Opgelet: bestelling '.$order->get_order_number().' zou tegen '.date_i18n( 'd/m/Y H:i', $order->get_meta('estimated_delivery') ).' geleverd worden maar het order is nog niet als afgerond gemarkeerd in de webshop! Hierdoor blijft de klant online in het ongewisse. Gelieve actie te ondernemen.</p><p><a href="'.$order->get_edit_order_url().'" target="_blank">Bekijk het order in de back-end (inloggen vereist) &raquo;</a></p><p>&nbsp;</p><p><i>Dit is een automatisch bericht.</i></p></html>';

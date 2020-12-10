@@ -18,6 +18,10 @@ body {
   letter-spacing: 0.02em;
   letter-spacing: 0.34px;
 
+  @media (max-width: 767px) {
+    overflow-x: hidden;
+  }
+
   &.active {
     overflow: hidden;
 

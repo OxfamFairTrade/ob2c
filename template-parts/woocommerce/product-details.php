@@ -1,7 +1,7 @@
 <?php 
 	global $product, $partners, $featured_partner;
 	
-	// Nieuwe globals, te vervangen door template parameters (WP 5.5+)
+	// @toDo: Globals vervangen door template parameters (WP 5.5+)
 	global $food_api_labels, $oft_quality_data;
 
 	// Definitie van labels en verplichte voedingswaarden BEETJE AMBETANT DAT WE DIT HIER OOK AL NODIG HEBBEN ...
@@ -25,6 +25,7 @@
 	if ( false === ( $oft_quality_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
 		// Haal de kwaliteitsdata op indien een OFT product-ID beschikbaar is (+ uitsluiten non-food?)
 		if ( intval( $product->get_meta('oft_product_id') ) > 0 ) {
+			// @toDo: Upgrade naar v3 van zodra OFT-site up to date?
 			$base = 'https://www.oxfamfairtrade.be/wp-json/wc/v2';
 			$response = wp_remote_get( $base.'/products/'.$product->get_meta('oft_product_id').'?consumer_key='.OFT_WC_KEY.'&consumer_secret='.OFT_WC_SECRET );
 			
@@ -58,8 +59,38 @@
 					if ( $featured_partner !== false ) {
 						get_template_part( 'template-parts/woocommerce/single-product/featured-partner' );
 					} else {
-						// Toon de herkomstinfo en voedingsinfo hier pas (om het gat op te vullen)
-						?>
+						if ( ! is_national_product( $product->get_id() ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
+							// Toon de lange beschrijving bij lokale producten altijd (indien beschikbaar)
+							?>
+							<div class="col-row">
+								<div class="col-md-12">
+									<?php if ( strlen( $product->get_description() ) > 5 ) : ?>
+										<h3>Beschrijving</h3>
+										<div class="product-text-block woocommerce-product-details__long-description">
+											<?php echo $product->get_description(); ?>
+										</div>
+									<?php endif; ?>
+									<?php
+										if ( $product->get_attribute('merk') !== '' ) {
+											if ( false !== ( $term = get_term_by( 'name', $product->get_attribute('merk'), 'pa_merk' ) ) ) {
+												if ( strlen( $term->description ) > 5 ) {
+												?>
+													<h3>Over <?php echo $product->get_attribute('merk'); ?></h3>
+													<div class="product-text-block woocommerce-product-details__brand">
+														<?php echo $term->description; ?>
+													</div>
+												<?php
+												}
+											}
+										}
+									?>
+								</div>
+							</div>
+							<?php
+						} else {
+							// Toon de herkomstinfo en voedingsinfo hier pas (om het gat op te vullen)
+							// Deze gegevens ontbreken sowieso bij lokale producten en crafts, dus mag weggelaten worden
+							?>
 							<div class="col-row">
 								<div class="col-md-6">
 									<?php
@@ -73,7 +104,8 @@
 									?>
 								</div>
 							</div>
-						<?php
+							<?php
+						}
 					}
 				?>
 			</div>
@@ -81,6 +113,13 @@
 			<div class="col-md-4 col-md-pull-8 extra-info">
 				<h3>Extra informatie</h3>
 				<?php get_template_part( 'template-parts/woocommerce/product-icons' ); ?>
+
+				<?php if ( $product->has_dimensions() and ( ! is_national_product( $product->get_id() ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) ) : ?>
+					<div id="product-dimensions" class="product-info-panel dimensions">
+						<h4>Afmetingen</h4>
+						<p><?php echo wc_format_dimensions( $product->get_dimensions( false ) ); ?></p>
+					</div>
+				<?php endif; ?>
 
 				<?php if ( $product->get_attribute('merk') !== '' ) : ?>
 					<div id="product-brand" class="product-info-panel brand">
