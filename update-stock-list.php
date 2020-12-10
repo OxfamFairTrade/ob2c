@@ -126,139 +126,8 @@
 				
 				echo $content;
 				
-				echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> bestelbaar</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan op de homepage.</p>';
-				
+				echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> bestelbaar</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan op de homepage.</p>';	
 			}
-
-			add_action('admin_footer', 'oxfam_action_javascript');
-
-			function oxfam_action_javascript() { ?>
-				<script type="text/javascript">
-					jQuery(document).ready(function() {
-						// Check wijzigingen op selects (= voorraad) en checkboxes (= in de kijker)
-						jQuery("#oxfam-products").find(".toggle").on( 'change', function() {
-							var parts = jQuery(this).attr('id').split("-");
-							var id = parts[0];
-							var meta = parts[1];
-							if ( meta == 'featured' ) {
-								ajaxCall(id, meta, jQuery(this).is(":checked"));
-							}
-							if ( meta == 'stockstatus' ) {
-								// TO DO: Validatie toevoegen op geldigheid waarde (kan gemanipuleerd worden in HTML)
-								var value = jQuery(this).find(":selected").val();
-								ajaxCall( id, meta, value );
-							}
-						});
-
-						// Reset teller
-						var tries = 0;
-
-						// Verwerk de individuele AJAX-call
-						function ajaxCall(id, meta, value) {
-							jQuery("#"+id).find(".output").html("Aan het opslaan ...");
-
-							var input = {
-								'action': 'oxfam_stock_action',
-								'id': id,
-								'meta': meta,
-								'value': value,
-							};
-
-							jQuery.ajax({
-								type: 'POST',
-								url: ajaxurl,
-								data: input,
-								dataType: 'html',
-								success: function(msg) {
-									tries = 0;
-									
-									if ( msg != 'ERROR' ) {
-										// Pas de gekleurde rand aan na een succesvolle voorraadwijziging
-										if ( value == 'onbackorder' ) {
-											jQuery("#"+id).find('.border').removeClass('color-red color-green').addClass('color-orange');
-										} else if ( value == 'outofstock' ) {
-											jQuery("#"+id).find('.border').removeClass('color-green color-orange').addClass('color-red');
-										} else if ( value == 'instock' ) {
-											jQuery("#"+id).find('.border').removeClass('color-red color-orange').addClass('color-green');
-										}
-
-										// Werk de tellers bij
-										jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border.color-green").length);
-										jQuery(".onbackorder-cnt").html(jQuery("#oxfam-products").find(".border-color-orange").length);
-										jQuery(".featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
-									} else {
-										msg = 'Niets gedaan!';
-									}
-
-									jQuery("#"+id).find(".output").html(msg).delay(5000).animate({
-										opacity: 0,
-									}, 1000, function(){
-										jQuery(this).html("&nbsp;").css('opacity', 1);
-									});
-								},
-								error: function(jqXHR, statusText, errorThrown) {
-									tries++;
-									if ( tries < 10 ) {
-										ajaxCall(id, meta, value);
-									} else {
-										// Val terug op de tegengestelde waarde
-										if ( value == 'outofstock' || value == 'onbackorder' ) {
-											jQuery(this).val('instock');
-										} else if ( value == 'instock' ) {
-											jQuery(this).val('outofstock');
-										} else {
-											jQuery(this).prop("checked", !jQuery(this).is(":checked") );
-										}
-
-										tries = 0;
-
-										jQuery("#"+id).find(".output").html("Wijzigingen mislukt!").delay(15000).animate({
-											opacity: 0,
-										}, 1000, function(){
-											jQuery(this).html("&nbsp;").css('opacity', 1);
-										});
-									}
-								},
-							});
-						}
-
-						jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
-							var go = confirm("Weet je zeker dat je dit wil doen?");
-							if ( go == true ) {
-								jQuery(this).parent().parent().find(".output").html("Bezig met verwerken, wacht op automatische refresh ...");
-
-								var input = {
-									'action': 'oxfam_bulk_stock_action',
-									'status': jQuery(this).find(":selected").val(),
-									'assortment': '<?php echo $current_tab; ?>',
-								};
-
-								jQuery.ajax({
-									type: 'POST',
-									url: ajaxurl,
-									data: input,
-									dataType: 'html',
-									success: function(msg) {
-										if ( msg.substr(0, 5) == 'ERROR' ) {
-											alert("Er liep iets mis, probeer het later eens opnieuw! "+msg);
-											jQuery(this).val('');
-										} else {
-											window.location.reload();
-										}
-									},
-									error: function(jqXHR, statusText, errorThrown) {
-										alert("Er liep iets mis, probeer het later eens opnieuw!");
-										jQuery(this).val('');
-									},
-								});
-							} else {
-								alert("Begrepen, we wijzigen niets!");
-								jQuery(this).val('');
-							}
-						});
-					});
-				</script>
-			<?php }
 		?>
 		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black;">
 			<div class="cell" style="width: 3%;"></div>
@@ -277,3 +146,129 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		// Check wijzigingen op selects (= voorraad) en checkboxes (= in de kijker)
+		jQuery("#oxfam-products").find(".toggle").on( 'change', function() {
+			var parts = jQuery(this).attr('id').split("-");
+			var id = parts[0];
+			var meta = parts[1];
+			if ( meta == 'featured' ) {
+				ajaxCall(id, meta, jQuery(this).is(":checked"));
+			}
+			if ( meta == 'stockstatus' ) {
+				// TO DO: Validatie toevoegen op geldigheid waarde (kan gemanipuleerd worden in HTML)
+				var value = jQuery(this).find(":selected").val();
+				ajaxCall( id, meta, value );
+			}
+		});
+
+		// Reset teller
+		var tries = 0;
+
+		// Verwerk de individuele AJAX-call
+		function ajaxCall(id, meta, value) {
+			jQuery("#"+id).find(".output").html("Aan het opslaan ...");
+
+			var input = {
+				'action': 'oxfam_stock_action',
+				'id': id,
+				'meta': meta,
+				'value': value,
+			};
+
+			jQuery.ajax({
+				type: 'POST',
+				url: ajaxurl,
+				data: input,
+				dataType: 'html',
+				success: function(msg) {
+					tries = 0;
+					
+					if ( msg != 'ERROR' ) {
+						// Pas de gekleurde rand aan na een succesvolle voorraadwijziging
+						if ( value == 'onbackorder' ) {
+							jQuery("#"+id).find('.border').removeClass('color-red color-green').addClass('color-orange');
+						} else if ( value == 'outofstock' ) {
+							jQuery("#"+id).find('.border').removeClass('color-green color-orange').addClass('color-red');
+						} else if ( value == 'instock' ) {
+							jQuery("#"+id).find('.border').removeClass('color-red color-orange').addClass('color-green');
+						}
+
+						// Werk de tellers bij
+						jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border.color-green").length);
+						jQuery(".onbackorder-cnt").html(jQuery("#oxfam-products").find(".border-color-orange").length);
+						jQuery(".featured-cnt").html(jQuery("#oxfam-products").find("input[type=checkbox]:checked").length);
+					} else {
+						msg = 'Niets gedaan!';
+					}
+
+					jQuery("#"+id).find(".output").html(msg).delay(5000).animate({
+						opacity: 0,
+					}, 1000, function(){
+						jQuery(this).html("&nbsp;").css('opacity', 1);
+					});
+				},
+				error: function(jqXHR, statusText, errorThrown) {
+					tries++;
+					if ( tries < 10 ) {
+						ajaxCall(id, meta, value);
+					} else {
+						// Val terug op de tegengestelde waarde
+						if ( value == 'outofstock' || value == 'onbackorder' ) {
+							jQuery(this).val('instock');
+						} else if ( value == 'instock' ) {
+							jQuery(this).val('outofstock');
+						} else {
+							jQuery(this).prop("checked", !jQuery(this).is(":checked") );
+						}
+
+						tries = 0;
+
+						jQuery("#"+id).find(".output").html("Wijzigingen mislukt!").delay(15000).animate({
+							opacity: 0,
+						}, 1000, function(){
+							jQuery(this).html("&nbsp;").css('opacity', 1);
+						});
+					}
+				},
+			});
+		}
+
+		jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
+			var go = confirm("Weet je zeker dat je dit wil doen?");
+			if ( go == true ) {
+				jQuery(this).parent().parent().find(".output").html("Bezig met verwerken, wacht op automatische refresh ...");
+
+				var input = {
+					'action': 'oxfam_bulk_stock_action',
+					'status': jQuery(this).find(":selected").val(),
+					'assortment': '<?php echo $current_tab; ?>',
+				};
+
+				jQuery.ajax({
+					type: 'POST',
+					url: ajaxurl,
+					data: input,
+					dataType: 'html',
+					success: function(msg) {
+						if ( msg.substr(0, 5) == 'ERROR' ) {
+							alert("Er liep iets mis, probeer het later eens opnieuw! "+msg);
+							jQuery(this).val('');
+						} else {
+							window.location.reload();
+						}
+					},
+					error: function(jqXHR, statusText, errorThrown) {
+						alert("Er liep iets mis, probeer het later eens opnieuw!");
+						jQuery(this).val('');
+					},
+				});
+			} else {
+				alert("Begrepen, we wijzigen niets!");
+				jQuery(this).val('');
+			}
+		});
+	});
+</script>

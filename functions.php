@@ -5716,7 +5716,7 @@
 		return $output;
 	}
 
-	function ob2c_change_regular_products_stock_status( $status, $assortment = 'general' ) {			
+	function ob2c_change_regular_products_stock_status( $status, $assortment ) {			
 		if ( ! array_key_exists( $status, wc_get_product_stock_status_options() ) ) {
 			return 'ERROR - INVALID STOCK STATUS PASSED';
 		}
