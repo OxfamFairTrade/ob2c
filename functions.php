@@ -1158,15 +1158,13 @@
 			}
 		}
 
-		// Verhinder het indexeren van lokale productpagina's (zorgt voor enorm veel duplicate content)
+		// Verhinder indexeren van bepaalde lokale pagina's
 		// if ( ! is_main_site() ) {
-		// 	if ( is_product() ) {
-		// 		wp_no_robots();
-		// 	}
+		// 	wp_no_robots();
 		// }
 	}
 
-	// Vervang canonical tag door hoofdproduct bij nationale producten
+	// Vervang canonical tag door hoofdproduct bij nationale producten (duplicate content vermijden!)
 	add_filter( 'get_canonical_url', 'ob2c_tweak_canonical_url', 10, 2 );
 
 	function ob2c_tweak_canonical_url( $url, $post ) {

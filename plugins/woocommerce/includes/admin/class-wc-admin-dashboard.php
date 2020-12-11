@@ -153,8 +153,10 @@ if ( ! class_exists( 'WC_Admin_Dashboard', false ) ) :
 			}
 
 			$this->status_widget_order_rows();
-			// GEWIJZIGD: Heeft weinig zin zo lang we geen voorraadbeheer doen, maar laat voorlopig staan
-			$this->status_widget_stock_rows();
+			// GEWIJZIGD: Heeft geen zin zo lang we geen voorraadbeheer doen
+			if ( get_option('woocommerce_manage_stock') === 'yes' ) {
+				$this->status_widget_stock_rows();
+			}
 
 			do_action( 'woocommerce_after_dashboard_status_widget', $reports );
 			echo '</ul>';
