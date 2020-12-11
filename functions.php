@@ -819,12 +819,25 @@
 	add_action( 'update_option_wcgwp_show_thumb', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wcgwp_textarea_limit', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_heartbeat_control_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie-payments-for-woocommerce_customer_details', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie-payments-for-woocommerce_payment_description', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie-payments-for-woocommerce_payment_locale', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie-payments-for-woocommerce_order_status_cancelled_payments', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_bancontact_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_belfius_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_creditcard_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_ideal_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_inghomepay_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_kbc_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_kbc_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_woocommerce_gateway_order', 'sync_settings_to_subsites', 10, 3 );
 	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( get_current_blog_id() === 1 and current_user_can('update_core') ) {
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'Oxfam Options Sync' );
+			$updates_sites = array();
 			$sites = get_sites( array( 'site__not_in' => array(1) ) );
 			// write_log( print_r( $new_value, true ) );
 			
@@ -852,16 +865,17 @@
 					$success = $wpdb->update( $wpdb->prefix.'options', array( 'option_value' => serialize( $new_value ) ), array( 'option_name' => $option ) );
 				} else {
 					if ( update_option( $option, $new_value ) ) {
-						$success = true;
+						$updated_sites[] = $site->path;
 					}
 				}
 				
 				restore_current_blog();
+			}
 
-				// Log op het hoofdniveau!
-				if ( $success ) {
-					$logger->info( "Setting '".$option."' synced to subsite ".$site->path, $context );
-				}
+			if ( count( $updated_sites ) > 0 ) {
+				$logger->info( "Setting '".$option."' synced to subsites ".implode( ', ', $updated_sites ), $context );
+			} else {
+				$logger->warning( "Setting '".$option."' could not be synced to any subsite", $context );
 			}
 		}
 	}
@@ -6683,7 +6697,7 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-info">';
-					echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook beschikbaar voor thuislevering). Door minstens één product op voorraad te zetten activeer je de module. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden. Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</a></p>';
+					echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden. Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</a></p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					// echo '<p>De nieuwe assortimentsdoos thee werd toegevoegd (opgelet, iets lagere prijs dan de voorgaande referentie!), samen met de doppers en wasnoten:</p><ul style="margin-left: 2em; column-count: 2;">';
