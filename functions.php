@@ -1188,14 +1188,10 @@
 
 	function ob2c_tweak_structured_data( $markup, $product ) {
 		if ( is_main_site() ) {
-			$markup['brand'] = $product->get_attribute('merk');
 			$markup['sku'] = $product->get_meta('_shopplus_code');
-			$markup['productID'] = $product->get_sku();
 			$markup['gtin'] = $product->get_meta('_cu_ean');
-			$markup['image'] = $product->get_image( 'woocommerce_thumbnail', array(), false );
-		}
-		if ( current_user_can('update_core') ) {
-			write_log( print_r( $markup, true ) );
+			$markup['brand'] = $product->get_attribute('merk');
+			$markup['image'] =  wp_get_attachment_image_url( $product->get_image_id(), 'woocommerce_thumbnail' );
 		}
 		return $markup;
 	}
