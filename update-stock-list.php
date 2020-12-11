@@ -24,11 +24,13 @@
 		?>
 	</nav>
 
-	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Met de knop onderaan de pagina kun je alle producten in één keer in/uit voorraad halen. Een bevestigingsvenster behoedt je daarbij voor onbedoelde wijzigingen. <b>Tip: met Ctrl+F kun je snel zoeken naar een product.</b></p>
+	<p>Vink een product aan om het op de homepage te plaatsen of selecteer de juiste voorraadstatus om het in of uit de online verkoop te halen. Je aanpassing wordt onmiddellijk opgeslagen! Met de knop onderaan de pagina kun je alle producten op dit tabblad in één keer in/uit voorraad halen. Een bevestigingsvenster behoedt je daarbij voor onbedoelde wijzigingen. <b>Tip: met Ctrl+F kun je snel zoeken naar een product.</b></p>
 
-	<p>Nieuwe producten, die in de loop van de voorbije 3 maanden beschikbaar werden op BestelWeb, hebben <span style="background-color: lightskyblue;">een blauwe achtergrond</span>. Ze verschijnen aanvankelijk als 'niet in assortiment' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden. Producten die momenteel onbeschikbaar zijn op BestelWeb krijgen <span style="background-color: gold;">een gele achtergrond</span>, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt.</p>
+	<p>Recente producten met een publicatiedatum die in de voorbije 3 maanden ligt, hebben <span style="background-color: lightskyblue;">een blauwe achtergrond</span> en krijgen in de front-end het 'nieuw'-label. Ze verschijnen aanvankelijk als 'niet in assortiment' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden. Producten die voor langere tijd onbeschikbaar zijn op BestelWeb krijgen <span style="background-color: gold;">een gele achtergrond</span>, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt.</p>
 
-	<p>Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
+	<?php if ( $current_tab !== 'local' ) : ?>
+		<p>Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
+	<?php endif; ?>
 
 	<div id="oxfam-products" style="border-spacing: 0 10px;">
 		<?php
