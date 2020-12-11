@@ -33,7 +33,7 @@ if ( is_main_site() ) {
 			//  Geef 2 weken buffer om lokale voorraad aan te leggen
 			echo '<span class="soon-available">Weldra online beschikbaar</span>';
 		} else {
-			echo '<a rel="nofollow" href="#" class="button product_type_simple store-selector-open"></a>';
+			echo '<a href="#" class="button product_type_simple store-selector-open"></a>';
 		}
 	} else {
 		// Het product wordt niet online verkocht (o.b.v. aanwezigheid in webshop Oostende als test case)
@@ -45,7 +45,7 @@ if ( is_main_site() ) {
 		echo 'Tijdelijk niet beschikbaar';
 	} elseif ( $product->is_in_stock() ) {
 		echo apply_filters( 'woocommerce_loop_add_to_cart_link',
-			sprintf( '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',
+			sprintf( '<a rel="nofollow" href="%s" data-quantity="%s" class="%s" %s>%s</a>',
 				esc_url( $product->add_to_cart_url() ),
 				esc_attr( isset( $multiple ) ? $multiple : ( isset( $args['quantity'] ) ? $args['quantity'] : 1 ) ),
 				esc_attr( isset( $args['class'] ) ? $args['class'] : 'button' ),
