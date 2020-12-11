@@ -79,7 +79,7 @@
 		if ( get_post_type( $post_id ) === 'product' ) {
 			if ( ! wp_doing_cron() and ! current_user_can('update_core') ) {
 				if ( ! in_array( get_post_field( 'post_author', $post_id ), get_local_manager_user_ids() ) ) {
-					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van nationale producten door lokale beheerders niet toegestaan! Oude producten worden verwijderd van zodra de laatst uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn.<br/><br/>Keer terug naar %s of mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="'.wp_get_referer().'">de vorige pagina</a>', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
+					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het naar de prullenbak verplaatsen van nationale producten door lokale beheerders niet toegestaan! Oude producten worden verwijderd van zodra de laatst uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn.<br/><br/>Keer terug naar %s of mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="'.wp_get_referer().'">de vorige pagina</a>', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
 				}
 			}
 		}
@@ -90,6 +90,13 @@
 
 	function ob2c_delete_coupled_packshot( $post_id ) {
 		if ( get_post_type( $post_id ) === 'product' ) {
+			if ( ! wp_doing_cron() and ! current_user_can('update_core') ) {
+				if ( ! in_array( get_post_field( 'post_author', $post_id ), get_local_manager_user_ids() ) ) {
+					// In principe kunnen deze producten niet in de prullenbak geraakt zijn, maar kom
+					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het verwijderen van nationale producten door lokale beheerders niet toegestaan! Oude producten worden verwijderd van zodra de laatst uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn.<br/><br/>Keer terug naar %s of mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="'.wp_get_referer().'">de vorige pagina</a>', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
+				}
+			}
+
 			if ( has_post_thumbnail( $post_id ) ) {
 				$logger = wc_get_logger();
 				$context = array( 'source' => 'Oxfam Cleanup' );
