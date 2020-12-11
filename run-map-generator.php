@@ -101,6 +101,18 @@
 				}
 
 				$ll = explode( ',', $oww_store_data['location']['ll'] );
+				
+				if ( array_key_exists( $oww_store_data['id'], $site_ids_vs_blog_ids ) ) {
+					// Dit moét uit de lijst met sites komen (data in OWW-site kan vervuild zijn met andere webshops!)
+					$webshop_url = $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_url'];
+					$webshop_blog_id = $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_id'];
+					$home_delivery = $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['home_delivery'];
+				} else {
+					$webshop_url = '';
+					$webshop_blog_id = '';
+					$home_delivery = false;
+				}
+				
 				$store_args = array(
 					'ID' =>	$wpsl_store_id,
 					'post_title' => $oww_store_data['title']['rendered'],
@@ -117,10 +129,8 @@
 						'wpsl_lng' => $ll[0],
 						'wpsl_phone' => $oww_store_data['location']['telephone'],
 						'wpsl_url' => $oww_store_data['link'],
-						// Dit moét uit de lijst met sites komen (data in OWW-site kan vervuild zijn met andere webshops!)
-						// Dit veroorzaakt notices over onbestaande array keys
-						'wpsl_webshop' => $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_url'],
-						'wpsl_webshop_blog_id' => $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_id'],
+						'wpsl_webshop' => $webshop_url,
+						'wpsl_webshop_blog_id' => $webshop_blog_id,
 						// Vul hier bewust het algemene mailadres in (ook voor winkels mét webshop)
 						'wpsl_email' => $oww_store_data['location']['mail'],
 						// Openingsuren toch internaliseren?
@@ -137,14 +147,19 @@
 					delete_option('oxfam_holidays');
 				}
 
-				// Dit veroorzaakt elke dag een nieuwe '_wp_old_date'-entry ...
 				$result_post_id = wp_insert_post( $store_args );
-				
-				// Winkelcategorie instellen DEPRECATED
-				wp_set_object_terms( $result_post_id, 'afhaling', 'wpsl_store_category', false );
-				if ( $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['home_delivery'] ) {
-					// Tweede categorie instellen indien niet enkel afhaling
-					wp_set_object_terms( $result_post_id, 'levering', 'wpsl_store_category', true );
+				if ( ! is_wp_error( $result_post_id ) ) {
+					// Verwijder de '_wp_old_date'-keys die elke dag toegevoegd worden door wp_insert_post() te gebruiken
+					if ( delete_post_meta( $result_post_id, '_wp_old_date' ) ) {
+						echo "Oude datums verwijderd op post-ID ".$result_post_id."<br/>";
+					}
+
+					// Winkelcategorie instellen DEPRECATED
+					wp_set_object_terms( $result_post_id, 'afhaling', 'wpsl_store_category', false );
+					if ( $home_delivery ) {
+						// Tweede categorie instellen indien niet enkel afhaling
+						wp_set_object_terms( $result_post_id, 'levering', 'wpsl_store_category', true );
+					}
 				}
 			}
 
