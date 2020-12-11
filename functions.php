@@ -2490,7 +2490,7 @@
 			'page',
 			'settings-updated',
 		);
-		$args['admin.php']['oxfam-stock'] = array(
+		$args['admin.php']['oxfam-products-list'] = array(
 			'assortment',
 		);
 		$args['admin.php']['wpml_plugin_log'] = array(
@@ -5689,7 +5689,6 @@
 
 	function custom_oxfam_options() {
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
-		// add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Nationaal assortiment', 'manage_network_users', 'oxfam-products-list-national', 'oxfam_products_list_national_callback' );
 		// add_submenu_page( 'oxfam-products-list', 'Stel de voorraad van je lokale webshop in', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_local_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
