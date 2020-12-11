@@ -1191,6 +1191,9 @@
 			$markup['sku'] = $product->get_meta('_shopplus_code');
 			$markup['gtin'] = $product->get_meta('_cu_ean');
 		}
+		if ( current_user_can('update_core') ) {
+			write_log( print_r( $markup, true ) );
+		}
 		return $markup;
 	}
 
