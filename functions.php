@@ -1190,7 +1190,7 @@
 		if ( is_main_site() ) {
 			$markup['sku'] = $product->get_meta('_shopplus_code');
 			$markup['gtin'] = $product->get_meta('_cu_ean');
-			$markup['brand'] = $product->get_attribute('merk');
+			$markup['brand'] = array( '@type' =>  'Organization', 'name' => $product->get_attribute('merk') );
 			$markup['image'] =  wp_get_attachment_image_url( $product->get_image_id(), 'woocommerce_thumbnail' );
 		}
 		return $markup;
