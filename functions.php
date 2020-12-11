@@ -2490,6 +2490,9 @@
 			'page',
 			'settings-updated',
 		);
+		$args['admin.php']['oxfam-stock'] = array(
+			'assortment',
+		);
 		$args['admin.php']['wpml_plugin_log'] = array(
 			'page',
 			'paged',
