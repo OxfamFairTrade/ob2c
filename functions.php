@@ -1602,7 +1602,24 @@
 		
 		// @toDo: Injecteer de thuisleverwinkel, ongeacht de afstand
 		$store_data = array(
-			'name' => 'Testwinkel',
+			array(
+				'address' => 'Pley 19',
+				'store' => 'Voeren',
+				'id' => 2813,
+				'city' => 'Voeren',
+				'zip' => '3798',
+				'country' => 'België',
+				'lat' => 50.758378,
+				'lng' => 5.762896,
+				'email' => 'voeren@oww.be',
+				'url' => 'https://www.oxfamwereldwinkels.be/winkels/voeren/',
+				'oxfamShopPostId' => 3788,
+				'webshopUrl' => 'https://dev.oxfamwereldwinkels.be/oostende/', 
+				'webshopBlogId' => 23,
+				'pickup' => '<li class="pickup inactive">Afhalen in de winkel</li>',
+				'delivery' => '<li class="delivery inactive">Geen levering aan huis in 4000</li>',
+				'available' => 'yes',
+			),
 		); 
 		
 		if ( current_user_can('update_core') ) {
