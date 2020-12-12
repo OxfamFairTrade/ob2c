@@ -45,20 +45,20 @@
 					$methods = $mollie->availablePaymentMethodsByPartnerId( $partner_id_customer );
 					if ( $methods->resultcode == '10' ) {
 						$lacking = array();
-						write_log( print_r( $methods->services, true ) );
-						$must_be = array( 'mistercash', 'kbc', 'belfius', 'ing', 'creditcard', 'applepay', 'ideal' );
+						// Er bestaat geen aparte service voor Apple Pay, wel voor 'voucher'
+						$must_be = array( 'mistercash', 'kbc', 'belfius', 'inghomepay', 'creditcard', 'ideal' );
 						foreach ( $must_be as $service ) {
 							if ( $methods->services->{$service} == 'false' ) {
 								$lacking[] = $service;
 							}
 						}
 
-						if ( count($lacking) > 0 ) {
+						if ( count( $lacking ) > 0 ) {
 							echo "<tr>";
 								echo "<th class='left' style='color: red;'>Activeer volgende verplichte betaalmethodes:</th>";
 								echo "<td class='right'>";
 									foreach ( $lacking as $service ) {
-										echo strtoupper($service)."&nbsp;&nbsp;&nbsp;";
+										echo strtoupper( $service )."&nbsp;&nbsp;";
 									}
 								echo "</td>";
 							echo "</tr>";	
