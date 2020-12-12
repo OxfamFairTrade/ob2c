@@ -5491,8 +5491,11 @@
 	add_filter( 'woocommerce_add_to_cart_fragments', 'ob2c_update_store_locator_fragments' );
 	
 	function ob2c_update_store_locator_fragments( $fragments ) {
+		ob_start();
 		// Probleem: hoe kunnen we hier altijd de juiste context meegeven?
-		$fragments['div.selected-store.ok'] = get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'sidebar' ) );
+		get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'sidebar' ) );
+		$fragments['div.selected-store.ok'] = ob_get_contents();
+		ob_end_clean();
 		return $fragments;
 	}
 
