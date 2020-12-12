@@ -1604,7 +1604,7 @@
 
 			// HOE LEIDEN WE DIT AF?
 			$postcode = 8400;
-			
+
 			$stores = array();
 			$all_stores_by_postcode = get_webshops_by_postcode(true);
 			if ( array_key_exists( $postcode, $all_stores_by_postcode ) ) {
@@ -7543,7 +7543,7 @@
 		return get_oxfam_shop_data( 'place', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'zipcode', 0, false, $atts['id'] )." ".get_oxfam_shop_data( 'city', 0, false, $atts['id'] );
 	}
 
-	function get_webshops_by_postcode( $return_store_id ) {
+	function get_webshops_by_postcode( $return_store_id = false ) {
 		$global_zips = array();
 		// Negeer afgeschermde en gearchiveerde sites
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
