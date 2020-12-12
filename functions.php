@@ -1594,10 +1594,11 @@
 		// Nogal drastisch, beter om enkel de thuisleverwinkel naar boven te trekken door distance op 0 te zetten?
 		// array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_data );
 
-		if ( ! $results_contain_delivery_store ) {
-			// Injecteer de thuisleverwinkel indien die nog niet tussen de resultaten zit (ongeacht de afstand)
+		// Injecteer de thuisleverwinkel indien die nog niet tussen de resultaten zit (ongeacht de afstand)
+			if ( ! $results_contain_delivery_store ) {
 			// Numerieke keys, dus elementen worden niet overschreven
-			$store_data = array_merge( $store_data, get_default_webshop_for_home_delivery() );
+			// Array wordt niet meer gesorteerd, dus dit bepaalt ook de volgorde
+			$store_data = array_merge( get_default_webshop_for_home_delivery(), $store_data );
 			write_log("Thuisleverwinkel van buiten perimeter toegevoegd!");
 		}
 		
@@ -1634,7 +1635,7 @@
 				if ( array_key_exists( $current_location, $all_stores_by_postcode ) ) {
 					$store = new stdClass();
 					$store->ID = $all_stores_by_postcode[ $current_location ];
-					// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt
+					// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt na sorteren
 					$store->distance = 0;
 					// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
 					
