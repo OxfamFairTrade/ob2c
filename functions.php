@@ -1612,7 +1612,7 @@
 	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
 	
 	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
-		write_log("Geen enkele winkel gevonden binnen de 30 kilometer!");
+		write_log("Geen enkele winkel gevonden binnen de 20 kilometer!");
 		
 		// Injecteer de thuisleverwinkel indien er geen enkele winkel gevonden werd (ongeacht de afstand)
 		$store_data = get_default_webshop_for_home_delivery();
