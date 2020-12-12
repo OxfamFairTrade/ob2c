@@ -108,9 +108,13 @@
 			/* Probeer het huidige pad te bewaren! */
 			var current_url = window.location.href;
 			var current_zip = jQuery('#wpsl-search-input').val();
-			/* Geen enkel de hoofdgemeente mee (nog beter zou zijn om de effectief geselecteerde gemeente door te geven!) */
-			var cities = zips[current_zip].split( " / ", 1 );
-			var url_suffix = '?referralZip=' + current_zip + '&referralCity=' + cities[0];
+			var url_suffix = '?referralZip=' + current_zip;
+			/* Check of de postcode voorkomt in de lijst, anders blokkeert JavaScript op split() */
+			if ( current_zip in zips ) {
+				/* Geef enkel de hoofdgemeente mee (nog beter zou zijn om de effectief geselecteerde gemeente door te geven!) */
+				var cities = zips[current_zip].split( " / ", 1 );
+				url_suffix += '&referralCity=' + cities[0];
+			}
 			if ( urlParams.has('addSkus') ) {
 				url_suffix += '&addSkus=' + urlParams.get('addSkus');
 			}

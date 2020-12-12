@@ -1593,57 +1593,36 @@
 		return $store_data;
 	}
 
-	// Deze filters zullen misschien van pas komen indien er geen enkel resultaat gevonden werd
+	// Injecteer de thuisleverwinkel indien er geen enkele winkel gevonden werd (ongeacht de afstand)
 	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
-	// add_filter( 'wpsl_sql_placeholder_values', 'debug_no_results_for_antwerp', 10, 1 );
 	
 	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
 		write_log("Geen enkele winkel gevonden binnen de 50 kilometer!");
 		
-		// @toDo: Injecteer de thuisleverwinkel, ongeacht de afstand
 		if ( class_exists('WPSL_Frontend') ) {
 			$wpsl_frontend = new WPSL_Frontend();
 			$stores = array();
 
-			$store = new stdClass();
-			$store->lat = 51.226419;
-			$store->lng = 2.909586;
-			$store->ID = 1660;
-			// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt
-			$store->distance = 0;
-			$stores[] = $store;
+			// HOE LEIDEN WE DIT AF?
+			$postcode = 8400;
+			$all_shops_by_postcode = get_shops(true);
+			if ( array_key_exists( $postcode, $all_shops_by_postcode ) ) {
+				$store = new stdClass();
+				$store->ID = $all_shops_by_postcode[ $postcode ];
+				// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt
+				$store->distance = 0;
+				// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
+				$stores[] = $store;
 
-			$store_data = $wpsl_frontend->get_store_meta_data( $stores );
+				// Dit vult alle andere velden aan, ook de dynamische 'delivery'!
+				$store_data = $wpsl_frontend->get_store_meta_data( $stores );
+			}
 		}
-
-		$example_store = array(
-			'address' => 'Pley 19',
-			'store' => 'Voeren',
-			'id' => 2813,
-			'city' => 'Voeren',
-			'zip' => '3798',
-			'country' => 'België',
-			'lat' => 50.758378,
-			'lng' => 5.762896,
-			'email' => 'voeren@oww.be',
-			'url' => 'https://www.oxfamwereldwinkels.be/winkels/voeren/',
-			'oxfamShopPostId' => 3788,
-			'webshopUrl' => 'https://dev.oxfamwereldwinkels.be/oostende/', 
-			'webshopBlogId' => 23,
-			'pickup' => '<li class="pickup inactive">Afhalen in de winkel</li>',
-			'delivery' => '<li class="delivery inactive">Geen levering aan huis in 4000</li>',
-			'available' => 'yes',
-		); 
 		
 		if ( current_user_can('update_core') ) {
 			write_log( print_r( $store_data, true ) );
 		}
 		return $store_data;
-	}
-
-	function debug_no_results_for_antwerp( $values ) {
-		write_log("WP Store Locator Lat-Long Search: ".$values[1].",".$values[2]);
-		return $values;
 	}
 
 	// Voeg o.a. post-ID toe als extra metadata op winkel
@@ -7563,24 +7542,25 @@
 		return get_oxfam_shop_data( 'place', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'zipcode', 0, false, $atts['id'] )." ".get_oxfam_shop_data( 'city', 0, false, $atts['id'] );
 	}
 
-	function get_shops() {
+	function get_shops( $return_blog_id = false ) {
 		$global_zips = array();
 		// Negeer afgeschermde en gearchiveerde sites
-		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
+		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			$local_zips = get_option('oxfam_zip_codes');
 			if ( $local_zips !== false ) {
 				foreach ( $local_zips as $zip ) {
-					if ( isset($global_zips[$zip]) ) {
-						write_log("CONSISTENTIEFOUT BLOG-ID ".$site->blog_id.": Postcode ".$zip." is reeds gelinkt aan ".$global_zips[$zip].'!');
+					if ( $return_blog_id ) {
+						$global_zips[ $zip ] = $site->blog_id;
+					} else {
+						$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;
 					}
-					$global_zips[$zip] = 'https://' . $site->domain . $site->path;
 				}
 			}
 			restore_current_blog();
 		}
-		ksort($global_zips);
+		ksort( $global_zips );
 		return $global_zips;
 	}
 
@@ -7589,9 +7569,9 @@
 			return $map_types;
 		}
 
-		if ( $attrs['maptype'] === 'light_monochrome' and empty($map_types['light_monochrome']) ) {
+		if ( $attrs['maptype'] === 'light_monochrome' and empty( $map_types['light_monochrome'] ) ) {
 			$custom_type = '{ "styles" : [{"stylers":[{"hue":"#ffffff"},{"invert_lightness":false},{"saturation":-100}]}], "options" : { "name" : "Light Monochrome" } }';
-			$map_types['light_monochrome'] = json_decode($custom_type);
+			$map_types['light_monochrome'] = json_decode( $custom_type );
 		}
 		return $map_types;
 	}, 10, 2 );
