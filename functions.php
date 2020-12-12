@@ -1597,26 +1597,27 @@
 	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
 	
 	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
-		write_log("Geen enkele winkel gevonden binnen de 50 kilometer!");
+		write_log("Geen enkele winkel gevonden binnen de 30 kilometer!");
 		
 		if ( class_exists('WPSL_Frontend') ) {
 			$wpsl_frontend = new WPSL_Frontend();
 
-			// HOE LEIDEN WE DIT AF?
-			$postcode = 8400;
-
-			$stores = array();
-			$all_stores_by_postcode = get_webshops_by_postcode(true);
-			if ( array_key_exists( $postcode, $all_stores_by_postcode ) ) {
-				$store = new stdClass();
-				$store->ID = $all_stores_by_postcode[ $postcode ];
-				// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt
-				$store->distance = 0;
-				// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
-				$stores[] = $store;
-
-				// Dit vult alle andere velden aan, ook de dynamische 'delivery'!
-				$store_data = $wpsl_frontend->get_store_meta_data( $stores );
+			// Haal de gezochte postcode op uit cookie
+			if ( ! empty( $_COOKIE['current_location'] ) ) {
+				$all_stores_by_postcode = get_webshops_by_postcode(true);
+				write_log( print_r( $all_stores_by_postcode, true ) );
+				if ( array_key_exists( $postcode, $all_stores_by_postcode ) ) {
+					$store = new stdClass();
+					$store->ID = $all_stores_by_postcode[ $_COOKIE['current_location'] ];
+					// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt
+					$store->distance = 0;
+					// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
+					
+					$stores = array();
+					$stores[] = $store;
+					// Dit vult alle andere velden aan, ook de dynamische 'delivery'
+					$store_data = $wpsl_frontend->get_store_meta_data( $stores );
+				}
 			}
 		}
 		

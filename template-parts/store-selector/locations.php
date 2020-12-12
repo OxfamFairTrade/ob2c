@@ -108,6 +108,7 @@
 			/* Probeer het huidige pad te bewaren! */
 			var current_url = window.location.href;
 			var current_zip = jQuery('#wpsl-search-input').val();
+			/* @toDo: Indien we de store selector meteen opnieuw gebruiken (zonder page refresh) ontstaat er pile-up van GET-parameters */
 			var url_suffix = '?referralZip=' + current_zip;
 			/* Check of de postcode voorkomt in de lijst, anders blokkeert JavaScript op split() */
 			if ( current_zip in zips ) {
@@ -121,6 +122,7 @@
 			if ( urlParams.has('recipeId') ) {
 				url_suffix += '&recipeId=' + urlParams.get('recipeId');
 			}
+			/* @toDo: Indien we op een productdetailpagina van lokaal assortiment zitten, leidt deze redirect tot een 404-error! */
 			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + url_suffix );
 		});
 
