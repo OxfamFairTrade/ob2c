@@ -4801,8 +4801,9 @@
 	function validate_zip_code( $zip ) {
 		if ( does_home_delivery() and $zip !== 0 ) {
 			// Eventueel enkel tonen op de winkelmandpagina m.b.v. is_cart()
-			if ( ! array_key_exists( $zip, get_site_option( 'oxfam_flemish_zip_codes' ) ) and $zip !== 6941 ) {
-				wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
+			if ( ! array_key_exists( $zip, get_site_option('oxfam_flemish_zip_codes') ) ) {
+				// Niet langer gebruiken
+				// wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
 				return false;
 			} else {
 				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden
