@@ -1574,6 +1574,8 @@
 
 	function wpsl_change_results_sorting( $store_data ) {
 		$custom_sort = array();
+		$results_contain_delivery_store = false;
+
 		foreach ( $store_data as $key => $row ) {
 			// In plaats van sorteren op 'distance'
 			// Key bestaat niet indien de winkel geen webshop heeft!
@@ -1581,11 +1583,23 @@
 			
 			// Formatteer de afstand op z'n Belgisch
 			$store_data[ $key ]['distance'] = round( $row['distance'], 0 );
+
+			// Check of er een resultaat is dat thuislevering organiseert
+			if ( strpos( $store_data[ $key ]['delivery'], 'delivery active' ) !== false ) {
+				$results_contain_delivery_store = true;
+			}
 		}
 
 		// Winkels zonder webshop-URL (= lege string) onderaan plaatsen
-		// Nogal drastisch, beter om enkel de thuisleverwinkel naar boven te trekken?
+		// Nogal drastisch, beter om enkel de thuisleverwinkel naar boven te trekken door distance op 0 te zetten?
 		// array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_data );
+
+		if ( ! $results_contain_delivery_store ) {
+			// Injecteer de thuisleverwinkel indien die nog niet tussen de resultaten zit (ongeacht de afstand)
+			// Numerieke keys, dus elementen worden niet overschreven
+			$store_data = array_merge( $store_data, get_default_webshop_for_home_delivery() );
+			write_log("Thuisleverwinkel van buiten perimeter toegevoegd!");
+		}
 		
 		if ( current_user_can('update_core') ) {
 			write_log( print_r( $store_data, true ) );
@@ -1593,12 +1607,23 @@
 		return $store_data;
 	}
 
-	// Injecteer de thuisleverwinkel indien er geen enkele winkel gevonden werd (ongeacht de afstand)
 	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
 	
 	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
 		write_log("Geen enkele winkel gevonden binnen de 30 kilometer!");
 		
+		// Injecteer de thuisleverwinkel indien er geen enkele winkel gevonden werd (ongeacht de afstand)
+		$store_data = get_default_webshop_for_home_delivery();
+		
+		if ( current_user_can('update_core') ) {
+			write_log( print_r( $store_data, true ) );
+		}
+		return $store_data;
+	}
+
+	function get_default_webshop_for_home_delivery() {
+		$store_data = array();
+
 		if ( class_exists('WPSL_Frontend') ) {
 			$wpsl_frontend = new WPSL_Frontend();
 
@@ -1620,10 +1645,7 @@
 				}
 			}
 		}
-		
-		if ( current_user_can('update_core') ) {
-			write_log( print_r( $store_data, true ) );
-		}
+
 		return $store_data;
 	}
 
