@@ -1605,10 +1605,9 @@
 			// Haal de gezochte postcode op uit cookie
 			if ( ! empty( $_COOKIE['current_location'] ) ) {
 				$all_stores_by_postcode = get_webshops_by_postcode(true);
-				write_log( print_r( $all_stores_by_postcode, true ) );
 				if ( array_key_exists( $postcode, $all_stores_by_postcode ) ) {
 					$store = new stdClass();
-					$store->ID = $all_stores_by_postcode[ $_COOKIE['current_location'] ];
+					$store->ID = $all_stores_by_postcode[ intval( $_COOKIE['current_location'] ) ];
 					// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt
 					$store->distance = 0;
 					// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
@@ -7553,6 +7552,8 @@
 			$local_zips = get_option('oxfam_zip_codes');
 			if ( $local_zips !== false ) {
 				foreach ( $local_zips as $zip ) {
+					// In principe is dit reeds het geval, maar belangrijk voor consequente response array
+					$zip = intval( $zip );
 					if ( $return_store_id ) {
 						// Zoek de WPSL-post op die deze blog-ID bevat
 						switch_to_blog(1);
@@ -7567,7 +7568,7 @@
 						$stores = new WP_Query( $store_args );
 						$matching_store_ids = $stores->posts;
 						if ( count( $matching_store_ids ) > 0 ) {
-							// Er kunnen meerdere winkels zijn met dezelfde blog-ID ...
+							// @toDo: Er kunnen meerdere winkels zijn met dezelfde blog-ID, hoe selecteren we de hoofdwinkel?
 							$global_zips[ $zip ] = reset( $matching_store_ids );
 						}
 						restore_current_blog();
