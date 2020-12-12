@@ -5485,6 +5485,17 @@
 		$cart->set_cart_contents( array_merge( $cart_sorted, $glass_items, $plastic_items, $gift_items ) );
 	}
 
+	// Personaliseer de gegevens in de store locator (als we pagina cache gebruiken!)
+	// Wordt doorlopen bij elke paga load + na elke wijziging aan het winkelmandje
+	// @toDo: Wijzigen na gebruiken van store selector en niet langer na wijzigen van winkelmandje!
+	add_filter( 'woocommerce_add_to_cart_fragments', 'ob2c_update_store_locator_fragments' );
+	
+	function ob2c_update_store_locator_fragments( $fragments ) {
+		// Probleem: hoe kunnen we hier altijd de juiste context meegeven?
+		$fragments['div.selected-store.ok'] = get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'sidebar' ) );
+		return $fragments;
+	}
+
 	// Toon leeggoed niet in de mini-cart (maar wordt wel meegeteld in subtotaal!)
 	add_filter( 'woocommerce_widget_cart_item_visible', 'hide_empties_in_mini_cart', 10, 3 );
 
