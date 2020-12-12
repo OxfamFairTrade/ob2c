@@ -1601,25 +1601,38 @@
 		write_log("Geen enkele winkel gevonden binnen de 50 kilometer!");
 		
 		// @toDo: Injecteer de thuisleverwinkel, ongeacht de afstand
-		$store_data = array(
-			array(
-				'address' => 'Pley 19',
-				'store' => 'Voeren',
-				'id' => 2813,
-				'city' => 'Voeren',
-				'zip' => '3798',
-				'country' => 'België',
-				'lat' => 50.758378,
-				'lng' => 5.762896,
-				'email' => 'voeren@oww.be',
-				'url' => 'https://www.oxfamwereldwinkels.be/winkels/voeren/',
-				'oxfamShopPostId' => 3788,
-				'webshopUrl' => 'https://dev.oxfamwereldwinkels.be/oostende/', 
-				'webshopBlogId' => 23,
-				'pickup' => '<li class="pickup inactive">Afhalen in de winkel</li>',
-				'delivery' => '<li class="delivery inactive">Geen levering aan huis in 4000</li>',
-				'available' => 'yes',
-			),
+		if ( class_exists('WPSL_Frontend') ) {
+			$wpsl_frontend = new WPSL_Frontend();
+			$stores = array();
+
+			$store = new stdClass();
+			$store->lat = 51.226419;
+			$store->lng = 2.909586;
+			$store->ID = 1660;
+			// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt
+			$store->distance = 0;
+			$stores[] = $store;
+
+			$store_data = $wpsl_frontend->get_store_meta_data( $stores );
+		}
+
+		$example_store = array(
+			'address' => 'Pley 19',
+			'store' => 'Voeren',
+			'id' => 2813,
+			'city' => 'Voeren',
+			'zip' => '3798',
+			'country' => 'België',
+			'lat' => 50.758378,
+			'lng' => 5.762896,
+			'email' => 'voeren@oww.be',
+			'url' => 'https://www.oxfamwereldwinkels.be/winkels/voeren/',
+			'oxfamShopPostId' => 3788,
+			'webshopUrl' => 'https://dev.oxfamwereldwinkels.be/oostende/', 
+			'webshopBlogId' => 23,
+			'pickup' => '<li class="pickup inactive">Afhalen in de winkel</li>',
+			'delivery' => '<li class="delivery inactive">Geen levering aan huis in 4000</li>',
+			'available' => 'yes',
 		); 
 		
 		if ( current_user_can('update_core') ) {

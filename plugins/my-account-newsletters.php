@@ -44,13 +44,19 @@
 		}
 
 		public function new_menu_items( $items ) {
-			// Want uitlogknop staat al bovenaan
-			unset( $items['customer-logout'] );
-			// Schakel ondertussen ook dashboard en downloads uit
+			// Schakel dashboard en downloads uit
 			unset( $items['dashboard'] );
 			unset( $items['downloads'] );
-			$items['nieuwsbrief'] = 'Digizine';
-			return $items;
+			
+			$sorted_items = array();
+			foreach ( $items as $key => $title ) {
+				$sorted_items[ $key ] = $title;
+				if ( $key === 'edit-account' ) {
+					$sorted_items['nieuwsbrief'] = 'Nieuwsbrief';
+				}
+			}
+
+			return $sorted_items;
 		}
 
 		public function endpoint_content() {
