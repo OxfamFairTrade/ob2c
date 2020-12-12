@@ -1604,9 +1604,9 @@
 		}
 		array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_data );
 		
-		if ( current_user_can('update_core') ) {
-			write_log( print_r( $store_data, true ) );
-		}
+		// if ( current_user_can('update_core') ) {
+		// 	write_log( print_r( $store_data, true ) );
+		// }
 		return $store_data;
 	}
 
@@ -1618,9 +1618,6 @@
 		// Injecteer de thuisleverwinkel indien er geen enkele winkel gevonden werd (ongeacht de afstand)
 		$store_data = get_default_webshop_for_home_delivery();
 		
-		if ( current_user_can('update_core') ) {
-			write_log( print_r( $store_data, true ) );
-		}
 		return $store_data;
 	}
 
@@ -1640,10 +1637,11 @@
 					// Altijd op 5 zetten, zodat de winkel 'redelijk' bovenaan verschijnt na sorteren
 					$store->distance = 5;
 					// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
+					write_log("Ontbrekende thuisleverwinkel met store-ID ".$store->ID." toegevoegd aan resultatenlijst voor ".$current_location);
 					
 					$stores = array();
 					$stores[] = $store;
-					// Dit vult alle andere velden aan, ook de dynamische 'delivery'
+					// Dit vult alle andere velden aan, ook de custom dynamische
 					$store_data = $wpsl_frontend->get_store_meta_data( $stores );
 				}
 			}
