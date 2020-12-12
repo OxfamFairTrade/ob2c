@@ -831,12 +831,12 @@
 	add_action( 'update_option_mollie-payments-for-woocommerce_payment_locale', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie-payments-for-woocommerce_order_status_cancelled_payments', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_bancontact_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_kbc_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_belfius_settings', 'sync_settings_to_subsites', 10, 3 );
-	add_action( 'update_option_mollie_wc_gateway_creditcard_settings', 'sync_settings_to_subsites', 10, 3 );
-	add_action( 'update_option_mollie_wc_gateway_ideal_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_inghomepay_settings', 'sync_settings_to_subsites', 10, 3 );
-	add_action( 'update_option_mollie_wc_gateway_kbc_settings', 'sync_settings_to_subsites', 10, 3 );
-	add_action( 'update_option_mollie_wc_gateway_kbc_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_creditcard_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_applepay_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_ideal_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_gateway_order', 'sync_settings_to_subsites', 10, 3 );
 	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
@@ -1590,7 +1590,6 @@
 			// Numerieke keys, dus elementen worden niet overschreven
 			// Array wordt niet meer gesorteerd, dus dit bepaalt ook de volgorde
 			$store_data = array_merge( get_default_webshop_for_home_delivery(), $store_data );
-			write_log("Thuisleverwinkel van buiten perimeter toegevoegd!");
 		}
 
 		$custom_sort = array();
@@ -4267,10 +4266,10 @@
 		if ( is_b2b_customer() ) {
 			// write_log( print_r( $gateways, true ) );
 			unset( $gateways['mollie_wc_gateway_bancontact'] );
-			unset( $gateways['mollie_wc_gateway_creditcard'] );
 			unset( $gateways['mollie_wc_gateway_kbc'] );
 			unset( $gateways['mollie_wc_gateway_belfius'] );
 			unset( $gateways['mollie_wc_gateway_inghomepay'] );
+			unset( $gateways['mollie_wc_gateway_creditcard'] );
 			unset( $gateways['mollie_wc_gateway_applepay'] );
 			unset( $gateways['mollie_wc_gateway_ideal'] );
 		} else {
