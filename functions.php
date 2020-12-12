@@ -1601,14 +1601,15 @@
 		
 		if ( class_exists('WPSL_Frontend') ) {
 			$wpsl_frontend = new WPSL_Frontend();
-			$stores = array();
 
 			// HOE LEIDEN WE DIT AF?
 			$postcode = 8400;
-			$all_shops_by_postcode = get_shops(true);
-			if ( array_key_exists( $postcode, $all_shops_by_postcode ) ) {
+			
+			$stores = array();
+			$all_stores_by_postcode = get_webshops_by_postcode(true);
+			if ( array_key_exists( $postcode, $all_stores_by_postcode ) ) {
 				$store = new stdClass();
-				$store->ID = $all_shops_by_postcode[ $postcode ];
+				$store->ID = $all_stores_by_postcode[ $postcode ];
 				// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt
 				$store->distance = 0;
 				// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
@@ -4798,7 +4799,7 @@
 
 					// Toon de foutmelding slechts één keer
 					if ( WC()->session->get( 'no_zip_delivery_in_'.get_current_blog_id().'_for_'.$zip ) !== 'SHOWN' ) {
-						$global_zips = get_shops();
+						$global_zips = get_webshops_by_postcode();
 						if ( isset( $global_zips[$zip] ) ) {
 							$url = $global_zips[$zip];
 							// @toDo: Commando toevoegen om winkelmandje over te zetten
@@ -7542,7 +7543,7 @@
 		return get_oxfam_shop_data( 'place', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'zipcode', 0, false, $atts['id'] )." ".get_oxfam_shop_data( 'city', 0, false, $atts['id'] );
 	}
 
-	function get_shops( $return_blog_id = false ) {
+	function get_webshops_by_postcode( $return_store_id ) {
 		$global_zips = array();
 		// Negeer afgeschermde en gearchiveerde sites
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
@@ -7551,8 +7552,24 @@
 			$local_zips = get_option('oxfam_zip_codes');
 			if ( $local_zips !== false ) {
 				foreach ( $local_zips as $zip ) {
-					if ( $return_blog_id ) {
-						$global_zips[ $zip ] = $site->blog_id;
+					if ( $return_store_id ) {
+						// Zoek de WPSL-post op die deze blog-ID bevat
+						switch_to_blog(1);
+						$store_args = array(
+							'post_type'	=> 'wpsl_stores',
+							'post_status' => 'publish',
+							'posts_per_page' => -1,
+							'meta_key' => 'wpsl_webshop_blog_id',
+							'meta_value' => $site->blog_id,
+							'fields' => 'ids',
+						);
+						$stores = new WP_Query( $store_args );
+						$matching_store_ids = $stores->posts;
+						if ( count( $matching_store_ids ) > 0 ) {
+							// Er kunnen meerdere winkels zijn met dezelfde blog-ID ...
+							$global_zips[ $zip ] = reset( $matching_store_ids );
+						}
+						restore_current_blog();
 					} else {
 						$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;
 					}
@@ -7565,7 +7582,7 @@
 	}
 
 	add_filter( 'flexmap_custom_map_types', function( $map_types, $attrs ) {
-		if ( empty($attrs['maptype']) ) {
+		if ( empty( $attrs['maptype'] ) ) {
 			return $map_types;
 		}
 

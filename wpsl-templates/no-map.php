@@ -2,11 +2,11 @@
 	global $current_store, $wpsl_settings, $wpsl;
 
 	$options = array();
-	$global_zips = get_shops();
+	$global_zips = get_webshops_by_postcode();
 	$all_zips = get_site_option('oxfam_flemish_zip_codes');
 	foreach ( $all_zips as $zip => $city ) {
-		if ( isset( $global_zips[$zip] ) ) {
-			$url = $global_zips[$zip];
+		if ( isset( $global_zips[ $zip ] ) ) {
+			$url = $global_zips[ $zip ];
 		} else {
 			$url = '';
 		}
@@ -14,7 +14,7 @@
 	}
 
 	$output = $this->get_custom_css(); 
-	$autoload_class = ( !$wpsl_settings['autoload'] ) ? 'class="wpsl-not-loaded"' : '';
+	$autoload_class = ( ! $wpsl_settings['autoload'] ) ? 'class="wpsl-not-loaded"' : '';
 
 	$output .= '<div id="wpsl-wrap" class="wpsl-store-below">' . "\r\n";
 	$output .= "\t" . '<div class="wpsl-search wpsl-clearfix ' . $this->get_css_classes() . '">' . "\r\n";
