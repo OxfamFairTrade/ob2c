@@ -5495,7 +5495,8 @@
 		ob_start();
 		// Probleem: hoe kunnen we hier altijd de juiste context meegeven?
 		get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'sidebar' ) );
-		$fragments['div.selected-store.ok'] = ob_get_contents();
+		$fragments['div.selected-store.TEST'] = ob_get_contents();
+		write_log("Store selector fragment bijgewerkt!");
 		ob_end_clean();
 		return $fragments;
 	}
