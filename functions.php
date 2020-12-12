@@ -1573,14 +1573,9 @@
 	add_filter( 'wpsl_store_data', 'wpsl_change_results_sorting', 1000 );
 
 	function wpsl_change_results_sorting( $store_data ) {
-		$custom_sort = array();
 		$results_contain_delivery_store = false;
 
 		foreach ( $store_data as $key => $row ) {
-			// In plaats van sorteren op 'distance'
-			// Key bestaat niet indien de winkel geen webshop heeft!
-			$custom_sort[ $key ] = ! empty( $row['webshop'] ) ? $row['webshop'] : '';
-			
 			// Formatteer de afstand op z'n Belgisch
 			$store_data[ $key ]['distance'] = round( $row['distance'], 0 );
 
@@ -1590,17 +1585,24 @@
 			}
 		}
 
-		// Winkels zonder webshop-URL (= lege string) onderaan plaatsen
-		// Nogal drastisch, beter om enkel de thuisleverwinkel naar boven te trekken door distance op 0 te zetten?
-		// array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_data );
-
 		// Injecteer de thuisleverwinkel indien die nog niet tussen de resultaten zit (ongeacht de afstand)
-			if ( ! $results_contain_delivery_store ) {
+		if ( ! $results_contain_delivery_store ) {
 			// Numerieke keys, dus elementen worden niet overschreven
 			// Array wordt niet meer gesorteerd, dus dit bepaalt ook de volgorde
 			$store_data = array_merge( get_default_webshop_for_home_delivery(), $store_data );
 			write_log("Thuisleverwinkel van buiten perimeter toegevoegd!");
 		}
+
+		$custom_sort = array();
+		foreach ( $store_data as $key => $row ) {
+			// Winkels zonder webshop-URL (= lege string) onderaan plaatsen
+			// Key bestaat niet indien de winkel geen webshop heeft!
+			// $custom_sort[ $key ] = ! empty( $row['webshop'] ) ? $row['webshop'] : '';
+			
+			// Sorteer nog eens opnieuw op afstand
+			$custom_sort[ $key ] = ! empty( $row['distance'] ) ? $row['distance'] : 0;
+		}
+		array_multisort( $custom_sort, SORT_ASC, SORT_REGULAR, $store_data );
 		
 		if ( current_user_can('update_core') ) {
 			write_log( print_r( $store_data, true ) );
@@ -1635,8 +1637,8 @@
 				if ( array_key_exists( $current_location, $all_stores_by_postcode ) ) {
 					$store = new stdClass();
 					$store->ID = $all_stores_by_postcode[ $current_location ];
-					// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt na sorteren
-					$store->distance = 0;
+					// Altijd op 5 zetten, zodat de winkel 'redelijk' bovenaan verschijnt na sorteren
+					$store->distance = 5;
 					// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
 					
 					$stores = array();
