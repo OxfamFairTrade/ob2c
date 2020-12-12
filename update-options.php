@@ -154,7 +154,7 @@
 				<th class="left">
 					<?php
 						if ( does_home_delivery() and count( get_oxfam_covered_zips() ) > 0 ) {
-							$extra_info = 'Wat wel van belang blijft is de lijst van '.count( get_oxfam_covered_zips() ).' postcodes waar deze webshop <u>kan</u> thuisleveren: '.implode( ', ', get_oxfam_covered_zips() ).'. ';
+							$extra_info = 'Wat wel van belang blijft, is de lijst van '.count( get_oxfam_covered_zips() ).' postcodes waar deze webshop <u>kan</u> thuisleveren: '.implode( ', ', get_oxfam_covered_zips() ).'. ';
 						} else {
 							$extra_info = '';
 						} 
