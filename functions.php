@@ -1604,10 +1604,11 @@
 
 			// Haal de gezochte postcode op uit cookie
 			if ( ! empty( $_COOKIE['current_location'] ) ) {
+				$current_location = intval( $_COOKIE['current_location'] );
 				$all_stores_by_postcode = get_webshops_by_postcode(true);
-				if ( array_key_exists( $postcode, $all_stores_by_postcode ) ) {
+				if ( array_key_exists( $current_location, $all_stores_by_postcode ) ) {
 					$store = new stdClass();
-					$store->ID = $all_stores_by_postcode[ intval( $_COOKIE['current_location'] ) ];
+					$store->ID = $all_stores_by_postcode[ $current_location ];
 					// Altijd op 0 zetten, zodat de winkel bovenaan verschijnt
 					$store->distance = 0;
 					// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
