@@ -159,7 +159,7 @@
 							$extra_info = '';
 						} 
 					?>
-					<label for="oxfam_zip_codes" title="">Postcodes waarvoor deze webshop hoofdverantwoordelijke is (<?php echo count( get_option( 'oxfam_zip_codes', array() ) ); ?>):<br/><small>Sinds het vervangen van de portaalpagina door een algemene winkelkiezer (oktober 2020) heeft het begrip 'hoofdverantwoordelijke' geen echte betekenis meer. Er gebeurt immers geen automatische doorsturing meer. <?php echo $extra_info; ?>Dit kan enkel vanuit het NS gewijzigd worden.</small></label>
+					<label for="oxfam_zip_codes" title="">Postcodes waarvoor deze webshop hoofdverantwoordelijke is (<?php echo count( get_option( 'oxfam_zip_codes', array() ) ); ?>):<br/><small>Sinds het vervangen van de portaalpagina door een algemene winkelkiezer (oktober 2020) heeft het begrip 'hoofdverantwoordelijke' geen echte betekenis meer. Er gebeurt immers niet langer een volledig automatische doorsturing na het invullen van een postcode. <?php echo $extra_info; ?>Dit kan enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
 				<td class="right">
 					<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo implode( ', ', get_oxfam_covered_zips() ); ?>" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_zip_codes', array() ) ) ); ?></textarea>
