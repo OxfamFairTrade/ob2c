@@ -1612,7 +1612,7 @@
 	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
 	
 	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
-		write_log("Geen enkele winkel gevonden binnen de 20 kilometer!");
+		write_log("Geen enkele winkel gevonden binnen de 30 kilometer!");
 		
 		// Injecteer de thuisleverwinkel indien er geen enkele winkel gevonden werd (ongeacht de afstand)
 		$store_data = get_default_webshop_for_home_delivery();
@@ -5850,6 +5850,10 @@
 			
 			if ( $product->save() ) {
 				$output = $message;
+				// Flush na afloop de W3TC-cache van deze specifieke productpagina?
+				// if ( function_exists('w3tc_flush_post') ) {
+				// 	w3tc_flush_post( $product_id );
+				// }
 			}
 		}
 		
@@ -6519,6 +6523,11 @@
 			$old = WP_CONTENT_DIR."/erp-import.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
+
+			// Flush na afloop alle W3TC-caches?
+			// if ( function_exists('w3tc_flush_all') ) {
+			// 	w3tc_flush_all();
+			// }
 		}
 	}
 

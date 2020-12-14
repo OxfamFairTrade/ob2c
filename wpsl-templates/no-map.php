@@ -13,7 +13,8 @@
 		$options[] = '<input type="hidden" id="'.$zip.'" value="'.$url.'">';
 	}
 
-	$output = $this->get_custom_css(); 
+	// Laat extra CSS voor kaarten weg
+	// $output = $this->get_custom_css(); 
 	$autoload_class = ( ! $wpsl_settings['autoload'] ) ? 'class="wpsl-not-loaded"' : '';
 
 	$output .= '<div id="wpsl-wrap" class="wpsl-store-below">' . "\r\n";
