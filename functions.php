@@ -4603,9 +4603,8 @@
 						}
 					}
 
-					do_action( 'qm/debug', $pickup_locations );
-					do_action( 'qm/debug', $chosen_pickup_id );
-					do_action( 'qm/debug', $chosen_shop_post_id );
+					do_action( 'qm/info', 'Chosen pickup location ID: {id}', array( 'id' => $chosen_pickup_id ) );
+					do_action( 'qm/info', 'Chosen shop post ID: {id}', array( 'id' => $chosen_shop_post_id ) );
 				}
 
 				if ( $chosen_shop_post_id === 'tuincentrum' ) {
