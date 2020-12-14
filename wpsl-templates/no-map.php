@@ -10,7 +10,8 @@
 		} else {
 			$url = '';
 		}
-		$options[] = '<input type="hidden" id="'.$zip.'" value="'.$url.'">';
+		// Eigenlijk mag dit weggelaten worden?
+		// $options[] = '<input type="hidden" id="'.$zip.'" value="'.$url.'">';
 	}
 
 	// Laat extra CSS voor kaarten weg

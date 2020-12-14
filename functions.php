@@ -1438,22 +1438,6 @@
 	# WP STORE LOCATOR #
 	####################
 
-	// Laad onze custom markers (zowel in front-end als back-end)
-	define( 'WPSL_MARKER_URI', dirname( get_bloginfo('stylesheet_url') ).'/markers/' );
-	add_filter( 'wpsl_admin_marker_dir', 'wpsl_admin_marker_dir' );
-
-	function wpsl_admin_marker_dir() {
-		return get_stylesheet_directory().'/markers/';
-	}
-
-	// Verberg de startpositie (zonder gefoefel met transparante afbeeldingen)
-	add_filter( 'wpsl_js_settings', 'wpsl_hide_start_marker' );
-
-	function wpsl_hide_start_marker( $settings ) {
-		$settings['startMarker'] = '';
-		return $settings;
-	}
-
 	add_filter( 'wpsl_templates', 'wpsl_add_no_map_template' );
 
 	function wpsl_add_no_map_template( $templates ) {

@@ -34,6 +34,7 @@
 </div>
 
 <script type="text/javascript">
+	/* Verplaatsen naar externe file /js/scripts.js (met cache)? */
 	jQuery(document).ready( function() {
 		/* In wpsl-gmap.js staat in searchLocationBtn() een $( "#wpsl-search-btn" ).unbind( "click" ) die dit verhindert */
 		/* Voorlopig daar hard verwijderd maar wellicht beter om zelf een custom event te verzinnen en binden? */
@@ -52,7 +53,7 @@
 		});
 
 		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
-		/* Licht gewijzigde vorm voor autocomplete */
+		/* Licht gewijzigde vorm voor autocomplete (proberen samenvoegen?) */
 		var autocomplete_zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
 		
 		/* Gebruik event delegation, de buttons in .nm-shop-products-col zijn niet noodzakelijk al aanwezig bij DOM load! */
@@ -83,9 +84,7 @@
 			eraseCookie('latest_shop_id');
 			eraseCookie('latest_blog_id');
 			eraseCookie('latest_blog_path');
-			/* Probeer het huidige pad te bewaren! */
-			var current_url = window.location.href;
-			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', '<?php echo network_site_url(); ?>' ) );
+			window.location.replace( window.location.href.replace( '<?php echo home_url('/'); ?>', '<?php echo network_site_url(); ?>' ) );
 		});
 
 		jQuery('.autocomplete-postcodes').autocomplete({
@@ -100,13 +99,10 @@
 		});
 		
 		/* Gebruik event delegation, deze nodes zijn nog niet aanwezig bij DOM load! */
-		/* Non-JS back-up voorzien via <a href>? */
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
 			console.log( "Registreer shop-ID "+jQuery(this).data('oxfam-shop-post-id')+" in cookie en doe redirect naar "+jQuery(this).data('webshop-url') );
 			setCookie( 'latest_shop_id', jQuery(this).data('oxfam-shop-post-id') );
 			setCookie( 'latest_blog_id', jQuery(this).data('webshop-blog-id') );
-			/* Probeer het huidige pad te bewaren! */
-			var current_url = window.location.href;
 			var current_zip = jQuery('#wpsl-search-input').val();
 			/* @toDo: Indien we de store selector meteen opnieuw gebruiken (zonder page refresh) ontstaat er pile-up van GET-parameters */
 			var url_suffix = '?referralZip=' + current_zip;
@@ -123,18 +119,13 @@
 				url_suffix += '&recipeId=' + urlParams.get('recipeId');
 			}
 			/* @toDo: Indien we op een productdetailpagina van lokaal assortiment zitten, leidt deze redirect tot een 404-error! */
-			window.location.replace( current_url.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + url_suffix );
+			window.location.replace( window.location.href.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + url_suffix );
 		});
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
 			e.preventDefault();
-			// Kijk naar wat er gebeurt in nm-shop-filters.js
-			// Het 'href'-attribuut wijzigen naar '/producten/' lijkt te volstaan om te wissen!
-			// jQuery(this).attr( 'href', 'https://dev.oxfamwereldwinkels.be/oostende/producten/' );
-			// jQuery(this).unbind('click').click();
-			// Of doe gewoon een location replace ...
-			var current_url = window.location.href;
-			window.location.replace( current_url.replace( jQuery(this).attr('href'), '<?php echo get_permalink( wc_get_page_id('shop') ); ?>' ) );
+			/* Mimic eventueel wat er gebeurt in nm-shop-filters.js! */
+			window.location.replace( window.location.href.replace( jQuery(this).attr('href'), '<?php echo get_permalink( wc_get_page_id('shop') ); ?>' ) );
 		});
 	});
 

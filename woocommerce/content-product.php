@@ -135,7 +135,6 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     </div>
 </li>
 
-<!-- We nemen de brakke Conversal-logica voorlopig over -->
 <?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 and 1 === 2 ) : ?>
     <li class="promo-banner horizontal">
         <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2020-quinoa.png" />
