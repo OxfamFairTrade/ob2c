@@ -2063,11 +2063,11 @@
 		global $pagenow, $post_type;
 		if ( $pagenow === 'edit.php' and $post_type === 'shop_order' and $query->query['post_type'] === 'shop_order' ) {
 			// Check of we moeten sorteren op één van onze custom kolommen
-			if ( $query->get( 'orderby' ) === 'estimated_delivery' ) {
+			if ( $query->get('orderby') === 'estimated_delivery' ) {
 				$query->set( 'meta_key', 'estimated_delivery' );
 				$query->set( 'orderby', 'meta_value_num' );
 			}
-			if ( $query->get( 'orderby' ) === 'claimed_by' ) {
+			if ( $query->get('orderby') === 'claimed_by' ) {
 				$query->set( 'meta_key', 'claimed_by' );
 				$query->set( 'orderby', 'meta_value' );
 			}
@@ -4563,7 +4563,7 @@
 		if ( $order_id === false ) {
 			$from = current_time('timestamp');
 		} else {
-			$order = wc_get_order($order_id);
+			$order = wc_get_order( $order_id );
 			// We hebben de timestamp van de besteldatum nodig in de huidige tijdzone, dus pas get_date_from_gmt() toe die het formaat 'Y-m-d H:i:s' vereist!
 			$from = strtotime( get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', strtotime( $order->get_date_created() ) ) ) );
 		}
@@ -4582,7 +4582,6 @@
 					if ( $order_id === false ) {
 						// @toDo: Werkt dit nog in WooCommerce Local Pickup Plus 2.9+?
 						$pickup_locations = WC()->session->get('chosen_pickup_locations');
-						// write_log( print_r( $pickup_locations, true ) );
 						if ( isset( $pickup_locations ) ) {
 							$chosen_pickup_id = reset( $pickup_locations );
 						} else {
@@ -4596,12 +4595,17 @@
 						// write_log( print_r( $chosen_pickup_location, true ) );
 						$chosen_pickup_id = $chosen_pickup_location['id'];
 					}
+					
 					foreach ( $locations as $shop_post_id => $pickup_id ) {
 						if ( $pickup_id == $chosen_pickup_id ) {
 							$chosen_shop_post_id = $shop_post_id;
 							break;
 						}
 					}
+
+					do_action( 'qm/debug', $pickup_locations );
+					do_action( 'qm/debug', $chosen_pickup_id );
+					do_action( 'qm/debug', $chosen_shop_post_id );
 				}
 
 				if ( $chosen_shop_post_id === 'tuincentrum' ) {
@@ -7106,10 +7110,10 @@
 				$locations = wc_local_pickup_plus()->get_pickup_locations_instance()->get_sorted_pickup_locations( array( 'order' => 'ASC' ) );
 				foreach ( $locations as $location ) {
 					// We kunnen ook $location->get_address() gebruiken (zoals vroeger) maar dat is een object, geen string
-					$parts = explode( 'id=', $location->get_description() );
+					$parts = explode( ' id=', $location->get_description() );
 					if ( isset( $parts[1] ) ) {
-						// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
 						$temporary_shop_post_id = str_replace( ']', '', $parts[1] );
+						// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
 						if ( is_numeric( $temporary_shop_post_id ) ) {
 							$shop_post_id = intval( $temporary_shop_post_id );
 						} elseif ( $include_external_locations ) {
@@ -7127,6 +7131,7 @@
 					if ( $return_internal_id ) {
 						$shops[ $shop_post_id ] = $location->get_id();
 					} else {
+						// Eventueel str_replace( 'Oxfam-Wereldwinkel ', '', $location->get_name() ) doen?
 						$shops[ $shop_post_id ] = $location->get_name();
 					}
 				}
@@ -7136,27 +7141,35 @@
 			
 			// Oude versie
 			if ( $locations = get_option('woocommerce_pickup_locations') ) {
-				foreach ( $locations as $location ) {
-					$parts = explode( 'id=', $location['address_1'] );
+				foreach ( $locations as $internal_id => $location ) {
+					$parts = explode( ' id=', $location['address_1'] );
 					if ( isset( $parts[1] ) ) {
-						$shop_post_id = str_replace( ']', '', $parts[1] );
+						$temporary_shop_post_id = str_replace( ']', '', $parts[1] );
 						if ( is_numeric( $shop_post_id ) ) {
-							$shop_post_id = intval( $shop_post_id );
-							// Eventueel str_replace( 'Oxfam-Wereldwinkel ', '', $location['shipping_company'] ) doen?
-							$shops[ $shop_post_id ] = $location['shipping_company'];
+							$shop_post_id = intval( $temporary_shop_post_id );
 						} elseif ( $include_external_locations ) {
-							$shops[ $shop_post_id ] = $location['shipping_company'];
+							// Externe locatie toch opnemen
+							$shop_post_id = $temporary_shop_post_id;
+						} else {
+							// Sla locatie definitief over
+							continue;
 						}
 					} else {
 						// Geen argument, dus het is de hoofdwinkel, altijd opnemen!
-						$shops[ get_option('oxfam_shop_post_id') ] = $location['shipping_company'];
+						$shop_post_id = get_option('oxfam_shop_post_id');
+					}
+
+					if ( $return_internal_id ) {
+						$shops[ $shop_post_id ] = $internal_id;
+					} else {
+						$shops[ $shop_post_id ] = $location['shipping_company'];
 					}
 				}
 			}
 
 		}
 
-		// write_log( print_r( $shops, true ) );
+		do_action( 'qm/debug', $shops );
 		return $shops;
 	}
 
