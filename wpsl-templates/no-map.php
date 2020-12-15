@@ -1,30 +1,14 @@
 <?php 
 	global $current_store, $wpsl_settings, $wpsl;
 
-	$options = array();
-	$global_zips = get_webshops_by_postcode();
-	$all_zips = get_site_option('oxfam_flemish_zip_codes');
-	foreach ( $all_zips as $zip => $city ) {
-		if ( isset( $global_zips[ $zip ] ) ) {
-			$url = $global_zips[ $zip ];
-		} else {
-			$url = '';
-		}
-		// Eigenlijk mag dit weggelaten worden?
-		// $options[] = '<input type="hidden" id="'.$zip.'" value="'.$url.'">';
-	}
-
-	// Laat extra CSS voor kaarten weg
-	// $output = $this->get_custom_css(); 
 	$autoload_class = ( ! $wpsl_settings['autoload'] ) ? 'class="wpsl-not-loaded"' : '';
 
-	$output .= '<div id="wpsl-wrap" class="wpsl-store-below">' . "\r\n";
+	$output = '<div id="wpsl-wrap" class="wpsl-store-below">' . "\r\n";
 	$output .= "\t" . '<div class="wpsl-search wpsl-clearfix ' . $this->get_css_classes() . '">' . "\r\n";
 	$output .= "\t\t" . '<div id="wpsl-search-wrap">' . "\r\n";
 	$output .= "\t\t\t" . '<form autocomplete="off">' . "\r\n";
 	$output .= "\t\t\t" . '<div class="wpsl-input">' . "\r\n";
 	$output .= "\t\t\t\t" . '<input id="wpsl-search-input" class="autocomplete-postcodes" type="text" placeholder="Zoek op postcode" value="' . apply_filters( 'wpsl_search_input', '' ) . '" name="wpsl-search-input" placeholder="" aria-required="true" />' . "\r\n";
-	$output .= "\t\t\t\t" . implode( "\r\n", $options )  . "\r\n";
 	$output .= "\t\t\t" . '</div>' . "\r\n";
 
 	$output .= "\t\t\t\t" . '<div class="wpsl-search-btn-wrap"><input id="wpsl-search-btn" class="frederik" type="submit" value="' . esc_attr( $wpsl->i18n->get_translation( 'search_btn_label', __( 'Search', 'wpsl' ) ) ) . '"></div>' . "\r\n";
