@@ -5476,7 +5476,7 @@
 	// Personaliseer de gegevens in de store locator (als we pagina cache gebruiken!)
 	// Wordt doorlopen bij elke paga load + na elke wijziging aan het winkelmandje
 	// @toDo: Wijzigen na gebruiken van store selector en niet langer na wijzigen van winkelmandje!
-	add_filter( 'woocommerce_add_to_cart_fragments', 'ob2c_update_shipping_active_fragments', 1000, 1 );
+	// add_filter( 'woocommerce_add_to_cart_fragments', 'ob2c_update_shipping_active_fragments' );
 	
 	// BREEKT SOMS OPENEN VAN STORE SELECTOR (GEÏNJECTEERDE NODE NIET BESCHIKBAAR ON PAGE LOAD?)
 	function ob2c_update_store_locator_fragments( $fragments ) {
