@@ -5476,10 +5476,14 @@
 	// Personaliseer de gegevens in de store locator (als we pagina cache gebruiken!)
 	// Wordt doorlopen bij elke paga load + na elke wijziging aan het winkelmandje
 	// @toDo: Wijzigen na gebruiken van store selector en niet langer na wijzigen van winkelmandje!
-	add_filter( 'woocommerce_add_to_cart_fragments', 'ob2c_update_shipping_active_fragments' );
+	add_filter( 'woocommerce_add_to_cart_fragments', 'ob2c_update_shipping_active_fragments', 1000 );
 	
 	// BREEKT SOMS OPENEN VAN STORE SELECTOR (GEÏNJECTEERDE NODE NIET BESCHIKBAAR ON PAGE LOAD?)
 	function ob2c_update_store_locator_fragments( $fragments ) {
+		if ( is_main_site() ) {
+			return $fragments;
+		}
+
 		ob_start();
 		// Probleem: hoe kunnen we hier altijd de juiste context meegeven?
 		get_template_part( 'template-parts/store-selector/current', NULL, array( 'context' => 'sidebar' ) );
@@ -5509,8 +5513,8 @@
 		}
 
 		$fragments['li.shipping'] = '<li class="delivery '.$home_delivery.'">Levering aan huis in '.$current_location.'</li>';
-		write_log("Thuisleverstatus bijgewerkt!");
-		do_action( 'qm/debug', $fragments );
+		write_log("Thuisleverstatus bijgewerkt naar ".$current_location."!");
+		write_log( print_r( $fragments, true ) );
 		return $fragments;
 	}
 
