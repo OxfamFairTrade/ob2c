@@ -44,7 +44,7 @@ function mss_admin_bar_menu( $wp_admin_bar ) {
 			'title'  => sprintf(
 				'<label for="my-sites-search-text">%s</label><input type="text" id="my-sites-search-text" placeholder="%s" />',
 				esc_html__( 'Filter sites', 'mss' ),
-				esc_attr__( 'Zoek sites', 'mss' )
+				esc_attr__( 'Zoek site ...', 'mss' )
 			),
 			'meta'   => array(
 				'class' => 'hide-if-no-js'
@@ -86,9 +86,20 @@ function mss_enqueue_styles() {
 			padding: 0 1px;
 			width: 95%;
 			width: calc( 100% - 2px );
-			color: rgba(240,245,250,.7);
+			color: white;
+			background-color: initial;
 			border-width: 0;
-			border-bottom-width: 1px;
+			border-bottom: 1px solid rgba(240,245,250,.7);
+		}
+		#wp-admin-bar-my-sites-search input::placeholder {
+			color: rgba(240,245,250,.7);
+			opacity: 1;
+		}
+		#wp-admin-bar-my-sites-search input:focus {
+			border-color: white;
+		}
+		#wp-admin-bar-my-sites-search input:focus::placeholder {
+			color: white;
 		}
 		#wp-admin-bar-my-sites-list {
 			min-width: 350px;
@@ -114,15 +125,10 @@ function mss_enqueue_scripts() {
 		jQuery(document).ready( function($) {
 			$('#wp-admin-bar-my-sites-search.hide-if-no-js').show();
 			$('#wp-admin-bar-my-sites-search input').keyup( function( ) {
-
 				var searchValRegex = new RegExp( $(this).val(), 'i');
-
 				$('#wp-admin-bar-my-sites-list > li.menupop').hide().filter(function() {
-
 					return searchValRegex.test( $(this).find('> a').text() );
-
 				}).show();
-
 			});
 		});
 	<?php

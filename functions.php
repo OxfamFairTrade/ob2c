@@ -7820,7 +7820,8 @@
 		return $blocks;
 	}
 
-	// Voeg de bovenliggende categorie toe aan de te indexeren content van een product (inclusief synoniemen) NOG NODIG?
+	// Voeg de bovenliggende categorie toe aan de te indexeren content van een product (inclusief synoniemen)
+	// @toDo: Gebruik 'relevanssi_index_custom_fields'-filter om verborgen metavelden toe te voegen (kan ook via instellingen)
 	add_filter( 'relevanssi_content_to_index', 'ob2c_index_parent_category_and_origin', 10, 2 );
 
 	function ob2c_index_parent_category_and_origin( $content, $post ) {
@@ -7833,8 +7834,8 @@
 					$parent = get_term( $category->parent, 'product_cat' );
 					if ( array_key_exists( 'synonyms', $relevanssi_variables ) ) {
 						// Laat de synoniemenlijst eerst nog even inwerken
-						$search = array_keys($relevanssi_variables['synonyms']);
-						$replace = array_values($relevanssi_variables['synonyms']);
+						$search = array_keys( $relevanssi_variables['synonyms'] );
+						$replace = array_values( $relevanssi_variables['synonyms'] );
 						$content .= str_ireplace( $search, $replace, $parent->name ).' ';
 					} else {
 						// Voeg direct toe
