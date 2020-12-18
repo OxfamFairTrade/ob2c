@@ -2517,7 +2517,7 @@
 			'action2',
 			's',
 			'wpml-list_table_nonce',
-			'email[0]',
+			'email[]',
 			'_wp_http_referer',
 			'_wpnonce',
 		);
