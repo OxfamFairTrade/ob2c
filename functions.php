@@ -3718,6 +3718,9 @@
 
 				// Bereken en selecteer het totaalbedrag
 				$pick_sheet->setSelectedCell('F5')->setCellValue( 'F5', $pick_sheet->getCell('F5')->getCalculatedValue() );
+			} else {
+				$pick_sheet->setCellValue( 'A'.$i, '*EINDE*' );
+				$i++;
 			}
 
 			// Check of we een nieuwe file maken of een bestaande overschrijven
