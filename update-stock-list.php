@@ -40,7 +40,7 @@
 				'post_status'		=> array('publish'),
 				'posts_per_page'	=> -1,
 				'meta_key'			=> '_sku',
-				'orderby'			=> 'meta_value_num',
+				'orderby'			=> 'meta_value',
 				'order'				=> 'ASC',
 			);
 			$products = new WP_Query( $args );
