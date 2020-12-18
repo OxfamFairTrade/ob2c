@@ -6783,21 +6783,21 @@
 					echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden. Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</a></p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
-					// echo '<p>De nieuwe assortimentsdoos thee werd toegevoegd (opgelet, iets lagere prijs dan de voorgaande referentie!), samen met de doppers en wasnoten:</p><ul style="margin-left: 2em; column-count: 2;">';
-					// 	$skus = array( 23508, 12034, 12076, 12093, 12094, 12095, 12108, 48566, 48712, 65762, 87142, 87143, 87144, 87169, 87170, 87171, 87172, 87231, 87232, 87233, 87234, 91702, 91703, 91704 );
-					// 	foreach ( $skus as $sku ) {
-					// 		$product_id = wc_get_product_id_by_sku( $sku );
-					// 		if ( $product_id ) {
-					// 			$product = wc_get_product($product_id);
-					// 			echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-					// 		}
-					// 	}
-					// echo '</ul><p>';
-					// if ( current_user_can('manage_network_users') ) {
-					// 	// echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					// 	echo 'Opgelet: om te vermijden dat al deze producten als \'nieuw\' zouden verschijnen, kreeg de non-food als creatiedatum de dag van aanmaak in fairtradecrafts.be mee. Hierdoor verschijnen deze producten niét in het blauw onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					// }
-					// echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+					echo '<p>De nieuwe rode pesto staat klaar:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 27995 );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+						// echo 'Opgelet: om te vermijden dat al deze producten als \'nieuw\' zouden verschijnen, kreeg de non-food als creatiedatum de dag van aanmaak in fairtradecrafts.be mee. Hierdoor verschijnen deze producten niét in het blauw onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 					echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit begin januari gebeuren, samen met de levering in de winkel. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
@@ -7526,6 +7526,12 @@
 					switch ($key) {
 						case 'telephone':
 							return call_user_func( 'format_'.$key, '0471997223', '.' );
+					}
+				} elseif ( intval( $shop_post_id ) === 3468 ) {
+					// Uitzonderingen voor Hoboken
+					switch ($key) {
+						case 'telephone':
+							return call_user_func( 'format_'.$key, '038277719', '.' );
 					}
 				}
 				

@@ -139,12 +139,16 @@
 					),
 				);
 
-				if ( count( $oww_store_data['closing_days'] ) > 0 ) {
-					// Neem de ingestelde sluitingsdagen over uit de OWW-site
-					update_option( 'oxfam_holidays', $oww_store_data['closing_days'] );
-				} else {
-					// Verwijder de optie zodat we géén lege array achterlaten die de default waardes blokkeert
-					delete_option('oxfam_holidays');
+				if ( $webshop_blog_id !== '' ) {
+					switch_to_blog( $webshop_blog_id );
+					if ( count( $oww_store_data['closing_days'] ) > 0 ) {
+						// Neem de ingestelde sluitingsdagen over uit de OWW-site
+						update_option( 'oxfam_holidays', $oww_store_data['closing_days'] );
+					} else {
+						// Verwijder de optie zodat we géén lege array achterlaten die de default waardes blokkeert
+						delete_option('oxfam_holidays');
+					}
+					restore_current_blog();
 				}
 
 				$result_post_id = wp_insert_post( $store_args );
