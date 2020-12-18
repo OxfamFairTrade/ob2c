@@ -155,7 +155,7 @@
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
-	$default_holidays = array( '2020-04-03', '2020-04-04', '2020-04-05', '2020-04-06', '2020-04-07', '2020-04-08', '2020-04-09', '2020-04-10', '2020-04-11', '2020-04-12', '2020-04-13', '2020-04-14', '2020-04-15', '2020-04-16', '2020-04-17', '2020-04-18', '2020-04-19', '2020-05-01', '2020-05-21', '2020-06-01', '2020-07-21', '2020-08-15', '2020-11-01', '2020-11-11', '2020-12-25', '2021-01-01' );
+	$default_holidays = array( '2021-04-05', '2021-05-01', '2021-05-13', '2021-05-24', '2021-07-21', '2021-08-15', '2021-11-01', '2021-11-11', '2021-12-25', '2022-01-01' );
 	update_site_option( 'oxfam_holidays', $default_holidays );
 
 	// Handige truc om alle vinkjes aan te zetten op https://shop.oxfamwereldwinkels.be/wp-admin/edit.php?post_status=publish&post_type=product&orderby=sku&order=desc
