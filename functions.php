@@ -2510,7 +2510,7 @@
 		$args['admin.php']['oxfam-products-list'] = array(
 			'assortment',
 		);
-		$args['admin.php']['wpml_plugin_log'] = array(
+		$args['tools.php']['wpml_plugin_log'] = array(
 			'page',
 			'paged',
 			'action',
@@ -2518,7 +2518,6 @@
 			's',
 			'wpml-list_table_nonce',
 			'email[0]',
-			'email%5B0%5D',
 			'_wp_http_referer',
 			'_wpnonce',
 		);
