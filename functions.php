@@ -1382,15 +1382,18 @@
 
 		// Ook WordPress 5.5 gebruikt nog jQuery UI 1.11.4, upgrades voorzien vanaf WP 5.6+
 		wp_register_style( 'jquery-ui', 'https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css' );
-		wp_enqueue_style( 'jquery-ui' );
+		wp_enqueue_style('jquery-ui');
 
-		wp_enqueue_script( 'jquery-ui-autocomplete' );
-		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_enqueue_script( 'jquery-ui-tooltip' );
+		wp_enqueue_script('jquery-ui-autocomplete');
+		wp_enqueue_script('jquery-ui-datepicker');
+		wp_enqueue_script('jquery-ui-tooltip');
 
 		// Inladen in de footer om dependency issues met jQuery te vermijden 
 		wp_enqueue_script( 'readmore', get_stylesheet_directory_uri() . '/libraries/readmore/readmore.min.js', array(), false, true );
 		wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts-min.js', array(), false, true );
+
+		// Dashicons worden niet ingeladen bij niet-ingelogde gebruikers (maar gebruiken we in de tooltips!)
+		wp_enqueue_style('dashicons');
 	}
 
 	function dequeue_unwanted_styles_and_scripts() {
