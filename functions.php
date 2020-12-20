@@ -7922,7 +7922,7 @@
 				if ( is_array( $log ) or is_object( $log ) ) {
 					$log = serialize( $log );
 				}
-				error_log( "[".date_i18n('d/m/Y H:i:s')."] ".$log."\n", 3, WP_CONTENT_DIR.'../../activity.log' );
+				error_log( "[".date_i18n('d/m/Y H:i:s')."] ".$log."\n", 3, ABSPATH . '../activity.log' );
 			}
 		}
 	}
