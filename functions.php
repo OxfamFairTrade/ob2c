@@ -7440,11 +7440,11 @@
 
 		if ( false === ( $partner_data = get_site_transient( $partner_slug.'_partner_data' ) ) ) {
 			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
-			$args = array(
-				'headers' => array(
-					'Authorization' => 'Basic '.base64_encode( OWW_USER.':'.OWW_PASSWORD ),
-				),
-			);
+			// $args = array(
+			// 	'headers' => array(
+			// 		'Authorization' => 'Basic '.base64_encode( OWW_USER.':'.OWW_PASSWORD ),
+			// 	),
+			// );
 
 			// Zoekt default enkel naar objecten met status 'publish', levert in principe één element op
 			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/?slug='.$partner_slug );
