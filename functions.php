@@ -557,6 +557,11 @@
 				if ( wp_attachment_is_image( $main_image_id ) ) {
 					// Retourneert lege string bij error
 					$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
+					// Dit levert nog steeds een source op die het pad van de lokale shop bevat, waardoor het beeld toch niet in cache zit ...
+					$current_blog = get_blog_details();
+					do_action( 'qm/debug', $image );
+					$image = str_replace( '/wp-content/'.$current_blog->path.'/uploads/', '/wp-content/uploads/', $image );
+					do_action( 'qm/debug', $image );
 				}
 				restore_current_blog();
 			}
@@ -579,8 +584,10 @@
 				switch_to_blog(1);
 				// Check of de file nog bestaat
 				if ( get_post_type( $main_image_id ) === 'attachment' ) {
-					// Dit levert nog steeds een source op die de lokale shop bevat, waardoor het beeld fysiek wel identiek is maar toch niet in cache zit ...
 					$html = wc_get_gallery_image_html( $main_image_id, true );
+					// Dit levert nog steeds een source op die het pad van de lokale shop bevat, waardoor het beeld toch niet in cache zit ...
+					// $current_blog = get_blog_details();
+					// $html = str_replace( '/wp-content/'.$current_blog->path.'/uploads/', '/wp-content/uploads/', $html );
 				}
 				restore_current_blog();
 			}
