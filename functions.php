@@ -7915,14 +7915,14 @@
 		wp_mail( 'Helpdesk E-Commerce <e-commerce@oft.be>', $subject, $body, $headers );
 	}
 
-	// Print variabelen op een overzichtelijke manier naar debug.log
+	// Print variabelen op een overzichtelijke manier naar een niet-publieke file
 	if ( ! function_exists( 'write_log' ) ) {
 		function write_log( $log )  {
 			if ( defined('WP_DEBUG_LOG') and WP_DEBUG_LOG ) {
 				if ( is_array( $log ) or is_object( $log ) ) {
 					$log = serialize( $log );
 				}
-				error_log( "[".date_i18n('d/m/Y H:i:s')."] ".$log."\n", 3, WP_CONTENT_DIR.'/activity.log' );
+				error_log( "[".date_i18n('d/m/Y H:i:s')."] ".$log."\n", 3, WP_CONTENT_DIR.'../../activity.log' );
 			}
 		}
 	}
