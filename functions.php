@@ -552,13 +552,13 @@
 			}
 			
 			if ( $main_image_id ) {
+				$current_blog = get_blog_details();
 				switch_to_blog(1);
 				// Checkt of de file nog bestaat én een afbeelding is
 				if ( wp_attachment_is_image( $main_image_id ) ) {
 					// Retourneert lege string bij error
 					$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
 					// Dit levert nog steeds een source op die het pad van de lokale shop bevat, waardoor het beeld toch niet in cache zit ...
-					$current_blog = get_blog_details();
 					do_action( 'qm/debug', $current_blog->path );
 					$image = str_replace( $current_blog->path.'wp-content/uploads/', '/wp-content/uploads/', $image );
 					do_action( 'qm/debug', $image );
