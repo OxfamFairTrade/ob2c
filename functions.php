@@ -559,8 +559,8 @@
 					$image = wp_get_attachment_image( $main_image_id, $size, false, $attr );
 					// Dit levert nog steeds een source op die het pad van de lokale shop bevat, waardoor het beeld toch niet in cache zit ...
 					$current_blog = get_blog_details();
-					do_action( 'qm/debug', $image );
-					$image = str_replace( '/wp-content/'.$current_blog->path.'/uploads/', '/wp-content/uploads/', $image );
+					do_action( 'qm/debug', $current_blog->path );
+					$image = str_replace( $current_blog->path.'wp-content/uploads/', '/wp-content/uploads/', $image );
 					do_action( 'qm/debug', $image );
 				}
 				restore_current_blog();
@@ -587,7 +587,7 @@
 					$html = wc_get_gallery_image_html( $main_image_id, true );
 					// Dit levert nog steeds een source op die het pad van de lokale shop bevat, waardoor het beeld toch niet in cache zit ...
 					// $current_blog = get_blog_details();
-					// $html = str_replace( '/wp-content/'.$current_blog->path.'/uploads/', '/wp-content/uploads/', $html );
+					// $html = str_replace( $current_blog->path.'wp-content/uploads/', '/wp-content/uploads/', $html );
 				}
 				restore_current_blog();
 			}
