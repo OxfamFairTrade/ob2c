@@ -1426,18 +1426,13 @@
 	}
 
 	// Fixes i.v.m. cURL
-	add_action( 'http_api_curl', 'custom_curl_timeout', 10, 3 );
+	// add_action( 'http_api_curl', 'custom_curl_timeout', 10, 3 );
 	
 	function custom_curl_timeout( $handle, $r, $url ) {
 		// Fix error 28 - Operation timed out after 10000 milliseconds with 0 bytes received (bij het connecteren van Jetpack met Wordpress.com)
 		curl_setopt( $handle, CURLOPT_TIMEOUT, 180 );
 		// Fix error 60 - SSL certificate problem: unable to get local issuer certificate (bij het downloaden van een CSV in WP All Import)
 		curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
-	}
-
-	// Jetpack-tags uitschakelen op homepages om dubbel werk te vermijden
-	if ( is_front_page() ) {
-		add_filter( 'jetpack_enable_open_graph', '__return_false' );
 	}
 
 
