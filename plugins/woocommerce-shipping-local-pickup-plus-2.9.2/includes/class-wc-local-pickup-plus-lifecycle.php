@@ -404,6 +404,9 @@ CREATE TABLE {$wpdb->prefix}woocommerce_pickup_locations_geodata (
 			$plugin->log ( 'No pickup locations found to upgrade.' );
 		}
 
+		// GEWIJZIGD: Stel verwijdering voor alle veiligheid nog even uit
+		update_option( 'legacy_woocommerce_pickup_locations', $legacy_pickup_locations, 'no' );
+		
 		// finally delete the legacy option meant for storing pickup locations
 		delete_option( 'woocommerce_pickup_locations' );
 	}

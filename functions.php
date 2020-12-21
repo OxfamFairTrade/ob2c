@@ -713,7 +713,8 @@
 	// Geautomatiseerde manier om diverse instellingen te kopiëren naar subsites
 	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_placeholder_image', 'sync_settings_to_subsites', 10, 3 );
-	add_action( 'update_option_woocommerce_google_analytics_settings', 'sync_settings_to_subsites', 10, 3 );
+	// add_action( 'update_option_woocommerce_google_analytics_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_gtm4wp-options', 'sync_settings_to_subsites', 10, 3 );
 	// add_action( 'update_option_woocommerce_local_pickup_plus_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wp_mail_smtp', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
@@ -1046,8 +1047,8 @@
 		exit();
 	}
 	
-	// Schakel Google Analytics uit in bepaalde gevallen
-	add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
+	// Schakel Google Analytics uit in bepaalde gevallen WORDT NU VOLLEDIG IN GTM GEREGELD
+	// add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
 
 	function disable_ga_tracking_for_certain_users( $disable, $type ) {
 		// Parameter $type bevat het soort GA-tracking
@@ -1060,29 +1061,6 @@
 				return false;
 			}
 		}
-	}
-
-	// Activeer Google Tag Manager (JS)
-	add_action( 'wp_head', 'add_google_tag_manager_js', 100 );
-
-	function add_google_tag_manager_js() {
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			echo '<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">';
-			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-				?>
-				<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-				new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-				j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-				'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-				})(window,document,'script','dataLayer','GTM-KMKZ7HH');</script>
-				<?php
-			}
-		}
-
-		// Verhinder indexeren van bepaalde lokale pagina's
-		// if ( ! is_main_site() ) {
-		// 	wp_no_robots();
-		// }
 	}
 
 	// Vervang canonical tag door hoofdproduct bij nationale producten (duplicate content vermijden!)
@@ -1113,20 +1091,6 @@
 			$markup['image'] =  wp_get_attachment_image_url( $product->get_image_id(), 'shop_single' );
 		}
 		return $markup;
-	}
-
-	// Activeer Google Tag Manager (no JS)
-	add_action( 'wp_head', 'add_google_tag_manager_no_js', 100 );
-
-	function add_google_tag_manager_no_js() {
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-				?>
-				<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMKZ7HH"
-				height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-				<?php
-			}
-		}
 	}
 
 	// Activeer Facebook Pixel (JS)
@@ -1762,7 +1726,7 @@
 				$pickup_location_name = $pickup_location['shipping_company'];
 			}
 
-			$city = mb_strtolower( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_location_name ) ) );
+			$city = mb_strtolower( trim( str_replace( 'Oxfam-Wereldwinkel ', '', $pickup_location_name ) ) );
 			if ( in_array( $city, get_option('oxfam_member_shops') ) ) {
 				// Dubbelcheck of deze stad wel tussen de deelnemende winkels zit
 				$owner = $city;
@@ -3708,7 +3672,7 @@
 							$pickup_location = $shipping_method->get_meta('pickup_location');
 							$pickup_location_name = $pickup_location['shipping_company'];
 						}
-						$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_location_name ) ) ) );
+						$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel ', '', $pickup_location_name ) ) ) );
 				}
 
 				// Vermeld de totale korting (inclusief/exclusief BTW)
