@@ -13,7 +13,7 @@ $agent = 'WordPress/' . $wp_version . '; ' . home_url();
 foreach ( $blogs as $blog ) {
 	$domain = $blog->domain;
 	$path = $blog->path;
-	$command = "https://" . $domain . ( $path ? $path : '/' ) . 'wp-cron.php?doing_wp_cron=' . time() . '&ver=' . $wp_version;
+	$command = "https://" . $domain . ( $path ? $path : '/' ) . 'wp-cron.php?doing_wp_cron';
 
 	$ch = curl_init( $command );
 	$rc = curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
