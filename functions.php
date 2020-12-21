@@ -3155,7 +3155,7 @@
 		$fields['account']['account_password']['label'] = "Kies een wachtwoord:";
 		
 		$shipping_methods = WC()->session->get('chosen_shipping_methods');
-		$shipping_id = reset($shipping_methods);
+		$shipping_id = reset( $shipping_methods );
 		switch ( $shipping_id ) {
 			case stristr( $shipping_id, 'local_pickup' ):
 				$placeholder = __( 'Voorbeeldnotitie op afrekenpagina (indien afhaling).', 'oxfam-webshop' );
@@ -4780,9 +4780,11 @@
 	
 	function skip_shipping_address_on_pickups( $needs_shipping_address ) {
 		$chosen_methods = WC()->session->get('chosen_shipping_methods');
-		// Deze vergelijking zoekt naar methodes die beginnen met deze string
-		if ( strpos( reset($chosen_methods), 'local_pickup' ) !== false ) {
-			$needs_shipping_address = false;
+		if ( $chosen_methods !== NULL ) {
+			// Deze vergelijking zoekt naar methodes die beginnen met deze string
+			if ( strpos( reset( $chosen_methods ), 'local_pickup' ) !== false ) {
+				$needs_shipping_address = false;
+			}
 		}
 		return $needs_shipping_address;
 	}
