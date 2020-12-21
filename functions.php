@@ -71,20 +71,6 @@
 	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
 	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
 
-	// Laat lokale beheerders enkel lokale producten verwijderen
-	// Eventueel vervangen door 'pre_trash_post'-filter, maar die eindigt ook gewoon met wp_die() ...
-	add_action( 'wp_trash_post', 'ob2c_disable_national_product_removal', 10, 1 );
-
-	function ob2c_disable_national_product_removal( $post_id ) {
-		if ( get_post_type( $post_id ) === 'product' ) {
-			if ( ! wp_doing_cron() and ! current_user_can('update_core') ) {
-				if ( ! in_array( get_post_field( 'post_author', $post_id ), get_local_manager_user_ids() ) ) {
-					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het naar de prullenbak verplaatsen van nationale producten door lokale beheerders niet toegestaan! Oude producten worden verwijderd van zodra de laatst uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn.<br/><br/>Keer terug naar %s of mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="'.wp_get_referer().'">de vorige pagina</a>', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
-				}
-			}
-		}
-	}
-
 	// Verwijder het gekoppelde packshot
 	add_action( 'before_delete_post', 'ob2c_delete_coupled_packshot', 10, 1 );
 
@@ -129,95 +115,6 @@
 			}
 		}
 	}
-
-	// Vergt het activeren van de 'Posts edit access'-module én het toekennen van 'edit_others_products'!
-	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
-	
-	function ure_modify_authors_list( $authors ) {
-		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
-		// TO DO: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
-		if ( count( get_local_manager_user_ids() ) > 0 ) {
-			return $authors . ',' . get_local_manager_user_ids( true );
-		} else {
-			return $authors;
-		}
-	}
-
-	function get_local_manager_user_ids( $implode = false ) {
-		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
-		if ( count( $local_managers->get_results() ) > 0 ) {
-			if ( current_user_can('update_core') ) {
-				write_log( "Local managers blog-ID ".get_current_blog_id().": ".implode( ', ', $local_managers->get_results() ) );
-			}
-
-			if ( $implode ) {
-				return implode( ',', $local_managers->get_results() );
-			} else {
-				return $local_managers->get_results();
-			}
-		} else {
-			// In principe is er altijd minstens één lokale beheerder, maar wie weet!
-			return array();
-		}
-	}
-
-	// 'Posts edit access'-module blokkeert automatisch ook het inkijken van andere post types zoals orders!
-	add_filter( 'ure_restrict_edit_post_type', 'exclude_posts_from_edit_restrictions' );
-	
-	function exclude_posts_from_edit_restrictions( $post_type ) {
-		$restrict_it = false;
-		if ( $post_type === 'product' ) {
-			$user = wp_get_current_user();
-			if ( in_array( 'local_manager', $user->roles ) ) {
-				$restrict_it = true;
-			}
-		}
-		return $restrict_it;
-	}
-
-	// Lijst ook de posts op die de gebruiker niét kan bewerken
-	add_filter( 'ure_posts_show_full_list', '__return_true' );
-
-	// Enkel admins mogen producten dupliceren
-	add_filter( 'woocommerce_duplicate_product_capability', function( $cap ) {
-		return 'manage_options';
-	}, 10, 1 );
-
-	// Disable bulk edit van producten
-	add_filter( 'bulk_actions-edit-product', function( $actions ) {
-		// var_dump_pre( $actions);
-		if ( ! current_user_can('manage_options') and array_key_exists( 'edit', $actions ) ) {
-			unset( $actions['edit'] );
-		}
-		return $actions;
-	}, 10, 1 );
-
-	// Disable quick edit van producten
-	add_filter( 'post_row_actions', 'remove_quick_edit', 10, 2 );
-
-	function remove_quick_edit( $actions, $post ) {
-		if ( get_post_type( $post ) === 'product' ) {
-			// var_dump_pre( $actions );
-			if ( ! current_user_can('manage_options') and array_key_exists( 'inline hide-if-no-js', $actions ) ) {
-				unset( $actions['inline hide-if-no-js'] );
-			}
-		}
-		return $actions;
-	}
-
-	// Verwijder overbodige productopties
-	add_filter( 'product_type_selector', function( $types ) {
-		unset( $types['grouped'] );
-		unset( $types['external'] );
-		unset( $types['variable'] );
-		return $types;
-	}, 10, 1 );
-
-	add_filter( 'product_type_options', function( $options ) {
-		unset( $options['virtual'] );
-		unset( $options['downloadable'] );
-		return $options;
-	}, 10, 1 );
 
 	add_action( 'woocommerce_product_options_general_product_data', 'add_oxfam_general_product_fields', 5 );
 	add_action( 'woocommerce_product_options_inventory_product_data', 'add_oxfam_inventory_product_fields', 5 );
@@ -379,6 +276,7 @@
 			}
 		}
 
+		// NIET MEER NODIG
 		// if ( is_main_site() ) {
 		// 	$product = wc_get_product( $post_id );
 		// 	if ( $product !== false ) {
@@ -386,7 +284,7 @@
 		// 		$context = array( 'source' => 'Oxfam Manual Product Sync' );
 					
 		// 		if ( $product->get_meta('_multiple') === '' ) {
-		// 			// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur IN PRINCIPE NIET MEER NODIG
+		// 			// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur
 		// 			$to_migrate = array(
 		// 				'shopplus' => '_shopplus_code',
 		// 				'ean' => '_cu_ean',
@@ -950,7 +848,7 @@
 		unset( $actions['mark_processing'] );
 		unset( $actions['mark_completed'] );
 		// WERKT NIET, WELLICHT MOET WOOCOMMERCE ORDER STATUSES NOG BIJGEWERKT WORDEN (INJECTEERT STATUSSEN NOG VIA JAVASCRIPT?)
-		// var_dump_pre( $actions);
+		do_action( 'qm/debug', $actions );
 		return $actions;
 	}
 
@@ -967,11 +865,11 @@
 		return $actions;
 	}
 
-	// Verwijder bepaalde filters boven het productoverzicht in de back-end (beschikbaar vanaf WC3.5+)
+	// Verwijder bepaalde filters boven het productoverzicht in de back-end
 	add_filter( 'woocommerce_products_admin_list_table_filters', 'oft_remove_product_filters', 10, 1 );
 
 	function oft_remove_product_filters( $filters ) {
-		unset($filters['product_type']);
+		unset( $filters['product_type'] );
 		return $filters;
 	}
 
@@ -999,9 +897,6 @@
 		}
 		return $order_statuses;
 	}
-
-	// Sitemap van afbeeldingen uitschakelen
-	add_filter( 'jetpack_sitemap_image_skip_post', '__return_true' );
 
 	// Verhinder bekijken van site door mensen die geen beheerder zijn van deze webshop
 	add_action( 'init', 'force_user_login' );
@@ -1078,7 +973,7 @@
 		}
 
 		if ( WC()->session->has_session() and $recipe ) {
-			// VOORLOPIG UITSCHAKELEN
+			// Voorlopig niet inschakelen
 			// $executed = WC()->session->get( 'recipe_'.$recipe_id.'_products_ordered', 'no' );
 			$executed = 'no';
 		} else {
@@ -1425,7 +1320,7 @@
 		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.2' );
 	}
 
-	// Fixes i.v.m. cURL
+	// Fixes i.v.m. cURL NIET MEER NODIG?
 	// add_action( 'http_api_curl', 'custom_curl_timeout', 10, 3 );
 	
 	function custom_curl_timeout( $handle, $r, $url ) {
@@ -1679,48 +1574,13 @@
 	# SECURITY #
 	############
 
-	// Toon het blokje 'Additional Capabilities' op de profielpagina nooit
-	add_filter( 'ure_show_additional_capabilities_section', '__return_false' );
-
-	// Schakel de sterkte-indicator voor paswoorden uit
+	// Schakel de sterkte-indicator voor paswoorden in de front-end uit
 	add_action( 'wp_print_scripts', 'remove_password_strength', 100 );
 	
 	function remove_password_strength() {
 		if ( wp_script_is( 'wc-password-strength-meter', 'enqueued' ) ) {
 			wp_dequeue_script( 'wc-password-strength-meter' );
 		}
-	}
-
-	// Fix probleem waarbij wc_modify_editable_roles() in wc-user-functions.php admins en speciale rollen enkel nog toegang geeft tot gewone klanten
-	// Zie o.a. https://github.com/woocommerce/woocommerce/pull/21555
-	add_filter( 'woocommerce_shop_manager_editable_roles', 'give_custom_user_roles_access_to_role_edit_capabilities' );
-
-	function give_custom_user_roles_access_to_role_edit_capabilities( $roles ) {
-		// Toestaan dat lokale beheerders ook lokale assistenten bewerken
-		if ( current_user_can('manage_network_users') ) {
-			$roles[] = 'local_helper';
-		}
-
-		// Superadmins toegang geven tot alle rollen uit het netwerk
-		if ( current_user_can('create_sites') ) {
-			global $wp_roles;
-			if ( ! isset( $wp_roles ) ) {
-				$wp_roles = new WP_Roles();
-			}
-			$roles = array_keys( $wp_roles->role_names );
-		}
-		
-		return $roles;
-	}
-
-	// Zorg ervoor dat lokale assistenten/beheerders hun gearchiveerde site toch al kunnen bekijken
-	add_filter( 'ms_site_check', 'allow_local_manager_on_archived' );
-
-	function allow_local_manager_on_archived() {
-		if ( current_user_can('manage_woocommerce') ) {
-			return true;
-		}
-		// Terug te plaatsen winkelboodschap: "We zijn vandaag uitzonderlijk gesloten. Bestellingen worden opnieuw verwerkt vanaf de eerstvolgende openingsdag. De geschatte leverdatum houdt hiermee rekening."
 	}
 
 	// Tegenhouden lukt niet omdat de orderstatus al bijgewerkt is als de actie doorlopen wordt ...
@@ -1881,12 +1741,28 @@
 			$methods = $order->get_shipping_methods();
 			$method = reset( $methods );
 			
-			$meta_data = $method->get_meta_data();
-			$pickup_data = reset($meta_data);
-			// OF NIEUWE MANIER?
-			// $pickup_location = $method->get_meta('pickup_location');
-			// $pickup_location['shipping_company']
-			$city = mb_strtolower( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) );
+			$shipping_methods = $order->get_shipping_methods();
+			$shipping_method = reset( $shipping_methods );
+			
+			if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
+				// Kijk naar interne add_pickup_locations_column_content() functie
+				$pickup_location_name = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_name( $shipping_method->get_id() );
+				$pickup_location_id = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_id( $shipping_method->get_id() );
+				$pickup_location_id = is_numeric( $pickup_location_id ) ? (int) $pickup_location_id : null;
+				
+				$pickup_location = wc_local_pickup_plus_get_pickup_location( $pickup_location_id );
+				if ( $pickup_location instanceof \WC_Local_Pickup_Plus_Pickup_Location ) {
+					if ( $pickup_location->get_name() !== $pickup_location_name ) {
+						// Of behouden we toch de originele naam?
+						$pickup_location_name = $pickup_location->get_name();
+					}
+				}
+			} else {
+				$pickup_location = $shipping_method->get_meta('pickup_location');
+				$pickup_location_name = $pickup_location['shipping_company'];
+			}
+
+			$city = mb_strtolower( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_location_name ) ) );
 			if ( in_array( $city, get_option('oxfam_member_shops') ) ) {
 				// Dubbelcheck of deze stad wel tussen de deelnemende winkels zit
 				$owner = $city;
@@ -2225,10 +2101,35 @@
 		return $args;
 	}
 
-	// Voeg gewicht en volume toe op orderdetail
+	// Voeg afhaalpunt en gewicht / volume toe aan orderdetail
 	add_action( 'woocommerce_admin_order_data_after_shipping_address', 'ob2c_add_logistic_parameters', 10, 1 );
 
 	function ob2c_add_logistic_parameters( $order ) {
+		if ( $order->has_shipping_method('local_pickup_plus') ) {
+			$shipping_methods = $order->get_shipping_methods();
+			$shipping_method = reset( $shipping_methods );
+			
+			if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
+				// Kijk naar interne add_pickup_locations_column_content() functie
+				$pickup_location_name = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_name( $shipping_method->get_id() );
+				$pickup_location_id = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_id( $shipping_method->get_id() );
+				$pickup_location_id = is_numeric( $pickup_location_id ) ? (int) $pickup_location_id : null;
+				
+				$pickup_location = wc_local_pickup_plus_get_pickup_location( $pickup_location_id );
+				if ( $pickup_location instanceof \WC_Local_Pickup_Plus_Pickup_Location ) {
+					if ( $pickup_location->get_name() !== $pickup_location_name ) {
+						// Of behouden we toch de originele naam?
+						$pickup_location_name = $pickup_location->get_name();
+					}
+				}
+			} else {
+				$pickup_location = $shipping_method->get_meta('pickup_location');
+				$pickup_location_name = $pickup_location['shipping_company'];
+			}
+			
+			echo '<p><strong>Gekozen afhaalpunt:</strong><br/>'.$pickup_location_name.'</p>';
+		}
+
 		echo '<p><strong>Logistieke info:</strong><br/>';
 		$logistics = get_logistic_params( $order );
 		echo number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg';
@@ -2259,14 +2160,13 @@
 			}
 		}
 
-		if ( $theorder->get_meta('is_b2b_sale') === 'yes' ) {
-			// $actions['oxfam_mark_invoiced'] = 'Markeer als factuur opgesteld';
-		}
+		// if ( $theorder->get_meta('is_b2b_sale') === 'yes' ) {
+		// 	$actions['oxfam_mark_invoiced'] = 'Markeer als factuur opgesteld';
+		// }
 
-		// Pas vanaf WC 3.1+ toegang tot alle statussen
-		// write_log( wc_print_r( $actions, true ) );
-		// unset($actions['send_order_details']);
-		// unset($actions['regenerate_download_permissions']);
+		do_action( 'qm/debug', $actions );
+		unset( $actions['send_order_details'] );
+		unset( $actions['regenerate_download_permissions'] );
 		
 		return $actions;
 	}
@@ -2482,6 +2382,31 @@
 		return wc_price($regular_price);
 	}
 
+	// Fix probleem waarbij wc_modify_editable_roles() in wc-user-functions.php admins en speciale rollen enkel nog toegang geeft tot gewone klanten
+	// Zie o.a. https://github.com/woocommerce/woocommerce/pull/21555 NIET LANGER NODIG?
+	// add_filter( 'woocommerce_shop_manager_editable_roles', 'give_custom_user_roles_access_to_role_edit_capabilities' );
+
+	function give_custom_user_roles_access_to_role_edit_capabilities( $roles ) {
+		// Toestaan dat lokale beheerders ook lokale assistenten bewerken
+		if ( current_user_can('manage_network_users') ) {
+			$roles[] = 'local_helper';
+		}
+
+		// Superadmins toegang geven tot alle rollen uit het netwerk
+		if ( current_user_can('create_sites') ) {
+			global $wp_roles;
+			if ( ! isset( $wp_roles ) ) {
+				$wp_roles = new WP_Roles();
+			}
+			$roles = array_keys( $wp_roles->role_names );
+		}
+		
+		return $roles;
+	}
+
+	// Toon het blokje 'Additional Capabilities' op de profielpagina nooit
+	add_filter( 'ure_show_additional_capabilities_section', '__return_false' );
+
 	// Zorg ervoor dat winkelbeheerders na bv. het opslaan van feestdagen of het filteren in regiorapporten niet teruggedwongen worden naar het dashboard
 	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
 
@@ -2513,6 +2438,7 @@
 		$args['admin.php']['oxfam-products-list'] = array(
 			'assortment',
 		);
+		// Verwijderen / opnieuw versturen blijft onmogelijk ...
 		$args['tools.php']['wpml_plugin_log'] = array(
 			'page',
 			'paged',
@@ -2541,6 +2467,109 @@
 			'updated',
 		);
 		return $args;
+	}
+
+	// Vergt het activeren van de 'Posts edit access'-module én het toekennen van 'edit_others_products'!
+	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
+	
+	function ure_modify_authors_list( $authors ) {
+		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
+		// TO DO: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
+		if ( count( get_local_manager_user_ids() ) > 0 ) {
+			return $authors . ',' . get_local_manager_user_ids( true );
+		} else {
+			return $authors;
+		}
+	}
+
+	function get_local_manager_user_ids( $implode = false ) {
+		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
+		if ( count( $local_managers->get_results() ) > 0 ) {
+			if ( current_user_can('update_core') ) {
+				write_log( "Local managers blog-ID ".get_current_blog_id().": ".implode( ', ', $local_managers->get_results() ) );
+			}
+
+			if ( $implode ) {
+				return implode( ',', $local_managers->get_results() );
+			} else {
+				return $local_managers->get_results();
+			}
+		} else {
+			// In principe is er altijd minstens één lokale beheerder, maar wie weet!
+			return array();
+		}
+	}
+
+	// 'Posts edit access'-module blokkeert automatisch ook het inkijken van andere post types zoals orders!
+	add_filter( 'ure_restrict_edit_post_type', 'exclude_posts_from_edit_restrictions' );
+	
+	function exclude_posts_from_edit_restrictions( $post_type ) {
+		$restrict_it = false;
+		if ( $post_type === 'product' ) {
+			$user = wp_get_current_user();
+			if ( in_array( 'local_manager', $user->roles ) ) {
+				$restrict_it = true;
+			}
+		}
+		return $restrict_it;
+	}
+
+	// Lijst ook de posts op die de gebruiker niét kan bewerken
+	add_filter( 'ure_posts_show_full_list', '__return_true' );
+
+	// Enkel admins mogen producten dupliceren
+	add_filter( 'woocommerce_duplicate_product_capability', function( $cap ) {
+		return 'manage_options';
+	}, 10, 1 );
+
+	// Disable bulk edit van producten
+	add_filter( 'bulk_actions-edit-product', function( $actions ) {
+		// var_dump_pre( $actions);
+		if ( ! current_user_can('manage_options') and array_key_exists( 'edit', $actions ) ) {
+			unset( $actions['edit'] );
+		}
+		return $actions;
+	}, 10, 1 );
+
+	// Disable quick edit van producten
+	add_filter( 'post_row_actions', 'remove_quick_edit', 10, 2 );
+
+	function remove_quick_edit( $actions, $post ) {
+		if ( get_post_type( $post ) === 'product' ) {
+			// var_dump_pre( $actions );
+			if ( ! current_user_can('manage_options') and array_key_exists( 'inline hide-if-no-js', $actions ) ) {
+				unset( $actions['inline hide-if-no-js'] );
+			}
+		}
+		return $actions;
+	}
+
+	// Verwijder overbodige productopties
+	add_filter( 'product_type_selector', function( $types ) {
+		unset( $types['grouped'] );
+		unset( $types['external'] );
+		unset( $types['variable'] );
+		return $types;
+	}, 10, 1 );
+
+	add_filter( 'product_type_options', function( $options ) {
+		unset( $options['virtual'] );
+		unset( $options['downloadable'] );
+		return $options;
+	}, 10, 1 );
+
+	// Laat lokale beheerders enkel lokale producten verwijderen
+	// Eventueel vervangen door 'pre_trash_post'-filter, maar die eindigt ook gewoon met wp_die() ...
+	add_action( 'wp_trash_post', 'ob2c_disable_national_product_removal', 10, 1 );
+
+	function ob2c_disable_national_product_removal( $post_id ) {
+		if ( get_post_type( $post_id ) === 'product' ) {
+			if ( ! wp_doing_cron() and ! current_user_can('update_core') ) {
+				if ( ! in_array( get_post_field( 'post_author', $post_id ), get_local_manager_user_ids() ) ) {
+					wp_die( sprintf( 'Uit veiligheidsoverwegingen is het naar de prullenbak verplaatsen van nationale producten door lokale beheerders niet toegestaan! Oude producten worden verwijderd van zodra de laatst uitgeleverde THT-datum verstreken is en/of alle lokale webshopvoorraden opgebruikt zijn.<br/><br/>Keer terug naar %s of mail naar %s indien deze melding volgens jou ten onrechte getoond wordt.', '<a href="'.wp_get_referer().'">de vorige pagina</a>', '<a href="mailto:'.get_site_option('admin_email').'">'.get_site_option('admin_email').'</a>' ) );
+				}
+			}
+		}
 	}
 
 
@@ -3662,12 +3691,24 @@
 						break;
 
 					default:
-						$meta_data = $shipping_method->get_meta_data();
-						$pickup_data = reset( $meta_data );
-						// OF NIEUWE MANIER?
-						// $pickup_location = $method->get_meta('pickup_location');
-						// $pickup_location['shipping_company']
-						$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_data->value['shipping_company'] ) ) ) );
+						if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
+							// Kijk naar interne add_pickup_locations_column_content() functie
+							$pickup_location_name = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_name( $shipping_method->get_id() );
+							$pickup_location_id = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_id( $shipping_method->get_id() );
+							$pickup_location_id = is_numeric( $pickup_location_id ) ? (int) $pickup_location_id : null;
+							
+							$pickup_location = wc_local_pickup_plus_get_pickup_location( $pickup_location_id );
+							if ( $pickup_location instanceof \WC_Local_Pickup_Plus_Pickup_Location ) {
+								if ( $pickup_location->get_name() !== $pickup_location_name ) {
+									// Of behouden we toch de originele naam?
+									$pickup_location_name = $pickup_location->get_name();
+								}
+							}
+						} else {
+							$pickup_location = $shipping_method->get_meta('pickup_location');
+							$pickup_location_name = $pickup_location['shipping_company'];
+						}
+						$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel', '', $pickup_location_name ) ) ) );
 				}
 
 				// Vermeld de totale korting (inclusief/exclusief BTW)
