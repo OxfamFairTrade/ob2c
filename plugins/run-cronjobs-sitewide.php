@@ -15,10 +15,12 @@ foreach ( $blogs as $blog ) {
 	$path = $blog->path;
 	$command = "https://" . $domain . ( $path ? $path : '/' ) . 'wp-cron.php?doing_wp_cron';
 
-	$ch = curl_init( $command );
-	$rc = curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
-	$rc = curl_exec( $ch );
-	curl_close( $ch );
+	$rc = shell_exec( dirname(__FILE__) . ( $path ? $path : '/' ) . 'public_html/wp-cron.php?doing_wp_cron' );
+	
+	// $ch = curl_init( $command );
+	// $rc = curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
+	// $rc = curl_exec( $ch );
+	// curl_close( $ch );
 
 	print_r( $rc );
 	print_r( "\t✔ " . $command . PHP_EOL );
