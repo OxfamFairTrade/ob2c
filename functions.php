@@ -4584,7 +4584,6 @@
 						$method = reset( $methods );
 						// @toDo: Werkt dit nog in WooCommerce Local Pickup Plus 2.9+?
 						$chosen_pickup_location = $method->get_meta('pickup_location');
-						// write_log( print_r( $chosen_pickup_location, true ) );
 						$chosen_pickup_id = $chosen_pickup_location['id'];
 					}
 					
@@ -7168,11 +7167,11 @@
 			
 			// Oude versie
 			if ( $locations = get_option('woocommerce_pickup_locations') ) {
-				foreach ( $locations as $internal_id => $location ) {
+				foreach ( $locations as $location ) {
 					$parts = explode( ' id=', $location['address_1'] );
 					if ( isset( $parts[1] ) ) {
 						$temporary_shop_post_id = str_replace( ']', '', $parts[1] );
-						if ( is_numeric( $shop_post_id ) ) {
+						if ( is_numeric( $temporary_shop_post_id ) ) {
 							$shop_post_id = intval( $temporary_shop_post_id );
 						} elseif ( $include_external_locations ) {
 							// Externe locatie toch opnemen
@@ -7187,7 +7186,7 @@
 					}
 
 					if ( $return_internal_id ) {
-						$shops[ $shop_post_id ] = $internal_id;
+						$shops[ $shop_post_id ] = $location['id'];
 					} else {
 						$shops[ $shop_post_id ] = $location['shipping_company'];
 					}
