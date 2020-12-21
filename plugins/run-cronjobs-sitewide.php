@@ -1,7 +1,7 @@
 <?php
 
 // Laad de WordPress-omgeving (relatief pad geldig vanuit domeinmap)
-require_once 'public_html/wp-load.php';
+require_once dirname(__FILE__).'/public_html/wp-load.php';
 
 $args = array( 'public' => 1 );
 $blogs = get_sites( $args );
