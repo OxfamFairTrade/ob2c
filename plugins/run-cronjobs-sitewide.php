@@ -1,6 +1,6 @@
 <?php
 
-// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
+// Laad de WordPress-omgeving (relatief pad geldig vanuit domeinmap)
 require_once 'public_html/wp-load.php';
 
 $args = array( 'public' => 1 );
