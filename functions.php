@@ -1798,9 +1798,6 @@
 
 	function add_claimed_by_column( $columns ) {
 		$columns['claimed_by'] = 'Behandeling door';
-		// Eventueel bepaalde kolommen volledig verwijderen?
-		// unset( $columns['order_notes'] );
-		// unset( $columns['order_actions'] );
 		return $columns;
 	}
 
@@ -1904,8 +1901,9 @@
 	function add_estimated_delivery_column( $columns ) {
 		$columns['estimated_delivery'] = 'Uiterste leverdag';
 		$columns['excel_file_name'] = 'Picklijst';
+		// Eventueel bepaalde kolommen volledig verwijderen?
 		// unset( $columns['billing_address'] );
-		// unset( $columns['order_notes'] );
+		// unset( $columns['order_actions'] );
 		return $columns;
 	}
 
