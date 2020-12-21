@@ -3547,8 +3547,10 @@
 			$shipping_method = reset( $shipping_methods );
 			$gift_wrap_text = false;
 			
-			$i = 1;
-			if ( get_option('oxfam_remove_excel_header') !== 'yes' ) {
+			if ( get_option('oxfam_remove_excel_header') === 'yes' ) {
+				// Skip de kopregel
+				$i = 2;
+			} else {
 				// Bestelgegevens invullen
 				$pick_sheet->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
 				$pick_sheet->getStyle( 'F3' )->getNumberFormat()->setFormatCode( PHPExcel_Style_NumberFormat::FORMAT_DATE_DMYSLASH );
