@@ -1904,8 +1904,8 @@
 	function add_estimated_delivery_column( $columns ) {
 		$columns['estimated_delivery'] = 'Uiterste leverdag';
 		$columns['excel_file_name'] = 'Picklijst';
-		unset($columns['billing_address']);
-		unset($columns['order_notes']);
+		// unset( $columns['billing_address'] );
+		// unset( $columns['order_notes'] );
 		return $columns;
 	}
 
@@ -1951,16 +1951,24 @@
 				}
 			}
 		} elseif ( $column === 'excel_file_name' ) {
-			if ( strpos( $the_order->get_meta('_excel_file_name'), '.xlsx' ) > 10 ) {
-				$file_path = '/uploads/xlsx/'.$the_order->get_meta('_excel_file_name');
-				if ( file_exists( WP_CONTENT_DIR . $file_path ) ) {
-					echo '<a href="'.content_url( $file_path ).'" download>Download</a>';
-				} else {
-					echo '<i>niet meer beschikbaar</i>';
-				}
+			echo get_picklist_download_link( $the_order );
+		}
+	}
+
+	function get_picklist_download_link( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return '';
+		}
+
+		if ( strpos( $order->get_meta('_excel_file_name'), '.xlsx' ) > 10 ) {
+			$file_path = '/uploads/xlsx/'.$order->get_meta('_excel_file_name');
+			if ( file_exists( WP_CONTENT_DIR . $file_path ) ) {
+				return '<a href="'.content_url( $file_path ).'" download>Download</a>';
 			} else {
-				echo '<i>niet beschikbaar</i>';
+				return '<i>niet meer beschikbaar</i>';
 			}
+		} else {
+			return '<i>niet beschikbaar</i>';
 		}
 	}
 
@@ -2091,12 +2099,16 @@
 				$pickup_location_name = $pickup_location['shipping_company'];
 			}
 			
-			echo '<p><strong>Gekozen afhaalpunt:</strong><br/>'.$pickup_location_name.'</p>';
+			echo '<p><strong>Gekozen afhaalpunt:</strong><br/>'.trim( str_replace( 'Oxfam-Wereldwinkel ', '', $pickup_location_name ) ).'</p>';
 		}
 
 		echo '<p><strong>Logistieke info:</strong><br/>';
 		$logistics = get_logistic_params( $order );
 		echo number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg';
+		echo '</p>';
+
+		echo '<p><strong>Picklijst:</strong><br/>';
+		echo get_picklist_download_link( $order );
 		echo '</p>';
 	}
 
@@ -2213,10 +2225,10 @@
 	function switch_admin_recipient_dynamically( $recipients, $order ) {
 		// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is
 		if ( $order !== NULL and $order instanceof WC_Order ) {
-			
+			return get_staged_recipients( $recipients );
+		} else {
+			return $recipients;
 		}
-
-		return get_staged_recipients( $recipients );
 	}
 
 	// Leid mails op DEV-omgevingen om naar de site admin
