@@ -1685,31 +1685,11 @@
 		
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
 			// Koppel automatisch aan de winkel waar de afhaling zal gebeuren
-			$methods = $order->get_shipping_methods();
-			$method = reset( $methods );
-			
 			$shipping_methods = $order->get_shipping_methods();
 			$shipping_method = reset( $shipping_methods );
 			
-			if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
-				// Kijk naar interne add_pickup_locations_column_content() functie
-				$pickup_location_name = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_name( $shipping_method->get_id() );
-				$pickup_location_id = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_id( $shipping_method->get_id() );
-				$pickup_location_id = is_numeric( $pickup_location_id ) ? (int) $pickup_location_id : null;
-				
-				$pickup_location = wc_local_pickup_plus_get_pickup_location( $pickup_location_id );
-				if ( $pickup_location instanceof \WC_Local_Pickup_Plus_Pickup_Location ) {
-					if ( $pickup_location->get_name() !== $pickup_location_name ) {
-						// Of behouden we toch de originele naam?
-						$pickup_location_name = $pickup_location->get_name();
-					}
-				}
-			} else {
-				$pickup_location = $shipping_method->get_meta('pickup_location');
-				$pickup_location_name = $pickup_location['shipping_company'];
-			}
-
-			$city = mb_strtolower( trim( str_replace( 'Oxfam-Wereldwinkel ', '', $pickup_location_name ) ) );
+			$pickup_location_name = ob2c_get_pickup_location_name( $shipping_method );
+			$city = mb_strtolower( $pickup_location_name );
 			if ( in_array( $city, get_option('oxfam_member_shops') ) ) {
 				// Dubbelcheck of deze stad wel tussen de deelnemende winkels zit
 				$owner = $city;
@@ -2061,26 +2041,7 @@
 		if ( $order->has_shipping_method('local_pickup_plus') ) {
 			$shipping_methods = $order->get_shipping_methods();
 			$shipping_method = reset( $shipping_methods );
-			
-			if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
-				// Kijk naar interne add_pickup_locations_column_content() functie
-				$pickup_location_name = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_name( $shipping_method->get_id() );
-				$pickup_location_id = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_id( $shipping_method->get_id() );
-				$pickup_location_id = is_numeric( $pickup_location_id ) ? (int) $pickup_location_id : null;
-				
-				$pickup_location = wc_local_pickup_plus_get_pickup_location( $pickup_location_id );
-				if ( $pickup_location instanceof \WC_Local_Pickup_Plus_Pickup_Location ) {
-					if ( $pickup_location->get_name() !== $pickup_location_name ) {
-						// Of behouden we toch de originele naam?
-						$pickup_location_name = $pickup_location->get_name();
-					}
-				}
-			} else {
-				$pickup_location = $shipping_method->get_meta('pickup_location');
-				$pickup_location_name = $pickup_location['shipping_company'];
-			}
-			
-			echo '<p><strong>Gekozen afhaalpunt:</strong><br/>'.trim( str_replace( 'Oxfam-Wereldwinkel ', '', $pickup_location_name ) ).'</p>';
+			echo '<p><strong>Gekozen afhaalpunt:</strong><br/>'.ob2c_get_pickup_location_name( $shipping_method ).'</p>';
 		}
 
 		echo '<p><strong>Logistieke info:</strong><br/>';
@@ -3612,24 +3573,8 @@
 						break;
 
 					default:
-						if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
-							// Kijk naar interne add_pickup_locations_column_content() functie
-							$pickup_location_name = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_name( $shipping_method->get_id() );
-							$pickup_location_id = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_id( $shipping_method->get_id() );
-							$pickup_location_id = is_numeric( $pickup_location_id ) ? (int) $pickup_location_id : null;
-							
-							$pickup_location = wc_local_pickup_plus_get_pickup_location( $pickup_location_id );
-							if ( $pickup_location instanceof \WC_Local_Pickup_Plus_Pickup_Location ) {
-								if ( $pickup_location->get_name() !== $pickup_location_name ) {
-									// Of behouden we toch de originele naam?
-									$pickup_location_name = $pickup_location->get_name();
-								}
-							}
-						} else {
-							$pickup_location = $shipping_method->get_meta('pickup_location');
-							$pickup_location_name = $pickup_location['shipping_company'];
-						}
-						$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( trim( str_replace( 'Oxfam-Wereldwinkel ', '', $pickup_location_name ) ) ) );
+						$pickup_location_name = ob2c_get_pickup_location_name( $shipping_method );
+						$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( $pickup_location_name ) );
 				}
 
 				// Vermeld de totale korting (inclusief/exclusief BTW)
@@ -7160,6 +7105,38 @@
 
 		do_action( 'qm/debug', $shops );
 		return $shops;
+	}
+
+	function ob2c_get_pickup_location_name( $shipping_method, $shortened = true ) {
+		if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
+			
+			// Nieuwe versie
+			// Kijk naar interne add_pickup_locations_column_content() functie voor inspiratie
+			$pickup_location_name = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_name( $shipping_method->get_id() );
+			$pickup_location_id = wc_local_pickup_plus()->get_orders_instance()->get_order_items_instance()->get_order_item_pickup_location_id( $shipping_method->get_id() );
+			$pickup_location_id = is_numeric( $pickup_location_id ) ? (int) $pickup_location_id : null;
+			
+			$pickup_location = wc_local_pickup_plus_get_pickup_location( $pickup_location_id );
+			if ( $pickup_location instanceof \WC_Local_Pickup_Plus_Pickup_Location ) {
+				if ( $pickup_location->get_name() !== $pickup_location_name ) {
+					// Of behouden we toch de originele naam?
+					$pickup_location_name = $pickup_location->get_name();
+				}
+			}
+
+		} else {
+			
+			// Oude versie
+			$pickup_location = $shipping_method->get_meta('pickup_location');
+			$pickup_location_name = $pickup_location['shipping_company'];
+
+		}
+
+		if ( $shortened ) {
+			return trim( str_replace( 'Oxfam-Wereldwinkel ', '', $pickup_location_name ) );
+		} else {
+			return $pickup_location_name;
+		}
 	}
 
 	function print_oxfam_shop_data( $key, $atts ) {

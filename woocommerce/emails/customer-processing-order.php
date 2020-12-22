@@ -24,9 +24,9 @@ $context = array( 'source' => 'Oxfam Emails' );
 echo '<p>Dag '.$order->get_billing_first_name().'</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
-	$methods = $order->get_shipping_methods();
-	$method = reset( $methods );
-	$pickup_location = $method->get_meta('pickup_location');
+	$shipping_methods = $order->get_shipping_methods();
+	$shipping_method = reset( $shipping_methods );
+	$pickup_location_name = ob2c_get_pickup_location_name( $shipping_method, false );
 	
 	if ( $order->get_meta('is_b2b_sale') === 'no' ) {
 		// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD
@@ -35,13 +35,13 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 		
 		if ( $delivery === '' ) {
 			// Aangepast bericht zonder tijdsinschatting indien waarde ontbreekt (bv. door ontbreken van openingsuren tijdens lockdown)
-			echo '<p>' . sprintf( 'We hebben je bestelling goed ontvangen. Onze vrijwilligers zetten je boodschappen klaar in %1$s. We sturen je een tweede bericht van zodra alles klaarstaat.', $pickup_location['shipping_company'] ) . '</p>';
+			echo '<p>' . sprintf( 'We hebben je bestelling goed ontvangen. Onze vrijwilligers zetten je boodschappen klaar in %1$s. We sturen je een tweede bericht van zodra alles klaarstaat.', $pickup_location_name ) . '</p>';
 			$logger->info( $order->get_order_number().': pickup mail sent without time indication', $context );
 		} else {
-			echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling), inclusief afhaallocatie (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ), $pickup_location['shipping_company'], date_i18n( 'l d/m', $delivery ), date_i18n( 'G\ui', $delivery ) ) . '</p>';
+			echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling), inclusief afhaallocatie (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ), $pickup_location_name, date_i18n( 'l d/m', $delivery ), date_i18n( 'G\ui', $delivery ) ) . '</p>';
 		}
 	} else {
-		echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail van een B2B-bestelling (indien afhaling), inclusief afhaallocatie (%s).', 'oxfam-webshop' ), $pickup_location['shipping_company'] ) . '</p>';
+		echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail van een B2B-bestelling (indien afhaling), inclusief afhaallocatie (%s).', 'oxfam-webshop' ), $pickup_location_name ) . '</p>';
 	}
 } else {
 	echo '<p>' . __( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ) . '</p>';
