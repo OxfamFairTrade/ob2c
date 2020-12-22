@@ -2346,14 +2346,10 @@
 	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
 
 	function ure_allow_args_for_oxfam_options( $args ) {
+		// Default WP-argumenten zoals 'product_cat', 'filter_action', 'action', 'action2', 'paged', ... zijn reeds automatisch voorzien!
 		$args['edit.php'][''][] = 'claimed_by';
 		$args['edit.php'][''][] = 'stock_status';
-		// Deze argumenten zijn reeds automatisch voorzien ...
-		// $args['edit.php'][''][] = 'product_cat';
-		// $args['edit.php'][''][] = 'filter_action';
-		// $args['edit.php'][''][] = 'action';
-		// $args['edit.php'][''][] = 'action2';
-		// $args['edit.php'][''][] = 'paged';
+		
 		$args['admin.php']['wc-reports'] = array(
 			'tab',
 			'report',
@@ -2366,38 +2362,39 @@
 			'end_date',
 			'wc_reports_nonce',
 		);
+		
 		$args['admin.php']['oxfam-options'] = array(
 			'page',
 			'settings-updated',
 		);
+		
 		$args['admin.php']['oxfam-products-list'] = array(
 			'assortment',
 		);
+		
 		// Verwijderen / opnieuw versturen blijft onmogelijk ...
 		$args['tools.php']['wpml_plugin_log'] = array(
-			'page',
-			'paged',
-			'action',
-			'action2',
-			's',
 			'wpml-list_table_nonce',
 			'email[]',
 			'_wp_http_referer',
 			'_wpnonce',
 		);
 		// $args['admin.php']['wpml_plugin_log'] = $args['tools.php']['wpml_plugin_log'];
+		
 		$args['admin.php']['pmxe-admin-export'] = array(
 			'id',
 			'action',
 			'pmxe_nt',
 			'warnings',
 		);
+		
 		$args['admin.php']['pmxe-admin-manage'] = array(
 			'id',
 			'action',
 			'pmxe_nt',
 			'warnings',
 		);
+		
 		$args['profile.php'][''] = array(
 			'updated',
 		);
@@ -7898,7 +7895,7 @@
 				if ( is_array( $log ) or is_object( $log ) ) {
 					$log = serialize( $log );
 				}
-				error_log( "[".date_i18n('d/m/Y H:i:s')."] ".$log."\n", 3, ABSPATH . '../activity.log' );
+				error_log( "[".date_i18n('d/m/Y H:i:s')."] ".$log."\n", 3, ABSPATH . '/../activity.log' );
 			}
 		}
 	}
