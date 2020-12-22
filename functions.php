@@ -1047,22 +1047,6 @@
 		exit();
 	}
 	
-	// Schakel Google Analytics uit in bepaalde gevallen WORDT NU VOLLEDIG IN GTM GEREGELD
-	// add_filter( 'woocommerce_ga_disable_tracking', 'disable_ga_tracking_for_certain_users', 10, 2 );
-
-	function disable_ga_tracking_for_certain_users( $disable, $type ) {
-		// Parameter $type bevat het soort GA-tracking
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			// Wordt standaard enkel uitgeschakeld voor users met 'manage_options'-rechten (= superadmins)
-			// Let op: hoofdniveau NIET in testmodus zetten, anders verliezen we tracking van homepage!
-			if ( current_user_can('manage_woocommerce') or ! cn_cookies_accepted() or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-	}
-
 	// Vervang canonical tag door hoofdproduct bij nationale producten (duplicate content vermijden!)
 	add_filter( 'get_canonical_url', 'ob2c_tweak_canonical_url', 10, 2 );
 
