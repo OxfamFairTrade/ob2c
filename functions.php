@@ -2272,9 +2272,9 @@
 		// Zorg ervoor dat productrevisies bijgehouden worden op de hoofdsite
 		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		// Log wijzigingen aan metadata na het succesvol bijwerken
-		add_action( 'updated_post_metadata', 'log_product_changes', 100, 4 );
-		// Toon de lokale webshops die het product nog op voorraad hebben ZEER TRAGE FUNCTIE
-		// add_action( 'woocommerce_product_options_inventory_product_data', 'add_inventory_fields', 5 );
+		// add_action( 'updated_post_metadata', 'log_product_changes', 100, 4 );
+		// Toon de lokale webshops die het product nog op voorraad hebben TRAGE FUNCTIE
+		add_action( 'woocommerce_product_options_inventory_product_data', 'add_inventory_fields', 5 );
 	}
 	
 	function add_product_revisions( $vars ) {
@@ -2298,27 +2298,23 @@
 		global $product_object;
 		echo '<div class="options_group oft"><p class="form-field">';
 			$shops_instock = array();
-			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'orderby' => 'path' ) );
+			$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'orderby' => 'path' ) );
 			foreach ( $sites as $site ) {
-				if ( $site->blog_id != 1 ) {
-					switch_to_blog( $site->blog_id );
-					$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
-					if ( $local_product !== false and $local_product->is_in_stock() ) {
-						$shops_instock[] = get_webshop_name();
-					}
-					restore_current_blog();
+				switch_to_blog( $site->blog_id );
+				$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
+				if ( $local_product !== false and $local_product->is_in_stock() ) {
+					$shops_instock[] = get_webshop_name();
 				}
+				restore_current_blog();
 			}
-			echo '<label>Op voorraad? ('.count($shops_instock).'/'.(count($sites)-1).')</label>';
-			if ( count($shops_instock) > 0 ) {
-				foreach ($shops_instock as $shop_name ) {
-					echo $shop_name.'<br/>';
-				}
+			echo '<label>Op voorraad? ('.count( $shops_instock ).'/'.count( $sites ).')</label>';
+			if ( count( $shops_instock ) > 0 ) {
+				echo implode( '<br/>', $shops_instock );
 			}
 		echo '</p></div>';
 	}
 
-	// Verberg alle koopknoppen op het hoofddomein (ook reeds geblokkeerd via .htaccess but better be safe than sorry)
+	// Verberg alle koopknoppen op het hoofddomein
 	add_filter( 'woocommerce_get_price_html' , 'no_orders_on_main', 10, 2 );
 	
 	function no_orders_on_main( $price, $product ) {
@@ -2335,7 +2331,7 @@
 	add_filter( 'woocommerce_format_sale_price', 'format_sale_as_regular_price', 10, 3 );
 
 	function format_sale_as_regular_price( $price, $regular_price, $sale_price ) {
-		return wc_price($regular_price);
+		return wc_price( $regular_price );
 	}
 
 	// Toon het blokje 'Additional Capabilities' op de profielpagina nooit
@@ -2403,7 +2399,7 @@
 		);
 
 		// Wordt enkel doorlopen bij niet-admins!
-		write_log( print_r( $args, true ) );
+		// write_log( print_r( $args, true ) );
 		return $args;
 	}
 
@@ -2760,7 +2756,6 @@
 		if ( ! $is_b2b_customer and ! current_user_can('manage_woocommerce') ) {
 			if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
 				$product = wc_get_product( $product_id );
-				write_log( "DISABLED PRODUCT ".$product->get_sku()." VIEW / PURCHASE / ADD TO CART FOR NON B2B CLIENT" );
 				$available = false;
 			}
 		}
@@ -3209,7 +3204,7 @@
 				// Indien er echt geen huisnummer is, moet Z/N ingevuld worden
 				if ( preg_match( '/([0-9]+|ZN)/i', $fields[ $key_to_check ] ) === 0 ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tHuisnummer ontbreekt in '".$fields[ $key_to_check ]."'\n";
-					file_put_contents( "../housenumber_errors.csv", $str, FILE_APPEND );
+					file_put_contents( dirname( ABSPATH, 1 )."/housenumber_errors.csv", $str, FILE_APPEND );
 					$errors->add( 'validation', __( 'Foutmelding na het invullen van een straatnaam zonder huisnummer.', 'oxfam-webshop' ) );
 				}
 			}
@@ -4787,7 +4782,7 @@
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
 					if ( ! current_user_can('update_core') ) {
-						file_put_contents( "../shipping_errors.csv", $str, FILE_APPEND );
+						file_put_contents( dirname( ABSPATH, 1 )."/shipping_errors.csv", $str, FILE_APPEND );
 					}
 					
 					if ( WC()->customer->get_billing_postcode() !== WC()->customer->get_shipping_postcode() ) {
@@ -5775,7 +5770,6 @@
 		global $wp_admin_bar;
 		if ( current_user_can('create_sites') ) {
 			$sites = get_sites( array( 'public' => 1 ) );
-			// write_log( print_r( $wp_admin_bar->get_nodes(), true ) );
 			foreach ( $sites as $site ) {
 				$node_d = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-d');
 				if ( $node_d ) {
