@@ -2215,7 +2215,7 @@
 	// Leid mails op DEV-omgevingen om naar de site admin
 	function get_staged_recipients( $recipients ) {
 		if ( $_SERVER['SERVER_NAME'] !== 'shop.oxfamwereldwinkels.be' ) {
-			return get_option('admin_email');
+			return get_site_option('admin_email');
 		}
 		return $recipients;
 	}
