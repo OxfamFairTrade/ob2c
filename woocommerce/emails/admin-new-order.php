@@ -20,10 +20,10 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 printf( '<p>Je hebt een bestelling ontvangen van %s.</p>', $order->get_formatted_billing_full_name() );
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
-	$methods = $order->get_shipping_methods();
-	$method = reset( $methods );
-	$pickup_location = $method->get_meta('pickup_location');
-	echo '<p><b>Dit is een afhaling voor '.$pickup_location['shipping_company'].'.</b> Vergeet de bestelling in de webshop niet als \'Afgerond\' te markeren van zodra het pakje samengesteld is. Pas dan ontvangt de klant een tweede mail waarin hij/zij op de hoogte gebracht wordt dat de bestelling klaarstaat voor afhaling in de winkel.</p>';
+	$shipping_methods = $order->get_shipping_methods();
+	$shipping_method = reset( $shipping_methods );
+	$pickup_location_name = ob2c_get_pickup_location_name( $shipping_method, false );
+	echo '<p><b>Dit is een afhaling voor '.$pickup_location_name.'.</b> Vergeet de bestelling in de webshop niet als \'Afgerond\' te markeren van zodra het pakje samengesteld is. Pas dan ontvangt de klant een tweede mail waarin hij/zij op de hoogte gebracht wordt dat de bestelling klaarstaat voor afhaling in de winkel.</p>';
 } elseif ( $order->get_shipping_total() > 0 ) {
 	if ( in_array( 'voeding', $order->get_items_tax_classes() ) === false ) {
 		echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( STANDARD_VAT_SHIPPING_COST ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
