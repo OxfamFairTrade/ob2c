@@ -8,6 +8,14 @@
 		require_once '../../../wp-load.php';
 		
 		if ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) {
+			// Vraag alle huidige winkels in de OWW-site op
+			$oww_stores = get_external_wpsl_stores();
+
+			// Ga enkel verder als we effectief resultaten doorkregen
+			if ( count( $oww_stores ) < 1 ) {
+				die("No stores retrieved!");
+			}
+
 			// Verplaats alle WP Stores naar de prullenbak
 			$all_store_args = array(
 				'post_type'	=> 'wpsl_stores',
@@ -76,9 +84,6 @@
 			}
 
 			var_dump_pre( $site_ids_vs_blog_ids );
-
-			// Vraag alle huidige winkels in de OWW-site op
-			$oww_stores = get_external_wpsl_stores();
 
 			foreach ( $oww_stores as $oww_store_data ) {
 				// Zoek op de hoofdsite de zonet verwijderde WP Store op die past bij de post-ID

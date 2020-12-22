@@ -7362,7 +7362,7 @@
 		} else {
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'WordPress API' );
-			$logger->notice( 'Could not retrieve shops on page '.$page, $context );
+			$logger->critical( 'Could not retrieve shops on page '.$page, $context );
 		}
 
 		return $all_stores;
