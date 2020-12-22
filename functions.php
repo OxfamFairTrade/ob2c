@@ -2205,12 +2205,11 @@
 	add_filter( 'woocommerce_email_recipient_cancelled_order', 'switch_admin_recipient_dynamically', 10, 2 );
 
 	function switch_admin_recipient_dynamically( $recipients, $order ) {
-		// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is
 		if ( $order !== NULL and $order instanceof WC_Order ) {
-			return get_staged_recipients( $recipients );
-		} else {
-			return $recipients;
+			// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
 		}
+
+		return get_staged_recipients( $recipients );
 	}
 
 	// Leid mails op DEV-omgevingen om naar de site admin
