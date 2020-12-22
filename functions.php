@@ -472,7 +472,6 @@
 	function get_single_parent_image_if_non_set( $html, $image_id ) {
 		if ( ! is_main_site() ) {
 			// Als er lokaal geen productafbeelding beschikbaar is, is op dit ogenblik reeds een placeholder ingevoegd
-			// write_log( $image_id );
 			// Check of er een globaal beeld ingesteld is
 			global $product;
 			if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
@@ -2346,7 +2345,7 @@
 	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
 
 	function ure_allow_args_for_oxfam_options( $args ) {
-		// Default WP-argumenten zoals 'product_cat', 'filter_action', 'action', 'action2', 'paged', ... zijn reeds automatisch voorzien!
+		// Default WP-argumenten zoals 's', 'filter_action', 'action', 'action2', 'paged', ... zijn reeds automatisch voorzien!
 		$args['edit.php'][''][] = 'claimed_by';
 		$args['edit.php'][''][] = 'stock_status';
 		
@@ -2364,7 +2363,6 @@
 		);
 		
 		$args['admin.php']['oxfam-options'] = array(
-			'page',
 			'settings-updated',
 		);
 		
@@ -2374,6 +2372,11 @@
 		
 		// Verwijderen / opnieuw versturen blijft onmogelijk ...
 		$args['tools.php']['wpml_plugin_log'] = array(
+			's',
+			'action',
+			'action2',
+			'page',
+			'paged',
 			'wpml-list_table_nonce',
 			'email[]',
 			'_wp_http_referer',
@@ -2399,6 +2402,7 @@
 			'updated',
 		);
 
+		// Wordt enkel doorlopen bij niet-admins!
 		write_log( print_r( $args, true ) );
 		return $args;
 	}
