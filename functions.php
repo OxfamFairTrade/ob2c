@@ -2271,8 +2271,6 @@
 	if ( is_main_site() ) {
 		// Zorg ervoor dat productrevisies bijgehouden worden op de hoofdsite
 		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
-		// Log wijzigingen aan metadata na het succesvol bijwerken
-		// add_action( 'updated_post_metadata', 'log_product_changes', 100, 4 );
 		// Toon de lokale webshops die het product nog op voorraad hebben TRAGE FUNCTIE
 		add_action( 'woocommerce_product_options_inventory_product_data', 'add_inventory_fields', 5 );
 	}
@@ -2280,18 +2278,6 @@
 	function add_product_revisions( $vars ) {
 		$vars['supports'][] = 'revisions';
 		return $vars;
-	}
-
-	function log_product_changes( $meta_id, $post_id, $meta_key, $new_meta_value ) {
-		// Alle overige interessante data zitten in het algemene veld '_product_attributes' dus daarvoor best een ander filtertje zoeken
-		$watched_metas = array( '_price', '_stock_status', '_tax_class', '_weight', '_length', '_width', '_height', '_thumbnail_id', '_force_sell_synced_ids', '_product_attributes' );
-		// Deze actie vuurt bij 'single value meta keys' enkel indien er een wezenlijke wijziging was, dus check hoeft niet meer
-		if ( get_post_type( $post_id ) === 'product' and in_array( $meta_key, $watched_metas ) ) {
-			// Schrijf weg in log per weeknummer (zonder leading zero's)
-			$user = wp_get_current_user();
-			$str = date_i18n('d/m/Y H:i:s') . "\t" . get_post_meta( $post_id, '_sku', true ) . "\t" . $user->user_firstname . "\t" . $meta_key . " gewijzigd in " . serialize($new_meta_value) . "\t" . get_the_title( $post_id ) . "\n";
-			file_put_contents( WP_CONTENT_DIR."/changelog-week-".intval( date_i18n('W') ).".csv", $str, FILE_APPEND );
-		}
 	}
 
 	function add_inventory_fields() {
@@ -2314,10 +2300,10 @@
 		echo '</p></div>';
 	}
 
-	// Verberg alle koopknoppen op het hoofddomein
-	add_filter( 'woocommerce_get_price_html' , 'no_orders_on_main', 10, 2 );
+	// Voeg suffix toe bij B2B-klanten
+	add_filter( 'woocommerce_get_price_html' , 'ob2c_add_price_suffix', 10, 2 );
 	
-	function no_orders_on_main( $price, $product ) {
+	function ob2c_add_price_suffix( $price, $product ) {
 		if ( ! is_admin() ) {
 			if ( is_b2b_customer() ) {
 				$price .= ' per stuk';
