@@ -2346,8 +2346,6 @@
 	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
 
 	function ure_allow_args_for_oxfam_options( $args ) {
-		do_action( 'qm/debug', $args );
-
 		$args['edit.php'][''][] = 'claimed_by';
 		$args['edit.php'][''][] = 'stock_status';
 		// Deze argumenten zijn reeds automatisch voorzien ...
@@ -2387,7 +2385,7 @@
 			'_wp_http_referer',
 			'_wpnonce',
 		);
-		$args['admin.php']['wpml_plugin_log'] = $args['tools.php']['wpml_plugin_log'];
+		// $args['admin.php']['wpml_plugin_log'] = $args['tools.php']['wpml_plugin_log'];
 		$args['admin.php']['pmxe-admin-export'] = array(
 			'id',
 			'action',
@@ -2404,7 +2402,7 @@
 			'updated',
 		);
 
-		do_action( 'qm/debug', $args );
+		write_log( print_r( $args, true ) );
 		return $args;
 	}
 
