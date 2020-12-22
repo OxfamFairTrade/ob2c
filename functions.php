@@ -2340,28 +2340,6 @@
 		return wc_price($regular_price);
 	}
 
-	// Fix probleem waarbij wc_modify_editable_roles() in wc-user-functions.php admins en speciale rollen enkel nog toegang geeft tot gewone klanten
-	// Zie o.a. https://github.com/woocommerce/woocommerce/pull/21555 NIET LANGER NODIG?
-	// add_filter( 'woocommerce_shop_manager_editable_roles', 'give_custom_user_roles_access_to_role_edit_capabilities' );
-
-	function give_custom_user_roles_access_to_role_edit_capabilities( $roles ) {
-		// Toestaan dat lokale beheerders ook lokale assistenten bewerken
-		if ( current_user_can('manage_network_users') ) {
-			$roles[] = 'local_helper';
-		}
-
-		// Superadmins toegang geven tot alle rollen uit het netwerk
-		if ( current_user_can('create_sites') ) {
-			global $wp_roles;
-			if ( ! isset( $wp_roles ) ) {
-				$wp_roles = new WP_Roles();
-			}
-			$roles = array_keys( $wp_roles->role_names );
-		}
-		
-		return $roles;
-	}
-
 	// Toon het blokje 'Additional Capabilities' op de profielpagina nooit
 	add_filter( 'ure_show_additional_capabilities_section', '__return_false' );
 
@@ -2369,6 +2347,8 @@
 	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
 
 	function ure_allow_args_for_oxfam_options( $args ) {
+		do_action( 'qm/debug', $args );
+
 		$args['edit.php'][''][] = 'claimed_by';
 		$args['edit.php'][''][] = 'stock_status';
 		// Deze argumenten zijn reeds automatisch voorzien ...
@@ -2424,6 +2404,8 @@
 		$args['profile.php'][''] = array(
 			'updated',
 		);
+
+		do_action( 'qm/debug', $args );
 		return $args;
 	}
 
