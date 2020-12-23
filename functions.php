@@ -6176,7 +6176,7 @@
 		if ( count( $cat_ids ) > 0 ) {
 			$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
 			
-			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) {
+			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or ( $parent_id > 0 and get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) ) {
 				$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
 			}
 
