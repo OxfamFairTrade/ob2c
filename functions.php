@@ -553,17 +553,11 @@
 		return $apply_quantity;
 	}
 
-	add_filter( 'woocommerce_products_admin_list_table_filters', 'sort_categories_by_menu_order', 1000, 1 );
+	add_filter( 'woocommerce_products_admin_list_table_filters', 'ob2c_sort_categories_by_menu_order', 1000, 1 );
 
-	function sort_categories_by_menu_order( $filters ) {
-		$filters['product_category'] = wc_product_dropdown_categories(
-			array(
-				'option_select_text' => __( 'Filter by category', 'woocommerce' ),
-				'hide_empty' => 0,
-				// Sorteer volgens onze custom volgorde
-				'orderby' => 'menu_order',
-			)
-		);
+	function ob2c_sort_categories_by_menu_order( $filters ) {
+		// Hierna wordt call_user_func() toegepast, dus voorzie een callback functie
+		$filters['product_category'] = array( __CLASS__, 'ob2c_render_products_category_filter' );
 
 		// Verwijder de nutteloze filter van WooMultistore
 		if ( array_key_exists( 'parent_child', $filters ) ) {
@@ -571,6 +565,17 @@
 		}
 
 		return $filters;
+	}
+
+	function ob2c_render_products_category_filter() {
+		wc_product_dropdown_categories(
+			array(
+				'option_select_text' => __( 'Filter by category', 'woocommerce' ),
+				'hide_empty' => 0,
+				// Sorteer volgens onze custom volgorde
+				'orderby' => 'menu_order',
+			)
+		);
 	}
 
 	// Limiteer de afbeeldingsgrootte op subsites
