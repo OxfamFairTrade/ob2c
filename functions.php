@@ -557,7 +557,7 @@
 
 	function ob2c_sort_categories_by_menu_order( $filters ) {
 		// Hierna wordt call_user_func() toegepast, dus voorzie een callback functie
-		$filters['product_category'] = array( __CLASS__, 'ob2c_render_products_category_filter' );
+		$filters['product_category'] = 'ob2c_render_products_category_filter';
 
 		// Verwijder de nutteloze filter van WooMultistore
 		if ( array_key_exists( 'parent_child', $filters ) ) {
