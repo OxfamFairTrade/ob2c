@@ -9,6 +9,7 @@ Plugin URI: https://gist.github.com/soderlind/610a9b24dbf95a678c3e
 License: GPL
 
 Save the plugin in mu-plugins. You don't have to, but you should add an an object cache.
+Met dank aan de clues op https://stackoverflow.com/questions/48852834/slow-load-plugin-textdomain-and-load-default-textdomain
 Alternatieve plugin die rechtstreeks de object cache aanspreekt: https://github.com/inpsyde/translation-cache
 */
 

@@ -25,6 +25,9 @@ foreach ( $sites as $site ) {
 	
 	echo number_format( microtime(true)-$start, 2, ',', '.' ) . ' s - ' . $command . '<br/>';
 	restore_current_blog();
+
+	// Doe het rustig aan (telt niet mee voor max_execution_time)
+	sleep(2);
 }
 
 ?>
