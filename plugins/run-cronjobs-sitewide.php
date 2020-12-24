@@ -7,7 +7,7 @@ $sites = get_sites( array( 'public' => 1, 'site__not_in' => get_site_option('oxf
 
 global $wp_version;
 $agent = 'WordPress/' . $wp_version . '; ' . home_url();
-$interval = 2;
+$interval = 1;
 print_r( 'Sleep interval: ' . $interval . ' seconds' . PHP_EOL . PHP_EOL );
 $start = microtime(true);
 
