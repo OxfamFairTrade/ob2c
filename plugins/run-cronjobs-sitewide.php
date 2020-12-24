@@ -7,6 +7,8 @@ $sites = get_sites( array( 'public' => 1, 'site__not_in' => get_site_option('oxf
 
 global $wp_version;
 $agent = 'WordPress/' . $wp_version . '; ' . home_url();
+$interval = 2;
+print_r( 'Sleep interval: ' . $interval . ' seconds' . PHP_EOL . PHP_EOL );
 $start = microtime(true);
 
 foreach ( $sites as $site ) {
@@ -23,11 +25,11 @@ foreach ( $sites as $site ) {
 	$rc = curl_exec( $ch );
 	curl_close( $ch );
 	
-	echo number_format( microtime(true)-$start, 2, ',', '.' ) . ' s - ' . $command . '<br/>';
+	print_r( number_format( microtime(true)-$start, 2, ',', '.' ) . ' s - ' . $command . PHP_EOL );
 	restore_current_blog();
 
 	// Doe het rustig aan (telt niet mee voor max_execution_time)
-	sleep(2);
+	sleep( $interval );
 }
 
 ?>
