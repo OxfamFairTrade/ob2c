@@ -19,7 +19,15 @@ foreach ( $sites as $site ) {
 	
 	switch_to_blog( $site->blog_id );
 
-	$command = home_url( 'wp-cron.php?doing_wp_cron='.time() );
+	$to_unhook = array( 'check_plugin_updates-user-role-editor-pro', 'jp_purge_transients_cron', 'jetpack_v2_heartbeat', 'woocommerce_tracker_send_event' );
+	foreach ( $to_unhook as $event ) {
+		$unhooked = wp_clear_scheduled_hook( $event );
+		if ( count( $unhooked ) > 0 ) {
+			print_r( $unhooked . ' \'' . $event . '\' events unhooked' . PHP_EOL );
+		}
+	}
+	
+	$command = home_url( 'wp-cron.php?doing_wp_cron' );
 	$ch = curl_init( $command );
 	$rc = curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
 	$rc = curl_exec( $ch );
