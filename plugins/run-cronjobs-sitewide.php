@@ -22,7 +22,7 @@ foreach ( $sites as $site ) {
 	$to_unhook = array( 'check_plugin_updates-user-role-editor-pro', 'jp_purge_transients_cron', 'jetpack_v2_heartbeat', 'woocommerce_tracker_send_event' );
 	foreach ( $to_unhook as $event ) {
 		$unhooked = wp_clear_scheduled_hook( $event );
-		if ( count( $unhooked ) > 0 ) {
+		if ( intval( $unhooked ) > 0 ) {
 			print_r( $unhooked . ' \'' . $event . '\' events unhooked' . PHP_EOL );
 		}
 	}
