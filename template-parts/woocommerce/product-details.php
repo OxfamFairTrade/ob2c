@@ -25,8 +25,7 @@
 	if ( false === ( $oft_quality_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
 		// Haal de kwaliteitsdata op indien een OFT product-ID beschikbaar is (+ uitsluiten non-food?)
 		if ( intval( $product->get_meta('oft_product_id') ) > 0 ) {
-			// @toDo: Upgrade naar v3 van zodra OFT-site up to date?
-			$base = 'https://www.oxfamfairtrade.be/wp-json/wc/v2';
+			$base = 'https://www.oxfamfairtrade.be/wp-json/wc/v3';
 			$response = wp_remote_get( $base.'/products/'.$product->get_meta('oft_product_id').'?consumer_key='.OFT_WC_KEY.'&consumer_secret='.OFT_WC_SECRET );
 			
 			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
