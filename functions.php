@@ -6700,54 +6700,53 @@
 			// 	echo '<p>Mails naar Microsoft-adressen (@hotmail.com, @live.com, ...) arriveerden de voorbije dagen niet bij de bestemmeling door een blacklisting van de externe mailserver die gekoppeld was aan de webshops. We zijn daarom voor de 3de keer op enkele maanden tijd overgeschakeld op een nieuw systeem.</p>';
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+				echo '<div class="notice notice-success">';
+					echo '<p>De <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-januari-2021-update.html" target="_blank">januaripromo\'s</a> werden geactiveerd in alle webshops. De <a href="https://copain.oww.be/k/n118/news/view/20763/12894/prijswijzigingen-vanaf-1-januari-2021.html" target="_blank">prijswijzigingen van 01/01/2021</a> werden in de ochtend van 2 januari doorgevoerd.</p>';
+				echo '</div>';
 				echo '<div class="notice notice-info">';
 					echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden. Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</a></p>';
 				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe rode pesto staat klaar:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 27995 );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-						// echo 'Opgelet: om te vermijden dat al deze producten als \'nieuw\' zouden verschijnen, kreeg de non-food als creatiedatum de dag van aanmaak in fairtradecrafts.be mee. Hierdoor verschijnen deze producten niét in het blauw onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-					echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit begin januari gebeuren, samen met de levering in de winkel. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.</p>';
-				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/k/nl/n111/news/view/20167/1429/promo-s-online-winkel-december-update-wijnduo-s.html" target="_blank">decemberpromo\'s</a> werden geactiveerd in alle webshops. Ook de <a href="https://copain.oww.be/k/nl/n118/news/view/20655/12894/eindejaar-wijnduo-s-2020-turfblad.html" target="_blank">feestelijke wijnduo\'s</a> blijven actief tot en met 31 december. Creditering verloopt ook voor online wijnduo\'s via het turfblad in de winkel. Raadpleeg indien nodig <a href="admin.php?page=wc-reports&tab=orders&report=coupon_usage&range=month">de webshopstatistieken</a>.</p>';
-				echo '</div>';
-				echo '<div class="notice notice-info">';
-					$correctie = '';
-					$koffie_count = get_number_of_times_coupon_was_used('wvdft2020-koffie');
-					if ( get_current_blog_id() === 15 ) {
-						// Correctie voor Gentbrugge
-						$koffie_extra = 4;
-						$koffie_count += $koffie_extra;
-						$correctie = ' Dit totaal bevat '.$koffie_extra.' koffiebonnen extra ter compensatie van de foutief toegekende kortingen in OWW07715, waarvoor nogmaals onze excuses.';
-					}
-					if ( get_current_blog_id() === 19 ) {
-						// Correctie voor Lichtaart
-						$koffie_extra = 2;
-						$koffie_count += $koffie_extra;
-						$correctie = ' Dit totaal bevat '.$koffie_extra.' koffiebonnen extra ter compensatie van de foutief toegekende kortingen in OWW07781 en OWW07823, waarvoor nogmaals onze excuses.';
-					}
-					$koffie_amount = 1.4151 * $koffie_count;
-					$quinoa_count = get_number_of_times_coupon_was_used('wvdft2020-quinoa');
-					$quinoa_amount = 3.8972 * $quinoa_count;
-					echo '<p>Zoals eerder gemeld dien je voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon de webshopstatistieken om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Voor jullie webshop werden '.$koffie_count.' koffiebonnen (t.w.v. '.wc_price( $koffie_amount ).') en '.$quinoa_count.' quinoabonnen (t.w.v. '.wc_price( $quinoa_amount ).') geregistreerd.';
-					if ( $koffie_amount+$quinoa_amount > 0 ) {
-						echo ' Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, array( 'ex_tax_label' => true ) ).' zal terugbetaald worden bij de volgende crediteringsronde, half december. <a href="https://shop.oxfamwereldwinkels.be/online-creditering-WVDFT2020.pdf" download>Raadpleeg de exacte verdeling per winkel in deze PDF.</a>';
-					}
-					echo $correctie.'</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>De nieuwe rode pesto staat klaar:</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 		$skus = array( 27995 );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku( $sku );
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+				// 	echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit begin januari gebeuren, samen met de levering in de winkel. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.</p>';
+				// echo '</div>';
+				// echo '<div class="notice notice-info">';
+				// 	$correctie = '';
+				// 	$koffie_count = get_number_of_times_coupon_was_used('wvdft2020-koffie');
+				// 	if ( get_current_blog_id() === 15 ) {
+				// 		// Correctie voor Gentbrugge
+				// 		$koffie_extra = 4;
+				// 		$koffie_count += $koffie_extra;
+				// 		$correctie = ' Dit totaal bevat '.$koffie_extra.' koffiebonnen extra ter compensatie van de foutief toegekende kortingen in OWW07715, waarvoor nogmaals onze excuses.';
+				// 	}
+				// 	if ( get_current_blog_id() === 19 ) {
+				// 		// Correctie voor Lichtaart
+				// 		$koffie_extra = 2;
+				// 		$koffie_count += $koffie_extra;
+				// 		$correctie = ' Dit totaal bevat '.$koffie_extra.' koffiebonnen extra ter compensatie van de foutief toegekende kortingen in OWW07781 en OWW07823, waarvoor nogmaals onze excuses.';
+				// 	}
+				// 	$koffie_amount = 1.4151 * $koffie_count;
+				// 	$quinoa_count = get_number_of_times_coupon_was_used('wvdft2020-quinoa');
+				// 	$quinoa_amount = 3.8972 * $quinoa_count;
+				// 	echo '<p>Zoals eerder gemeld dien je voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon de webshopstatistieken om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Voor jullie webshop werden '.$koffie_count.' koffiebonnen (t.w.v. '.wc_price( $koffie_amount ).') en '.$quinoa_count.' quinoabonnen (t.w.v. '.wc_price( $quinoa_amount ).') geregistreerd.';
+				// 	if ( $koffie_amount+$quinoa_amount > 0 ) {
+				// 		echo ' Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, array( 'ex_tax_label' => true ) ).' zal terugbetaald worden bij de volgende crediteringsronde, half december. <a href="https://shop.oxfamwereldwinkels.be/online-creditering-WVDFT2020.pdf" download>Raadpleeg de exacte verdeling per winkel in deze PDF.</a>';
+				// 	}
+				// 	echo $correctie.'</p>';
+				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';

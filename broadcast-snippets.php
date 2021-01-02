@@ -274,7 +274,7 @@
 		// Opgelet: dit kijkt naar de (onzichtbare) slug, die lichtjes kan afwijken van de titel!
 		// WERKT NIET BIJ 'b2b-5%' en 'b2b-10%' (ZELFS MET 'b2b5' en 'b2b10')
 		// GEBRUIK DAARVOOR 'title' => 'b2b-5%' en 'title' => 'b2b-10%'
-		'post_name__in'	=> array( 'b2b-wereldwinkel', 'worldmix', 'kleine-chips', 'honingbiscuits', 'appelsap', 'sinaasappelsap', 'duo-zuid-afrika', 'duo-chili', 'duo-argentinie', 'duo-schuimwijn' ),
+		'post_name__in'	=> array( 'worldshake', 'sinaasappelsap-tetra', 'appelsap-groot', 'vidseca-pcc', 'malbec-gran-reserva' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	

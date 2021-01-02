@@ -75,9 +75,9 @@
 						'stock_status' => 'instock',
 						'tag' => array('promotie'),
 					);
-					$sint_products = wc_get_products( $args );
+					$banner_products = wc_get_products( $args );
 
-					if ( count( $sint_products ) > 0 ) {
+					if ( count( $banner_products ) > 0 and 1 === 2 ) {
 						?>
 						<div class="col-row lh-banner">		
 		 					<div class="col-xs-12">		

@@ -24,12 +24,12 @@
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
 		
-		$three_plus_one_products = array( 20810, 20811, 20812 );
+		$three_plus_one_products = array( 20808, 20810, 20812 );
 		if ( in_array( $product->get_sku(), $three_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 3+1 gratis';
 		}
 
-		$twentyfive_percent_off_products = array( 20807, 20808, 20809 );
+		$twentyfive_percent_off_products = array( 20807, 20809, 20811 );
 		if ( in_array( $product->get_sku(), $twentyfive_percent_off_products ) ) {
 			$labels['promotion'] = 'Promo -25%';
 		}
