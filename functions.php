@@ -238,7 +238,7 @@
 
 	function save_oxfam_product_fields( $post_id ) {
 		// Logica niet doorlopen tijdens imports, ontbreken van $_POST veroorzaakt verdwijnen van metadata
-		if ( get_site_option('oft_import_active') === 'yes' ) {
+		if ( get_site_option('oft_import_active') === 'yes' or empty( $_POST ) ) {
 			return;
 		}
 
@@ -281,8 +281,7 @@
 		// 	$product = wc_get_product( $post_id );
 		// 	if ( $product !== false ) {
 		// 		$logger = wc_get_logger();
-		// 		$context = array( 'source' => 'Oxfam Manual Product Sync' );
-					
+		// 		$context = array( 'source' => 'Oxfam Manual Product Sync' );			
 		// 		if ( $product->get_meta('_multiple') === '' ) {
 		// 			// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur
 		// 			$to_migrate = array(
@@ -293,18 +292,11 @@
 		// 				'fairtrade' => '_fairtrade_share',
 		// 				'eprijs' => '_unit_price',
 		// 			);
-		// 		} else {
-		// 			// Eenheidsprijs moet nog verhuisd worden in import!
-		// 			$to_migrate = array(
-		// 				'eprijs' => '_unit_price',
-		// 			);
 		// 		}
-
 		// 		foreach ( $to_migrate as $attribute => $meta_key ) {
 		// 			$migrated_values[] =  $meta_key.': '.$product->get_attribute( $attribute );
 		// 			$product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
 		// 		}
-
 		// 		$logger->info( 'Migrating SKU '.$product->get_sku().' to new data structure ('.implode( ', ', $migrated_values ).')', $context );
 		// 		$product->save();
 		// 	}

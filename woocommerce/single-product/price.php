@@ -24,16 +24,13 @@ global $product;
 
 <?php
 	if ( floatval( $product->get_meta('_unit_price') ) !== 0.0 ) {
-		// Nieuwe systeem (lokaal), via metadata
-		if ( strtolower( $product->get_meta('_net_unit') ) === 'cl' ) {
+		// Nationaal vs. lokale producten
+		if ( $product->get_meta('_stat_uom') === 'L' or $product->get_meta('_net_unit') === 'cl' ) {	
 			$unit = '&euro;/l';
 		} else {
 			$unit = '&euro;/kg';
 		}
 		echo '<p class="unit-price">'.$unit.' '.number_format_i18n( $product->get_meta('_unit_price'), 2 ).'</p>';
-	} elseif ( floatval( $product->get_attribute('eprijs') ) !== 0.0 ) {
-		// Oude systeem (nationaal), via attribuut
-		echo '<p class="unit-price">&euro;/'.strtolower( $product->get_meta('_stat_uom') ).' '.number_format_i18n( $product->get_attribute('eprijs'), 2 ).'</p>';
 	}
 
 /* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */
