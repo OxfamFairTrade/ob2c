@@ -6421,26 +6421,30 @@
 
 		if ( $import_id == 7 ) {
 			// Vind alle producten die vandaag niet bijgewerkt werden door de ERP-import
-			// Best een 2de import opzetten specifiek voor craftsproducten?
+			// Als we dit in gebruik willen nemen, moeten we vooraf de craftsvoorraden bijwerken
+			// Zodat 'touched_by_import' ook bij hen op vandaag staat
 			$args = array(
 				'post_type'			=> 'product',
-				'post_status'		=> array( 'publish', 'draft', 'trash' ),
+				'post_status'		=> array('publish'),
 				'posts_per_page'	=> -1,
 				'meta_key'			=> 'touched_by_import', 
-				'meta_value'		=> date_i18n('Ymd'),
+				'meta_value'		=> date('Ymd'),
 				'meta_compare'		=> '<',
 			);
 			$to_outofstock = new WP_Query( $args );
 			if ( $to_outofstock->have_posts() ) {
 				write_log( $to_outofstock->found_posts." DEPRECATED PRODUCTS" );
-				while ( $to_outofstock->have_posts() ) {
-					$to_outofstock->the_post();
-					$product = wc_get_product( get_the_ID() );
-					// write_log( $product->get_sku() );
-					// $product->set_stock_status('outofstock');
-					// $product->update_meta_data( '_in_bestelweb', 'nee' );
-					// $product->save();
-				}
+				// while ( $to_outofstock->have_posts() ) {
+				// 	$to_outofstock->the_post();
+				// 	$product = wc_get_product( get_the_ID() );
+				// 	write_log( $product->get_sku() );
+				// 	$product->set_stock_quantity(0);
+				// 	// In principe overbodig ...
+				// 	$product->set_stock_status('outofstock');
+				// 	$product->set_backorders('no');
+				// 	$product->update_meta_data( '_in_bestelweb', 'nee' );
+				// 	$product->save();
+				// }
 				wp_reset_postdata();
 			}
 
