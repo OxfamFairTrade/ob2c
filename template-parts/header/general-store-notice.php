@@ -35,7 +35,7 @@
 				<?php if ( $html ) : ?>
 					<li class="col-md-4"><span><?php echo $html; ?></span></li>
 				<?php endif; ?>
-				<li class="col-md-4"><span>Wij kopen rechtreeks bij kwetsbare producenten</span></li>
+				<li class="col-md-4"><span>Wij kopen rechtstreeks bij kwetsbare producenten</span></li>
 				<li class="col-md-4"><span>Je steunt de strijd voor eerlijke handel</span></li>
 			<?php endif; ?>
 		</ul>
