@@ -15,7 +15,6 @@
 			
 			// Let op met SPF-verificatie nu dit een '@oft.be'-adres geworden is!
 			$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
-			$headers[] = 'Bcc: e-commerce@oft.be';
 			$headers[] = 'Content-Type: text/html';
 				
 			foreach ( $sites as $site ) {
@@ -74,10 +73,16 @@
 								if ( $order->get_meta('_overdue_reminder_sent') === '' or $order->get_meta('_overdue_reminder_sent') < strtotime('-3 weekdays') ) {
 									echo $order->get_order_number().'<br/>';
 									$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$order->get_meta('_excel_file_name');
-									$body = '<html><p>Opgelet: bestelling '.$order->get_order_number().' zou tegen '.date_i18n( 'd/m/Y H:i', $order->get_meta('estimated_delivery') ).' geleverd worden maar het order is nog niet als afgerond gemarkeerd in de webshop! Hierdoor blijft de klant online in het ongewisse. Gelieve actie te ondernemen.</p><p><a href="'.$order->get_edit_order_url().'" target="_blank">Bekijk het order in de back-end (inloggen vereist) &raquo;</a></p><p>&nbsp;</p><p><i>Dit is een automatisch bericht.</i></p></html>';
-									if ( wp_mail( get_webshop_email(), $order->get_order_number().' wacht op verwerking', $body, $headers, $attachments ) ) {
+									$body = '<p>Opgelet: bestelling '.$order->get_order_number().' zou tegen '.date_i18n( 'd/m/Y H:i', $order->get_meta('estimated_delivery') ).' geleverd worden maar het order is nog niet als afgerond gemarkeerd in de webshop! Hierdoor blijft de klant online in het ongewisse. Gelieve actie te ondernemen.</p><p><a href="'.$order->get_edit_order_url().'" target="_blank">Bekijk het order in de back-end (inloggen vereist) &raquo;</a></p><p>&nbsp;</p><p><i>Dit is een automatisch bericht.</i></p>';
+									if ( wp_mail( get_webshop_email(), $order->get_order_number().' wacht op verwerking', '<html>'.$body.'</html>', $headers, $attachments ) ) {
 										$logger->warning( $order->get_order_number().": waarschuwing verstuurd over laattijdige afwerking", $context );
 										$order->add_order_note( 'Bestelling nog niet afgewerkt! Automatische herinnering verstuurd naar webshopmailbox.' );
+
+										if ( $order->get_meta('_overdue_reminder_sent') !== '' ) {
+											// Admins enkel verwittigen vanaf 2de herinnering
+											send_automated_mail_to_helpdesk( $order->get_order_number().' wacht op verwerking bij '.get_webshop_name(), $body );
+										}
+
 										$order->update_meta_data( '_overdue_reminder_sent', current_time('timestamp') );
 										$order->save();
 									} else {
