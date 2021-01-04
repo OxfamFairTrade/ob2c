@@ -160,7 +160,13 @@
 				if ( ! is_wp_error( $result_post_id ) ) {
 					// Verwijder de '_wp_old_date'-keys die elke dag toegevoegd worden door wp_insert_post() te gebruiken
 					if ( delete_post_meta( $result_post_id, '_wp_old_date' ) ) {
-						echo "Oude datums verwijderd op post-ID ".$result_post_id."<br/>";
+						echo "Vorige publicatiedatums gewist op post-ID ".$result_post_id."<br/>";
+					}
+					if ( delete_post_meta( $result_post_id, '_wp_trash_meta_time' ) ) {
+						echo "Datums van verwijdering gewist op post-ID ".$result_post_id."<br/>";
+					}
+					if ( delete_post_meta( $result_post_id, '_wp_trash_meta_status' ) ) {
+						echo "Statussen voor verwijdering gewist op post-ID ".$result_post_id."<br/>";
 					}
 
 					// Winkelcategorie instellen DEPRECATED
