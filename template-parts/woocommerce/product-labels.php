@@ -24,7 +24,7 @@
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
 		
-		$three_plus_one_products = array( 20808, 20810, 20812 );
+		$three_plus_one_products = array( 20808, 20810, 20812, 21108 );
 		if ( in_array( $product->get_sku(), $three_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 3+1 gratis';
 		}
