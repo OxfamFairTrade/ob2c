@@ -6700,7 +6700,7 @@
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
 								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').') : '.$explanation.'</li>';
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').'): '.$explanation.'</li>';
 							}
 						}
 					echo '</ul>Onze excuses voor de kleine prijsafwijkingen die hierdoor de voorbije dagen ontstonden. In de webshops bleef de impact beperkt tot twee bestellingen (OWW10710 en OWW10726).<p>';
