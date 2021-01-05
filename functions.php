@@ -6695,7 +6695,7 @@
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-warning">';
 					echo '<p>Er waren op het NS helaas enkele malversaties rond de productdatabase voor januari! Op 5/1 werden volgende correcties doorgevoerd om ShopPlus, de prijskaartjes en de webshops weer helemaal in overeenstemming te brengen met elkaar:<ul>';
-						$skus = array( 19238 => 'er was voorzien om de pakketprijzen ongemoeid te laten, maar in het geval van de JUSTE Bruin-set betaalde je daardoor méér dan bij aanschaf van de losse onderdelen, dus we trekken de prijs alsnog gelijk met de JUSTE Tripel-set (er volgt een nieuw prijskaartje)', 27201 => 'dit product werd na de aangekondigde prijsverhoging stopgezet, toch behouden we de nieuwe prijs van 2,00 euro zoals vermeld in de nieuwe prijskaartjes', 28021 => 'in ons ERP zat vanaf 1/1 een prijsverhoging geprogrammeerd voor de oogst van 2021 die nog (lang) niet uitgeleverd wordt, we keren terug naar de oude prijs van 11,35 euro', 21108 => 'de 3+1-actie op dit product werd laattijdig verlengd tot 15/1' );
+						$skus = array( 19238 => 'er was voorzien om de pakketprijzen ongemoeid te laten, maar in het geval van de JUSTE Bruin-set betaalde je daardoor méér dan bij aanschaf van de losse onderdelen, dus we trekken de prijs alsnog gelijk met de JUSTE Tripel-set (er volgt een nieuw prijskaartje)', 27201 => 'dit product werd na de aangekondigde prijsverhoging stopgezet, toch behouden we de nieuwe prijs van 2,00 euro zoals vermeld in de nieuwe prijskaartjes', 28021 => 'in ons ERP zat vanaf 1/1 een prijsverhoging geprogrammeerd voor de oogst van 2021 die nog (lang) niet uitgeleverd wordt, we keren terug naar de oude prijs van 11,35 euro', 21108 => 'de 3+1-actie op dit product werd last minute verlengd tot 15/1' );
 						foreach ( $skus as $sku => $explanation ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -6703,7 +6703,7 @@
 								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_meta('_shopplus_code').' '.$product->get_title().'</a>: '.$explanation.'</li>';
 							}
 						}
-					echo '</ul>Onze excuses voor de kleine prijsafwijkingen op het kassaticket die hierdoor de voorbije dagen ontstonden.<p>';
+					echo '</ul>Onze excuses voor de kleine prijsafwijkingen die hierdoor de voorbije dagen ontstonden. In de webshops bleef de impact beperkt tot twee bestellingen (OWW10710 en OWW10726).<p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-januari-2021-update.html" target="_blank">januaripromo\'s</a> werden geactiveerd in alle webshops. De <a href="https://copain.oww.be/k/n118/news/view/20763/12894/prijswijzigingen-vanaf-1-januari-2021.html" target="_blank">prijswijzigingen van 01/01/2021</a> werden in de ochtend van 2 januari doorgevoerd.</p>';
