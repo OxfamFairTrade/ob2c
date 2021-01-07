@@ -3057,6 +3057,7 @@
 
 		// Onzichtbaar gemaakt via CSS maar absoluut nodig voor service points!
 		$address_fields['country']['priority'] = 100;
+		$address_fields['country']['custom_attributes'] = array( 'disabled' => 'disabled' );
 
 		return $address_fields;
 	}
@@ -3531,10 +3532,12 @@
 							if ( $total_tax > 0.01 ) {
 								if ( $shipping->get_tax_class() === 'voeding' ) {
 									$tax = 0.06;
+									$qty = round( $total_excl_tax / REDUCED_VAT_SHIPPING_COST );
 								} else {
 									$tax = 0.21;
+									$qty = round( $total_excl_tax / STANDARD_VAT_SHIPPING_COST );
 								}
-								$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
+								$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, $qty )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
 							}
 						}
 						break;
@@ -4376,8 +4379,8 @@
 				break;
 		}
 		$descr .= '</small>';
-		// Geen schattingen tonen aan B2B-klanten
-		if ( ! is_b2b_customer() ) {
+		// Geen schattingen tonen aan B2B-klanten of buitenlandse particulieren
+		if ( ! is_b2b_customer() or WC()->customer->get_shipping_country() !== 'BE' ) {
 			return $label.'<br/>'.$descr;
 		} else {
 			return $label;
@@ -5003,11 +5006,20 @@
 			if ( ! in_array( $reduced_vat_slug, $tax_classes ) ) {
 				// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
 				$cost = STANDARD_VAT_SHIPPING_COST;
+				do_action( 'qm/debug', WC()->customer->get_shipping_country() );
+				if ( WC()->customer->get_shipping_country() !== 'BE' ) {
+					// Verdubbel de verzendkost voor buitenlandse bestellingen
+					$cost *= 2;
+				}
 				// Ook belastingen expliciet herberekenen!
 				$tax_cost = 0.21 * $cost;
 				$tax_rate = $standard_vat_rate;
 			} else {
 				$cost = REDUCED_VAT_SHIPPING_COST;
+				if ( WC()->customer->get_shipping_country() !== 'BE' ) {
+					// Verdubbel de verzendkost voor buitenlandse bestellingen
+					$cost *= 2;
+				}
 				$tax_cost = 0.06 * $cost;
 				$tax_rate = $reduced_vat_rate;
 			}
@@ -6695,7 +6707,7 @@
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-warning">';
 					echo '<p>Er waren op het NS helaas enkele malversaties rond de productdatabase voor januari! Op 5/1 werden volgende correcties doorgevoerd om ShopPlus, de prijskaartjes en de webshops weer helemaal in overeenstemming te brengen met elkaar:<ul>';
-						$skus = array( 19238 => 'oorspronkelijk was het voorzien om de pakketprijzen ongemoeid te laten, maar in het geval van de JUSTE Bruin-set betaalde je daardoor méér dan bij aanschaf van de losse onderdelen, dus we trekken de prijs alsnog gelijk met de JUSTE Tripel-set (er volgt een nieuw prijskaartje)', 27201 => 'dit product werd na de in oktober aangekondigde prijsverhoging stopgezet, toch behouden we de nieuwe prijs van 2,00 euro zoals vermeld in de nieuwe prijskaartjes', 28021 => 'in ons ERP zat vanaf 1/1 een prijsverhoging geprogrammeerd voor de oogst van 2021 die nog (lang) niet uitgeleverd wordt, we keren terug naar de oude prijs van 11,35 euro', 21108 => 'de 3+1-actie op dit product werd last minute verlengd tot 15/1' );
+						$skus = array( 19238 => 'oorspronkelijk was het voorzien om de pakketprijzen ongemoeid te laten, maar in het geval van de JUSTE Bruin-set betaalde je daardoor méér dan bij aanschaf van de losse onderdelen, dus we trekken de prijs alsnog gelijk met de JUSTE Tripel-set (<a href="https://crm.oww.be/l/library/download/urn:uuid:e202df59-8338-4f91-be81-6818ef49080d/189-prijskaartje-biergeschenkset+juste-01-2021.pdf?format=save_to_disk&ext=.pdf" target="_blank">download het nieuwe prijskaartje</a>)', 27201 => 'dit product werd na de in oktober aangekondigde prijsverhoging stopgezet, toch behouden we de nieuwe prijs van 2,00 euro zoals vermeld in de nieuwe prijskaartjes', 28021 => 'in ons ERP zat vanaf 1/1 een prijsverhoging geprogrammeerd voor de oogst van 2021 die nog (lang) niet uitgeleverd wordt, we keren terug naar de oude prijs van 11,35 euro', 21108 => 'de 3+1-actie op dit product werd last minute verlengd tot 15/1' );
 						foreach ( $skus as $sku => $explanation ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -6709,7 +6721,7 @@
 					echo '<p>De <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-januari-2021-update.html" target="_blank">januaripromo\'s</a> werden geactiveerd in alle webshops. De <a href="https://copain.oww.be/k/n118/news/view/20763/12894/prijswijzigingen-vanaf-1-januari-2021.html" target="_blank">prijswijzigingen van 01/01/2021</a> werden in de ochtend van 2 januari doorgevoerd.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-info">';
-					echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden. Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</a></p>';
+					echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				echo '</div>';
 				// echo '<div class="notice notice-success">';
 				// 	echo '<p>De nieuwe rode pesto staat klaar:</p><ul style="margin-left: 2em; column-count: 2;">';
