@@ -5,9 +5,10 @@
 <body>
 	<?php
 		// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-		require_once '../../../wp-load.php';
+		require_once __DIR__ . '/../../../wp-load.php';
 		
-		if ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) {
+		// Bied zowel ondersteuning voor wget als php cron jobs!
+		if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'import_key='.IMPORT_KEY ) ) {
 			// Vraag alle huidige winkels in de OWW-site op
 			$oww_stores = get_external_wpsl_stores();
 
@@ -48,7 +49,7 @@
 					// Maak de lokale kaart aan met alle deelnemende winkelpunten, exclusief externen
 					$locations = ob2c_get_pickup_locations();
 					if ( count( $locations ) > 0 ) {
-						$local_file = fopen( "../../maps/site-".$site->blog_id.".kml", "w" );
+						$local_file = fopen( __DIR__ . '/../../maps/site-'.$site->blog_id.'.kml', 'w' );
 						$txt = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 						// Icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin
 						$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
@@ -158,9 +159,12 @@
 
 				$result_post_id = wp_insert_post( $store_args );
 				if ( ! is_wp_error( $result_post_id ) ) {
-					// Verwijder de '_wp_old_date'-keys die elke dag toegevoegd worden door wp_insert_post() te gebruiken
+					// Verwijder de trash keys die elke dag toegevoegd worden door wp_insert_post() te gebruiken
 					if ( delete_post_meta( $result_post_id, '_wp_old_date' ) ) {
 						echo "Vorige publicatiedatums gewist op post-ID ".$result_post_id."<br/>";
+					}
+					if ( delete_post_meta( $result_post_id, '_wp_old_slug' ) ) {
+						echo "Vorige URL's gewist op post-ID ".$result_post_id."<br/>";
 					}
 					if ( delete_post_meta( $result_post_id, '_wp_trash_meta_time' ) ) {
 						echo "Datums van verwijdering gewist op post-ID ".$result_post_id."<br/>";
@@ -178,7 +182,7 @@
 				}
 			}
 
-			echo "THE END";
+			write_log( count( $oww_stores )." winkels geïmporteerd!" );
 		} else {
 			die("Access prohibited!");
 		}

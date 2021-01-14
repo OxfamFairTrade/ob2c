@@ -198,7 +198,7 @@
 			?>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_remove_excel_header">Laat header met klantgegevens weg uit pick-Excel:<br/><small>Hierdoor kun je de file zonder aanpassingen overnemen in ShopPlus (druk F10, op de kassacomputer moet Microsoft Excel geïnstalleerd zijn). Zo hoef je de producten niet meer handmatig in te scannen. Je verliest wel de dubbelcheck op de compleetheid van de bestelling en ziet het adres van de klant niet meer op het document.</small></label>
+					<label for="oxfam_remove_excel_header">Laat header met klantgegevens weg uit pick-Excel:<br/><small>Hierdoor kun je de file zonder aanpassingen overnemen in ShopPlus (druk in het verkoopscherm op F10 en vervolgens op F12, op de kassacomputer moet Microsoft Excel geïnstalleerd zijn). Zo hoef je de producten niet meer handmatig in te scannen. Je verliest wel de dubbelcheck op de compleetheid van de bestelling en ziet het adres van de klant niet meer op het document.</small></label>
 				</th>
 				<td class="right">
 					<input type="checkbox" name="oxfam_remove_excel_header" value="yes" <?php checked( get_option('oxfam_remove_excel_header'), 'yes' ); ?> <?php if ( current_user_can('create_sites') ) echo ' disabled'; ?>>

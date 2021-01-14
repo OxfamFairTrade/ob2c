@@ -1438,12 +1438,8 @@
 	add_filter( 'wpsl_no_results_sql', 'wpsl_show_default_webshop_for_home_delivery' );
 	
 	function wpsl_show_default_webshop_for_home_delivery( $store_data ) {
-		write_log("Geen enkele winkel gevonden binnen de 30 kilometer!");
-		
-		// Injecteer de thuisleverwinkel indien er geen enkele winkel gevonden werd (ongeacht de afstand)
-		$store_data = get_default_webshop_for_home_delivery();
-		
-		return $store_data;
+		// Retourneer de thuisleverwinkel indien er geen enkele winkel gevonden werd (ongeacht de afstand)
+		return get_default_webshop_for_home_delivery();
 	}
 
 	function get_default_webshop_for_home_delivery() {
@@ -1459,8 +1455,8 @@
 				if ( array_key_exists( $current_location, $all_stores_by_postcode ) ) {
 					$store = new stdClass();
 					$store->ID = $all_stores_by_postcode[ $current_location ];
-					// Altijd op 5 zetten, zodat de winkel 'redelijk' bovenaan verschijnt na sorteren
-					$store->distance = 5;
+					// Op slechts enkele kilometers zetten, zodat de winkel redelijk bovenaan verschijnt na sorteren
+					$store->distance = 3;
 					// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
 					write_log("Ontbrekende thuisleverwinkel met store-ID ".$store->ID." toegevoegd aan resultatenlijst voor ".$current_location);
 					
@@ -7873,12 +7869,12 @@
 
 	// Print variabelen op een overzichtelijke manier naar een niet-publieke file
 	if ( ! function_exists( 'write_log' ) ) {
-		function write_log( $log )  {
+		function write_log( $log ) {
 			if ( defined('WP_DEBUG_LOG') and WP_DEBUG_LOG ) {
 				if ( is_array( $log ) or is_object( $log ) ) {
 					$log = serialize( $log );
 				}
-				error_log( "[".date_i18n('d/m/Y H:i:s')."] ".$log."\n", 3, ABSPATH . '/../activity.log' );
+				error_log( "[".date_i18n('d/m/Y H:i:s')."] " . $log . "\n", 3, ABSPATH . '/../activity.log' );
 			}
 		}
 	}
