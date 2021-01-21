@@ -2704,7 +2704,7 @@
 		return $available;
 	}
 
-	// Herlaad winkelmandje automatisch na aanpassing en zorg dat postcode altijd gecheckt wordt (en activeer live search indien plugin geactiveerd)
+	// Herlaad winkelmandje automatisch na aanpassing en trigger geschenkverpakking indien nodig
 	add_action( 'wp_footer', 'cart_update_qty_script' );
 	
 	function cart_update_qty_script() {
@@ -2721,7 +2721,7 @@
 						}, 1000);
 					});
 					<?php if ( isset( $_GET['triggerGiftWrapper'] ) ) : ?>
-						// jQuery('.wcgwp-modal-toggle').trigger('click') werkt niet
+						// You trigger a click on the underlying HTML element, not the jQuery object
 						jQuery('.wcgwp-modal-toggle')[0].click();
 					<?php endif; ?>
 				});
@@ -2748,7 +2748,7 @@
 			jQuery(document).ready( function() {
 				function hidePlaceholder( dateText, inst ) {
 					// Placeholder onmiddellijk verwijderen
-					jQuery(this).attr('placeholder', '');
+					jQuery(this).attr( 'placeholder', '' );
 					// Datum is sowieso geldig, verwijder de eventuele foutmelding
 					jQuery('#datepicker_field').removeClass('woocommerce-invalid woocommerce-invalid-required-field');
 				}
@@ -3051,9 +3051,13 @@
 			)
 		);
 
-		// Onzichtbaar gemaakt via CSS maar absoluut nodig voor service points!
+		// Land moet bewerkbaar blijven, anders geen waarde doorgestuurd, en absoluut nodig voor service points!
 		$address_fields['country']['priority'] = 100;
-		$address_fields['country']['custom_attributes'] = array( 'disabled' => 'disabled' );
+		$address_fields['country']['class'] = array('hidden-address-field');
+		// Enkel zichtbaar maken bij buitenlandse klanten
+		if ( WC()->customer->get_shipping_country() !== 'BE' ) {
+			$address_fields['country']['class'] = array('update_totals_on_change');
+		}
 
 		return $address_fields;
 	}
@@ -3104,9 +3108,9 @@
 	}
 
 	// Acties om uit te voeren AAN BEGIN VAN ELKE POGING TOT CHECKOUT
-	add_action( 'woocommerce_checkout_process', 'verify_min_max_age_postcode_vat' );
+	add_action( 'woocommerce_checkout_process', 'ob2c_validate_order_total' );
 
-	function verify_min_max_age_postcode_vat() {
+	function ob2c_validate_order_total() {
 		// Stel een bestelminimum in
 		$min = 10;
 		if ( floatval( WC()->cart->get_total('edit') ) < $min ) {
@@ -3115,9 +3119,9 @@
 	}
 
 	// Validaties om uit te voeren NA FORMATTERING DATA door 'woocommerce_process_checkout_field_...'-filters in get_posted_data()
-	add_action( 'woocommerce_after_checkout_validation', 'do_age_housenumber_vat_validation', 10, 2 );
+	add_action( 'woocommerce_after_checkout_validation', 'ob2c_validate_age_housenumber_vat', 10, 2 );
 
-	function do_age_housenumber_vat_validation( $fields, $errors ) {
+	function ob2c_validate_age_housenumber_vat( $fields, $errors ) {
 		// Check op het invullen van verplichte velden gebeurt reeds eerder door WooCommerce
 		// Als er een waarde meegegeven wordt, checken we wel steeds of de klant meerderjarig is
 		if ( ! empty( $fields['billing_birthday'] ) ) {
@@ -3237,6 +3241,7 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_vat', 'format_tax', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_address_1', 'format_place', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_address_1', 'format_place', 10, 1 );
+	// Tegenwoordig doet WooCommerce zelf goede validatie van postcodes, zie 'woocommerce_validate_postcode'-filter
 	add_filter( 'woocommerce_process_checkout_field_billing_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_city', 'format_city', 10, 1 );
@@ -3252,6 +3257,7 @@
 	add_filter( 'woocommerce_process_myaccount_field_shipping_last_name', 'trim_and_uppercase', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_address_1', 'format_place', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_address_1', 'format_place', 10, 1 );
+	// Tegenwoordig doet WooCommerce zelf goede validatie van postcodes, zie 'woocommerce_validate_postcode'-filter
 	add_filter( 'woocommerce_process_checkout_field_shipping_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_shipping_city', 'format_city', 10, 1 );
@@ -3344,8 +3350,9 @@
 	}
 
 	function format_zipcode( $value ) {
-		// Verwijder alle tekens die geen cijfer zijn
-		return preg_replace( '/\D/', '', trim($value) );
+		// Opgelet: niet-numerieke tekens bewust niet verwijderen, anders problemen met NL-postcodes!
+		// Gebruik eventueel WC_Validation::is_postcode( $postcode, $country )
+		return trim( $value );
 	}
 
 	function format_city( $value ) {
@@ -3468,8 +3475,12 @@
 			}
 
 			// Vul de artikeldata item per item in
-			foreach ( $order->get_items() as $order_item_id => $item ) {
-				$product = $order->get_product_from_item( $item );
+			foreach ( $order->get_items() as $item ) {
+				$product = $item->get_product();
+				if ( $product === false ) {
+					continue;
+				}
+				
 				switch ( $product->get_tax_class() ) {
 					case 'voeding':
 						$tax = '0.06';
@@ -3501,6 +3512,9 @@
 				$i++;
 			}
 
+			// Verzendkosten vermelden (indien van toepassing)
+			$i = ob2c_print_shipping_costs( $order, $pick_sheet, $i );
+
 			if ( get_option('oxfam_remove_excel_header') !== 'yes' ) {
 				$pickup_text = 'Afhaling in winkel';
 				// Deze $order->get_meta() is hier reeds beschikbaar!
@@ -3519,23 +3533,6 @@
 						
 						// Leveradres invullen (is in principe zeker beschikbaar!)
 						$pick_sheet->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
-
-						// Verzendkosten vermelden
-						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
-							$total_tax = floatval( $shipping->get_total_tax() );
-							$total_excl_tax = floatval( $shipping->get_total() );
-							// Enkel printen indien nodig
-							if ( $total_tax > 0.01 ) {
-								if ( $shipping->get_tax_class() === 'voeding' ) {
-									$tax = 0.06;
-									$qty = round( $total_excl_tax / REDUCED_VAT_SHIPPING_COST );
-								} else {
-									$tax = 0.21;
-									$qty = round( $total_excl_tax / STANDARD_VAT_SHIPPING_COST );
-								}
-								$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, $qty )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
-							}
-						}
 						break;
 
 					case stristr( $shipping_method['method_id'], 'free_shipping' ):
@@ -3552,21 +3549,6 @@
 						$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
 						$service_point_info = explode ( '|', $service_point['extra'] );
 						$pick_sheet->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
-
-						// Verzendkosten vermelden
-						foreach ( $order->get_items('shipping') as $order_item_id => $shipping ) {
-							$total_tax = floatval( $shipping->get_total_tax() );
-							$total_excl_tax = floatval( $shipping->get_total() );
-							// Enkel printen indien nodig
-							if ( $total_tax > 0.01 ) {
-								if ( $shipping->get_tax_class() === 'voeding' ) {
-									$tax = 0.06;
-								} else {
-									$tax = 0.21;
-								}
-								$pick_sheet->setCellValue( 'A'.$i, 'WEB'.intval(100*$tax) )->setCellValue( 'B'.$i, 'Thuislevering' )->setCellValue( 'C'.$i, 1 )->setCellValue( 'D'.$i, $total_excl_tax+$total_tax )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $total_excl_tax+$total_tax );
-							}
-						}
 						break;
 
 					default:
@@ -3659,6 +3641,41 @@
 		}
 
 		return $attachments;
+	}
+
+	function ob2c_get_shipping_cost_details( $order ) {
+		$total_excl_tax = 0.00;
+		$total_tax = 0.00;
+		$tax_rate = 0.06;
+		$qty = 0;
+		
+		// We gaan ervan uit dat er altijd slechts één verzendlijn aanwezig zal zijn!
+		foreach ( $order->get_items('shipping') as $shipping_item ) {
+			$total_excl_tax = floatval( $shipping_item->get_total() );
+			$total_tax = floatval( $shipping_item->get_total_tax() );
+			
+			// Opgelet: géén $shipping_item->get_tax_class() gebruiken, want dit retourneert gewoon waarde van 'woocommerce_shipping_tax_class'-optie!
+			if ( ! in_array( 'voeding', $order->get_items_tax_classes() ) ) {
+				$tax_rate = 0.21;
+				$qty = round( $total_excl_tax / STANDARD_VAT_SHIPPING_COST );
+			} else {
+				$qty = round( $total_excl_tax / REDUCED_VAT_SHIPPING_COST );
+			}
+		}
+
+		return array( 'total_excl_tax' => $total_excl_tax, 'total_tax' => $total_tax, 'tax_rate' => $tax_rate, 'qty' => $qty );
+	}
+
+	function ob2c_print_shipping_costs( $order, $excel_sheet, $line_number ) {
+		// Enkel printen indien betalende verzendkost aanwezig
+		if ( floatval( $order->get_shipping_total() ) > 0.00 ) {
+			$shipping_cost_details = ob2c_get_shipping_cost_details( $order );
+			$shipping_cost_total = $shipping_cost_details['total_excl_tax'] + $shipping_cost_details['total_tax'];
+			$excel_sheet->setCellValue( 'A'.$line_number, 'WEB'.intval( 100 * $shipping_cost_details['tax_rate'] ) )->setCellValue( 'B'.$line_number, 'Thuislevering' )->setCellValue( 'C'.$line_number, $shipping_cost_details['qty'] )->setCellValue( 'D'.$line_number, $shipping_cost_total / $shipping_cost_details['qty'] )->setCellValue( 'E'.$line_number, $shipping_cost_details['tax_rate'] )->setCellValue( 'F'.$line_number, $shipping_cost_total );
+			$line_number++;
+		}
+
+		return $line_number;
 	}
 
 	// Verduidelijk de profiellabels in de back-end	
@@ -3956,26 +3973,26 @@
 
 		$names = array( 'billing_company', 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_city', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_city' );
 		foreach ( $names as $name ) {
-			if ( isset($_POST[$name]) ) {
-				$_POST[$name] = trim_and_uppercase($_POST[$name]);
+			if ( isset( $_POST[$name] ) ) {
+				$_POST[$name] = trim_and_uppercase( $_POST[$name] );
 			}
 		}
 
-		if ( isset($_POST['billing_email']) ) {
+		if ( isset( $_POST['billing_email'] ) ) {
 			// Retourneert false indien ongeldig e-mailformaat
-			$_POST['billing_email'] = is_email( format_mail($_POST['billing_email']) );
+			$_POST['billing_email'] = is_email( format_mail( $_POST['billing_email'] ) );
 		}
-		if ( isset($_POST['billing_phone']) ) {
-			$_POST['billing_phone'] = format_telephone($_POST['billing_phone']);
+		if ( isset( $_POST['billing_phone'] ) ) {
+			$_POST['billing_phone'] = format_telephone( $_POST['billing_phone'] );
 		}
-		if ( isset($_POST['billing_vat']) ) {
-			$_POST['billing_vat'] = format_tax($_POST['billing_vat']);
+		if ( isset( $_POST['billing_vat'] ) ) {
+			$_POST['billing_vat'] = format_tax( $_POST['billing_vat'] );
 		}
-		if ( isset($_POST['billing_postcode']) ) {
-			$_POST['billing_postcode'] = format_zipcode($_POST['billing_postcode']);
+		if ( isset( $_POST['billing_postcode'] ) ) {
+			$_POST['billing_postcode'] = format_zipcode( $_POST['billing_postcode'] );
 		}
-		if ( isset($_POST['shipping_postcode']) ) {
-			$_POST['shipping_postcode'] = format_zipcode($_POST['shipping_postcode']);
+		if ( isset( $_POST['shipping_postcode'] ) ) {
+			$_POST['shipping_postcode'] = format_zipcode( $_POST['shipping_postcode'] );
 		}
 
 		// Usermeta is netwerkbreed, dus ID van blog toevoegen aan de key!
@@ -4375,8 +4392,8 @@
 				break;
 		}
 		$descr .= '</small>';
-		// Geen schattingen tonen aan B2B-klanten of buitenlandse particulieren
-		if ( ! is_b2b_customer() or WC()->customer->get_shipping_country() !== 'BE' ) {
+		// Geen schattingen tonen aan B2B-klanten of buitenlanders
+		if ( ! is_b2b_customer() and WC()->customer->get_shipping_country() === 'BE' ) {
 			return $label.'<br/>'.$descr;
 		} else {
 			return $label;
@@ -4990,19 +5007,16 @@
 			// 	wc_add_notice( sprintf( __( 'Foutmelding bij bestellingen boven de 30 kg, inclusief het huidige gewicht in kilogram (%s).', 'oxfam-webshop' ), number_format( $cart_weight, 1, ',', '.' ) ), 'error' );
 			// }
 
-			$reduced_vat_slug = 'voeding';
-			$reduced_vat_rates = WC_Tax::get_rates_for_tax_class( $reduced_vat_slug );
+			$reduced_vat_rates = WC_Tax::get_rates_for_tax_class('voeding');
 			$reduced_vat_rate = reset( $reduced_vat_rates );
 			
 			// Slug voor 'standard rate' is een lege string!
 			$standard_vat_rates = WC_Tax::get_rates_for_tax_class('');
 			$standard_vat_rate = reset( $standard_vat_rates );
 			
-			$tax_classes = WC()->cart->get_cart_item_tax_classes();
-			if ( ! in_array( $reduced_vat_slug, $tax_classes ) ) {
+			if ( ! in_array( 'voeding', WC()->cart->get_cart_item_tax_classes() ) ) {
 				// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
 				$cost = STANDARD_VAT_SHIPPING_COST;
-				do_action( 'qm/debug', WC()->customer->get_shipping_country() );
 				if ( WC()->customer->get_shipping_country() !== 'BE' ) {
 					// Verdubbel de verzendkost voor buitenlandse bestellingen
 					$cost *= 2;
@@ -6702,8 +6716,8 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-warning">';
-					echo '<p>Er waren op het NS helaas enkele malversaties rond de productdatabase voor januari! Op 5/1 werden volgende correcties doorgevoerd om ShopPlus, de prijskaartjes en de webshops weer helemaal in overeenstemming te brengen met elkaar:<ul>';
-						$skus = array( 19238 => 'oorspronkelijk was het voorzien om de pakketprijzen ongemoeid te laten, maar in het geval van de JUSTE Bruin-set betaalde je daardoor méér dan bij aanschaf van de losse onderdelen, dus we trekken de prijs alsnog gelijk met de JUSTE Tripel-set (<a href="https://crm.oww.be/l/library/download/urn:uuid:e202df59-8338-4f91-be81-6818ef49080d/189-prijskaartje-biergeschenkset+juste-01-2021.pdf?format=save_to_disk&ext=.pdf" target="_blank">download het nieuwe prijskaartje</a>)', 27201 => 'dit product werd na de in oktober aangekondigde prijsverhoging stopgezet, toch behouden we de nieuwe prijs van 2,00 euro zoals vermeld in de nieuwe prijskaartjes', 28021 => 'in ons ERP zat vanaf 1/1 een prijsverhoging geprogrammeerd voor de oogst van 2021 die nog (lang) niet uitgeleverd wordt, we keren terug naar de oude prijs van 11,35 euro', 21108 => 'de 3+1-actie op dit product werd last minute verlengd tot 15/1' );
+					echo '<p>Een laatste malversatie rond de prijswijzigingen van 1 januari werd op 19/1 rechtgetrokken:<ul>';
+						$skus = array( 24006 => 'Oorspronkelijk was voorzien om de prijsverhoging van 3,45 naar 3,65 euro enkel toe te passen op de nieuwe ompakken met nummer 24018, die pas vanaf volgende week uitgeleverd zullen worden. Omdat de barcode op de verpakking dezelfde gebleven is, werd de leverancierscode in ShopPlus in de update van januari reeds geswitcht naar 24018. Bijgevolg kreeg W14006 toen ook de hogere prijs en zal W14018 (zoals voorzien in de prijskaartjes) nooit aangemaakt worden. We hebben daarom besloten om de prijs van de bestaande chocodrink ook in de webshops al op te trekken naar 3,65 euro.' );
 						foreach ( $skus as $sku => $explanation ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -6711,7 +6725,7 @@
 								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').'): '.$explanation.'</li>';
 							}
 						}
-					echo '</ul>Onze excuses voor de kleine prijsafwijkingen die hierdoor de voorbije dagen ontstonden. In de webshops bleef de impact beperkt tot twee bestellingen (OWW10710 en OWW10726).<p>';
+					echo '</ul>De chocodrink werd aan de \'verkeerde\' prijs verrekend in bestellingen OWW10775, OWW10827, OWW10784, OWW10972 en OWW10990.<p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-januari-2021-update.html" target="_blank">januaripromo\'s</a> werden geactiveerd in alle webshops. De <a href="https://copain.oww.be/k/n118/news/view/20763/12894/prijswijzigingen-vanaf-1-januari-2021.html" target="_blank">prijswijzigingen van 01/01/2021</a> werden in de ochtend van 2 januari doorgevoerd.</p>';
@@ -7525,11 +7539,11 @@
 
 			switch ( $key ) {
 				case 'place':
-					return call_user_func( 'format_place', 'Ververijstraat 17' );
+					return 'Ververijstraat 17';
 				case 'zipcode':
-					return call_user_func( 'format_zipcode', '9000' );
+					return '9000';
 				case 'city':
-					return call_user_func( 'format_city', 'Gent' );
+					return 'Gent';
 				case 'telephone':
 					return call_user_func( 'format_telephone', '092188899', '.' );
 				case 'tax':

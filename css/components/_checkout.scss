@@ -26,10 +26,8 @@ form.woocommerce-checkout {
     }
   }
 
-  .woocommerce-shipping-fields__field-wrapper {
-    
-  }
-
+  .woocommerce-billing-fields .hidden-address-field,
+  .woocommerce-shipping-fields .hidden-address-field,
   span.optional {
     display: none !important;
   }

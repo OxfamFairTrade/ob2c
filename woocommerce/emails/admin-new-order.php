@@ -24,9 +24,19 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$shipping_method = reset( $shipping_methods );
 	$pickup_location_name = ob2c_get_pickup_location_name( $shipping_method, false );
 	echo '<p><b>Dit is een afhaling voor '.$pickup_location_name.'.</b> Vergeet de bestelling in de webshop niet als \'Afgerond\' te markeren van zodra het pakje samengesteld is. Pas dan ontvangt de klant een tweede mail waarin hij/zij op de hoogte gebracht wordt dat de bestelling klaarstaat voor afhaling in de winkel.</p>';
-} elseif ( $order->get_shipping_total() > 0 ) {
-	if ( in_array( 'voeding', $order->get_items_tax_classes() ) === false ) {
-		echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( STANDARD_VAT_SHIPPING_COST ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
+} elseif ( floatval( $order->get_shipping_total() ) > 0.00 ) {
+	$shipping_cost_details = ob2c_get_shipping_cost_details( $order );
+
+	if ( $shipping_cost_details['tax_rate'] == 0.21 ) {
+		if ( $shipping_cost_details['qty'] > 1 ) {
+			echo '<p style="color: red; font-weight: bold;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW met levering naar het buitenland! Zorg ervoor dat je bij de verwerking in ShopPlus ' . $shipping_cost_details['qty'] . 'x de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( $shipping_cost_details['qty'] * REDUCED_VAT_SHIPPING_COST ) ).'</p>';
+		} else {
+			echo '<p style="color: red; font-weight: bold;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
+		}
+	} else {
+		if ( $shipping_cost_details['qty'] > 1 ) {
+			echo '<p style="color: red; font-weight: bold;">Dit is een bestelling met levering naar het buitenland! Zorg ervoor dat je bij de verwerking in ShopPlus ' . $shipping_cost_details['qty'] . 'x de levercode \'WEB6\' inscant.</p>';
+		}
 	}
 }
 
