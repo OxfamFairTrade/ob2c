@@ -479,25 +479,27 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		'woocommerce_new_order_settings',
 		'woocommerce_customer_new_account_settings',
 		'woocommerce_customer_processing_order_settings',
+		'woocommerce_customer_completed_order_settings',
 		'woocommerce_customer_reset_password_settings',
 		'woocommerce_customer_note_settings',
 	);
-	$chosen_key = 'woocommerce_customer_processing_order_settings';
 	
+	$chosen_key = 'woocommerce_customer_processing_order_settings';
 	switch_to_blog(1);
 	$mail_settings = get_option( $chosen_key );
 	restore_current_blog();
 	
 	if ( is_array( $mail_settings ) ) {
-		// Let op met overschrijvingen in subsites!
 		// $mail_settings['enabled'] = 'yes';
-		// $mail_settings['recipient'] =  get_webshop_email();
+		// Let op in subsites, altijd overschrijven in adminmails!
+		// $mail_settings['recipient'] = get_webshop_email();
 		// $mail_settings['subject'] = 'Actie vereist: nieuwe online bestelling ({order_number}) – {order_date}';
 		// $mail_settings['heading'] = 'Hoera, een nieuwe bestelling!';
 		$mail_settings['additional_content'] = '';
 		update_option( $chosen_key, $mail_settings );
 		
 		$local_settings = get_option( $chosen_key );
+		// Voor klantenmails bestaat deze waarde niet
 		write_log( "BLOG ".get_current_blog_id().": ".$local_settings['recipient'] );
 		write_log( "BLOG ".get_current_blog_id().": ".$local_settings['subject'] );
 		write_log( "BLOG ".get_current_blog_id().": ".$local_settings['heading'] );
