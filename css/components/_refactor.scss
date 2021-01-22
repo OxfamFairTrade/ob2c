@@ -514,6 +514,10 @@ tr.shipping .woocommerce-Price-amount {
     }
   }
 
+  .woocommerce-addres-fields .hidden-address-field {
+    display: none !important;
+  }
+
   /* Bestelstatus met uitleg */
   mark.order-status {
     background-color: $light-grey;
