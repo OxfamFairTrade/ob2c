@@ -3054,9 +3054,9 @@
 		// Land moet bewerkbaar blijven, anders geen waarde doorgestuurd, en absoluut nodig voor service points!
 		$address_fields['country']['priority'] = 100;
 		$address_fields['country']['class'] = array('hidden-address-field');
-		// Enkel zichtbaar maken bij buitenlandse klanten
 		if ( WC()->customer->get_shipping_country() !== 'BE' ) {
-			$address_fields['country']['class'] = array('update_totals_on_change');
+			// Veld toch zichtbaar maken bij buitenlandse klanten?
+			// $address_fields['country']['class'] = array('update_totals_on_change');
 		}
 
 		return $address_fields;
