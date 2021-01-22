@@ -474,26 +474,35 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		update_option( 'woocommerce_cod_settings', $cod_settings );
 	}
 
-	// Instellingen van een WooCommerce-mail wijzigen (let op met overschrijvingen in subsites!)
+	// Instellingen van een WooCommerce-mail wijzigen
+	$possible_keys = array(
+		'woocommerce_new_order_settings',
+		'woocommerce_customer_new_account_settings',
+		'woocommerce_customer_processing_order_settings',
+		'woocommerce_customer_reset_password_settings',
+		'woocommerce_customer_note_settings',
+	);
+	$chosen_key = 'woocommerce_customer_processing_order_settings';
+	
 	switch_to_blog(1);
-	$mail_settings = get_option('woocommerce_new_order_settings');
-	// $mail_settings = get_option('woocommerce_customer_new_account_settings');
-	// $mail_settings = get_option('woocommerce_customer_processing_order_settings');
-	// $mail_settings = get_option('woocommerce_customer_reset_password_settings');
-	// $mail_settings = get_option('woocommerce_customer_note_settings');
+	$mail_settings = get_option( $chosen_key );
 	restore_current_blog();
-	if ( is_array($mail_settings) ) {
-		$mail_settings['enabled'] = 'yes';
-		$mail_settings['recipient'] =  get_webshop_email();
-		$mail_settings['subject'] = 'Actie vereist: nieuwe online bestelling ({order_number}) – {order_date}';
-		$mail_settings['heading'] = 'Hoera, een nieuwe bestelling!';
-		update_option( 'woocommerce_new_order_settings', $mail_settings );
+	
+	if ( is_array( $mail_settings ) ) {
+		// Let op met overschrijvingen in subsites!
+		// $mail_settings['enabled'] = 'yes';
+		// $mail_settings['recipient'] =  get_webshop_email();
+		// $mail_settings['subject'] = 'Actie vereist: nieuwe online bestelling ({order_number}) – {order_date}';
+		// $mail_settings['heading'] = 'Hoera, een nieuwe bestelling!';
+		$mail_settings['additional_content'] = '';
+		update_option( $chosen_key, $mail_settings );
 		
-		$local_settings = get_option('woocommerce_new_order_settings');
-		write_log("BLOG ".get_current_blog_id().": ".$local_settings['recipient']);
-		write_log("BLOG ".get_current_blog_id().": ".$local_settings['subject']);
-		write_log("BLOG ".get_current_blog_id().": ".$local_settings['heading']);
-		unset($local_settings);
+		$local_settings = get_option( $chosen_key );
+		write_log( "BLOG ".get_current_blog_id().": ".$local_settings['recipient'] );
+		write_log( "BLOG ".get_current_blog_id().": ".$local_settings['subject'] );
+		write_log( "BLOG ".get_current_blog_id().": ".$local_settings['heading'] );
+		write_log( "BLOG ".get_current_blog_id().": ".$local_settings['additional_content'] );
+		unset( $local_settings );
 	}
 
 	// Instellingen van WP Mail Log kopiëren naar subsites
