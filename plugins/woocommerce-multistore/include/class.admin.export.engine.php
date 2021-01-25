@@ -216,6 +216,10 @@ class WOO_MSTORE_EXPORT_ENGINE {
 						}
 					}
 				}
+			} elseif ( $field_name === 'levermethode' ) {
+				$shipping_methods = $order->get_shipping_methods();
+				$shipping_method = reset( $shipping_methods );
+				$value = $shipping_method->get_method_title();
 			} elseif ( isset( ${ $class_name } ) && method_exists( ${$class_name}, $get_field_value_function_name ) ) {
 				$value = $this->maybe_jsonify( ${$class_name}->$get_field_value_function_name() );
 			} elseif ( method_exists( $this, $get_field_value_function_name ) ) {

@@ -3093,7 +3093,7 @@
 
 	function add_tooltips_after_woocommerce_label( $field, $key, $args, $value ) {
 		if ( $key === 'billing_birthday' ) {
-			$field = str_replace( '</label>', '<a class="dashicons dashicons-editor-help tooltip" title="Omdat we ook alcohol verkopen zijn we verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden."></a></label>', $field );
+			$field = str_replace( '</label>', '<a class="dashicons dashicons-editor-help tooltip" title="Omdat we ook alcohol verkopen zijn we soms verplicht om je leeftijd te controleren. We gebruiken deze info nooit voor andere doeleinden."></a></label>', $field );
 		}
 
 		if ( $key === 'billing_phone' ) {

@@ -43,8 +43,8 @@ class WOO_MSTORE_EXPORT {
 			'total'                => '',
 			'total_tax'            => '',
 			// GEWIJZIGD: Velden toegevoegd
-			'order_number'         => '',
-			'shipping_methode'     => '',
+			'order_number'         => 'Ordernummer (Oxfam)',
+			'levermethode'         => 'Levermethode (Oxfam)',
 			// Order props.
 			'customer_id'          => '',
 			'order_key'            => '',
