@@ -842,9 +842,9 @@
 	add_filter( 'woocommerce_order_actions', 'remove_dangerous_singular_actions', 100, 1 );
 
 	function remove_dangerous_bulk_actions( $actions ) {
+		// Werkt niet, want zijn aangevinkt als bulkactie in Woocommerce Order Statuses en wordt via jQuery geïnjecteerd (zie bulk_admin_footer() in class-wc-order-status-manager-admin-orders.php)
 		unset( $actions['mark_processing'] );
 		unset( $actions['mark_completed'] );
-		// WERKT NIET, WELLICHT MOET WOOCOMMERCE ORDER STATUSES NOG BIJGEWERKT WORDEN (INJECTEERT STATUSSEN NOG VIA JAVASCRIPT?)
 		do_action( 'qm/debug', $actions );
 		return $actions;
 	}
@@ -883,6 +883,14 @@
 					// Cancelled misschien wel toestaan bij B2B-bestellingen?
 					// Ook volledige terugbetaling altijd handmatig registreren met opgave van reden!
 					$forbidden_statuses = array( 'wc-pending', 'wc-on-hold', 'wc-failed', 'wc-refunded', 'wc-cancelled' );
+					switch ( $order->get_status() ) {
+						case 'pending':
+						case 'cancelled':
+							$forbidden_statuses[] = 'wc-processing';
+							$forbidden_statuses[] = 'wc-claimed';
+							$forbidden_statuses[] = 'wc-completed';
+							break;
+					}
 					foreach ( $forbidden_statuses as $key ) {
 						// Verhinder dat we de huidige status van het order verwijderen
 						if ( array_key_exists( $key, $order_statuses ) and $order->get_status() !== str_replace( 'wc-', '', $key ) ) {
@@ -1524,8 +1532,8 @@
 	}
 
 	// Tegenhouden lukt niet omdat de orderstatus al bijgewerkt is als de actie doorlopen wordt ...
-	// add_action( 'woocommerce_order_status_processing', 'warn_if_processing_from_invalid_status', 1, 2 );
-	// add_action( 'woocommerce_order_status_completed', 'warn_if_completed_from_invalid_status', 1, 2 );
+	add_action( 'woocommerce_order_status_processing', 'warn_if_processing_from_invalid_status', 1, 2 );
+	add_action( 'woocommerce_order_status_completed', 'warn_if_completed_from_invalid_status', 1, 2 );
 	
 	function warn_if_processing_from_invalid_status( $order_id, $order ) {
 		if ( in_array( $order->get_status(), array( 'completed', 'cancelled', 'refunded' ) ) ) {
