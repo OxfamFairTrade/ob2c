@@ -226,6 +226,13 @@ class WOO_MSTORE_EXPORT_ENGINE {
 					write_log( $order->get_order_number().": shipping method is lacking" );
 					$value = null;
 				}
+			} elseif ( $field_name === 'local_product' ) {
+				// GEWIJZIGD: Zoek op of het een lokaal product is
+				if ( $order_item_product instanceof WC_Product ) {
+					$value = intval( ! is_national_product( $order_item_product ) );
+				} else {
+					$value = 0;
+				}
 			} elseif ( isset( ${ $class_name } ) && method_exists( ${$class_name}, $get_field_value_function_name ) ) {
 				$value = $this->maybe_jsonify( ${$class_name}->$get_field_value_function_name() );
 			} elseif ( method_exists( $this, $get_field_value_function_name ) ) {
@@ -238,8 +245,8 @@ class WOO_MSTORE_EXPORT_ENGINE {
 				if ( $field_name === 'quantity' ) {
 					// GEWIJZIGD: Voeg maalteken toe na hoeveelheid
 					$item[ $export_field_column_name ] = $value.'x';
-				} elseif ( $field_name === 'subtotal' ) {
-					// GEWIJZIGD: Voeg subtotaal niet aan data
+				} elseif ( in_array( $field_name, array( 'subtotal', 'subtotal_tax', 'local_product' ) ) ) {
+					// GEWIJZIGD: Voeg niet toe aan gegroepeerde data
 				} else {
 					$item[ $export_field_column_name ] = $value;
 				}

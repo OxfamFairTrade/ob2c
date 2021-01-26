@@ -42,9 +42,6 @@ class WOO_MSTORE_EXPORT {
 			'cart_tax'             => '',
 			'total'                => '',
 			'total_tax'            => '',
-			// GEWIJZIGD: Velden toegevoegd
-			'order_number'         => 'Ordernummer (Oxfam)',
-			'levermethode'         => 'Levermethode (Oxfam)',
 			// Order props.
 			'customer_id'          => '',
 			'order_key'            => '',
@@ -79,6 +76,9 @@ class WOO_MSTORE_EXPORT {
 			'date_paid'            => '',
 			'cart_hash'            => '',
 			'meta'                 => '',
+			// GEWIJZIGD: Velden toegevoegd
+			'order_number'         => 'Ordernummer (Oxfam)',
+			'levermethode'         => 'Levermethode (Oxfam)',
 		);
 
 		$this->order_item_fields = array(
@@ -144,6 +144,8 @@ class WOO_MSTORE_EXPORT {
 			'rating_counts'      => '',
 			'average_rating'     => '',
 			'review_count'       => '',
+			// GEWIJZIGD: Veld toegevoegd
+			'local_product'      => 'Lokaal product (Oxfam)',
 		);
 
 		$this->order_item_shipping_fields = array(
