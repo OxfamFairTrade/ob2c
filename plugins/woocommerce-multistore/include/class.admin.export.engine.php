@@ -203,8 +203,8 @@ class WOO_MSTORE_EXPORT_ENGINE {
 			list( $class_name, $field_name ) = explode( '__', $export_field );
 			$get_field_value_function_name = 'get_' . $field_name;
 
-			// GEWIJZIGD: Check of de ingelogde klant een medewerker is
 			if ( $field_name === 'customer_id' ) {
+				// GEWIJZIGD: Check of de ingelogde klant een medewerker is
 				$customer_id = $order->get_customer_id();
 				$user_meta = get_userdata( $customer_id );
 				$value = $customer_id;
@@ -217,6 +217,7 @@ class WOO_MSTORE_EXPORT_ENGINE {
 					}
 				}
 			} elseif ( $field_name === 'levermethode' ) {
+				// GEWIJZIGD: Haal waarde van custom Oxfam-leverveld op
 				$shipping_methods = $order->get_shipping_methods();
 				$shipping_method = reset( $shipping_methods );
 				if ( $shipping_method instanceof WC_Order_Item_Shipping ) {
@@ -234,9 +235,11 @@ class WOO_MSTORE_EXPORT_ENGINE {
 			}
 
 			if ( 0 === strpos( $class_name, 'order_item' ) ) {
-				// GEWIJZIGD: Voeg maalteken toe na hoeveelheid
 				if ( $field_name === 'quantity' ) {
+					// GEWIJZIGD: Voeg maalteken toe na hoeveelheid
 					$item[ $export_field_column_name ] = $value.'x';
+				} elseif ( $field_name === 'subtotal' ) {
+					// GEWIJZIGD: Voeg subtotaal niet aan data
 				} else {
 					$item[ $export_field_column_name ] = $value;
 				}
@@ -248,8 +251,8 @@ class WOO_MSTORE_EXPORT_ENGINE {
 		}
 
 		if ( array_key_exists( 'order__order_items', $this->export_fields ) ) {
-			// GEWIJZIGD: Maak implode() van alle velden
-			$row[ 'order__order_items' ] = 'row_per_order' == $this->row_format ? implode( ' ', $item ) : json_encode( $item );
+			// GEWIJZIGD: Maak steeds implode() van alle velden
+			$row[ 'order__order_items' ] = implode( ' ', $item );
 		}
 
 		return $row;
