@@ -228,7 +228,7 @@ class WOO_MSTORE_EXPORT_ENGINE {
 				}
 			} elseif ( $field_name === 'local_product' ) {
 				// GEWIJZIGD: Zoek op of het een lokaal product is
-				if ( $order_item_product instanceof WC_Product and is_national_product( $order_item_product ) ) {
+				if ( $order_item_product instanceof WC_Product and ! is_national_product( $order_item_product ) ) {
 					$value = 'yes';
 				} else {
 					$value = 'no';
