@@ -228,10 +228,10 @@ class WOO_MSTORE_EXPORT_ENGINE {
 				}
 			} elseif ( $field_name === 'local_product' ) {
 				// GEWIJZIGD: Zoek op of het een lokaal product is
-				if ( $order_item_product instanceof WC_Product ) {
-					$value = intval( ! is_national_product( $order_item_product ) );
+				if ( $order_item_product instanceof WC_Product and is_national_product( $order_item_product ) ) {
+					$value = 'yes';
 				} else {
-					$value = 0;
+					$value = 'no';
 				}
 			} elseif ( isset( ${ $class_name } ) && method_exists( ${$class_name}, $get_field_value_function_name ) ) {
 				$value = $this->maybe_jsonify( ${$class_name}->$get_field_value_function_name() );
