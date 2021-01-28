@@ -567,13 +567,11 @@ tr.shipping .woocommerce-Price-amount {
 .woocommerce-store-notice.demo_store {
   position: fixed;
   bottom: 0;
-  z-index: 100;
+  z-index: 1000;
 
   .woocommerce-store-notice__dismiss-link {
-    background-color: white;
     padding: 0.5em;
     border-radius: 3px;
-    margin: 0 1em;
   }
 }
 

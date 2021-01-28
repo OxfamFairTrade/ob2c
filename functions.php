@@ -1540,12 +1540,11 @@
 			$data = $order->get_data();
 			$from_status = $data['status'];
 			$to_status = $changes['status'];
-			write_log( "CHECKING ob2c_prevent_order_suspicious_status_changes" );
 			
 			// KAN MOLLIE STATUSSEN NOG AANPASSEN?
 			$user_meta = get_userdata( get_current_user_id() );
 			$user_roles = $user_meta->roles;
-			write_log( implode( ', ', $user_roles ) );
+			write_log( "CHECKING ob2c_prevent_order_suspicious_status_changes user roles: ".implode( ', ', $user_roles ) );
 			
 			if ( in_array( 'local_manager', $user_roles ) or in_array( 'local_assistent', $user_roles ) ) {
 				$unpaid_statusses = array( 'pending', 'cancelled' );
@@ -1553,13 +1552,11 @@
 
 				if ( in_array( $from_status, $paid_statusses ) and in_array( $to_status, $unpaid_statusses ) ) {
 					write_log( "REVERTING ob2c_prevent_order_suspicious_status_changes to PAID status" );
-					// NUTTELOZE STATUSTRANSITIE GAAT WEL NOG DOOR
 					$order->set_status( $from_status );
 				}
 
 				if ( in_array( $from_status, $unpaid_statusses ) and in_array( $to_status, $paid_statusses ) ) {
 					write_log( "REVERTING ob2c_prevent_order_suspicious_status_changes to UNPAID status" );
-					// NUTTELOZE STATUSTRANSITIE GAAT WEL NOG DOOR
 					$order->set_status( $from_status );
 				}
 			}
@@ -1573,7 +1570,8 @@
 	
 	function warn_if_tried_to_continue_from_invalid_status( $order_id, $order ) {
 		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
-		// De nutteloze order note is reeds geprint, zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
+		// Nutteloze order note is reeds geprint, maar stop verdere verwerking
+		// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
 		throw new Exception( $order->get_order_number().' werd niet betaald en dient niet in verwerking genomen te worden.' );
 	}
 
@@ -1583,7 +1581,8 @@
 	
 	function warn_if_tried_to_revert_from_invalid_status( $order_id, $order ) {
 		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar onbetaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
-		// De nutteloze order note is reeds geprint, zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
+		// Nutteloze order note is reeds geprint, maar stop verdere verwerking
+		// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
 		throw new Exception( $order->get_order_number().' is reeds afgewerkt en mag niet in een onbetaalde status geplaatst te worden.' );
 	}
 
