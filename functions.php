@@ -7045,10 +7045,12 @@
 				// Uitzondering voor Diksmuide
 				$output = '<p class="corona-notice">Tijdens de lockdown van De Stoasje: gratis thuislevering op donderdag tussen 18u en 20u!</p>';
 			} elseif ( get_current_blog_id() === 19 ) {
-				$output = '<p class="corona-notice">Wereldwinkel Lichtaart verhuist momenteel naar een nieuwe locatie, en is daardoor gesloten. Vanaf 3/2 kun je je bestelling ophalen op de nieuwe locatie (Melkstraat 38, 2460 Kasterlee).</p>';
+				// Uitzondering voor Lichtaart
+				$output = '<p class="corona-notice">Wereldwinkel Lichtaart verhuist momenteel naar een nieuwe locatie, en is daardoor gesloten. De afhalingen in Vorselaar blijven gewoon doorgaan op zaterdagochtend tussen 10 en 12 uur.</p>';
 			} else {
 				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
-				$output = '<p class="corona-notice">'.$text.'</p>';
+				// UITSCHAKELEN
+				// $output = '<p class="corona-notice">'.$text.'</p>';
 			}
 		} else {
 			// if ( $atts['id'] === 'brugge' ) {
