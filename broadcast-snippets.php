@@ -305,14 +305,20 @@
 	$args = array(
 		'post_type'		=> 'wc_order_status',
 		'post_status'	=> 'publish',
-		'name'			=> 'on-hold',
+		'name'			=> 'processing',
 	);
 	$order_statuses = new WP_Query( $args );
 
 	if ( $order_statuses->have_posts() ) {
 		while ( $order_statuses->have_posts() ) {
 			$order_statuses->the_post();
-			update_post_meta( get_the_ID(), '_bulk_action', 'no' );
+			if ( update_post_meta( get_the_ID(), '_bulk_action', 'no' ) ) {
+				write_log( "Blog-ID ".get_current_blog_id().": disabled bulk status action '".$args['name']."'" );
+			}
+			// $next_statuses = array('cancelled');
+			// if ( update_post_meta( get_the_ID(), '_next_statuses', $next_statuses ) ) {
+			// 	write_log( "Blog-ID ".get_current_blog_id().": set next status on '".$args['name']."' status to '".implode( "', '", $next_statuses )."'" );
+			// }
 		}
 		wp_reset_postdata();
 	}
