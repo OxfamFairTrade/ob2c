@@ -1531,35 +1531,71 @@
 		}
 	}
 
-	// Tegenhouden lukt niet omdat de orderstatus al bijgewerkt is als de actie doorlopen wordt ...
-	add_action( 'woocommerce_order_status_processing', 'warn_if_processing_from_invalid_status', 1, 2 );
-	add_action( 'woocommerce_order_status_completed', 'warn_if_completed_from_invalid_status', 1, 2 );
+	// Tegenhouden m.b.v. 'woocommerce_order_status_OLDSTATUS_to_NEWSTATUS'-acties lukt niet omdat de status al bijgewerkt is wanneer zij doorlopen worden!
+	add_filter( 'woocommerce_before_order_object_save', 'ob2c_prevent_order_suspicious_status_changes', 10, 2 );
+
+	function ob2c_prevent_order_suspicious_status_changes( $order, $data_store ) {
+		$changes = $order->get_changes();
+		if ( isset( $changes['status'] ) ) {
+			$data = $order->get_data();
+			$from_status = $data['status'];
+			$to_status = $changes['status'];
+			write_log( "CHECKING ob2c_prevent_order_suspicious_status_changes" );
+			
+			// KAN MOLLIE STATUSSEN NOG AANPASSEN?
+			$user_meta = get_userdata( get_current_user_id() );
+			$user_roles = $user_meta->roles;
+			write_log( implode( ', ', $user_roles ) );
+			
+			if ( in_array( 'local_manager', $user_roles ) or in_array( 'local_assistent', $user_roles ) ) {
+				$unpaid_statusses = array( 'pending', 'cancelled' );
+				$paid_statusses = array( 'processing', 'claimed', 'completed' );
+
+				if ( in_array( $from_status, $paid_statusses ) and in_array( $to_status, $unpaid_statusses ) ) {
+					write_log( "REVERTING ob2c_prevent_order_suspicious_status_changes to PAID status" );
+					// NUTTELOZE STATUSTRANSITIE GAAT WEL NOG DOOR
+					$order->set_status( $from_status );
+				}
+
+				if ( in_array( $from_status, $unpaid_statusses ) and in_array( $to_status, $paid_statusses ) ) {
+					write_log( "REVERTING ob2c_prevent_order_suspicious_status_changes to UNPAID status" );
+					// NUTTELOZE STATUSTRANSITIE GAAT WEL NOG DOOR
+					$order->set_status( $from_status );
+				}
+			}
+		}
+
+		return $order;
+	}
+
+	add_action( 'woocommerce_order_status_pending_to_pending', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
+	add_action( 'woocommerce_order_status_cancelled_to_cancelled', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
 	
-	function warn_if_processing_from_invalid_status( $order_id, $order ) {
-		if ( in_array( $order->get_status(), array( 'completed', 'cancelled', 'refunded' ) ) ) {
-			send_automated_mail_to_helpdesk( $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
-			// Dit zal verderop opgevangen worden, en de foutmelding wordt als melding getoond in de back-end 
-			// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L396
-			throw new Exception( $order->get_order_number().' is reeds afgewerkt en kan niet opnieuw in verwerking genomen worden.' );
-		}
+	function warn_if_tried_to_continue_from_invalid_status( $order_id, $order ) {
+		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
+		// De nutteloze order note is reeds geprint, zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
+		throw new Exception( $order->get_order_number().' werd niet betaald en dient niet in verwerking genomen te worden.' );
 	}
 
-	function warn_if_completed_from_invalid_status( $order_id, $order ) {
-		if ( in_array( $order->get_status(), array( 'pending', 'cancelled', 'refunded' ) ) ) {
-			send_automated_mail_to_helpdesk( $order->get_order_number().' onderging bijna een ongeoorloofde statuswijziging', '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
-			throw new Exception( $order->get_order_number().' werd niet betaald en dient niet in verwerking genomen te worden.' );
-		}
+	add_action( 'woocommerce_order_status_processing_to_processing', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
+	add_action( 'woocommerce_order_status_claimed_to_claimed', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
+	add_action( 'woocommerce_order_status_completed_to_completed', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
+	
+	function warn_if_tried_to_revert_from_invalid_status( $order_id, $order ) {
+		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar onbetaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
+		// De nutteloze order note is reeds geprint, zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
+		throw new Exception( $order->get_order_number().' is reeds afgewerkt en mag niet in een onbetaalde status geplaatst te worden.' );
 	}
 
-	add_action( 'woocommerce_order_status_pending_to_completed', 'warn_if_invalid_status_change', 10, 2 );
-	add_action( 'woocommerce_order_status_refunded_to_processing', 'warn_if_invalid_status_change', 10, 2 );
-	add_action( 'woocommerce_order_status_refunded_to_completed', 'warn_if_invalid_status_change', 10, 2 );
-	add_action( 'woocommerce_order_status_completed_to_processing', 'warn_if_invalid_status_change', 10, 2 );
-	add_action( 'woocommerce_order_status_completed_to_claimed', 'warn_if_invalid_status_change', 10, 2 );
-	add_action( 'woocommerce_order_status_cancelled_to_pending', 'warn_if_invalid_status_change', 10, 2 );
-	add_action( 'woocommerce_order_status_cancelled_to_processing', 'warn_if_invalid_status_change', 10, 2 );
-	add_action( 'woocommerce_order_status_cancelled_to_claimed', 'warn_if_invalid_status_change', 10, 2 );
-	add_action( 'woocommerce_order_status_cancelled_to_completed', 'warn_if_invalid_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_pending_to_completed', 'warn_if_invalid_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_refunded_to_processing', 'warn_if_invalid_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_refunded_to_completed', 'warn_if_invalid_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_completed_to_processing', 'warn_if_invalid_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_completed_to_claimed', 'warn_if_invalid_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_cancelled_to_pending', 'warn_if_invalid_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_cancelled_to_processing', 'warn_if_invalid_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_cancelled_to_claimed', 'warn_if_invalid_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_cancelled_to_completed', 'warn_if_invalid_status_change', 10, 2 );
 	
 	function warn_if_invalid_status_change( $order_id, $order ) {
 		send_automated_mail_to_helpdesk( 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), '<p>Gelieve de logs te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!</p>' );
@@ -2737,7 +2773,7 @@
 			<?php
 		} elseif ( is_account_page() and is_user_logged_in() ) {
 			$current_user = wp_get_current_user();
-			$user_meta = get_userdata($current_user->ID);
+			$user_meta = get_userdata( $current_user->ID );
 			$user_roles = $user_meta->roles;
 			if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_webshop_email() ) {
 				?>
@@ -3773,7 +3809,7 @@
 		}
 		
 		$current_user = wp_get_current_user();
-		$user_meta = get_userdata($current_user->ID);
+		$user_meta = get_userdata( $current_user->ID );
 		$user_roles = $user_meta->roles;
 		if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_webshop_email() ) {
 			?>
