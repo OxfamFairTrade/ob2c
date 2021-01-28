@@ -1,6 +1,9 @@
 ( function( $ ){
   $(document).ready( function () {
-    $('.tooltip').tooltip();
+    /* Gebruik selector, de tooltips in .woocommerce-checkout-review-order-table zijn niet noodzakelijk al aanwezig bij DOM load! */
+    $('body').tooltip({
+      selector: '.tooltip'
+    });
 
     $("#menu-btn").on('click', function(e) {
       e.preventDefault();
