@@ -1532,9 +1532,7 @@
 
 	// Tegenhouden m.b.v. 'woocommerce_order_status_OLDSTATUS_to_NEWSTATUS'-acties lukt niet omdat de status al bijgewerkt is wanneer zij doorlopen worden!
 	add_filter( 'woocommerce_before_order_object_save', 'ob2c_prevent_order_suspicious_status_changes', 10, 2 );
-	// Bovenstaande volstaat niet om ongeldige bulkbewerkingen tegen te houden (gebruikt update_status() i.p.v. changes, doorloopt enkel 'woocommerce_order_edit_status'-actie achteraf)
-	// add_filter( 'woocommerce_bulk_action_ids', 'ob2c_prevent_order_suspicious_bulk_status_changes', 10, 3 );
-
+	
 	function ob2c_prevent_order_suspicious_status_changes( $order, $data_store ) {
 		$changes = $order->get_changes();
 		if ( isset( $changes['status'] ) ) {
@@ -1554,16 +1552,25 @@
 
 				if ( in_array( $from_status, $paid_statusses ) and in_array( $to_status, $unpaid_statusses ) ) {
 					write_log( "REVERTING ".$order->get_order_number()." to PAID status" );
+					send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar onbetaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
 					$order->set_status( $from_status );
+					$order->add_order_note( 'Bestelling is reeds afgewerkt en mag niet in een onbetaalde status geplaatst worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.' );
 				}
 
 				if ( in_array( $from_status, $unpaid_statusses ) and in_array( $to_status, $paid_statusses ) ) {
 					write_log( "REVERTING ".$order->get_order_number()." to UNPAID status" );
+					send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
 					$order->set_status( $from_status );
+					$order->add_order_note( 'Bestelling werd niet betaald en dient niet in verwerking genomen te worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.' );
 				}
 			}
 		}
+
+		return $order;
 	}
+
+	// Bovenstaande volstaat niet om ongeldige bulkbewerkingen tegen te houden TOCH WEL
+	// add_filter( 'woocommerce_bulk_action_ids', 'ob2c_prevent_order_suspicious_bulk_status_changes', 10, 3 );
 
 	function ob2c_prevent_order_suspicious_bulk_status_changes( $order_ids, $action, $post_type ) {
 		if ( $post_type === 'order' and $action = 'mark_completed' ) {
@@ -1582,8 +1589,9 @@
 		return $order_ids;
 	}
 
-	add_action( 'woocommerce_order_status_pending_to_pending', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
-	add_action( 'woocommerce_order_status_cancelled_to_cancelled', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
+	// add_action( 'woocommerce_order_status_pending_to_pending', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
+	// add_action( 'woocommerce_order_status_cancelled_to_cancelled', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
+	// add_action( 'woocommerce_order_status_refunded_to_refunded', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
 	
 	function warn_if_tried_to_continue_from_invalid_status( $order_id, $order ) {
 		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
@@ -1592,15 +1600,15 @@
 		throw new Exception( $order->get_order_number().' werd niet betaald en dient niet in verwerking genomen te worden.' );
 	}
 
-	add_action( 'woocommerce_order_status_processing_to_processing', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
-	add_action( 'woocommerce_order_status_claimed_to_claimed', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
-	add_action( 'woocommerce_order_status_completed_to_completed', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
+	// add_action( 'woocommerce_order_status_processing_to_processing', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
+	// add_action( 'woocommerce_order_status_claimed_to_claimed', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
+	// add_action( 'woocommerce_order_status_completed_to_completed', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
 	
 	function warn_if_tried_to_revert_from_invalid_status( $order_id, $order ) {
 		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar onbetaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
 		// Nutteloze order note is reeds geprint, maar stop verdere verwerking
 		// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
-		throw new Exception( $order->get_order_number().' is reeds afgewerkt en mag niet in een onbetaalde status geplaatst te worden.' );
+		throw new Exception( $order->get_order_number().' is reeds afgewerkt en mag niet in een onbetaalde status geplaatst worden.' );
 	}
 
 	// add_action( 'woocommerce_order_status_pending_to_completed', 'warn_if_invalid_status_change', 10, 2 );
