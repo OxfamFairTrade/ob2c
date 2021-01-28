@@ -3030,7 +3030,7 @@
 			)
 		);
 
-		unset($address_fields['address_2']);
+		unset( $address_fields['address_2'] );
 
 		$address_fields['postcode'] = array_merge(
 			$address_fields['postcode'],
@@ -3062,10 +3062,11 @@
 		// Land moet bewerkbaar blijven, anders geen waarde doorgestuurd, en absoluut nodig voor service points!
 		$address_fields['country']['priority'] = 100;
 		$address_fields['country']['class'] = array('hidden-address-field');
-		if ( WC()->customer->get_shipping_country() !== 'BE' ) {
-			// Veld toch zichtbaar maken bij buitenlandse klanten?
-			// $address_fields['country']['class'] = array('update_totals_on_change');
-		}
+		// Filter wordt ook doorlopen in back-end, pas op met het raadplegen van WC()->customer
+		// if ( ! is_admin() and WC()->customer->get_shipping_country() !== 'BE' ) {
+		// 	// Veld zichtbaar maken bij buitenlandse klanten?
+		// 	$address_fields['country']['class'] = array('update_totals_on_change');
+		// }
 
 		return $address_fields;
 	}
@@ -7043,6 +7044,8 @@
 			if ( get_current_blog_id() === 44 ) {
 				// Uitzondering voor Diksmuide
 				$output = '<p class="corona-notice">Tijdens de lockdown van De Stoasje: gratis thuislevering op donderdag tussen 18u en 20u!</p>';
+			} elseif ( get_current_blog_id() === 19 ) {
+				$output = '<p class="corona-notice">Wereldwinkel Lichtaart verhuist momenteel naar een nieuwe locatie, en is daardoor gesloten. Vanaf 3/2 kun je je bestelling ophalen op de nieuwe locatie (Melkstraat 38, 2460 Kasterlee).</p>';
 			} else {
 				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
 				$output = '<p class="corona-notice">'.$text.'</p>';
