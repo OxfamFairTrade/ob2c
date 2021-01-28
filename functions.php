@@ -1533,7 +1533,7 @@
 	// Tegenhouden m.b.v. 'woocommerce_order_status_OLDSTATUS_to_NEWSTATUS'-acties lukt niet omdat de status al bijgewerkt is wanneer zij doorlopen worden!
 	add_filter( 'woocommerce_before_order_object_save', 'ob2c_prevent_order_suspicious_status_changes', 10, 2 );
 	// Bovenstaande volstaat niet om ongeldige bulkbewerkingen tegen te houden (gebruikt update_status() i.p.v. changes, doorloopt enkel 'woocommerce_order_edit_status'-actie achteraf)
-	add_filter( 'woocommerce_bulk_action_ids', 'ob2c_prevent_order_suspicious_bulk_status_changes', 10, 3 );
+	// add_filter( 'woocommerce_bulk_action_ids', 'ob2c_prevent_order_suspicious_bulk_status_changes', 10, 3 );
 
 	function ob2c_prevent_order_suspicious_status_changes( $order, $data_store ) {
 		$changes = $order->get_changes();
@@ -1547,7 +1547,7 @@
 			// Mollie past statussen aan met blanco gebruikersrol (?)
 			write_log( "CHECKING ob2c_prevent_order_suspicious_status_changes user roles: ".implode( ', ', $user_roles ) );
 			
-			if ( in_array( 'local_manager', $user_roles ) or in_array( 'local_assistent', $user_roles ) ) {
+			if ( in_array( 'local_manager', $user_roles ) or in_array( 'local_helper', $user_roles ) ) {
 				// Wat met 'refunded'?
 				$unpaid_statusses = array( 'pending', 'cancelled', 'refunded' );
 				$paid_statusses = array( 'processing', 'claimed', 'completed' );
@@ -1567,10 +1567,8 @@
 
 	function ob2c_prevent_order_suspicious_bulk_status_changes( $order_ids, $action, $post_type ) {
 		if ( $post_type === 'order' and $action = 'mark_completed' ) {
-			// Wat met 'refunded'?
 			$unpaid_statusses = array( 'pending', 'cancelled', 'refunded' );
 			$paid_statusses = array( 'processing', 'claimed', 'completed' );
-			write_log( "CHECKING ob2c_prevent_order_suspicious_bulk_status_changes" );
 			
 			foreach ( $order_ids as $key => $order_id ) {
 				$order = wc_get_order( $order_id );
