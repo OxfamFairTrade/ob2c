@@ -1554,14 +1554,14 @@
 					write_log( "REVERTING ".$order->get_order_number()." to PAID status" );
 					send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar onbetaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
 					$order->set_status( $from_status );
-					$order->add_order_note( 'Bestelling is reeds afgewerkt en mag niet in een onbetaalde status geplaatst worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.' );
+					$order->add_order_note( 'Bestelling is reeds afgewerkt en mag niet in een onbetaalde status geplaatst worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.', 0, true );
 				}
 
 				if ( in_array( $from_status, $unpaid_statusses ) and in_array( $to_status, $paid_statusses ) ) {
 					write_log( "REVERTING ".$order->get_order_number()." to UNPAID status" );
 					send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
 					$order->set_status( $from_status );
-					$order->add_order_note( 'Bestelling werd niet betaald en dient niet in verwerking genomen te worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.' );
+					$order->add_order_note( 'Bestelling werd niet betaald en dient niet in verwerking genomen te worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.', 0, true );
 				}
 			}
 		}
@@ -1589,14 +1589,14 @@
 		return $order_ids;
 	}
 
+	// Eventueel gebruiken om nutteloze notitie over non-wijziging meteen weer te wissen?
+	// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
 	// add_action( 'woocommerce_order_status_pending_to_pending', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
 	// add_action( 'woocommerce_order_status_cancelled_to_cancelled', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
 	// add_action( 'woocommerce_order_status_refunded_to_refunded', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
 	
 	function warn_if_tried_to_continue_from_invalid_status( $order_id, $order ) {
 		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
-		// Nutteloze order note is reeds geprint, maar stop verdere verwerking
-		// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
 		throw new Exception( $order->get_order_number().' werd niet betaald en dient niet in verwerking genomen te worden.' );
 	}
 
@@ -1606,8 +1606,6 @@
 	
 	function warn_if_tried_to_revert_from_invalid_status( $order_id, $order ) {
 		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar onbetaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
-		// Nutteloze order note is reeds geprint, maar stop verdere verwerking
-		// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
 		throw new Exception( $order->get_order_number().' is reeds afgewerkt en mag niet in een onbetaalde status geplaatst worden.' );
 	}
 
@@ -7947,7 +7945,7 @@
 	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
 	function send_automated_mail_to_helpdesk( $subject, $body ) {
 		if ( wp_get_environment_type() !== 'production' ) {
-			return;
+			// return;
 		}
 
 		$headers = array();
