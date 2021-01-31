@@ -6844,7 +6844,7 @@
 			}
 		}
 
-		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and 'mark_completed' === $_REQUEST['bulk_action'] ) {
+		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and 'marked_completed' === $_REQUEST['bulk_action'] ) {
 			$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
 			$message = sprintf( _n( '%d order status changed.', '%d order statuses changed.', $number, 'woocommerce' ), number_format_i18n( $number ) );
 			echo '<div class="updated"><p>' . esc_html( $message ) . ' Opgelet: ongeldige wijzigingen kunnen teruggedraaid zijn door het systeem! Raadpleeg de logs in de rechterkolom van de bestelling.</p></div>';
