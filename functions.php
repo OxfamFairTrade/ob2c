@@ -1531,37 +1531,40 @@
 	}
 
 	// Tegenhouden m.b.v. 'woocommerce_order_status_OLDSTATUS_to_NEWSTATUS'-acties lukt niet omdat de status al bijgewerkt is wanneer zij doorlopen worden!
-	add_filter( 'woocommerce_before_order_object_save', 'ob2c_prevent_order_suspicious_status_changes', 10, 2 );
+	add_filter( 'woocommerce_before_order_object_save', 'ob2c_prevent_suspicious_order_status_changes', 10, 2 );
 	
-	function ob2c_prevent_order_suspicious_status_changes( $order, $data_store ) {
+	function ob2c_prevent_suspicious_order_status_changes( $order, $data_store ) {
 		$changes = $order->get_changes();
 		if ( isset( $changes['status'] ) ) {
 			$data = $order->get_data();
-			$from_status = $data['status'];
-			$to_status = $changes['status'];
-			
 			$user_meta = get_userdata( get_current_user_id() );
-			$user_roles = $user_meta->roles;
-			// Mollie past statussen aan met blanco gebruikersrol (?)
-			write_log( "CHECKING ob2c_prevent_order_suspicious_status_changes user roles: ".implode( ', ', $user_roles ) );
-			
-			if ( in_array( 'local_manager', $user_roles ) or in_array( 'local_helper', $user_roles ) ) {
-				// Wat met 'refunded'?
-				$unpaid_statusses = array( 'pending', 'cancelled', 'refunded' );
-				$paid_statusses = array( 'processing', 'claimed', 'completed' );
 
-				if ( in_array( $from_status, $paid_statusses ) and in_array( $to_status, $unpaid_statusses ) ) {
-					write_log( "REVERTING ".$order->get_order_number()." to PAID status" );
-					send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar onbetaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
-					$order->set_status( $from_status );
-					$order->add_order_note( 'Bestelling is reeds afgewerkt en mag niet in een onbetaalde status geplaatst worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.', 0, true );
-				}
+			if ( $user_meta === false ) {
+				// Mollie past statussen aan zonder ingelogd te zijn
+				// Alle statuswijzigingen blijven dus mogelijk, ook de belangrijke (betaald => niet-betaald)
+			} else {
+				write_log( "CHECKING ob2c_prevent_suspicious_order_status_changes user roles: ".implode( ', ', $user_meta->roles ) );
+				if ( in_array( 'local_manager', $user_meta->roles ) or in_array( 'local_helper', $user_meta->roles ) ) {
+					$from_status = $data['status'];
+					$to_status = $changes['status'];
 
-				if ( in_array( $from_status, $unpaid_statusses ) and in_array( $to_status, $paid_statusses ) ) {
-					write_log( "REVERTING ".$order->get_order_number()." to UNPAID status" );
-					send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
-					$order->set_status( $from_status );
-					$order->add_order_note( 'Bestelling werd niet betaald en dient niet in verwerking genomen te worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.', 0, true );
+					// Wat met 'refunded'?
+					$unpaid_statusses = array( 'pending', 'cancelled', 'refunded' );
+					$paid_statusses = array( 'processing', 'claimed', 'completed' );
+
+					if ( in_array( $from_status, $paid_statusses ) and in_array( $to_status, $unpaid_statusses ) ) {
+						write_log( "REVERTING ".$order->get_order_number()." to PAID status" );
+						send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar onbetaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
+						$order->set_status( $from_status );
+						$order->add_order_note( 'Bestelling is reeds afgewerkt en mag niet in een onbetaalde status geplaatst worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.', 0, true );
+					}
+
+					if ( in_array( $from_status, $unpaid_statusses ) and in_array( $to_status, $paid_statusses ) ) {
+						write_log( "REVERTING ".$order->get_order_number()." to UNPAID status" );
+						send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
+						$order->set_status( $from_status );
+						$order->add_order_note( 'Bestelling werd niet betaald en dient niet in verwerking genomen te worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.', 0, true );
+					}
 				}
 			}
 		}
@@ -1580,7 +1583,9 @@
 	
 	function ob2c_remove_useless_order_status_change_note( $order_id, $order ) {
 		$label = wc_get_order_status_name( $order->get_status() );
-		$args = array( 'post_id' => $order_id, 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'DESC', 'search' => 'gewijzigd van '.$label.' naar '.$label );
+		$search = 'gewijzigd van '.$label.' naar '.$label;
+		write_log( "SEARCHING comments with ".$search." ..." );
+		$args = array( 'post_id' => $order_id, 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'DESC', 'search' => $search );
 		// Want anders zien we de private opmerkingen niet!
 		remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
 		$comments = get_comments( $args );
@@ -6805,30 +6810,6 @@
 				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 				// 	echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit begin januari gebeuren, samen met de levering in de winkel. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.</p>';
 				// echo '</div>';
-				// echo '<div class="notice notice-info">';
-				// 	$correctie = '';
-				// 	$koffie_count = get_number_of_times_coupon_was_used('wvdft2020-koffie');
-				// 	if ( get_current_blog_id() === 15 ) {
-				// 		// Correctie voor Gentbrugge
-				// 		$koffie_extra = 4;
-				// 		$koffie_count += $koffie_extra;
-				// 		$correctie = ' Dit totaal bevat '.$koffie_extra.' koffiebonnen extra ter compensatie van de foutief toegekende kortingen in OWW07715, waarvoor nogmaals onze excuses.';
-				// 	}
-				// 	if ( get_current_blog_id() === 19 ) {
-				// 		// Correctie voor Lichtaart
-				// 		$koffie_extra = 2;
-				// 		$koffie_count += $koffie_extra;
-				// 		$correctie = ' Dit totaal bevat '.$koffie_extra.' koffiebonnen extra ter compensatie van de foutief toegekende kortingen in OWW07781 en OWW07823, waarvoor nogmaals onze excuses.';
-				// 	}
-				// 	$koffie_amount = 1.4151 * $koffie_count;
-				// 	$quinoa_count = get_number_of_times_coupon_was_used('wvdft2020-quinoa');
-				// 	$quinoa_amount = 3.8972 * $quinoa_count;
-				// 	echo '<p>Zoals eerder gemeld dien je voor de koffie- en quinoa-actie die tijdens Week van de Fair Trade automatisch geactiveerd werd bij geldige webshopbestellingen <u>geen bonnen in te leveren ter creditering</u>. We raadplegen gewoon de webshopstatistieken om te zien hoe vaak beide kortingen geactiveerd werden in jullie webshop. Voor jullie webshop werden '.$koffie_count.' koffiebonnen (t.w.v. '.wc_price( $koffie_amount ).') en '.$quinoa_count.' quinoabonnen (t.w.v. '.wc_price( $quinoa_amount ).') geregistreerd.';
-				// 	if ( $koffie_amount+$quinoa_amount > 0 ) {
-				// 		echo ' Het netto kortingsbedrag van '.wc_price( $koffie_amount+$quinoa_amount, array( 'ex_tax_label' => true ) ).' zal terugbetaald worden bij de volgende crediteringsronde, half december. <a href="https://shop.oxfamwereldwinkels.be/online-creditering-WVDFT2020.pdf" download>Raadpleeg de exacte verdeling per winkel in deze PDF.</a>';
-				// 	}
-				// 	echo $correctie.'</p>';
-				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
@@ -6844,10 +6825,12 @@
 			}
 		}
 
-		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and 'marked_completed' === $_REQUEST['bulk_action'] ) {
-			$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
-			$message = sprintf( _n( '%d order status changed.', '%d order statuses changed.', $number, 'woocommerce' ), number_format_i18n( $number ) );
-			echo '<div class="updated"><p>' . esc_html( $message ) . ' Opgelet: ongeldige wijzigingen kunnen teruggedraaid zijn door het systeem! Raadpleeg de logs in de rechterkolom van de bestelling.</p></div>';
+		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and isset( $_REQUEST['bulk_action'] ) ) {
+			if ( $_REQUEST['bulk_action'] === 'marked_completed' ) {
+				$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
+				$message = sprintf( _n( '%d bestelstatus proberen te wijzigen.', '%d bestelstatussen proberen te wijzigen.', $number, 'woocommerce' ), number_format_i18n( $number ) );
+				echo '<div class="updated"><p>' . esc_html( $message ) . ' Ongeldige wijzigingen kunnen tegengehouden zijn door het systeem! Raadpleeg de logs in de rechterkolom van het orderdetail als je merkt dat de status onveranderd gebleven is.</p></div>';
+			}
 		}
 	}
 
