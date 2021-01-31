@@ -1569,58 +1569,40 @@
 		return $order;
 	}
 
-	// Bovenstaande volstaat niet om ongeldige bulkbewerkingen tegen te houden TOCH WEL
-	// add_filter( 'woocommerce_bulk_action_ids', 'ob2c_prevent_order_suspicious_bulk_status_changes', 10, 3 );
-
-	function ob2c_prevent_order_suspicious_bulk_status_changes( $order_ids, $action, $post_type ) {
-		if ( $post_type === 'order' and $action = 'mark_completed' ) {
-			$unpaid_statusses = array( 'pending', 'cancelled', 'refunded' );
-			$paid_statusses = array( 'processing', 'claimed', 'completed' );
-			
-			foreach ( $order_ids as $key => $order_id ) {
-				$order = wc_get_order( $order_id );
-				if ( in_array( $order->get_status(), $unpaid_statusses ) ) {
-					write_log( "PROHIBITING ".$order->get_order_number()." change to COMPLETED status" );
-					unset( $order_ids[ $key ] );
-				}
+	// Eventueel gebruiken om nutteloze notitie over non-wijziging meteen weer te wissen?
+	// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
+	add_action( 'woocommerce_order_status_pending_to_pending', 'ob2c_remove_useless_order_status_change_note', 1, 2 );
+	add_action( 'woocommerce_order_status_cancelled_to_cancelled', 'ob2c_remove_useless_order_status_change_note', 1, 2 );
+	add_action( 'woocommerce_order_status_refunded_to_refunded', 'ob2c_remove_useless_order_status_change_note', 1, 2 );
+	add_action( 'woocommerce_order_status_processing_to_processing', 'ob2c_remove_useless_order_status_change_note', 1, 2 );
+	add_action( 'woocommerce_order_status_claimed_to_claimed', 'ob2c_remove_useless_order_status_change_note', 1, 2 );
+	add_action( 'woocommerce_order_status_completed_to_completed', 'ob2c_remove_useless_order_status_change_note', 1, 2 );
+	
+	function ob2c_remove_useless_order_status_change_note( $order_id, $order ) {
+		$label = wc_get_order_status_name( $order->get_status() );
+		$args = array( 'post_id' => $order_id, 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'DESC', 'search' => 'gewijzigd van '.$label.' naar '.$label );
+		// Want anders zien we de private opmerkingen niet!
+		remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
+		$comments = get_comments( $args );
+		
+		if ( count( $comments ) > 0 ) {
+			foreach ( $comments as $useless_note ) {
+				write_log( "DELETING comment ID ".$useless_note->comment_ID." ..." );
+				wp_delete_comment( $useless_note->comment_ID, true );
 			}
 		}
 
-		return $order_ids;
+		// Reactiveer filter
+		add_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
 	}
 
-	// Eventueel gebruiken om nutteloze notitie over non-wijziging meteen weer te wissen?
-	// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
-	// add_action( 'woocommerce_order_status_pending_to_pending', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
-	// add_action( 'woocommerce_order_status_cancelled_to_cancelled', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
-	// add_action( 'woocommerce_order_status_refunded_to_refunded', 'warn_if_tried_to_continue_from_invalid_status', 1, 2 );
+	// Deze acties veranderen de betaalstatus niet maar zouden ook niet mogen voorkomen
+	add_action( 'woocommerce_order_status_completed_to_processing', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_completed_to_claimed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_cancelled_to_pending', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 	
-	function warn_if_tried_to_continue_from_invalid_status( $order_id, $order ) {
-		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
-		throw new Exception( $order->get_order_number().' werd niet betaald en dient niet in verwerking genomen te worden.' );
-	}
-
-	// add_action( 'woocommerce_order_status_processing_to_processing', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
-	// add_action( 'woocommerce_order_status_claimed_to_claimed', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
-	// add_action( 'woocommerce_order_status_completed_to_completed', 'warn_if_tried_to_revert_from_invalid_status', 1, 2 );
-	
-	function warn_if_tried_to_revert_from_invalid_status( $order_id, $order ) {
-		send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar onbetaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
-		throw new Exception( $order->get_order_number().' is reeds afgewerkt en mag niet in een onbetaalde status geplaatst worden.' );
-	}
-
-	// add_action( 'woocommerce_order_status_pending_to_completed', 'warn_if_invalid_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_refunded_to_processing', 'warn_if_invalid_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_refunded_to_completed', 'warn_if_invalid_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_completed_to_processing', 'warn_if_invalid_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_completed_to_claimed', 'warn_if_invalid_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_cancelled_to_pending', 'warn_if_invalid_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_cancelled_to_processing', 'warn_if_invalid_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_cancelled_to_claimed', 'warn_if_invalid_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_cancelled_to_completed', 'warn_if_invalid_status_change', 10, 2 );
-	
-	function warn_if_invalid_status_change( $order_id, $order ) {
-		send_automated_mail_to_helpdesk( 'Bestelling '.$order->get_order_number().' onderging een ongeoorloofde statuswijziging naar '.$order->get_status(), '<p>Gelieve de logs te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!</p>' );
+	function ob2c_warn_if_suspicious_status_change( $order_id, $order ) {
+		send_automated_mail_to_helpdesk( 'Bestelling '.$order->get_order_number().' onderging een verdachte statuswijziging naar '.$order->get_status(), '<p>Gelieve de logs te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!</p>' );
 	}
 
 	// Functie is niet gebaseerd op eigenschappen van gebruikers en dus al zeer vroeg al bepaald (geen 'init' nodig)
@@ -2349,8 +2331,10 @@
 
 	function ure_allow_args_for_oxfam_options( $args ) {
 		// Default WP-argumenten zoals 's', 'filter_action', 'action', 'action2', 'paged', ... zijn reeds automatisch voorzien!
+		// Sta filteren toe op orderoverzicht
 		$args['edit.php'][''][] = 'claimed_by';
 		$args['edit.php'][''][] = 'stock_status';
+		// Sta bulkacties toe op orderoverzicht
 		$args['edit.php'][''][] = 'bulk_action';
 		$args['edit.php'][''][] = 'changed';
 		$args['edit.php'][''][] = 'ids';
@@ -6677,7 +6661,7 @@
 		$comments = get_comments( $args );
 		
 		$tracking_info = false;
-		if ( count($comments) > 0 ) {
+		if ( count( $comments ) > 0 ) {
 			foreach ( $comments as $sendcloud_note ) {
 				// Enkel waarde in meest recente comment zal geretourneerd worden!
 				$tracking_info = array();
@@ -6773,7 +6757,8 @@
 	function oxfam_admin_notices() {
 		global $pagenow, $post_type;
 		$screen = get_current_screen();
-		if ( $pagenow === 'index.php' and $screen->base === 'dashboard' ) {
+		
+		if ( 'index.php' === $pagenow and 'dashboard' === $screen->base ) {
 			if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
 				echo '<div class="notice notice-error">';
 					echo '<p>Deze webshop is momenteel reeds bereikbaar (voor o.a. Mollie-controle) maar verschijnt nog niet in de winkelzoeker!</p>';
@@ -6857,6 +6842,12 @@
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}
 			}
+		}
+
+		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and 'mark_completed' === $_REQUEST['bulk_action'] ) {
+			$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
+			$message = sprintf( _n( '%d order status changed.', '%d order statuses changed.', $number, 'woocommerce' ), number_format_i18n( $number ) );
+			echo '<div class="updated"><p>' . esc_html( $message ) . ' Opgelet: ongeldige wijzigingen kunnen teruggedraaid zijn door het systeem! Raadpleeg de logs in de rechterkolom van de bestelling.</p></div>';
 		}
 	}
 
@@ -7945,6 +7936,9 @@
 	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
 	function send_automated_mail_to_helpdesk( $subject, $body ) {
 		if ( wp_get_environment_type() !== 'production' ) {
+			$subject = 'DEMO '.$subject;
+
+			// Eventueel volledig uitschakelen
 			// return;
 		}
 
@@ -7952,7 +7946,7 @@
 		$headers[] = 'From: '.get_webshop_name().' <'.get_option('admin_email').'>';
 		$headers[] = 'Content-Type: text/html';
 		// $body moét effectief HTML-code bevatten, anders werpt WP Mail Log soms een error op!
-		wp_mail( 'Helpdesk E-Commerce <e-commerce@oft.be>', $subject, $body, $headers );
+		wp_mail( get_staged_recipients('e-commerce@oft.be'), $subject, $body, $headers );
 	}
 
 	// Print variabelen op een overzichtelijke manier naar een niet-publieke file
