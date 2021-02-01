@@ -76,7 +76,7 @@
 							continue;
 						}
 					} elseif ( $current_tab === 'januari-2021' ) {
-						if ( ! has_tag( $current_tab, $product->get_id() ) ) {
+						if ( ! has_term( $current_tab, 'product_tag', $product->get_id() ) ) {
 							continue;
 						}
 					}

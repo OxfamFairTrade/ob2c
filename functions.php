@@ -5894,7 +5894,7 @@
 						continue;
 					}
 				} elseif ( $assortment === 'januari-2021' ) {
-					if ( ! has_tag( $assortment, $product->get_id() ) ) {
+					if ( ! has_term( $assortment, 'product_tag', $product->get_id() ) ) {
 						continue;
 					}
 				}
