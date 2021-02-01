@@ -2007,7 +2007,6 @@
 		$refund = wc_get_order( $refund_id );
 		if ( $order !== false and $refund !== false ) {
 			if ( $order->get_meta('claimed_by') !== '' ) {
-				write_log( "Copying claimer '".$order->get_meta('claimed_by')."' to refund ..." );
 				$refund->update_meta_data( 'claimed_by', $order->get_meta('claimed_by') );
 				$refund->save();
 			}

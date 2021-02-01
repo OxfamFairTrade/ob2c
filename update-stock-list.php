@@ -75,8 +75,8 @@
 						if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) !== 0 ) {
 							continue;
 						}
-					} elseif ( $assortment === 'januari-2021' ) {
-						if ( ! has_tag( $assortment, $product->get_id() ) ) {
+					} elseif ( $current_tab === 'januari-2021' ) {
+						if ( ! has_tag( $current_tab, $product->get_id() ) ) {
 							continue;
 						}
 					}
