@@ -9,14 +9,14 @@
 		<?php
 			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'crafts' => 'Crafts', 'januari-2021' => 'Januarimagazine 2021');
 			if ( isset( $_GET['assortment'] ) and array_key_exists( $_GET['assortment'], $tabs ) ) {
-				$current_tab = $_GET['assortment'];
+				$assortment = $_GET['assortment'];
 			} else {
-				$current_tab = 'general';
+				$assortment = 'general';
 			}
 
 			foreach ( $tabs as $key => $title ) {
 				$active = '';
-				if ( $current_tab === $key ) {
+				if ( $assortment === $key ) {
 					$active = 'nav-tab-active';
 				}
 				echo '<a href="'.admin_url( 'admin.php?page=oxfam-products-list&assortment='.$key ).'" class="nav-tab '.$active.'">'.$title.'</a>';
@@ -28,7 +28,7 @@
 
 	<p>Recente producten met een publicatiedatum die in de voorbije 3 maanden ligt, hebben <span style="background-color: lightskyblue;">een blauwe achtergrond</span> en krijgen in de front-end het 'nieuw'-label. Ze verschijnen aanvankelijk als 'niet in assortiment' in jullie lokale webshop, zodat je alle tijd hebt om te beslissen of je het product zal inkopen en online wil aanbieden. Producten die voor langere tijd onbeschikbaar zijn op BestelWeb krijgen <span style="background-color: gold;">een gele achtergrond</span>, zodat het duidelijk is dat dit product misschien op zijn laatste benen loopt.</p>
 
-	<?php if ( $current_tab !== 'local' ) : ?>
+	<?php if ( $assortment !== 'local' ) : ?>
 		<p>Oude producten die definitief niet meer te bestellen zijn bij Oxfam Fair Trade worden pas na enkele maanden uit de moederdatabank verwijderd (en dus uit jullie webshop), zodat we er zeker kunnen van zijn dat er geen lokale voorraden meer bestaan. Dit zal ook aangekondigd worden op het dashboard.</p>
 	<?php endif; ?>
 
@@ -63,22 +63,8 @@
 					}
 
 					// Logica eventueel reeds toepassen in WP_Query voor performantie?
-					if ( $current_tab === 'national' ) {
-						if ( ! is_national_product( $product ) ) {
-							continue;
-						}
-					} elseif ( $current_tab === 'local' ) {
-						if ( is_national_product( $product ) ) {
-							continue;
-						}
-					} elseif ( $current_tab === 'crafts' ) {
-						if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) !== 0 ) {
-							continue;
-						}
-					} elseif ( $current_tab === 'januari-2021' ) {
-						if ( ! has_term( $current_tab, 'product_tag', $product->get_id() ) ) {
-							continue;
-						}
+					if ( ! ob2c_product_matches_assortment( $product, $assortment ) ) {
+						continue;
 					}
 
 					// Kleur de randen en tel de initiële waarde voor de tellers
@@ -250,7 +236,7 @@
 				var input = {
 					'action': 'oxfam_bulk_stock_action',
 					'status': jQuery(this).find(":selected").val(),
-					'assortment': '<?php echo $current_tab; ?>',
+					'assortment': '<?php echo $assortment; ?>',
 				};
 
 				jQuery.ajax({

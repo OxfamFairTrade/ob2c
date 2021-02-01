@@ -5862,7 +5862,7 @@
 			'post_status'		=> array('publish'),
 			'posts_per_page'	=> -1,
 			'meta_key'			=> '_sku',
-			'orderby'			=> 'meta_value_num',
+			'orderby'			=> 'meta_value',
 			'order'				=> 'ASC',
 		);
 		$products = new WP_Query( $args );
@@ -5881,22 +5881,8 @@
 				}
 
 				// Logica eventueel reeds toepassen in WP_Query voor performantie?
-				if ( $assortment === 'national' ) {
-					if ( ! is_national_product( $product ) ) {
-						continue;
-					}
-				} elseif ( $assortment === 'local' ) {
-					if ( is_national_product( $product ) ) {
-						continue;
-					}
-				} elseif ( $assortment === 'crafts' ) {
-					if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) !== 0 ) {
-						continue;
-					}
-				} elseif ( $assortment === 'januari-2021' ) {
-					if ( ! has_term( $assortment, 'product_tag', $product->get_id() ) ) {
-						continue;
-					}
+				if ( ! ob2c_product_matches_assortment( $product, $assortment ) ) {
+					continue;
 				}
 
 				if ( $product->get_stock_status() !== $status ) {
@@ -5914,6 +5900,37 @@
 		}
 		
 		return $output;
+	}
+
+	function ob2c_product_matches_assortment( $product, $assortment ) {
+		switch ( $assortment ) {
+			case 'national':
+				if ( is_national_product( $product ) ) {
+					return true;
+				}
+				break;
+
+			case 'local':
+				if ( ! is_national_product( $product ) ) {
+					return true;
+				}
+				break;
+
+			case 'crafts':
+				if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
+					return true;
+				}
+				break;
+
+			case 'oktober-2020':
+			case 'januari-2021':
+				if ( has_term( $assortment, 'product_tag', $product->get_id() ) ) {
+					return true;
+				}
+				break;
+		}
+
+		return false;
 	}
 
 	function oxfam_photo_action_callback() {
