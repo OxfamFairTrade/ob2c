@@ -5904,6 +5904,10 @@
 
 	function ob2c_product_matches_assortment( $product, $assortment ) {
 		switch ( $assortment ) {
+			case 'general':
+				return true;
+				break;
+
 			case 'national':
 				if ( is_national_product( $product ) ) {
 					return true;
