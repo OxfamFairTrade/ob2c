@@ -7,7 +7,7 @@
 
 	<nav class="nav-tab-wrapper">
 		<?php
-			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'crafts' => 'Crafts' );
+			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'crafts' => 'Crafts', 'januari-2021' => 'Januarimagazine 2021');
 			if ( isset( $_GET['assortment'] ) and array_key_exists( $_GET['assortment'], $tabs ) ) {
 				$current_tab = $_GET['assortment'];
 			} else {
@@ -75,6 +75,10 @@
 						if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) !== 0 ) {
 							continue;
 						}
+					} elseif ( $assortment === 'januari-2021' ) {
+						if ( ! has_tag( $assortment, $product->get_id() ) ) {
+							continue;
+						}
 					}
 
 					// Kleur de randen en tel de initiële waarde voor de tellers
@@ -136,9 +140,9 @@
 			<div class="cell" style="width: 40%; text-align: center;">
 				<select class="global-toggle">';
 					<option value="" selected>(bulkwijziging)</option>
-					<option value="instock">Zet ALLE producten op voorraad</option>
-					<option value="onbackorder">Zet ALLE producten op tijdelijk uit voorraad</option>
-					<option value="outofstock">Haal ALLE producten uit assortiment</option>
+					<option value="instock">Zet ALLE producten op deze pagina op voorraad</option>
+					<option value="onbackorder">Zet ALLE producten op deze pagina tijdelijk uit voorraad</option>
+					<option value="outofstock">Haal ALLE producten op deze pagina uit assortiment</option>
 				</select>
 			</div>
 			<div class="cell" style="width: 40%; text-align: left;">

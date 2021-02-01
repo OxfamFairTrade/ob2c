@@ -835,44 +835,35 @@
 		return $availability;
 	}
 
-	// Verberg acties op orders (ook in bulk en preview)
-	add_filter( 'bulk_actions-edit-shop_order', 'remove_dangerous_bulk_actions', 10000, 1 );
+	// Verberg ongewenste acties op orders (in bulk)
+	// add_filter( 'bulk_actions-edit-shop_order', 'remove_dangerous_bulk_actions', 10, 1 );
+	// Verberg ongewenste acties op orders (in preview)
 	add_filter( 'woocommerce_admin_order_actions', 'remove_dangerous_preview_actions', 100, 2 );
 	add_filter( 'woocommerce_admin_order_preview_actions', 'remove_dangerous_preview_actions', 100, 2 );
-	// Statussen die aangevinkt zijn als bulkactie in Woocommerce Order Statuses worden via jQuery geïnjecteerd (zie bulk_admin_footer() in class-wc-order-status-manager-admin-orders.php)
-	// add_filter( 'woocommerce_order_actions', 'remove_dangerous_singular_actions', 100, 1 );
-
+	
 	function remove_dangerous_bulk_actions( $actions ) {
-		unset( $actions['mark_completed'] );
+		// Statussen die aangevinkt zijn als bulkactie in Woocommerce Order Statuses worden via jQuery geïnjecteerd (zie bulk_admin_footer() in class-wc-order-status-manager-admin-orders.php)
 		do_action( 'qm/debug', $actions );
 		return $actions;
 	}
 
 	function remove_dangerous_preview_actions( $actions, $order ) {
-		// Voorlopig volledig verbergen, later misschien flow voorzien?
 		unset( $actions['status'] );
 		return $actions;
 	}
 
-	function remove_dangerous_singular_actions( $actions ) {
-		unset( $actions['send_order_details'] );
-		unset( $actions['send_order_details_admin'] );
-		unset( $actions['regenerate_download_permissions'] );
-		return $actions;
-	}
+	// Verwijder nutteloze filters boven het productoverzicht in de back-end
+	add_filter( 'woocommerce_products_admin_list_table_filters', 'ob2c_remove_product_filters', 10, 1 );
 
-	// Verwijder bepaalde filters boven het productoverzicht in de back-end
-	add_filter( 'woocommerce_products_admin_list_table_filters', 'oft_remove_product_filters', 10, 1 );
-
-	function oft_remove_product_filters( $filters ) {
+	function ob2c_remove_product_filters( $filters ) {
 		unset( $filters['product_type'] );
 		return $filters;
 	}
 
 	// Beperk de beschikbare statussen op het orderdetail voor lokale beheerders 
-	add_filter( 'wc_order_statuses', 'limit_status_possibilities_on_edit_order_screen', 1000 );
+	add_filter( 'wc_order_statuses', 'ob2c_limit_status_possibilities_on_edit_order_screen', 100, 1 );
 	
-	function limit_status_possibilities_on_edit_order_screen( $order_statuses ) {
+	function ob2c_limit_status_possibilities_on_edit_order_screen( $order_statuses ) {
 		if ( is_admin() ) {
 			global $pagenow, $post_type;
 			if ( $pagenow === 'post.php' and $post_type === 'shop_order' ) {
@@ -1465,7 +1456,7 @@
 					// Op slechts enkele kilometers zetten, zodat de winkel redelijk bovenaan verschijnt na sorteren
 					$store->distance = 3;
 					// $store->lat en $store->lng mogen we weglaten, wordt later opgevuld
-					write_log("Ontbrekende thuisleverwinkel met store-ID ".$store->ID." toegevoegd aan resultatenlijst voor ".$current_location);
+					write_log( "Ontbrekende thuisleverwinkel met store-ID ".$store->ID." toegevoegd aan resultatenlijst voor ".$current_location );
 					
 					$stores = array();
 					$stores[] = $store;
@@ -1572,7 +1563,7 @@
 		return $order;
 	}
 
-	// Eventueel gebruiken om nutteloze notitie over non-wijziging meteen weer te wissen?
+	// Wis de nutteloze notitie die toch nog toegevoegd werd bij bovenstaande non-wijzigingen
 	// Zie https://github.com/woocommerce/woocommerce/blob/0f134ca6a20c8132be490b22ad8d1dc245d81cc0/includes/class-wc-order.php#L370
 	add_action( 'woocommerce_order_status_pending_to_pending', 'ob2c_remove_useless_order_status_change_note', 1, 2 );
 	add_action( 'woocommerce_order_status_cancelled_to_cancelled', 'ob2c_remove_useless_order_status_change_note', 1, 2 );
@@ -1605,8 +1596,15 @@
 	add_action( 'woocommerce_order_status_completed_to_processing', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 	add_action( 'woocommerce_order_status_completed_to_claimed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 	add_action( 'woocommerce_order_status_cancelled_to_pending', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_pending_to_completed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_refunded_to_processing', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_refunded_to_completed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_cancelled_to_processing', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_cancelled_to_claimed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	// add_action( 'woocommerce_order_status_cancelled_to_completed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 	
 	function ob2c_warn_if_suspicious_status_change( $order_id, $order ) {
+		// Acties door admins negeren?
 		send_automated_mail_to_helpdesk( 'Bestelling '.$order->get_order_number().' onderging een verdachte statuswijziging naar '.$order->get_status(), '<p>Gelieve de logs te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!</p>' );
 	}
 
@@ -1654,8 +1652,7 @@
 		add_filter( 'woocommerce_menu_order_count', 'ob2c_add_claimed_to_open_orders_count', 10, 1 );
 
 		// Zorg ervoor dat refunds aan dezelfde winkel toegekend worden als het oorspronkelijke bestelling, zodat ze correct getoond worden in de gefilterde rapporten
-		// @toDo: Te testen
-		// add_action( 'woocommerce_order_refunded', 'ob2c_copy_metadata_from_order_to_refund', 10, 2 );
+		add_action( 'woocommerce_order_refunded', 'ob2c_copy_metadata_from_order_to_refund', 10, 2 );
 
 		// Maak de boodschap om te filteren op winkel beschikbaar bij de rapporten
 		add_filter( 'woocommerce_reports_get_order_report_data_args', 'limit_reports_to_member_shop', 10, 2 );
@@ -2000,21 +1997,6 @@
 		return $array;
 	}	
 
-	// Bevat geen WooCommerce-acties want die worden wegens een bug ingeladen via JavaScript!
-	// add_filter( 'bulk_actions-edit-shop_order', 'my_custom_bulk_actions', 1, 10000 );
-
-	function my_custom_bulk_actions( $actions ) {
-		var_dump_pre( $actions );
-		return $actions;
-	}
-
-	// Poging om de actie die de JavaScript toe te voegen weer uitschakelt
-	// add_action( 'plugins_loaded', 'disable_wc_actions' );
-
-	function disable_wc_actions() {
-		remove_action( 'bulk_actions-edit-shop_order', array( WC_Admin_CPT_Shop_Order::getInstance(), 'admin_footer' ), 10 );
-	}
-
 	function ob2c_add_claimed_to_open_orders_count( $count ) {
 		$count += wc_orders_count('claimed');
 		return $count;
@@ -2024,8 +2006,11 @@
 		$order = wc_get_order( $order_id );
 		$refund = wc_get_order( $refund_id );
 		if ( $order !== false and $refund !== false ) {
-			$refund->update_meta_data( 'claimed_by', $order->get_meta('claimed_by') );
-			$refund->save();
+			if ( $order->get_meta('claimed_by') !== '' ) {
+				write_log( "Copying claimer '".$order->get_meta('claimed_by')."' to refund ..." );
+				$refund->update_meta_data( 'claimed_by', $order->get_meta('claimed_by') );
+				$refund->save();
+			}
 		}
 	}
 
@@ -2100,7 +2085,7 @@
 		echo '</p>';
 	}
 
-	// Voeg acties toe op orderdetailscherm om status te wijzigen (want keuzemenu bestelstatus geblokkeerd!)
+	// Voeg gebruiksvriendelijke acties toe op orderdetailscherm om status te wijzigen
 	add_action( 'woocommerce_order_actions', 'add_order_status_changing_actions' );
 
 	function add_order_status_changing_actions( $actions ) {
@@ -2128,8 +2113,8 @@
 		// 	$actions['oxfam_mark_invoiced'] = 'Markeer als factuur opgesteld';
 		// }
 
-		do_action( 'qm/debug', $actions );
 		unset( $actions['send_order_details'] );
+		// unset( $actions['send_order_details_admin'] );
 		unset( $actions['regenerate_download_permissions'] );
 		
 		return $actions;
@@ -4236,7 +4221,6 @@
 
 	function b2b_restrict_to_bank_transfer( $gateways ) {
 		if ( is_b2b_customer() ) {
-			// write_log( print_r( $gateways, true ) );
 			unset( $gateways['mollie_wc_gateway_bancontact'] );
 			unset( $gateways['mollie_wc_gateway_kbc'] );
 			unset( $gateways['mollie_wc_gateway_belfius'] );
@@ -5910,6 +5894,10 @@
 					if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) !== 0 ) {
 						continue;
 					}
+				} elseif ( $assortment === 'januari-2021' ) {
+					if ( ! has_tag( $assortment, $product->get_id() ) ) {
+						continue;
+					}
 				}
 
 				if ( $product->get_stock_status() !== $status ) {
@@ -5926,7 +5914,6 @@
 			$output = 'ERROR - NO PRODUCTS FOUND';
 		}
 		
-		write_log( $output );
 		return $output;
 	}
 
