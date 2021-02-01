@@ -271,10 +271,9 @@
 	$args = array(
 		'post_type'		=> 'shop_coupon',
 		'post_status'	=> 'publish',
-		// Opgelet: dit kijkt naar de (onzichtbare) slug, die lichtjes kan afwijken van de titel!
-		// WERKT NIET BIJ 'b2b-5%' en 'b2b-10%' (ZELFS MET 'b2b5' en 'b2b10')
-		// GEBRUIK DAARVOOR 'title' => 'b2b-5%' en 'title' => 'b2b-10%'
-		'post_name__in'	=> array( 'worldshake', 'sinaasappelsap-tetra', 'appelsap-groot', 'vidseca-pcc', 'malbec-gran-reserva' ),
+		// Opgelet: dit kijkt naar de (onzichtbare) slug, die kan afwijken van de titel, bv. indien kortingscode achteraf gewijzigd!
+		// WERKT NIET BIJ 'b2b-5%' en 'b2b-10%' (ZELFS MET 'b2b5' en 'b2b10'), GEBRUIK DAARVOOR 'title' => 'b2b-5%' en 'title' => 'b2b-10%'
+		'post_name__in'	=> array( '202102-merlot', '202102-sauvignon-blanc', '202102-gedroogde-banaan', '202102-quinoa', '202102-rijstwafels' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	

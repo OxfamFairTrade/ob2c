@@ -7,7 +7,8 @@
 
 	<nav class="nav-tab-wrapper">
 		<?php
-			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'crafts' => 'Crafts', 'januari-2021' => 'Januarimagazine 2021');
+			// 'oktober-2020' => 'Oktobermagazine 2020', 'januari-2021' => 'Januarimagazine 2021'
+			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'crafts' => 'Crafts' );
 			if ( isset( $_GET['assortment'] ) and array_key_exists( $_GET['assortment'], $tabs ) ) {
 				$assortment = $_GET['assortment'];
 			} else {

@@ -6464,17 +6464,17 @@
 
 			$stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
 			foreach ( $stores as $key => $store_id ) {
-				// Producten sowieso nooit publiceren naar sjabloon!
+				// Producten sowieso nooit publiceren naar sjabloon
 				if ( $store_id == 5 ) {
 					unset( $stores[ $key ] );
 				}
-				// Nieuwe webshops uitsluiten
+				// Nieuwe webshops eventueel uitsluiten
 				// if ( in_array( $store_id, get_site_option('oxfam_blocked_sites') ) ) {
 				// 	unset( $stores[ $key ] );
 				// }
 			}
-			// write_log( "PUBLISH PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
-			// do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no' );
+			write_log( "PUBLISH PRODUCT-ID ".$post_id." TO STORE-ID'S ".implode( ', ', $stores ) );
+			do_action( 'WOO_MSTORE_admin_product/set_sync_options', $post_id, $stores, 'yes', 'no' );
 			
 			/**
 			 * After sync option is set, now fire the sync hook.
@@ -6782,27 +6782,16 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-warning">';
-					echo '<p>Een laatste malversatie rond de prijswijzigingen van 1 januari werd op 19/1 rechtgetrokken:<ul>';
-						$skus = array( 24006 => 'Oorspronkelijk was voorzien om de prijsverhoging van 3,45 naar 3,65 euro enkel toe te passen op de nieuwe ompakken met nummer 24018, die pas vanaf volgende week uitgeleverd zullen worden. Omdat de barcode op de verpakking dezelfde gebleven is, werd de leverancierscode in ShopPlus in de update van januari reeds geswitcht naar 24018. Bijgevolg kreeg W14006 toen ook de hogere prijs en zal W14018 (zoals voorzien in de prijskaartjes) nooit aangemaakt worden. We hebben daarom besloten om de prijs van de bestaande chocodrink ook in de webshops al op te trekken naar 3,65 euro.' );
-						foreach ( $skus as $sku => $explanation ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').'): '.$explanation.'</li>';
-							}
-						}
-					echo '</ul>De chocodrink werd aan de \'verkeerde\' prijs verrekend in bestellingen OWW10775, OWW10827, OWW10784, OWW10972 en OWW10990.<p>';
-				echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-januari-2021-update.html" target="_blank">januaripromo\'s</a> werden geactiveerd in alle webshops. De <a href="https://copain.oww.be/k/n118/news/view/20763/12894/prijswijzigingen-vanaf-1-januari-2021.html" target="_blank">prijswijzigingen van 01/01/2021</a> werden in de ochtend van 2 januari doorgevoerd.</p>';
+					echo '<p>De <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-februari-2021-update.html" target="_blank">promo\'s voor februari</a> werden geactiveerd in alle webshops.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-info">';
-					echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-info">';
+				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
+				// echo '</div>';
 				// echo '<div class="notice notice-success">';
-				// 	echo '<p>De nieuwe rode pesto staat klaar:</p><ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 27995 );
+				// 	echo '<p>De producten van het januarimagazine zijn beschikbaar gemaakt in de database. Je kunt alle producten snel op voorraad zetten met de bulkknop onderaan het tabblad \'<a href="admin.php?page=oxfam-products-list&assortment=januari-2021">Januarimagazine 2021</a>\' op de pagina \'Voorraadbeheer\'.</p>';
+				// 	echo '<p>De nieuwe theereferenties werden toegevoegd:</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 		$skus = array( 23648, 23649, 23650, 25730 );
 				// 		foreach ( $skus as $sku ) {
 				// 			$product_id = wc_get_product_id_by_sku( $sku );
 				// 			if ( $product_id ) {
@@ -6815,8 +6804,8 @@
 				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 				// 	}
 				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-				// 	echo '<p>Bovenop de agenda\'s, kalenders en doppers werden op 03/12 ook 149 centraal beheerde non-foodproducten toegevoegd. Het gaat om een beperkte selectie \'vast assortiment\' van MDM én alle producten uit het eindejaarsmagazine. <a href="https://shop.oxfamwereldwinkels.be/20201202-erp-import-crafts.xlsx" download>Raadpleeg de Excel met alle producten.</a> Vanaf nu zullen we elk kwartaal alle producten uit het FAIR-magazine beschikbaar maken. Voor het januaripakket zal dit begin januari gebeuren, samen met de levering in de winkel. Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.</p>';
 				// echo '</div>';
+				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 					// echo '<div class="notice notice-success">';
