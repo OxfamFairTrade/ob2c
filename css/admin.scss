@@ -163,19 +163,14 @@ button.bulk-increase-stock, */
 	display: none !important;
 }
 
-/* Kan verbeterd worden m.b.v. wijziging in woocommerce/includes/admin/meta-boxes/views/html-order-items.php (= enkel getoond indien betaalmethode niet API-refundable) */
+/* Sta terugbetalingen buiten Mollie om (bv. in de winkel) toch weer toe */
 button.do-manual-refund {
 	// display: none !important;
 }
 
-/* Verberg link naar het volledige Jetpack-dashboard (vereist login die beheerders toch niet hebben) */
-div.gotonewdash {
+/* Verhinder het verwijderen van eerder aangemaakte refunds (indien terugbetaling via Mollie liep moet die handmatig geannuleerd worden!) */
+.wc-order-edit-line-item-actions > a.delete_refund {
 	display: none !important;
-}
-
-/* Verberg Jetpack-notificaties rechtsboven */
-li#wp-admin-bar-notes {
-	display: none;
 }
 
 /* Meldingen van framework voor WP Mail Log verbergen*/

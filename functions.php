@@ -1539,8 +1539,8 @@
 					$from_status = $data['status'];
 					$to_status = $changes['status'];
 
-					// Wat met 'refunded'?
-					$unpaid_statusses = array( 'pending', 'cancelled', 'refunded' );
+					// Status 'refunded' nemen we bewust niet op, anders werkt de automatische overgang naar 'Volledig terugbetaald' niet
+					$unpaid_statusses = array( 'pending', 'cancelled' );
 					$paid_statusses = array( 'processing', 'claimed', 'completed' );
 
 					if ( in_array( $from_status, $paid_statusses ) and in_array( $to_status, $unpaid_statusses ) ) {
@@ -1550,6 +1550,9 @@
 						$order->add_order_note( 'Bestelling is reeds afgewerkt en mag niet in een onbetaalde status geplaatst worden. Statuswijziging '.$from_status.' &rarr; '.$to_status.' geblokkeerd.', 0, true );
 					}
 
+					// In de omgekeerde richting nemen we 'refunded' wel op!
+					$unpaid_statusses[] = 'refunded';
+					
 					if ( in_array( $from_status, $unpaid_statusses ) and in_array( $to_status, $paid_statusses ) ) {
 						write_log( "REVERTING ".$order->get_order_number()." to UNPAID status" );
 						send_automated_mail_to_helpdesk( $order->get_order_number().': ongeoorloofde wijziging naar betaalde status verhinderd', '<p>Bekijk de logs <a href="'.$order->get_edit_order_url().'">in de back-end</a> ter info.</p>' );
