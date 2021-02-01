@@ -1534,7 +1534,6 @@
 				// Mollie past statussen aan zonder ingelogd te zijn
 				// Alle statuswijzigingen blijven dus mogelijk, ook de belangrijke (betaald => niet-betaald)
 			} else {
-				write_log( "CHECKING ob2c_prevent_suspicious_order_status_changes user roles: ".implode( ', ', $user_meta->roles ) );
 				if ( in_array( 'local_manager', $user_meta->roles ) or in_array( 'local_helper', $user_meta->roles ) ) {
 					$from_status = $data['status'];
 					$to_status = $changes['status'];
@@ -1577,16 +1576,14 @@
 	
 	function ob2c_remove_useless_order_status_change_note( $order_id, $order ) {
 		$label = wc_get_order_status_name( $order->get_status() );
-		$search = 'gewijzigd van '.$label.' naar '.$label;
-		write_log( "SEARCHING comments with ".$search." ..." );
-		$args = array( 'post_id' => $order_id, 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'DESC', 'search' => $search );
+		$args = array( 'post_id' => $order_id, 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'DESC', 'search' => 'gewijzigd van '.$label.' naar '.$label );
 		// Want anders zien we de private opmerkingen niet!
 		remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
 		$comments = get_comments( $args );
 		
 		if ( count( $comments ) > 0 ) {
 			foreach ( $comments as $useless_note ) {
-				write_log( "DELETING comment ID ".$useless_note->comment_ID." ..." );
+				write_log( "DELETING comment ID ".$useless_note->comment_ID." on order ".$order->get_order_number() );
 				wp_delete_comment( $useless_note->comment_ID, true );
 			}
 		}
@@ -6505,17 +6502,17 @@
 			$to_outofstock = new WP_Query( $args );
 			if ( $to_outofstock->have_posts() ) {
 				write_log( $to_outofstock->found_posts." DEPRECATED PRODUCTS" );
-				// while ( $to_outofstock->have_posts() ) {
-				// 	$to_outofstock->the_post();
-				// 	$product = wc_get_product( get_the_ID() );
-				// 	write_log( $product->get_sku() );
-				// 	$product->set_stock_quantity(0);
-				// 	// In principe overbodig ...
-				// 	$product->set_stock_status('outofstock');
-				// 	$product->set_backorders('no');
-				// 	$product->update_meta_data( '_in_bestelweb', 'nee' );
-				// 	$product->save();
-				// }
+				while ( $to_outofstock->have_posts() ) {
+					$to_outofstock->the_post();
+					$product = wc_get_product( get_the_ID() );
+					write_log( $product->get_sku() );
+					// $product->set_stock_quantity(0);
+					// // In principe overbodig ...
+					// $product->set_stock_status('outofstock');
+					// $product->set_backorders('no');
+					// $product->update_meta_data( '_in_bestelweb', 'nee' );
+					// $product->save();
+				}
 				wp_reset_postdata();
 			}
 
