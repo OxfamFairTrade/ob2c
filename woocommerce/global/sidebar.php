@@ -24,38 +24,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="nm-shop-widget-col">
 				<h3 class="nm-widget-title">In de kijker</h3>
 				<?php
+					$products_tags = array();
+
 					$args = array(
 						'stock_status' => 'instock',
 						'include' => wc_get_product_ids_on_sale(),
 					);
 					$sale_products = wc_get_products( $args );
 					if ( count( $sale_products ) > 0 ) {
-						// Of toch liever iets proberen m.b.v. add_query_arg( 'filter_product_tag', 'promotie' ) / remove_query_arg( 'filter_product_tag' ) ?
-						// Maar wordt dan nog altijd niet automatisch opgenomen in actieve filters!
-						$term_link = get_term_link( 'promotie', 'product_tag' );
-						if ( ! is_wp_error( $term_link ) ) {
-							if ( is_product_tag('promotie') ) {
+						$products_tags[] = 'promotie';
+					}
+					
+					$products_tags[] = 'januari-2021';
+
+					foreach( $products_tags as $product_slug ) {
+						$term = get_term_by( 'slug', $product_slug, 'product_tag' );
+						if ( ! is_wp_error( $term ) ) {
+							// Of toch iets à la add_query_arg( 'filter_product_tag', 'promotie' ) / remove_query_arg( 'filter_product_tag' ) maar wordt dan nog altijd niet automatisch opgenomen in actieve filters!
+							$term_link = get_term_link( $term );
+							if ( is_product_tag( $product_slug ) ) {
 								$class = 'chosen';
 								$url = get_permalink( wc_get_page_id('shop') );
 							} else {
 								$class = '';
 								$url = $term_link.'#nm-shop-products';
 							}
-							echo '<a href="'.$url.'" class="'.$class.'"><span>Promoties</span></a>';
+
+							if ( $product_slug === 'promotie' ) {
+								$label = 'Promoties';
+							} else {
+								$label = ucfirst( $term->name );
+							}
+							echo '<a href="'.$url.'" class="'.$class.'"><span>'.$label.'</span></a>';
 						}
 					}
-					
-					// $term_link = get_term_link( 'sinterklaas', 'product_tag' );
-					// if ( ! is_wp_error( $term_link ) ) {
-					// 	if ( is_product_tag('sinterklaas') ) {
-					// 		$class = 'chosen';
-					// 		$url = get_permalink( wc_get_page_id('shop') );
-					// 	} else {
-					// 		$class = '';
-					// 		$url = $term_link.'#nm-shop-products';
-					// 	}
-					// 	echo '<a href="'.$url.'" class="'.$class.'"><span>Sinterklaas</span></a>';
-					// }
 				?>
 			</div>
 

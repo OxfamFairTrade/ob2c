@@ -6783,7 +6783,7 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-februari-2021-update.html" target="_blank">promo\'s voor februari</a> werden geactiveerd in alle webshops. De producten van het januarimagazine zijn beschikbaar gemaakt in de database.';
+					echo '<p>De <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-februari-2021-update.html" target="_blank">promo\'s voor februari</a> zijn geactiveerd in alle webshops. Daarnaast werden de producten van het januarimagazine beschikbaar gemaakt in de database.';
 						if ( current_user_can('manage_network_users') ) {
 							echo ' Je kunt alle producten snel op voorraad zetten met de bulkknop onderaan het tabblad \'<a href="admin.php?page=oxfam-products-list&assortment=januari-2021">Januarimagazine 2021</a>\' op de pagina \'Voorraadbeheer\'.';
 						}
