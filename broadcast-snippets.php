@@ -597,7 +597,6 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 	$gateway = get_option('mollie_wc_gateway_bancontact_settings');
 	$gateway = get_option('mollie_wc_gateway_kbc_settings');
 	$gateway = get_option('mollie_wc_gateway_belfius_settings');
-	$gateway = get_option('mollie_wc_gateway_inghomepay_settings');
 	$gateway = get_option('mollie_wc_gateway_applepay_settings');
 	$gateway = get_option('mollie_wc_gateway_creditcard_settings');
 	$gateway = get_option('mollie_wc_gateway_ideal_settings');

@@ -46,7 +46,7 @@
 					if ( $methods->resultcode == '10' ) {
 						$lacking = array();
 						// Er bestaat geen aparte service voor Apple Pay, wel voor 'voucher'
-						$must_be = array( 'mistercash', 'kbc', 'belfius', 'inghomepay', 'creditcard', 'ideal' );
+						$must_be = array( 'mistercash', 'kbc', 'belfius', 'creditcard', 'ideal' );
 						foreach ( $must_be as $service ) {
 							if ( $methods->services->{$service} == 'false' ) {
 								$lacking[] = $service;

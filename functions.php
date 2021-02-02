@@ -733,7 +733,6 @@
 	add_action( 'update_option_mollie_wc_gateway_bancontact_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_kbc_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_belfius_settings', 'sync_settings_to_subsites', 10, 3 );
-	add_action( 'update_option_mollie_wc_gateway_inghomepay_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_creditcard_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_applepay_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_ideal_settings', 'sync_settings_to_subsites', 10, 3 );
@@ -6788,6 +6787,9 @@
 							echo ' Je kunt alle producten snel op voorraad zetten met de bulkknop onderaan het tabblad \'<a href="admin.php?page=oxfam-products-list&assortment=januari-2021">Januarimagazine 2021</a>\' op de pagina \'Voorraadbeheer\'.';
 						}
 					echo '</p>';
+				echo '</div>';
+				echo '<div class="notice notice-warning">';
+					echo '<p>Betalen via ING-internetbankieren was een kort leven beschoren: we konden deze betaalmethode pas in november activeren (na de nodige technische updates) maar Mollie heeft de integratie met ING stopgezet per 1 februari 2021 ... Klanten van ING kunnen uiteraard wel nog betalen via het algemene Bancontact, zoals voorheen.</p>';
 				echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
