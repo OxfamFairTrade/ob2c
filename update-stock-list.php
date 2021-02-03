@@ -121,21 +121,23 @@
 				echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> bestelbaar</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan op de homepage.</p>';	
 			}
 		?>
-		<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black;">
-			<div class="cell" style="width: 3%;"></div>
-			<div class="cell" style="width: 40%; text-align: center;">
-				<select class="global-toggle">';
-					<option value="" selected>(bulkwijziging)</option>
-					<option value="instock">Zet ALLE producten op deze pagina op voorraad</option>
-					<option value="onbackorder">Zet ALLE producten op deze pagina tijdelijk uit voorraad</option>
-					<option value="outofstock">Haal ALLE producten op deze pagina uit assortiment</option>
-				</select>
+		<?php if ( $i < 500 ) : ?>
+			<div style="display: table; width: 100%; border-top: 1px solid black; border-bottom: 1px solid black;">
+				<div class="cell" style="width: 3%;"></div>
+				<div class="cell" style="width: 40%; text-align: center;">
+					<select class="global-toggle">';
+						<option value="" selected>(bulkwijziging)</option>
+						<option value="instock">Zet ALLE producten op deze pagina op voorraad</option>
+						<option value="onbackorder">Zet ALLE producten op deze pagina tijdelijk uit voorraad</option>
+						<option value="outofstock">Haal ALLE producten op deze pagina uit assortiment</option>
+					</select>
+				</div>
+				<div class="cell" style="width: 40%; text-align: left;">
+					Opgelet: deze bewerking kan, afhankelijk van het aantal producten, ettelijke seconden in beslag nemen! Sluit de pagina niet zolang de oranje boodschap zichtbaar is. Na afloop wordt de pagina opnieuw geladen.
+				</div>
+				<div class="cell output" style="width: 17%;"></div>
 			</div>
-			<div class="cell" style="width: 40%; text-align: left;">
-				Opgelet: deze bewerking kan, afhankelijk van het aantal producten, ettelijke seconden in beslag nemen! Sluit de pagina niet zolang de oranje boodschap zichtbaar is. Na afloop wordt de pagina opnieuw geladen.
-			</div>
-			<div class="cell output" style="width: 17%;"></div>
-		</div>
+		<?php endif; ?>
 	</div>
 </div>
 
