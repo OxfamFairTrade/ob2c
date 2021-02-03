@@ -5732,7 +5732,9 @@
 
 	function custom_oxfam_options() {
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
-		add_submenu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list' );
+		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Nationaal assortiment', 'Nationaal', 'manage_network_users', 'oxfam-products-list-national', 'oxfam_products_list_national_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_local_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_januari_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_oktober_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
@@ -5757,13 +5759,23 @@
 		include get_stylesheet_directory().'/update-stock-list.php';
 	}
 
+	function oxfam_products_list_national_callback() {
+		$_REQUEST['assortment'] = 'national';
+		oxfam_products_list_callback();
+	}
+
+	function oxfam_products_list_local_callback() {
+		$_REQUEST['assortment'] = 'local';
+		oxfam_products_list_callback();
+	}
+
 	function oxfam_products_list_januari_callback() {
 		$_REQUEST['assortment'] = 'januari-2021';
 		oxfam_products_list_callback();
 	}
 
 	function oxfam_products_list_oktober_callback() {
-		$_REQUEST['assortment'] = 'oktober-2021';
+		$_REQUEST['assortment'] = 'oktober-2020';
 		oxfam_products_list_callback();
 	}
 
