@@ -2417,8 +2417,7 @@
 		if ( $post_type === 'product' ) {
 			$user_meta = get_userdata( get_current_user_id() );
 			if ( in_array( 'local_manager', $user_meta->roles ) ) {
-				// In nieuwe subsites wordt deze module soms niet actief?
-				write_log( get_webshop_name().": restrict edit products for local managers" );
+				// write_log( get_webshop_name().": restrict edit products for local managers" );
 				$restrict_it = true;
 			}
 		}
