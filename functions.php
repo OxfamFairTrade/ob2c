@@ -2344,10 +2344,6 @@
 			'settings-updated',
 		);
 		
-		$args['admin.php']['oxfam-products-list'] = array(
-			'assortment',
-		);
-		
 		// Verwijderen / opnieuw versturen blijft onmogelijk ...
 		$args['tools.php']['wpml_plugin_log'] = array(
 			's',
@@ -2392,6 +2388,7 @@
 		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
 		// TO DO: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
 		if ( count( get_local_manager_user_ids() ) > 0 ) {
+			write_log( "Allow edit products of these author IDs: ".$authors );
 			return $authors . ',' . get_local_manager_user_ids( true );
 		} else {
 			return $authors;
@@ -5733,10 +5730,11 @@
 	function custom_oxfam_options() {
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
 		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Nationaal assortiment', 'Nationaal', 'manage_network_users', 'oxfam-products-list-national', 'oxfam_products_list_national_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_local_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_januari_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_oktober_callback' );
+		// Opgelet: vergeet de nieuwe paginaslugs niet te whitelisten voor de rol 'local_manager' in User Role Editor! 
+		add_submenu_page( 'oxfam-products-list', 'Nationaal assortiment', 'Nationaal', 'manage_network_users', 'oxfam-products-list-national', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
@@ -5757,26 +5755,6 @@
 
 	function oxfam_products_list_callback() {
 		include get_stylesheet_directory().'/update-stock-list.php';
-	}
-
-	function oxfam_products_list_national_callback() {
-		$_REQUEST['assortment'] = 'national';
-		oxfam_products_list_callback();
-	}
-
-	function oxfam_products_list_local_callback() {
-		$_REQUEST['assortment'] = 'local';
-		oxfam_products_list_callback();
-	}
-
-	function oxfam_products_list_januari_callback() {
-		$_REQUEST['assortment'] = 'januari-2021';
-		oxfam_products_list_callback();
-	}
-
-	function oxfam_products_list_oktober_callback() {
-		$_REQUEST['assortment'] = 'oktober-2020';
-		oxfam_products_list_callback();
 	}
 
 	// Vervang onnutige links in netwerkmenu door Oxfam-pagina's
@@ -5943,15 +5921,21 @@
 				}
 				break;
 
+			// Voorlopig niet meer gebruikt
 			case 'crafts':
 				if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
 					return true;
 				}
 				break;
 
-			case 'oktober-2020':
-			case 'januari-2021':
-				if ( has_term( $assortment, 'product_tag', $product->get_id() ) ) {
+			case 'oktober':
+				if ( has_term( 'oktober-2020', 'product_tag', $product->get_id() ) ) {
+					return true;
+				}
+				break;
+
+			case 'januari':
+				if ( has_term( 'januari-2021', 'product_tag', $product->get_id() ) ) {
 					return true;
 				}
 				break;

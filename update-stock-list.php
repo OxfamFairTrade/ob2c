@@ -7,9 +7,13 @@
 
 	<nav class="nav-tab-wrapper">
 		<?php
-			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'januari-2021' => 'Januarimagazine 2021', 'oktober-2020' => 'Oktobermagazine 2020' );
-			if ( isset( $_REQUEST['assortment'] ) and array_key_exists( $_REQUEST['assortment'], $tabs ) ) {
-				$assortment = $_REQUEST['assortment'];
+			// Om het submenu de tabselectie netjes te laten volgen, kijken we beter naar het laatste deel van de parameter 'oxfam-product-list-...' i.p.v. de nieuwe parameter 'assortment' 
+			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'januari' => 'Januarimagazine 2021', 'oktober' => 'Oktobermagazine 2020' );
+			
+			$parts = explode( 'oxfam-products-list-', $_REQUEST['page'] );
+			var_dump_pre( $parts );
+			if ( count( $parts ) === 2 and array_key_exists( $parts[1], $tabs ) ) {
+				$assortment = $parts[1];
 			} else {
 				$assortment = 'general';
 			}
@@ -19,7 +23,7 @@
 				if ( $assortment === $key ) {
 					$active = 'nav-tab-active';
 				}
-				echo '<a href="'.admin_url( 'admin.php?page=oxfam-products-list&assortment='.$key ).'" class="nav-tab '.$active.'">'.$title.'</a>';
+				echo '<a href="'.admin_url( 'admin.php?page=oxfam-products-list-'.$key ).'" class="nav-tab '.$active.'">'.$title.'</a>';
 			}
 		?>
 	</nav>
