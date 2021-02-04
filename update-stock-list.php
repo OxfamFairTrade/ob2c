@@ -11,7 +11,6 @@
 			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'januari' => 'Januarimagazine 2021', 'oktober' => 'Oktobermagazine 2020' );
 			
 			$parts = explode( 'oxfam-products-list-', $_REQUEST['page'] );
-			var_dump_pre( $parts );
 			if ( count( $parts ) === 2 and array_key_exists( $parts[1], $tabs ) ) {
 				$assortment = $parts[1];
 			} else {
@@ -23,7 +22,13 @@
 				if ( $assortment === $key ) {
 					$active = 'nav-tab-active';
 				}
-				echo '<a href="'.admin_url( 'admin.php?page=oxfam-products-list-'.$key ).'" class="nav-tab '.$active.'">'.$title.'</a>';
+				
+				if ( $assortment === 'general' ) {
+					$suffix = '';
+				} else {
+					$suffix = '-'.$key;
+				}
+				echo '<a href="'.admin_url( 'admin.php?page=oxfam-products-list'.$suffix ).'" class="nav-tab '.$active.'">'.$title.'</a>';
 			}
 		?>
 	</nav>
