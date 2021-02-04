@@ -2388,7 +2388,7 @@
 		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
 		// TO DO: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
 		if ( count( get_local_manager_user_ids() ) > 0 ) {
-			write_log( "Allow edit products of these author IDs: ".$authors );
+			write_log( "Allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
 			return $authors . ',' . get_local_manager_user_ids( true );
 		} else {
 			return $authors;
@@ -2398,10 +2398,6 @@
 	function get_local_manager_user_ids( $implode = false ) {
 		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
 		if ( count( $local_managers->get_results() ) > 0 ) {
-			if ( current_user_can('update_core') ) {
-				write_log( "Local managers blog-ID ".get_current_blog_id().": ".implode( ', ', $local_managers->get_results() ) );
-			}
-
 			if ( $implode ) {
 				return implode( ',', $local_managers->get_results() );
 			} else {
