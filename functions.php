@@ -2388,7 +2388,7 @@
 		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
 		// TO DO: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie? 
 		if ( count( get_local_manager_user_ids() ) > 0 ) {
-			write_log( "Allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
+			// write_log( "Allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
 			return $authors . ',' . get_local_manager_user_ids( true );
 		} else {
 			return $authors;
@@ -2416,7 +2416,12 @@
 		$restrict_it = false;
 		if ( $post_type === 'product' ) {
 			$user = wp_get_current_user();
-			if ( in_array( 'local_manager', $user->roles ) ) {
+			write_log( print_r( $user->roles ) );
+			$user_meta = get_userdata( get_current_user_id() );
+			write_log( print_r( $user_meta->roles ) );
+			if ( in_array( 'local_manager', $user_meta->roles ) ) {
+				// In nieuwe subsites wordt deze module soms niet actief?
+				write_log( "Restrict edit products for local managers" );
 				$restrict_it = true;
 			}
 		}
@@ -2764,8 +2769,7 @@
 		} elseif ( is_account_page() and is_user_logged_in() ) {
 			$current_user = wp_get_current_user();
 			$user_meta = get_userdata( $current_user->ID );
-			$user_roles = $user_meta->roles;
-			if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_webshop_email() ) {
+			if ( in_array( 'local_manager', $user_meta->roles ) and $current_user->user_email === get_webshop_email() ) {
 				?>
 				<script type="text/javascript">
 					jQuery(document).ready( function() {
@@ -3800,8 +3804,7 @@
 		
 		$current_user = wp_get_current_user();
 		$user_meta = get_userdata( $current_user->ID );
-		$user_roles = $user_meta->roles;
-		if ( in_array( 'local_manager', $user_roles ) and $current_user->user_email === get_webshop_email() ) {
+		if ( in_array( 'local_manager', $user_meta->roles ) and $current_user->user_email === get_webshop_email() ) {
 			?>
 			<script type="text/javascript">
 				/* Verhinder dat lokale webbeheerders het e-mailadres aanpassen van hun hoofdaccount */
