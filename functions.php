@@ -2415,13 +2415,10 @@
 	function exclude_posts_from_edit_restrictions( $post_type ) {
 		$restrict_it = false;
 		if ( $post_type === 'product' ) {
-			$user = wp_get_current_user();
-			write_log( print_r( $user->roles, true ) );
 			$user_meta = get_userdata( get_current_user_id() );
-			write_log( print_r( $user_meta->roles, true ) );
 			if ( in_array( 'local_manager', $user_meta->roles ) ) {
 				// In nieuwe subsites wordt deze module soms niet actief?
-				write_log( "Restrict edit products for local managers" );
+				write_log( get_webshop_name().": restrict edit products for local managers" );
 				$restrict_it = true;
 			}
 		}
