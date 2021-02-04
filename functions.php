@@ -2416,9 +2416,9 @@
 		$restrict_it = false;
 		if ( $post_type === 'product' ) {
 			$user = wp_get_current_user();
-			write_log( print_r( $user->roles ) );
+			write_log( print_r( $user->roles, true ) );
 			$user_meta = get_userdata( get_current_user_id() );
-			write_log( print_r( $user_meta->roles ) );
+			write_log( print_r( $user_meta->roles, true ) );
 			if ( in_array( 'local_manager', $user_meta->roles ) ) {
 				// In nieuwe subsites wordt deze module soms niet actief?
 				write_log( "Restrict edit products for local managers" );
