@@ -23,7 +23,7 @@
 					$active = 'nav-tab-active';
 				}
 				
-				if ( $assortment === 'general' ) {
+				if ( $key === 'general' ) {
 					$suffix = '';
 				} else {
 					$suffix = '-'.$key;
