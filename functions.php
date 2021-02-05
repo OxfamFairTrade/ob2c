@@ -6290,7 +6290,7 @@
 			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
 			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
 				echo '<p class="promotie">';
-					echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').'. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
+					echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').' in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
 				echo '</p>';
 			}
 		}
@@ -6527,13 +6527,15 @@
 				while ( $to_outofstock->have_posts() ) {
 					$to_outofstock->the_post();
 					$product = wc_get_product( get_the_ID() );
-					write_log( $product->get_sku() );
-					// $product->set_stock_quantity(0);
-					// // In principe overbodig ...
-					// $product->set_stock_status('outofstock');
-					// $product->set_backorders('no');
-					// $product->update_meta_data( '_in_bestelweb', 'nee' );
-					// $product->save();
+					if ( $product->get_meta('_in_bestelweb') === 'ja' ) {
+						write_log( $product->get_sku() );
+						// $product->set_stock_quantity(0);
+						// // In principe overbodig ...
+						// $product->set_stock_status('outofstock');
+						// $product->set_backorders('no');
+						// $product->update_meta_data( '_in_bestelweb', 'nee' );
+						// $product->save();
+					}
 				}
 				wp_reset_postdata();
 			}
