@@ -3926,7 +3926,7 @@
 						}
 					?>
 					</select>
-					<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje (met uitzondering van leeggoed).</span>
+					<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje (met uitzondering van leeggoed en cadeaubonnen).</span>
 				</td>
 			</tr>
 			<tr class="show-if-b2b-checked">
