@@ -24,6 +24,17 @@
 		return false;
 	}
 
+	// Custom foutmeldingen
+	add_filter( 'woocommerce_coupon_error', 'plugin_coupon_error_message', 10, 3 );
+
+	function plugin_coupon_error_message( $message, $error_code, $coupon ) {
+		if ( strpos( strtoupper( $coupon->code ), 'CERA' ) === 0 and intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
+			return __( 'Deze cadeubon, aangekocht via Cera, werd al ingeruild!', 'ob2c' );
+		}
+
+		return $message;
+	}
+
 	// Maak de code na succesvolle betaling onbruikbaar in de centrale database
 	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_bulk_coupon', 10, 1 );
 
