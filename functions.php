@@ -5,6 +5,85 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	// Creëer waardebonnen programmatorisch vanuit centrale tabel
+	add_filter( 'woocommerce_get_shop_coupon_data', 'ob2c_check_bulk_coupons', 10, 3 );
+
+	function ob2c_check_bulk_coupons( $bool, $code, $wc_coupon_class ) {
+		$coupon = ob2c_is_valid_bulk_coupon( $code );
+		if ( $coupon !== false ) {
+			// Eventueel beperken tot OFT-producten?
+			$args = array( 'date_expires' => $coupon->expires, 'amount' => $coupon->value, 'usage_limit' => 1, 'description' => 'Cadeaubon '.$coupon->value.' euro', 'product_ids' => array() );
+			if ( ! empty( $coupon->order ) ) {
+				// De code bestaat maar kan niet meer gebruikt worden!
+				write_log( 'already used: '.$coupon->code );
+				$args['usage_count'] = 1;
+			}
+			return $args;
+		}
+
+		return false;
+	}
+
+	// Maak de code na succesvolle betaling onbruikbaar in de centrale database
+	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_bulk_coupon', 10, 1 );
+
+	function ob2c_invalidate_bulk_coupon( $order_id ) {
+		$order = wc_get_order( $order_id );
+		if ( $order !== false ) {
+			$used_coupons = $order->get_coupon_codes();
+			foreach ( $used_coupons as $code ) {
+				$coupon = ob2c_is_valid_bulk_coupon( $code );
+				if ( $coupon !== false ) {
+					// Eerst nogmaals checken of de code al niet ingewisseld werd!
+					if ( ! empty( $coupon->order ) ) {
+						$logger = wc_get_logger();
+						$logger->critical( 'Coupon '.$coupon->code.' was already used in '.$coupon->code.', should not be used in '.$order->get_order_number() );
+					} else {
+						global $wpdb;
+						$result = $wpdb->update(
+							$wpdb->base_prefix.'universal_coupons',
+							array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s') ),
+							array( 'code' => $coupon->code, 'issuer' => $code->issuer )
+						);
+					}
+				}
+			}
+		}
+	}
+
+	function ob2c_is_valid_bulk_coupon( $code ) {
+		$code = strtoupper( $code );
+		$parts = explode( '-', $code );
+		if ( count( $parts ) < 2 ) {
+			return false;
+		}
+
+		$issuer = $parts[0];
+		$issuers = array( 'CERA', 'GZB' );
+		if ( in_array( $issuer, $issuers ) ) {
+			$unique_code = $parts[1];
+
+			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
+			if ( $tries > 10 ) {
+				write_log( 'too many attempts: '.$_SERVER['REMOTE_ADDR'] );
+			}
+
+			global $wpdb;
+			$coupon = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `code` = %1$s AND `issuer` = %2$s", $unique_code, $issuer ) );
+
+			if ( null !== $coupon ) {
+				return $coupon;
+			} else {
+				write_log( 'not existing: '.$unique_code );
+				set_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'], $tries + 1, DAY_IN_SECONDS );
+			}
+		} else {
+			write_log( 'no valid issuer: '.$code );
+		}
+
+		return false;
+	}
+
 	// Verwijder originelen uit srcset (wordt opgepikt door zoekmachines!)
 	add_filter( 'wp_calculate_image_srcset_meta', 'ob2c_remove_large_images_from_srcset' );
 
@@ -4815,8 +4894,9 @@
 		if ( is_cart() and ! is_b2b_customer() ) {
 			// Indien de threshold afhangt van de postcode zal dit niet helemaal kloppen ...
 			$threshold = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
-			// Subtotaal = winkelmandje inclusief belasting, exclusief verzending
-			$current = WC()->cart->subtotal;
+			// get_subtotal() = winkelmandje inclusief belastingen, exclusief kortingen en verzending
+			// get_total() = winkelmandje inclusief belastingen, kortingen en verzending
+			$current = WC()->cart->get_total('raw');
 			if ( $current > ( 0.7 * $threshold ) ) {
 				if ( $current < $threshold ) {
 					// Probeer de boodschap slechts af en toe te tonen via sessiedata
