@@ -69,7 +69,7 @@
 			}
 
 			global $wpdb;
-			$coupon = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `code` = %1$s AND `issuer` = %2$s", $unique_code, $issuer ) );
+			$coupon = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `code` = %s AND `issuer` = %s", $unique_code, $issuer ) );
 
 			if ( null !== $coupon ) {
 				return $coupon;
