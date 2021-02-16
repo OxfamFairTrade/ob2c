@@ -4330,11 +4330,10 @@
 			
 				// Door bestaan van tijdelijke file te checken, vermijden we om ook in BCC te belanden bij échte wachtwoordresets van B2B-gebruikers
 				if ( file_exists( get_stylesheet_directory().'/woocommerce/emails/temporary.php' ) ) {
-					$extra_recipients[] = 'Helpdesk E-Commerce <'.get_site_option('admin_email').'>';
 					$extra_recipients[] = get_webshop_name().' <'.get_webshop_email().'>';
 					$logger->debug( 'B2B-uitnodiging getriggerd naar user-ID '.$object->ID.' mét beheerders in BCC', $context );
 				} else {
-					$logger->debug( 'B2B-uitnodiging getriggerd naar user-ID '.$object->ID.' zónder beheerders in BCC', $context );
+					$logger->debug( 'B2B-wachtwoordreset getriggerd voor user-ID '.$object->ID.' zónder beheerders in BCC', $context );
 				}
 			}
 		}
