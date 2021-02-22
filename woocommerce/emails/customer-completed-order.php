@@ -11,13 +11,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Voeg ondersteuning voor Frans toe (Test Aankoop) 
+if ( $order->get_meta('wpml_language') === 'fr' ) {
+	unload_textdomain('woocommerce');
+	unload_textdomain('oxfam-webshop');
+	load_textdomain( 'woocommerce', WP_CONTENT_DIR.'/languages/plugins/woocommerce-fr_FR.mo' );
+	load_textdomain( 'oxfam-webshop', WP_CONTENT_DIR.'/languages/themes/oxfam-webshop-fr_FR.mo' );
+	$email_heading = 'Votre commande a été expédiée';
+	$hi = 'Che.è.r.e';
+} else {
+	$hi = 'Dag';
+}
+
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
 do_action( 'woocommerce_email_header', $email_heading, $email );
 
 // Is altijd ingevuld, dus geen check doen
-echo '<p>Dag '.$order->get_billing_first_name().'</p>';
+echo '<p>'.$hi.' '.$order->get_billing_first_name().'</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ) . '</p>';
