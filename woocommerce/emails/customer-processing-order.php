@@ -11,6 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Voeg ondersteuning voor Frans toe (Test Aankoop) 
+if ( $order->get_meta('wpml_language') === 'fr' ) {
+	unload_textdomain('woocommerce');
+	load_textdomain( 'oft-mdm', WP_CONTENT_DIR.'/languages/plugins/woocommerce-fr_FR.mo' );
+	$email_heading = 'Merci pour votre commande !';
+}
+
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
