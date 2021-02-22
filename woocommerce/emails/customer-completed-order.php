@@ -11,13 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Voeg ondersteuning voor Frans toe (Test Aankoop) 
+// Voeg ondersteuning voor Frans toe (Test Aankoop)
 if ( $order->get_meta('wpml_language') === 'fr' ) {
 	unload_textdomain('woocommerce');
 	unload_textdomain('oxfam-webshop');
 	load_textdomain( 'woocommerce', WP_CONTENT_DIR.'/languages/plugins/woocommerce-fr_FR.mo' );
 	load_textdomain( 'oxfam-webshop', WP_CONTENT_DIR.'/languages/themes/oxfam-webshop-fr_FR.mo' );
-	$email_heading = 'Votre commande a été expédiée';
+	$email_heading = 'Votre commande est en route ! ';
 	$hi = 'Che.è.r.e';
 } else {
 	$hi = 'Dag';

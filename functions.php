@@ -2152,6 +2152,10 @@
 
 	function change_processing_order_subject( $subject, $order ) {
 		$subject = sprintf( __( 'Onderwerp van de 1ste bevestigingsmail inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
+		// Voeg ondersteuning voor Frans toe (Test Aankoop)
+		if ( $order->get_meta('wpml_language') === 'fr' ) {
+			$subject = sprintf( 'Nous avons bien reçu votre commande du %s', $order->get_date_created()->date_i18n('d/m/Y') );
+		}
 		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
 			$subject = 'DEMO '.$subject;
 		}
@@ -2163,6 +2167,10 @@
 			$subject = sprintf( __( 'Onderwerp van de 2de bevestigingsmail (indien afhaling) inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
 		} else {
 			$subject = sprintf( __( 'Onderwerp van de 2de bevestigingsmail (indien thuislevering) inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
+		}
+		// Voeg ondersteuning voor Frans toe (Test Aankoop)
+		if ( $order->get_meta('wpml_language') === 'fr' ) {
+			$subject = sprintf( 'Votre commande du %s a été emballée', $order->get_date_created()->date_i18n('d/m/Y') );
 		}
 		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
 			$subject = 'DEMO '.$subject;
