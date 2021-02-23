@@ -6793,6 +6793,25 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>Betalen via ING-internetbankieren was een kort leven beschoren: we konden deze betaalmethode pas in november activeren (na de nodige technische updates) maar Mollie heeft de integratie met ING stopgezet per 1 februari 2021 ... Klanten van ING kunnen uiteraard wel nog betalen via het algemene Bancontact, zoals voorheen.</p>';
+				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>De sintfiguren werden in concept geplaatst en de paasfiguren werden gepubliceerd:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 24529, 24634, 24648 );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De nieuwe theereferenties en amandelnoten (23648, 23649, 23650 en 25730) volgen met de update van 1 maart, enkele productgegevens ontbreken nog.</p>';
+				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/n111/news/view/20167/1429/promo-s-online-winkel-februari-2021-update.html" target="_blank">promo\'s voor februari</a> zijn geactiveerd in alle webshops. Daarnaast werden de producten van het januarimagazine beschikbaar gemaakt in de database.';
 						if ( current_user_can('manage_network_users') ) {
@@ -6800,27 +6819,8 @@
 						}
 					echo '</p>';
 				echo '</div>';
-				echo '<div class="notice notice-warning">';
-					echo '<p>Betalen via ING-internetbankieren was een kort leven beschoren: we konden deze betaalmethode pas in november activeren (na de nodige technische updates) maar Mollie heeft de integratie met ING stopgezet per 1 februari 2021 ... Klanten van ING kunnen uiteraard wel nog betalen via het algemene Bancontact, zoals voorheen.</p>';
-				echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
-				// echo '</div>';
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>De nieuwe theereferenties werden toegevoegd:</p><ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 23648, 23649, 23650, 25730 );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 				// echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				if ( does_home_delivery() ) {
