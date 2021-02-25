@@ -21,6 +21,7 @@
 	add_filter( 'woocommerce_marketing_menu_items', '__return_empty_array' );
 
 	// Instant search in de lange lijst substies
+	// Zie https://github.com/trepmal/my-sites-search
 	add_action( 'admin_bar_menu', 'mss_admin_bar_menu' );
 	add_action( 'wp_enqueue_scripts', 'mss_enqueue_styles' );
 	add_action( 'admin_enqueue_scripts', 'mss_enqueue_styles' );
@@ -128,19 +129,19 @@
 			return;
 		}
 
-		ob_start();
-		?>
-			jQuery(document).ready( function($) {
-				$('#wp-admin-bar-my-sites-search.hide-if-no-js').show();
-				$('#wp-admin-bar-my-sites-search input').keyup( function( ) {
-					var searchValRegex = new RegExp( $(this).val(), 'i');
-					$('#wp-admin-bar-my-sites-list > li.menupop').hide().filter(function() {
-						return searchValRegex.test( $(this).find('> a').text() );
-					}).show();
-				});
+		$script = <<<SCRIPT
+		jQuery(document).ready( function($) {
+			$('#wp-admin-bar-my-sites-search.hide-if-no-js').show();
+			$('#wp-admin-bar-my-sites-search input').keyup( function( ) {
+				var searchValRegex = new RegExp( $(this).val(), 'i');
+				$('#wp-admin-bar-my-sites-list > li.menupop').hide().filter(function() {
+					return searchValRegex.test( $(this).find('> a').text() );
+				}).show();
 			});
-		<?php
-		wp_enqueue_script('jquery-core');
-		wp_add_inline_script( 'jquery-core', ob_get_clean() );
+		});
+		SCRIPT;
+
+		wp_enqueue_script( 'admin-bar' );
+		wp_add_inline_script( 'admin-bar', $script );
 	}
 ?>

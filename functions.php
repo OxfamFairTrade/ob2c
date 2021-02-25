@@ -1193,9 +1193,6 @@
 	add_filter( 'body_class', 'add_main_site_class' );
 
 	function add_main_site_class( $classes ) {
-		if ( is_main_site() ) {
-			$classes[] = 'portal';
-		}
 		if ( is_b2b_customer() ) {
 			$classes[] = 'is_b2b_customer';
 		}
@@ -2136,14 +2133,6 @@
 	add_filter( 'the_title', 'do_shortcode' );
 	add_filter( 'woocommerce_email_footer_text', 'do_shortcode' );
 
-	// Zorg ervoor dat het Return-Path gelijk is aan de afzender (= webshop.gemeente@oxfamwereldwinkels.be, met correct ingesteld MX-record)
-	// INSTELLING WP SMTP WORDT BLIJKBAAR GENEGEERD IN WOOCOMMERCE-MAILS, TESTMAILS ZIJN WEL OK
-	// add_action( 'phpmailer_init', 'fix_bounce_address' );
-
-	function fix_bounce_address( $phpmailer ) {
-		$phpmailer->Sender = $phpmailer->From;
-	}
-	
 	// Pas het onderwerp van de mails aan naargelang de gekozen levermethode
 	add_filter( 'woocommerce_email_subject_customer_processing_order', 'change_processing_order_subject', 10, 2 );
 	add_filter( 'woocommerce_email_subject_customer_completed_order', 'change_completed_order_subject', 10, 2 );
@@ -2155,9 +2144,6 @@
 		// Voeg ondersteuning voor Frans toe (Test Aankoop)
 		if ( $order->get_meta('wpml_language') === 'fr' ) {
 			$subject = sprintf( 'Nous avons bien reçu votre commande du %s', $order->get_date_created()->date_i18n('d/m/Y') );
-		}
-		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
-			$subject = 'DEMO '.$subject;
 		}
 		return $subject;
 	}
@@ -2172,9 +2158,6 @@
 		if ( $order->get_meta('wpml_language') === 'fr' ) {
 			$subject = sprintf( 'Votre commande du %s a été emballée', $order->get_date_created()->date_i18n('d/m/Y') );
 		}
-		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
-			$subject = 'DEMO '.$subject;
-		}
 		return $subject;
 	}
 
@@ -2184,17 +2167,11 @@
 		} else {
 			$subject = sprintf( __( 'Onderwerp van de terugbetalingsmail (gedeeltelijk) inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
 		}
-		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
-			$subject = 'DEMO '.$subject;
-		}
 		return $subject;
 	}
 
 	function change_note_subject( $subject, $order ) {
 		$subject = sprintf( __( 'Onderwerp van de opmerkingenmail inclusief besteldatum (%s)', 'oxfam-webshop' ), $order->get_date_created()->date_i18n('d/m/Y') );
-		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) { 
-			$subject = 'DEMO '.$subject;
-		}
 		return $subject;
 	}
 
@@ -4375,7 +4352,7 @@
 					$params[0] = get_site_option('admin_email');
 				}
 				// Prefix onderwerp
-				$params[1] = 'TEST '.$params[1];
+				$params[1] = 'TEST - '.$params[1].' - NO ACTION REQUIRED';
 			}
 		}
 		return $params;
@@ -6977,9 +6954,6 @@
 	# SHORTCODES #
 	##############
 
-	// Personaliseer de begroeting op de startpagina
-	// add_shortcode( 'topbar', 'print_greeting' );
-	// add_shortcode( 'copyright', 'print_copyright' );
 	add_shortcode( 'straat', 'print_place' );
 	add_shortcode( 'postcode', 'print_zipcode' );
 	add_shortcode( 'gemeente', 'print_city' );
@@ -6987,24 +6961,16 @@
 	add_shortcode( 'e-mail', 'print_mail' );
 	add_shortcode( 'openingsuren', 'print_office_hours' );
 	add_shortcode( 'alle_winkels', 'print_all_shops' );
-	// add_shortcode( 'toon_titel', 'print_portal_title' );
-	// add_shortcode( 'toon_inleiding', 'print_welcome' );
-	// add_shortcode( 'toon_shops', 'print_store_selector' );
-	// add_shortcode( 'toon_kaart', 'print_store_locator_map' );
 	add_shortcode( 'toon_wc_notices', 'print_woocommerce_messages' );
 	add_shortcode( 'toon_thuislevering', 'print_delivery_snippet' );
 	add_shortcode( 'toon_postcodelijst', 'print_delivery_zips' );
 	add_shortcode( 'toon_winkel_kaart', 'print_store_map' );
-	// add_shortcode( 'scrolltext', 'print_scroll_text' );
 	add_shortcode( 'company_name', 'get_webshop_name' );
 	add_shortcode( 'contact_address', 'get_shop_contact' );
 	add_shortcode( 'map_address', 'get_shop_address' );
 	add_shortcode( 'email_footer', 'get_company_and_year' );
+	// add_shortcode( 'topbar', 'print_greeting' );
 	// add_shortcode( 'toon_zoekbalk_producten', 'show_product_search' );
-
-	function show_product_search() {
-		wc_get_template( 'product-searchform_nm.php' );
-	}
 
 	function print_greeting() {
 		if ( date_i18n('G') < 6 ) {
@@ -7019,18 +6985,13 @@
 		return sprintf( __( 'Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s).', 'oxfam-webshop' ), $greeting, get_customer(), get_webshop_name() );
 	}
 
+	function show_product_search() {
+		wc_get_template( 'product-searchform_nm.php' );
+	}
+
 	function get_customer() {
 		global $current_user;
 		return ( is_user_logged_in() and strlen($current_user->user_firstname) > 1 ) ? $current_user->user_firstname : "bezoeker";
-	}
-
-	function print_copyright() {
-		$text = get_webshop_name().' &copy; 2017-'.date_i18n('Y');
-		if ( ! is_main_site() ) {
-			// Contactpagina niet linken op portaalpagina
-			$text = '<a href="'.get_site_url( get_current_blog_id(), '/contact/' ).'">'.$text.'</a>';
-		}
-		return $text;
 	}
 
 	function print_office_hours( $atts = [] ) {
@@ -7320,10 +7281,6 @@
 			$zoom = 15;
 		}
 		return do_shortcode("[flexiblemap src='".content_url( '/maps/site-'.get_current_blog_id().'.kml?v='.rand() )."' width='100%' height='600px' zoom='".$zoom."' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
-	}
-
-	function print_scroll_text() {
-		return __( 'Tekst die verschijnt bovenaan de hoofdpagina met producten.', 'oxfam-webshop' );
 	}
 
 
@@ -7932,7 +7889,7 @@
 	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
 	function send_automated_mail_to_helpdesk( $subject, $body ) {
 		if ( wp_get_environment_type() !== 'production' ) {
-			$subject = 'DEMO '.$subject;
+			$subject = 'TEST - '.$subject.' - NO ACTION REQUIRED';
 
 			// Eventueel volledig uitschakelen
 			// return;
