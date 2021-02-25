@@ -38,7 +38,7 @@ foreach ( $items as $item_id => $item ) :
 		}
 
 		// GEWIJZIGD: Voeg ondersteuning voor Frans toe (Test Aankoop)
-		if ( $order->get_meta('wpml_language') === 'fr' and $product->get_sku() === 'WGC052022' ) {
+		if ( $order->get_meta('wpml_language') === 'fr' and in_array( $sku, array( '19066', '19073' ) ) ) {
 			$item_name = 'Chèque-cadeau 5 euros (valable jusqu\'au 31/12/2022)';
 		} else {
 			$item_name = $item->get_name();
