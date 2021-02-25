@@ -3519,8 +3519,9 @@
 					// Stukprijs exclusief BTW bij B2B-bestellingen
 					$product_price /= 1+$tax;
 				} else {
-					// BTW erbij tellen bij particulieren
-					$line_total += $item['line_subtotal_tax'];
+					// Tel bij particulieren de BTW erbij
+					// Afronden per regel in plaats van per subtotaal (zoals in ShopPlus)
+					$line_total = wc_round_tax_total( $line_total + $item['line_subtotal_tax'] );
 				}
 
 				if ( $item->get_meta('wcgwp_note') !== '' ) {
@@ -3582,7 +3583,8 @@
 				if ( count( $used_coupons ) >= 1 ) {
 					$discount = $order->get_discount_total();
 					if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
-						$discount += $order->get_discount_tax();
+						// Afronden per regel in plaats van per subtotaal (zoals in ShopPlus)
+						$discount = wc_round_tax_total( $discount + $order->get_discount_tax() );
 					}
 					$i++;
 					$pick_sheet->setCellValue( 'A'.$i, 'Kortingen' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupons ) ) )->setCellValue( 'F'.$i, '-'.$discount );
