@@ -33,22 +33,23 @@ foreach ( $items as $item_id => $item ) :
 		<td class="td" style="text-align:<?php echo esc_attr( $text_align ); ?>; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; word-wrap:break-word;">
 		<?php
 
-		// Show title/image etc.
-		// GEWIJZIGD: Maak productfotootjes aanklikbaar?
 		if ( $show_image ) {
 			echo wp_kses_post( apply_filters( 'woocommerce_order_item_thumbnail', $image, $item ) );
 		}
 
-		// Product name.
-		echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', $item->get_name(), $item, false ) );
+		// GEWIJZIGD: Voeg ondersteuning voor Frans toe (Test Aankoop)
+		if ( $order->get_meta('wpml_language') === 'fr' and $product->get_sku() === 'WGC052022' ) {
+			$item_name = 'Chèque-cadeau 5 euros (valable jusqu\'au 31/12/2022)';
+		} else {
+			$item_name = $item->get_name();
+		}
+		echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', $item_name, $item, false ) );
 
-		// SKU.
 		// GEWIJZIGD: Verwijder hastag en vermeld ShopPlus-referentie i.p.v. ompaknummer
 		if ( $show_sku and is_object( $product ) and $product->get_meta('_shopplus_code') !== '' ) {
 			echo wp_kses_post( ' (' . $product->get_meta('_shopplus_code') . ')' );
 		}
 
-		// allow other plugins to add additional product information here.
 		do_action( 'woocommerce_order_item_meta_start', $item_id, $item, $order, $plain_text );
 
 		wc_display_item_meta(
@@ -58,7 +59,6 @@ foreach ( $items as $item_id => $item ) :
 			)
 		);
 
-		// allow other plugins to add additional product information here.
 		do_action( 'woocommerce_order_item_meta_end', $item_id, $item, $order, $plain_text );
 
 		?>
