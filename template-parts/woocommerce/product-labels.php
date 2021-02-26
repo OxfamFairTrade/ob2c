@@ -58,9 +58,8 @@
 			$labels['pickup-only'] = 'Afhaling';
 		}
 	}
-
-	// and date_i18n('Y-m-d') >= '2021-03-01'
-	if ( $product->get_sku() === '20263' and date_i18n('Y-m-d') < '2021-09-01' ) {
+	
+	if ( $product->get_sku() === '20263' and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' ) {
 		$labels['beste-van-de-test'] = '';
 	}
 
