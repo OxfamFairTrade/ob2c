@@ -77,7 +77,7 @@
 					);
 					$banner_products = wc_get_products( $args );
 
-					if ( count( $banner_products ) > 0 ) {
+					if ( count( $banner_products ) > 0 and 1 === 2 ) {
 						?>
 						<div class="col-row lh-banner">
 							<div class="col-xs-12">
@@ -96,7 +96,7 @@
 					// Beste van de Test
 					$campesino = wc_get_product( wc_get_product_id_by_sku('20263') );
 					
-					if ( $campesino !== false and $campesino->is_in_stock() ) {
+					if ( $campesino !== false and $campesino->is_in_stock() and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' ) {
 						?>
 						<div class="col-row lh-banner">
 							<div class="col-xs-12">
