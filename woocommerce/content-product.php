@@ -144,7 +144,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     <?php if ( $campesino !== false and $campesino->is_in_stock() ) : ?>
         <li class="promo-banner vertical">
             <a href="<?php echo esc_url( $campesino->get_permalink() ); ?>">
-                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/campesino-chardonnay-2021-bestel-nu.png' ); ?>" />
+                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/campesino-chardonnay-2021-bestel-nu.jpg' ); ?>" />
             </a>
         </li>
     <?php endif; ?>
