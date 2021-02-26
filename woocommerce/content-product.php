@@ -139,12 +139,12 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     <li class="promo-banner horizontal">
         <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2020-quinoa.png" />
     </li>
-<?php elseif ( $position_in_grid === 7 and is_shop() and wc_get_loop_prop('current_page') === 1 and 1 === 2 ) : ?>
-    <?php $term_link = get_term_link( 'koffie', 'product_cat' ); ?>
-    <?php if ( ! is_wp_error( $term_link ) ) : ?>
+<?php elseif ( $position_in_grid === 7 and is_shop() and wc_get_loop_prop('current_page') === 1 ) : ?>
+    <?php $campesino = wc_get_product( wc_get_product_id_by_sku('20263') ); ?>
+    <?php if ( $campesino !== false and $campesino->is_in_stock() ) : ?>
         <li class="promo-banner vertical">
-            <a href="<?php echo $term_link; ?>">
-                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2020-koffie.png" />
+            <a href="<?php echo esc_url( $campesino->get_permalink() ); ?>">
+                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2020-koffie.png' ); ?>" />
             </a>
         </li>
     <?php endif; ?>
