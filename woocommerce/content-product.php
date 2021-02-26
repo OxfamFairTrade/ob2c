@@ -138,8 +138,8 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 <?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 and 1 === 2 ) : ?>
     <li class="promo-banner horizontal">
         <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2020-quinoa.png" />
-    </li><!-- and date_i18n('Y-m-d') >= '2021-03-01' -->
-<?php elseif ( $position_in_grid === 7 and is_shop() and wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-09-01' ) : ?>
+    </li>
+<?php elseif ( $position_in_grid === 7 and is_shop() and wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' ) : ?>
     <?php $campesino = wc_get_product( wc_get_product_id_by_sku('20263') ); ?>
     <?php if ( $campesino !== false and $campesino->is_in_stock() ) : ?>
         <li class="promo-banner vertical">
