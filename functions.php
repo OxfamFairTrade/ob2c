@@ -2195,6 +2195,22 @@
 		return $recipients;
 	}
 
+	// Als er meerdere labels aangemaakt worden in Sendcloud vertrekken er ook meerdere mails ...
+	add_filter( 'woocommerce_email_recipient_customer_completed_order', 'prevent_multiple_shipping_confirmations', 10, 2 );
+
+	function prevent_multiple_shipping_confirmations( $recipients, $order ) {
+		if ( $order !== NULL and $order instanceof WC_Order ) {
+			// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
+		}
+
+		if ( $order->get_meta('test_aankoop') !== '' and $order->get_meta('shipping_confirmation_already_sent') === 'yes' ) {
+			write_log( "CANCELLED SENDING SHIPPING CONFIRMATION ".$order->get_order_number() );
+			$recipients = '';
+		}
+
+		return $recipients;
+	}
+
 	// Pas de header van de mails aan naargelang de gekozen levermethode
 	add_filter( 'woocommerce_email_heading_new_order', 'change_new_order_email_heading', 10, 2 );
 	add_filter( 'woocommerce_email_heading_customer_processing_order', 'change_processing_email_heading', 10, 2 );
@@ -6671,25 +6687,34 @@
 		
 		$tracking_info = false;
 		if ( count( $comments ) > 0 ) {
+			// Geef alle waardes door!
+			$tracking_info = array();
+
 			foreach ( $comments as $sendcloud_note ) {
 				// Enkel waarde in meest recente comment zal geretourneerd worden!
-				$tracking_info = array();
+				// $tracking_info = array();
 
 				if ( preg_match( '/[0-9]{24}/', $sendcloud_note->comment_content, $numbers ) === 1 ) {
 					// We hebben 24-cijferig tracking number van Bpost gevonden
-					$tracking_info['carrier'] = 'Bpost';
-					$tracking_info['number'] = $numbers[0];
+					$params = array(
+						'carrier' => 'Bpost',
+						'number' => $numbers[0],
+					);
 				} elseif ( preg_match( '/[0-9]{14}/', $sendcloud_note->comment_content, $numbers ) === 1 ) {
 					// We hebben 14-cijferig tracking number van DPD gevonden
-					$tracking_info['carrier'] = 'DPD';
-					$tracking_info['number'] = $numbers[0];
+					$params = array(
+						'carrier' => 'DPD',
+						'number' => $numbers[0],
+					);
 				}
 				
 				// Zeer gevoelig voor wijzigingen van SendCloud uit!
 				$parts = explode( 'traced at: ', $sendcloud_note->comment_content );
 				if ( count( $parts ) > 1 ) {
-					$tracking_info['link'] = esc_url( $parts[1] );
+					$params['link'] = $parts[1];
 				}
+
+				$tracking_info[] = $params;
 			}
 		}
 		
@@ -6737,7 +6762,7 @@
 				}
 				$params['volume'] += $line_item->get_quantity() * $volume;
 				$params['weight'] += $line_item->get_quantity() * floatval( $product->get_weight() );
-			} 
+			}
 		}
 
 		// Volume omrekenen van kubieke millimeters naar liter

@@ -46,8 +46,18 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 				echo str_replace( 'Een vrijwilliger ', 'De koerier ', $text );
 			}
 			echo ' ';
+			$clickable_tracking_numbers = '';
+			foreach ( $tracking_info as $index => $tracking_info_details ) {
+				if ( $index === 0 ) {
+					$clickable_tracking_numbers .= '<a href="'.esc_url( $tracking_info_details['link'] ).'" target="_blank">'.$tracking_info_details['number'].'</a>'; 
+				} else {
+					$clickable_tracking_numbers .= ', <a href="'.esc_url( $tracking_info_details['link'] ).'" target="_blank">'.$tracking_info_details['number'].'</a>';
+				}
+			}
 			// Mocht de link om één of andere reden ontbreken zal dit 'zacht' breken
-			printf( __( 'Trackinginfo, inclusief barcode (%1$s) en volglink (%2$s).', 'oxfam-webshop' ), $tracking_info['number'], $tracking_info['link'] );
+			printf( __( 'Trackinginfo inclusief aanklikbare traceercodes (%s).', 'oxfam-webshop' ), $clickable_tracking_numbers );
+			$order->update_meta_data( 'shipping_confirmation_already_sent', 'yes' );
+			$order->save();
 		} else {
 			echo $text;
 		}

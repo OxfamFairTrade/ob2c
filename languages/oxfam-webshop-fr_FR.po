@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2021-02-26 23:52+0100\n"
-"PO-Revision-Date: 2021-02-26 23:54+0100\n"
+"POT-Creation-Date: 2021-03-01 15:02+0100\n"
+"PO-Revision-Date: 2021-03-01 15:03+0100\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: fr_FR\n"
@@ -195,33 +195,33 @@ msgstr ""
 msgid "Foutmelding na het ingeven van een ongeldig BTW-nummer."
 msgstr ""
 
-#: functions.php:4265
+#: functions.php:4272
 msgid "BTW-nummer"
 msgstr ""
 
-#: functions.php:4382
+#: functions.php:4389
 #, php-format
 msgid ""
 "Dag (%1$s) en uur (%2$s) vanaf wanneer de bestelling klaarstaat voor afhaling"
 msgstr ""
 
-#: functions.php:4388
+#: functions.php:4395
 #, php-format
 msgid ""
 "Uiterste dag (%s) waarop het pakje beschikbaar zal zijn in postpunt / "
 "automaat"
 msgstr ""
 
-#: functions.php:4396 functions.php:4400
+#: functions.php:4403 functions.php:4407
 #, php-format
 msgid "Uiterste dag (%s) waarop de levering zal plaatsvinden"
 msgstr ""
 
-#: functions.php:4410
+#: functions.php:4417
 msgid "Boodschap indien schatting leverdatum niet beschikbaar"
 msgstr ""
 
-#: functions.php:4777
+#: functions.php:4784
 #, php-format
 msgid ""
 "Foutmelding na het ingeven van postcode %1$s waar deze webshop geen "
@@ -229,46 +229,46 @@ msgid ""
 "doet."
 msgstr ""
 
-#: functions.php:4837
+#: functions.php:4844
 msgid "B2B-leveringen"
 msgstr ""
 
-#: functions.php:5003 functions.php:5005
+#: functions.php:5010 functions.php:5012
 #, php-format
 msgid "%d grote fles"
 msgid_plural "%d grote flessen"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:5003 functions.php:5007 functions.php:5382 functions.php:5385
+#: functions.php:5010 functions.php:5014 functions.php:5389 functions.php:5392
 #, php-format
 msgid "%d krat"
 msgid_plural "%d kratten"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:5380
+#: functions.php:5387
 #, php-format
 msgid "%d flesje"
 msgid_plural "%d flesjes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:5387
+#: functions.php:5394
 #, php-format
 msgid "%d fles"
 msgid_plural "%d flessen"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:6823
+#: functions.php:6839
 #, php-format
 msgid "%d bestelstatus proberen te wijzigen."
 msgid_plural "%d bestelstatussen proberen te wijzigen."
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:6987
+#: functions.php:7003
 #, php-format
 msgid "Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s)."
 msgstr ""
@@ -345,14 +345,12 @@ msgstr ""
 "Nous venons de préparer votre commande pour expédition ! Le courrier se "
 "rendra bientôt chez vous."
 
-#: woocommerce/emails/customer-completed-order.php:50
+#: woocommerce/emails/customer-completed-order.php:58
 #, php-format
-msgid "Trackinginfo, inclusief barcode (%1$s) en volglink (%2$s)."
-msgstr ""
-"Pour suivre votre collis, voici votre numéro de tracking : <a href=\"%2$s\" "
-"target=\"_blank\">%1$s</a>."
+msgid "Trackinginfo inclusief aanklikbare traceercodes (%s)."
+msgstr "Pour suivre votre colis, voici votre lien(s) de tracking : %s."
 
-#: woocommerce/emails/customer-completed-order.php:55
+#: woocommerce/emails/customer-completed-order.php:63
 msgid ""
 "Bericht bovenaan de 2de bevestigingsmail (indien B2B-levering op locatie)."
 msgstr ""
