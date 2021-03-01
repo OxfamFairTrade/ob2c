@@ -2203,16 +2203,17 @@
 			// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
 		}
 
-		write_log( "CHECKING SHIPPING CONFIRMATION STATUS ..." );
-		write_log( $order->get_order_number() );
-		write_log( $order->get_status() );
-		write_log( $order->get_meta('shipping_confirmation_already_sent') );
-		if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
-			write_log( "CANCELLED SENDING SHIPPING CONFIRMATION BY TRANSIENT ".$order->get_order_number() );
-			return '';
+		if ( $order->get_meta('test_aankoop') !== '' ) {
+			write_log( "CHECKING SHIPPING CONFIRMATION STATUS ..." );
+			write_log( $order->get_order_number().' - '.$order->get_status() );
+			if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
+				write_log( "CANCELLED SENDING SHIPPING CONFIRMATION BY TRANSIENT ".$order->get_order_number() );
+				return '';
+			} else {
+				set_transient( 'shipping_confirmation_sent_'.$order->get_order_number(), 'yes', 60 );
+			}
 		}
 
-		set_transient( 'shipping_confirmation_sent_'.$order->get_order_number(), 'yes', 60 );
 		return $recipients;
 	}
 
