@@ -11,11 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( $order->get_meta('test_aankoop') !== '' and $order->get_meta('shipping_confirmation_already_sent') === 'yes' ) {
-	write_log( "CANCELLED SENDING SHIPPING CONFIRMATION ".$order->get_order_number() );
-	exit;
-}
-
 // Voeg ondersteuning voor Frans toe (Test Aankoop)
 if ( $order->get_meta('wpml_language') === 'fr' ) {
 	unload_textdomain('woocommerce');
