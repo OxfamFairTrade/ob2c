@@ -3490,6 +3490,13 @@
 				$logistics = get_logistic_params( $order );
 				$pick_sheet->setCellValue( 'A5', number_format( $logistics['volume'], 1, ',', '.' ).' liter / '.number_format( $logistics['weight'], 1, ',', '.' ).' kg' )->setCellValue( 'A6', 'max. '.$logistics['maximum'].' cm' );
 
+				// Klantentaal tonen
+				$lang = $order->get_meta('wpml_language');
+				$languages = array( 'nl' => 'Nederlands', 'fr' => 'Français' );
+				if ( array_key_exists( $lang, $languages ) ) {
+					$pick_sheet->setCellValue( 'A2', strtoupper( $languages[ $lang ] ) );
+				}
+
 				// Begin pas met items vanaf rij 8
 				$i = 8;
 			}
