@@ -2176,14 +2176,10 @@
 	}
 
 	// Wijzig de bestemmelingen van de adminmails
-	add_filter( 'woocommerce_email_recipient_new_order', 'switch_admin_recipient_dynamically', 10, 2 );
-	add_filter( 'woocommerce_email_recipient_cancelled_order', 'switch_admin_recipient_dynamically', 10, 2 );
+	add_filter( 'woocommerce_email_recipient_new_order', 'switch_admin_recipient_dynamically', 10, 1 );
+	add_filter( 'woocommerce_email_recipient_cancelled_order', 'switch_admin_recipient_dynamically', 10, 1 );
 
-	function switch_admin_recipient_dynamically( $recipients, $order ) {
-		if ( $order !== NULL and $order instanceof WC_Order ) {
-			// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
-		}
-
+	function switch_admin_recipient_dynamically( $recipients ) {
 		return get_staged_recipients( $recipients );
 	}
 
@@ -2195,22 +2191,21 @@
 		return $recipients;
 	}
 
-	// Als er meerdere labels aangemaakt worden in Sendcloud vertrekken er ook meerdere mails ...
+	// Verhinder dat er meerdere mails vertrekken als er meerdere labels aangemaakt worden in Sendcloud
 	add_filter( 'woocommerce_email_recipient_customer_completed_order', 'prevent_multiple_shipping_confirmations', 10, 2 );
 
 	function prevent_multiple_shipping_confirmations( $recipients, $order ) {
+		// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
 		if ( $order !== NULL and $order instanceof WC_Order ) {
-			// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
-		}
-
-		if ( $order->get_meta('test_aankoop') !== '' ) {
-			write_log( "CHECKING SHIPPING CONFIRMATION STATUS ..." );
-			write_log( $order->get_order_number().' - '.$order->get_status() );
-			if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
-				write_log( "CANCELLED SENDING SHIPPING CONFIRMATION BY TRANSIENT ".$order->get_order_number() );
-				return '';
-			} else {
-				set_transient( 'shipping_confirmation_sent_'.$order->get_order_number(), 'yes', 60 );
+			if ( $order->get_meta('test_aankoop') !== '' ) {
+				write_log( "CHECKING SHIPPING CONFIRMATION STATUS ..." );
+				write_log( $order->get_order_number().' - '.$order->get_status() );
+				if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
+					write_log( "CANCELLED SENDING SHIPPING CONFIRMATION BY TRANSIENT ".$order->get_order_number() );
+					return '';
+				} else {
+					set_transient( 'shipping_confirmation_sent_'.$order->get_order_number(), 'yes', 60 );
+				}
 			}
 		}
 
