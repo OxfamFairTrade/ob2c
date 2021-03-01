@@ -2207,14 +2207,9 @@
 		write_log( $order->get_order_number() );
 		write_log( $order->get_status() );
 		write_log( $order->get_meta('shipping_confirmation_already_sent') );
-		if ( $order->get_meta('shipping_confirmation_already_sent') === 'yes' ) {
-			write_log( "CANCELLED SENDING SHIPPING CONFIRMATION BY META ".$order->get_order_number() );
-			$recipients = '';
-		}
-
 		if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
 			write_log( "CANCELLED SENDING SHIPPING CONFIRMATION BY TRANSIENT ".$order->get_order_number() );
-			$recipients = '';
+			return '';
 		}
 
 		set_transient( 'shipping_confirmation_sent_'.$order->get_order_number(), 'yes', 60 );

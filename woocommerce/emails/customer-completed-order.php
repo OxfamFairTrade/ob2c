@@ -56,8 +56,6 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 			}
 			// Mocht de link om één of andere reden ontbreken zal dit 'zacht' breken
 			printf( __( 'Trackinginfo inclusief aanklikbare traceercodes (%s).', 'oxfam-webshop' ), $clickable_tracking_numbers );
-			$order->update_meta_data( 'shipping_confirmation_already_sent', 'yes' );
-			$order->save();
 		} else {
 			echo $text;
 		}
