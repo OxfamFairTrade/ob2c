@@ -11,6 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( $order->get_meta('test_aankoop') !== '' and $order->get_meta('shipping_confirmation_already_sent') === 'yes' ) {
+	write_log( "CANCELLED SENDING SHIPPING CONFIRMATION ".$order->get_order_number() );
+	exit;
+}
+
 // Voeg ondersteuning voor Frans toe (Test Aankoop)
 if ( $order->get_meta('wpml_language') === 'fr' ) {
 	unload_textdomain('woocommerce');
@@ -40,9 +45,9 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 		if ( false !== ( $tracking_info = get_tracking_info( $order ) ) ) {
 			if ( $order->has_shipping_method('service_point_shipping_method') ) {
 				echo str_replace( 'Een vrijwilliger komt er binnenkort mee langs.', 'Je kunt het binnenkort oppikken in het afhaalpunt dat je koos.', $text );
-			} elseif ( $tracking_info['carrier'] === 'Bpost' ) {
+			} elseif ( $tracking_info[0]['carrier'] === 'Bpost' ) {
 				echo str_replace( 'Een vrijwilliger ', 'De postbode ', $text );
-			} elseif ( $tracking_info['carrier'] === 'DPD' ) {
+			} elseif ( $tracking_info[0]['carrier'] === 'DPD' ) {
 				echo str_replace( 'Een vrijwilliger ', 'De koerier ', $text );
 			}
 			echo ' ';

@@ -2203,6 +2203,7 @@
 			// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
 		}
 
+		write_log( "CHECKING SHIPPING CONFIRMATION STATUS ".$order->get_order_number() );
 		if ( $order->get_meta('test_aankoop') !== '' and $order->get_meta('shipping_confirmation_already_sent') === 'yes' ) {
 			write_log( "CANCELLED SENDING SHIPPING CONFIRMATION ".$order->get_order_number() );
 			$recipients = '';
