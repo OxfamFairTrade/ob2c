@@ -79,7 +79,6 @@ if ( ! is_main_site() ) {
 				
 				// Sluit de hoofdsite en deze webshop uit
 				// Geef enkel de blog-ID van de gevonden winkels door
-				var_dump_pre( wp_list_pluck( $stores_with_webshop, 'webshopBlogId' ) );
 				$sites = get_sites( array( 'site__not_in' => array( 1, get_current_blog_id() ), 'site__in' => wp_list_pluck( $stores_with_webshop, 'webshopBlogId' ), 'public' => 1 ) );
 				// Resultaat in transient stoppen zodat we dit lijstje niet telkens opnieuw moeten opvragen?
 				// var_dump_pre( $sites );
@@ -95,7 +94,7 @@ if ( ! is_main_site() ) {
 				}
 				// var_dump_pre( $shops_instock );
 
-				echo '<p>Er werden '.count( $stores ).' winkels in de buurt van '.$lat.','.$lng.' gevonden, waarvan '.count( $stores_with_webshop ).' met een webshop, goed voor '.count( $sites ).' sites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
+				echo '<p>Er werden '.count( $stores ).' winkels in de buurt van '.$lat.','.$lng.' gevonden, waarvan '.count( $stores_with_webshop ).' met een webshop, goed voor '.count( $sites ).' andere subsites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
 
 				if ( count( $shops_instock ) > 0 ) {
 					echo '<p>Dit product is online momenteel wel beschikbaar bij:<ul>';
