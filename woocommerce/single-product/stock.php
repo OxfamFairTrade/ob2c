@@ -35,7 +35,6 @@ if ( ! is_main_site() ) {
 			}
 
 			// Zoek op de hoofdsite de WP Store op die past bij de post-ID
-			$wpsl_store_id = 0;
 			switch_to_blog(1);
 			$store_args = array(
 				'post_type'	=> 'wpsl_stores',
@@ -45,27 +44,25 @@ if ( ! is_main_site() ) {
 				'meta_value' => $current_store,
 			);
 			$wpsl_stores = new WP_Query( $store_args );
-			
-			if ( $wpsl_stores->have_posts() ) {
-				$wpsl_stores->the_post();
-				$wpsl_store_id = get_the_ID();
-				$lat = floatval( get_post_meta( $wpsl_store_id, 'wpsl_lat', true ) );
-				$lng = floatval( get_post_meta( $wpsl_store_id, 'wpsl_lng', true ) );
-				wp_reset_postdata();
+			$wpsl_store_ids = wp_list_pluck( $wpsl_stores->posts, 'ID' );
+			if ( count( $wpsl_store_ids ) > 0 ) {
+				$lat = floatval( get_post_meta( $wpsl_store_ids[0], 'wpsl_lat', true ) );
+				$lng = floatval( get_post_meta( $wpsl_store_ids[0], 'wpsl_lng', true ) );
+			} else {
+				$lat = 50.84510814431842;
+				$lng = 4.349988998666601;
 			}
 			restore_current_blog();
 
 			// Zoek op in welke andere webshops het product wél voorradig is
-			if ( class_exists('WPSL_Frontend') and $wpsl_store_id > 0 ) {
+			if ( class_exists('WPSL_Frontend') and $lat > 0 and $lng > 0 ) {
 				$wpsl = new WPSL_Frontend();
 				$args = array(
 					// Te vervangen door waarde opgeslagen in WPSL-object dat overeenkomt met huidige webshop!
-					// 'lat' => 51.228443,
 					'lat' => $lat,
-					// 'lng' => 3.134465,
 					'lng' => $lng,
 					// Lijkt niets uit te maken!
-					// 'search_radius' => 200,
+					'search_radius' => 200,
 					// Overrule default waarde
 					'max_results' => 10,
 				);
@@ -80,8 +77,9 @@ if ( ! is_main_site() ) {
 				// Er kunnen dubbels voorkomen (= meerdere winkels onder één webshop) maar dat lossen we later op
 				// var_dump_pre( $stores_with_webshop );
 				
-				// Sluit deze webshop uit en geef enkel de blog-ID door
-				$sites = get_sites( array( 'site__not_in' => array( get_current_blog_id() ), 'site__in' => wp_list_pluck( $stores_with_webshop, 'webshopBlogId' ), 'public' => 1 ) );
+				// Sluit de hoofdsite en deze webshop uit
+				// Geef enkel de blog-ID van de gevonden winkels door
+				$sites = get_sites( array( 'site__not_in' => array( 1, get_current_blog_id() ), 'site__in' => wp_list_pluck( $stores_with_webshop, 'webshopBlogId' ), 'public' => 1 ) );
 				// Resultaat in transient stoppen zodat we dit lijstje niet telkens opnieuw moeten opvragen?
 				// var_dump_pre( $sites );
 
@@ -94,6 +92,7 @@ if ( ! is_main_site() ) {
 					}
 					restore_current_blog();
 				}
+				// var_dump_pre( $shops_instock );
 
 				if ( count( $shops_instock ) > 0 ) {
 					echo '<p>Dit product is online momenteel wel beschikbaar bij:<ul>';
