@@ -23,6 +23,8 @@ if ( ! is_main_site() ) {
 		if ( class_exists('WPSL_Frontend') and current_user_can('update_core') ) {
 
 			if ( false === ( $neighbouring_webshops = get_transient('oxfam_neighbouring_webshops') ) ) {
+				$current_shop_id = get_option('oxfam_shop_post_id');
+				
 				// Zoek de coördinaten op van de (hoofd)winkel die overeenkomt met deze webshop
 				switch_to_blog(1);
 				$store_args = array(
@@ -30,9 +32,10 @@ if ( ! is_main_site() ) {
 					'post_status' => 'publish',
 					'posts_per_page' => 1,
 					'meta_key' => 'wpsl_oxfam_shop_post_id',
-					'meta_value' => get_option('oxfam_shop_post_id'),
+					'meta_value' => $current_shop_id,
 				);
 				$wpsl_stores = new WP_Query( $store_args );
+				
 				$wpsl_store_ids = wp_list_pluck( $wpsl_stores->posts, 'ID' );
 				if ( count( $wpsl_store_ids ) > 0 ) {
 					$lat = floatval( get_post_meta( $wpsl_store_ids[0], 'wpsl_lat', true ) );
@@ -43,7 +46,7 @@ if ( ! is_main_site() ) {
 				}
 				restore_current_blog();
 
-				// Zoek op in welke andere webshops het product wél voorradig is
+				// Stop de naburige webshops in een lijst
 				if ( $lat > 0 and $lng > 0 ) {
 					$wpsl = new WPSL_Frontend();
 					$args = array(
@@ -64,13 +67,13 @@ if ( ! is_main_site() ) {
 					// Filter de webshoploze winkels weg
 					$neighbouring_webshops = wp_filter_object_list( $stores, array( 'webshopBlogId' => '' ), 'not' );
 					// Er kunnen dubbels voorkomen (= meerdere winkels onder één webshop) maar dat lossen we later op
-					// var_dump_pre( $neighbouring_webshops );
 					set_transient( 'oxfam_neighbouring_webshops', $neighbouring_webshops, DAY_IN_SECONDS );
 
 					echo '<p>Er werden '.count( $stores ).' winkels in de buurt van '.$lat.','.$lng.' gevonden, waarvan '.count( $neighbouring_webshops ).' met een webshop.<p>';
 				}
 			}
 
+			// Zoek op in welke andere webshops het product wél voorradig is
 			if ( count( $neighbouring_webshops ) > 0 ) {
 				// Sluit de hoofdsite en deze webshop uit
 				// Geef enkel de blog-ID van de gevonden winkels door
