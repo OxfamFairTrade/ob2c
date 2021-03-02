@@ -58,9 +58,9 @@ if ( ! is_main_site() ) {
 				$wpsl = new WPSL_Frontend();
 				$args = array(
 					// Te vervangen door waarde opgeslagen in WPSL-object dat overeenkomt met huidige webshop!
-					'lat' => 51.228443,
+					// 'lat' => 51.228443,
 					'lat' => floatval( get_post_meta( $wpsl_store_id, 'wpsl_lat', true ) ),
-					'lng' => 3.134465,
+					// 'lng' => 3.134465,
 					'lng' => floatval( get_post_meta( $wpsl_store_id, 'wpsl_lng', true ) ),
 					// Lijkt niets uit te maken!
 					// 'search_radius' => 200,
