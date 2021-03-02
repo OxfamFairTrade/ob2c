@@ -49,6 +49,8 @@ if ( ! is_main_site() ) {
 			if ( $wpsl_stores->have_posts() ) {
 				$wpsl_stores->the_post();
 				$wpsl_store_id = get_the_ID();
+				$lat = floatval( get_post_meta( $wpsl_store_id, 'wpsl_lat', true ) );
+				$lng = floatval( get_post_meta( $wpsl_store_id, 'wpsl_lng', true ) );
 				wp_reset_postdata();
 			}
 			restore_current_blog();
@@ -59,9 +61,9 @@ if ( ! is_main_site() ) {
 				$args = array(
 					// Te vervangen door waarde opgeslagen in WPSL-object dat overeenkomt met huidige webshop!
 					// 'lat' => 51.228443,
-					'lat' => floatval( get_post_meta( $wpsl_store_id, 'wpsl_lat', true ) ),
+					'lat' => $lat,
 					// 'lng' => 3.134465,
-					'lng' => floatval( get_post_meta( $wpsl_store_id, 'wpsl_lng', true ) ),
+					'lng' => $lng,
 					// Lijkt niets uit te maken!
 					// 'search_radius' => 200,
 					// Overrule default waarde
