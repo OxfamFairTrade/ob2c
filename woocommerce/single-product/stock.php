@@ -49,7 +49,7 @@ if ( ! is_main_site() ) {
 			
 			if ( $wpsl_stores->have_posts() ) {
 				$wpsl_stores->the_post();
-				$wpsl_store = $wpsl_stores->the_post();
+				$wpsl_store = get_post();
 				wp_reset_postdata();
 			}
 			restore_current_blog();
@@ -59,12 +59,14 @@ if ( ! is_main_site() ) {
 			}
 
 			// Zoek op in welke andere webshops het product wél voorradig is
-			if ( class_exists('WPSL_Frontend') ) {
+			if ( class_exists('WPSL_Frontend') and $wpsl_store ) {
 				$wpsl = new WPSL_Frontend();
 				$args = array(
 					// Te vervangen door waarde opgeslagen in WPSL-object dat overeenkomt met huidige webshop!
 					'lat' => 51.228443,
+					// 'lat' => floatval( $wpsl_store->meta->wpsl_lat ),
 					'lng' => 2.934465,
+					// 'lng' => floatval( $wpsl_store->meta->wpsl_lng ),
 					// Lijkt niets uit te maken!
 					// 'search_radius' => 200,
 					// Overrule default waarde
