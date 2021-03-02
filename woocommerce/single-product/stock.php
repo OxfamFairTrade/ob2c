@@ -40,8 +40,8 @@ if ( ! is_main_site() ) {
 				
 				// Filter de webshoploze winkels weg
 				$stores_with_webshop = wp_filter_object_list( $stores, array( 'webshopBlogId' => '' ), 'not' );
-				// Er kunnen dubbels voorkomen (= meerdere winkels onder één webshop) maar dat is niet erg
-				var_dump_pre( $stores_with_webshop );
+				// Er kunnen dubbels voorkomen (= meerdere winkels onder één webshop) maar dat lossen we later op
+				// var_dump_pre( $stores_with_webshop );
 				
 				// Sluit deze webshop uit en geef enkel de blog-ID door
 				$sites = get_sites( array( 'site__not_in' => array( get_current_blog_id() ), 'site__in' => wp_list_pluck( $stores_with_webshop, 'webshopBlogId' ), 'public' => 1 ) );
@@ -65,7 +65,10 @@ if ( ! is_main_site() ) {
 					foreach ( $stores_with_webshop as $store ) {
 						$blog_id = intval( $store['webshopBlogId'] );
 						if ( array_key_exists( $blog_id, $shops_instock ) ) {
+							// Of lijsten we toch winkels i.p.v. webshops op?
 							echo '<li><a href="'.esc_url( $store['webshopUrl'] ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> ('.esc_html( $store['distance'] ).' km)</li>';
+							// Verhinder dat we dezelfde webshop nog eens tonen!
+							unset( $shops_instock[ $blog_id ] );
 						}
 					}
 					echo '</ul></p>';
