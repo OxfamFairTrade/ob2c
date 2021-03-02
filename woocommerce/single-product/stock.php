@@ -62,7 +62,7 @@ if ( ! is_main_site() ) {
 					'lat' => $lat,
 					'lng' => $lng,
 					// Lijkt niets uit te maken!
-					'search_radius' => 200,
+					// 'search_radius' => 200,
 					// Overrule default waarde
 					'max_results' => 10,
 				);
@@ -93,6 +93,8 @@ if ( ! is_main_site() ) {
 					restore_current_blog();
 				}
 				// var_dump_pre( $shops_instock );
+
+				echo '<p>Er werden '.count( $stores ).' winkels in de buurt gevonden, waarvan '.count( $stores_with_webshop ).' met een webshop, goed voor '.count( $sites ).' sites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
 
 				if ( count( $shops_instock ) > 0 ) {
 					echo '<p>Dit product is online momenteel wel beschikbaar bij:<ul>';
