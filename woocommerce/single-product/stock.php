@@ -66,7 +66,7 @@ if ( ! is_main_site() ) {
 					// Overrule default waarde
 					'max_results' => 10,
 				);
-				var_dump_pre( $args );
+				// var_dump_pre( $args );
 
 				// Raadpleeg werking van functie in /wp-store-locator/frontend/class-frontend.php
 				$stores = $wpsl->find_nearby_locations( $args );
@@ -79,6 +79,7 @@ if ( ! is_main_site() ) {
 				
 				// Sluit de hoofdsite en deze webshop uit
 				// Geef enkel de blog-ID van de gevonden winkels door
+				var_dump_pre( wp_list_pluck( $stores_with_webshop, 'webshopBlogId' ) );
 				$sites = get_sites( array( 'site__not_in' => array( 1, get_current_blog_id() ), 'site__in' => wp_list_pluck( $stores_with_webshop, 'webshopBlogId' ), 'public' => 1 ) );
 				// Resultaat in transient stoppen zodat we dit lijstje niet telkens opnieuw moeten opvragen?
 				// var_dump_pre( $sites );
@@ -94,7 +95,7 @@ if ( ! is_main_site() ) {
 				}
 				// var_dump_pre( $shops_instock );
 
-				echo '<p>Er werden '.count( $stores ).' winkels in de buurt gevonden, waarvan '.count( $stores_with_webshop ).' met een webshop, goed voor '.count( $sites ).' sites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
+				echo '<p>Er werden '.count( $stores ).' winkels in de buurt van '.$lat.','.$lng.' gevonden, waarvan '.count( $stores_with_webshop ).' met een webshop, goed voor '.count( $sites ).' sites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
 
 				if ( count( $shops_instock ) > 0 ) {
 					echo '<p>Dit product is online momenteel wel beschikbaar bij:<ul>';
@@ -114,25 +115,4 @@ if ( ! is_main_site() ) {
 		}
 
 	}
-} else {
-	
-	// $shops_instock = array();
-	// $sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'orderby' => 'path' ) );
-	// foreach ( $sites as $site ) {
-	// 	switch_to_blog( $site->blog_id );
-	// 	$local_product = wc_get_product( wc_get_product_id_by_sku( $product->get_sku() ) );
-	// 	if ( $local_product !== false and $local_product->is_in_stock() ) {
-	// 		$shops_instock[ get_webshop_name() ] = get_site_url();
-	// 	}
-	// 	restore_current_blog();
-	// }
-
-	// if ( count( $shops_instock ) > 0 ) {
-	// 	echo '<p>Dit product is online beschikbaar bij:</p><ul>';
-	// 	foreach ( $shops_instock as $name => $url ) {
-	// 	 	echo '<li><a href="'.esc_url( $url ).'">'.esc_html( $name ).'</a></li>';
-	// 	 }
-	// 	echo '</ul></p>';
-	// }
-
 }
