@@ -64,7 +64,7 @@ if ( ! is_main_site() ) {
 					// Loop over $stores_with_webshop zodat we de volgorde op stijgende afstand bewaren
 					foreach ( $stores_with_webshop as $store ) {
 						$blog_id = intval( $store['webshopBlogId'] );
-						if ( array_keys_exists( $blog_id, $shops_instock ) ) {
+						if ( array_key_exists( $blog_id, $shops_instock ) ) {
 							echo '<li><a href="'.esc_url( $store['webshopUrl'] ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> ('.esc_html( $store['distance'] ).' km)</li>';
 						}
 					}
