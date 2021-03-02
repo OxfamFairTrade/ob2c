@@ -18,7 +18,7 @@ if ( ! is_main_site() ) {
 	<?php
 
 	// Variable $product wordt via template argumenten doorgegeven door WooCommerce, geen global nodig
-	if ( ! $product->is_in_stock() ) {
+	if ( ! $product->is_in_stock() or $product->is_on_backorder() ) {
 		
 		if ( class_exists('WPSL_Frontend') and current_user_can('update_core') ) {
 
@@ -54,7 +54,7 @@ if ( ! is_main_site() ) {
 						'lat' => $lat,
 						'lng' => $lng,
 						// Lijkt niets uit te maken!
-						// 'search_radius' => 200,
+						'search_radius' => 100,
 						// Overrule default waarde
 						'max_results' => 20,
 					);
