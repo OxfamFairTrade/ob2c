@@ -2198,8 +2198,7 @@
 		// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
 		if ( $order !== NULL and $order instanceof WC_Order ) {
 			if ( $order->get_meta('test_aankoop') !== '' ) {
-				write_log( "CHECKING SHIPPING CONFIRMATION STATUS ..." );
-				write_log( $order->get_order_number().' - '.$order->get_status() );
+				// Omdat Sendcloud parallelle calls lijkt te maken, volstaat dit meestal niet om dubbele mails te vermijden ...
 				if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
 					write_log( "CANCELLED SENDING SHIPPING CONFIRMATION BY TRANSIENT ".$order->get_order_number() );
 					return '';
@@ -6528,7 +6527,7 @@
 				'post_status'		=> array('publish'),
 				'posts_per_page'	=> -1,
 				'meta_key'			=> 'touched_by_import', 
-				'meta_value'		=> date('Ymd'),
+				'meta_value'		=> date( 'Ymd', strtotime('-5 days') ),
 				'meta_compare'		=> '<',
 			);
 			$to_outofstock = new WP_Query( $args );

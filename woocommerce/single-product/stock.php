@@ -21,6 +21,42 @@ if ( ! is_main_site() ) {
 	if ( ! $product->is_in_stock() ) {
 		
 		if ( current_user_can('update_core') ) {
+			// Haal de coördinaten van de huidige gekozen winkel op
+			$current_store = false;
+			if ( ! empty( $_COOKIE['latest_shop_id'] ) ) {
+				$current_store = intval( $_COOKIE['latest_shop_id'] );
+			}
+
+			$shops = ob2c_get_pickup_locations();
+			if ( $current_store === false or ! array_key_exists( $current_store, $shops ) ) {
+				// De cookie slaat op een winkel uit een andere subsite (bv. door rechtstreeks switchen)
+				// Stel de hoofdwinkel van de huidige subsite in als fallback
+				$current_store = get_option('oxfam_shop_post_id');
+			}
+
+			// Zoek op de hoofdsite de WP Store op die past bij de post-ID
+			$wpsl_store = false;
+			switch_to_blog(1);
+			$post_args = array(
+				'post_type'	=> 'wpsl_stores',
+				'post_status' => 'publish',
+				'posts_per_page' => 1,
+				'meta_key' => 'wpsl_oxfam_shop_post_id',
+				'meta_value' => $current_store,
+			);
+			$wpsl_stores = new WP_Query( $post_args );
+			
+			if ( $wpsl_stores->have_posts() ) {
+				$wpsl_stores->the_post();
+				$wpsl_store = the_post();
+				wp_reset_postdata();
+			}
+			restore_current_blog();
+
+			if ( $wpsl_store ) {
+				var_dump_pre( $wpsl_store );
+			}
+
 			// Zoek op in welke andere webshops het product wél voorradig is
 			if ( class_exists('WPSL_Frontend') ) {
 				$wpsl = new WPSL_Frontend();
@@ -58,7 +94,6 @@ if ( ! is_main_site() ) {
 					restore_current_blog();
 				}
 
-				var_dump_pre( $shops_instock );
 				if ( count( $shops_instock ) > 0 ) {
 					echo '<p>Dit product is online momenteel wel beschikbaar bij:<ul>';
 					// Loop over $stores_with_webshop zodat we de volgorde op stijgende afstand bewaren
