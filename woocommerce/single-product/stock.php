@@ -44,6 +44,7 @@ if ( ! is_main_site() ) {
 				'meta_key' => 'wpsl_oxfam_shop_post_id',
 				'meta_value' => $current_store,
 			);
+			var_dump_pre( $post_args );
 			$wpsl_stores = new WP_Query( $post_args );
 			
 			if ( $wpsl_stores->have_posts() ) {
