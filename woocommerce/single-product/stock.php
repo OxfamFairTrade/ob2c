@@ -35,43 +35,39 @@ if ( ! is_main_site() ) {
 			}
 
 			// Zoek op de hoofdsite de WP Store op die past bij de post-ID
-			$wpsl_store = false;
+			$wpsl_store_id = 0;
 			switch_to_blog(1);
-			$post_args = array(
+			$store_args = array(
 				'post_type'	=> 'wpsl_stores',
 				'post_status' => 'publish',
 				'posts_per_page' => 1,
 				'meta_key' => 'wpsl_oxfam_shop_post_id',
 				'meta_value' => $current_store,
 			);
-			var_dump_pre( $post_args );
-			$wpsl_stores = new WP_Query( $post_args );
+			$wpsl_stores = new WP_Query( $store_args );
 			
 			if ( $wpsl_stores->have_posts() ) {
 				$wpsl_stores->the_post();
-				$wpsl_store = get_post();
+				$wpsl_store_id = get_the_ID();
 				wp_reset_postdata();
 			}
 			restore_current_blog();
 
-			if ( $wpsl_store ) {
-				var_dump_pre( $wpsl_store );
-			}
-
 			// Zoek op in welke andere webshops het product wél voorradig is
-			if ( class_exists('WPSL_Frontend') and $wpsl_store ) {
+			if ( class_exists('WPSL_Frontend') and $wpsl_store_id > 0 ) {
 				$wpsl = new WPSL_Frontend();
 				$args = array(
 					// Te vervangen door waarde opgeslagen in WPSL-object dat overeenkomt met huidige webshop!
 					'lat' => 51.228443,
-					// 'lat' => floatval( $wpsl_store->meta->wpsl_lat ),
-					'lng' => 2.934465,
-					// 'lng' => floatval( $wpsl_store->meta->wpsl_lng ),
+					'lat' => floatval( get_post_meta( $wpsl_store_id, 'wpsl_lat', true ) ),
+					'lng' => 3.134465,
+					'lng' => floatval( get_post_meta( $wpsl_store_id, 'wpsl_lng', true ) ),
 					// Lijkt niets uit te maken!
 					// 'search_radius' => 200,
 					// Overrule default waarde
 					'max_results' => 10,
 				);
+				var_dump_pre( $args );
 
 				// Raadpleeg werking van functie in /wp-store-locator/frontend/class-frontend.php
 				$stores = $wpsl->find_nearby_locations( $args );
