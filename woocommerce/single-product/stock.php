@@ -48,7 +48,7 @@ if ( ! is_main_site() ) {
 			
 			if ( $wpsl_stores->have_posts() ) {
 				$wpsl_stores->the_post();
-				$wpsl_store = the_post();
+				$wpsl_store = $wpsl_stores->the_post();
 				wp_reset_postdata();
 			}
 			restore_current_blog();
