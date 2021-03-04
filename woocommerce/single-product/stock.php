@@ -18,7 +18,7 @@ if ( ! is_main_site() ) {
 	<?php
 
 	// Variable $product wordt via template argumenten doorgegeven door WooCommerce, geen global nodig
-	if ( ! $product->is_in_stock() or $product->is_on_backorder() ) {
+	if ( ( ! $product->is_in_stock() or $product->is_on_backorder() ) and is_national_product( $product->get_id() ) ) {
 		
 		if ( class_exists('WPSL_Frontend') and current_user_can('update_core') ) {
 
@@ -100,8 +100,8 @@ if ( ! is_main_site() ) {
 					foreach ( $neighbouring_webshops as $store ) {
 						$blog_id = intval( $store['webshopBlogId'] );
 						if ( array_key_exists( $blog_id, $shops_instock ) ) {
-							// Of lijsten we toch winkels i.p.v. webshops op?
-							echo '<li><a href="'.esc_url( $store['webshopUrl'] ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> ('.esc_html( $store['distance'] ).' km)</li>';
+							// Link meteen naar het product in kwestie, maak de nationale URL daarvoor lokaal
+							echo '<li><a href="'.esc_url( str_replace( home_url('/'), $store['webshopUrl'], $product->get_permalink() ) ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> ('.esc_html( $store['distance'] ).' km)</li>';
 							// Verhinder dat we dezelfde webshop nog eens tonen!
 							unset( $shops_instock[ $blog_id ] );
 						}
