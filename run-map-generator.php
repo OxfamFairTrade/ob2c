@@ -69,7 +69,8 @@
 								// Ook als we de kaarten volledig zouden uitschakelen blijft deze stap nodig voor de rest van het script!
 								$site_ids_vs_blog_ids[ $shop_post_id ] = array(
 									'blog_id' => get_current_blog_id(),
-									'blog_url' => get_site_url().'/',
+									// Haal expliciet de HTTPS-link op (ook als we via cron job werken!)
+									'blog_url' => get_site_url( get_current_blog_id(), '/', 'https' ),
 									'home_delivery' => does_home_delivery(),
 								);
 							}
