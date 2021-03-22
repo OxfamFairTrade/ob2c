@@ -2,22 +2,17 @@
 /**
  * Customer new account email
  *
- * @see 		https://docs.woocommerce.com/document/template-structure/
- * @author 		WooThemes
- * @package 	WooCommerce/Templates/Emails
- * @version 	1.6.4
+ * @see https://docs.woocommerce.com/document/template-structure/
+ * @package WooCommerce\Templates\Emails
+ * @version 3.7.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
+defined( 'ABSPATH' ) || exit;
 
 $customer = get_user_by( 'login', $user_login );
 $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' );
 
-?>
-
-<?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
+do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <p>
 	<?php
@@ -32,7 +27,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <?php if ( 'yes' === get_the_author_meta( 'blog_'.get_current_blog_id().'_is_b2b_customer', $customer->ID ) ) : ?>
 
-	<p><?php printf( __( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van webshop (%s).', 'oxfam-webshop' ), get_webshop_name() ); ?></p>
+	<p><?php printf( esc_html__( 'Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van webshop (%s).', 'oxfam-webshop' ), get_webshop_name() ); ?></p>
 
 	<ul>
 		<?php
@@ -60,7 +55,7 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 	<p><?php printf( __( 'Tweede alinea in de uitnodingsmail aan B2B-gebruikers, inclusief gebruikersnaam (%s).', 'oxfam-webshop' ), '<strong>&laquo;&nbsp;' . esc_html( $user_login ) . '&nbsp;&raquo;</strong>' ); ?></p>
 
 	<p style="text-align: center;">
-		<a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'login' => rawurlencode( $user_login ) ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>">
+		<a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'id' => $user_id ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>">
 			<b><?php _e( 'Speciale wachtwoordresetlink', 'oxfam-webshop' ); ?> &raquo;</b>
 		</a>
 	</p>
@@ -101,6 +96,17 @@ $email_heading = __( 'Titel in de header van de welkomstmail', 'oxfam-webshop' )
 
 <p><?php _e( 'Uitsmijter van het mailbericht bij nieuwe accounts.', 'oxfam-webshop' ); ?></p>
 
+<?php
+	/**
+	 * Show user-defined additional content - this is set in each email's settings.
+	 */
+	if ( $additional_content ) {
+		echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
+	}
+?>
+
 <p><?php printf( __( 'Ondertekening van mails met accountinfo, inclusief regio van webshop (%s).', 'oxfam-webshop' ), get_webshop_name(true) ); ?></p>
 
-<?php do_action( 'woocommerce_email_footer', $email );
+<?php
+
+do_action( 'woocommerce_email_footer', $email );

@@ -2,3 +2,4 @@
 *.htaccess
 wp-content/
 */config.php
+htaccess

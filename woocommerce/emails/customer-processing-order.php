@@ -11,6 +11,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Voeg ondersteuning voor Frans toe (Test Aankoop)
+if ( $order->get_meta('wpml_language') === 'fr' ) {
+	unload_textdomain('woocommerce');
+	unload_textdomain('oxfam-webshop');
+	load_textdomain( 'woocommerce', WP_CONTENT_DIR.'/languages/plugins/woocommerce-fr_FR.mo' );
+	load_textdomain( 'oxfam-webshop', WP_CONTENT_DIR.'/languages/themes/oxfam-webshop-fr_FR.mo' );
+	$email_heading = 'Merci pour votre commande';
+	$hi = 'Che.è.r.e';
+} else {
+	$hi = 'Dag';
+}
+
+// Toon afwijkend telefoonnummer (Test Aankoop)
+if ( $order->get_meta('test_aankoop') !== '' ) {
+	$phone = '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', '050331168' ), 1 ).'">'.call_user_func( 'format_telephone', '050331168', '.' ).'</a>';
+} else {
+	$phone = print_telephone();
+}
+
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
@@ -20,7 +39,7 @@ $logger = wc_get_logger();
 $context = array( 'source' => 'Oxfam Emails' );
 
 // Is altijd ingevuld, dus geen check doen
-echo '<p>Dag '.$order->get_billing_first_name().'</p>';
+echo '<p>'.$hi.' '.$order->get_billing_first_name().'</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$shipping_methods = $order->get_shipping_methods();
@@ -34,7 +53,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 		
 		if ( $delivery === '' ) {
 			// Aangepast bericht zonder tijdsinschatting indien waarde ontbreekt (bv. door ontbreken van openingsuren tijdens lockdown)
-			echo '<p>' . sprintf( 'We hebben je bestelling goed ontvangen. Onze vrijwilligers zetten je boodschappen klaar in %1$s. We sturen je een tweede bericht van zodra alles klaarstaat.', $pickup_location_name ) . '</p>';
+			echo '<p>' . sprintf( __( 'We hebben je bestelling goed ontvangen. Onze vrijwilligers zetten je boodschappen klaar in %1$s. We sturen je een tweede bericht van zodra alles klaarstaat.', 'oxfam-webshop' ), $pickup_location_name ) . '</p>';
 			$logger->info( $order->get_order_number().': pickup mail sent without time indication', $context );
 		} else {
 			echo '<p>' . sprintf( __( 'Bericht bovenaan de 1ste bevestigingsmail (indien afhaling), inclusief afhaallocatie (%1$s), -dag (%2$s) en -uur (%3$s).', 'oxfam-webshop' ), $pickup_location_name, date_i18n( 'l d/m', $delivery ), date_i18n( 'G\ui', $delivery ) ) . '</p>';
@@ -47,7 +66,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 }
 
 // Eventueel array( 'id' => ... ) doorgeven als argument voor de juiste $pickup_location?
-echo '<p>Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op '.print_telephone().' en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.</p>';
+echo '<p>'.sprintf( __( 'Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op %s en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.', 'oxfam-webshop' ), $phone ).'</p>';
 
 /*
  * @hooked WC_Emails::order_details() Shows the order details table.

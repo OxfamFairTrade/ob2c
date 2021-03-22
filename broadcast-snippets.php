@@ -273,7 +273,7 @@
 		'post_status'	=> 'publish',
 		// Opgelet: dit kijkt naar de (onzichtbare) slug, die kan afwijken van de titel, bv. indien kortingscode achteraf gewijzigd!
 		// WERKT NIET BIJ 'b2b-5%' en 'b2b-10%' (ZELFS MET 'b2b5' en 'b2b10'), GEBRUIK DAARVOOR 'title' => 'b2b-5%' en 'title' => 'b2b-10%'
-		'post_name__in'	=> array( '202102-merlot', '202102-sauvignon-blanc', '202102-gedroogde-banaan', '202102-quinoa', '202102-rijstwafels' ),
+		'post_name__in'	=> array( '202103-wijn', '202103-quinoabiscuits', '202103-groene-worldmix' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	
@@ -393,7 +393,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( 68448, 68449, 68450, 66058, 66060, 65230, 65232, 68561, 68562, 21287, 21336, 21665, 21672, 21830, 21855, 41052, 42284, 54224, 66169, 66195, 66206, 66207, 66208, 66209, 66210, 66211, 66212, 66213, 66217, 66218, 66219, 68538, 68539, 68540, 68543, 68544, 68548, 68549, 68550, 68551, 68576, 68577, 68581, 68582, 87364 );
+	$outofstocks = array( 23648, 23649, 23650, 25730, 26015 );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {

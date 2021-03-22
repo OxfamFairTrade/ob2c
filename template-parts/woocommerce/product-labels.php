@@ -9,7 +9,7 @@
 		// Zoek vervolgens de details van de actie op
 		// Handmatig beheerde lijst, want simpeler dan afleiden uit de kortingsregels!
 		
-		$fifty_percent_off_second_products = array( 20060, 20253, 25627, 27008, 27151 );
+		$fifty_percent_off_second_products = array( 20060, 20253, 25627, 27008, 27151, 20059, 20257, 25013, 27114 );
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}
@@ -57,6 +57,10 @@
 		if ( $product->get_shipping_class() === 'breekbaar' ) {
 			$labels['pickup-only'] = 'Afhaling';
 		}
+	}
+	
+	if ( $product->get_sku() === '20263' and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' ) {
+		$labels['beste-van-de-test'] = '';
 	}
 
 	if ( count( $labels ) > 0 ) {

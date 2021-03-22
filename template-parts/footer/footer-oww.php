@@ -115,6 +115,17 @@
 					<div class="col-row">
 						<div class="col-md-3">
 							<div class="footer-menu">
+								<?php
+									// Dynamisch maken m.b.v. wp_remote_get() naar https://OXFAM_MAIN_SITE_DOMAIN/wp-json/menus/v1/menus/footer-menu-1
+									// Activeer hiervoor eerst https://nl.wordpress.org/plugins/wp-rest-api-v2-menus/ op de OWW-site
+									// <h3> => menu_title
+									// <ul> => foreach items as item
+									// <li> => item['title']
+									// href => item['url']
+									// target => item['target']
+									// title => item['attr_title']
+									// class => enkel de custom extra klasses kunnen overgenomen worden, plus 'menu-item-type-'.$item['type'] en 'menu-item-object-'.$item['object']
+								?>
 								<h3>Oxfam-Wereldwinkels</h3>
 								<ul id="menu-footer-menu-1" class="menu">
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/">Missie en aanpak</a></li>

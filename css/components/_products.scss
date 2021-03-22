@@ -50,6 +50,19 @@
           color: $see-through-blue;
           border-color: $see-through-blue;
         }
+
+        &.beste-van-de-test {
+          width: 140px;
+          height: 140px;
+          border-width: 0;
+          border-radius: 0;
+          padding: 0;
+          backgroun-color: transparent;
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center center;
+          background-image: url('https://www.oxfamfairtrade.be/wp-content/themes/oft/assets/beste-van-de-test-NL.png'); 
+        }
       }
     }
   }
@@ -58,6 +71,11 @@
     .info-labels {
       .info-label {
         font-size: 12px;
+
+        &.beste-van-de-test {
+          width: 90px;
+          height: 90px;
+        }
       }
     }
   }

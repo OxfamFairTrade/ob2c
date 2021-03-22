@@ -11,13 +11,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Voeg ondersteuning voor Frans toe (Test Aankoop)
+if ( $order->get_meta('wpml_language') === 'fr' ) {
+	unload_textdomain('woocommerce');
+	unload_textdomain('oxfam-webshop');
+	load_textdomain( 'woocommerce', WP_CONTENT_DIR.'/languages/plugins/woocommerce-fr_FR.mo' );
+	load_textdomain( 'oxfam-webshop', WP_CONTENT_DIR.'/languages/themes/oxfam-webshop-fr_FR.mo' );
+	$email_heading = 'Votre commande est en route ! ';
+	$hi = 'Che.è.r.e';
+} else {
+	$hi = 'Dag';
+}
+
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
 do_action( 'woocommerce_email_header', $email_heading, $email );
 
 // Is altijd ingevuld, dus geen check doen
-echo '<p>Dag '.$order->get_billing_first_name().'</p>';
+echo '<p>'.$hi.' '.$order->get_billing_first_name().'</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>' . __( 'Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel).', 'oxfam-webshop' ) . '</p>';
@@ -28,14 +40,22 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 		if ( false !== ( $tracking_info = get_tracking_info( $order ) ) ) {
 			if ( $order->has_shipping_method('service_point_shipping_method') ) {
 				echo str_replace( 'Een vrijwilliger komt er binnenkort mee langs.', 'Je kunt het binnenkort oppikken in het afhaalpunt dat je koos.', $text );
-			} elseif ( $tracking_info['carrier'] === 'Bpost' ) {
+			} elseif ( $tracking_info[0]['carrier'] === 'Bpost' ) {
 				echo str_replace( 'Een vrijwilliger ', 'De postbode ', $text );
-			} elseif ( $tracking_info['carrier'] === 'DPD' ) {
+			} elseif ( $tracking_info[0]['carrier'] === 'DPD' ) {
 				echo str_replace( 'Een vrijwilliger ', 'De koerier ', $text );
 			}
 			echo ' ';
+			$clickable_tracking_numbers = '';
+			foreach ( $tracking_info as $index => $tracking_info_details ) {
+				if ( $index === 0 ) {
+					$clickable_tracking_numbers .= '<a href="'.esc_url( $tracking_info_details['link'] ).'" target="_blank">'.$tracking_info_details['number'].'</a>'; 
+				} else {
+					$clickable_tracking_numbers .= ', <a href="'.esc_url( $tracking_info_details['link'] ).'" target="_blank">'.$tracking_info_details['number'].'</a>';
+				}
+			}
 			// Mocht de link om één of andere reden ontbreken zal dit 'zacht' breken
-			printf( __( 'Trackinginfo, inclusief barcode (%1$s) en volglink (%2$s).', 'oxfam-webshop' ), $tracking_info['number'], $tracking_info['link'] );
+			printf( __( 'Trackinginfo inclusief aanklikbare traceercodes (%s).', 'oxfam-webshop' ), $clickable_tracking_numbers );
 		} else {
 			echo $text;
 		}
