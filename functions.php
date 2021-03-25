@@ -3089,7 +3089,9 @@
 		// Land moet bewerkbaar blijven, anders geen waarde doorgestuurd, en absoluut nodig voor service points!
 		$address_fields['country']['priority'] = 100;
 		$address_fields['country']['class'] = array('hidden-address-field');
-		$address_fields['country']['custom_attributes']['autocomplete'] = false;
+		// Verhinder dat het landveld automatisch switcht bij niet-ingelogde buitenlandse klanten
+		$address_fields['country']['autocomplete'] = false;
+		
 		// Filter wordt ook doorlopen in back-end, pas op met het raadplegen van WC()->customer
 		// if ( ! is_admin() and WC()->customer->get_shipping_country() !== 'BE' ) {
 		// 	// Veld zichtbaar maken bij buitenlandse klanten?
