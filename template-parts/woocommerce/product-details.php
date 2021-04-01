@@ -66,7 +66,7 @@
 									<?php if ( strlen( $product->get_description() ) > 5 ) : ?>
 										<h3>Beschrijving</h3>
 										<div class="product-text-block woocommerce-product-details__long-description">
-											<?php echo $product->get_description(); ?>
+											<?php echo do_shortcode( wpautop( $product->get_description() ) ); ?>
 										</div>
 									<?php endif; ?>
 									<?php
@@ -76,7 +76,7 @@
 												?>
 													<h3>Over <?php echo $product->get_attribute('merk'); ?></h3>
 													<div class="product-text-block woocommerce-product-details__brand">
-														<?php echo $term->description; ?>
+														<?php echo wpautop( $term->description ); ?>
 													</div>
 												<?php
 												}

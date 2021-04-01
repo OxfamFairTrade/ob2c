@@ -2357,7 +2357,8 @@
 			'_wp_http_referer',
 			'_wpnonce',
 		);
-		// $args['admin.php']['wpml_plugin_log'] = $args['tools.php']['wpml_plugin_log'];
+		// Hoofdknop linkt naar admin.php ... dus kopieer de instellingen!
+		$args['admin.php']['wpml_plugin_log'] = $args['tools.php']['wpml_plugin_log'];
 		
 		$args['admin.php']['pmxe-admin-export'] = array(
 			'id',
