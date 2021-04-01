@@ -6807,37 +6807,31 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Betalen via ING-internetbankieren was een kort leven beschoren: we konden deze betaalmethode pas in november activeren (na de nodige technische updates) maar Mollie heeft de integratie met ING stopgezet per 1 februari 2021 ... Klanten van ING kunnen uiteraard wel nog betalen via het algemene Bancontact, zoals voorheen.</p>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>De nieuwigheden van april en de 'Oxfam Pakt Uit'-kaartjes werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 		$skus = array( 22724, 22725, 48500, 48501, 48502, 48503, 48504, 48505, 49112 );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku( $sku );
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 				// echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe theeproducten en de vervangende referenties voor de amandelnoten en agavesiroop werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 23648, 23649, 23650, 25730, 26015 );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-maart-2021-update.html" target="_blank">promo\'s voor maart</a> zijn geactiveerd in alle webshops. De prijswijzigingen van 1 maart op drie B2B-producten voor koffieservice (08808, 08809 en 29298) werden doorgevoerd.';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-april-2021-update.html" target="_blank">promo\'s voor april</a> zijn geactiveerd in alle webshops.';
+				// echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
-					// echo '<div class="notice notice-success">';
-					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
-					// echo '</div>';
 				}
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>5 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. 25721 BIO Cashew chili.</p>';
