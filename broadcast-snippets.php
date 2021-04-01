@@ -269,11 +269,11 @@
 
 	// Product-ID's in kortingsbonnen lokaal maken
 	$args = array(
-		'post_type'		=> 'shop_coupon',
-		'post_status'	=> 'publish',
+		'post_type'	=> 'shop_coupon',
+		'post_status' => 'publish',
 		// Opgelet: dit kijkt naar de (onzichtbare) slug, die kan afwijken van de titel, bv. indien kortingscode achteraf gewijzigd!
 		// WERKT NIET BIJ 'b2b-5%' en 'b2b-10%' (ZELFS MET 'b2b5' en 'b2b10'), GEBRUIK DAARVOOR 'title' => 'b2b-5%' en 'title' => 'b2b-10%'
-		'post_name__in'	=> array( '202103-wijn', '202103-quinoabiscuits', '202103-groene-worldmix' ),
+		'post_name__in' => array( '202104-juste-blond', '202104-juste-clips', '202104-juste-tripel-bruin', '202104-chocoladerepen', '202104-ice-tea', '202104-chenin-box', '202104-chips' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	
@@ -393,7 +393,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( 23648, 23649, 23650, 25730, 26015 );
+	$outofstocks = array( 22724, 22725, 26016 );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
