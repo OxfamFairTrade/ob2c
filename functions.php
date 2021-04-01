@@ -6823,7 +6823,7 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De solidariteitsagenda\'s en 11.11.11-kalenders voor 2021 werden verwijderd aangezien ze niet meer relevant zijn.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-april-2021-update.html" target="_blank">promo\'s voor april</a> zijn geactiveerd in alle webshops.';
@@ -6835,7 +6835,7 @@
 					// Boodschappen voor winkels die thuislevering doen
 				}
 				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>5 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. 25721 BIO Cashew chili.</p>';
+				// 	echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 28103 BIO Rijstazijn, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28329 BIO Kurkuma.</p>';
 				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
