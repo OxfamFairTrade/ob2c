@@ -2484,6 +2484,18 @@
 		}
 	}
 
+	// Verduidelijk de status van een product in de overzichtslijst
+	add_filter( 'display_post_states', 'ob2c_clarify_product_states', 100, 2 );
+
+	function ob2c_clarify_product_states( $post_states, $post ) {
+		if ( get_post_type( $post ) === 'product' ) {
+			if ( is_national_product( $post->ID ) ) {
+				$post_states['uneditable'] = 'Nationaal product, niet bewerkbaar';
+			}
+		}
+		return $post_states;
+	}
+
 
 	
 	###############
@@ -6844,7 +6856,7 @@
 			}
 		}
 
-		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and isset( $_REQUEST['bulk_action'] ) ) {
+		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and isset( $_REQUEST['bulk_action'] ) and ! current_user_can('create_sites') ) {
 			if ( $_REQUEST['bulk_action'] === 'marked_completed' ) {
 				$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
 				$message = sprintf( _n( '%d bestelstatus proberen te wijzigen.', '%d bestelstatussen proberen te wijzigen.', $number, 'woocommerce' ), number_format_i18n( $number ) );
