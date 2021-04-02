@@ -2491,7 +2491,8 @@
 		if ( get_post_type( $post ) === 'product' ) {
 			$user_meta = get_userdata( get_current_user_id() );
 			if ( in_array( 'local_manager', $user_meta->roles ) and is_national_product( $post->ID ) ) {
-				$post_states['uneditable'] = 'Nationaal product, niet bewerkbaar';
+				$post_states['national'] = 'Nationaal product';
+				$post_states['uneditable'] = 'Onbewerkbaar';
 			}
 		}
 		return $post_states;
