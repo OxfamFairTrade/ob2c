@@ -2261,8 +2261,8 @@
 	add_action( 'wp_print_scripts', function() { wp_deregister_script('autosave'); } );
 
 	if ( is_main_site() ) {
-		// Zorg ervoor dat productrevisies bijgehouden worden op de hoofdsite
-		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+		// Zorg ervoor dat productrevisies bijgehouden worden op de hoofdsite UITSCHAKELEN
+		// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		// Toon de lokale webshops die het product nog op voorraad hebben TRAGE FUNCTIE
 		add_action( 'woocommerce_product_options_inventory_product_data', 'add_inventory_fields', 5 );
 	}
@@ -2293,7 +2293,7 @@
 	}
 
 	// Voeg suffix toe bij B2B-klanten
-	add_filter( 'woocommerce_get_price_html' , 'ob2c_add_price_suffix', 10, 2 );
+	add_filter( 'woocommerce_get_price_html', 'ob2c_add_price_suffix', 10, 2 );
 	
 	function ob2c_add_price_suffix( $price, $product ) {
 		if ( ! is_admin() ) {
