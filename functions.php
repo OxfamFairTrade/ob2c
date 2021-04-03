@@ -2199,14 +2199,12 @@
 	function prevent_multiple_shipping_confirmations( $recipients, $order ) {
 		// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
 		if ( $order !== NULL and $order instanceof WC_Order ) {
-			if ( $order->get_meta('test_aankoop') !== '' ) {
-				// Omdat Sendcloud parallelle calls lijkt te maken, volstaat dit meestal niet om dubbele mails te vermijden ...
-				if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
-					write_log( "CANCELLED SENDING SHIPPING CONFIRMATION BY TRANSIENT ".$order->get_order_number() );
-					return '';
-				} else {
-					set_transient( 'shipping_confirmation_sent_'.$order->get_order_number(), 'yes', 60 );
-				}
+			// Omdat Sendcloud parallelle calls lijkt te maken, volstaat dit meestal niet om dubbele mails te vermijden ...
+			if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
+				write_log( "Versturen van dubbele verzendbevestiging verhinderd bij ".$order->get_order_number() );
+				return '';
+			} else {
+				set_transient( 'shipping_confirmation_sent_'.$order->get_order_number(), 'yes', 60 );
 			}
 		}
 
@@ -4378,7 +4376,7 @@
 	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
 
 	function put_administrator_in_bcc( $headers, $object ) {
-		if ( $object === 'customer_processing_order' or $object === 'customer_completed_order' ) {
+		if ( in_array( $object, array( 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
 			if ( wp_get_environment_type() === 'production' ) {
 				$headers .= 'BCC: "Developer" <webshops@oxfamfairtrade.be>\r\n';
 			} else {

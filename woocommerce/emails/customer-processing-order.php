@@ -23,13 +23,6 @@ if ( $order->get_meta('wpml_language') === 'fr' ) {
 	$hi = 'Dag';
 }
 
-// Toon afwijkend telefoonnummer (Test Aankoop)
-if ( $order->get_meta('test_aankoop') !== '' ) {
-	$phone = '<a href="tel:+32'.substr( preg_replace( '/[^0-9]/', '', '050331168' ), 1 ).'">'.call_user_func( 'format_telephone', '050331168', '.' ).'</a>';
-} else {
-	$phone = print_telephone();
-}
-
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
@@ -66,7 +59,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 }
 
 // Eventueel array( 'id' => ... ) doorgeven als argument voor de juiste $pickup_location?
-echo '<p>'.sprintf( __( 'Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op %s en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.', 'oxfam-webshop' ), $phone ).'</p>';
+echo '<p>'.sprintf( __( 'Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op %s en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.', 'oxfam-webshop' ), print_telephone() ).'</p>';
 
 /*
  * @hooked WC_Emails::order_details() Shows the order details table.
