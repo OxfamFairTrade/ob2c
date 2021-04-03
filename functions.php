@@ -1476,7 +1476,7 @@
 			'oxfam_shop_post_id' => array( 'label' => 'Post-ID in OWW-site' ),
 			'webshop' => array( 'label' => 'URL van de webshop' ),
 			'webshop_blog_id' => array( 'label' => 'Blog-ID van de webshop' ),
-			'holidays' => array( 'label' => 'Sluitingsdagen' ),
+			'holidays' => array( 'label' => 'Uitzonderlijk gesloten' ),
 			'mailchimp' => array( 'label' => 'Lokale nieuwsbrief' ),
 		);
 
@@ -4624,7 +4624,7 @@
 				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
 
 				// Tel alle sluitingsdagen die in de verwerkingsperiode vallen (inclusief de eerstkomende openingsdag!) erbij
-				$timestamp = move_date_on_holidays( $from, $timestamp );
+				$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_post_id );
 
 				// Check of de winkel ook op de nieuwe dag effectief nog geopend is na 12u
 				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
@@ -4653,7 +4653,7 @@
 					$timestamp = strtotime( '+2 weekdays', $timestamp );
 
 					// Tel feestdagen die in de verwerkingsperiode vallen erbij
-					$timestamp = move_date_on_holidays( $from, $timestamp );
+					$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_post_id );
 				}
 		}
 
@@ -4677,7 +4677,7 @@
 
 	// Check of er feestdagen in een bepaalde periode liggen, en zo ja: tel die dagen bij de einddag
 	// Neemt een begin- en eindpunt en retourneert het nieuwe eindpunt (allemaal in timestamps)
-	function move_date_on_holidays( $from, $till ) {
+	function move_date_on_holidays( $from, $till, $shop_post_id ) {
 		// Check of de startdag ook nog in beschouwing genomen moet worden
 		if ( date_i18n( 'N', $from ) < 6 and date_i18n( 'G', $from ) >= 12 ) {
 			$first = date_i18n( 'Y-m-d', strtotime( '+1 weekday', $from ) );
@@ -4688,8 +4688,8 @@
 		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
 		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 		
-		// Neem de wettelijke feestdagen indien er geen enkele gedefinieerd zijn
-		foreach ( get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) as $holiday ) {
+		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
+		foreach ( get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) as $holiday ) {
 			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
 			if ( date_i18n( 'N', strtotime($holiday) ) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				// TO DO: Enkel werkdag bijtellen indien de winkel niet sowieso al gesloten is op deze weekdag?
@@ -5594,7 +5594,6 @@
 		register_setting( 'oxfam-options-local', 'oxfam_remove_excel_header', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_b2b_invitation_text', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
-		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 	}
 
 	// Zorg ervoor dat je lokale opties ook zonder 'manage_options'-rechten opgeslagen kunnen worden
@@ -7052,13 +7051,8 @@
 		if ( in_array( $atts['id'], $exceptions ) ) {
 			$holidays = array( '2020-12-25', '2021-01-01' );
 		} else {
-			// Uitzondering voor Borgerhout en Merksem
-			if ( $atts['id'] == 3316 or $atts['id'] == 3646 ) {
-				$holidays = get_site_option('oxfam_holidays');
-			} else {
-				// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
-				$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
-			}
+			// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
+			$holidays = get_site_option( 'oxfam_holidays_'.$atts['id'], get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) );
 		}
 
 		if ( $atts['start'] === 'today' ) {

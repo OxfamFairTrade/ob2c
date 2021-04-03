@@ -142,7 +142,7 @@
 						'wpsl_email' => $oww_store_data['location']['mail'],
 						// Openingsuren ook opslaan in WPSL-object
 						'wpsl_hours' => $oww_store_data['opening_hours'],
-						'wpsl_holidays' => $oww_store_data['closing_days'],
+						'wpsl_holidays' => implode( ', ', $oww_store_data['closing_days'] ),
 						'wpsl_mailchimp' => $oww_store_data['mailchimp_url'],
 					),
 				);
