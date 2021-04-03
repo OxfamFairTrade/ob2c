@@ -1476,6 +1476,7 @@
 			'oxfam_shop_post_id' => array( 'label' => 'Post-ID in OWW-site' ),
 			'webshop' => array( 'label' => 'URL van de webshop' ),
 			'webshop_blog_id' => array( 'label' => 'Blog-ID van de webshop' ),
+			'holidays' => array( 'label' => 'Sluitingsdagen' ),
 			'mailchimp' => array( 'label' => 'Lokale nieuwsbrief' ),
 		);
 
@@ -1489,6 +1490,7 @@
 		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
 		$store_fields['wpsl_webshop'] = array( 'name' => 'webshopUrl' );
 		$store_fields['wpsl_webshop_blog_id'] = array( 'name' => 'webshopBlogId' );
+		$store_fields['wpsl_holidays'] = array( 'name' => 'closingDays' );
 		$store_fields['wpsl_mailchimp'] = array( 'name' => 'mailchimpUrl' );
 		return $store_fields;
 	}
@@ -2888,6 +2890,8 @@
 							
 							var sku = jQuery('#inventory_product_data').find('input[name=_sku]').val();
 							if ( sku.length == 0 ) {
+								// Lege artikelnummers kunnen alsnog ontstaan door automatische check van WooCommerce op unieke SKU's
+								// Eventueel uit te schakelen m.b.v. de 'wc_product_has_unique_sku'-filter
 								msg += '* Je moet nog een artikelnummer ingeven!\n';
 							} else if ( ! isNaN( parseFloat( sku ) ) && isFinite( sku ) ) {
 								msg += '* Kies een niet-numeriek artikelnummer om conflicten met nationale producten te vermijden!\n';
@@ -7099,10 +7103,10 @@
 			} elseif ( get_current_blog_id() === 19 ) {
 				// Uitzondering voor Lichtaart
 				$output = '<p class="corona-notice">Wereldwinkel Lichtaart verhuist momenteel naar een nieuwe locatie, en is daardoor gesloten. De afhalingen in Vorselaar blijven gewoon doorgaan op zaterdagochtend tussen 10 en 12 uur.</p>';
-			} else {
+			} elseif ( get_current_blog_id() === 72 ) {
+				// Houthalen-Helchteren is tijdelijk dicht
 				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
-				// UITSCHAKELEN
-				// $output = '<p class="corona-notice">'.$text.'</p>';
+				$output = '<p class="corona-notice">'.$text.'</p>';
 			}
 		} else {
 			// if ( $atts['id'] === 'brugge' ) {

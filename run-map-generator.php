@@ -140,22 +140,31 @@
 						'wpsl_webshop_blog_id' => $webshop_blog_id,
 						// Vul hier bewust het algemene mailadres in (ook voor winkels mét webshop)
 						'wpsl_email' => $oww_store_data['location']['mail'],
-						// Openingsuren toch internaliseren?
+						// Openingsuren ook opslaan in WPSL-object
 						'wpsl_hours' => $oww_store_data['opening_hours'],
+						'wpsl_holidays' => $oww_store_data['closing_days'],
 						'wpsl_mailchimp' => $oww_store_data['mailchimp_url'],
 					),
 				);
 
 				if ( $webshop_blog_id !== '' ) {
+					// Oude manier: sluitingsdagen opslaan als universele subsite optie
 					switch_to_blog( $webshop_blog_id );
 					if ( count( $oww_store_data['closing_days'] ) > 0 ) {
-						// Neem de ingestelde sluitingsdagen over uit de OWW-site
 						update_option( 'oxfam_holidays', $oww_store_data['closing_days'] );
 					} else {
 						// Verwijder de optie zodat we géén lege array achterlaten die de default waardes blokkeert
 						delete_option('oxfam_holidays');
 					}
 					restore_current_blog();
+
+					// Nieuwe manier: sluitingsdagen opslaan als winkelspecifieke site optie
+					if ( count( $oww_store_data['closing_days'] ) > 0 ) {
+						update_site_option( 'oxfam_holidays_'.$oww_store_data['id'], $oww_store_data['closing_days'] );
+					} else {
+						// Verwijder de optie zodat we géén lege array achterlaten die de default waardes blokkeert
+						delete_site_option( 'oxfam_holidays_'.$oww_store_data['id'] );
+					}
 				}
 
 				$result_post_id = wp_insert_post( $store_args );
