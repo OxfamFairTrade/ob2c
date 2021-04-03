@@ -2194,7 +2194,8 @@
 	}
 
 	// Verhinder dat er meerdere mails vertrekken als er meerdere labels aangemaakt worden in Sendcloud
-	add_filter( 'woocommerce_email_recipient_customer_completed_order', 'prevent_multiple_shipping_confirmations', 10, 2 );
+	// FILTER WORDT SOWIESO MEERDERE KEREN DOORLOPEN, OOK BIJ EENMALIGE MAIL, DUS NIET GEBRUIKEN
+	// add_filter( 'woocommerce_email_recipient_customer_completed_order', 'prevent_multiple_shipping_confirmations', 10, 2 );
 
 	function prevent_multiple_shipping_confirmations( $recipients, $order ) {
 		// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
@@ -6426,7 +6427,7 @@
 		 * @return array
 		 */
 		
-		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_main_thumbnail_id', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text' );
+		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_main_thumbnail_id', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text', 'touched_by_import' );
 		foreach ( $keys_to_copy as $key ) {
 			if ( $key === '_main_thumbnail_id' ) {
 				$meta_data[ $key ] = $data['master_product']->get_image_id();
