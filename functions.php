@@ -3303,8 +3303,8 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_city', 'format_city', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_city', 'format_city', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_telephone', 10, 1 );
-	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_telephone', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_phone_number', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_phone_number', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_email', 'format_mail', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_email', 'format_mail', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_birthday', 'format_date', 10, 1 );
@@ -3425,32 +3425,44 @@
 	}
 	
 	// Sta een optionele parameter toe om puntjes te zetten in plaats van spaties (maar: wordt omgezet in streepjes door wc_format_phone() dus niet gebruiken in verkoop!)
-	function format_telephone( $value, $delim = ' ' ) {
+	function format_phone_number( $value, $delim = ' ' ) {
 		if ( $delim === '.' ) {
 			$slash = '/';
 		} else {
 			$slash = $delim;
 		}
-		// Wis alle spaties, leestekens en landcodes
-		$temp_tel = preg_replace( '/[\s\-\.\/]/', '', $value );
-		$temp_tel = str_replace( '+32', '0', $temp_tel );
-		$temp_tel = preg_replace( '/(^|\s)0032/', '0', $temp_tel );
 		
-		// Formatteer vaste telefoonnummers
-		if ( mb_strlen($temp_tel) === 9 ) {
-			if ( intval($temp_tel[1]) === 2 or intval($temp_tel[1]) === 3 or intval($temp_tel[1]) === 4 or intval($temp_tel[1]) === 9 ) {
-				$value = substr( $temp_tel, 0, 2 ) . $slash . substr( $temp_tel, 2, 3 ) . $delim . substr( $temp_tel, 5, 2 ) . $delim . substr( $temp_tel, 7, 2 );
+		// Verwijder alle non-digits
+		$value = preg_replace('/[^0-9]/', '', str_replace( '+32', '0032', $value ) );
+		
+		// Wis Belgische landcodes
+		// @toDo: Andere landcodes checken en ook formatteren?
+		if ( substr( $value, 0, 4 ) === '0032' ) {
+			$value = substr( $value, 4 );
+		}
+		
+		// Voeg indien nodig leading zero toe
+		if ( substr( $value, 0, 1 ) !== '0' ) {
+			$value = '0' . $value;
+		}
+		
+		// Vaste telefoonnummers
+		if ( strlen( $value ) == 9 ) {
+			if ( intval( $value[1] ) == 2 or intval( $value[1] ) == 3 or intval( $value[1] ) == 4 or intval( $value[1] ) == 9 ) {
+				// Zonenummer van twee cijfers
+				$phone = substr( $value, 0, 2 ) . $slash . substr( $value, 2, 3 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
 			} else {
-				$value = substr( $temp_tel, 0, 3 ) . $slash . substr( $temp_tel, 3, 2 ) . $delim . substr( $temp_tel, 5, 2 ) . $delim . substr( $temp_tel, 7, 2 );
+				// Zonenummer van drie cijfers
+				$phone = substr( $value, 0, 3 ) . $slash . substr( $value, 3, 2 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
 			}
 		}
 
-		// Formatteer mobiele telefoonnummers
-		if ( mb_strlen($temp_tel) === 10 ) {
-			$value = substr($temp_tel, 0, 4) . $slash . substr($temp_tel, 4, 2) . $delim . substr($temp_tel, 6, 2) . $delim . substr($temp_tel, 8, 2);
+		// Mobiele telefoonnummers
+		if ( strlen( $value ) == 10 ) {
+			$phone = substr( $value, 0, 4 ) . $slash . substr( $value, 4, 2 ) . $delim . substr( $value, 6, 2 ) . $delim . substr( $value, 8, 2 );
 		}
 		
-		return $value;
+		return $phone;
 	}
 
 	function format_hour( $value ) {
@@ -4048,7 +4060,7 @@
 			$_POST['billing_email'] = is_email( format_mail( $_POST['billing_email'] ) );
 		}
 		if ( isset( $_POST['billing_phone'] ) ) {
-			$_POST['billing_phone'] = format_telephone( $_POST['billing_phone'] );
+			$_POST['billing_phone'] = format_phone_number( $_POST['billing_phone'] );
 		}
 		if ( isset( $_POST['billing_vat'] ) ) {
 			$_POST['billing_vat'] = format_tax( $_POST['billing_vat'] );
@@ -7603,7 +7615,7 @@
 				case 'city':
 					return 'Gent';
 				case 'telephone':
-					return call_user_func( 'format_telephone', '092188899', '.' );
+					return call_user_func( 'format_phone_number', '092188899', '.' );
 				case 'tax':
 					return call_user_func( 'format_tax', 'BE 0415.365.777' );
 				default:
