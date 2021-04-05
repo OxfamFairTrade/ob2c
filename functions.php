@@ -6393,8 +6393,8 @@
 			unset( $products_data_diff['featured'] );
 		}
 		
-		write_log("WOO_MSTORE_admin_product/master_slave_products_data_diff AFTER CUSTOM FILTER");
-		write_log( print_r( $products_data_diff, true ) );
+		// write_log("AFTER WOO_MSTORE_admin_product/master_slave_products_data_diff FILTER");
+		// write_log( print_r( $products_data_diff, true ) );
 		
 		return $products_data_diff;
 	}
@@ -6429,40 +6429,35 @@
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
 
-		// Voorraadbeheer steeds uitschakelen lokaal?
-		// $meta_keys['_manage_stock'] = 'no';
-		
 		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text' );
+			$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text', 'touched_by_import' );
 			foreach ( $keys_to_copy as $key ) {
 				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
 			}
 		} else {
-			write_log("WOO_MSTORE_admin_product/slave_product_meta_to_update AFTER CUSTOM FILTER");
-			foreach ( $meta_data as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$value = implode( ', ', $value );
-				}
-				write_log( $key.' => '.$value );
-			}
+			// Voorraadbeheer steeds uitschakelen? NIET DOEN MET OOG OP LOKAAL VOORRAADBEHEER
+			// $meta_keys['_manage_stock'] = 'no';
+			
+			// write_log("AFTER WOO_MSTORE_admin_product/slave_product_meta_to_update FILTER");
+			// foreach ( $meta_data as $key => $value ) {
+			// 	if ( is_array( $value ) ) {
+			// 		$value = implode( ', ', $value );
+			// 	}
+			// 	write_log( $key.' => '.$value );
+			// }
 		}
 		
 		return $meta_data;
 	}
 
 	// Vermijd dat publieke metadata zoals 'touched_by_import' automatisch gekopieerd wordt bij eerste lokale publicatie
-	// Inschakelen zorgt er ook voor dat bestaande lokale waarden weer gewist worden!
-	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
+	// Filter inschakelen zorgt er ook voor dat bestaande lokale waarden weer gewist worden!
+	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
 
 	function exclude_slave_product_meta( $meta_keys, $data ) {
 		$meta_keys[] = 'touched_by_import';
 
-		// Niet langer nodig, zit in ingebouwde instellingen
-		// $meta_keys[] = 'total_sales';
-		// $meta_keys[] = '_stock';
-		// $meta_keys[] = '_stock_status';
-
-		write_log("WOO_MSTORE_admin_product/slave_product_meta_to_exclude AFTER CUSTOM FILTER");
+		write_log("AFTER WOO_MSTORE_admin_product/slave_product_meta_to_exclude FILTER");
 		write_log( implode( ', ', $meta_keys ) );
 
 		return $meta_keys;

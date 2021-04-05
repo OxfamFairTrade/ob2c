@@ -71,7 +71,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                 $before = add_action( 'woocommerce_before_cart', array( $this, 'before_cart' ) );           
             }
             if ( in_array( "after_coupon", $giftwrap_display ) ) {
-                $collaterals = add_action( 'woocommerce_before_cart_collaterals', array( $this, 'before_cart_collaterals' ) );    
+                $collaterals = add_action( 'woocommerce_before_cart_collaterals', array( $this, 'before_cart_collaterals' ) );           
             }
             if ( in_array( "after_cart", $giftwrap_display ) ) {
                 $after = add_action( 'woocommerce_after_cart', array( $this, 'after_cart' ) );
@@ -354,7 +354,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
             } 
             $orderby = 'date';
             $order = 'DESC';
-            $args = array(
+            $args = apply_filters( 'wcgwp_post_args', array(
                 'post_type'         => 'product',
                 'post_status'       => 'publish',
                 'posts_per_page'    => '-1',
@@ -374,8 +374,8 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                         'value'     => 'instock'
                     )
                 ),
-            );
-            return get_posts( $args );	
+            ) );
+        	return apply_filters( 'wcgwp_wrap_posts', get_posts( $args ) );	
 
         }  
 
@@ -452,6 +452,10 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
          * @return void
         */
         public function gift_wrap_action( $label ) {
+        
+        	$list = $this->get_wcgw_products();
+        
+        	if ( ! apply_filters( 'wcgwp_continue_gift_wrap_action', TRUE, $list, $label ) ) return;
             
             $giftwrap_details = get_option( 'wcgwp_details', 'We offer the following gift wrap options:' );
             ob_start(); ?>
@@ -462,7 +466,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                 // if modal version
                 if ( get_option( 'wcgwp_modal', 'no' ) == 'yes' ) {
 
-                    wc_get_template( 'wcgwp/modal.php', array( 'label' => $label, 'list' => $this->get_wcgw_products(), 'giftwrap_details' => $giftwrap_details, 'show_thumbs' => $this->show_thumbs() ), '', WCGW_PLUGIN_DIR . 'templates/');
+                    wc_get_template( 'wcgwp/modal.php', array( 'label' => $label, 'list' => $list, 'giftwrap_details' => $giftwrap_details, 'show_thumbs' => $this->show_thumbs() ), '', WCGW_PLUGIN_DIR . 'templates/');
 
                 // non-modal version
                 } else { 
@@ -478,12 +482,12 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                             <?php echo esc_html__( $giftwrap_details, 'woocommerce-gift-wrapper' ); ?>
                         </p>
                     <?php }
-                    wc_get_template( 'wcgwp/giftwrap-list-cart.php', array( 'label' => $label, 'list' => $this->get_wcgw_products(), 'show_thumbs' => $this->show_thumbs() ), '', WCGW_PLUGIN_DIR . 'templates/');
+                    wc_get_template( 'wcgwp/giftwrap-list-cart.php', array( 'label' => $label, 'list' => $list, 'show_thumbs' => $this->show_thumbs() ), '', WCGW_PLUGIN_DIR . 'templates/');
                      ?>
                         <button type="submit" id="cart_giftwrap_submit" class="button btn alt giftwrap_submit replace_wrap fusion-button fusion-button-default fusion-button-default-size" name="wcgwp_submit<?php echo $label; ?>"><?php echo apply_filters( 'wcgwp_add_wrap_button_text', esc_html__( 'Add Gift Wrap to Order', 'woocommerce-gift-wrapper' ) ); ?></button>
                     </form>
                     <?php } else { // new template since version 4.4
-                        wc_get_template( 'wcgwp/giftwrap-list.php', array( 'label' => $label, 'list' => $this->get_wcgw_products(), 'show_thumbs' => $this->show_thumbs() ), '', WCGW_PLUGIN_DIR . 'templates/');
+                        wc_get_template( 'wcgwp/giftwrap-list.php', array( 'label' => $label, 'list' => $list, 'show_thumbs' => $this->show_thumbs() ), '', WCGW_PLUGIN_DIR . 'templates/');
                     }
                     
                 } ?>
