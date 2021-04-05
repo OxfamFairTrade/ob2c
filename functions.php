@@ -5774,6 +5774,7 @@
 		add_submenu_page( 'oxfam-products-list', 'Ontbijt', 'Ontbijt', 'manage_network_users', 'oxfam-products-list-ontbijt', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Snacks', 'Snacks', 'manage_network_users', 'oxfam-products-list-snacks', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Wereldkeuken', 'Wereldkeuken', 'manage_network_users', 'oxfam-products-list-wereldkeuken', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Alle craftsproducten', 'Alle craftsproducten', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Aprilmagazine 2021', 'Aprilpakket 2021', 'manage_network_users', 'oxfam-products-list-april', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januaripakket 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktoberpakket 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
@@ -5965,6 +5966,12 @@
 				}
 				break;
 
+			case 'crafts':
+				if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
+					return true;
+				}
+				break;
+
 			case 'april':
 				if ( has_term( 'april-2021', 'product_tag', $product->get_id() ) ) {
 					return true;
@@ -5992,13 +5999,6 @@
 			// Voorlopig niet meer gebruikt
 			case 'national':
 				if ( is_national_product( $product ) ) {
-					return true;
-				}
-				break;
-
-			// Voorlopig niet meer gebruikt
-			case 'crafts':
-				if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
 					return true;
 				}
 				break;
@@ -6565,19 +6565,25 @@
 			$to_outofstock = new WP_Query( $args );
 			if ( $to_outofstock->have_posts() ) {
 				write_log( $to_outofstock->found_posts." DEPRECATED PRODUCTS" );
+				
 				while ( $to_outofstock->have_posts() ) {
 					$to_outofstock->the_post();
 					$product = wc_get_product( get_the_ID() );
 					if ( $product->get_meta('_in_bestelweb') === 'ja' ) {
-						write_log( $product->get_sku() );
-						// $product->set_stock_quantity(0);
+						$product->set_stock_quantity(0);
+						$product->update_meta_data( '_in_bestelweb', 'nee' );
+						
 						// // In principe overbodig ...
 						// $product->set_stock_status('outofstock');
 						// $product->set_backorders('no');
-						// $product->update_meta_data( '_in_bestelweb', 'nee' );
-						// $product->save();
+						
+						if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
+							$product->save();
+							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
+						}
 					}
 				}
+
 				wp_reset_postdata();
 			}
 
