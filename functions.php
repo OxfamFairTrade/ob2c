@@ -7538,67 +7538,64 @@
 						case 'headquarter':
 							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
 						case 'telephone':
-							return call_user_func( 'format_'.$key, '0495325682', '.' );
+							return call_user_func( 'format_phone_number', '0495325682', '.' );
 					}
 				} elseif ( intval( $shop_post_id ) === 3226 ) {
 					// Uitzonderingen voor Regio Antwerpen vzw
 					switch ($key) {
 						case 'account':
-							return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
+							return call_user_func( 'format_phone_number', 'BE56 0018 1366 6388' );
 					}
 				} elseif ( intval( $shop_post_id ) === 3362 ) {
 					// Uitzonderingen voor Deinze
 					switch ($key) {
 						case 'telephone':
-							return call_user_func( 'format_'.$key, '0493082695', '.' );
+							return call_user_func( 'format_phone_number', '0493082695', '.' );
 					}
 				} elseif ( intval( $shop_post_id ) === 3454 ) {
 					// Uitzonderingen voor Hemiksem
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_'.$key, '0494626517', '.' );
-					}
+					$location_data['telephone'] = '0494626517';
 				} elseif ( intval( $shop_post_id ) === 3725 ) {
 					// Uitzonderingen voor Schelle
 					switch ($key) {
 						case 'telephone':
-							return call_user_func( 'format_'.$key, '0487436822', '.' );
+							return call_user_func( 'format_phone_number', '0487436822', '.' );
 					}
 				} elseif ( intval( $shop_post_id ) === 3383 ) {
 					// Uitzonderingen voor Diest
 					switch ($key) {
 						case 'telephone':
-							return call_user_func( 'format_'.$key, '0475596166', '.' );
+							return call_user_func( 'format_phone_number', '0475596166', '.' );
 					}
 				} elseif ( intval( $shop_post_id ) === 3249 ) {
 					// Uitzonderingen voor Belsele
 					switch ($key) {
 						case 'telephone':
-							return call_user_func( 'format_'.$key, '0471997223', '.' );
+							return call_user_func( 'format_phone_number', '0471997223', '.' );
 					}
 				} elseif ( intval( $shop_post_id ) === 3468 ) {
 					// Uitzonderingen voor Hoboken
 					switch ($key) {
 						case 'telephone':
-							return call_user_func( 'format_'.$key, '038277719', '.' );
+							return call_user_func( 'format_phone_number', '038277719', '.' );
 					}
 				}
 				
-				if ( array_key_exists( $key, $location_data ) and $location_data[$key] !== '' ) {
+				if ( array_key_exists( $key, $location_data ) and $location_data[ $key ] !== '' ) {
 					
 					switch ( $key ) {
 						case 'telephone':
 							// Geef alternatieve delimiter mee
-							return call_user_func( 'format_'.$key, $location_data[$key], '.' );
+							return call_user_func( 'format_phone_number', $location_data[ $key ], '.' );
 						case 'headquarter':
 							// Plak de adresgegevens van de vzw aan elkaar
-							return call_user_func( 'format_place', $location_data[$key]['place'] ).', '.call_user_func( 'format_zipcode', $location_data[$key]['zipcode'] ).' '.call_user_func( 'format_city', $location_data[$key]['city'] );
+							return call_user_func( 'format_place', $location_data[ $key ]['place'] ).', '.call_user_func( 'format_zipcode', $location_data[ $key ]['zipcode'] ).' '.call_user_func( 'format_city', $location_data[ $key ]['city'] );
 						case 'll':
 							// Er bestaat geen formatteerfunctie voor coördinaten
-							return $location_data[$key];
+							return $location_data[ $key ];
 					}
 
-					return call_user_func( 'format_'.$key, $location_data[$key] );
+					return call_user_func( 'format_'.$key, $location_data[ $key ] );
 
 				} else {
 					return '';
