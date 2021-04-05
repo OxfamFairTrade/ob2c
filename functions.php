@@ -5961,7 +5961,7 @@
 			case 'snacks':
 			case 'wereldkeuken':
 				// Werkt enkel zolang we de categorie blijven opnemen in de URL!
-				if ( stristr( '/'.$assortment.'/', 'product_category', $product->get_permalink() ) ) {
+				if ( stristr( $product->get_permalink(), '/'.$assortment.'/' ) ) {
 					return true;
 				}
 				break;
