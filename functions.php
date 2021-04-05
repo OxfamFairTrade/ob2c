@@ -7528,57 +7528,51 @@
 				// Bestaat in principe altijd
 				$location_data = $oww_store_data['location'];
 				
-				if ( intval( $shop_post_id ) === 3598 ) {
-					// Uitzonderingen voor Regio Leuven vzw
-					switch ($key) {
-						case 'tax':
-							return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
-						case 'account':
-							return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
-						case 'headquarter':
-							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
-						case 'telephone':
-							return call_user_func( 'format_phone_number', '0495325682', '.' );
-					}
-				} elseif ( intval( $shop_post_id ) === 3226 ) {
+				switch ( intval( $shop_post_id ) ) {
+					case 3598:
+						// Uitzonderingen voor Regio Leuven vzw
+						$location_data['tax'] = 'BE 0479.961.641';
+						$location_data['account'] = 'BE86 0014 0233 4050';
+						$location_data['headquarter'] = 'Parijsstraat 56, 3000 Leuven';
+						$location_data['telephone'] = '0495325682';
+						break;
+				}
+
+				if ( intval( $shop_post_id ) === 3226 ) {
+
 					// Uitzonderingen voor Regio Antwerpen vzw
-					switch ($key) {
-						case 'account':
-							return call_user_func( 'format_phone_number', 'BE56 0018 1366 6388' );
-					}
+					$location_data['account'] = 'BE56 0018 1366 6388';
+
 				} elseif ( intval( $shop_post_id ) === 3362 ) {
+
 					// Uitzonderingen voor Deinze
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_phone_number', '0493082695', '.' );
-					}
+					$location_data['telephone'] = '0493082695';
+
 				} elseif ( intval( $shop_post_id ) === 3454 ) {
+
 					// Uitzonderingen voor Hemiksem
 					$location_data['telephone'] = '0494626517';
+
 				} elseif ( intval( $shop_post_id ) === 3725 ) {
+
 					// Uitzonderingen voor Schelle
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_phone_number', '0487436822', '.' );
-					}
+					$location_data['telephone'] = '0487436822';
+
 				} elseif ( intval( $shop_post_id ) === 3383 ) {
+
 					// Uitzonderingen voor Diest
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_phone_number', '0475596166', '.' );
-					}
+					$location_data['telephone'] = '0475596166';
+
 				} elseif ( intval( $shop_post_id ) === 3249 ) {
+
 					// Uitzonderingen voor Belsele
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_phone_number', '0471997223', '.' );
-					}
+					$location_data['telephone'] = '0471997223';
+
 				} elseif ( intval( $shop_post_id ) === 3468 ) {
+
 					// Uitzonderingen voor Hoboken
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_phone_number', '038277719', '.' );
-					}
+					$location_data['telephone'] = '038277719';
+
 				}
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[ $key ] !== '' ) {
