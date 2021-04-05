@@ -6422,7 +6422,7 @@
 	}
 
 	// Geef aan welke metavelden we willen kopiëren
-	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 10, 2 );
+	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 1000, 2 );
 
 	function update_slave_product_meta( $meta_data, $data ) {
 		/**
@@ -6439,12 +6439,16 @@
 		 * @return array
 		 */
 		
-		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_main_thumbnail_id', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text', 'touched_by_import' );
-		foreach ( $keys_to_copy as $key ) {
-			if ( $key === '_main_thumbnail_id' ) {
-				$meta_data[ $key ] = $data['master_product']->get_image_id();
-			} else {
+		$meta_data['_main_thumbnail_id'] = $data['master_product']->get_image_id();
+
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text', 'touched_by_import' );
+			foreach ( $keys_to_copy as $key ) {
 				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
+			}
+		} else {
+			foreach ( $meta_data as $key => $value ) {
+				write_log( $key.' => '.$value );
 			}
 		}
 		
@@ -6453,15 +6457,12 @@
 		foreach ( $keys_to_translate as $key ) {
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
-
-		// foreach ( $meta_data as $key => $value ) {
-		// 	write_log( $key.' => '.$value );
-		// }
 		
 		return $meta_data;
 	}
 
-	// Publieke metadata zoals 'touched_by_import' wordt automatisch gekopieerd bij eerste lokale publicatie ... PAS BESCHIKBAAR VANAF WOOMULTISTORE 4.1.5
+	// Publieke metadata zoals 'touched_by_import' wordt automatisch gekopieerd bij eerste lokale publicatie ...
+	// BESTAAT BLIJKBAAR NIET, OOK NIET IN WOOMULTISTORE 4.1.5?
 	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
 
 	function exclude_slave_product_meta( $meta_keys, $data ) {
