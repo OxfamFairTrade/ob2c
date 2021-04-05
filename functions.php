@@ -6384,14 +6384,14 @@
 		return $options;
 	}
 
-	// Haal extra velden uit de automatische synchronisatie
+	// Synchroniseer 'featured'-status niet naar de subsites
 	add_filter( 'WOO_MSTORE_admin_product/master_slave_products_data_diff', 'unset_extra_products_data_diff', 10, 2 );
 
 	function unset_extra_products_data_diff( $products_data_diff, $data ) {
-		// Synchroniseer uitlichting niet, add_filter( 'WOO_MSTORE_SYNC/sync_child/sync_is_featured', '__return_false' ) lijkt niet te volstaan
-		// if ( 'no' === $data['options']['child_inherit_changes_fields_control__featured'][ get_current_blog_id() ] ) {
-		// 	unset( $products_data_diff['featured'] );
-		// }
+		// Zowel add_filter( 'WOO_MSTORE_SYNC/sync_child/sync_is_featured', '__return_false' ) als $data['options']['child_inherit_changes_fields_control__featured'] op zich volstaan niet
+		if ( 'no' === $data['options']['child_inherit_changes_fields_control__featured'][ get_current_blog_id() ] ) {
+			unset( $products_data_diff['featured'] );
+		}
 		
 		write_log("WOO_MSTORE_admin_product/master_slave_products_data_diff AFTER CUSTOM FILTER");
 		write_log( print_r( $products_data_diff, true ) );
@@ -6399,7 +6399,7 @@
 		return $products_data_diff;
 	}
 
-	// Wijzig welke metavelden we willen synchroniseren naar de lokale webshops
+	// Wijzig welke metavelden we willen synchroniseren naar de subsites
 	// Sinds WooMultistore 4.1.5+ gebruiken we de ingebouwde instellingen op https://shop.oxfamwereldwinkels.be/wp-admin/network/admin.php?page=woonet-set-taxonomy
 	// Behalve voor '_main_thumbnail_id', '_force_sell_ids' en '_force_sell_synced_ids' (afwijkende / gelokaliseerde meta values!)
 	// Aangezien de whitelist met prioriteit PHP_INT_MAX uitgevoerd wordt, hebben de ingebouwde instellingen steeds voorrang
@@ -6438,13 +6438,13 @@
 				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
 			}
 		} else {
-			// write_log("WOO_MSTORE_admin_product/slave_product_meta_to_update AFTER CUSTOM FILTER");
-			// foreach ( $meta_data as $key => $value ) {
-			// 	if ( is_array( $value ) ) {
-			// 		$value = implode( ', ', $value );
-			// 	}
-			// 	write_log( $key.' => '.$value );
-			// }
+			write_log("WOO_MSTORE_admin_product/slave_product_meta_to_update AFTER CUSTOM FILTER");
+			foreach ( $meta_data as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$value = implode( ', ', $value );
+				}
+				write_log( $key.' => '.$value );
+			}
 		}
 		
 		return $meta_data;
