@@ -2187,7 +2187,7 @@
 
 	// Leid mails op DEV-omgevingen om naar de site admin
 	function get_staged_recipients( $recipients ) {
-		if ( $_SERVER['SERVER_NAME'] !== 'shop.oxfamwereldwinkels.be' ) {
+		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 			return get_site_option('admin_email');
 		}
 		return $recipients;
@@ -5775,9 +5775,9 @@
 		add_submenu_page( 'oxfam-products-list', 'Snacks', 'Snacks', 'manage_network_users', 'oxfam-products-list-snacks', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Wereldkeuken', 'Wereldkeuken', 'manage_network_users', 'oxfam-products-list-wereldkeuken', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Alle craftsproducten', 'Alle craftsproducten', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Aprilmagazine 2021', 'Aprilpakket 2021', 'manage_network_users', 'oxfam-products-list-april', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januaripakket 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktoberpakket 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Aprilmagazine 2021', 'April 2021', 'manage_network_users', 'oxfam-products-list-april', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
@@ -6456,23 +6456,16 @@
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
 
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text', 'touched_by_import' );
-			foreach ( $keys_to_copy as $key ) {
-				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
-			}
-		} else {
-			// Voorraadbeheer steeds uitschakelen? NIET DOEN MET OOG OP LOKAAL VOORRAADBEHEER
-			// $meta_keys['_manage_stock'] = 'no';
-			
-			// write_log("AFTER WOO_MSTORE_admin_product/slave_product_meta_to_update FILTER");
-			// foreach ( $meta_data as $key => $value ) {
-			// 	if ( is_array( $value ) ) {
-			// 		$value = implode( ', ', $value );
-			// 	}
-			// 	write_log( $key.' => '.$value );
-			// }
-		}
+		// Voorraadbeheer steeds uitschakelen? NIET DOEN MET OOG OP LOKAAL VOORRAADBEHEER
+		// $meta_keys['_manage_stock'] = 'no';
+		
+		// write_log("AFTER WOO_MSTORE_admin_product/slave_product_meta_to_update FILTER");
+		// foreach ( $meta_data as $key => $value ) {
+		// 	if ( is_array( $value ) ) {
+		// 		$value = implode( ', ', $value );
+		// 	}
+		// 	write_log( $key.' => '.$value );
+		// }
 		
 		return $meta_data;
 	}
@@ -6580,6 +6573,8 @@
 						if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 							$product->save();
 							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
+						} else {
+							write_log( $product->get_sku()." SHOULD BE DISABLED ON MAIN SITE" );
 						}
 					}
 				}
@@ -6858,7 +6853,7 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De solidariteitsagenda\'s en 11.11.11-kalenders voor 2021 werden verwijderd aangezien ze niet meer relevant zijn.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De producten van het aprilmagazine volgen van zodra de eerste leveringen gebeurd zijn (half april). De solidariteitsagenda\'s en 11.11.11-kalenders voor 2021 werden verwijderd aangezien ze niet meer relevant zijn.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-april-2021-update.html" target="_blank">promo\'s voor april</a> zijn geactiveerd in alle webshops.';
