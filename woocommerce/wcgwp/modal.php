@@ -2,7 +2,7 @@
 /**
  * The template for displaying gift wrap modal content in cart/checkout areas
  *
- * @version 4.4
+ * @version 4.4.6
  */
 defined( 'ABSPATH' ) || exit;
 ?>
@@ -79,6 +79,7 @@ defined( 'ABSPATH' ) || exit;
                     <ul class="giftwrap_ul">
                         <?php foreach ( $list as $giftwrapper_product ) {
                             $product = wc_get_product( $giftwrapper_product->ID );
+                            if ( ! $product->is_in_stock() || ! $product->is_purchasable() ) continue; 
                             $price_html = $product->get_price_html().' service';
                             $giftwrap_label = strtolower( preg_replace( '/\s*/', '', $product->get_title() ) );
                             $show_thumbs_class = ' no_giftwrap_thumbs';
