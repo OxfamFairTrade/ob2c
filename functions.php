@@ -5777,7 +5777,6 @@
 		add_submenu_page( 'oxfam-products-list', 'Aprilmagazine 2021', 'April 2021', 'manage_network_users', 'oxfam-products-list-april', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Nationaal assortiment', 'Nationaal', 'manage_network_users', 'oxfam-products-list-national', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
@@ -5984,14 +5983,15 @@
 				}
 				break;
 
-			case 'national':
-				if ( is_national_product( $product ) ) {
+			case 'local':
+				if ( ! is_national_product( $product ) ) {
 					return true;
 				}
 				break;
 
-			case 'local':
-				if ( ! is_national_product( $product ) ) {
+			// Voorlopig niet meer gebruikt
+			case 'national':
+				if ( is_national_product( $product ) ) {
 					return true;
 				}
 				break;
