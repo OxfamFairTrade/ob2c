@@ -5767,10 +5767,18 @@
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
 		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
 		// Opgelet: vergeet de nieuwe paginaslugs niet te whitelisten voor de rol 'local_manager' in User Role Editor! 
-		add_submenu_page( 'oxfam-products-list', 'Nationaal assortiment', 'Nationaal', 'manage_network_users', 'oxfam-products-list-national', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Chocolade', 'Chocolade', 'manage_network_users', 'oxfam-products-list-chocolade', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Koffie', 'Koffie', 'manage_network_users', 'oxfam-products-list-koffie', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Wijn', 'Wijn', 'manage_network_users', 'oxfam-products-list-wijn', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Andere dranken', 'Andere dranken', 'manage_network_users', 'oxfam-products-list-andere-dranken', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Ontbijt', 'Ontbijt', 'manage_network_users', 'oxfam-products-list-ontbijt', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Snacks', 'Snacks', 'manage_network_users', 'oxfam-products-list-snacks', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Wereldkeuken', 'Wereldkeuken', 'manage_network_users', 'oxfam-products-list-wereldkeuken', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Aprilmagazine 2021', 'April 2021', 'manage_network_users', 'oxfam-products-list-april', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Nationaal assortiment', 'Nationaal', 'manage_network_users', 'oxfam-products-list-national', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
@@ -5945,6 +5953,37 @@
 				return true;
 				break;
 
+			case 'chocolade':
+			case 'koffie':
+			case 'wijn':
+			case 'andere-dranken':
+			case 'ontbijt':
+			case 'snacks':
+			case 'wereldkeuken':
+				// Werkt enkel zolang we de categorie blijven opnemen in de URL!
+				if ( stristr( '/'.$assortment.'/', 'product_category', $product->get_permalink() ) ) {
+					return true;
+				}
+				break;
+
+			case 'april':
+				if ( has_term( 'april-2021', 'product_tag', $product->get_id() ) ) {
+					return true;
+				}
+				break;
+
+			case 'januari':
+				if ( has_term( 'januari-2021', 'product_tag', $product->get_id() ) ) {
+					return true;
+				}
+				break;
+
+			case 'oktober':
+				if ( has_term( 'oktober-2020', 'product_tag', $product->get_id() ) ) {
+					return true;
+				}
+				break;
+
 			case 'national':
 				if ( is_national_product( $product ) ) {
 					return true;
@@ -5960,18 +5999,6 @@
 			// Voorlopig niet meer gebruikt
 			case 'crafts':
 				if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
-					return true;
-				}
-				break;
-
-			case 'oktober':
-				if ( has_term( 'oktober-2020', 'product_tag', $product->get_id() ) ) {
-					return true;
-				}
-				break;
-
-			case 'januari':
-				if ( has_term( 'januari-2021', 'product_tag', $product->get_id() ) ) {
 					return true;
 				}
 				break;
