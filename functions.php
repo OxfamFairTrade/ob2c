@@ -6376,8 +6376,8 @@
 			$options['child_inherit_changes_fields_control__upsell'][ $key ] = 'no';
 			$options['child_inherit_changes_fields_control__cross_sells'][ $key ] = 'no';
 			
-			// Onderstaande optie ontbreekt in settings-page.php, dus onzichtbaar!
-			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'no';
+			// Onderstaande optie ontbreekt in settings-page.php, dus onzichtbaar! TEST
+			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'yes';
 		}
 		
 		write_log( print_r( $options, true ) );
@@ -6457,9 +6457,7 @@
 	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
 
 	function exclude_slave_product_meta( $meta_keys, $data ) {
-		if ( $data['slave_product']->get_meta('touched_by_import') ) {
-			$meta_keys[] = 'touched_by_import';
-		}
+		$meta_keys[] = 'touched_by_import';
 
 		// Niet langer nodig, zit in ingebouwde instellingen
 		// $meta_keys[] = 'total_sales';
