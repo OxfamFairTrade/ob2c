@@ -6366,58 +6366,38 @@
 	#############
 
 	// Pas de opties van WooMultistore eenvoudig aan voor alle subsites
-	// add_filter( 'woo_mstore/options/options_save', 'change_woo_mstore_options_in_bulk' );
+	add_filter( 'woo_mstore/options/options_save', 'change_woo_mstore_options_in_bulk' );
 
 	function change_woo_mstore_options_in_bulk( $options ) {
 		foreach ( $options['child_inherit_changes_fields_control__product_image'] as $key => $value ) {
 			$options['child_inherit_changes_fields_control__product_image'][ $key ] = 'no';
 			$options['child_inherit_changes_fields_control__product_gallery'][ $key ] = 'no';
-			// $options['child_inherit_changes_fields_control__upsell'][ $key ] = 'yes';
-			// $options['child_inherit_changes_fields_control__cross_sells'][ $key ] = 'yes';
-			// Onderstaande opties ontbreken in settings-page.php, dus onzichtbaar
-			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'no';
 			$options['child_inherit_changes_fields_control__shipping_class'][ $key ] = 'yes';
+			$options['child_inherit_changes_fields_control__upsell'][ $key ] = 'no';
+			$options['child_inherit_changes_fields_control__cross_sells'][ $key ] = 'no';
+			
+			// Onderstaande optie ontbreekt in settings-page.php, dus onzichtbaar!
+			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'no';
 		}
+		
 		write_log( print_r( $options, true ) );
 		return $options;
 	}
 
-	// Verhinder dat de lokale voorraad overschreven wordt bij elke update ZIT NU IN PRINCIPE NETJES IN INSTELLING
-	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'do_not_overwrite_local_stock', 10, 2 );
-
-	function do_not_overwrite_local_stock( $meta_keys, $data ) {
-		/**
-		 * @param array $meta_keys    Metadata keys to exclude from slave product
-		 * @param array $data array(
-		 *      WC_Product  master_product              Master product
-		 *      array       master_product_attributes   Master product attributes
-		 *      integer     master_product_blog_id      Master product blog ID
-		 *      array       master_product_terms        Master product terms
-		 *      array       master_product_upload_dir   Master product uploads directory information ( see wp_get_upload_dir() )
-		 *      array       options                     Plugin options
-		 *      WC_Product  slave_product               Slave product
-		 * )
-		 *
-		 * @return array
-		 */
-		$meta_keys[] = 'total_sales';
-		$meta_keys[] = '_stock';
-		$meta_keys[] = '_stock_status';
-		$meta_keys[] = '_wc_review_count';
-		$meta_keys[] = '_wc_rating_count';
-		$meta_keys[] = '_wc_average_rating';
-		write_log( print_r( $meta_keys, true ) );
-		return $meta_keys;
-	}
+	// Synchroniseer uitlichting niet
+	add_filter( 'WOO_MSTORE_SYNC/sync_child/sync_is_featured', '__return_false' );
 
 	// Haal extra velden uit de automatische synchronisatie
 	add_filter( 'WOO_MSTORE_admin_product/master_slave_products_data_diff', 'unset_extra_products_data_diff', 10, 2 );
 
 	function unset_extra_products_data_diff( $products_data_diff, $data ) {
-		if ( 'no' === $data['options']['child_inherit_changes_fields_control__featured'][ get_current_blog_id() ] ) {
-			unset( $products_data_diff['featured'] );
-		}
-		// write_log( print_r( $products_data_diff, true ) );
+		// if ( 'no' === $data['options']['child_inherit_changes_fields_control__featured'][ get_current_blog_id() ] ) {
+		// 	unset( $products_data_diff['featured'] );
+		// }
+		
+		write_log("WOO_MSTORE_admin_product/master_slave_products_data_diff AFTER CUSTOM FILTER");
+		write_log( print_r( $products_data_diff, true ) );
+		
 		return $products_data_diff;
 	}
 
@@ -6450,6 +6430,9 @@
 		foreach ( $keys_to_translate as $key ) {
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
+
+		// Voorraadbeheer steeds uitschakelen lokaal?
+		// $meta_keys['_manage_stock'] = 'no';
 		
 		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 			$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text' );
@@ -6474,26 +6457,14 @@
 	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
 
 	function exclude_slave_product_meta( $meta_keys, $data ) {
-		/**
-		 * @param array $meta_keys          Metadata keys to exclude from slave product
-		 * @param array $data array(
-		 *      WC_Product  master_product              Master product
-		 *      array       master_product_attributes   Master product attributes
-		 *      integer     master_product_blog_id      Master product blog ID
-		 *      array       master_product_terms        Master product terms
-		 *      array       master_product_upload_dir   Master product uploads directory information ( see wp_get_upload_dir() )
-		 *      array       options                     Plugin options
-		 *      WC_Product  slave_product               Slave product
-		 * )
-		 * @return array
-		 */
-		
 		if ( $data['slave_product']->get_meta('touched_by_import') ) {
 			$meta_keys[] = 'touched_by_import';
 		}
 
-		// Voorraadbeheer standaard uitschakelen?
-		// $meta_keys[] = '_manage_stock';
+		// Niet langer nodig, zit in ingebouwde instellingen
+		// $meta_keys[] = 'total_sales';
+		// $meta_keys[] = '_stock';
+		// $meta_keys[] = '_stock_status';
 
 		write_log("WOO_MSTORE_admin_product/slave_product_meta_to_exclude AFTER CUSTOM FILTER");
 		write_log( implode( ', ', $meta_keys ) );
