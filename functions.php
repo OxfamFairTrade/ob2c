@@ -6457,18 +6457,20 @@
 				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
 			}
 		} else {
-			foreach ( $meta_data as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$value = implode( ', ', $value );
-				}
-				write_log( $key.' => '.$value );
-			}
+			// write_log("WOO_MSTORE_admin_product/slave_product_meta_to_update AFTER CUSTOM FILTER");
+			// foreach ( $meta_data as $key => $value ) {
+			// 	if ( is_array( $value ) ) {
+			// 		$value = implode( ', ', $value );
+			// 	}
+			// 	write_log( $key.' => '.$value );
+			// }
 		}
 		
 		return $meta_data;
 	}
 
 	// Vermijd dat publieke metadata zoals 'touched_by_import' automatisch gekopieerd wordt bij eerste lokale publicatie
+	// Inschakelen zorgt er ook voor dat bestaande lokale waarden weer gewist worden!
 	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
 
 	function exclude_slave_product_meta( $meta_keys, $data ) {
@@ -6493,7 +6495,9 @@
 		// Voorraadbeheer standaard uitschakelen?
 		// $meta_keys[] = '_manage_stock';
 
+		write_log("WOO_MSTORE_admin_product/slave_product_meta_to_exclude AFTER CUSTOM FILTER");
 		write_log( implode( ', ', $meta_keys ) );
+
 		return $meta_keys;
 	}
 
