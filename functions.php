@@ -6376,21 +6376,19 @@
 			$options['child_inherit_changes_fields_control__upsell'][ $key ] = 'no';
 			$options['child_inherit_changes_fields_control__cross_sells'][ $key ] = 'no';
 			
-			// Onderstaande optie ontbreekt in settings-page.php, dus onzichtbaar! TEST
-			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'yes';
+			// Onderstaande optie ontbreekt in settings-page.php, dus onzichtbaar!
+			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'no';
 		}
 		
 		write_log( print_r( $options, true ) );
 		return $options;
 	}
 
-	// Synchroniseer uitlichting niet
-	add_filter( 'WOO_MSTORE_SYNC/sync_child/sync_is_featured', '__return_false' );
-
 	// Haal extra velden uit de automatische synchronisatie
 	add_filter( 'WOO_MSTORE_admin_product/master_slave_products_data_diff', 'unset_extra_products_data_diff', 10, 2 );
 
 	function unset_extra_products_data_diff( $products_data_diff, $data ) {
+		// Synchroniseer uitlichting niet, add_filter( 'WOO_MSTORE_SYNC/sync_child/sync_is_featured', '__return_false' ) lijkt niet te volstaan
 		// if ( 'no' === $data['options']['child_inherit_changes_fields_control__featured'][ get_current_blog_id() ] ) {
 		// 	unset( $products_data_diff['featured'] );
 		// }
