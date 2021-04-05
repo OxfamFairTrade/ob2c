@@ -6421,7 +6421,10 @@
 		return $products_data_diff;
 	}
 
-	// Geef aan welke metavelden we willen kopiëren
+	// Wijzig welke metavelden we willen synchroniseren naar de lokale webshops
+	// Sinds WooMultistore 4.1.5+ gebruiken we de ingebouwde instellingen op https://shop.oxfamwereldwinkels.be/wp-admin/network/admin.php?page=woonet-set-taxonomy
+	// Behalve voor '_main_thumbnail_id', '_force_sell_ids' en '_force_sell_synced_ids' (afwijkende / gelokaliseerde meta values!)
+	// Aangezien de whitelist met prioriteit PHP_INT_MAX uitgevoerd wordt, hebben de ingebouwde instellingen steeds voorrang
 	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 10, 2 );
 
 	function update_slave_product_meta( $meta_data, $data ) {
@@ -6439,32 +6442,34 @@
 		 * @return array
 		 */
 		
+		// Haal de afbeelding-ID op i.p.v. de (niet-bestaande) meta value
 		$meta_data['_main_thumbnail_id'] = $data['master_product']->get_image_id();
 
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text', 'touched_by_import' );
-			foreach ( $keys_to_copy as $key ) {
-				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
-			}
-		} else {
-			write_log("OB2C FILTER RUNTHROUGH");
-			foreach ( $meta_data as $key => $value ) {
-				write_log( $key.' => '.$value );
-			}
-		}
-		
-		// '_upsell_ids' en '_crosssell_ids' worden in principe door WooMultistore zelf onderhouden
+		// Velden '_upsell_ids' en '_crosssell_ids' worden door WooMultistore onderhouden
 		$keys_to_translate = array( '_force_sell_ids', '_force_sell_synced_ids' );
 		foreach ( $keys_to_translate as $key ) {
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
 		
+		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+			$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text' );
+			foreach ( $keys_to_copy as $key ) {
+				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
+			}
+		} else {
+			foreach ( $meta_data as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$value = implode( ', ', $value );
+				}
+				write_log( $key.' => '.$value );
+			}
+		}
+		
 		return $meta_data;
 	}
 
-	// Publieke metadata zoals 'touched_by_import' wordt automatisch gekopieerd bij eerste lokale publicatie ...
-	// BESTAAT BLIJKBAAR NIET, OOK NIET IN WOOMULTISTORE 4.1.5?
-	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
+	// Vermijd dat publieke metadata zoals 'touched_by_import' automatisch gekopieerd wordt bij eerste lokale publicatie
+	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
 
 	function exclude_slave_product_meta( $meta_keys, $data ) {
 		/**
@@ -6481,12 +6486,12 @@
 		 * @return array
 		 */
 		
-		// Voorraadbeheer standaard uitschakelen?
-		// $meta_keys[] = '_manage_stock';
-
 		if ( $data['slave_product']->get_meta('touched_by_import') ) {
 			$meta_keys[] = 'touched_by_import';
 		}
+
+		// Voorraadbeheer standaard uitschakelen?
+		// $meta_keys[] = '_manage_stock';
 
 		write_log( implode( ', ', $meta_keys ) );
 		return $meta_keys;
