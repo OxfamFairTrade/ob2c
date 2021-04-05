@@ -8,7 +8,7 @@
 	<nav class="nav-tab-wrapper">
 		<?php
 			// Om het submenu de tabselectie netjes te laten volgen, kijken we beter naar het laatste deel van de parameter 'oxfam-product-list-...' i.p.v. de nieuwe parameter 'assortment' 
-			$tabs = array( 'general' => 'Alle producten', 'chocolade' => 'Chocolade', 'koffie' => 'Koffie', 'wijn' => 'Wijn', 'andere-dranken' => 'Andere dranken', 'ontbijt' => 'Ontbijt', 'snacks' => 'Snacks', 'wereldkeuken' => 'Wereldkeuken', 'april' => 'Aprilmagazine 2021', 'januari' => 'Januarimagazine 2021', 'oktober' => 'Oktobermagazine 2020', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment' );
+			$tabs = array( 'general' => 'Alle producten', 'chocolade' => 'Chocolade', 'koffie' => 'Koffie', 'wijn' => 'Wijn', 'andere-dranken' => 'Andere dranken', 'ontbijt' => 'Ontbijt', 'snacks' => 'Snacks', 'wereldkeuken' => 'Wereldkeuken', 'april' => 'Aprilmagazine 2021', 'januari' => 'Januarimagazine 2021', 'oktober' => 'Oktobermagazine 2020', 'local' => 'Lokaal assortiment' );
 			
 			$parts = explode( 'oxfam-products-list-', $_REQUEST['page'] );
 			if ( count( $parts ) === 2 and array_key_exists( $parts[1], $tabs ) ) {
