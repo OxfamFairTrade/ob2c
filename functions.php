@@ -7536,50 +7536,48 @@
 						$location_data['headquarter'] = 'Parijsstraat 56, 3000 Leuven';
 						$location_data['telephone'] = '0495325682';
 						break;
-				}
 
-				if ( intval( $shop_post_id ) === 3226 ) {
+					case 3226:
+						// Uitzonderingen voor Regio Antwerpen vzw
+						$location_data['account'] = 'BE56 0018 1366 6388';
+						break;
 
-					// Uitzonderingen voor Regio Antwerpen vzw
-					$location_data['account'] = 'BE56 0018 1366 6388';
+					case 3362:
+						// Uitzonderingen voor Deinze
+						$location_data['telephone'] = '0493082695';
+						break;
 
-				} elseif ( intval( $shop_post_id ) === 3362 ) {
+					case 3454:
+						// Uitzonderingen voor Hemiksem
+						$location_data['telephone'] = '0494626517';
+						break;
 
-					// Uitzonderingen voor Deinze
-					$location_data['telephone'] = '0493082695';
+					case 3725:
+						// Uitzonderingen voor Schelle
+						$location_data['telephone'] = '0487436822';
+						break;
 
-				} elseif ( intval( $shop_post_id ) === 3454 ) {
+					case 3383:
+						// Uitzonderingen voor Diest
+						$location_data['telephone'] = '0475596166';
+						break;
 
-					// Uitzonderingen voor Hemiksem
-					$location_data['telephone'] = '0494626517';
+					case 3249:
+						// Uitzonderingen voor Belsele
+						$location_data['telephone'] = '0471997223';
+						break;
 
-				} elseif ( intval( $shop_post_id ) === 3725 ) {
-
-					// Uitzonderingen voor Schelle
-					$location_data['telephone'] = '0487436822';
-
-				} elseif ( intval( $shop_post_id ) === 3383 ) {
-
-					// Uitzonderingen voor Diest
-					$location_data['telephone'] = '0475596166';
-
-				} elseif ( intval( $shop_post_id ) === 3249 ) {
-
-					// Uitzonderingen voor Belsele
-					$location_data['telephone'] = '0471997223';
-
-				} elseif ( intval( $shop_post_id ) === 3468 ) {
-
-					// Uitzonderingen voor Hoboken
-					$location_data['telephone'] = '038277719';
-
+					case 3468:
+						// Uitzonderingen voor Hoboken
+						$location_data['telephone'] = '038277719';
+						break;
 				}
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[ $key ] !== '' ) {
 					
 					switch ( $key ) {
 						case 'telephone':
-							// Geef alternatieve delimiter mee
+							// Geef alternatieve formatteringsfunctie en delimiter mee
 							return call_user_func( 'format_phone_number', $location_data[ $key ], '.' );
 						case 'headquarter':
 							// Plak de adresgegevens van de vzw aan elkaar
