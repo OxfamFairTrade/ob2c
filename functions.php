@@ -6422,7 +6422,7 @@
 	}
 
 	// Geef aan welke metavelden we willen kopiëren
-	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 1000, 2 );
+	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 10, 2 );
 
 	function update_slave_product_meta( $meta_data, $data ) {
 		/**
@@ -6447,6 +6447,7 @@
 				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
 			}
 		} else {
+			write_log("OB2C FILTER RUNTHROUGH");
 			foreach ( $meta_data as $key => $value ) {
 				write_log( $key.' => '.$value );
 			}
