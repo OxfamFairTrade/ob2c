@@ -99,7 +99,7 @@ if ( ! is_main_site() ) {
 				// echo '<p>We vonden '.count( $neighbouring_webshops ).' webshops in de buurt, goed voor '.count( $neighbouring_sites ).' andere subsites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
 
 				if ( count( $shops_instock ) > 0 ) {
-					echo '<p class="neighbouring-webshops">Naburige beschikbaarheid:</p><ul>';
+					echo '<ul class="neighbouring-webshops">';
 					// Loop over $neighbouring_webshops zodat we de volgorde op stijgende afstand bewaren
 					foreach ( $neighbouring_webshops as $store ) {
 						$blog_id = intval( $store['webshopBlogId'] );

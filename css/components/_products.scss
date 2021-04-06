@@ -194,7 +194,7 @@
   .neighbouring-webshops {
     font-size: 0.8em;
 
-    li.available::before {
+    li.available:before {
       content: '';
       display: inline-block;
       width: 20px;
@@ -204,7 +204,7 @@
       margin-right: 1em;
     }
 
-    li.unavailable::before {
+    li.unavailable:before {
       background-color: $see-through-red;
     }
   }
