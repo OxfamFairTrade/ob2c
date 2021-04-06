@@ -69,7 +69,7 @@ if ( ! is_main_site() ) {
 					// Er kunnen dubbels voorkomen (= meerdere winkels onder één webshop) maar dat lossen we later op
 					set_transient( 'oxfam_neighbouring_webshops', $neighbouring_webshops, DAY_IN_SECONDS );
 
-					echo '<p>Er werden '.count( $stores ).' winkels in de buurt van '.$lat.','.$lng.' gevonden, waarvan '.count( $neighbouring_webshops ).' met een webshop.<p>';
+					// echo '<p>Er werden '.count( $stores ).' winkels in de buurt van '.$lat.','.$lng.' gevonden, waarvan '.count( $neighbouring_webshops ).' met een webshop.<p>';
 				}
 			}
 
@@ -91,7 +91,7 @@ if ( ! is_main_site() ) {
 				// We zouden ook dit resultaat in een kortlevende transient per SKU kunnen stoppen, als de data echt frequent opgevraagd wordt
 				// var_dump_pre( $shops_instock );
 
-				echo '<p>We vonden '.count( $neighbouring_webshops ).' webshops in de buurt, goed voor '.count( $neighbouring_sites ).' andere subsites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
+				// echo '<p>We vonden '.count( $neighbouring_webshops ).' webshops in de buurt, goed voor '.count( $neighbouring_sites ).' andere subsites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
 
 				if ( count( $shops_instock ) > 0 ) {
 					echo '<p class="neighbouring-webshops">Dit product is online momenteel wel beschikbaar bij:<ul>';
