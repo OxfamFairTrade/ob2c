@@ -41,6 +41,7 @@ if ( ! is_main_site() ) {
 					$lat = floatval( get_post_meta( $wpsl_store_ids[0], 'wpsl_lat', true ) );
 					$lng = floatval( get_post_meta( $wpsl_store_ids[0], 'wpsl_lng', true ) );
 				} else {
+					write_log("Geen winkellocatie gevonden, gebruik de coördinaten van Manneken Pis");
 					$lat = 50.84510814431842;
 					$lng = 4.349988998666601;
 				}
@@ -58,7 +59,6 @@ if ( ! is_main_site() ) {
 						// Overrule default waarde
 						'max_results' => 20,
 					);
-					// var_dump_pre( $args );
 
 					// Raadpleeg werking van functie in /wp-store-locator/frontend/class-frontend.php
 					$stores = $wpsl->find_nearby_locations( $args );
@@ -78,7 +78,6 @@ if ( ! is_main_site() ) {
 				// Sluit de hoofdsite en deze webshop uit
 				// Geef enkel de blog-ID van de gevonden winkels door
 				$neighbouring_sites = get_sites( array( 'site__not_in' => array( 1, get_current_blog_id() ), 'site__in' => wp_list_pluck( $neighbouring_webshops, 'webshopBlogId' ), 'public' => 1 ) );
-				// var_dump_pre( $neighbouring_sites );
 
 				$shops_instock = array();
 				foreach ( $neighbouring_sites as $site ) {
@@ -95,13 +94,13 @@ if ( ! is_main_site() ) {
 				echo '<p>We vonden '.count( $neighbouring_webshops ).' webshops in de buurt, goed voor '.count( $neighbouring_sites ).' andere subsites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
 
 				if ( count( $shops_instock ) > 0 ) {
-					echo '<p>Dit product is online momenteel wel beschikbaar bij:<ul>';
+					echo '<p class="neighbouring-webshops">Dit product is online momenteel wel beschikbaar bij:<ul>';
 					// Loop over $neighbouring_webshops zodat we de volgorde op stijgende afstand bewaren
 					foreach ( $neighbouring_webshops as $store ) {
 						$blog_id = intval( $store['webshopBlogId'] );
 						if ( array_key_exists( $blog_id, $shops_instock ) ) {
 							// Link meteen naar het product in kwestie, maak de nationale URL daarvoor lokaal
-							echo '<li><a href="'.esc_url( str_replace( home_url('/'), $store['webshopUrl'], $product->get_permalink() ) ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> ('.esc_html( $store['distance'] ).' km)</li>';
+							echo '<li class="available"><a href="'.esc_url( str_replace( home_url('/'), $store['webshopUrl'], $product->get_permalink() ) ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> ('.esc_html( $store['distance'] ).' km)</li>';
 							// Verhinder dat we dezelfde webshop nog eens tonen!
 							unset( $shops_instock[ $blog_id ] );
 						}

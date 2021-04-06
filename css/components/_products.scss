@@ -173,10 +173,6 @@
     font-size: 17px;
     line-height: 24px;
 
-    &.herkomst {
-
-    }
-
     &.promotie {
       margin: 28px 0;
       color: $see-through-red;
@@ -192,6 +188,19 @@
       color: gray;
       font-size: 15.3px;
       margin-right: 7.65px;
+    }
+  }
+
+  .neigbouring-webshops {
+    font-size: 0.8em;
+    
+    li.available:before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: $green-bio;
     }
   }
 

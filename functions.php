@@ -6851,7 +6851,7 @@
 						}
 					echo '</ul><p>';
 					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De producten van het aprilmagazine volgen van zodra de eerste leveringen gebeurd zijn (half april). De solidariteitsagenda\'s en 11.11.11-kalenders voor 2021 werden verwijderd aangezien ze niet meer relevant zijn.</p>';
 				echo '</div>';
