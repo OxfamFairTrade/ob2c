@@ -195,6 +195,8 @@
     font-size: 0.8em;
 
     li {
+      list-style: none;
+
       & > a {
         text-decoration: none;
       }
@@ -209,10 +211,6 @@
         margin: 0 0.4em -0.1em 0.4em;
       }
 
-      &.available {
-        text-decoration: underline;
-      }
-
       &.unavailable {
         cursor: not-allowed;
 
@@ -224,8 +222,13 @@
       &:hover {
         &:before {
           // background-color: grey;
-          transition: transform 0.5s ease;
-          transform: scale(1.1);
+          transition: all 0.5s ease-in-out;
+          transform: scale(1.1) translateZ(0);
+          backface-visibility: hidden;
+        }
+
+        &.available > a {
+          text-decoration: underline;
         }
       }
     }
