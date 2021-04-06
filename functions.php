@@ -6500,8 +6500,8 @@
 
 			$stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
 			foreach ( $stores as $key => $store_id ) {
-				// Producten sowieso nooit publiceren naar sjabloon
-				if ( $store_id == 5 ) {
+				// Producten sowieso nooit publiceren naar hoofdsite en sjabloon
+				if ( in_array( $store_id, array( 1, 5 ) ) ) {
 					unset( $stores[ $key ] );
 				}
 				// Nieuwe webshops eventueel uitsluiten
@@ -6585,6 +6585,9 @@
 			$old = WP_CONTENT_DIR."/erp-import.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
+
+			// Pas toegevoegde foto's dienen niet meer via bulkimport geregistreerd te worden
+			update_option( 'laatste_registratie_timestamp', time() );
 
 			// Flush na afloop alle W3TC-caches?
 			// if ( function_exists('w3tc_flush_all') ) {
