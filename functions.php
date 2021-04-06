@@ -6488,7 +6488,7 @@
 	
 	function execute_product_sync( $post_id ) {
 		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
-		if ( get_post_type( $post_id ) === 'product' and get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
+		if ( get_post_type( $post_id ) === 'product' and get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 			/**
 			 * Mark a new product to sync with a store and then call process_product hook to run the sync.
 			 *
