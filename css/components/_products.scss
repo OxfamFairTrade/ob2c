@@ -206,17 +206,26 @@
         height: 1em;
         border-radius: 50%;
         background-color: $green-bio;
-        margin: 0 0.4em -0.2em 1em;
+        margin: 0 0.4em -0.1em 0.4em;
       }
 
-      &.unavailable:before {
-        background-color: $see-through-red;
+      &.available {
+        text-decoration: underline;
+      }
+
+      &.unavailable {
+        cursor: not-allowed;
+
+        &:before {
+          background-color: $see-through-red;
+        }
       }
 
       &:hover {
         &:before {
-          background-color: grey;
-          transition: background-color 0.5s ease;
+          // background-color: grey;
+          transition: transform 0.5s ease;
+          transform: scale(1.1);
         }
       }
     }
