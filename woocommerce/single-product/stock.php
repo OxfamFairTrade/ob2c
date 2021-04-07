@@ -94,7 +94,7 @@ if ( ! is_main_site() ) {
 					restore_current_blog();
 				}
 				
-				write_log( count( $neighbouring_webshops )." webshops gevonden in de buurt, goed voor ".count( $neighbouring_sites )." subsites waarvan ".count( $shops_instock )." ".$product->get_sku()." wél in voorraad hebben" );
+				write_log( count( $neighbouring_webshops )." webshops gevonden in de buurt, goed voor ".count( $neighbouring_sites )." subsites waarvan ".count( $shops_instock )." met ".$product->get_sku()." wél in voorraad (".$product->get_permalink().")" );
 				// We zouden ook dit resultaat in een kortlevende transient per SKU kunnen stoppen, als de data echt frequent opgevraagd wordt ...
 				// var_dump_pre( $shops_instock );
 
