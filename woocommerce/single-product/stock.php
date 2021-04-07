@@ -97,24 +97,25 @@ if ( ! is_main_site() ) {
 				write_log( count( $neighbouring_webshops )." webshops gevonden in de buurt, goed voor ".count( $neighbouring_sites )." subsites waarvan ".count( $shops_instock )." met ".$product->get_sku()." wél in voorraad: ".$product->get_permalink() );
 				// We zouden ook dit resultaat in een kortlevende transient per SKU kunnen stoppen, als de data echt frequent opgevraagd wordt ...
 				// var_dump_pre( $shops_instock );
-
-				if ( count( $shops_instock ) > 0 ) {
-					echo '<ul class="neighbouring-webshops">';
-					// Loop over $neighbouring_webshops zodat we de volgorde op stijgende afstand bewaren
-					foreach ( $neighbouring_webshops as $store ) {
-						$blog_id = intval( $store['webshopBlogId'] );
-						if ( array_key_exists( $blog_id, $shops_instock ) ) {
-							// Link meteen naar het product in kwestie, maak de nationale URL daarvoor lokaal
-							echo '<li class="available"><a href="'.esc_url( str_replace( home_url('/'), $store['webshopUrl'], $product->get_permalink() ) ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> <small>('.esc_html( $store['distance'] ).' km)</small></li>';
-							// Verhinder dat we dezelfde webshop nog eens tonen!
-							unset( $shops_instock[ $blog_id ] );
-						} elseif ( array_key_exists( $blog_id, $shops_outofstock ) ) {
-							echo '<li class="unavailable">'.esc_html( $shops_outofstock[ $blog_id ] ).' <small>('.esc_html( $store['distance'] ).' km)</small></li>';
-							unset( $shops_outofstock[ $blog_id ] );
-						}
+					
+				echo '<div class="neighbouring-webshops">';
+				echo '<p>Voorradigheid bij naburige winkels:</p>';
+				echo '<ul class="neighbouring-webshops">';
+				// Loop over $neighbouring_webshops zodat we de volgorde op stijgende afstand bewaren
+				foreach ( $neighbouring_webshops as $store ) {
+					$blog_id = intval( $store['webshopBlogId'] );
+					if ( array_key_exists( $blog_id, $shops_instock ) ) {
+						// Link meteen naar het product in kwestie, maak de nationale URL daarvoor lokaal
+						echo '<li class="available"><a href="'.esc_url( str_replace( home_url('/'), $store['webshopUrl'], $product->get_permalink() ) ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> <small>('.esc_html( $store['distance'] ).' km)</small></li>';
+						// Verhinder dat we dezelfde webshop nog eens tonen!
+						unset( $shops_instock[ $blog_id ] );
+					} elseif ( array_key_exists( $blog_id, $shops_outofstock ) ) {
+						echo '<li class="unavailable">'.esc_html( $shops_outofstock[ $blog_id ] ).' <small>('.esc_html( $store['distance'] ).' km)</small></li>';
+						unset( $shops_outofstock[ $blog_id ] );
 					}
-					echo '</ul>';
 				}
+				echo '</ul>';
+				echo '</div>';
 			}
 		}
 	}
