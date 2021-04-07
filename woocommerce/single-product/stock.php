@@ -99,8 +99,7 @@ if ( ! is_main_site() ) {
 				// var_dump_pre( $shops_instock );
 					
 				echo '<div class="neighbouring-webshops">';
-					echo '<p>Voorradigheid bij naburige winkels:</p>';
-					echo '<ul>';
+					echo 'Voorradigheid bij naburige winkels:<ul>';
 					// Loop over $neighbouring_webshops zodat we de volgorde op stijgende afstand bewaren
 					foreach ( $neighbouring_webshops as $store ) {
 						$blog_id = intval( $store['webshopBlogId'] );
