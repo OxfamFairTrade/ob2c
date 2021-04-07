@@ -20,7 +20,7 @@ if ( ! is_main_site() ) {
 	// Variable $product wordt via template argumenten doorgegeven door WooCommerce, geen global nodig
 	if ( ( ! $product->is_in_stock() or $product->is_on_backorder() ) and is_national_product( $product->get_id() ) ) {
 		
-		if ( class_exists('WPSL_Frontend') and current_user_can('update_core') ) {
+		if ( class_exists('WPSL_Frontend') ) {
 
 			if ( false === ( $neighbouring_webshops = get_transient('oxfam_neighbouring_webshops') ) ) {
 				$current_shop_id = get_option('oxfam_shop_post_id');
@@ -41,7 +41,7 @@ if ( ! is_main_site() ) {
 					$lat = floatval( get_post_meta( $wpsl_store_ids[0], 'wpsl_lat', true ) );
 					$lng = floatval( get_post_meta( $wpsl_store_ids[0], 'wpsl_lng', true ) );
 				} else {
-					write_log("Geen winkellocatie gevonden, gebruik de coördinaten van Manneken Pis");
+					write_log("Geen winkellocatie gevonden, gebruik coördinaten van Manneken Pis");
 					$lat = 50.84510814431842;
 					$lng = 4.349988998666601;
 				}
@@ -69,7 +69,7 @@ if ( ! is_main_site() ) {
 					// Er kunnen dubbels voorkomen (= meerdere winkels onder één webshop) maar dat lossen we later op
 					set_transient( 'oxfam_neighbouring_webshops', $neighbouring_webshops, DAY_IN_SECONDS );
 
-					// echo '<p>Er werden '.count( $stores ).' winkels in de buurt van '.$lat.','.$lng.' gevonden, waarvan '.count( $neighbouring_webshops ).' met een webshop.<p>';
+					write_log( count( $stores )." winkels gevonden in de buurt van ".$lat.",".$lng." waarvan ".count( $neighbouring_webshops )." met webshop" );
 				}
 			}
 
@@ -93,10 +93,10 @@ if ( ! is_main_site() ) {
 					}
 					restore_current_blog();
 				}
-				// We zouden ook dit resultaat in een kortlevende transient per SKU kunnen stoppen, als de data echt frequent opgevraagd wordt
+				
+				write_log( count( $neighbouring_webshops )." webshops gevonden in de buurt, goed voor ".count( $neighbouring_sites )." subsites waarvan ".count( $shops_instock )." ".$product->get_sku()." wél in voorraad hebben" );
+				// We zouden ook dit resultaat in een kortlevende transient per SKU kunnen stoppen, als de data echt frequent opgevraagd wordt ...
 				// var_dump_pre( $shops_instock );
-
-				// echo '<p>We vonden '.count( $neighbouring_webshops ).' webshops in de buurt, goed voor '.count( $neighbouring_sites ).' andere subsites. Daarvan hebben '.count( $shops_instock ).' het product wél in voorraad.<p>';
 
 				if ( count( $shops_instock ) > 0 ) {
 					echo '<ul class="neighbouring-webshops">';
@@ -109,7 +109,7 @@ if ( ! is_main_site() ) {
 							// Verhinder dat we dezelfde webshop nog eens tonen!
 							unset( $shops_instock[ $blog_id ] );
 						} elseif ( array_key_exists( $blog_id, $shops_outofstock ) ) {
-							echo '<li class="unavailable">'.esc_html( $shops_outofstock[ $blog_id ] ).'</li>';
+							echo '<li class="unavailable">'.esc_html( $shops_outofstock[ $blog_id ] ).' <small>('.esc_html( $store['distance'] ).' km)</small></li>';
 							unset( $shops_outofstock[ $blog_id ] );
 						}
 					}

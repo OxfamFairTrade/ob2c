@@ -221,7 +221,6 @@
 
       &:hover {
         &:before {
-          // background-color: grey;
           transition: all 0.25s ease-in-out;
           transform: scale(1.1);
           backface-visibility: hidden;
