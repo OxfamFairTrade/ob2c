@@ -202,7 +202,7 @@
 
       70% {
         transform: scale(1);
-        box-shadow: 0 0 0 0.5em rgba(97, 165, 52, 0);
+        box-shadow: 0 0 0 0.4em rgba(97, 165, 52, 0);
       }
 
       100% {
@@ -219,7 +219,7 @@
 
       70% {
         transform: scale(1);
-        box-shadow: 0 0 0 0.5em rgba(253, 52, 6, 0);
+        box-shadow: 0 0 0 0.4em rgba(253, 52, 6, 0);
       }
 
       100% {
@@ -245,6 +245,7 @@
         margin: 0 0.4em -0.1em 0.4em;
         box-shadow: 0 0 0 0 rgba(97, 165, 52, 1);
         transform: scale(1);
+        animation: stock-pulse-green 1s infinite 2s;
       }
 
       &.unavailable {
@@ -253,15 +254,8 @@
         &:before {
           background-color: $red-cart;
           box-shadow: 0 0 0 0 rgba(253, 52, 6, 1);
+          animation: stock-pulse-red 1s infinite 2s;
         }
-      }
-
-      &.available:hover:before {
-        animation: stock-pulse-green 2s infinite;
-      }
-
-      &.unavailable:hover:before {
-        animation: stock-pulse-red 2s infinite;
       }
     }
   }
