@@ -107,9 +107,9 @@
 						}
 						$content .= '</span></div>';
 						$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
-							$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>'.$stock_statuses['instock'].'</option>';
-							$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>'.$stock_statuses['onbackorder'].'</option>';
-							$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>'.$stock_statuses['outofstock'].'</option>';
+							$content .= '<option value="instock" '.selected( $product->get_stock_status(), 'instock', false ).'>'.$stock_statuses['instock'].'</option>';
+							$content .= '<option value="onbackorder" '.selected( $product->get_stock_status(), 'onbackorder', false ).'>'.$stock_statuses['onbackorder'].'</option>';
+							$content .= '<option value="outofstock" '.selected( $product->get_stock_status(), 'outofstock', false ).'>'.$stock_statuses['outofstock'].'</option>';
 						$content .= '</select></div>';
 						$content .= '<div class="cell">';
 						if ( $product->get_catalog_visibility() !== 'hidden' and ! has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {

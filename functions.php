@@ -2281,7 +2281,7 @@
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
 				$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
-				if ( $local_product !== false and $local_product->is_in_stock() ) {
+				if ( $local_product !== false and $local_product->get_stock_status() === 'instock' ) {
 					$shops_instock[] = get_webshop_name();
 				}
 				restore_current_blog();
