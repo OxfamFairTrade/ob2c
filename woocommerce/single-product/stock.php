@@ -99,22 +99,22 @@ if ( ! is_main_site() ) {
 				// var_dump_pre( $shops_instock );
 					
 				echo '<div class="neighbouring-webshops">';
-				echo '<p>Voorradigheid bij naburige winkels:</p>';
-				echo '<ul class="neighbouring-webshops">';
-				// Loop over $neighbouring_webshops zodat we de volgorde op stijgende afstand bewaren
-				foreach ( $neighbouring_webshops as $store ) {
-					$blog_id = intval( $store['webshopBlogId'] );
-					if ( array_key_exists( $blog_id, $shops_instock ) ) {
-						// Link meteen naar het product in kwestie, maak de nationale URL daarvoor lokaal
-						echo '<li class="available"><a href="'.esc_url( str_replace( home_url('/'), $store['webshopUrl'], $product->get_permalink() ) ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> <small>('.esc_html( $store['distance'] ).' km)</small></li>';
-						// Verhinder dat we dezelfde webshop nog eens tonen!
-						unset( $shops_instock[ $blog_id ] );
-					} elseif ( array_key_exists( $blog_id, $shops_outofstock ) ) {
-						echo '<li class="unavailable">'.esc_html( $shops_outofstock[ $blog_id ] ).' <small>('.esc_html( $store['distance'] ).' km)</small></li>';
-						unset( $shops_outofstock[ $blog_id ] );
+					echo '<p>Voorradigheid bij naburige winkels:</p>';
+					echo '<ul>';
+					// Loop over $neighbouring_webshops zodat we de volgorde op stijgende afstand bewaren
+					foreach ( $neighbouring_webshops as $store ) {
+						$blog_id = intval( $store['webshopBlogId'] );
+						if ( array_key_exists( $blog_id, $shops_instock ) ) {
+							// Link meteen naar het product in kwestie, maak de nationale URL daarvoor lokaal
+							echo '<li class="available"><a href="'.esc_url( str_replace( home_url('/'), $store['webshopUrl'], $product->get_permalink() ) ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> <small>('.esc_html( $store['distance'] ).' km)</small></li>';
+							// Verhinder dat we dezelfde webshop nog eens tonen!
+							unset( $shops_instock[ $blog_id ] );
+						} elseif ( array_key_exists( $blog_id, $shops_outofstock ) ) {
+							echo '<li class="unavailable">'.esc_html( $shops_outofstock[ $blog_id ] ).' <small>('.esc_html( $store['distance'] ).' km)</small></li>';
+							unset( $shops_outofstock[ $blog_id ] );
+						}
 					}
-				}
-				echo '</ul>';
+					echo '</ul>';
 				echo '</div>';
 			}
 		}
