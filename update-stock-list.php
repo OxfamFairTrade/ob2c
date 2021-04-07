@@ -8,7 +8,7 @@
 	<nav class="nav-tab-wrapper">
 		<?php
 			// Om het submenu de tabselectie netjes te laten volgen, kijken we beter naar het laatste deel van de parameter 'oxfam-product-list-...' i.p.v. de nieuwe parameter 'assortment' 
-			$tabs = array( 'general' => 'Alle producten', 'national' => 'Nationaal assortiment', 'local' => 'Lokaal assortiment', 'januari' => 'Januarimagazine 2021', 'oktober' => 'Oktobermagazine 2020' );
+			$tabs = array( 'general' => 'Alle producten', 'chocolade' => 'Chocolade', 'koffie' => 'Koffie', 'wijn' => 'Wijn', 'andere-dranken' => 'Andere dranken', 'ontbijt' => 'Ontbijt', 'snacks' => 'Snacks', 'wereldkeuken' => 'Wereldkeuken', 'crafts' => 'Alle craftsproducten', 'april' => 'Aprilmagazine 2021', 'januari' => 'Januarimagazine 2021', 'oktober' => 'Oktobermagazine 2020', 'local' => 'Lokaal assortiment' );
 			
 			$parts = explode( 'oxfam-products-list-', $_REQUEST['page'] );
 			if ( count( $parts ) === 2 and array_key_exists( $parts[1], $tabs ) ) {
@@ -107,9 +107,9 @@
 						}
 						$content .= '</span></div>';
 						$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
-							$content .= '<option value="instock" '.selected( $product->is_in_stock(), true, false ).'>'.$stock_statuses['instock'].'</option>';
-							$content .= '<option value="onbackorder" '.selected( $product->is_on_backorder(), true, false ).'>'.$stock_statuses['onbackorder'].'</option>';
-							$content .= '<option value="outofstock" '.selected( $product->is_in_stock(), false, false ).'>'.$stock_statuses['outofstock'].'</option>';
+							$content .= '<option value="instock" '.selected( $product->get_stock_status(), 'instock', false ).'>'.$stock_statuses['instock'].'</option>';
+							$content .= '<option value="onbackorder" '.selected( $product->get_stock_status(), 'onbackorder', false ).'>'.$stock_statuses['onbackorder'].'</option>';
+							$content .= '<option value="outofstock" '.selected( $product->get_stock_status(), 'outofstock', false ).'>'.$stock_statuses['outofstock'].'</option>';
 						$content .= '</select></div>';
 						$content .= '<div class="cell">';
 						if ( $product->get_catalog_visibility() !== 'hidden' and ! has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {

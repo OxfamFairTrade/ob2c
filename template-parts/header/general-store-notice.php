@@ -32,7 +32,7 @@
 			<?php if ( $single_message ) : ?>
 				<li class="col-md-12"><span><?php echo $html; ?></span></li>
 			<?php else : ?>
-				<?php if ( $html ) : ?>
+				<?php if ( $html and ! is_b2b_customer() ) : ?>
 					<li class="col-md-4"><span><?php echo $html; ?></span></li>
 				<?php endif; ?>
 				<li class="col-md-4"><span>Wij kopen rechtstreeks bij kwetsbare producenten</span></li>

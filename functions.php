@@ -1566,6 +1566,7 @@
 			'oxfam_shop_post_id' => array( 'label' => 'Post-ID in OWW-site' ),
 			'webshop' => array( 'label' => 'URL van de webshop' ),
 			'webshop_blog_id' => array( 'label' => 'Blog-ID van de webshop' ),
+			'holidays' => array( 'label' => 'Uitzonderlijk gesloten' ),
 			'mailchimp' => array( 'label' => 'Lokale nieuwsbrief' ),
 		);
 
@@ -1579,6 +1580,7 @@
 		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
 		$store_fields['wpsl_webshop'] = array( 'name' => 'webshopUrl' );
 		$store_fields['wpsl_webshop_blog_id'] = array( 'name' => 'webshopBlogId' );
+		$store_fields['wpsl_holidays'] = array( 'name' => 'closingDays' );
 		$store_fields['wpsl_mailchimp'] = array( 'name' => 'mailchimpUrl' );
 		return $store_fields;
 	}
@@ -2275,26 +2277,25 @@
 
 	// Leid mails op DEV-omgevingen om naar de site admin
 	function get_staged_recipients( $recipients ) {
-		if ( $_SERVER['SERVER_NAME'] !== 'shop.oxfamwereldwinkels.be' ) {
+		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 			return get_site_option('admin_email');
 		}
 		return $recipients;
 	}
 
 	// Verhinder dat er meerdere mails vertrekken als er meerdere labels aangemaakt worden in Sendcloud
-	add_filter( 'woocommerce_email_recipient_customer_completed_order', 'prevent_multiple_shipping_confirmations', 10, 2 );
+	// FILTER WORDT SOWIESO MEERDERE KEREN DOORLOPEN, OOK BIJ EENMALIGE MAIL, DUS NIET GEBRUIKEN
+	// add_filter( 'woocommerce_email_recipient_customer_completed_order', 'prevent_multiple_shipping_confirmations', 10, 2 );
 
 	function prevent_multiple_shipping_confirmations( $recipients, $order ) {
 		// Filter wordt ook doorlopen op instellingenpagina (zonder 2de argument), dus check eerst of het object wel een order is voor we orderlogica toevoegen
 		if ( $order !== NULL and $order instanceof WC_Order ) {
-			if ( $order->get_meta('test_aankoop') !== '' ) {
-				// Omdat Sendcloud parallelle calls lijkt te maken, volstaat dit meestal niet om dubbele mails te vermijden ...
-				if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
-					write_log( "CANCELLED SENDING SHIPPING CONFIRMATION BY TRANSIENT ".$order->get_order_number() );
-					return '';
-				} else {
-					set_transient( 'shipping_confirmation_sent_'.$order->get_order_number(), 'yes', 60 );
-				}
+			// Omdat Sendcloud parallelle calls lijkt te maken, volstaat dit meestal niet om dubbele mails te vermijden ...
+			if ( get_transient( 'shipping_confirmation_sent_'.$order->get_order_number() ) === 'yes' ) {
+				write_log( "Versturen van dubbele verzendbevestiging verhinderd bij ".$order->get_order_number() );
+				return '';
+			} else {
+				set_transient( 'shipping_confirmation_sent_'.$order->get_order_number(), 'yes', 60 );
 			}
 		}
 
@@ -2351,8 +2352,8 @@
 	add_action( 'wp_print_scripts', function() { wp_deregister_script('autosave'); } );
 
 	if ( is_main_site() ) {
-		// Zorg ervoor dat productrevisies bijgehouden worden op de hoofdsite
-		add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
+		// Zorg ervoor dat productrevisies bijgehouden worden op de hoofdsite UITSCHAKELEN
+		// add_filter( 'woocommerce_register_post_type_product', 'add_product_revisions' );
 		// Toon de lokale webshops die het product nog op voorraad hebben TRAGE FUNCTIE
 		add_action( 'woocommerce_product_options_inventory_product_data', 'add_inventory_fields', 5 );
 	}
@@ -2370,7 +2371,7 @@
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
 				$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
-				if ( $local_product !== false and $local_product->is_in_stock() ) {
+				if ( $local_product !== false and $local_product->get_stock_status() === 'instock' ) {
 					$shops_instock[] = get_webshop_name();
 				}
 				restore_current_blog();
@@ -2383,7 +2384,7 @@
 	}
 
 	// Voeg suffix toe bij B2B-klanten
-	add_filter( 'woocommerce_get_price_html' , 'ob2c_add_price_suffix', 10, 2 );
+	add_filter( 'woocommerce_get_price_html', 'ob2c_add_price_suffix', 10, 2 );
 	
 	function ob2c_add_price_suffix( $price, $product ) {
 		if ( ! is_admin() ) {
@@ -2447,7 +2448,8 @@
 			'_wp_http_referer',
 			'_wpnonce',
 		);
-		// $args['admin.php']['wpml_plugin_log'] = $args['tools.php']['wpml_plugin_log'];
+		// Hoofdknop linkt naar admin.php ... dus kopieer de instellingen!
+		$args['admin.php']['wpml_plugin_log'] = $args['tools.php']['wpml_plugin_log'];
 		
 		$args['admin.php']['pmxe-admin-export'] = array(
 			'id',
@@ -2571,6 +2573,20 @@
 				}
 			}
 		}
+	}
+
+	// Verduidelijk de status van een product in de overzichtslijst
+	add_filter( 'display_post_states', 'ob2c_clarify_product_states', 100, 2 );
+
+	function ob2c_clarify_product_states( $post_states, $post ) {
+		if ( get_post_type( $post ) === 'product' ) {
+			$user_meta = get_userdata( get_current_user_id() );
+			if ( in_array( 'local_manager', $user_meta->roles ) and is_national_product( $post->ID ) ) {
+				$post_states['national'] = 'Nationaal product';
+				$post_states['uneditable'] = 'Onbewerkbaar';
+			}
+		}
+		return $post_states;
 	}
 
 
@@ -2963,6 +2979,8 @@
 							
 							var sku = jQuery('#inventory_product_data').find('input[name=_sku]').val();
 							if ( sku.length == 0 ) {
+								// Lege artikelnummers kunnen alsnog ontstaan door automatische check van WooCommerce op unieke SKU's
+								// Eventueel uit te schakelen m.b.v. de 'wc_product_has_unique_sku'-filter
 								msg += '* Je moet nog een artikelnummer ingeven!\n';
 							} else if ( ! isNaN( parseFloat( sku ) ) && isFinite( sku ) ) {
 								msg += '* Kies een niet-numeriek artikelnummer om conflicten met nationale producten te vermijden!\n';
@@ -3179,6 +3197,9 @@
 		// Land moet bewerkbaar blijven, anders geen waarde doorgestuurd, en absoluut nodig voor service points!
 		$address_fields['country']['priority'] = 100;
 		$address_fields['country']['class'] = array('hidden-address-field');
+		// Verhinder dat het landveld automatisch switcht bij niet-ingelogde buitenlandse klanten
+		$address_fields['country']['autocomplete'] = false;
+		
 		// Filter wordt ook doorlopen in back-end, pas op met het raadplegen van WC()->customer
 		// if ( ! is_admin() and WC()->customer->get_shipping_country() !== 'BE' ) {
 		// 	// Veld zichtbaar maken bij buitenlandse klanten?
@@ -3372,8 +3393,8 @@
 	add_filter( 'woocommerce_process_myaccount_field_billing_postcode', 'format_zipcode', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_city', 'format_city', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_city', 'format_city', 10, 1 );
-	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_telephone', 10, 1 );
-	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_telephone', 10, 1 );
+	add_filter( 'woocommerce_process_checkout_field_billing_phone', 'format_phone_number', 10, 1 );
+	add_filter( 'woocommerce_process_myaccount_field_billing_phone', 'format_phone_number', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_email', 'format_mail', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_billing_email', 'format_mail', 10, 1 );
 	add_filter( 'woocommerce_process_checkout_field_billing_birthday', 'format_date', 10, 1 );
@@ -3494,32 +3515,44 @@
 	}
 	
 	// Sta een optionele parameter toe om puntjes te zetten in plaats van spaties (maar: wordt omgezet in streepjes door wc_format_phone() dus niet gebruiken in verkoop!)
-	function format_telephone( $value, $delim = ' ' ) {
+	function format_phone_number( $value, $delim = ' ' ) {
 		if ( $delim === '.' ) {
 			$slash = '/';
 		} else {
 			$slash = $delim;
 		}
-		// Wis alle spaties, leestekens en landcodes
-		$temp_tel = preg_replace( '/[\s\-\.\/]/', '', $value );
-		$temp_tel = str_replace( '+32', '0', $temp_tel );
-		$temp_tel = preg_replace( '/(^|\s)0032/', '0', $temp_tel );
 		
-		// Formatteer vaste telefoonnummers
-		if ( mb_strlen($temp_tel) === 9 ) {
-			if ( intval($temp_tel[1]) === 2 or intval($temp_tel[1]) === 3 or intval($temp_tel[1]) === 4 or intval($temp_tel[1]) === 9 ) {
-				$value = substr( $temp_tel, 0, 2 ) . $slash . substr( $temp_tel, 2, 3 ) . $delim . substr( $temp_tel, 5, 2 ) . $delim . substr( $temp_tel, 7, 2 );
+		// Verwijder alle non-digits
+		$value = preg_replace('/[^0-9]/', '', str_replace( '+32', '0032', $value ) );
+		
+		// Wis Belgische landcodes
+		// @toDo: Andere landcodes checken en ook formatteren?
+		if ( substr( $value, 0, 4 ) === '0032' ) {
+			$value = substr( $value, 4 );
+		}
+		
+		// Voeg indien nodig leading zero toe
+		if ( substr( $value, 0, 1 ) !== '0' ) {
+			$value = '0' . $value;
+		}
+		
+		// Vaste telefoonnummers
+		if ( strlen( $value ) == 9 ) {
+			if ( intval( $value[1] ) == 2 or intval( $value[1] ) == 3 or intval( $value[1] ) == 4 or intval( $value[1] ) == 9 ) {
+				// Zonenummer van twee cijfers
+				$phone = substr( $value, 0, 2 ) . $slash . substr( $value, 2, 3 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
 			} else {
-				$value = substr( $temp_tel, 0, 3 ) . $slash . substr( $temp_tel, 3, 2 ) . $delim . substr( $temp_tel, 5, 2 ) . $delim . substr( $temp_tel, 7, 2 );
+				// Zonenummer van drie cijfers
+				$phone = substr( $value, 0, 3 ) . $slash . substr( $value, 3, 2 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
 			}
 		}
 
-		// Formatteer mobiele telefoonnummers
-		if ( mb_strlen($temp_tel) === 10 ) {
-			$value = substr($temp_tel, 0, 4) . $slash . substr($temp_tel, 4, 2) . $delim . substr($temp_tel, 6, 2) . $delim . substr($temp_tel, 8, 2);
+		// Mobiele telefoonnummers
+		if ( strlen( $value ) == 10 ) {
+			$phone = substr( $value, 0, 4 ) . $slash . substr( $value, 4, 2 ) . $delim . substr( $value, 6, 2 ) . $delim . substr( $value, 8, 2 );
 		}
 		
-		return $value;
+		return $phone;
 	}
 
 	function format_hour( $value ) {
@@ -4117,7 +4150,7 @@
 			$_POST['billing_email'] = is_email( format_mail( $_POST['billing_email'] ) );
 		}
 		if ( isset( $_POST['billing_phone'] ) ) {
-			$_POST['billing_phone'] = format_telephone( $_POST['billing_phone'] );
+			$_POST['billing_phone'] = format_phone_number( $_POST['billing_phone'] );
 		}
 		if ( isset( $_POST['billing_vat'] ) ) {
 			$_POST['billing_vat'] = format_tax( $_POST['billing_vat'] );
@@ -4446,7 +4479,7 @@
 	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
 
 	function put_administrator_in_bcc( $headers, $object ) {
-		if ( $object === 'customer_processing_order' or $object === 'customer_completed_order' ) {
+		if ( in_array( $object, array( 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
 			if ( wp_get_environment_type() === 'production' ) {
 				$headers .= 'BCC: "Developer" <webshops@oxfamfairtrade.be>\r\n';
 			} else {
@@ -4692,7 +4725,7 @@
 				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
 
 				// Tel alle sluitingsdagen die in de verwerkingsperiode vallen (inclusief de eerstkomende openingsdag!) erbij
-				$timestamp = move_date_on_holidays( $from, $timestamp );
+				$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_post_id );
 
 				// Check of de winkel ook op de nieuwe dag effectief nog geopend is na 12u
 				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
@@ -4721,7 +4754,7 @@
 					$timestamp = strtotime( '+2 weekdays', $timestamp );
 
 					// Tel feestdagen die in de verwerkingsperiode vallen erbij
-					$timestamp = move_date_on_holidays( $from, $timestamp );
+					$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_post_id );
 				}
 		}
 
@@ -4745,7 +4778,7 @@
 
 	// Check of er feestdagen in een bepaalde periode liggen, en zo ja: tel die dagen bij de einddag
 	// Neemt een begin- en eindpunt en retourneert het nieuwe eindpunt (allemaal in timestamps)
-	function move_date_on_holidays( $from, $till ) {
+	function move_date_on_holidays( $from, $till, $shop_post_id ) {
 		// Check of de startdag ook nog in beschouwing genomen moet worden
 		if ( date_i18n( 'N', $from ) < 6 and date_i18n( 'G', $from ) >= 12 ) {
 			$first = date_i18n( 'Y-m-d', strtotime( '+1 weekday', $from ) );
@@ -4756,8 +4789,8 @@
 		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
 		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 		
-		// Neem de wettelijke feestdagen indien er geen enkele gedefinieerd zijn
-		foreach ( get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) as $holiday ) {
+		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
+		foreach ( get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) as $holiday ) {
 			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
 			if ( date_i18n( 'N', strtotime($holiday) ) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				// TO DO: Enkel werkdag bijtellen indien de winkel niet sowieso al gesloten is op deze weekdag?
@@ -5663,7 +5696,6 @@
 		register_setting( 'oxfam-options-local', 'oxfam_remove_excel_header', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_b2b_invitation_text', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
-		// register_setting( 'oxfam-options-local', 'oxfam_holidays', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 	}
 
 	// Zorg ervoor dat je lokale opties ook zonder 'manage_options'-rechten opgeslagen kunnen worden
@@ -5826,10 +5858,18 @@
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
 		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
 		// Opgelet: vergeet de nieuwe paginaslugs niet te whitelisten voor de rol 'local_manager' in User Role Editor! 
-		add_submenu_page( 'oxfam-products-list', 'Nationaal assortiment', 'Nationaal', 'manage_network_users', 'oxfam-products-list-national', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Chocolade', 'Chocolade', 'manage_network_users', 'oxfam-products-list-chocolade', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Koffie', 'Koffie', 'manage_network_users', 'oxfam-products-list-koffie', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Wijn', 'Wijn', 'manage_network_users', 'oxfam-products-list-wijn', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Andere dranken', 'Andere dranken', 'manage_network_users', 'oxfam-products-list-andere-dranken', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Ontbijt', 'Ontbijt', 'manage_network_users', 'oxfam-products-list-ontbijt', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Snacks', 'Snacks', 'manage_network_users', 'oxfam-products-list-snacks', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Wereldkeuken', 'Wereldkeuken', 'manage_network_users', 'oxfam-products-list-wereldkeuken', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Alle craftsproducten', 'Alle craftsproducten', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Aprilmagazine 2021', 'April 2021', 'manage_network_users', 'oxfam-products-list-april', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
@@ -6004,8 +6044,39 @@
 				return true;
 				break;
 
-			case 'national':
-				if ( is_national_product( $product ) ) {
+			case 'chocolade':
+			case 'koffie':
+			case 'wijn':
+			case 'andere-dranken':
+			case 'ontbijt':
+			case 'snacks':
+			case 'wereldkeuken':
+				// Werkt enkel zolang we de categorie blijven opnemen in de URL!
+				if ( stristr( $product->get_permalink(), '/'.$assortment.'/' ) ) {
+					return true;
+				}
+				break;
+
+			case 'crafts':
+				if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
+					return true;
+				}
+				break;
+
+			case 'april':
+				if ( has_term( 'april-2021', 'product_tag', $product->get_id() ) ) {
+					return true;
+				}
+				break;
+
+			case 'januari':
+				if ( has_term( 'januari-2021', 'product_tag', $product->get_id() ) ) {
+					return true;
+				}
+				break;
+
+			case 'oktober':
+				if ( has_term( 'oktober-2020', 'product_tag', $product->get_id() ) ) {
 					return true;
 				}
 				break;
@@ -6017,20 +6088,8 @@
 				break;
 
 			// Voorlopig niet meer gebruikt
-			case 'crafts':
-				if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
-					return true;
-				}
-				break;
-
-			case 'oktober':
-				if ( has_term( 'oktober-2020', 'product_tag', $product->get_id() ) ) {
-					return true;
-				}
-				break;
-
-			case 'januari':
-				if ( has_term( 'januari-2021', 'product_tag', $product->get_id() ) ) {
+			case 'national':
+				if ( is_national_product( $product ) ) {
 					return true;
 				}
 				break;
@@ -6425,62 +6484,43 @@
 	#############
 
 	// Pas de opties van WooMultistore eenvoudig aan voor alle subsites
-	// add_filter( 'woo_mstore/options/options_save', 'change_woo_mstore_options_in_bulk' );
+	add_filter( 'woo_mstore/options/options_save', 'change_woo_mstore_options_in_bulk' );
 
 	function change_woo_mstore_options_in_bulk( $options ) {
 		foreach ( $options['child_inherit_changes_fields_control__product_image'] as $key => $value ) {
 			$options['child_inherit_changes_fields_control__product_image'][ $key ] = 'no';
 			$options['child_inherit_changes_fields_control__product_gallery'][ $key ] = 'no';
-			// $options['child_inherit_changes_fields_control__upsell'][ $key ] = 'yes';
-			// $options['child_inherit_changes_fields_control__cross_sells'][ $key ] = 'yes';
-			// Onderstaande opties ontbreken in settings-page.php, dus onzichtbaar
-			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'no';
 			$options['child_inherit_changes_fields_control__shipping_class'][ $key ] = 'yes';
+			$options['child_inherit_changes_fields_control__upsell'][ $key ] = 'no';
+			$options['child_inherit_changes_fields_control__cross_sells'][ $key ] = 'no';
+			
+			// Onderstaande optie ontbreekt in settings-page.php, dus onzichtbaar!
+			$options['child_inherit_changes_fields_control__featured'][ $key ] = 'no';
 		}
+		
 		write_log( print_r( $options, true ) );
 		return $options;
 	}
 
-	// Verhinder dat de lokale voorraad overschreven wordt bij elke update ZIT NU IN PRINCIPE NETJES IN INSTELLING
-	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'do_not_overwrite_local_stock', 10, 2 );
-
-	function do_not_overwrite_local_stock( $meta_keys, $data ) {
-		/**
-		 * @param array $meta_keys    Metadata keys to exclude from slave product
-		 * @param array $data array(
-		 *      WC_Product  master_product              Master product
-		 *      array       master_product_attributes   Master product attributes
-		 *      integer     master_product_blog_id      Master product blog ID
-		 *      array       master_product_terms        Master product terms
-		 *      array       master_product_upload_dir   Master product uploads directory information ( see wp_get_upload_dir() )
-		 *      array       options                     Plugin options
-		 *      WC_Product  slave_product               Slave product
-		 * )
-		 *
-		 * @return array
-		 */
-		$meta_keys[] = 'total_sales';
-		$meta_keys[] = '_stock';
-		$meta_keys[] = '_stock_status';
-		$meta_keys[] = '_wc_review_count';
-		$meta_keys[] = '_wc_rating_count';
-		$meta_keys[] = '_wc_average_rating';
-		write_log( print_r( $meta_keys, true ) );
-		return $meta_keys;
-	}
-
-	// Haal extra velden uit de automatische synchronisatie
+	// Synchroniseer 'featured'-status niet naar de subsites
 	add_filter( 'WOO_MSTORE_admin_product/master_slave_products_data_diff', 'unset_extra_products_data_diff', 10, 2 );
 
 	function unset_extra_products_data_diff( $products_data_diff, $data ) {
+		// Zowel add_filter( 'WOO_MSTORE_SYNC/sync_child/sync_is_featured', '__return_false' ) als $data['options']['child_inherit_changes_fields_control__featured'] op zich volstaan niet
 		if ( 'no' === $data['options']['child_inherit_changes_fields_control__featured'][ get_current_blog_id() ] ) {
 			unset( $products_data_diff['featured'] );
 		}
+		
+		// write_log("AFTER WOO_MSTORE_admin_product/master_slave_products_data_diff FILTER");
 		// write_log( print_r( $products_data_diff, true ) );
+		
 		return $products_data_diff;
 	}
 
-	// Geef aan welke metavelden we willen kopiëren
+	// Wijzig welke metavelden we willen synchroniseren naar de subsites
+	// Sinds WooMultistore 4.1.5+ gebruiken we de ingebouwde instellingen op https://shop.oxfamwereldwinkels.be/wp-admin/network/admin.php?page=woonet-set-taxonomy
+	// Behalve voor '_main_thumbnail_id', '_force_sell_ids' en '_force_sell_synced_ids' (afwijkende / gelokaliseerde meta values!)
+	// Aangezien de whitelist met prioriteit PHP_INT_MAX uitgevoerd wordt, hebben de ingebouwde instellingen steeds voorrang
 	add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_update', 'update_slave_product_meta', 10, 2 );
 
 	function update_slave_product_meta( $meta_data, $data ) {
@@ -6498,54 +6538,39 @@
 		 * @return array
 		 */
 		
-		$keys_to_copy = array( '_in_bestelweb', '_shopplus_code', '_cu_ean', '_multiple', '_stat_uom', '_fairtrade_share', '_main_thumbnail_id', '_net_unit', '_net_content', '_unit_price', 'oft_product_id', 'promo_text' );
-		foreach ( $keys_to_copy as $key ) {
-			if ( $key === '_main_thumbnail_id' ) {
-				$meta_data[ $key ] = $data['master_product']->get_image_id();
-			} else {
-				$meta_data[ $key ] = $data['master_product']->get_meta( $key );
-			}
-		}
-		
-		// '_upsell_ids' en '_crosssell_ids' worden in principe door WooMultistore zelf onderhouden
+		// Haal de afbeelding-ID op i.p.v. de (niet-bestaande) meta value
+		$meta_data['_main_thumbnail_id'] = $data['master_product']->get_image_id();
+
+		// Velden '_upsell_ids' en '_crosssell_ids' worden door WooMultistore onderhouden
 		$keys_to_translate = array( '_force_sell_ids', '_force_sell_synced_ids' );
 		foreach ( $keys_to_translate as $key ) {
 			$meta_data[ $key ] = translate_master_to_slave_ids( $key, $data['master_product']->get_meta( $key ), $data['master_product_blog_id'], $data['master_product'] );
 		}
 
+		// Voorraadbeheer steeds uitschakelen? NIET DOEN MET OOG OP LOKAAL VOORRAADBEHEER
+		// $meta_keys['_manage_stock'] = 'no';
+		
+		// write_log("AFTER WOO_MSTORE_admin_product/slave_product_meta_to_update FILTER");
 		// foreach ( $meta_data as $key => $value ) {
+		// 	if ( is_array( $value ) ) {
+		// 		$value = implode( ', ', $value );
+		// 	}
 		// 	write_log( $key.' => '.$value );
 		// }
 		
 		return $meta_data;
 	}
 
-	// Publieke metadata zoals 'touched_by_import' wordt automatisch gekopieerd bij eerste lokale publicatie ... PAS BESCHIKBAAR VANAF WOOMULTISTORE 4.1.5
+	// Vermijd dat publieke metadata zoals 'touched_by_import' automatisch gekopieerd wordt bij eerste lokale publicatie
+	// Filter inschakelen zorgt er ook voor dat bestaande lokale waarden weer gewist worden!
 	// add_filter( 'WOO_MSTORE_admin_product/slave_product_meta_to_exclude', 'exclude_slave_product_meta', 10, 2 );
 
 	function exclude_slave_product_meta( $meta_keys, $data ) {
-		/**
-		 * @param array $meta_keys          Metadata keys to exclude from slave product
-		 * @param array $data array(
-		 *      WC_Product  master_product              Master product
-		 *      array       master_product_attributes   Master product attributes
-		 *      integer     master_product_blog_id      Master product blog ID
-		 *      array       master_product_terms        Master product terms
-		 *      array       master_product_upload_dir   Master product uploads directory information ( see wp_get_upload_dir() )
-		 *      array       options                     Plugin options
-		 *      WC_Product  slave_product               Slave product
-		 * )
-		 * @return array
-		 */
-		
-		// Voorraadbeheer standaard uitschakelen?
-		// $meta_keys[] = '_manage_stock';
+		$meta_keys[] = 'touched_by_import';
 
-		if ( $data['slave_product']->get_meta('touched_by_import') ) {
-			$meta_keys[] = 'touched_by_import';
-		}
-
+		write_log("AFTER WOO_MSTORE_admin_product/slave_product_meta_to_exclude FILTER");
 		write_log( implode( ', ', $meta_keys ) );
+
 		return $meta_keys;
 	}
 
@@ -6554,7 +6579,7 @@
 	
 	function execute_product_sync( $post_id ) {
 		// Enkel uitvoeren indien het een product was dat bijgewerkt werd
-		if ( get_post_type( $post_id ) === 'product' ) {
+		if ( get_post_type( $post_id ) === 'product' and get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 			/**
 			 * Mark a new product to sync with a store and then call process_product hook to run the sync.
 			 *
@@ -6566,8 +6591,8 @@
 
 			$stores = apply_filters( 'WOO_MSTORE/get_store_ids', array() );
 			foreach ( $stores as $key => $store_id ) {
-				// Producten sowieso nooit publiceren naar sjabloon
-				if ( $store_id == 5 ) {
+				// Producten sowieso nooit publiceren naar hoofdsite en sjabloon
+				if ( in_array( $store_id, array( 1, 5 ) ) ) {
 					unset( $stores[ $key ] );
 				}
 				// Nieuwe webshops eventueel uitsluiten
@@ -6624,25 +6649,36 @@
 			$to_outofstock = new WP_Query( $args );
 			if ( $to_outofstock->have_posts() ) {
 				write_log( $to_outofstock->found_posts." DEPRECATED PRODUCTS" );
+				
 				while ( $to_outofstock->have_posts() ) {
 					$to_outofstock->the_post();
 					$product = wc_get_product( get_the_ID() );
 					if ( $product->get_meta('_in_bestelweb') === 'ja' ) {
-						write_log( $product->get_sku() );
-						// $product->set_stock_quantity(0);
+						$product->set_stock_quantity(0);
+						$product->update_meta_data( '_in_bestelweb', 'nee' );
+						
 						// // In principe overbodig ...
 						// $product->set_stock_status('outofstock');
 						// $product->set_backorders('no');
-						// $product->update_meta_data( '_in_bestelweb', 'nee' );
-						// $product->save();
+						
+						if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
+							$product->save();
+							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
+						} else {
+							write_log( $product->get_sku()." SHOULD BE DISABLED ON MAIN SITE" );
+						}
 					}
 				}
+
 				wp_reset_postdata();
 			}
 
 			$old = WP_CONTENT_DIR."/erp-import.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
+
+			// Pas toegevoegde foto's dienen niet meer via bulkimport geregistreerd te worden
+			update_option( 'laatste_registratie_timestamp', time() );
 
 			// Flush na afloop alle W3TC-caches?
 			// if ( function_exists('w3tc_flush_all') ) {
@@ -6761,7 +6797,7 @@
 		echo '<div class="rss-widget">';
 		echo '<p>De <a href="https://github.com/OxfamFairTrade/ob2c/wiki" target="_blank">online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Gebruik eventueel de zoekfunctie bovenaan rechts.</p>';
 		echo '<p>Daarnaast kun je de nieuwe slides van de voorbije opleidingssessies raadplegen voor een overzicht van alle afspraken en praktische details: <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-concept.pdf" download>Deel 1: Concept</a> (16/05/2020) en <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-praktisch.pdf" download>Deel 2: Praktisch</a> (30/05/2020). Op <a href="https://copain.oww.be/webshop" target="_blank">de webshoppagina op Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
-		echo '<p>Stuur een mailtje naar de <a href="mailto:e-commerce@oft.be?">Helpdesk E-Commerce</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Tineke, Ive, Elien en Frederik helpen je zo snel mogelijk verder.</p>';
+		echo '<p>Stuur een mailtje naar de <a href="mailto:e-commerce@oft.be?">Helpdesk E-Commerce</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Tineke, Ive en Frederik helpen je zo snel mogelijk verder.</p>';
 		echo '</div>';
 	}
 
@@ -6895,12 +6931,11 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Betalen via ING-internetbankieren was een kort leven beschoren: we konden deze betaalmethode pas in november activeren (na de nodige technische updates) maar Mollie heeft de integratie met ING stopgezet per 1 februari 2021 ... Klanten van ING kunnen uiteraard wel nog betalen via het algemene Bancontact, zoals voorheen.</p>';
-				// echo '</div>';
+				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe theeproducten en de vervangende referenties voor de amandelnoten en agavesiroop werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 23648, 23649, 23650, 25730, 26015 );
+					// en de 'Oxfam Pakt Uit'-kaartjes 48500, 48501, 48502, 48503, 48504, 48505, 49112
+					echo '<p>De nieuwe koffiecapsules werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 22724, 22725 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -6910,25 +6945,21 @@
 						}
 					echo '</ul><p>';
 					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De producten van het aprilmagazine volgen van zodra de eerste leveringen gebeurd zijn (half april). De solidariteitsagenda\'s en 11.11.11-kalenders voor 2021 werden verwijderd aangezien ze niet meer relevant zijn.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-maart-2021-update.html" target="_blank">promo\'s voor maart</a> zijn geactiveerd in alle webshops. De prijswijzigingen van 1 maart op drie B2B-producten voor koffieservice (08808, 08809 en 29298) werden doorgevoerd.';
+					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-april-2021-update.html" target="_blank">promo\'s voor april</a> zijn geactiveerd in alle webshops. Zoals eerder aangekondigd in de nieuwsbrief werden alle bestellingen van vòòr 2019 verwijderd, in lijn met ons privacybeleid. Geannuleerde bestellingen en pick-Excels van vòòr 2021 werden ook reeds opgeruimd.';
 				echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
-				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
-					// echo '<div class="notice notice-success">';
-					// 	echo '<p>Om de sluiting van het wereldwinkelnetwerk te verzachten werden de verzendkosten in alle webshops verlaagd naar 4,95 i.p.v. 6,95 euro per bestelling én is gratis levering tijdelijk beschikaar vanaf 50 i.p.v. 100 euro.</p>';
-					// echo '</div>';
 				}
 				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>5 uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had. 25721 BIO Cashew chili.</p>';
+				// 	echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 28103 BIO Rijstazijn, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28329 BIO Kurkuma.</p>';
 				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
@@ -6936,7 +6967,7 @@
 			}
 		}
 
-		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and isset( $_REQUEST['bulk_action'] ) ) {
+		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and isset( $_REQUEST['bulk_action'] ) and ! current_user_can('create_sites') ) {
 			if ( $_REQUEST['bulk_action'] === 'marked_completed' ) {
 				$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
 				$message = sprintf( _n( '%d bestelstatus proberen te wijzigen.', '%d bestelstatussen proberen te wijzigen.', $number, 'woocommerce' ), number_format_i18n( $number ) );
@@ -7126,13 +7157,8 @@
 		if ( in_array( $atts['id'], $exceptions ) ) {
 			$holidays = array( '2020-12-25', '2021-01-01' );
 		} else {
-			// Uitzondering voor Borgerhout en Merksem
-			if ( $atts['id'] == 3316 or $atts['id'] == 3646 ) {
-				$holidays = get_site_option('oxfam_holidays');
-			} else {
-				// TO DO: Vervang dit door de expliciete 'closing_days' van de post-ID, want anders sluiten alle winkels van zodra de hoofdwinkel gesloten is, wat niet noodzakelijk klopt!
-				$holidays = get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') );
-			}
+			// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
+			$holidays = get_site_option( 'oxfam_holidays_'.$atts['id'], get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) );
 		}
 
 		if ( $atts['start'] === 'today' ) {
@@ -7177,10 +7203,10 @@
 			} elseif ( get_current_blog_id() === 19 ) {
 				// Uitzondering voor Lichtaart
 				$output = '<p class="corona-notice">Wereldwinkel Lichtaart verhuist momenteel naar een nieuwe locatie, en is daardoor gesloten. De afhalingen in Vorselaar blijven gewoon doorgaan op zaterdagochtend tussen 10 en 12 uur.</p>';
-			} else {
+			} elseif ( get_current_blog_id() === 72 ) {
+				// Houthalen-Helchteren is tijdelijk dicht
 				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
-				// UITSCHAKELEN
-				// $output = '<p class="corona-notice">'.$text.'</p>';
+				$output = '<p class="corona-notice">'.$text.'</p>';
 			}
 		} else {
 			// if ( $atts['id'] === 'brugge' ) {
@@ -7597,77 +7623,66 @@
 				// Bestaat in principe altijd
 				$location_data = $oww_store_data['location'];
 				
-				if ( intval( $shop_post_id ) === 3598 ) {
-					// Uitzonderingen voor Regio Leuven vzw
-					switch ($key) {
-						case 'tax':
-							return call_user_func( 'format_'.$key, 'BE 0479.961.641' );
-						case 'account':
-							return call_user_func( 'format_'.$key, 'BE86 0014 0233 4050' );
-						case 'headquarter':
-							return call_user_func( 'format_'.$key, 'Parijsstraat 56, 3000 Leuven' );
-						case 'telephone':
-							return call_user_func( 'format_'.$key, '0495325682', '.' );
-					}
-				} elseif ( intval( $shop_post_id ) === 3226 ) {
-					// Uitzonderingen voor Regio Antwerpen vzw
-					switch ($key) {
-						case 'account':
-							return call_user_func( 'format_'.$key, 'BE56 0018 1366 6388' );
-					}
-				} elseif ( intval( $shop_post_id ) === 3362 ) {
-					// Uitzonderingen voor Deinze
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_'.$key, '0493082695', '.' );
-					}
-				} elseif ( intval( $shop_post_id ) === 3454 ) {
-					// Uitzonderingen voor Hemiksem
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_'.$key, '0494626517', '.' );
-					}
-				} elseif ( intval( $shop_post_id ) === 3725 ) {
-					// Uitzonderingen voor Schelle
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_'.$key, '0487436822', '.' );
-					}
-				} elseif ( intval( $shop_post_id ) === 3383 ) {
-					// Uitzonderingen voor Diest
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_'.$key, '0475596166', '.' );
-					}
-				} elseif ( intval( $shop_post_id ) === 3249 ) {
-					// Uitzonderingen voor Belsele
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_'.$key, '0471997223', '.' );
-					}
-				} elseif ( intval( $shop_post_id ) === 3468 ) {
-					// Uitzonderingen voor Hoboken
-					switch ($key) {
-						case 'telephone':
-							return call_user_func( 'format_'.$key, '038277719', '.' );
-					}
+				switch ( intval( $shop_post_id ) ) {
+					case 3598:
+						// Uitzonderingen voor Regio Leuven vzw
+						$location_data['tax'] = 'BE 0479.961.641';
+						$location_data['account'] = 'BE86 0014 0233 4050';
+						$location_data['headquarter'] = 'Parijsstraat 56, 3000 Leuven';
+						$location_data['telephone'] = '0495325682';
+						break;
+
+					case 3226:
+						// Uitzonderingen voor Regio Antwerpen vzw
+						$location_data['account'] = 'BE56 0018 1366 6388';
+						break;
+
+					case 3362:
+						// Uitzonderingen voor Deinze
+						$location_data['telephone'] = '0493082695';
+						break;
+
+					case 3454:
+						// Uitzonderingen voor Hemiksem
+						$location_data['telephone'] = '0494626517';
+						break;
+
+					case 3725:
+						// Uitzonderingen voor Schelle
+						$location_data['telephone'] = '0487436822';
+						break;
+
+					case 3383:
+						// Uitzonderingen voor Diest
+						$location_data['telephone'] = '0475596166';
+						break;
+
+					case 3249:
+						// Uitzonderingen voor Belsele
+						$location_data['telephone'] = '0471997223';
+						break;
+
+					case 3468:
+						// Uitzonderingen voor Hoboken
+						$location_data['telephone'] = '038277719';
+						break;
 				}
 				
-				if ( array_key_exists( $key, $location_data ) and $location_data[$key] !== '' ) {
+				if ( array_key_exists( $key, $location_data ) and $location_data[ $key ] !== '' ) {
 					
 					switch ( $key ) {
 						case 'telephone':
-							// Geef alternatieve delimiter mee
-							return call_user_func( 'format_'.$key, $location_data[$key], '.' );
+							// Geef alternatieve formatteringsfunctie en delimiter mee
+							return call_user_func( 'format_phone_number', $location_data[ $key ], '.' );
 						case 'headquarter':
 							// Plak de adresgegevens van de vzw aan elkaar
-							return call_user_func( 'format_place', $location_data[$key]['place'] ).', '.call_user_func( 'format_zipcode', $location_data[$key]['zipcode'] ).' '.call_user_func( 'format_city', $location_data[$key]['city'] );
+							return call_user_func( 'format_place', $location_data[ $key ]['place'] ).', '.call_user_func( 'format_zipcode', $location_data[ $key ]['zipcode'] ).' '.call_user_func( 'format_city', $location_data[ $key ]['city'] );
 						case 'll':
 							// Er bestaat geen formatteerfunctie voor coördinaten
-							return $location_data[$key];
+							return $location_data[ $key ];
 					}
 
-					return call_user_func( 'format_'.$key, $location_data[$key] );
+					return call_user_func( 'format_'.$key, $location_data[ $key ] );
 
 				} else {
 					return '';
@@ -7684,7 +7699,7 @@
 				case 'city':
 					return 'Gent';
 				case 'telephone':
-					return call_user_func( 'format_telephone', '092188899', '.' );
+					return call_user_func( 'format_phone_number', '092188899', '.' );
 				case 'tax':
 					return call_user_func( 'format_tax', 'BE 0415.365.777' );
 				default:

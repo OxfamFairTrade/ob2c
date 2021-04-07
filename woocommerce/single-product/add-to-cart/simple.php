@@ -36,7 +36,7 @@ if ( is_main_site() ) {
 
 echo wc_get_stock_html( $product );
 
-// GEWIJZID: Ook verbergen indien 'onbackorder'
+// GEWIJZIGD: Ook verbergen indien 'onbackorder'
 if ( $product->is_in_stock() and ! $product->is_on_backorder() ) : ?>
 
 	<?php do_action( 'woocommerce_before_add_to_cart_form' ); ?>

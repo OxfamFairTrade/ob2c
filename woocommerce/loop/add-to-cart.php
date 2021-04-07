@@ -28,6 +28,8 @@ if ( is_b2b_customer() ) {
 if ( is_main_site() ) {
 	if ( strstr( $product->get_name(), 'Geschenkencheque ' ) !== false ) {
 		echo '<a href="https://www.oxfamwereldwinkels.be/cadeaubon-voor-eerlijke-producten/" class="button product_type_simple">Bestel online</a>';
+	} elseif ( strstr( $product->get_name(), 'Oxfam Pakt Uit' ) !== false ) {
+		echo '<a href="https://shop.oxfampaktuit.be/nl/koop-een-cadeau/" class="button product_type_simple">Bestel online</a>';
 	} elseif ( $product->get_meta('_woonet_publish_to_23') === 'yes' ) {
 		if ( $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-2 weeks') ) ) {
 			//  Geef 2 weken buffer om lokale voorraad aan te leggen

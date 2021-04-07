@@ -3,7 +3,7 @@
 Plugin Name: WP All Export Pro
 Plugin URI: http://www.wpallimport.com/export/
 Description: Export any post type to a CSV or XML file. Edit the exported data, and then re-import it later using WP All Import.
-Version: 1.6.3
+Version: 1.6.4
 Author: Soflyy
 */
 
@@ -46,7 +46,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
      */
     define('PMXE_PREFIX', 'pmxe_');
 
-	define('PMXE_VERSION', '1.6.3');
+	define('PMXE_VERSION', '1.6.4');
 
     define('PMXE_EDITION', 'paid');
 
@@ -137,13 +137,12 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
 
         const LANGUAGE_DOMAIN = 'wp_all_export_plugin';
 
-        // Dit kan volstaan voor lokale assistenen om exports te runnen / downloaden
         const CLIENT_MODE_CAP = 'wpae_run_exports';
 
         public static $session = null;
 
         // GEWIJZIGD: Ook lokale beheerders toegang geven tot het aanmaken van exports door rechten al vanaf 'manage_network_users' toe te kennen
-		public static $capabilities = 'manage_network_users';
+        public static $capabilities = 'manage_network_users';
 
         public static $cache_key = '';
 
@@ -291,6 +290,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
             $option_name = get_class($this) . '_Options';
             $options_default = PMXE_Config::createFromFile(self::ROOT_DIR . '/config/options.php')->toArray();
             $current_options = get_option($option_name, array());
+            $current_options = is_array($current_options) ? $current_options : array();
             $this->options = array_intersect_key($current_options, $options_default) + $options_default;
             $this->options = array_intersect_key($options_default, array_flip(array('info_api_url'))) + $this->options; // make sure hidden options apply upon plugin reactivation
             if ('' == $this->options['cron_job_key']) $this->options['cron_job_key'] = wp_all_export_url_title(wp_all_export_rand_char(12));
