@@ -1,66 +1,66 @@
-<mxfile host="app.diagrams.net" modified="2021-04-07T14:04:01.074Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15" etag="OJC54wHgiHy9JGYTYYdp" version="14.5.8" type="github">
+<mxfile host="app.diagrams.net" modified="2021-04-07T14:37:52.755Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Safari/605.1.15" etag="uRUtLASO13TR-MSIdY8S" version="14.5.8" type="github">
   <diagram id="-W9tANGnI3AYLvwFC5bV" name="Page-1">
     <mxGraphModel dx="1429" dy="843" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="dosSSecEMAH8YsC4D5bb-1" value="Oxfam Fair Trade" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-1" value="Oxfam Fair Trade" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="160" y="160" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-2" value="Gezinsbond" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-2" value="Gezinsbond" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="480" y="160" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-3" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="dosSSecEMAH8YsC4D5bb-1" target="dosSSecEMAH8YsC4D5bb-2">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-3" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="dosSSecEMAH8YsC4D5bb-1" target="dosSSecEMAH8YsC4D5bb-2" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="390" y="410" as="sourcePoint" />
             <mxPoint x="440" y="360" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-7" value="1. verkoopt code aan" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" vertex="1" connectable="0" parent="dosSSecEMAH8YsC4D5bb-3">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-7" value="1. verkoopt code aan" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" parent="dosSSecEMAH8YsC4D5bb-3" vertex="1" connectable="0">
           <mxGeometry x="0.819" y="1" relative="1" as="geometry">
             <mxPoint x="-82" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-5" value="Lid / Klant" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-5" value="Lid / Klant" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="480" y="320" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-8" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="dosSSecEMAH8YsC4D5bb-2" target="dosSSecEMAH8YsC4D5bb-5">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-8" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="dosSSecEMAH8YsC4D5bb-2" target="dosSSecEMAH8YsC4D5bb-5" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="290" y="210" as="sourcePoint" />
             <mxPoint x="500" y="210" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-9" value="2. verkoopt code aan" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" vertex="1" connectable="0" parent="dosSSecEMAH8YsC4D5bb-8">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-9" value="2. verkoopt code aan" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" parent="dosSSecEMAH8YsC4D5bb-8" vertex="1" connectable="0">
           <mxGeometry x="0.819" y="1" relative="1" as="geometry">
             <mxPoint x="-61" y="-41" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-10" value="Wereldwinkel" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-10" value="Wereldwinkel" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="160" y="320" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-11" value="" style="endArrow=classic;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="dosSSecEMAH8YsC4D5bb-5" target="dosSSecEMAH8YsC4D5bb-10">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-11" value="" style="endArrow=classic;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="dosSSecEMAH8YsC4D5bb-5" target="dosSSecEMAH8YsC4D5bb-10" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="560" y="240" as="sourcePoint" />
             <mxPoint x="560" y="340" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-12" value="3. ruilt code in bij webshop van&lt;br&gt;&lt;br&gt;ontvangt bv.&amp;nbsp;25 euro korting" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" vertex="1" connectable="0" parent="dosSSecEMAH8YsC4D5bb-11">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-12" value="3. ruilt code in bij webshop van&lt;br&gt;&lt;br&gt;ontvangt bv.&amp;nbsp;25 euro korting" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" parent="dosSSecEMAH8YsC4D5bb-11" vertex="1" connectable="0">
           <mxGeometry x="0.819" y="1" relative="1" as="geometry">
             <mxPoint x="82" y="-1" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-13" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="dosSSecEMAH8YsC4D5bb-1" target="dosSSecEMAH8YsC4D5bb-10">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-13" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="dosSSecEMAH8YsC4D5bb-1" target="dosSSecEMAH8YsC4D5bb-10" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="550" y="230" as="sourcePoint" />
             <mxPoint x="550" y="330" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-14" value="4. crediteert code aan*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" vertex="1" connectable="0" parent="dosSSecEMAH8YsC4D5bb-13">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-14" value="4. crediteert code aan*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=none;" parent="dosSSecEMAH8YsC4D5bb-13" vertex="1" connectable="0">
           <mxGeometry x="0.819" y="1" relative="1" as="geometry">
             <mxPoint x="59" y="-41" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dosSSecEMAH8YsC4D5bb-15" value="&lt;i style=&quot;font-size: 10px;&quot;&gt;*automatisch, op basis van maandelijks webshoprapport&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=none;fontSize=10;" vertex="1" parent="1">
+        <mxCell id="dosSSecEMAH8YsC4D5bb-15" value="&lt;i style=&quot;font-size: 10px;&quot;&gt;*automatisch, op basis van maandelijks webshoprapport&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=none;fontSize=10;" parent="1" vertex="1">
           <mxGeometry x="160" y="410" width="280" height="20" as="geometry" />
         </mxCell>
       </root>
