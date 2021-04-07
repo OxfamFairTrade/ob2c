@@ -829,7 +829,7 @@
 
 	function modify_backorder_text( $availability, $product ) {
 		if ( $availability === __( 'Available on backorder', 'woocommerce' ) ) {
-			$availability = 'Tijdelijk niet beschikbaar';
+			$availability = 'Tijdelijk niet beschikbaar in deze webshop';
 		}
 		return $availability;
 	}
@@ -4239,7 +4239,7 @@
 		return $tax_class;
 	}
 
-	// Geef hint om B2B-klant te worden TIJDELIJK UITSCHAKELEN
+	// Geef hint om B2B-klant te worden UITSCHAKELEN
 	// add_action( 'woocommerce_just_before_checkout_form', 'show_b2b_account_hint', 10 );
 
 	function show_b2b_account_hint() {
@@ -7109,9 +7109,6 @@
 			if ( get_current_blog_id() === 44 ) {
 				// Uitzondering voor Diksmuide
 				$output = '<p class="corona-notice">Tijdens de lockdown van De Stoasje: gratis thuislevering op donderdag tussen 18u en 20u!</p>';
-			} elseif ( get_current_blog_id() === 19 ) {
-				// Uitzondering voor Lichtaart
-				$output = '<p class="corona-notice">Wereldwinkel Lichtaart verhuist momenteel naar een nieuwe locatie, en is daardoor gesloten. De afhalingen in Vorselaar blijven gewoon doorgaan op zaterdagochtend tussen 10 en 12 uur.</p>';
 			} elseif ( get_current_blog_id() === 72 ) {
 				// Houthalen-Helchteren is tijdelijk dicht
 				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';

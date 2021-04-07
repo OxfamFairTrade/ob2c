@@ -17,27 +17,29 @@ if ( ! $product->is_purchasable() ) {
 
 if ( is_main_site() ) {
 	if ( strstr( $product->get_name(), 'Geschenkencheque ' ) !== false ) {
-		echo '<a href="https://www.oxfamwereldwinkels.be/cadeaubon-voor-eerlijke-producten/"><button type="button" class="button alt">Bestel online</button></a>';
-		return;
+		return '<a href="https://www.oxfamwereldwinkels.be/cadeaubon-voor-eerlijke-producten/"><button type="button" class="button alt">Bestel online</button></a>';
 	} elseif ( $product->get_meta('_woonet_publish_to_23') === 'yes' ) {
 		if ( $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-2 weeks') ) ) {
 			//  Geef 2 weken buffer om lokale voorraad aan te leggen
-			echo '<span class="soon-available">Weldra online beschikbaar</span>';
-			return;
+			return '<span class="soon-available">Weldra online beschikbaar</span>';
 		} else {
 			// Toon de gebruikelijke button die in dit geval de store selector triggert
 		}
 	} else {
 		// Het product wordt niet online verkocht (o.b.v. aanwezigheid in webshop Oostende als test case)
-		echo '<span class="unavailable">Niet online beschikbaar</span>';
-		return;
+		return '<span class="unavailable">Niet online beschikbaar</span>';
 	}
 }
 
 echo wc_get_stock_html( $product );
 
-// GEWIJZIGD: Ook verbergen indien 'onbackorder'
-if ( $product->is_in_stock() and ! $product->is_on_backorder() ) : ?>
+if ( $product->is_in_stock() ) : ?>
+	<?php
+		// GEWIJZIGD: Lokaal button ook verbergen indien 'onbackorder'
+		if ( ! is_main_site() and $product->is_on_backorder() ) {
+			return;
+		}
+	?>
 
 	<?php do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 
