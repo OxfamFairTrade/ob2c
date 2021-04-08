@@ -829,7 +829,9 @@
 
 	function modify_backorder_text( $availability, $product ) {
 		if ( $availability === __( 'Available on backorder', 'woocommerce' ) ) {
-			$availability = 'Tijdelijk niet beschikbaar in deze webshop';
+			$availability = 'Tijdelijk uitverkocht in deze webshop';
+		} elseif ( $availability === __( 'Out of stock', 'woocommerce' ) ) {
+			$availability = 'Niet beschikbaar bij deze webshop';
 		}
 		return $availability;
 	}

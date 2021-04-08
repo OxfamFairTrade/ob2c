@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Ook al doen we voorraadbeheer, statuslabel nooit tonen op nationaal niveau
 if ( ! is_main_site() ) {
 	?>
-		<p class="stock <?php echo esc_attr( $class ); ?>"><?php echo wp_kses_post( $availability ); ?></p>
+		<p class="stock out-of-stock <?php echo esc_attr( $class ); ?>"><?php echo wp_kses_post( $availability ); ?></p>
 	<?php
 
 	// Variable $product wordt via template argumenten doorgegeven door WooCommerce, geen global nodig

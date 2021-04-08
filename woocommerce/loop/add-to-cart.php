@@ -44,7 +44,7 @@ if ( is_main_site() ) {
 } else {
 	// GEWIJZIGD: Knop niet tonen bij voorraadstatus 'onbackorder'
 	if ( $product->is_on_backorder() ) {
-		echo 'Tijdelijk niet beschikbaar';
+		echo 'Tijdelijk uitverkocht';
 	} elseif ( $product->is_in_stock() ) {
 		echo apply_filters( 'woocommerce_loop_add_to_cart_link',
 			sprintf( '<a rel="nofollow" href="%s" data-quantity="%s" class="%s" %s>%s</a>',
