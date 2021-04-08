@@ -831,7 +831,7 @@
 		if ( $availability === __( 'Available on backorder', 'woocommerce' ) ) {
 			$availability = 'Tijdelijk uitverkocht in deze webshop';
 		} elseif ( $availability === __( 'Out of stock', 'woocommerce' ) ) {
-			$availability = 'Niet beschikbaar bij deze webshop';
+			$availability = 'Niet beschikbaar in deze webshop';
 		}
 		return $availability;
 	}
