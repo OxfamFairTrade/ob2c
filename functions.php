@@ -29,7 +29,11 @@
 
 	function plugin_coupon_error_message( $message, $error_code, $coupon ) {
 		if ( strpos( strtoupper( $coupon->code ), 'CERA' ) === 0 and intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
-			return __( 'Deze cadeubon, aangekocht via Cera, werd al ingeruild!', 'ob2c' );
+			return __( 'Deze cadeaubon, aangekocht via Cera, werd al ingeruild!', 'ob2c' );
+		}
+
+		if ( strpos( strtoupper( $coupon->code ), 'GZB' ) === 0 and intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
+			return __( 'Deze cadeaubon, aangekocht via Gezinsbond, werd al ingeruild!', 'ob2c' );
 		}
 
 		return $message;
@@ -65,13 +69,10 @@
 	function ob2c_is_valid_bulk_coupon( $code ) {
 		$code = strtoupper( $code );
 		$parts = explode( '-', $code );
-		if ( count( $parts ) < 2 ) {
-			return false;
-		}
-
 		$issuer = $parts[0];
-		$issuers = array( 'CERA', 'GZB' );
-		if ( in_array( $issuer, $issuers ) ) {
+		$issuers = array( 'CERA' => 'Cera', 'GZB' => 'Gezinsbond' );
+		
+		if ( count( $parts ) > 1 and array_key_exists( $issuer, $issuers ) ) {
 			$unique_code = $parts[1];
 
 			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
@@ -88,8 +89,6 @@
 				write_log( 'not existing: '.$unique_code );
 				set_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'], $tries + 1, DAY_IN_SECONDS );
 			}
-		} else {
-			write_log( 'no valid issuer: '.$code );
 		}
 
 		return false;

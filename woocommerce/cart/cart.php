@@ -141,7 +141,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 				</table>
 
 				<div class="coupon">
-					<input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" /> <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?></button>
+					<input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'GZB-ABC123', 'ob2c' ); ?>" /> <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'ob2c' ); ?>"><?php esc_attr_e( 'Apply coupon', 'ob2c' ); ?></button>
 					<?php do_action( 'woocommerce_cart_coupon' ); ?>
 				</div>
 
