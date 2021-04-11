@@ -125,12 +125,15 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 
 						do_action( 'woocommerce_cart_contents' );
 						?>
-						<!-- GEWIJZIGD: Laat rij staan om buttons te triggeren maar verberg altijd -->
-						<tr style="display: none;">
+						<tr>
 							<td colspan="3" class="actions">
-								<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
-				                
-				                <button type="submit" class="button border" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
+								<div class="coupon">
+									<label for="coupon_code"><?php esc_html_e( 'Coupon:', 'woocommerce' ); ?></label> <input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" /> <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?></button>
+									<?php do_action( 'woocommerce_cart_coupon' ); ?>
+								</div>
+
+								<!-- GEWIJZIGD: Laat button staan (zodat ze getriggerd kan worden) maar verberg altijd -->
+								<button type="submit" style="display: none;" class="button border" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
 
 								<?php do_action( 'woocommerce_cart_actions' ); ?>
 				                
