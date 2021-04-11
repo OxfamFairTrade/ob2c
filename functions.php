@@ -43,9 +43,11 @@
 	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_bulk_coupon', 10, 1 );
 
 	function ob2c_invalidate_bulk_coupon( $order_id ) {
+		write_log("PAYMENT COMPLETE");
 		$order = wc_get_order( $order_id );
 		if ( $order !== false ) {
 			$used_coupons = $order->get_coupon_codes();
+			write_log( print_r( $user_coupons, true ) );
 			foreach ( $used_coupons as $code ) {
 				$coupon = ob2c_is_valid_bulk_coupon( $code );
 				if ( $coupon !== false ) {
