@@ -39,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					
 					foreach ( $products_tags as $product_slug ) {
 						$term = get_term_by( 'slug', $product_slug, 'product_tag' );
-						if ( ! is_wp_error( $term ) ) {
+						if ( $term !== false ) {
 							// Of toch iets à la add_query_arg( 'filter_product_tag', 'promotie' ) / remove_query_arg( 'filter_product_tag' ) maar wordt dan nog altijd niet automatisch opgenomen in actieve filters!
 							$term_link = get_term_link( $term );
 							if ( is_product_tag( $product_slug ) ) {
