@@ -34,7 +34,7 @@
 		$characters = '0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
 		$characters_length = strlen( $characters );
 		$random_string = '';
-		for ( $i = 0; $i < 15; $i++ ) {
+		for ( $i = 0; $i < 12; $i++ ) {
 			$random_string .= $characters[ rand( 0, $characters_length - 1 ) ];
 		}
 
@@ -112,7 +112,7 @@
 		// O kan nooit voorkomen, automatisch vervangen door 0
 		$code = str_replace( 'O', '0', strtoupper( $code ) );
 		
-		if ( strlen( $code ) === 15 ) {
+		if ( strlen( $code ) === 12 ) {
 			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
 			if ( $tries > 10 ) {
 				write_log( 'too many attempts: '.$_SERVER['REMOTE_ADDR'] );
