@@ -5,7 +5,51 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
-	// Creëer waardebonnen programmatorisch vanuit centrale tabel
+	function ob2c_bulk_create_digital_vouchers( $issuer = 'Gezinsbond', $expires = '2023-01-01', $value = 25, $number = 100 ) {
+		global $wpdb;
+		$created_codes = array();
+		
+		for ( $i = 0; $i < $number; $i++ ) {
+			if ( current_user_can('update_core') ) {
+				$data = array(
+					'code' => ob2c_generate_new_voucher_code(),
+					'issuer' => $issuer,
+					'expires' => $expires,
+					'value' => $value,
+				);
+
+				if ( $wpdb->insert( $wpdb->base_prefix.'universal_coupons', $data ) === 1 ) {
+					$created_codes[] = $data['code'];
+				} else {
+					echo "Error inserting new code row<br/>";
+				}
+			}
+		}
+
+		echo implode( '<br/>', $created_codes );
+	}
+
+	function ob2c_generate_new_voucher_code( $length = 15 ) {
+		// O weglaten om verwarring met 0 te vermijden
+		$characters = '0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
+		$characters_length = strlen( $characters );
+		$random_string = '';
+		for ( $i = 0; $i < $length; $i++ ) {
+			$random_string .= $characters[ rand( 0, $characters_length - 1 ) ];
+		}
+
+		global $wpdb;
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE code = '%s'", $random_string ) );
+		if ( null !== $row ) {
+			// De code bestond al, begin opnieuw
+			echo "Coupon code ".$random_string." already exists, retry ...<br/>";
+			return ob2c_generate_new_voucher_code( $length );
+		} else {
+			return $random_string;
+		}
+	}
+
+	// Creëer waardebonnen on-the-fly op basis van centrale MySQL-tabel
 	add_filter( 'woocommerce_get_shop_coupon_data', 'ob2c_check_bulk_coupons', 10, 3 );
 
 	function ob2c_check_bulk_coupons( $bool, $code, $wc_coupon_class ) {
@@ -28,14 +72,10 @@
 	add_filter( 'woocommerce_coupon_error', 'plugin_coupon_error_message', 10, 3 );
 
 	function plugin_coupon_error_message( $message, $error_code, $coupon ) {
-		if ( strpos( strtoupper( $coupon->code ), 'CERA' ) === 0 and intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
-			return __( 'Deze cadeaubon, aangekocht via Cera, werd al ingeruild!', 'ob2c' );
+		if ( intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
+			return __( 'Deze cadeaubon werd al ingeruild!', 'ob2c' );
 		}
-
-		if ( strpos( strtoupper( $coupon->code ), 'GZB' ) === 0 and intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
-			return __( 'Deze cadeaubon, aangekocht via Gezinsbond, werd al ingeruild!', 'ob2c' );
-		}
-
+		
 		return $message;
 	}
 
@@ -69,26 +109,22 @@
 	}
 
 	function ob2c_is_valid_bulk_coupon( $code ) {
-		$code = strtoupper( $code );
-		$parts = explode( '-', $code );
-		$issuer = $parts[0];
-		$issuers = array( 'CERA' => 'Cera', 'GZB' => 'Gezinsbond' );
+		// O kan nooit voorkomen, automatisch vervangen door 0
+		$code = str_replace( 'O', '0', strtoupper( $code ) );
 		
-		if ( count( $parts ) > 1 and array_key_exists( $issuer, $issuers ) ) {
-			$unique_code = $parts[1];
-
+		if ( strlen( $code ) === 15 ) {
 			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
 			if ( $tries > 10 ) {
 				write_log( 'too many attempts: '.$_SERVER['REMOTE_ADDR'] );
 			}
 
 			global $wpdb;
-			$coupon = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `code` = %s AND `issuer` = %s", $unique_code, $issuer ) );
+			$coupon = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `code` = %s", $code ) );
 
 			if ( null !== $coupon ) {
 				return $coupon;
 			} else {
-				write_log( 'not existing: '.$unique_code );
+				write_log( 'not existing: '.$code );
 				set_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'], $tries + 1, DAY_IN_SECONDS );
 			}
 		}
