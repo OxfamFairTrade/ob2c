@@ -29,12 +29,12 @@
 		echo implode( '<br/>', $created_codes );
 	}
 
-	function ob2c_generate_new_voucher_code( $length = 15 ) {
+	function ob2c_generate_new_voucher_code() {
 		// O weglaten om verwarring met 0 te vermijden
 		$characters = '0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
 		$characters_length = strlen( $characters );
 		$random_string = '';
-		for ( $i = 0; $i < $length; $i++ ) {
+		for ( $i = 0; $i < 15; $i++ ) {
 			$random_string .= $characters[ rand( 0, $characters_length - 1 ) ];
 		}
 
@@ -43,7 +43,7 @@
 		if ( null !== $row ) {
 			// De code bestond al, begin opnieuw
 			echo "Coupon code ".$random_string." already exists, retry ...<br/>";
-			return ob2c_generate_new_voucher_code( $length );
+			return ob2c_generate_new_voucher_code();
 		} else {
 			return $random_string;
 		}
@@ -75,7 +75,7 @@
 		if ( intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
 			return __( 'Deze cadeaubon werd al ingeruild!', 'ob2c' );
 		}
-		
+
 		return $message;
 	}
 
