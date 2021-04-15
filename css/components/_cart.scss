@@ -157,6 +157,7 @@
       border: 1px solid $black;
       font-size: 15px;
       padding: 10px;
+      transition: all 0.2s;
 
       &:hover {
         background-color: $black;
@@ -312,8 +313,7 @@
 
 .wc-giftwrap {
   > .giftwrap_header_wrapper {
-    margin-top: 20px;
-    text-align: right;
+    margin-top: 15px;
 
     > .btn {
       background-color: transparent;
@@ -331,13 +331,13 @@
       text-align: center;
       width: auto;
 
-      &:before {
+      &:after {
         content: "";
         background: url(/wp-content/themes/oxfam-webshop/images/icons/gift-black.svg) no-repeat center center transparent;
         display: inline-block;
         width: 20px;
         height: 20px;
-        margin-right: 10px;
+        margin-left: 8px;
         top: 0;
         position: relative;
         vertical-align: top;
@@ -348,7 +348,7 @@
         background-color: $black;
         opacity: inherit;
 
-        &:before {
+        &:after {
           background-image: url(/wp-content/themes/oxfam-webshop/images/icons/gift.svg);
         }
       }
