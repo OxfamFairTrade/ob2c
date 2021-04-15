@@ -27,8 +27,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tr>
 
 		<tr class="coupon digital-voucher">
-			<th style="width: 70%;"><input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Digitale cadeaubon gekregen? Vul hier je code in.', 'oxfam-webshop' ); ?>" /></th>
-			<td style="width: 30%;"><button type="submit" class="button" name="apply_coupon"><?php esc_attr_e( 'Controleer code', 'oxfam-webshop' ); ?></button></td>
+			<th style="width: 70%; border-bottom: none;"><input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Digitale cadeaubon gekregen? Vul hier je code in.', 'oxfam-webshop' ); ?>" /></th>
+			<td style="width: 30%; border-bottom: none;"><button type="submit" class="button" name="apply_coupon"><?php esc_attr_e( 'Controleer code', 'oxfam-webshop' ); ?></button></td>
 			<?php do_action( 'woocommerce_cart_coupon' ); ?>
 		</tr>
 
