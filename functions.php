@@ -83,7 +83,7 @@
 	add_filter( 'woocommerce_cart_totals_coupon_label', 'ob2c_modify_digital_voucher_label', 10, 2 );
 
 	function ob2c_modify_digital_voucher_label( $label, $coupon ) {
-		if ( $coupon->get_amount() == 25.00 ) {
+		if ( $coupon->get_amount() == 25 or $coupon->get_amount() == 50 ) {
 			$label = 'Digitale geschenkencheque '.$coupon->get_amount().' euro: '.strtoupper( $coupon->get_code() );
 			// $label = $coupon->get_description();
 		}
