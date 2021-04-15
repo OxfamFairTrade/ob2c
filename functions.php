@@ -57,7 +57,7 @@
 		$coupon = ob2c_is_valid_bulk_coupon( $code );
 		if ( $coupon !== false ) {
 			// Eventueel beperken tot OFT-producten?
-			$args = array( 'date_expires' => $coupon->expires, 'amount' => $coupon->value, 'usage_limit' => 1, 'description' => 'Cadeaubon '.$coupon->value.' euro', 'product_ids' => array() );
+			$args = array( 'date_expires' => $coupon->expires, 'amount' => $coupon->value, 'usage_limit' => 1, 'description' => 'Digitale cadeaubon t.w.v. '.$coupon->value.' euro', 'product_ids' => array() );
 			if ( ! empty( $coupon->order ) ) {
 				// De code bestaat maar kan niet meer gebruikt worden!
 				write_log( 'already used: '.$coupon->code );
@@ -84,8 +84,7 @@
 
 	function ob2c_modify_digital_voucher_label( $label, $coupon ) {
 		if ( $coupon->get_amount() == 25 or $coupon->get_amount() == 50 ) {
-			$label = 'Digitale geschenkencheque '.$coupon->get_amount().' euro: '.strtoupper( $coupon->get_code() );
-			// $label = $coupon->get_description();
+			$label = $coupon->get_description().': '.strtoupper( $coupon->get_code() );
 		}
 
 		return $label;
@@ -621,13 +620,12 @@
 		return $html;
 	}
 
-	// Pas winkelmandkorting WVDFT2020-QUINOA toe op totaal i.p.v. subtotaal
-	// add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
+	// Pas winkelmandkorting n.a.v. World Fair Trade Day 2021 toe op totaal i.p.v. subtotaal
+	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
-		if ( $coupon->get_code() === 'wvdft2020-quinoa' ) {
-			// Dit geeft het totaal NA kortingen inclusief BTW als float MAAR bevat ook de verzendkosten!
-			// write_log( "CART TOTAL: ".WC()->cart->get_total('edit') );
+		if ( $coupon->get_code() === '202105-wftd' ) {
+			// WC()->cart->get_total('edit') geeft het totaal NA kortingen inclusief BTW als float MAAR bevat ook de verzendkosten!
 			$totals = WC()->cart->get_totals();
 			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] < $coupon->get_minimum_amount() ) {
 				return false;	
