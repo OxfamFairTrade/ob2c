@@ -84,7 +84,7 @@
 		}
 
 		if ( intval( $error_code ) === WC_COUPON::E_WC_COUPON_NOT_EXIST ) {
-			return sprintf( __( 'De code %s kennen we helaas niet. Opgelet: papieren geschenkencheques met een volgnummer in plaats van een unieke code kunnen niet via de webshop ingeruild worden!', 'oxfam-webshop' ), $coupon );
+			return sprintf( __( 'De alfanumerieke code %s kennen we helaas niet. Opgelet: papieren geschenkencheques met een volgnummer kunnen niet via de webshop ingeruild worden!', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
 		}
 
 		return $message;
@@ -3316,8 +3316,9 @@
 	add_action( 'woocommerce_checkout_process', 'ob2c_validate_order_total' );
 
 	function ob2c_validate_order_total() {
-		// Stel een bestelminimum in
+		// Stel een bestelminimum in CHECK OF ER GEEN CADEAUBONNEN INGERUILD WERDEN
 		$min = 10;
+		var_dump_pre( WC()->cart->get_applied_coupons() );
 		if ( floatval( WC()->cart->get_total('edit') ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
 		}
