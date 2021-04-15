@@ -5,7 +5,7 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
-	function ob2c_bulk_create_digital_vouchers( $issuer = 'Gezinsbond', $expires = '2023-01-01', $value = 25, $number = 100 ) {
+	function ob2c_bulk_create_digital_vouchers( $issuer = 'Gezinsbond', $expires = '2023-01-01', $value = 25, $number = 300 ) {
 		global $wpdb;
 		$created_codes = array();
 		
@@ -20,6 +20,7 @@
 
 				if ( $wpdb->insert( $wpdb->base_prefix.'universal_coupons', $data ) === 1 ) {
 					$created_codes[] = $data['code'];
+					file_put_contents( ABSPATH . '/../oxfam-digital-vouchers-'.$value.'-EUR-valid-'.$expires.'.csv', $data['code'], FILE_APPEND );
 				} else {
 					echo "Error inserting new code row<br/>";
 				}
