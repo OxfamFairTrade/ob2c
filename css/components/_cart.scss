@@ -143,14 +143,22 @@
   }
 
   .digital-voucher {
-    input.input-text {
+    .input-text {
       display: inline-block;
-      width: 20ch;
-      padding: 9px 15px 10px;
+      width: 100%;
+      padding: 10px 0;
+      border: none;
+      border-bottom: 1px dashed #e5e5e5;
     }
 
-    button.button {
+    .button {
+      background-color: transparent;
+      color: #282828;
 
+      &:hover {
+        background-color: inherit;
+        color: inherit;
+      }
     }
   }
 }

@@ -56,14 +56,20 @@
 	function ob2c_check_bulk_coupons( $bool, $code, $wc_coupon_class ) {
 		$coupon = ob2c_is_valid_bulk_coupon( $code );
 		if ( $coupon !== false ) {
-			// Eventueel beperken tot OFT-producten?
-			$args = array( 'date_expires' => $coupon->expires, 'amount' => $coupon->value, 'usage_limit' => 1, 'description' => 'Digitale cadeaubon t.w.v. '.$coupon->value.' euro', 'product_ids' => array() );
+			$data = array(
+				'date_expires' => $coupon->expires,
+				'amount' => $coupon->value,
+				'usage_limit' => 1,
+				'description' => 'Digitale cadeaubon t.w.v. '.$coupon->value.' euro',
+				// Eventueel beperken tot OFT-producten?
+				'product_ids' => array(),
+				'issuer' => $coupon->issuer,
+			);
 			if ( ! empty( $coupon->order ) ) {
 				// De code bestaat maar kan niet meer gebruikt worden!
-				write_log( 'already used: '.$coupon->code );
-				$args['usage_count'] = 1;
+				$data['usage_count'] = 1;
 			}
-			return $args;
+			return $data;
 		}
 
 		return false;
@@ -74,7 +80,7 @@
 
 	function plugin_coupon_error_message( $message, $error_code, $coupon ) {
 		if ( intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
-			return __( 'Deze cadeaubon werd al ingeruild!', 'ob2c' );
+			return __( 'Deze waardebon werd al ingeruild!', 'oxfam-webshop' );
 		}
 
 		return $message;
@@ -105,13 +111,13 @@
 					// Eerst nogmaals checken of de code al niet ingewisseld werd!
 					if ( ! empty( $coupon->order ) ) {
 						$logger = wc_get_logger();
-						$logger->critical( 'Coupon '.$coupon->code.' was already used in '.$coupon->code.', should not be used in '.$order->get_order_number() );
+						$logger->critical( 'Coupon '.$coupon->code.' was already used in '.$coupon->order.', should not be used in '.$order->get_order_number() );
 					} else {
 						global $wpdb;
 						$result = $wpdb->update(
 							$wpdb->base_prefix.'universal_coupons',
 							array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s') ),
-							array( 'code' => $coupon->code, 'issuer' => $code->issuer )
+							array( 'code' => $coupon->code )
 						);
 					}
 				}
@@ -620,8 +626,9 @@
 		return $html;
 	}
 
-	// Pas winkelmandkorting n.a.v. World Fair Trade Day 2021 toe op totaal i.p.v. subtotaal
-	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
+	// Pas winkelmandkorting n.a.v. World Fair Trade Day 2021 toe op het uiteindelijk te betalen bedrag i.p.v. het subtotaal
+	// Dit zorgt er ook voor dat de korting niet geactiveerd wordt bij betaling met digitale vouchers!
+	// add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
 		if ( $coupon->get_code() === '202105-wftd' ) {

@@ -26,6 +26,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<td data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce' ); ?>"><?php wc_cart_totals_subtotal_html(); ?></td>
 		</tr>
 
+		<tr class="coupon digital-voucher">
+			<th>
+				<input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'ABC123' ); ?>" />
+			</th>
+			<td>
+				<button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?></button>
+			</td>
+			<?php do_action( 'woocommerce_cart_coupon' ); ?>
+		</tr>
+
 		<?php foreach ( WC()->cart->get_coupons() as $code => $coupon ) : ?>
 			<!-- GEWIJZIGD: Check of er wel een beschrijving beschikbaar is -->
 			<?php if ( wc_cart_totals_coupon_label( $coupon, false ) !== '' ) : ?>
