@@ -128,7 +128,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 						<!-- GEWIJZIGD: Laat buttons staan (zodat ze getriggerd kunnen worden) maar verberg rij altijd -->
 						<tr style="display: none;">
 							<td colspan="3" class="actions">
-								<button type="submit" class="button border" name="update_cart" value="<?php esc_attr_e( 'Update cart', 'woocommerce' ); ?>"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
+								<button type="submit" class="button border" name="update_cart"><?php esc_html_e( 'Update cart', 'woocommerce' ); ?></button>
 
 								<?php do_action( 'woocommerce_cart_actions' ); ?>
 				                
