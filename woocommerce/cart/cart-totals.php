@@ -22,13 +22,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<table cellspacing="0" class="shop_table shop_table_responsive">
 
 		<tr class="cart-subtotal">
-			<th><?php _e( 'Subtotal', 'woocommerce' ); ?></th>
-			<td data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce' ); ?>"><?php wc_cart_totals_subtotal_html(); ?></td>
+			<th style="border-bottom: none !important;"><?php _e( 'Subtotal', 'woocommerce' ); ?></th>
+			<td style="border-bottom: none !important;" data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce' ); ?>"><?php wc_cart_totals_subtotal_html(); ?></td>
 		</tr>
 
 		<tr class="coupon digital-voucher">
-			<th style="width: 70%; border-bottom: none !important;"><input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Digitale cadeaubon gekregen? Vul hier je code in.', 'oxfam-webshop' ); ?>" /></th>
-			<td style="width: 30%; border-bottom: none !important;"><button type="submit" class="button" name="apply_coupon"><?php esc_attr_e( 'Controleer code', 'oxfam-webshop' ); ?></button></td>
+			<th style="width: 70%;"><input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Cadeaubon gekregen? Vul hier je unieke code in.', 'oxfam-webshop' ); ?>" /></th>
+			<td style="width: 30%;"><button type="submit" class="button" name="apply_coupon"><?php esc_attr_e( 'Controleer code', 'oxfam-webshop' ); ?></button></td>
 			<?php do_action( 'woocommerce_cart_coupon' ); ?>
 		</tr>
 

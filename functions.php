@@ -76,11 +76,15 @@
 	}
 
 	// Custom foutmeldingen
-	add_filter( 'woocommerce_coupon_error', 'plugin_coupon_error_message', 10, 3 );
+	add_filter( 'woocommerce_coupon_error', 'ob2c_coupon_error_message', 10, 3 );
 
-	function plugin_coupon_error_message( $message, $error_code, $coupon ) {
+	function ob2c_coupon_error_message( $message, $error_code, $coupon ) {
 		if ( intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
-			return __( 'Deze waardebon werd al ingeruild!', 'oxfam-webshop' );
+			return __( 'Deze cadeaubon werd al ingeruild!', 'oxfam-webshop' );
+		}
+
+		if ( intval( $error_code ) === WC_COUPON::E_WC_COUPON_NOT_EXIST ) {
+			return sprintf( __( 'De code %s kennen we helaas niet. Opgelet: papieren geschenkencheques met een volgnummer in plaats van een unieke code kunnen niet via de webshop ingeruild worden!', 'oxfam-webshop' ), $coupon );
 		}
 
 		return $message;
