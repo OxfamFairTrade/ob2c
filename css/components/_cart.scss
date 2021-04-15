@@ -333,10 +333,7 @@
 
       &:before {
         content: "";
-        mask: url(/wp-content/themes/oxfam-webshop/images/icons/gift.svg) no-repeat center center transparent;
-        mask-size: cover;
-        // Dit is equivalent met een fill op de SVG, dankzij het gebruik van 'mask' i.p.v. background-image
-        background-color: $black;
+        background: url(/wp-content/themes/oxfam-webshop/images/icons/gift-black.svg) no-repeat center center transparent;
         display: inline-block;
         width: 20px;
         height: 20px;
@@ -352,7 +349,7 @@
         opacity: inherit;
 
         &:before {
-          background-color: white;
+          background-image: url(/wp-content/themes/oxfam-webshop/images/icons/gift.svg);
         }
       }
     }
