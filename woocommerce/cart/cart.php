@@ -140,6 +140,12 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 					</tbody>
 				</table>
 
+				<div class="coupon digital-voucher">
+					<input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'ABC123' ); ?>" />
+					<button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?></button>
+					<?php do_action( 'woocommerce_cart_coupon' ); ?>
+				</div>
+
 				<?php do_action( 'woocommerce_after_cart_table' ); ?>
 
 				<?php do_action( 'woocommerce_before_cart_collaterals' ); ?>
@@ -159,12 +165,6 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 						<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
 						<?php do_action( 'woocommerce_proceed_to_checkout' ); ?>
 					</div>
-				</div>
-
-				<div class="coupon digital-voucher">
-					<input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'ABC123' ); ?>" />
-					<button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?></button>
-					<?php do_action( 'woocommerce_cart_coupon' ); ?>
 				</div>
 			</form>	
 
