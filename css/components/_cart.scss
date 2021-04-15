@@ -146,8 +146,8 @@
 .cart-collaterals {
   width: 100% !important;
   float: none !important;
-  margin-top: 0;
-  margin-bottom: 34px;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 
   > .cart_totals {
     > table.shop_table {
@@ -281,6 +281,18 @@
 
       .woocommerce-shipping-destination {
         padding: 0;
+      }
+
+      .digital-voucher {
+        input.input-text {
+          display: inline-block;
+          width: 20ch;
+          padding: 9px 15px 10px;
+        }
+
+        input.button {
+
+        }
       }
     }
   }

@@ -80,6 +80,18 @@
 		return $message;
 	}
 
+	add_filter( 'woocommerce_cart_totals_coupon_label', 'ob2c_modify_digital_voucher_label', 10, 2 );
+
+	function ob2c_modify_digital_voucher_label( $label, $coupon ) {
+		if ( $coupon->get_amount() == 25 ) {
+			$label = 'Digitale geschenkencheque: '.strtoupper( $coupon->get_code() );
+		} else {
+			$label = $coupon->get_description();
+		}
+
+		return $label;
+	}
+
 	// Maak de code na succesvolle betaling onbruikbaar in de centrale database
 	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_bulk_coupon', 10, 1 );
 

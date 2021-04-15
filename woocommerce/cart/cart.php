@@ -144,11 +144,6 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 
 				<?php do_action( 'woocommerce_before_cart_collaterals' ); ?>
 
-				<div class="coupon">
-					<input type="text" name="coupon_code" class="input-text" id="coupon_code" style="display: inline-block; width: 20ch; padding: 9px 15px 10px;" value="" placeholder="<?php esc_attr_e( 'ABC123' ); ?>" /> <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?></button>
-					<?php do_action( 'woocommerce_cart_coupon' ); ?>
-				</div>
-
 				<div class="cart-collaterals">
 				    <?php 
 				        /**
