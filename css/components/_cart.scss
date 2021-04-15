@@ -141,6 +141,18 @@
       }
     }
   }
+
+  .digital-voucher {
+    input.input-text {
+      display: inline-block;
+      width: 20ch;
+      padding: 9px 15px 10px;
+    }
+
+    input.button {
+
+    }
+  }
 }
 
 .cart-collaterals {
@@ -281,18 +293,6 @@
 
       .woocommerce-shipping-destination {
         padding: 0;
-      }
-
-      .digital-voucher {
-        input.input-text {
-          display: inline-block;
-          width: 20ch;
-          padding: 9px 15px 10px;
-        }
-
-        input.button {
-
-        }
       }
     }
   }
