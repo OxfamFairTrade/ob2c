@@ -50,7 +50,7 @@
 		}
 	}
 
-	// Creëer waardebonnen on-the-fly op basis van centrale MySQL-tabel
+	// Creëer vouchers on-the-fly op basis van centrale MySQL-tabel
 	add_filter( 'woocommerce_get_shop_coupon_data', 'ob2c_check_bulk_coupons', 10, 3 );
 
 	function ob2c_check_bulk_coupons( $bool, $code, $wc_coupon_class ) {
@@ -3322,9 +3322,16 @@
 
 	function ob2c_validate_order_total() {
 		// Stel een bestelminimum in
-		// @toDO: Check of er geen cadeaubonnen gebruikt werden
 		$min = 10;
-		write_log( print_r( WC()->cart->get_applied_coupons(), true ) );
+		
+		// Check of er geen vouchers als betaalmiddel gebruikt werden
+		foreach ( WC()->cart->get_applied_coupons() as $code ) {
+			if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
+				// Spring uit de actie
+				return;
+			}
+		}
+
 		if ( floatval( WC()->cart->get_total('edit') ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
 		}
