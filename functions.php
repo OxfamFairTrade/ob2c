@@ -133,10 +133,14 @@
 		// O kan nooit voorkomen, automatisch vervangen door 0
 		$code = str_replace( 'O', '0', strtoupper( $code ) );
 		
-		if ( strlen( $code ) === 12 ) {
+		// Vermijd dat we ook autocoupons checken en zo onszelf blacklisten!
+		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
 			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
 			if ( $tries > 10 ) {
 				write_log( 'too many attempts: '.$_SERVER['REMOTE_ADDR'] );
+				// Of alternatieve waarde meegeven zodat we andere foutmelding kunnen tonen?
+				// return WC_COUPON::E_WC_COUPON_NOT_YOURS_REMOVED;
+				return false;
 			}
 
 			global $wpdb;
@@ -147,6 +151,7 @@
 			} else {
 				write_log( 'not existing: '.$code );
 				set_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'], $tries + 1, DAY_IN_SECONDS );
+				// return WC_COUPON::E_WC_COUPON_NOT_EXIST;
 			}
 		}
 
