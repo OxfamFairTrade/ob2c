@@ -155,10 +155,13 @@
       background-color: transparent;
       color: $black;
       border: 1px solid $black;
+      font-size: 0.8em;
+      padding: 5px;
 
       &:hover {
-        background-color: inherit;
-        color: inherit;
+        background-color: $black;
+        color: white;
+        opacity: initial;
       }
     }
   }
@@ -313,25 +316,25 @@
 
     > .giftwrap_header {
       > .btn {
-        background-color: #282828;
-        border: 0 none;
+        background-color: transparent;
+        border: 1px solid $black;
         border-radius: 0;
-        color: #fff;
+        color: $black;
         cursor: pointer;
         display: inline-block;
         font-size: 16px;
         font-weight: normal;
         line-height: 22px;
         opacity: 1;
-        padding: 10px 14px;
-        transition: opacity 0.2s ease;
+        padding: 10px;
         text-decoration: none;
         text-align: center;
         width: auto;
 
         &:hover {
-          color: #fff;
-          opacity: 0.82;
+          color: white;
+          background-color: $black;
+          opacity: initial;
         }
 
         &:before {
