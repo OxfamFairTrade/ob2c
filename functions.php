@@ -3316,9 +3316,10 @@
 	add_action( 'woocommerce_checkout_process', 'ob2c_validate_order_total' );
 
 	function ob2c_validate_order_total() {
-		// Stel een bestelminimum in CHECK OF ER GEEN CADEAUBONNEN INGERUILD WERDEN
+		// Stel een bestelminimum in
+		// @toDO: Check of er geen cadeaubonnen gebruikt werden
 		$min = 10;
-		var_dump_pre( WC()->cart->get_applied_coupons() );
+		write_log( print_r( WC()->cart->get_applied_coupons(), true ) );
 		if ( floatval( WC()->cart->get_total('edit') ) < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
 		}
