@@ -5,51 +5,6 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
-	function ob2c_bulk_create_digital_vouchers( $issuer = 'Gezinsbond', $expires = '2023-01-01', $value = 25, $number = 300 ) {
-		global $wpdb;
-		$created_codes = array();
-		
-		for ( $i = 0; $i < $number; $i++ ) {
-			if ( current_user_can('update_core') ) {
-				$data = array(
-					'code' => ob2c_generate_new_voucher_code(),
-					'issuer' => $issuer,
-					'expires' => $expires,
-					'value' => $value,
-				);
-
-				if ( $wpdb->insert( $wpdb->base_prefix.'universal_coupons', $data ) === 1 ) {
-					$created_codes[] = $data['code'];
-					file_put_contents( ABSPATH . '/../oxfam-digital-vouchers-'.$value.'-EUR-valid-'.$expires.'.csv', $data['code'], FILE_APPEND );
-				} else {
-					echo "Error inserting new code row<br/>";
-				}
-			}
-		}
-
-		echo implode( '<br/>', $created_codes );
-	}
-
-	function ob2c_generate_new_voucher_code() {
-		// O weglaten om verwarring met 0 te vermijden
-		$characters = '0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
-		$characters_length = strlen( $characters );
-		$random_string = '';
-		for ( $i = 0; $i < 12; $i++ ) {
-			$random_string .= $characters[ rand( 0, $characters_length - 1 ) ];
-		}
-
-		global $wpdb;
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE code = '%s'", $random_string ) );
-		if ( null !== $row ) {
-			// De code bestond al, begin opnieuw
-			echo "Coupon code ".$random_string." already exists, retry ...<br/>";
-			return ob2c_generate_new_voucher_code();
-		} else {
-			return $random_string;
-		}
-	}
-
 	function ob2c_is_plausible_voucher_code( $code ) {
 		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
 			return true;
@@ -144,28 +99,6 @@
 		return $label;
 	}
 
-	// Sla de beschrijving i.p.v. de code op bij de bestelling NIET DOEN, GET_CODE() IS ALIAS VAN GET_NAME() 
-	// add_action( 'woocommerce_checkout_create_order_coupon_item', 'ob2c_rename_digtal_voucher_upon_order_creation', 10, 4 );
-
-	function ob2c_rename_digtal_voucher_upon_order_creation( $item, $code, $coupon, $order ) {
-		$item->set_name( $coupon->get_description() );
-	}
-
-	add_action( 'woocommerce_admin_order_totals_after_total', 'ob2c_list_voucher_payments', 10, 1 );
-
-	function ob2c_list_voucher_payments( $order_id ) {
-		$order = wc_get_order( $order_id );
-		foreach ( $order->get_fees() as $fee_item ) {
-			?>
-			<tr>
-				<td>
-					<span class="description"><?php echo 'waarvan '.number_format( floatval( $fee_item->get_meta('voucher_amount') ), 2, ',', '.' ).' euro via digitale cadeaubon'; ?></span>
-				</td>
-			</tr>
-			<?php
-		}
-	}
-
 	// Maak de code na succesvolle betaling onbruikbaar in de centrale database
 	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_digital_voucher', 10, 1 );
 
@@ -173,12 +106,11 @@
 		$order = wc_get_order( $order_id );
 		if ( $order !== false ) {
 			foreach ( $order->get_coupons() as $coupon_item ) {
-				write_log("IS OXFAM VOUCHER?");
 				// Wees in deze stap niet te kieskeurig met validatie: deze actie is eenmalig én cruciaal voor het ongeldig maken van de voucher! 
 				// Negeer in deze stap de rate limiting per IP-adres
 				$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
 				if ( is_object( $db_coupon ) ) {
-					write_log("IS OXFAM VOUCHER!");
+					write_log( "IS OXFAM VOUCHER: ".$coupon_item->get_code() );
 					// Nogmaals checken of de code al niet ingewisseld werd!
 					if ( ! empty( $db_coupon->order ) ) {
 						$logger = wc_get_logger();
@@ -212,12 +144,106 @@
 							if ( $order->add_item( $fee ) !== false ) {
 								// Verwijder de kortingscode volledig van het order
 								$order->remove_coupon( $coupon_item->get_code() );
+								write_log("VOUCHER REMOVED FROM ORDER");
 							}
 							$order->save();
 						}
 					}
 				}
 			}
+		}
+	}
+
+	// Vermeld het bedrag dat betaald werd via cadeaubonnen (enige beschikbare actie in die buurt ...)
+	add_action( 'woocommerce_admin_order_totals_after_total', 'ob2c_list_voucher_payments', 10, 1 );
+
+	function ob2c_list_voucher_payments( $order_id ) {
+		$order = wc_get_order( $order_id );
+		foreach ( $order->get_fees() as $fee_item ) {
+			?>
+			<tr>
+				<td>
+					<span class="description"><?php echo 'waarvan '.number_format( floatval( $fee_item->get_meta('voucher_amount') ), 2, ',', '.' ).' euro via digitale cadeaubon'; ?></span>
+				</td>
+			</tr>
+			<?php
+		}
+	}
+
+	function ob2c_bulk_create_digital_vouchers( $issuer = 'Gezinsbond', $expires = '2023-01-01', $value = 25, $number = 300 ) {
+		global $wpdb;
+		$created_codes = array();
+		
+		for ( $i = 0; $i < $number; $i++ ) {
+			if ( current_user_can('update_core') ) {
+				$data = array(
+					'code' => ob2c_generate_new_voucher_code(),
+					'issuer' => $issuer,
+					'expires' => $expires,
+					'value' => $value,
+				);
+
+				if ( $wpdb->insert( $wpdb->base_prefix.'universal_coupons', $data ) === 1 ) {
+					$created_codes[] = $data['code'];
+					file_put_contents( ABSPATH . '/../oxfam-digital-vouchers-'.$value.'-EUR-valid-'.$expires.'.csv', $data['code'], FILE_APPEND );
+				} else {
+					echo "Error inserting new code row<br/>";
+				}
+			}
+		}
+
+		echo implode( '<br/>', $created_codes );
+	}
+
+	function ob2c_generate_new_voucher_code() {
+		// O weglaten om verwarring met 0 te vermijden
+		$characters = '0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
+		$characters_length = strlen( $characters );
+		$random_string = '';
+		for ( $i = 0; $i < 12; $i++ ) {
+			$random_string .= $characters[ rand( 0, $characters_length - 1 ) ];
+		}
+
+		global $wpdb;
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE code = '%s'", $random_string ) );
+		if ( null !== $row ) {
+			// De code bestond al, begin opnieuw
+			echo "Coupon code ".$random_string." already exists, retry ...<br/>";
+			return ob2c_generate_new_voucher_code();
+		} else {
+			return $random_string;
+		}
+	}
+
+	function get_all_claimed_digital_vouchers( $start_date = '2021-04-01', $end_date = '2021-04-30', $return_orders = false ) {
+		global $wpdb;
+		$total_count = 0;
+		$objOrders = array();
+
+		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-completed' ) ) . "') AND woi.order_item_type = 'fee' AND woi.order_item_name LIKE 'Cadeaubon%' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
+		$orders = $wpdb->get_results( $query );
+
+		if ( count( $orders ) > 0 ) {
+			foreach ( $orders as $key => $order ) {
+				$objOrder = wc_get_order( $order->order_id );
+				if ( $objOrder !== false ) {
+					$objOrders[] = $objOrder; 
+					$coupons = $objOrder->get_items('coupon');
+					if ( $coupons ) {
+						foreach ( $coupons as $coupon ) {
+							if ( $coupon->get_code() == $coupon_code ) {
+								$total_count += $coupon->get_quantity();
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if ( $return_orders ) {
+			return $objOrders;
+		} else {
+			return $total_count;
 		}
 	}
 
@@ -2798,7 +2824,8 @@
 		// Slugs van alle extra orderstatussen (zonder 'wc'-prefix) die bewerkbaar moeten zijn
 		// Opmerking: standaard zijn 'pending', 'on-hold' en 'auto-draft' bewerkbaar
 		$editable_custom_statuses = array( 'on-hold' );
-		if ( in_array( $order->get_status(), $editable_custom_statuses ) or current_user_can('update_core') ) {
+		// or current_user_can('update_core')
+		if ( in_array( $order->get_status(), $editable_custom_statuses ) ) {
 			$editable = true;
 		} else {
 			$editable = false;
@@ -3835,7 +3862,7 @@
 					if ( $product !== false ) {
 						$qty = -1 * ceil( $coupon_item->get_discount() / 25 );
 						// Er is geen BTW op geschenkencheques!
-						$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $coupon_data_array['description'] )->setCellValue( 'C'.$i, $qty )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, $qty * $product->get_price() )->setCellValue( 'G'.$i, $coupon_item->get_code() )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
+						$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $coupon_data_array['description'] )->setCellValue( 'C'.$i, $qty )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, $qty * $product->get_price() )->setCellValue( 'G'.$i, strtoupper( $coupon_item->get_code() ) )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
 						$i++;
 					}
 				}
@@ -7146,38 +7173,6 @@
 		$objOrders = array();
 
 		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-completed' ) ) . "') AND woi.order_item_type = 'coupon' AND woi.order_item_name = '" . $coupon_code . "' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
-		$orders = $wpdb->get_results( $query );
-
-		if ( count( $orders ) > 0 ) {
-			foreach ( $orders as $key => $order ) {
-				$objOrder = wc_get_order( $order->order_id );
-				if ( $objOrder !== false ) {
-					$objOrders[] = $objOrder; 
-					$coupons = $objOrder->get_items('coupon');
-					if ( $coupons ) {
-						foreach ( $coupons as $coupon ) {
-							if ( $coupon->get_code() == $coupon_code ) {
-								$total_count += $coupon->get_quantity();
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if ( $return_orders ) {
-			return $objOrders;
-		} else {
-			return $total_count;
-		}
-	}
-
-	function get_all_claimed_digital_vouchers( $start_date = '2021-04-01', $end_date = '2021-04-30', $return_orders = false ) {
-		global $wpdb;
-		$total_count = 0;
-		$objOrders = array();
-
-		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-completed' ) ) . "') AND woi.order_item_type = 'fee' AND woi.order_item_name LIKE 'Cadeaubon%' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
 		$orders = $wpdb->get_results( $query );
 
 		if ( count( $orders ) > 0 ) {
