@@ -50,6 +50,13 @@
 		}
 	}
 
+	add_filter( 'woocommerce_coupon_discount_types', 'ob2c_add_voucher_discount_type', 10, 1 );
+
+	function ob2c_add_voucher_discount_type( $types ) {
+		$types['oxfam_voucher'] = 'Digitale cadeaubon';
+		return $types;
+	}
+
 	function ob2c_is_plausible_voucher_code( $code ) {
 		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
 			return true;
@@ -95,12 +102,14 @@
 			
 			default:
 				$data = array(
-					'date_expires' => $db_coupon->expires,
 					'amount' => $db_coupon->value,
-					'usage_limit' => 1,
+					'date_expires' => $db_coupon->expires,
+					// 'discount_type' => 'fixed_cart',
+					'discount_type' => 'oxfam_voucher',
 					'description' => 'Cadeaubon '.$db_coupon->issuer.' t.w.v. '.$db_coupon->value.' euro',
 					// Eventueel beperken tot OFT-producten?
 					// 'product_ids' => array(),
+					'usage_limit' => 1,
 				);
 				if ( ! empty( $db_coupon->order ) ) {
 					// De code bestaat maar kan niet meer gebruikt worden!
@@ -111,6 +120,16 @@
 		}
 
 		return $bool;
+	}
+
+	add_filter( 'woocommerce_coupon_get_discount_amount', 'wc_cpn_disc', 10, 5 );
+	
+	function wc_cpn_disc( $discount, $discounting_amount, $cart_item, $single, $coupon ) {
+		if ( $coupon->type == 'oxfam_voucher' ) {
+			$discount = $coupon->get_amount();
+		}
+
+		return $discount;
 	}
 
 	// Tweak foutmeldingen
@@ -175,15 +194,19 @@
 							);
 
 							// Converteer korting naar betaalmethode voor correcte verwerking BTW???
-							foreach ( $order->get_coupons() as $item ) {
-								if ( $item->get_code() === $code ) {
-									write_log("MODIFY VOUCHER ".$code);
-									$item->set_discount(0);
-									$item->set_discount_tax(0);
-									$item->save();
-									break;
-								}
-							}
+							$order->remove_coupon( $code );
+							// $order->save();
+
+							// Dit verwijdert de kortingen op de producten niet ...
+							// foreach ( $order->get_coupons() as $item ) {
+							// 	if ( $item->get_code() === $code ) {
+							// 		write_log("MODIFY VOUCHER ".$code);
+							// 		$item->set_discount(0);
+							// 		$item->set_discount_tax(0);
+							// 		$item->save();
+							// 		break;
+							// 	}
+							// }
 						}
 					}
 				}
