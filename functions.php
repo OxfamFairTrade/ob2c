@@ -87,22 +87,22 @@
 	add_filter( 'woocommerce_get_shop_coupon_data', 'ob2c_load_digital_voucher_on_the_fly', 10, 3 );
 
 	function ob2c_load_digital_voucher_on_the_fly( $bool, $code, $wc_coupon_class ) {
-		$coupon = ob2c_is_valid_voucher_code( $code );
+		$db_coupon = ob2c_is_valid_voucher_code( $code );
 		
-		switch ( $coupon ) {
+		switch ( $db_coupon ) {
 			case WC_COUPON::E_WC_COUPON_NOT_EXIST:
 				return false;
 			
 			default:
 				$data = array(
-					'date_expires' => $coupon->expires,
-					'amount' => $coupon->value,
+					'date_expires' => $db_coupon->expires,
+					'amount' => $db_coupon->value,
 					'usage_limit' => 1,
-					'description' => 'Cadeaubon '.$coupon->issuer.' t.w.v. '.$coupon->value.' euro',
+					'description' => 'Cadeaubon '.$db_coupon->issuer.' t.w.v. '.$db_coupon->value.' euro',
 					// Eventueel beperken tot OFT-producten?
 					// 'product_ids' => array(),
 				);
-				if ( ! empty( $coupon->order ) ) {
+				if ( ! empty( $db_coupon->order ) ) {
 					// De code bestaat maar kan niet meer gebruikt worden!
 					// Door deze waarde in te stellen zal meteen een foutmelding getriggerd worden
 					$data['usage_count'] = 1;
@@ -152,28 +152,38 @@
 	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_digital_voucher', 10, 1 );
 
 	function ob2c_invalidate_digital_voucher( $order_id ) {
-		write_log("PAYMENT COMPLETE");
 		$order = wc_get_order( $order_id );
 		if ( $order !== false ) {
 			$used_coupons = $order->get_coupon_codes();
 			write_log( print_r( $used_coupons, true ) );
 			foreach ( $used_coupons as $code ) {
 				if ( ob2c_is_plausible_voucher_code( $code ) ) {
-					$coupon = ob2c_is_valid_voucher_code( $code );
-					if ( is_object( $coupon ) ) {
+					$db_coupon = ob2c_is_valid_voucher_code( $code );
+					if ( is_object( $db_coupon ) ) {
 						// Nogmaals checken of de code al niet ingewisseld werd!
-						if ( ! empty( $coupon->order ) ) {
+						if ( ! empty( $db_coupon->order ) ) {
 							$logger = wc_get_logger();
-							$logger->critical( 'Coupon '.$coupon->code.' was already used in '.$coupon->order.', should not be used in '.$order->get_order_number() );
-							send_automated_mail_to_helpdesk( 'Cadeaubon '.$coupon->code.' werd reeds gebruikt in '.$coupon->order, '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
+							$logger->critical( 'Coupon '.$db_coupon->code.' was already used in '.$db_coupon->order.', should not be used in '.$order->get_order_number() );
+							send_automated_mail_to_helpdesk( 'Cadeaubon '.$db_coupon->code.' werd reeds gebruikt in '.$db_coupon->order, '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
 						} else {
 							// Ongeldig maken in de centrale database
 							global $wpdb;
 							$result = $wpdb->update(
 								$wpdb->base_prefix.'universal_coupons',
 								array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s') ),
-								array( 'code' => $coupon->code )
+								array( 'code' => $db_coupon->code )
 							);
+
+							// Converteer korting naar betaalmethode voor correcte verwerking BTW???
+							foreach ( $order->get_coupons() as $item ) {
+								if ( $item->get_code() === $code ) {
+									write_log("MODIFY VOUCHER ".$code);
+									$item->set_discount() = 0;
+									$item->set_discount_tax() = 0;
+									$item->save();
+									break;
+								}
+							}
 						}
 					}
 				}
@@ -3782,6 +3792,7 @@
 			foreach ( $used_coupons as $key => $code ) {
 				if ( ob2c_is_plausible_voucher_code( $code ) ) {
 					// $order_coupon_items = $order->get_coupons();
+					// $meta_data = array();
 					// foreach ( $order_coupon_items as $item ) {
 					// 	if ( $item->get_code() === $code ) {
 					// 		$meta_data = $item->get_meta('coupon_data');

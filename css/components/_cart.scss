@@ -273,11 +273,11 @@
           }
 
           &:last-of-type {
-            padding-right: 0 !important;;
+            padding-right: 0 !important;
           }
 
           &.no-border-bottom {
-            border-bottom: none !important;          
+            border-bottom: none !important;
           }
 
           &.shipping-explanation {
@@ -296,6 +296,12 @@
             &.asymmetrical.small {
               width: 30%;
             }
+          }
+        }
+
+        @media (max-width: 767px) { 
+          th {
+            border-bottom: none !important;
           }
         }
       }
