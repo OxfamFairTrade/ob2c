@@ -50,113 +50,147 @@
 		}
 	}
 
-	// Creëer vouchers on-the-fly op basis van centrale MySQL-tabel
-	add_filter( 'woocommerce_get_shop_coupon_data', 'ob2c_check_bulk_coupons', 10, 3 );
+	function ob2c_is_plausible_voucher_code( $code ) {
+		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-	function ob2c_check_bulk_coupons( $bool, $code, $wc_coupon_class ) {
-		$coupon = ob2c_is_valid_bulk_coupon( $code );
-		if ( $coupon !== false ) {
-			$data = array(
-				'date_expires' => $coupon->expires,
-				'amount' => $coupon->value,
-				'usage_limit' => 1,
-				'description' => 'Digitale cadeaubon t.w.v. '.$coupon->value.' euro',
-				// Eventueel beperken tot OFT-producten?
-				'product_ids' => array(),
-				'issuer' => $coupon->issuer,
-			);
-			if ( ! empty( $coupon->order ) ) {
-				// De code bestaat maar kan niet meer gebruikt worden!
-				$data['usage_count'] = 1;
+	function ob2c_is_valid_voucher_code( $code ) {
+		// O kan nooit voorkomen, automatisch vervangen door 0
+		$code = str_replace( 'O', '0', strtoupper( $code ) );
+		
+		// Vermijd dat we ook autocoupons checken en zo geldige gebruikers blacklisten!
+		if ( ob2c_is_plausible_voucher_code( $code ) ) {
+			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
+			if ( $tries > 10 ) {
+				write_log( 'too many attempts: '.$_SERVER['REMOTE_ADDR'] );
+				return WC_COUPON::E_WC_COUPON_MIN_SPEND_LIMIT_NOT_MET;
 			}
-			return $data;
+
+			global $wpdb;
+			$coupon = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `code` = %s", $code ) );
+
+			if ( NULL !== $coupon ) {
+				return $coupon;
+			} else {
+				write_log( 'not existing: '.$code );
+				set_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'], $tries + 1, DAY_IN_SECONDS );
+			}
 		}
 
-		return false;
+		return WC_COUPON::E_WC_COUPON_NOT_EXIST;
+	}
+
+	// Creëer vouchers on-the-fly op basis van centrale MySQL-tabel
+	add_filter( 'woocommerce_get_shop_coupon_data', 'ob2c_load_digital_voucher_on_the_fly', 10, 3 );
+
+	function ob2c_load_digital_voucher_on_the_fly( $bool, $code, $wc_coupon_class ) {
+		$coupon = ob2c_is_valid_voucher_code( $code );
+		
+		switch ( $coupon ) {
+			case WC_COUPON::E_WC_COUPON_NOT_EXIST:
+				return false;
+			
+			case WC_COUPON::E_WC_COUPON_MIN_SPEND_LIMIT_NOT_MET:
+				$data = array(
+					'minimum_amount' => 99999,
+				);
+				return $data;
+
+			default:
+				$data = array(
+					'date_expires' => $coupon->expires,
+					'amount' => $coupon->value,
+					'usage_limit' => 1,
+					'description' => 'Digitale cadeaubon t.w.v. '.$coupon->value.' euro',
+					// Eventueel beperken tot OFT-producten?
+					'product_ids' => array(),
+					// Dit heeft wellicht geen effect?
+					'issuer' => $coupon->issuer,
+				);
+				if ( ! empty( $coupon->order ) ) {
+					// De code bestaat maar kan niet meer gebruikt worden!
+					// Door deze waarde in te stellen zal meteen een foutmelding getriggerd worden
+					$data['usage_count'] = 1;
+				}
+				return $data;
+		}
+
+		return $bool;
 	}
 
 	// Custom foutmeldingen
 	add_filter( 'woocommerce_coupon_error', 'ob2c_coupon_error_message', 10, 3 );
 
 	function ob2c_coupon_error_message( $message, $error_code, $coupon ) {
-		if ( intval( $error_code ) === WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
-			return __( 'Deze cadeaubon werd al ingeruild!', 'oxfam-webshop' );
-		}
+		if ( ob2c_is_plausible_voucher_code( $coupon->get_code() ) ) {
+			switch ( intval( $error_code ) ) {
+				case WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED:
+					return __( 'Deze cadeaubon werd al ingeruild!', 'oxfam-webshop' );
 
-		if ( intval( $error_code ) === WC_COUPON::E_WC_COUPON_NOT_EXIST ) {
-			return sprintf( __( 'De alfanumerieke code %s kennen we helaas niet. Opgelet: papieren geschenkencheques met een volgnummer kunnen niet via de webshop ingeruild worden!', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
+				case WC_COUPON::E_WC_COUPON_MIN_SPEND_LIMIT_NOT_MET:
+					return __( 'Hold your horses, spambot!', 'oxfam-webshop' );
+
+				case WC_COUPON::E_WC_COUPON_NOT_EXIST:
+					return sprintf( __( 'De alfanumerieke code %s kennen we helaas niet. Opgelet: papieren geschenkencheques met een volgnummer kunnen niet via de webshop ingeruild worden!', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
+				
+				default:
+					break;
+			}
 		}
 
 		return $message;
 	}
 
+	// Toon duidelijke omschrijving i.p.v. kortingscode
 	add_filter( 'woocommerce_cart_totals_coupon_label', 'ob2c_modify_digital_voucher_label', 10, 2 );
 
 	function ob2c_modify_digital_voucher_label( $label, $coupon ) {
 		if ( $coupon->get_amount() == 25 or $coupon->get_amount() == 50 ) {
-			$label = $coupon->get_description().': '.strtoupper( $coupon->get_code() );
+			$label = $coupon->get_description().' '.serialize( $coupon->get_meta_data() ).': '.strtoupper( $coupon->get_code() );
 		}
 
 		return $label;
 	}
 
 	// Maak de code na succesvolle betaling onbruikbaar in de centrale database
-	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_bulk_coupon', 10, 1 );
+	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_digital_voucher', 10, 1 );
 
-	function ob2c_invalidate_bulk_coupon( $order_id ) {
+	function ob2c_invalidate_digital_voucher( $order_id ) {
 		write_log("PAYMENT COMPLETE");
 		$order = wc_get_order( $order_id );
 		if ( $order !== false ) {
 			$used_coupons = $order->get_coupon_codes();
-			write_log( print_r( $user_coupons, true ) );
+			write_log( print_r( $used_coupons, true ) );
+			write_log( print_r( $order->get_coupons(), true ) );
 			foreach ( $used_coupons as $code ) {
-				$coupon = ob2c_is_valid_bulk_coupon( $code );
-				if ( $coupon !== false ) {
-					// Eerst nogmaals checken of de code al niet ingewisseld werd!
-					if ( ! empty( $coupon->order ) ) {
-						$logger = wc_get_logger();
-						$logger->critical( 'Coupon '.$coupon->code.' was already used in '.$coupon->order.', should not be used in '.$order->get_order_number() );
-					} else {
-						global $wpdb;
-						$result = $wpdb->update(
-							$wpdb->base_prefix.'universal_coupons',
-							array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s') ),
-							array( 'code' => $coupon->code )
-						);
+				if ( ob2c_is_plausible_voucher_code( $code ) ) {
+					$coupon = ob2c_is_valid_voucher_code( $code );
+					if ( is_object( $coupon ) ) {
+						// Nogmaals checken of de code al niet ingewisseld werd!
+						if ( ! empty( $coupon->order ) ) {
+							$logger = wc_get_logger();
+							$logger->critical( 'Coupon '.$coupon->code.' was already used in '.$coupon->order.', should not be used in '.$order->get_order_number() );
+							send_automated_mail_to_helpdesk( 'Cadeaubon '.$coupon->code.' werd reeds gebruikt in '.$coupon->order, '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
+						} else {
+							// Ongeldig maken in de centrale database
+							global $wpdb;
+							$result = $wpdb->update(
+								$wpdb->base_prefix.'universal_coupons',
+								array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s') ),
+								array( 'code' => $coupon->code )
+							);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	function ob2c_is_valid_bulk_coupon( $code ) {
-		// O kan nooit voorkomen, automatisch vervangen door 0
-		$code = str_replace( 'O', '0', strtoupper( $code ) );
-		
-		// Vermijd dat we ook autocoupons checken en zo onszelf blacklisten!
-		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
-			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
-			if ( $tries > 10 ) {
-				write_log( 'too many attempts: '.$_SERVER['REMOTE_ADDR'] );
-				// Of alternatieve waarde meegeven zodat we andere foutmelding kunnen tonen?
-				// return WC_COUPON::E_WC_COUPON_NOT_YOURS_REMOVED;
-				return false;
-			}
-
-			global $wpdb;
-			$coupon = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `code` = %s", $code ) );
-
-			if ( null !== $coupon ) {
-				return $coupon;
-			} else {
-				write_log( 'not existing: '.$code );
-				set_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'], $tries + 1, DAY_IN_SECONDS );
-				// return WC_COUPON::E_WC_COUPON_NOT_EXIST;
-			}
-		}
-
-		return false;
-	}
+	
 
 	// Verwijder originelen uit srcset (wordt opgepikt door zoekmachines!)
 	add_filter( 'wp_calculate_image_srcset_meta', 'ob2c_remove_large_images_from_srcset' );
@@ -3326,7 +3360,7 @@
 		
 		// Check of er geen vouchers als betaalmiddel gebruikt werden
 		foreach ( WC()->cart->get_applied_coupons() as $code ) {
-			if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
+			if ( ob2c_is_plausible_voucher_code( $code ) ) {
 				// Spring uit de actie
 				return;
 			}
@@ -3793,6 +3827,7 @@
 					default:
 						$pickup_location_name = ob2c_get_pickup_location_name( $shipping_method );
 						$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( $pickup_location_name ) );
+						break;
 				}
 
 				// Vermeld de totale korting (inclusief/exclusief BTW)
@@ -4828,6 +4863,8 @@
 					// Tel feestdagen die in de verwerkingsperiode vallen erbij
 					$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_post_id );
 				}
+
+				break;
 		}
 
 		return $timestamp;
