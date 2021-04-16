@@ -67,7 +67,7 @@
 			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
 			if ( $tries > 10 ) {
 				write_log( 'too many attempts: '.$_SERVER['REMOTE_ADDR'] );
-				return WC_COUPON::E_WC_COUPON_MIN_SPEND_LIMIT_NOT_MET;
+				return WC_COUPON::E_WC_COUPON_NOT_EXIST;
 			}
 
 			global $wpdb;
@@ -76,7 +76,6 @@
 			if ( NULL !== $coupon ) {
 				return $coupon;
 			} else {
-				write_log( 'not existing: '.$code );
 				set_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'], $tries + 1, DAY_IN_SECONDS );
 			}
 		}
@@ -94,12 +93,6 @@
 			case WC_COUPON::E_WC_COUPON_NOT_EXIST:
 				return false;
 			
-			case WC_COUPON::E_WC_COUPON_MIN_SPEND_LIMIT_NOT_MET:
-				$data = array(
-					'minimum_amount' => 99999,
-				);
-				return $data;
-
 			default:
 				$data = array(
 					'date_expires' => $coupon->expires,
@@ -122,23 +115,21 @@
 		return $bool;
 	}
 
-	// Custom foutmeldingen
+	// Tweak foutmeldingen
 	add_filter( 'woocommerce_coupon_error', 'ob2c_coupon_error_message', 10, 3 );
 
 	function ob2c_coupon_error_message( $message, $error_code, $coupon ) {
 		if ( ob2c_is_plausible_voucher_code( $coupon->get_code() ) ) {
-			switch ( intval( $error_code ) ) {
-				case WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED:
-					return __( 'Deze cadeaubon werd al ingeruild!', 'oxfam-webshop' );
+			if ( $error_code == WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
+				return __( 'Deze cadeaubon werd al ingeruild!', 'oxfam-webshop' );
+			}
+		}
 
-				case WC_COUPON::E_WC_COUPON_MIN_SPEND_LIMIT_NOT_MET:
-					return __( 'Hold your horses, spambot!', 'oxfam-webshop' );
-
-				case WC_COUPON::E_WC_COUPON_NOT_EXIST:
-					return sprintf( __( 'De alfanumerieke code %s kennen we helaas niet. Opgelet: papieren geschenkencheques met een volgnummer kunnen niet via de webshop ingeruild worden!', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
-				
-				default:
-					break;
+		if ( $error_code == WC_COUPON::E_WC_COUPON_NOT_EXIST ) {
+			if ( intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) ) > 10 ) {
+				return __( 'Hold your horses, spambot!', 'oxfam-webshop' );
+			} else {
+				return sprintf( __( 'De alfanumerieke code %s kennen we helaas niet. Opgelet: papieren geschenkencheques met een volgnummer kunnen niet via de webshop ingeruild worden!', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
 			}
 		}
 
