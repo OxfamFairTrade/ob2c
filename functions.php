@@ -98,11 +98,9 @@
 					'date_expires' => $coupon->expires,
 					'amount' => $coupon->value,
 					'usage_limit' => 1,
-					'description' => 'Digitale cadeaubon t.w.v. '.$coupon->value.' euro',
+					'description' => 'Cadeaubon '.$coupon->issuer.' t.w.v. '.$coupon->value.' euro',
 					// Eventueel beperken tot OFT-producten?
-					'product_ids' => array(),
-					// Dit heeft wellicht geen effect?
-					'issuer' => $coupon->issuer,
+					// 'product_ids' => array(),
 				);
 				if ( ! empty( $coupon->order ) ) {
 					// De code bestaat maar kan niet meer gebruikt worden!
@@ -141,7 +139,7 @@
 
 	function ob2c_modify_digital_voucher_label( $label, $coupon ) {
 		if ( $coupon->get_amount() == 25 or $coupon->get_amount() == 50 ) {
-			$label = $coupon->get_description().' '.serialize( $coupon->get_meta_data() ).': '.strtoupper( $coupon->get_code() );
+			$label = $coupon->get_description().': '.strtoupper( $coupon->get_code() );
 		}
 
 		return $label;
