@@ -138,8 +138,11 @@
 	add_filter( 'woocommerce_cart_totals_coupon_label', 'ob2c_modify_digital_voucher_label', 10, 2 );
 
 	function ob2c_modify_digital_voucher_label( $label, $coupon ) {
-		if ( $coupon->get_amount() == 25 or $coupon->get_amount() == 50 ) {
-			$label = $coupon->get_description().': '.strtoupper( $coupon->get_code() );
+		if ( ob2c_is_plausible_voucher_code( $coupon->get_code() ) ) {
+			// Beter doen op basis van omschrijving?
+			if ( in_array( $coupon->get_amount(), array( 25, 50 ) ) ) {
+				$label = $coupon->get_description().': '.strtoupper( $coupon->get_code() );
+			}
 		}
 
 		return $label;
@@ -154,7 +157,6 @@
 		if ( $order !== false ) {
 			$used_coupons = $order->get_coupon_codes();
 			write_log( print_r( $used_coupons, true ) );
-			write_log( print_r( $order->get_coupons(), true ) );
 			foreach ( $used_coupons as $code ) {
 				if ( ob2c_is_plausible_voucher_code( $code ) ) {
 					$coupon = ob2c_is_valid_voucher_code( $code );
@@ -3774,6 +3776,42 @@
 				$i++;
 			}
 
+			// Geef digitale vouchers weer als producten met een negatief aantal
+			$used_coupons = $order->get_coupon_codes();
+			$voucher_total = 0;
+			foreach ( $used_coupons as $key => $code ) {
+				if ( ob2c_is_plausible_voucher_code( $code ) ) {
+					// $order_coupon_items = $order->get_coupons();
+					// foreach ( $order_coupon_items as $item ) {
+					// 	if ( $item->get_code() === $code ) {
+					// 		$meta_data = $item->get_meta('coupon_data');
+					// 		break;
+					// 	}
+					// }
+					// var_dump_pre( $meta_data['amount'] );
+					// var_dump_pre( $meta_data['description'] );
+
+					// We kunnen deze coupon nog steeds opvragen, alleen is de 'usage_count' nu opgebruikt
+					$coupon = new WC_Coupon( $code );
+					// Beter doen op basis van omschrijving?
+					if ( $coupon !== false and in_array( $coupon->get_amount(), array( 25, 50 ) ) ) {
+						// Vermijd dat de voucher ook nog eens als kortingscode getoond wordt
+						unset( $used_coupons[ $key ] );
+						// Trek waarde af van kortingsbedrag
+						$voucher_total += $coupon->get_amount();
+						
+						// Nog aan te passen aan de nieuwe artikelcodes (+ vervaldatum checken)
+						$product = wc_get_product( wc_get_product_id_by_sku('19075') );
+						if ( $product !== false ) {
+							$qty = -1 * round( $coupon->get_ammount() / 25 );
+							// Er is geen BTW op geschenkencheques!
+							$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $coupon->get_description() )->setCellValue( 'C'.$i, $qty )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, $qty * $product->get_price() )->setCellValue( 'G'.$i, $code )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
+							$i++;
+						}
+					}
+				}
+			}
+
 			// Verzendkosten vermelden (indien van toepassing)
 			$i = ob2c_print_shipping_costs( $order, $pick_sheet, $i );
 
@@ -3821,9 +3859,8 @@
 
 				// Vermeld de totale korting (inclusief/exclusief BTW)
 				// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
-				$used_coupons = $order->get_coupon_codes();
 				if ( count( $used_coupons ) >= 1 ) {
-					$discount = $order->get_discount_total();
+					$discount = $order->get_discount_total() - $voucher_total;
 					if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
 						// Afronden per regel in plaats van per subtotaal (zoals in ShopPlus)
 						$discount = wc_round_tax_total( $discount + $order->get_discount_tax() );
