@@ -178,8 +178,8 @@
 							foreach ( $order->get_coupons() as $item ) {
 								if ( $item->get_code() === $code ) {
 									write_log("MODIFY VOUCHER ".$code);
-									$item->set_discount() = 0;
-									$item->set_discount_tax() = 0;
+									$item->set_discount(0);
+									$item->set_discount_tax(0);
 									$item->save();
 									break;
 								}
