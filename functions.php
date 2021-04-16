@@ -66,7 +66,7 @@
 		if ( ob2c_is_plausible_voucher_code( $code ) ) {
 			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
 			if ( $tries > 10 ) {
-				write_log( 'too many attempts: '.$_SERVER['REMOTE_ADDR'] );
+				write_log( "Too many coupon attempts by ".$_SERVER['REMOTE_ADDR'].", code lookup temporarily blocked" );
 				return WC_COUPON::E_WC_COUPON_NOT_EXIST;
 			}
 
@@ -3814,7 +3814,7 @@
 						// Nog aan te passen aan de nieuwe artikelcodes (+ vervaldatum checken)
 						$product = wc_get_product( wc_get_product_id_by_sku('19075') );
 						if ( $product !== false ) {
-							$qty = -1 * round( $coupon->get_ammount() / 25 );
+							$qty = -1 * round( $coupon->get_amount() / 25 );
 							// Er is geen BTW op geschenkencheques!
 							$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $coupon->get_description() )->setCellValue( 'C'.$i, $qty )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, $qty * $product->get_price() )->setCellValue( 'G'.$i, $code )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
 							$i++;
