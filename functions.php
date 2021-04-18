@@ -171,14 +171,14 @@
 			?>
 			<tr>
 				<td>
-					<span class="description"><?php echo 'waarvan '.number_format( abs( floatval( $fee_item->get_meta('voucher_amount') ) ), 2, ',', '.' ).' euro via digitale cadeaubon'; ?></span>
+					<span class="description"><?php echo 'waarvan '.wc_price( $fee_item->get_meta('voucher_amount') ).' via digitale cadeaubon'; ?></span>
 				</td>
 			</tr>
 			<?php
 		}
 	}
 
-	// Vermeld het bedrag dat betaald werd via cadeaubonnen in de front-end 
+	// Vermeld het bedrag dat betaald werd via cadeaubonnen in de front-end
 	add_filter( 'woocommerce_get_order_item_totals', 'ob2c_add_voucher_subtotal', 10, 3 );
 
 	function ob2c_add_voucher_subtotal( $total_rows, $order, $tax_display ) {
@@ -190,7 +190,7 @@
 		}
 
 		if ( $voucher_total > 0 ) {
-			$total_rows['vouchers'] = array( 'label' => __( 'waarvan cadeaubonnen', 'oxfam-webshop' ), 'value' => wc_price( $voucher_total ) );
+			$total_rows['vouchers'] = array( 'label' => __( 'waarvan betaald via digitale cadeaubon', 'oxfam-webshop' ), 'value' => wc_price( $voucher_total ) );
 		}
 		
 		return $total_rows;
@@ -3893,7 +3893,7 @@
 					// Trek voucherwaarde af van kortingstotaal
 					$voucher_total += $coupon_total;
 					
-					// Nog aan te passen aan de nieuwe artikelcodes (+ checken of vervaldatum correspondeert?)
+					// Te switchen naar 19068 voor 31/12/2022 (+ checken of vervaldatum correspondeert?)
 					$product = wc_get_product( wc_get_product_id_by_sku('19075') );
 					if ( $product !== false ) {
 						$qty = -1 * ceil( $coupon_total / $product->get_price() );
