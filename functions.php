@@ -3854,7 +3854,7 @@
 					$gift_wrap_text = $item->get_meta('wcgwp_note');
 				}
 
-				$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
+				$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_meta('_cu_ean') );
 				$i++;
 			}
 
@@ -3867,19 +3867,22 @@
 				// Ophalen uit metadata, get_virtual() is geen methode van WC_Order_Item_Coupon!
 				$coupon_data_array = $coupon_item->get_meta('coupon_data');
 				if ( $coupon_data_array['virtual'] ) {
+					$coupon_total = $coupon_item->get_discount() + $coupon_item->get_discount_tax();
+					
 					// Vermijd dat de voucher ook nog eens als kortingscode getoond wordt
 					if ( ( $key = array_search( $coupon_item->get_code(), $used_coupon_codes ) ) !== false ) {
 						unset( $used_coupon_codes[ $key ] );
 					}
-					// Trek waarde af van kortingsbedrag
-					$voucher_total += $coupon_item->get_discount() + $coupon_item->get_discount_tax();
+					// Trek voucherwaarde af van kortingstotaal
+					$voucher_total += $coupon_total;
 					
-					// Nog aan te passen aan de nieuwe artikelcodes (+ checken of vervaldatum correspondeert)
+					// Nog aan te passen aan de nieuwe artikelcodes (+ checken of vervaldatum correspondeert?)
 					$product = wc_get_product( wc_get_product_id_by_sku('19075') );
 					if ( $product !== false ) {
-						$qty = -1 * ceil( $coupon_item->get_discount() / 25 );
+						$qty = -1 * ceil( $coupon_total / $product->get_price() );
 						// Er is geen BTW op geschenkencheques!
-						$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $coupon_data_array['description'] )->setCellValue( 'C'.$i, $qty )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, $qty * $product->get_price() )->setCellValue( 'G'.$i, strtoupper( $coupon_item->get_code() ) )->setCellValue( 'H'.$i, $product->get_attribute('ean') );
+						$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $coupon_data_array['description'] )->setCellValue( 'C'.$i, $qty )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, $qty * $product->get_price() )->setCellValue( 'G'.$i, strtoupper( $coupon_item->get_code() ) )->setCellValue( 'H'.$i, $product->get_meta('_cu_ean') );
+						$pick_sheet->getStyle('G'.$i)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 						$i++;
 					}
 				}
@@ -4469,10 +4472,6 @@
 			if ( $multiple < 2 ) {
 				$multiple = intval( $product->get_meta('_multiple') );
 				if ( $multiple < 2 ) {
-					$multiple = intval( $product->get_attribute('ompak') );
-				}
-
-				if ( $multiple < 2 ) {
 					$multiple = 1;
 				}
 			}
@@ -4570,10 +4569,6 @@
 	function add_multiple_to_add_to_cart_text( $text, $product ) {
 		if ( is_b2b_customer() ) {
 			$multiple = intval( $product->get_meta('_multiple') );
-			if ( $multiple < 2 ) {
-				$multiple = intval( $product->get_attribute('ompak') );
-			}
-			
 			if ( $multiple < 2 ) {
 				$text = 'Voeg 1 stuk toe aan mandje';
 			} else {
