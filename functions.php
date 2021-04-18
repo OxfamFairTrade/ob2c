@@ -108,42 +108,49 @@
 			foreach ( $order->get_coupons() as $coupon_item ) {
 				// Wees in deze stap niet te kieskeurig met validatie: deze actie is eenmalig én cruciaal voor het ongeldig maken van de voucher! 
 				// Negeer in deze stap de rate limiting per IP-adres
-				$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
+				$code = strtoupper( $coupon_item->get_code() );
+				$db_coupon = ob2c_is_valid_voucher_code( $code, true );
 				if ( is_object( $db_coupon ) ) {
-					write_log( "IS OXFAM VOUCHER: ".$coupon_item->get_code() );
+					write_log( "IS OXFAM VOUCHER: ".$code );
 					// Nogmaals checken of de code al niet ingewisseld werd!
 					if ( ! empty( $db_coupon->order ) ) {
 						$logger = wc_get_logger();
-						$logger->critical( 'Coupon '.$coupon_item->get_code().' was already used in '.$db_coupon->order.', should not be used in '.$order->get_order_number() );
-						send_automated_mail_to_helpdesk( 'Cadeaubon '.$coupon_item->get_code().' werd reeds gebruikt in '.$db_coupon->order, '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
+						$context = array( 'source' => 'Oxfam' );
+						$logger->critical( 'Coupon '.$code.' was already used in '.$db_coupon->order.', should not be used in '.$order->get_order_number(), $context );
+						send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' werd reeds gebruikt in '.$db_coupon->order, '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
 					} else {
-						write_log("VOUCHER STILL VALID");
-						
 						// Ongeldig maken in de centrale database
 						global $wpdb;
 						$result = $wpdb->update(
 							$wpdb->base_prefix.'universal_coupons',
 							array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s') ),
-							array( 'code' => $coupon_item->get_code() )
+							array( 'code' => $code )
 						);
 
 						if ( $result === 1 ) {
+							// send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' werd ingeruild in '.$order->get_order_number(), '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
 							write_log("VOUCHER DISABLED IN TABLE");
+							
+							$coupon_data_array = $coupon_item->get_meta('coupon_data');
+							$coupon_value = $coupon_item->get_discount() + $coupon_item->get_discount_tax();
 
 							// Converteer korting naar pseudo betaalmethode voor correcte omzetrapporten en verwerking van BTW
 							$fee = new WC_Order_Item_Fee();
-							$coupon_data_array = $coupon_item->get_meta('coupon_data');
-							$fee->set_name( $coupon_data_array['description'].': '.strtoupper( $coupon_item->get_code() ) );
+							$fee->set_name( $coupon_data_array['description'].': '.$code );
 							$fee->set_amount(0);
 							$fee->set_total(0);
+							// Opgelet: op negatieve kosten wordt sowieso automatisch BTW toegevoegd, ondanks deze instelling
+							// Zie https://github.com/woocommerce/woocommerce/issues/16528#issuecomment-354738929 
 							$fee->set_tax_status('none');
-							$fee->calculate_taxes();
-							// Bewaar het bedrag dat betaald werd via de voucher (kan minder zijn dan de totale waarde!) for future reference
-							$fee->update_meta_data( 'voucher_amount', $coupon_item->get_discount() + $coupon_item->get_discount_tax() );
+							$fee->update_meta_data( 'voucher_code', $code );
+							$fee->update_meta_data( 'voucher_value', $db_coupon->value );
+							// Bewaar het effectieve bedrag dat betaald werd via de voucher (kan minder zijn dan de totale waarde!) for future reference
+							$fee->update_meta_data( 'voucher_amount', $coupon_value );
+							$fee->save();
 							
 							if ( $order->add_item( $fee ) !== false ) {
 								// Verwijder de kortingscode volledig van het order
-								$order->remove_coupon( $coupon_item->get_code() );
+								$order->remove_coupon( $code );
 								write_log("VOUCHER REMOVED FROM ORDER");
 							}
 							$order->save();
@@ -163,7 +170,7 @@
 			?>
 			<tr>
 				<td>
-					<span class="description"><?php echo 'waarvan '.number_format( floatval( $fee_item->get_meta('voucher_amount') ), 2, ',', '.' ).' euro via digitale cadeaubon'; ?></span>
+					<span class="description"><?php echo 'waarvan '.number_format( abs( floatval( $fee_item->get_meta('voucher_amount') ) ), 2, ',', '.' ).' euro via digitale cadeaubon'; ?></span>
 				</td>
 			</tr>
 			<?php
@@ -215,33 +222,28 @@
 		}
 	}
 
-	function get_all_claimed_digital_vouchers( $start_date = '2021-04-01', $end_date = '2021-04-30', $return_orders = false ) {
+	function get_claimed_digital_vouchers_by_value( $value = 25, $start_date = '2021-04-01', $end_date = '2021-04-30', $return_orders = false ) {
 		global $wpdb;
 		$total_count = 0;
-		$objOrders = array();
+		$orders = array();
 
 		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-completed' ) ) . "') AND woi.order_item_type = 'fee' AND woi.order_item_name LIKE 'Cadeaubon%' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
-		$orders = $wpdb->get_results( $query );
+		$rows = $wpdb->get_results( $query );
 
-		if ( count( $orders ) > 0 ) {
-			foreach ( $orders as $key => $order ) {
-				$objOrder = wc_get_order( $order->order_id );
-				if ( $objOrder !== false ) {
-					$objOrders[] = $objOrder; 
-					$coupons = $objOrder->get_items('coupon');
-					if ( $coupons ) {
-						foreach ( $coupons as $coupon ) {
-							if ( $coupon->get_code() == $coupon_code ) {
-								$total_count += $coupon->get_quantity();
-							}
-						}
+		foreach ( $rows as $key => $row ) {
+			$order = wc_get_order( $row->order_id );
+			if ( $order !== false ) {
+				$orders[] = $order; 
+				foreach ( $order->get_fees() as $fee_item ) {
+					if ( intval( $fee_item->get_meta('voucher_value') ) == $value ) {
+						$total_count++;
 					}
 				}
 			}
 		}
 
 		if ( $return_orders ) {
-			return $objOrders;
+			return $orders;
 		} else {
 			return $total_count;
 		}
@@ -329,7 +331,7 @@
 
 			if ( has_post_thumbnail( $post_id ) ) {
 				$logger = wc_get_logger();
-				$context = array( 'source' => 'Oxfam Cleanup' );
+				$context = array( 'source' => 'Oxfam' );
 				
 				// Wis het packshot dat aan het product gekoppeld is
 				$attachment_id = intval( get_post_thumbnail_id( $post_id ) );
@@ -525,7 +527,7 @@
 		// 	$product = wc_get_product( $post_id );
 		// 	if ( $product !== false ) {
 		// 		$logger = wc_get_logger();
-		// 		$context = array( 'source' => 'Oxfam Manual Product Sync' );			
+		// 		$context = array( 'source' => 'Oxfam' );			
 		// 		if ( $product->get_meta('_multiple') === '' ) {
 		// 			// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur
 		// 			$to_migrate = array(
@@ -986,7 +988,7 @@
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( get_current_blog_id() === 1 and current_user_can('update_core') ) {
 			$logger = wc_get_logger();
-			$context = array( 'source' => 'Oxfam Options Sync' );
+			$context = array( 'source' => 'Oxfam' );
 			$updates_sites = array();
 			$sites = get_sites( array( 'site__not_in' => array(1) ) );
 			// write_log( print_r( $new_value, true ) );
@@ -1955,7 +1957,7 @@
 
 	function register_claiming_member_shop( $order_id, $order ) {
 		$logger = wc_get_logger();
-		$context = array( 'source' => 'Oxfam Regional Webshop' );
+		$context = array( 'source' => 'Oxfam' );
 
 		if ( get_current_user_id() > 1 ) {
 			// Een gewone klant heeft deze eigenschap niet en retourneert dus sowieso 'false'
@@ -2823,9 +2825,8 @@
 	function limit_editable_orders( $editable, $order ) {
 		// Slugs van alle extra orderstatussen (zonder 'wc'-prefix) die bewerkbaar moeten zijn
 		// Opmerking: standaard zijn 'pending', 'on-hold' en 'auto-draft' bewerkbaar
-		$editable_custom_statuses = array( 'on-hold' );
-		// or current_user_can('update_core')
-		if ( in_array( $order->get_status(), $editable_custom_statuses ) ) {
+		$editable_custom_statuses = array( 'on-hold' ); 
+		if ( in_array( $order->get_status(), $editable_custom_statuses ) or current_user_can('update_core') ) {
 			$editable = true;
 		} else {
 			$editable = false;
@@ -3364,6 +3365,20 @@
 		return $address_fields;
 	}
 
+	// Huidige nieuwsbriefwaardes niét ophalen uit profiel indien ingelogd, altijd weer op false zetten (want afvinken veroorzaakt geen uitschrijving!)
+	add_filter( 'default_checkout_digizine', '__return_false' );
+	add_filter( 'default_checkout_marketing', '__return_false' );
+
+	// Sla de marketingvinkjes correct op (= toestemming verwijderen indien waarde ontbreekt in $_POST)
+	add_action( 'woocommerce_checkout_create_order', 'custom_checkout_field_update_order_meta', 10, 2 );
+	
+	function custom_checkout_field_update_order_meta( $order, $data ) {
+		if ( get_current_user_id() > 0 ) {
+		    update_user_meta( get_current_user_id(), 'digizine', isset( $_POST['digizine'] ) ? 1 : 0 );
+			update_user_meta( get_current_user_id(), 'marketing', isset( $_POST['marketing'] ) ? 1 : 0 );
+		}
+	}
+
 	// Vul andere placeholders in, naar gelang de gekozen verzendmethode op de winkelwagenpagina (wordt NIET geüpdatet bij verandering in checkout)
 	add_filter( 'woocommerce_checkout_fields' , 'format_checkout_notes' );
 
@@ -3842,12 +3857,13 @@
 				$i++;
 			}
 
-			// Geef digitale vouchers weer als producten met een negatief aantal
+			// Geef digitale vouchers weer als producten met een negatief aantal (zoals in ShopPlus)
+			// Opgelet: na betaling worden 'coupons' omgezet in 'fees' en zal deze logica niet meer werken
 			$used_coupon_codes = $order->get_coupon_codes();
 			$used_coupons = $order->get_coupons();
 			$voucher_total = 0;
 			foreach ( $used_coupons as $coupon_item ) {
-				// Opgelet: get_virtual() is geen methode van WC_Order_Item_Coupon, ophalen uit metadata!
+				// Ophalen uit metadata, get_virtual() is geen methode van WC_Order_Item_Coupon!
 				$coupon_data_array = $coupon_item->get_meta('coupon_data');
 				if ( $coupon_data_array['virtual'] ) {
 					// Vermijd dat de voucher ook nog eens als kortingscode getoond wordt
@@ -4648,7 +4664,7 @@
 			// Bij dit type mogen we ervan uit gaan dat $object een WP_User bevat met de property ID
 			if ( is_b2b_customer( $object->ID ) ) {
 				$logger = wc_get_logger();
-				$context = array( 'source' => 'Oxfam Emails' );
+				$context = array( 'source' => 'Oxfam' );
 			
 				// Door bestaan van tijdelijke file te checken, vermijden we om ook in BCC te belanden bij échte wachtwoordresets van B2B-gebruikers
 				if ( file_exists( get_stylesheet_directory().'/woocommerce/emails/temporary.php' ) ) {
@@ -6950,7 +6966,7 @@
 		
 		// Verschijnt in de logs van de subsite!
 		$logger = wc_get_logger();
-		$context = array( 'source' => 'Oxfam Translate Broadcast Fields' );
+		$context = array( 'source' => 'Oxfam' );
 		$logger->debug( "Translated property '".$meta_key."' from ".implode( ', ', $main_product_ids )." to ".implode( ', ', $slave_product_ids ), $context );
 		
 		return implode( ',', $slave_product_ids );
@@ -7170,30 +7186,25 @@
 	function get_number_of_times_coupon_was_used( $coupon_code, $start_date = '2021-04-01', $end_date = '2021-04-30', $return_orders = false ) {
 		global $wpdb;
 		$total_count = 0;
-		$objOrders = array();
+		$orders = array();
 
 		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-completed' ) ) . "') AND woi.order_item_type = 'coupon' AND woi.order_item_name = '" . $coupon_code . "' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
-		$orders = $wpdb->get_results( $query );
+		$rows = $wpdb->get_results( $query );
 
-		if ( count( $orders ) > 0 ) {
-			foreach ( $orders as $key => $order ) {
-				$objOrder = wc_get_order( $order->order_id );
-				if ( $objOrder !== false ) {
-					$objOrders[] = $objOrder; 
-					$coupons = $objOrder->get_items('coupon');
-					if ( $coupons ) {
-						foreach ( $coupons as $coupon ) {
-							if ( $coupon->get_code() == $coupon_code ) {
-								$total_count += $coupon->get_quantity();
-							}
-						}
+		foreach ( $rows as $key => $row ) {
+			$order = wc_get_order( $row->order_id );
+			if ( $order !== false ) {
+				$orders[] = $order; 
+				foreach ( $order->get_coupons() as $coupon ) {
+					if ( $coupon->get_code() == $coupon_code ) {
+						$total_count += $coupon->get_quantity();
 					}
 				}
 			}
 		}
 
 		if ( $return_orders ) {
-			return $objOrders;
+			return $orders;
 		} else {
 			return $total_count;
 		}
