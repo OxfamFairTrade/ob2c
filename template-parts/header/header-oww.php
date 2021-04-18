@@ -57,7 +57,7 @@
 				<div id="nav" class="nav">
 					<ul id="menu-main-menu" class="menu">
 						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/">Over Oxfam</a></li>
-						<li class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item"><a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
+						<li class="menu-item menu-item-type-post_type menu-item-object-page<?php echo is_shop() ? ' current-menu-item' : ''; ?>"><a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
 						<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/recepten/">Recepten</a></li>
 						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/doe-mee/">Doe mee</a></li>
 						<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/winkels/">Vind winkel</a></li>
