@@ -108,9 +108,9 @@
 			foreach ( $order->get_coupons() as $coupon_item ) {
 				// Wees in deze stap niet te kieskeurig met validatie: deze actie is eenmalig én cruciaal voor het ongeldig maken van de voucher! 
 				// Negeer in deze stap de rate limiting per IP-adres
-				$code = strtoupper( $coupon_item->get_code() );
-				$db_coupon = ob2c_is_valid_voucher_code( $code, true );
+				$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
 				if ( is_object( $db_coupon ) ) {
+					$code = strtoupper( $coupon_item->get_code() );
 					write_log( "IS OXFAM VOUCHER: ".$code );
 					// Nogmaals checken of de code al niet ingewisseld werd!
 					if ( ! empty( $db_coupon->order ) ) {
@@ -150,7 +150,8 @@
 							
 							if ( $order->add_item( $fee ) !== false ) {
 								// Verwijder de kortingscode volledig van het order
-								$order->remove_coupon( $code );
+								// Gebruik bewust niet de uppercase versie maar de originele waarde!
+								$order->remove_coupon( $coupon_item->get_code() );
 								write_log("VOUCHER REMOVED FROM ORDER");
 							}
 							$order->save();
