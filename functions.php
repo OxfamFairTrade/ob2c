@@ -162,7 +162,7 @@
 		}
 	}
 
-	// Vermeld het bedrag dat betaald werd via cadeaubonnen (enige beschikbare actie in die buurt ...)
+	// Vermeld het bedrag dat betaald werd via cadeaubonnen in de back-end (enige beschikbare actie in die buurt ...)
 	add_action( 'woocommerce_admin_order_totals_after_total', 'ob2c_list_voucher_payments', 10, 1 );
 
 	function ob2c_list_voucher_payments( $order_id ) {
@@ -176,6 +176,24 @@
 			</tr>
 			<?php
 		}
+	}
+
+	// Vermeld het bedrag dat betaald werd via cadeaubonnen in de front-end 
+	add_filter( 'woocommerce_get_order_item_totals', 'ob2c_add_voucher_subtotal', 10, 3 );
+
+	function ob2c_add_voucher_subtotal( $total_rows, $order, $tax_display ) {
+		$voucher_total = 0.0;
+		foreach ( $order->get_fees() as $fee_item ) {
+			if ( $fee_item->get_meta('voucher_amount') !== '' ) {
+				$voucher_total += floatval( $fee_item->get_meta('voucher_amount') );
+			}
+		}
+
+		if ( $voucher_total > 0 ) {
+			$total_rows['vouchers'] = array( 'label' => __( 'waarvan cadeaubonnen', 'oxfam-webshop' ), 'value' => wc_price( $voucher_total ) );
+		}
+		
+		return $total_rows;
 	}
 
 	function ob2c_bulk_create_digital_vouchers( $issuer = 'Gezinsbond', $expires = '2023-01-01', $value = 25, $number = 300 ) {
@@ -3429,10 +3447,9 @@
 	add_action( 'woocommerce_checkout_process', 'ob2c_validate_order_total' );
 
 	function ob2c_validate_order_total() {
-		// Check of er geen vouchers als betaalmiddel gebruikt werden
+		// Skip check indien er vouchers als betaalmiddel gebruikt werden
 		foreach ( WC()->cart->get_coupons() as $coupon ) {
 			if ( $coupon->get_virtual() ) {
-				// Spring uit de actie
 				return;
 			}
 		}
@@ -3859,7 +3876,7 @@
 			}
 
 			// Geef digitale vouchers weer als producten met een negatief aantal (zoals in ShopPlus)
-			// Opgelet: na betaling worden 'coupons' omgezet in 'fees' en zal deze logica niet meer werken
+			// Opgelet: na betaling worden 'coupons' omgezet in 'fees' en zal deze logica niet meer werken!
 			$used_coupon_codes = $order->get_coupon_codes();
 			$used_coupons = $order->get_coupons();
 			$voucher_total = 0;
