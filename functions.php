@@ -4380,23 +4380,20 @@
 				} else {
 					$logger->debug( 'B2B-wachtwoordreset getriggerd voor user-ID '.$object->ID.' zónder beheerders in BCC', $context );
 				}
+			} else {
+				$extra_recipients[] = 'Developer <webshops@oxfamfairtrade.be>';
+			}
+		} elseif ( in_array( $type, array( 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
+			if ( wp_get_environment_type() === 'production' ) {
+				$extra_recipients[] = 'Developer <webshops@oxfamfairtrade.be>';
+			} else {
+				$extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
 			}
 		}
 
-		$headers .= 'BCC: '.implode( ',', $extra_recipients ).'\r\n';
-		return $headers;
-	}
-
-	// Check de verstuurde bevestigingsmails
-	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
-
-	function put_administrator_in_bcc( $headers, $object ) {
-		if ( in_array( $object, array( 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
-			if ( wp_get_environment_type() === 'production' ) {
-				$headers .= 'BCC: "Developer" <webshops@oxfamfairtrade.be>\r\n';
-			} else {
-				$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>\r\n';
-			}
+		if ( count( $extra_recipients ) > 0 ) {
+			// Gebruik voor alle zekerheid dubbele quotes rond newline command
+			$headers .= "BCC: ".implode( ',', $extra_recipients )."\r\n";
 		}
 		return $headers;
 	}
@@ -6845,8 +6842,8 @@
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
 					// en de 'Oxfam Pakt Uit'-kaartjes 48500, 48501, 48502, 48503, 48504, 48505, 49112
-					echo '<p>De nieuwe koffiecapsules werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 22724, 22725 );
+					echo '<p>De nieuwe koffiecapsules en biohoning werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 22724, 22725, 26016 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
