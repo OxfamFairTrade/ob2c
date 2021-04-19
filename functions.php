@@ -4380,8 +4380,6 @@
 				} else {
 					$logger->debug( 'B2B-wachtwoordreset getriggerd voor user-ID '.$object->ID.' zónder beheerders in BCC', $context );
 				}
-			} else {
-				$extra_recipients[] = 'Developer <webshops@oxfamfairtrade.be>';
 			}
 		} elseif ( in_array( $type, array( 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
 			if ( wp_get_environment_type() === 'production' ) {
