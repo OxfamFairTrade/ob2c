@@ -6855,18 +6855,22 @@
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De producten van het aprilmagazine volgen van zodra de eerste leveringen gebeurd zijn (half april). De solidariteitsagenda\'s en 11.11.11-kalenders voor 2021 werden verwijderd aangezien ze niet meer relevant zijn.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-april-2021-update.html" target="_blank">promo\'s voor april</a> zijn geactiveerd in alle webshops. Zoals eerder aangekondigd in de nieuwsbrief werden alle bestellingen van vòòr 2019 verwijderd, in lijn met ons privacybeleid. Geannuleerde bestellingen en pick-Excels van vòòr 2021 werden ook reeds opgeruimd.';
-				echo '</div>';
+				if ( ! in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
+					echo '<div class="notice notice-success">';
+						echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-april-2021-update.html" target="_blank">promo\'s voor april</a> zijn geactiveerd in alle webshops. Zoals eerder aangekondigd in de nieuwsbrief werden alle bestellingen van vòòr 2019 verwijderd, in lijn met ons privacybeleid. Geannuleerde bestellingen en pick-Excels van vòòr 2021 werden ook reeds opgeruimd.';
+					echo '</div>';
+				}
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 				}
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 28103 BIO Rijstazijn, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28329 BIO Kurkuma.</p>';
-				// echo '</div>';
+				// 27807 Woksaus zoet-zuur, 27998 BIO Mosterdsalsa, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28327 Zeezout mix chili-peper, 28329 BIO Kurkuma
+				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
+				echo '<div class="notice notice-warning">';
+					echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 20410 RAZA Brut Torrontés Schuimwijn, 25715 BIO Cashew natuur, 26314 BIO Mangoconfituur, 27003 Couscous, 27103 Paarse rijst en 28103 BIO Rijstazijn. Opgelet: veel webshops bleven de oude cashewnoten X15715 op voorraad houden terwijl zowel verpakking, netto-inhoud als prijs reeds wijzigden in 2019. Gelieve over te schakelen op de nieuwe cashewnoten X15725.</p>';
+				echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}
