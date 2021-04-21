@@ -1090,7 +1090,7 @@
 				s.parentNode.insertBefore(t,s)}(window, document,'script',
 				'https://connect.facebook.net/en_US/fbevents.js');
 				fbq('init', '1964131620531187');
-				fbq('track', 'PageView');</script>
+				</script>
 				<?php
 
 				if ( is_product() ) {
@@ -2518,12 +2518,14 @@
 			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar
 			WC()->customer->set_billing_postcode( intval( $_GET['referralZip'] ) );
 			WC()->customer->set_shipping_postcode( intval( $_GET['referralZip'] ) );
+			// @toDo: Check of dit ingesteld wordt indien winkelmandje ontbreekt
+			// write_log( print_r( $_GET['referralZip'], true ) );
+			// write_log( print_r( WC()->customer->get_shipping_postcode(), true ) );
+			// @toDo: Gekozen winkel meteen selecteren als afhaalpunt
 		}
 		if ( ! empty( $_GET['referralCity'] ) ) {
 			WC()->customer->set_billing_city( $_GET['referralCity'] );
 			WC()->customer->set_shipping_city( $_GET['referralCity'] );
-			// @toDo: Check of dit ingesteld wordt indien winkelmandje ontbreekt
-			// write_log( print_r( $_GET['referralCity'], true ) );
 		}
 	}
 
@@ -6839,7 +6841,7 @@
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
-					// en de 'Oxfam Pakt Uit'-kaartjes 48500, 48501, 48502, 48503, 48504, 48505, 49112
+					// 36 van de 53 aprilmagazineproducten en 7 'Oxfam Pakt Uit'-kaartjes: 48500, 48501, 48502, 48503, 48504, 48505, 49112
 					echo '<p>De nieuwe koffiecapsules en biohoning werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 22724, 22725, 26016 );
 						foreach ( $skus as $sku ) {
