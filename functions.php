@@ -7575,6 +7575,11 @@
 						// Uitzonderingen voor Hoboken
 						$location_data['telephone'] = '038277719';
 						break;
+
+					case 3700:
+						// Uitzonderingen voor Poperinge
+						$location_data['telephone'] = '0498521548';
+						break;
 				}
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[ $key ] !== '' ) {
