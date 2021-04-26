@@ -51,7 +51,7 @@
 				'amount' => $db_coupon->value,
 				'date_expires' => $db_coupon->expires,
 				'discount_type' => 'fixed_cart',
-				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro', $db_coupon->issuer, $db_coupon->value ),
+				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro <a class="dashicons dashicons-editor-help tooltip" title="Niet spreidbaar over meerdere aankopen. Eventuele restwaarde wordt niet terugbetaald. Niet toepasbaar op verzendkosten."></a>', $db_coupon->issuer, $db_coupon->value ),
 				// Eventueel beperken tot OFT-producten?
 				// 'product_ids' => array(),
 				'usage_limit' => 1,
