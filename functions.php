@@ -51,7 +51,7 @@
 				'amount' => $db_coupon->value,
 				'date_expires' => $db_coupon->expires,
 				'discount_type' => 'fixed_cart',
-				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro <a class="dashicons dashicons-editor-help tooltip" title="Niet spreidbaar over meerdere aankopen. Eventuele restwaarde wordt niet terugbetaald. Niet toepasbaar op verzendkosten."></a>', $db_coupon->issuer, $db_coupon->value ),
+				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro', $db_coupon->issuer, $db_coupon->value ),
 				// Eventueel beperken tot OFT-producten?
 				// 'product_ids' => array(),
 				'usage_limit' => 1,
@@ -93,7 +93,7 @@
 
 	function ob2c_modify_digital_voucher_label( $label, $coupon ) {
 		if ( $coupon->get_virtual() ) {
-			$label = $coupon->get_description().': '.strtoupper( $coupon->get_code() );
+			$label = $coupon->get_description().': '.strtoupper( $coupon->get_code() ).' <a class="dashicons dashicons-editor-help tooltip" title="Niet spreidbaar over meerdere aankopen. Eventuele restwaarde wordt niet terugbetaald. Niet toepasbaar op verzendkosten."></a>';
 		}
 
 		return $label;
