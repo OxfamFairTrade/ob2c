@@ -128,7 +128,7 @@
 						);
 
 						if ( $result === 1 ) {
-							// send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' werd ingeruild in '.$order->get_order_number(), '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
+							send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' werd ingeruild in '.$order->get_order_number(), '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
 							write_log("VOUCHER DISABLED IN TABLE");
 							
 							$coupon_data_array = $coupon_item->get_meta('coupon_data');
@@ -6863,7 +6863,7 @@
 				'post_status'		=> array('publish'),
 				'posts_per_page'	=> -1,
 				'meta_key'			=> 'touched_by_import', 
-				'meta_value'		=> date( 'Ymd', strtotime('-5 days') ),
+				'meta_value'		=> date( 'Ymd', strtotime('-10 days') ),
 				'meta_compare'		=> '<',
 			);
 			$to_outofstock = new WP_Query( $args );
