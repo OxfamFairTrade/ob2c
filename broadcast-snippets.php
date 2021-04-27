@@ -45,7 +45,7 @@
 
 	// Verwijder deprecated metadata op producten
 	global $wpdb;
-	$to_delete = array( 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean', '_herkomst_nl', 'touched_by_import' );
+	$to_delete = array( 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean', '_herkomst_nl' );
 	foreach ( $to_delete as $meta_key ) {
 		$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => $meta_key ) );
 	}
@@ -159,7 +159,8 @@
 	update_site_option( 'oxfam_holidays', $default_holidays );
 
 	// Handige truc om alle vinkjes aan te zetten op https://shop.oxfamwereldwinkels.be/wp-admin/edit.php?post_status=publish&post_type=product&orderby=sku&order=desc
-	// jQuery("#woocommerce-multistore-fields").find("input[name*='_child_inheir']").prop('checked',true);
+	// Nieuwe werkwijze sinds WooMultistor 4.0+ met selects en hidden inputs, dit is nog niet getest ...
+	// jQuery("#woonet-bulk-edit-fields").find("input[name*='_child_inheir']").val('yes');
 
 	// Startpagina instellen
 	$homepage = get_page_by_title('Startpagina');
@@ -220,8 +221,9 @@
 			// Ook themafuncties kunnen opgeroepen worden vanuit snippets!
 			if ( $product !== false and ! in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) {
 				$product->set_stock_status('outofstock');
-				// On first publish wordt voorraadbeheer van nationaal ook lokaal geactiveerd!
+				// On first publish wordt voorraadbeheer en uitlichting van nationaal ook lokaal geactiveerd!
 				$product->set_manage_stock('no');
+				$product->set_featured('no');
 				$product->save();
 			}
 		}

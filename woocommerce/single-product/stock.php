@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Ook al doen we voorraadbeheer, statuslabel nooit tonen op nationaal niveau
 if ( ! is_main_site() ) {
 	?>
-		<p class="stock <?php echo esc_attr( $class ); ?>"><?php echo wp_kses_post( $availability ); ?></p>
+		<p class="stock out-of-stock <?php echo esc_attr( $class ); ?>"><?php echo wp_kses_post( $availability ); ?></p>
 	<?php
 
 	// Variable $product wordt via template argumenten doorgegeven door WooCommerce, geen global nodig
@@ -94,12 +94,12 @@ if ( ! is_main_site() ) {
 					restore_current_blog();
 				}
 				
-				write_log( count( $neighbouring_webshops )." webshops gevonden in de buurt, goed voor ".count( $neighbouring_sites )." subsites waarvan ".count( $shops_instock )." ".$product->get_sku()." wél in voorraad hebben" );
+				write_log( count( $neighbouring_webshops )." webshops gevonden in de buurt, goed voor ".count( $neighbouring_sites )." subsites waarvan ".count( $shops_instock )." met ".$product->get_sku()." wél in voorraad: ".$product->get_permalink() );
 				// We zouden ook dit resultaat in een kortlevende transient per SKU kunnen stoppen, als de data echt frequent opgevraagd wordt ...
 				// var_dump_pre( $shops_instock );
-
-				if ( count( $shops_instock ) > 0 ) {
-					echo '<ul class="neighbouring-webshops">';
+					
+				echo '<div class="neighbouring-webshops">';
+					echo 'Voorradigheid bij naburige winkels:<ul>';
 					// Loop over $neighbouring_webshops zodat we de volgorde op stijgende afstand bewaren
 					foreach ( $neighbouring_webshops as $store ) {
 						$blog_id = intval( $store['webshopBlogId'] );
@@ -114,7 +114,7 @@ if ( ! is_main_site() ) {
 						}
 					}
 					echo '</ul>';
-				}
+				echo '</div>';
 			}
 		}
 	}

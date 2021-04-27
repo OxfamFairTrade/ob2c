@@ -35,11 +35,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 						$products_tags[] = 'promotie';
 					}
 					
+					$products_tags[] = 'april-2021';
 					$products_tags[] = 'januari-2021';
 					
 					foreach ( $products_tags as $product_slug ) {
 						$term = get_term_by( 'slug', $product_slug, 'product_tag' );
-						if ( ! is_wp_error( $term ) ) {
+						if ( $term !== false ) {
 							// Of toch iets à la add_query_arg( 'filter_product_tag', 'promotie' ) / remove_query_arg( 'filter_product_tag' ) maar wordt dan nog altijd niet automatisch opgenomen in actieve filters!
 							$term_link = get_term_link( $term );
 							if ( is_product_tag( $product_slug ) ) {

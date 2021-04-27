@@ -1094,7 +1094,9 @@
 
 	function modify_backorder_text( $availability, $product ) {
 		if ( $availability === __( 'Available on backorder', 'woocommerce' ) ) {
-			$availability = 'Tijdelijk niet beschikbaar';
+			$availability = 'Tijdelijk uitverkocht in deze webshop';
+		} elseif ( $availability === __( 'Out of stock', 'woocommerce' ) ) {
+			$availability = 'Niet beschikbaar in deze webshop';
 		}
 		return $availability;
 	}
@@ -1353,7 +1355,7 @@
 				s.parentNode.insertBefore(t,s)}(window, document,'script',
 				'https://connect.facebook.net/en_US/fbevents.js');
 				fbq('init', '1964131620531187');
-				fbq('track', 'PageView');</script>
+				</script>
 				<?php
 
 				if ( is_product() ) {
@@ -1479,7 +1481,7 @@
 	add_action( 'wp_enqueue_scripts', 'dequeue_unwanted_styles_and_scripts', 100 );
 
 	function load_child_theme() {
-		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '2.1.1' );
+		wp_enqueue_style( 'oxfam-webshop', get_stylesheet_uri(), array( 'nm-core' ), '2.1.2' );
 		// In de languages map van het child theme zal dit niet werken (checkt enkel nl_NL.mo) maar fallback is de algemene languages map (inclusief textdomain)
 		load_child_theme_textdomain( 'oxfam-webshop', get_stylesheet_directory().'/languages' );
 
@@ -2781,12 +2783,14 @@
 			// Dit volstaat ook om de variabele te creëren indien nog niet beschikbaar
 			WC()->customer->set_billing_postcode( intval( $_GET['referralZip'] ) );
 			WC()->customer->set_shipping_postcode( intval( $_GET['referralZip'] ) );
+			// @toDo: Check of dit ingesteld wordt indien winkelmandje ontbreekt
+			// write_log( print_r( $_GET['referralZip'], true ) );
+			// write_log( print_r( WC()->customer->get_shipping_postcode(), true ) );
+			// @toDo: Gekozen winkel meteen selecteren als afhaalpunt
 		}
 		if ( ! empty( $_GET['referralCity'] ) ) {
 			WC()->customer->set_billing_city( $_GET['referralCity'] );
 			WC()->customer->set_shipping_city( $_GET['referralCity'] );
-			// @toDo: Check of dit ingesteld wordt indien winkelmandje ontbreekt
-			// write_log( print_r( $_GET['referralCity'], true ) );
 		}
 	}
 
@@ -4551,7 +4555,7 @@
 		return $tax_class;
 	}
 
-	// Geef hint om B2B-klant te worden TIJDELIJK UITSCHAKELEN
+	// Geef hint om B2B-klant te worden UITSCHAKELEN
 	// add_action( 'woocommerce_just_before_checkout_form', 'show_b2b_account_hint', 10 );
 
 	function show_b2b_account_hint() {
@@ -4687,22 +4691,17 @@
 					$logger->debug( 'B2B-wachtwoordreset getriggerd voor user-ID '.$object->ID.' zónder beheerders in BCC', $context );
 				}
 			}
+		} elseif ( in_array( $type, array( 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
+			if ( wp_get_environment_type() === 'production' ) {
+				$extra_recipients[] = 'Developer <webshops@oxfamfairtrade.be>';
+			} else {
+				$extra_recipients[] = 'Developer <'.get_site_option('admin_email').'>';
+			}
 		}
 
-		$headers .= 'BCC: '.implode( ',', $extra_recipients ).'\r\n';
-		return $headers;
-	}
-
-	// Check de verstuurde bevestigingsmails
-	add_filter( 'woocommerce_email_headers', 'put_administrator_in_bcc', 10, 2 );
-
-	function put_administrator_in_bcc( $headers, $object ) {
-		if ( in_array( $object, array( 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
-			if ( wp_get_environment_type() === 'production' ) {
-				$headers .= 'BCC: "Developer" <webshops@oxfamfairtrade.be>\r\n';
-			} else {
-				$headers .= 'BCC: "Developer" <'.get_site_option('admin_email').'>\r\n';
-			}
+		if ( count( $extra_recipients ) > 0 ) {
+			// Gebruik voor alle zekerheid dubbele quotes rond newline command
+			$headers .= "BCC: ".implode( ',', $extra_recipients )."\r\n";
 		}
 		return $headers;
 	}
@@ -7153,9 +7152,9 @@
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
-					// en de 'Oxfam Pakt Uit'-kaartjes 48500, 48501, 48502, 48503, 48504, 48505, 49112
-					echo '<p>De nieuwe koffiecapsules werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 22724, 22725 );
+					// 36 van de 53 aprilmagazineproducten en 7 'Oxfam Pakt Uit'-kaartjes: 48500, 48501, 48502, 48503, 48504, 48505, 49112
+					echo '<p>De nieuwe koffiecapsules en biohoning werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 22724, 22725, 26016 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -7169,18 +7168,22 @@
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De producten van het aprilmagazine volgen van zodra de eerste leveringen gebeurd zijn (half april). De solidariteitsagenda\'s en 11.11.11-kalenders voor 2021 werden verwijderd aangezien ze niet meer relevant zijn.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-april-2021-update.html" target="_blank">promo\'s voor april</a> zijn geactiveerd in alle webshops. Zoals eerder aangekondigd in de nieuwsbrief werden alle bestellingen van vòòr 2019 verwijderd, in lijn met ons privacybeleid. Geannuleerde bestellingen en pick-Excels van vòòr 2021 werden ook reeds opgeruimd.';
-				echo '</div>';
+				if ( ! in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
+					echo '<div class="notice notice-success">';
+						echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-april-2021-update.html" target="_blank">promo\'s voor april</a> zijn geactiveerd in alle webshops. Zoals eerder aangekondigd in de nieuwsbrief werden alle bestellingen van vòòr 2019 verwijderd, in lijn met ons privacybeleid. Geannuleerde bestellingen en pick-Excels van vòòr 2021 werden ook reeds opgeruimd.';
+					echo '</div>';
+				}
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 				}
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 28103 BIO Rijstazijn, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28329 BIO Kurkuma.</p>';
-				// echo '</div>';
+				// 27807 Woksaus zoet-zuur, 27998 BIO Mosterdsalsa, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28327 Zeezout mix chili-peper, 28329 BIO Kurkuma
+				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
+				echo '<div class="notice notice-warning">';
+					echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 20410 RAZA Brut Torrontés Schuimwijn, 25715 BIO Cashew natuur, 26314 BIO Mangoconfituur, 27003 Couscous, 27103 Paarse rijst en 28103 BIO Rijstazijn. Opgelet: veel webshops bleven de oude cashewnoten X15715 op voorraad houden terwijl zowel verpakking, netto-inhoud als prijs reeds wijzigden in 2019. Gelieve over te schakelen op de nieuwe cashewnoten X15725.</p>';
+				echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}
@@ -7415,9 +7418,6 @@
 			if ( get_current_blog_id() === 44 ) {
 				// Uitzondering voor Diksmuide
 				$output = '<p class="corona-notice">Tijdens de lockdown van De Stoasje: gratis thuislevering op donderdag tussen 18u en 20u!</p>';
-			} elseif ( get_current_blog_id() === 19 ) {
-				// Uitzondering voor Lichtaart
-				$output = '<p class="corona-notice">Wereldwinkel Lichtaart verhuist momenteel naar een nieuwe locatie, en is daardoor gesloten. De afhalingen in Vorselaar blijven gewoon doorgaan op zaterdagochtend tussen 10 en 12 uur.</p>';
 			} elseif ( get_current_blog_id() === 72 ) {
 				// Houthalen-Helchteren is tijdelijk dicht
 				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
@@ -7880,6 +7880,11 @@
 					case 3468:
 						// Uitzonderingen voor Hoboken
 						$location_data['telephone'] = '038277719';
+						break;
+
+					case 3700:
+						// Uitzonderingen voor Poperinge
+						$location_data['telephone'] = '0498521548';
 						break;
 				}
 				
