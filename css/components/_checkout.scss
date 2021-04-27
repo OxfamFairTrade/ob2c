@@ -79,7 +79,8 @@ form.woocommerce-checkout {
         top: 4px;
       }
 
-      > label {
+      > input[type=radio] + label {
+        // Enkel inspringen indien meerdere opties
         padding-left: 20px;
       }
 
