@@ -14,7 +14,8 @@ form.woocommerce-checkout {
       @include grid-col();
 
       float: none;
-      width: 50%;
+      // Overrule 48% niet, maakt velden soms net een tikkeltje te breed voor twee kolommen
+      // width: 50%;
 
       @media (max-width: 524px) {
         width: 100%;

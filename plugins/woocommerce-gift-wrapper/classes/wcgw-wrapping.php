@@ -71,7 +71,9 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                 $before = add_action( 'woocommerce_before_cart', array( $this, 'before_cart' ) );           
             }
             if ( in_array( "after_coupon", $giftwrap_display ) ) {
-                $collaterals = add_action( 'woocommerce_before_cart_collaterals', array( $this, 'before_cart_collaterals' ) );           
+                $collaterals = add_action( 'woocommerce_before_cart_collaterals', array( $this, 'before_cart_collaterals' ) );
+                // GEWIJZIGD: Modal form altijd buiten cart form plaatsen, anders kunnen actieknoppen breken!
+                add_action( 'woocommerce_after_cart', array( $this, 'put_modal_content_after_cart_form' ) );        
             }
             if ( in_array( "after_cart", $giftwrap_display ) ) {
                 $after = add_action( 'woocommerce_after_cart', array( $this, 'after_cart' ) );
@@ -118,12 +120,12 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
          *
          * @param object $cart_item
          * @return bool
-        */	
+        */  
         public function check_item_for_giftwrap_cat( $cart_item ) {
         
             $product_id = is_a( $cart_item, 'WC_Order_Item_Product' ) ? $cart_item->get_product_id() : $cart_item['data']->get_id();
             
-            $giftwrap_cat_id = get_option( 'wcgwp_category_id', '' );	
+            $giftwrap_cat_id = get_option( 'wcgwp_category_id', '' );   
             // WPML
             $giftwrap_cat_id = apply_filters( 'wpml_object_id', $giftwrap_cat_id, 'product_cat', true );
 
@@ -263,7 +265,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                     $it_matches = FALSE;    
                     $terms = get_the_terms( $product_id , 'product_cat' );
                     if ( $terms ) {
-                        $giftwrap_cat_id = get_option( 'wcgwp_category_id', '' );	
+                        $giftwrap_cat_id = get_option( 'wcgwp_category_id', '' );   
                         // WPML
                         $giftwrap_cat_id = apply_filters( 'wpml_object_id', $giftwrap_cat_id, 'product_cat', true );
 
@@ -282,7 +284,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
             if ( ! $notes ) {
                 $notes = array();
             }
-            WC()->cart->add_to_cart( $product, 1, 0, array(), $notes );	
+            WC()->cart->add_to_cart( $product, 1, 0, array(), $notes ); 
 
         }
           
@@ -291,7 +293,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
          *
          * @param array $cart
          * @return boolean
-        */	
+        */  
         public function check_cart_for_wrap( $cart ) {
         
             foreach ( $cart->cart_contents as $value ) {
@@ -301,7 +303,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                 $terms = get_the_terms( $product_id, 'product_cat' );
                 if ( $terms ) {
                 
-                    $giftwrap_cat_id = get_option( 'wcgwp_category_id', '' );	
+                    $giftwrap_cat_id = get_option( 'wcgwp_category_id', '' );   
                     // WPML
                     $giftwrap_cat_id = apply_filters( 'wpml_object_id', $giftwrap_cat_id, 'product_cat', true );
                     
@@ -375,7 +377,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                     )
                 ),
             ) );
-        	return apply_filters( 'wcgwp_wrap_posts', get_posts( $args ) );	
+            return apply_filters( 'wcgwp_wrap_posts', get_posts( $args ) ); 
 
         }  
 
@@ -409,6 +411,13 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
         public function before_cart_collaterals() {
         
             $this->gift_wrap_action( '_coupon' );
+        
+        }
+
+        // GEWIJZIGD: Modal form altijd buiten cart form plaatsen, anders kunnen actieknoppen breken!
+        public function put_modal_content_after_cart_form() {
+        
+            $this->gift_wrap_action_modal( '_coupon' );
         
         }
         
@@ -453,9 +462,9 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
         */
         public function gift_wrap_action( $label ) {
         
-        	$list = $this->get_wcgw_products();
+            $list = $this->get_wcgw_products();
         
-        	if ( ! apply_filters( 'wcgwp_continue_gift_wrap_action', TRUE, $list, $label ) ) return;
+            if ( ! apply_filters( 'wcgwp_continue_gift_wrap_action', TRUE, $list, $label ) ) return;
             
             $giftwrap_details = get_option( 'wcgwp_details', 'We offer the following gift wrap options:' );
             ob_start(); ?>
@@ -466,7 +475,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                 // if modal version
                 if ( get_option( 'wcgwp_modal', 'no' ) == 'yes' ) {
 
-                    wc_get_template( 'wcgwp/modal.php', array( 'label' => $label, 'list' => $list, 'giftwrap_details' => $giftwrap_details, 'show_thumbs' => $this->show_thumbs() ), '', WCGW_PLUGIN_DIR . 'templates/');
+                    wc_get_template( 'wcgwp/button.php', array( 'label' => $label, 'list' => $list, 'giftwrap_details' => $giftwrap_details, 'show_thumbs' => $this->show_thumbs() ), '', WCGW_PLUGIN_DIR . 'templates/');
 
                 // non-modal version
                 } else { 
@@ -491,12 +500,27 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
                     }
                     
                 } ?>
-            </div>	
+            </div>  
             
         <?php echo ob_get_clean();
         
         }
+
+        // GEWIJZIGD: Modal form altijd buiten cart form plaatsen, anders kunnen actieknoppen breken!
+        public function gift_wrap_action_modal( $label ) {
+        
+            $list = $this->get_wcgw_products();
             
+            if ( ! apply_filters( 'wcgwp_continue_gift_wrap_action', TRUE, $list, $label ) ) return;
+
+            $giftwrap_details = get_option( 'wcgwp_details', 'We offer the following gift wrap options:' );
+
+            if ( get_option( 'wcgwp_modal', 'no' ) == 'yes' ) {
+                wc_get_template( 'wcgwp/modal.php', array( 'label' => $label, 'list' => $list, 'giftwrap_details' => $giftwrap_details, 'show_thumbs' => $this->show_thumbs() ), '', WCGW_PLUGIN_DIR . 'templates/');
+            }
+        
+        }
+
         /**
          * Check if the cart contains virtual product
          * via Remi Corson, 10/2013
@@ -550,7 +574,7 @@ if ( ! class_exists( 'WCGW_Wrapping' ) ) :
          * Whether to show gift wrap product thumbnails...
          * 
          * @return bool
-        */	
+        */  
         public function show_thumbs() {
         
             if ( get_option( 'wcgwp_show_thumb', 'yes' ) == 'yes' ) {

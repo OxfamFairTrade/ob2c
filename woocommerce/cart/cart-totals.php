@@ -22,8 +22,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<table cellspacing="0" class="shop_table shop_table_responsive">
 
 		<tr class="cart-subtotal">
-			<th><?php _e( 'Subtotal', 'woocommerce' ); ?></th>
-			<td data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce' ); ?>"><?php wc_cart_totals_subtotal_html(); ?></td>
+			<th class="no-border-bottom"><?php _e( 'Subtotal', 'woocommerce' ); ?></th>
+			<td class="no-border-bottom" data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce' ); ?>"><?php wc_cart_totals_subtotal_html(); ?></td>
+		</tr>
+
+		<tr class="coupon digital-voucher">
+			<th class="asymmetrical"><input type="text" name="coupon_code" class="input-text" id="coupon_code" value="" placeholder="<?php esc_attr_e( 'Digitale cadeaubon gekregen? Vul hier je unieke code in.', 'oxfam-webshop' ); ?>" /></th>
+			<td class="asymmetrical small"><button type="submit" class="button" name="apply_coupon"><?php esc_attr_e( 'Controleer code', 'oxfam-webshop' ); ?></button></td>
+			<?php do_action( 'woocommerce_cart_coupon' ); ?>
 		</tr>
 
 		<?php foreach ( WC()->cart->get_coupons() as $code => $coupon ) : ?>
