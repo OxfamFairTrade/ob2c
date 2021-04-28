@@ -9,7 +9,7 @@
 		// Zoek vervolgens de details van de actie op
 		// Handmatig beheerde lijst, want simpeler dan afleiden uit de kortingsregels!
 		
-		$fifty_percent_off_second_products = array( 20059, 20257, 25013, 27114, 25405, 25406 );
+		$fifty_percent_off_second_products = array( 25405, 25406, 20060, 20253, 21052, 24501, 25013 );
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}
@@ -19,7 +19,7 @@
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
 		
-		$two_plus_one_products = array( 24101, 24117, 21500 );
+		$two_plus_one_products = array( 24101, 24117, 21500, 25310 );
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
