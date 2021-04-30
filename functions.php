@@ -1432,8 +1432,23 @@
 	add_action( 'wp_footer', 'add_facebook_messenger', 300 );
 
 	function add_facebook_messenger() {
+		$show_chatbot = false;
+
+		if ( get_current_blog_id() === 21 ) {
+			// Lokale pagina-ID voor Moerbeke-Waas
+			$fb_page_id = 101500678739676;
+			// Overal tonen
+			$show_chatbot = true;
+		} else {
+			$fb_page_id = 116000561802704;
+			// Enkel tonen op bepaalde pagina's
+			if ( is_cart() ) {
+				$show_chatbot = true;
+			}
+		}
+
 		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and is_cart() ) {
+			if ( cn_cookies_accepted() and $show_chatbot ) {
 				?>
 				<div id='fb-root'></div>
 				<script>(function(d, s, id) {
@@ -1442,7 +1457,7 @@
 					js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js';
 					fjs.parentNode.insertBefore(js, fjs);
 					}(document, 'script', 'facebook-jssdk'));</script>
-				<div class='fb-customerchat' attribution="wordpress" page_id='116000561802704' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!' logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
+				<div class='fb-customerchat' attribution="wordpress" page_id='<?php echo $fb_page_id; ?>' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!' logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
 				<?php
 			}
 		}
@@ -7885,6 +7900,11 @@
 					case 3700:
 						// Uitzonderingen voor Poperinge
 						$location_data['telephone'] = '0498521548';
+						break;
+
+					case 3580:
+						// Uitzonderingen voor Kruibeke
+						$location_data['telephone'] = '0493719939';
 						break;
 				}
 				
