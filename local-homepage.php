@@ -70,7 +70,7 @@
 					}
 				?>
 				<?php
-					// Check of er promoties effectief op voorraad zijn
+					// Wijnduo's 2020 UITGESCHAKELD
 					$args = array(
 						'stock_status' => 'instock',
 						'tag' => array('promotie'),
@@ -84,8 +84,7 @@
 								<?php		
 									$term_link = get_term_link( 'promotie', 'product_tag' );
 									if ( ! is_wp_error( $term_link ) ) {
-				 						// echo '<a href="'.$term_link.'#nm-shop-products"><img src="'.get_the_post_thumbnail_url( get_the_ID(), 'full' ).'" /></a>';
-										echo '<a href="'.esc_url( $term_link ).'#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2020-webshop.png' ).'" /></a>';
+				 						echo '<a href="'.esc_url( $term_link ).'#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2020-webshop.png' ).'" /></a>';
 									}
 								?>
 							</div>
@@ -93,15 +92,30 @@
 						<?php
 					}
 
-					// Beste van de Test
+					// Beste van de Test UITGESCHAKELD
 					$campesino = wc_get_product( wc_get_product_id_by_sku('20263') );
 					
-					if ( $campesino !== false and $campesino->is_in_stock() and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' ) {
+					if ( $campesino !== false and $campesino->get_stock_status() === 'instock' and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' and 1 === 2 ) {
 						?>
 						<div class="col-row lh-banner">
 							<div class="col-xs-12">
 								<?php
 									echo '<a href="'.esc_url( $campesino->get_permalink() ).'"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/campesino-chardonnay-2021.jpg' ).'" /></a>';
+								?>
+							</div>
+						</div>
+						<?php
+					}
+
+					// World Fair Trade Day 2021
+					$juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') );
+					
+					if ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) {
+						?>
+						<div class="col-row lh-banner">
+							<div class="col-xs-12">
+								<?php
+									echo '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/promo-wftd-2021-juste-home.jpg' ).'" />';
 								?>
 							</div>
 						</div>

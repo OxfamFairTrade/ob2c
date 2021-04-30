@@ -748,14 +748,20 @@
 	}
 
 	// Pas winkelmandkorting n.a.v. World Fair Trade Day 2021 toe op het uiteindelijk te betalen bedrag i.p.v. het subtotaal
-	// Dit zorgt er ook voor dat de korting niet geactiveerd wordt bij betaling met digitale vouchers!
-	// add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
+	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
 		if ( $coupon->get_code() === '202105-wftd' ) {
+			$juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') );
+			if ( $juste_tripel !== false and $juste_tripel->get_stock_status() !== 'instock' ) {
+				// Pas de korting niet toe als het gratis product niet op voorraad is
+				return false;
+			}
+
 			// WC()->cart->get_total('edit') geeft het totaal NA kortingen inclusief BTW als float MAAR bevat ook de verzendkosten!
 			$totals = WC()->cart->get_totals();
 			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] < $coupon->get_minimum_amount() ) {
+				// Dit zorgt er ook voor dat de korting niet geactiveerd wordt bij betaling met digitale vouchers ...
 				return false;	
 			}
 		}
@@ -3922,15 +3928,22 @@
 					// Trek voucherwaarde af van kortingstotaal
 					$voucher_total += $coupon_total;
 					
-					// Te switchen naar 19068 voor 31/12/2022 (+ checken of vervaldatum correspondeert?)
-					$product = wc_get_product( wc_get_product_id_by_sku('19075') );
-					if ( $product !== false ) {
-						$qty = -1 * ceil( $coupon_total / $product->get_price() );
-						// Er is geen BTW op geschenkencheques!
-						$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $coupon_data_array['description'] )->setCellValue( 'C'.$i, $qty )->setCellValue( 'D'.$i, $product->get_price() )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, -1 * $coupon_total )->setCellValue( 'G'.$i, strtoupper( $coupon_item->get_code() ) )->setCellValue( 'H'.$i, $product->get_meta('_cu_ean') );
-						$pick_sheet->getStyle('G'.$i)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-						$i++;
+					// Checken of vervaldatum correspondeert?
+					// Puur theoretisch zou een bon van 50 euro ook voor minder dan 25 euro producten gebruikt kunnen worden ...
+					if ( $coupon_total > 25 ) {
+						$value = 50;
+						$sku = 'WGCD502022';
+						$ean = '5400164190541';
+					} else {
+						$value = 25;
+						$sku = 'WGCD252022';
+						$ean = '5400164190534';
 					}
+					
+					// Er is geen BTW op geschenkencheques!
+					$pick_sheet->setCellValue( 'A'.$i, $sku )->setCellValue( 'B'.$i, $coupon_data_array['description'] )->setCellValue( 'C'.$i, -1 )->setCellValue( 'D'.$i, $value )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, -1 * $coupon_total )->setCellValue( 'G'.$i, strtoupper( $coupon_item->get_code() ) )->setCellValue( 'H'.$i, $ean );
+					$pick_sheet->getStyle('G'.$i)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+					$i++;
 				}
 			}
 
