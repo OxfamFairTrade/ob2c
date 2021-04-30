@@ -109,8 +109,9 @@
 
 					// World Fair Trade Day 2021
 					$juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') );
+					$juste_tripel_solo = wc_get_product( wc_get_product_id_by_sku('20810') );
 					
-					if ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) {
+					if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) or ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() === 'instock' ) ) {
 						?>
 						<div class="col-row lh-banner">
 							<div class="col-xs-12">

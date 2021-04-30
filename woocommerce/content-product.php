@@ -137,7 +137,8 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 
 <?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 ) : ?>
     <?php $juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') ); ?>
-    <?php if ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) : ?>
+    <?php $juste_tripel_solo = wc_get_product( wc_get_product_id_by_sku('20810') ); ?>
+    <?php if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) or ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() === 'instock' ) ) : ?>
         <li class="promo-banner horizontal">
             <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wftd-2021-juste-liggend.jpg" />
         </li>

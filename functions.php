@@ -753,7 +753,8 @@
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
 		if ( $coupon->get_code() === '202105-wftd' ) {
 			$juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') );
-			if ( $juste_tripel !== false and $juste_tripel->get_stock_status() !== 'instock' ) {
+			$juste_tripel_solo = wc_get_product( wc_get_product_id_by_sku('20810') );
+			if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) or ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() === 'instock' ) ) {
 				// Pas de korting niet toe als het gratis product niet op voorraad is
 				return false;
 			}
