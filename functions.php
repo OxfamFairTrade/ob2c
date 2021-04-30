@@ -1452,13 +1452,6 @@
 				?>
 				<div id='fb-root'></div>
 				<script>
-					window.fbAsyncInit = function() {
-						FB.init({
-							xfbml : true,
-							version : 'v10.0'
-						});
-					};
-
 					(function(d, s, id) {
 						var js, fjs = d.getElementsByTagName(s)[0];
 						if (d.getElementById(id)) return;
