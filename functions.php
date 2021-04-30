@@ -1451,12 +1451,21 @@
 			if ( cn_cookies_accepted() and $show_chatbot ) {
 				?>
 				<div id='fb-root'></div>
-				<script>(function(d, s, id) {
-					var js, fjs = d.getElementsByTagName(s)[0];
-					js = d.createElement(s); js.id = id;
-					js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js';
-					fjs.parentNode.insertBefore(js, fjs);
-					}(document, 'script', 'facebook-jssdk'));</script>
+				<script>
+					window.fbAsyncInit = function() {
+						FB.init({
+							xfbml : true,
+							version : 'v10.0'
+						});
+					};
+
+					(function(d, s, id) {
+						var js, fjs = d.getElementsByTagName(s)[0];
+						js = d.createElement(s); js.id = id;
+						js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js';
+						fjs.parentNode.insertBefore(js, fjs);
+					}(document, 'script', 'facebook-jssdk'));
+				</script>
 				<div class='fb-customerchat' attribution="wordpress" page_id='<?php echo $fb_page_id; ?>' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!' logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
 				<?php
 			}
