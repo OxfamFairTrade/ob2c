@@ -5598,8 +5598,14 @@
 				if ( $product !== false ) {
 					switch ( $product->get_sku() ) {
 						case '20807':
-						case '20809':
 						case '20811':
+							// Voeg 4 flesjes leeggoed toe bij clips
+							$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
+							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
+							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+							break;
+
+						case '20809':
 							$cart_price = apply_filters('woocommerce_cart_item_price', WC()->cart->get_product_price($product), $product_item, $product_item['key'] );
 							if ( stristr( $cart_price, 'gratis' ) ) {
 								// Geen leeggoed aanrekenen bij gratis product voor World Fair Trade Day 2021 
@@ -5610,8 +5616,8 @@
 								$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
 								// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
 								$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
-								break;
 							}
+							break;
 
 						case '19236':
 						case '19237':
