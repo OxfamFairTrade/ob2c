@@ -3849,6 +3849,9 @@
 			if ( get_option('oxfam_remove_excel_header') === 'yes' ) {
 				// Skip de kopregel
 				$i = 2;
+
+				// Leeggoeditems skippen, ook al bevatten ze geen artikelnummer/barcode?
+				// Of wordt leeggoed in ShopPlus niet automatisch toegevoegd bij overname vanuit Excel?
 			} else {
 				// Bestelgegevens invullen
 				$pick_sheet->setTitle( $order_number )->setCellValue( 'F2', $order_number )->setCellValue( 'F3', PHPExcel_Shared_Date::PHPToExcel( $order_timestamp ) );
@@ -5589,11 +5592,15 @@
 						case '20807':
 						case '20809':
 						case '20811':
-							// Voeg 4 flesjes leeggoed toe bij clips
-							$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
-							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
-							break;
+							// Geen leeggoed aanrekenen bij gratis producten, bv. voor World Fair Trade Day 2021 
+							write_log( print_r( $product_item, true ) );
+							if ( $product_item['total'] > 0 ) {
+								// Voeg 4 flesjes leeggoed toe bij clips
+								$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
+								// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
+								$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+								break;
+							}
 
 						case '19236':
 						case '19237':
