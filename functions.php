@@ -158,6 +158,12 @@
 						}
 					}
 				}
+
+				if ( $coupon_item->get_code() === '202105-wftd' ) {
+					// Winkelmandkorting verwijderen en vervangen door productkorting op leeggoedregel?
+					// Enige manier om de BTW-berekening correct te krijgen ...
+					// $order->remove_coupon( $coupon_item->get_code() );
+				} 
 			}
 		}
 	}
