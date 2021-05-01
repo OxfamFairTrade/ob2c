@@ -123,7 +123,7 @@
 						global $wpdb;
 						$result = $wpdb->update(
 							$wpdb->base_prefix.'universal_coupons',
-							array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s') ),
+							array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s'), 'blog_id' => get_current_blog_id() ),
 							array( 'code' => $code )
 						);
 
@@ -754,7 +754,7 @@
 		if ( $coupon->get_code() === '202105-wftd' ) {
 			$juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') );
 			$juste_tripel_solo = wc_get_product( wc_get_product_id_by_sku('20810') );
-			if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) or ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() === 'instock' ) ) {
+			if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() !== 'instock' ) and ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() !== 'instock' ) ) {
 				// Pas de korting niet toe als het gratis product niet op voorraad is
 				return false;
 			}
@@ -7207,9 +7207,9 @@
 				// 	}
 				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 				// echo '</div>';
-				// 	echo '<div class="notice notice-success">';
-				// 		echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-april-2021-update.html" target="_blank">promo\'s voor april</a> zijn geactiveerd in alle webshops. Zoals eerder aangekondigd in de nieuwsbrief werden alle bestellingen van vòòr 2019 verwijderd, in lijn met ons privacybeleid. Geannuleerde bestellingen en pick-Excels van vòòr 2021 werden ook reeds opgeruimd.';
-				// 	echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-mei-2021-update.html" target="_blank">promo\'s voor mei</a> zijn geactiveerd in alle webshops. De gratis clip JUSTE Tripel bij aankoop van minstens 50 euro excl. kortingen zal in juni automatisch gecrediteerd worden en dient <u>niet</u> geturfd te worden in de winkel. Opgelet: deze promotie wordt enkel geactiveerd indien je webshop JUSTE Tripel op voorraad heeft (in clip of als losse flesjes).';
+				echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
