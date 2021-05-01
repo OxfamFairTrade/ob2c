@@ -158,12 +158,6 @@
 						}
 					}
 				}
-
-				if ( $coupon_item->get_code() === '202105-wftd' ) {
-					// Winkelmandkorting verwijderen en vervangen door productkorting op leeggoedregel?
-					// Enige manier om de BTW-berekening correct te krijgen ...
-					// $order->remove_coupon( $coupon_item->get_code() );
-				} 
 			}
 		}
 	}
@@ -3916,7 +3910,15 @@
 					$gift_wrap_text = $item->get_meta('wcgwp_note');
 				}
 
-				$pick_sheet->setCellValue( 'A'.$i, $product->get_meta('_shopplus_code') )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $product->get_meta('_cu_ean') );
+				if ( $product->get_sku() == 20809 and $line_total == 0 ) {
+					// Juiste code voor World Fair Trade Day 2021
+					$shopplus = 'W08897';
+					$ean = '05400164088978';
+				} else {
+					$shopplus = $product->get_meta('_shopplus_code');
+					$ean = $product->get_meta('_cu_ean');
+				}
+				$pick_sheet->setCellValue( 'A'.$i, $shopplus )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $ean );
 				$i++;
 			}
 
@@ -5598,11 +5600,18 @@
 						case '20807':
 						case '20809':
 						case '20811':
-							// Voeg 4 flesjes leeggoed toe bij clips
-							$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
-							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
-							break;
+							$cart_price = apply_filters('woocommerce_cart_item_price', WC()->cart->get_product_price($product), $product_item, $product_item['key'] );
+							if ( stristr( $cart_price, 'gratis' ) ) {
+								// Geen leeggoed aanrekenen bij gratis product voor World Fair Trade Day 2021 
+								$empties_array['quantity'] = 0;
+								$product_item['quantity'] = 0;
+							} else {
+								// Voeg 4 flesjes leeggoed toe bij clips
+								$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
+								// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
+								$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
+								break;
+							}
 
 						case '19236':
 						case '19237':
