@@ -3913,7 +3913,7 @@
 				if ( $product->get_sku() == 20809 and $line_total == 0 ) {
 					// Juiste code voor World Fair Trade Day 2021
 					$shopplus = 'W08897';
-					$ean = '05400164088978';
+					$ean = '5400164088978';
 				} else {
 					$shopplus = $product->get_meta('_shopplus_code');
 					$ean = $product->get_meta('_cu_ean');
