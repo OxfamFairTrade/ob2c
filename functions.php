@@ -2632,6 +2632,8 @@
 			// Als het een zeer kleine reductie is, gaan we ervan uit dat het een 'fake' nationale promotie is
 			return wc_price( $regular_price );
 		}
+
+		return $price;
 	}
 
 	// Toon het blokje 'Additional Capabilities' op de profielpagina nooit
