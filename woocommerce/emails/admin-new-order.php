@@ -49,7 +49,7 @@ foreach ( $order->get_coupons() as $coupon_item ) {
 }
 if ( count( $digital_vouchers ) > 0 ) {
 	$percentage = ( $order->get_total() > 0 ) ? 'gedeeltelijk' : 'volledig';
-	echo '<p><b>Deze bestelling werd '.$percentage.' betaald met '._n( '%s digitale cadeaubon', '%s digitale cadeaubonnen', count( $digital_vouchers ) ).' ('.implode( ', ', $digital_vouchers ).').</b> De totale waarde zal volgende maand automatisch gecrediteerd worden aan de winkel die de bestelling behandelt. Contacteer de <a href="mailto:webshop@oft.be?">Helpdesk E-Commerce</a> indien je door onvoorziene omstandigheden een grote terugbetaling zou dienen uit te voeren op dit order.</p>';
+	echo '<p><b>Deze bestelling werd '.$percentage.' betaald met '.sprintf( _n( '%d digitale cadeaubon', '%d digitale cadeaubonnen', count( $digital_vouchers ) ), count( $digital_vouchers ) ).' ('.implode( ', ', $digital_vouchers ).').</b> De totale waarde zal volgende maand automatisch gecrediteerd worden aan de winkel die de bestelling behandelt. Contacteer de <a href="mailto:webshop@oft.be?">Helpdesk E-Commerce</a> indien je door onvoorziene omstandigheden een grote terugbetaling zou dienen uit te voeren op dit order.</p>';
 }
 
 if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
