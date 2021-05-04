@@ -99,7 +99,7 @@
 		return $label;
 	}
 
-	// Check net vòòr we de betaling starten nog eens of de code nog wel geldig is
+	// Check net vòòr we de betaling starten nog eens of de code wel geldig is
 	add_action( 'woocommerce_before_pay_action', 'ob2c_revalidate_digital_voucher_before_payment', 10, 1 );
 
 	function ob2c_revalidate_digital_voucher_before_payment( $order ) {
@@ -113,14 +113,10 @@
 					$logger = wc_get_logger();
 					$context = array( 'source' => 'Oxfam' );
 					$logger->warning( 'Trying to re-use coupon '.$code.' in '.$order->get_order_number().', previously used in '.$db_coupon->order, $context );
-					wc_add_notice( __( 'Deze bestelling bevat een digitale cadeaubon die inmiddels reeds ingeruild werd via een andere bestelling. Daarom kun je deze bestelling niet meer afronden.', 'oxfam-webshop' ), 'error' );
-					// Coupon proberen wissen?
+					wc_add_notice( sprintf( __( 'Deze bestelling bevatte een digitale cadeaubon met code %1$s die inmiddels reeds ingeruild werd in bestelling %2$s. De korting werd gennuleerd en het te betalen bedrag herberekend. Gelieve nu opnieuw te proberen.', 'oxfam-webshop' ), $code, $db_coupon->order ), 'error' );
+					// Wis de voucher en sla het order op, zodat een nieuw betaal
 					$order->remove_coupon( $coupon_item->get_code() );
-					// Of bestelling meteen volledig annuleren?
-					// $order->update_status('cancelled');
 					$order->save();
-					// Actie staat niet binnen try/catch-blok ...
-					// throw new Exception( __( 'Deze bestelling bevat een digitale cadeaubon die inmiddels reeds ingeruild werd via een andere bestelling. Daarom kun je deze bestelling niet meer afronden.', 'oxfam-webshop' ) );
 					return;
 				}
 			}
