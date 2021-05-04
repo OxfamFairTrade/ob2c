@@ -37,8 +37,17 @@
       }
     }
   }
-}
 
+  // Dit is volgens Frederik de juiste opeenvolging!
+  // Of komen beiden vormen voor?
+  &.woocommerce-message > .nm-shop-notice {
+    background-color: $pale-blue;
+  }
+
+  &.woocommerce-error > .nm-shop-notice {
+    background-color: $bright-red;
+  }
+}
 
 .general-store-notice {
   clear: both;

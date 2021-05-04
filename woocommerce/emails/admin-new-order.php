@@ -26,21 +26,34 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 
 	if ( $shipping_cost_details['tax_rate'] == 0.21 ) {
 		if ( $shipping_cost_details['qty'] > 1 ) {
-			echo '<p style="color: red; font-weight: bold;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW met levering naar het buitenland! Zorg ervoor dat je bij de verwerking in ShopPlus ' . $shipping_cost_details['qty'] . 'x de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( $shipping_cost_details['qty'] * REDUCED_VAT_SHIPPING_COST ) ).'</p>';
+			echo '<p style="color: red;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW met levering naar het buitenland! Zorg ervoor dat je bij de verwerking in ShopPlus ' . $shipping_cost_details['qty'] . 'x de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( $shipping_cost_details['qty'] * REDUCED_VAT_SHIPPING_COST ) ).'</p>';
 		} else {
-			echo '<p style="color: red; font-weight: bold;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
+			echo '<p style="color: red;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
 		}
 	} else {
 		if ( $shipping_cost_details['qty'] > 1 ) {
-			echo '<p style="color: red; font-weight: bold;">Dit is een bestelling met levering naar het buitenland! Zorg ervoor dat je bij de verwerking in ShopPlus ' . $shipping_cost_details['qty'] . 'x de levercode \'WEB6\' inscant.</p>';
+			echo '<p style="color: red;">Dit is een bestelling met levering naar het buitenland! Zorg ervoor dat je bij de verwerking in ShopPlus ' . $shipping_cost_details['qty'] . 'x de levercode \'WEB6\' inscant.</p>';
 		}
 	}
 }
 
 echo '<p>In bijlage vind je een Excel met alle gegevens in printvriendelijk formaat. Bezorg dit eventueel aan een winkelier zodat hij/zij de bestelling kan klaarzetten. In de laatste kolom is ruimte voorzien om de effectief geleverde aantallen te noteren.</p>';
 
+$digital_vouchers = array();
+foreach ( $order->get_coupons() as $coupon_item ) {
+	// Negeer in deze stap de rate limiting per IP-adres
+	$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
+	if ( is_object( $db_coupon ) ) {
+		$digital_vouchers[] = strtoupper( $coupon_item->get_code() );
+	}
+}
+if ( count( $digital_vouchers ) > 0 ) {
+	$percentage = ( $order->get_total() > 0 ) ? 'gedeeltelijk' : 'volledig';
+	echo '<p><b>Deze bestelling werd '.$percentage.' betaald met '._n( '%s digitale cadeaubon', '%s digitale cadeaubonnen', count( $digital_vouchers ) ).' ('.implode( ', ', $digital_vouchers ).').</b> De totale waarde zal volgende maand automatisch gecrediteerd worden aan de winkel die de bestelling behandelt. Contacteer de <a href="mailto:webshop@oft.be?">Helpdesk E-Commerce</a> indien je door onvoorziene omstandigheden een grote terugbetaling zou dienen uit te voeren op dit order.</p>';
+}
+
 if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
-	echo '<p style="color: red; font-weight: bold;">Opgelet, dit is een B2B-bestelling die nog niet betaald werd! Je zult geen bedrag ontvangen via Mollie. Stel een factuur op voor de effectief geleverde goederen en volg zelf de betaling op.</p>';
+	echo '<p style="color: red;">Opgelet, dit is een B2B-bestelling die nog niet betaald werd! Je zult geen bedrag ontvangen via Mollie. Stel een factuur op voor de effectief geleverde goederen en volg zelf de betaling op.</p>';
 }
 
 /*
