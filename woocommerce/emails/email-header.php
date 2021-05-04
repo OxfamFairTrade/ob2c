@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
 				<tr>
 					<td align="center" valign="top">
-						<div id="template_header_image">
+						<div id="template_header_image" style="max-width: 600px;">
 						<?php
 							// GEWIJZIGD: Voeg lokaal logo met link naar homepage toe
 							$img = get_stylesheet_directory_uri() . '/images/logo-green.svg';
