@@ -6,7 +6,9 @@
 <div class="featured-partner">
 	<div class="col-row">
 		<div class="col-md-7">
-			<img src="<?php echo esc_url( $featured_partner['quote']['image'] ); ?>">
+			<?php if ( $featured_partner['quote']['image'] !== '' ) : ?>
+				<img src="<?php echo esc_url( $featured_partner['quote']['image'] ); ?>">
+			<?php endif; ?>
 			<?php echo $featured_partner['bullet_points']; ?>
 			<p><a href="<?php echo esc_url( $featured_partner['link'] ); ?>">Maak kennis met <?php echo $featured_partner['name']; ?></a></p>
 		</div>

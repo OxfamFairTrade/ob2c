@@ -99,6 +99,34 @@
 		return $label;
 	}
 
+	// Check net vòòr we de betaling starten nog eens of de code nog wel geldig is
+	add_action( 'woocommerce_before_pay_action', 'ob2c_revalidate_digital_voucher_before_payment', 10, 1 );
+
+	function ob2c_revalidate_digital_voucher_before_payment( $order ) {
+		foreach ( $order->get_coupons() as $coupon_item ) {
+			// Negeer in deze stap de rate limiting per IP-adres
+			$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
+			if ( is_object( $db_coupon ) ) {
+				// Verhinder het betalen van een bestelling die een inmiddels reeds ingewisselde code bevat!
+				$code = strtoupper( $coupon_item->get_code() );
+				if ( ! empty( $db_coupon->order ) ) {
+					$logger = wc_get_logger();
+					$context = array( 'source' => 'Oxfam' );
+					$logger->warning( 'Trying to re-use coupon '.$code.' in '.$order->get_order_number().', previously used in '.$db_coupon->order, $context );
+					wc_add_notice( __( 'Deze bestelling bevat een digitale cadeaubon die inmiddels reeds ingeruild werd via een andere bestelling. Daarom kun je deze bestelling niet meer afronden.', 'oxfam-webshop' ), 'error' );
+					// Coupon proberen wissen?
+					$order->remove_coupon( $coupon_item->get_code() );
+					// Of bestelling meteen volledig annuleren?
+					// $order->update_status('cancelled');
+					$order->save();
+					// Actie staat niet binnen try/catch-blok ...
+					// throw new Exception( __( 'Deze bestelling bevat een digitale cadeaubon die inmiddels reeds ingeruild werd via een andere bestelling. Daarom kun je deze bestelling niet meer afronden.', 'oxfam-webshop' ) );
+					return;
+				}
+			}
+		}
+	}
+
 	// Maak de code na succesvolle betaling onbruikbaar in de centrale database
 	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_digital_voucher', 10, 1 );
 
@@ -110,14 +138,13 @@
 				// Negeer in deze stap de rate limiting per IP-adres
 				$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
 				if ( is_object( $db_coupon ) ) {
-					$code = strtoupper( $coupon_item->get_code() );
-					write_log( "IS OXFAM VOUCHER: ".$code );
 					// Nogmaals checken of de code al niet ingewisseld werd!
+					$code = strtoupper( $coupon_item->get_code() );
 					if ( ! empty( $db_coupon->order ) ) {
 						$logger = wc_get_logger();
 						$context = array( 'source' => 'Oxfam' );
 						$logger->critical( 'Coupon '.$code.' was already used in '.$db_coupon->order.', should not be used in '.$order->get_order_number(), $context );
-						send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' werd reeds gebruikt in '.$db_coupon->order, '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
+						send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' werd reeds gebruikt in '.$db_coupon->order, '<p>Bekijk <u>zo snel mogelijk</u> de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>. Hier is iets niet pluis!</p>' );
 					} else {
 						// Ongeldig maken in de centrale database
 						global $wpdb;
@@ -128,9 +155,6 @@
 						);
 
 						if ( $result === 1 ) {
-							send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' werd ingeruild in '.$order->get_order_number(), '<p>Bekijk de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>.</p>' );
-							write_log("VOUCHER DISABLED IN TABLE");
-							
 							$coupon_data_array = $coupon_item->get_meta('coupon_data');
 							$coupon_value = $coupon_item->get_discount() + $coupon_item->get_discount_tax();
 
@@ -152,7 +176,6 @@
 								// Verwijder de kortingscode volledig van het order
 								// Gebruik bewust niet de uppercase versie maar de originele waarde!
 								$order->remove_coupon( $coupon_item->get_code() );
-								write_log("VOUCHER REMOVED FROM ORDER");
 							}
 							$order->save();
 						}
@@ -6944,8 +6967,11 @@
 						// $product->set_backorders('no');
 						
 						if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
+							write_log( $product->get_sku()." DISABLE ON MAIN SITE" );
 							$product->save();
-							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
+
+							// Worden de wijzigingen automatisch gesynchroniseerd naar subsites of moeten we deze actie triggeren?
+							// do_action( 'WOO_MSTORE_admin_product/process_product', $product->get_id() );
 						} else {
 							write_log( $product->get_sku()." SHOULD BE DISABLED ON MAIN SITE" );
 						}
