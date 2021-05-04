@@ -25,17 +25,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<td align="center" valign="top">
 						<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_container">
 							<tr>
-								<td align="left" valign="top" style="background-color: transparent;">
-									<?php
-										// GEWIJZIGD: Voeg lokaal logo met link naar homepage toe
-										if ( file_exists( get_stylesheet_directory() . '/images/logos/' . get_current_blog_id() .'.svg' ) ) {
-											$img = get_stylesheet_directory_uri() . '/images/logos/' . get_current_blog_id() . '.svg';
-										} else {
-											$img = get_stylesheet_directory_uri() . '/images/logo-green.svg';
-										}
-										echo '<p style="margin-left: 40px; text-align: left;"><a href="' . esc_url( get_site_url() ) . '" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" style="max-width: 275px;" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
-									?>
-								</td>
+								<?php
+									// GEWIJZIGD: Voeg lokaal logo met link naar homepage toe
+									if ( file_exists( get_stylesheet_directory() . '/images/logos/' . get_current_blog_id() .'.svg' ) ) {
+										$img = get_stylesheet_directory_uri() . '/images/logos/' . get_current_blog_id() . '.svg';
+									} else {
+										$img = get_stylesheet_directory_uri() . '/images/logo-green.svg';
+									}
+									echo '<p style="margin-left: 40px; text-align: left;"><a href="' . esc_url( get_site_url() ) . '" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" style="max-width: 275px;" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
+								?>
 							</tr>
 							<tr>
 								<td align="center" valign="top">
