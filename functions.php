@@ -7214,23 +7214,22 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				// echo '<div class="notice notice-success">';
-				// 	// 36 van de 53 aprilmagazineproducten en 7 'Oxfam Pakt Uit'-kaartjes: 48500, 48501, 48502, 48503, 48504, 48505, 49112
-				// 	echo '<p>De nieuwe koffiecapsules en biohoning werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 22724, 22725, 26016 );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>7 \'Oxfam Pakt Uit\'-kaartjes en de 36 reeds geleverde aprilmagazineproducten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 48500, 48501, 48502, 48503, 48504, 48505, 49112, 41380, 65275, 65388, 65389, 65390, 65391, 66175, 66176, 66177, 66198, 66230, 66231, 66232, 66233, 66234, 66235, 66236, 66237, 66238, 66239, 68495, 68497, 68498, 68608, 68609, 68610, 68612, 68618, 68619, 68620, 68621, 68624, 68626, 68627, 68628, 87499 );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Het tweede deel aprilmagazineproducten wordt vanaf deze week uitgeleverd door Wondelgem en verschijnt vrijdag in de webshops.</p>';
+				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-mei-2021-update.html" target="_blank">promo\'s voor mei</a> zijn geactiveerd in alle webshops. De gratis clip JUSTE Tripel bij aankoop van minstens 50 euro (incl. kortingen, excl. verzendkosten) zal in juni automatisch gecrediteerd worden en dient <u>niet</u> geturfd te worden in de winkel. Opgelet: deze promotie wordt enkel automatisch geactiveerd indien je webshop JUSTE Tripel op voorraad heeft (in clips of als losse flesjes).';
 				echo '</div>';
@@ -7242,9 +7241,9 @@
 				}
 				// 27807 Woksaus zoet-zuur, 27998 BIO Mosterdsalsa, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28327 Zeezout mix chili-peper, 28329 BIO Kurkuma
 				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
-				echo '<div class="notice notice-warning">';
-					echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 20410 RAZA Brut Torrontés Schuimwijn, 25715 BIO Cashew natuur, 26314 BIO Mangoconfituur, 27003 Couscous, 27103 Paarse rijst en 28103 BIO Rijstazijn. Opgelet: veel webshops bleven de oude cashewnoten X15715 op voorraad houden terwijl zowel verpakking, netto-inhoud als prijs reeds wijzigden in 2019. Gelieve over te schakelen op de nieuwe cashewnoten X15725.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 20410 RAZA Brut Torrontés Schuimwijn, 25715 BIO Cashew natuur, 26314 BIO Mangoconfituur, 27003 Couscous, 27103 Paarse rijst en 28103 BIO Rijstazijn. Opgelet: veel webshops bleven de oude cashewnoten X15715 op voorraad houden terwijl zowel verpakking, netto-inhoud als prijs reeds wijzigden in 2019. Gelieve over te schakelen op de nieuwe cashewnoten X15725.</p>';
+				// echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}
