@@ -26,10 +26,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div id="template_header_image">
 						<?php
 							// GEWIJZIGD: Voeg lokaal logo met link naar homepage toe
-							$img = get_stylesheet_directory_uri().'/images/logo-green.svg';
-							if ( file_exists( get_stylesheet_directory().'/logo/'.get_option('oxfam_shop_node').'.png' ) ) {
-								// TO DO: Logo's hernummeren naar post-ID's
-								$img = get_stylesheet_directory_uri().'/logo/'.get_option('oxfam_shop_node').'.png';
+							$img = get_stylesheet_directory_uri() . '/images/logo-green.svg';
+							if ( file_exists( get_stylesheet_directory() . '/images/logos/' . get_current_blog_id() .'.svg' ) ) {
+								$img = get_stylesheet_directory_uri() . '/images/logos/' . get_current_blog_id() . '.svg';
 							}
 							echo '<p style="margin-top:0;"><a href="' . esc_url( get_site_url() ) . '" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" style="max-width: 200px;" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
 						?>
