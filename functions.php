@@ -2624,10 +2624,14 @@
 
 	// Doorstreepte adviesprijs en badge uitschakelen (meestal geen rechtstreekse productkorting)
 	add_filter( 'woocommerce_sale_flash', '__return_false' );
+	// Dit zou enkel geactiveerd mogen worden bij nationale producten maar deze filter geeft $product niet door ...
 	add_filter( 'woocommerce_format_sale_price', 'format_sale_as_regular_price', 10, 3 );
 
 	function format_sale_as_regular_price( $price, $regular_price, $sale_price ) {
-		return wc_price( $regular_price );
+		if ( abs( $regular_price - $sale_price ) < 0.01 ) {
+			// Als het een zeer kleine reductie is, gaan we ervan uit dat het een 'fake' nationale promotie is
+			return wc_price( $regular_price );
+		}
 	}
 
 	// Toon het blokje 'Additional Capabilities' op de profielpagina nooit
