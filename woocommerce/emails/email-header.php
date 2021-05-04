@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								} else {
 									$img = get_stylesheet_directory_uri() . '/images/logo-green.svg';
 								}
-								echo '<p style="margin-left: 40px; text-align: left;"><a href="' . esc_url( get_site_url() ) . '" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" style="max-width: 275px;" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
+								echo '<p style="margin-top: 0; margin-left: 40px; text-align: left;"><a href="' . esc_url( get_site_url() ) . '" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" style="max-width: 275px;" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a></p>';
 							?>
 						</div>
 						<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_container">
