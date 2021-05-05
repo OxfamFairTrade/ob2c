@@ -468,6 +468,11 @@
       padding: 0 12px;
       margin-bottom: 24px;
 
+      img {
+        object-fit: contain;
+        object-position: top;
+      }
+      
       &.horizontal {
         width: 100%;
       }
@@ -482,11 +487,6 @@
 
           overflow: hidden;
           display: flex;
-
-          img {
-            object-fit: cover;
-            object-position: top;
-          }
         }
       }
     }
