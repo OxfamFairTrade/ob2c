@@ -43,6 +43,7 @@
 
 	function ob2c_load_digital_voucher_on_the_fly( $bool, $code, $wc_coupon_class ) {
 		$db_coupon = ob2c_is_valid_voucher_code( $code );
+		write_log("CREATE COUPON ON THE FLY");
 		
 		if ( $db_coupon === WC_COUPON::E_WC_COUPON_NOT_EXIST ) {
 			return false;
@@ -5259,7 +5260,7 @@
 		}
 	}
 
-	// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
+	// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes? WORDT BIJ ELKE STAP DOORLOPEN, PAS OP MET ZWARE LOGICA
 	add_filter( 'woocommerce_shipping_free_shipping_is_available', 'ignore_digital_vouchers_for_free_shipping', 10, 3 );
 
 	function ignore_digital_vouchers_for_free_shipping( $is_available, $package, $shipping_method ) {
@@ -5269,7 +5270,8 @@
 		$voucher_total = 0.0;
 		foreach ( WC()->cart->get_coupons() as $coupon ) {
 			if ( $coupon->get_virtual() ) {
-				$voucher_total = $coupon->get_discount_amount();
+				// Géén get_discount_amount() gebruiken, doet complexe berekening
+				$voucher_total = $coupon->get_amount();
 			}
 		}
 
