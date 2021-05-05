@@ -133,6 +133,12 @@
       font-weight: bold;
     }
 
+    .price del span.amount {
+      font-size: 26.5625px;
+      color: $pale-black;
+      font-weight: bold;
+    }
+
     button.button {
       width: auto;
       display: inline-block;
