@@ -49,9 +49,18 @@ foreach ( $order->get_coupons() as $coupon_item ) {
 		$voucher_amount += $coupon_item->get_discount() + $coupon_item->get_discount_tax();
 	}
 }
+
+// Fallback indien de mail verzonden wordt nà het omvormen van de coupon in een fee
+foreach ( $order->get_fees() as $fee_item ) {
+	if ( $fee_item->get_meta('voucher_amount') !== '' ) {
+		$voucher_codes[] = $fee_item->get_meta('voucher_code');
+		$voucher_amount += floatval( $fee_item->get_meta('voucher_amount') );
+	}
+}
+
 if ( count( $voucher_codes ) > 0 ) {
 	$percentage = ( $order->get_total() > 0 ) ? 'gedeeltelijk' : 'volledig';
-	echo '<p><b>Deze bestelling werd '.$percentage.' betaald met '.sprintf( _n( '%d digitale cadeaubon', '%d digitale cadeaubonnen', count( $voucher_codes ) ), count( $voucher_codes ) ).' ('.implode( ', ', $voucher_codes ).') t.w.v. '.wc_price( $voucher_amount ).'.</b> Dit bedrag zal volgende maand automatisch gecrediteerd worden aan de winkel die de bestelling behandelt. Contacteer de <a href="mailto:webshop@oft.be?subject=Terugbetaling digitale cadeaubon in '.$order->get_order_number().'">Helpdesk E-Commerce</a> indien je door onvoorziene omstandigheden een (grote) terugbetaling dient uit te voeren op dit order.</p>';
+	echo '<p><b>Deze bestelling werd '.$percentage.' betaald met '.sprintf( _n( '%d digitale cadeaubon', '%d digitale cadeaubonnen', count( $voucher_codes ) ), count( $voucher_codes ) ).' t.w.v. '.wc_price( $voucher_amount ).'.</b> Dit bedrag zal volgende maand automatisch gecrediteerd worden aan de winkel die de bestelling behandelt. Contacteer de <a href="mailto:webshop@oft.be?subject=Terugbetaling digitale cadeaubon in '.$order->get_order_number().'">Helpdesk E-Commerce</a> indien je door onvoorziene omstandigheden een (grote) terugbetaling dient uit te voeren op dit order.</p>';
 }
 
 if ( $order->get_meta('is_b2b_sale') === 'yes' ) {

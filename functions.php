@@ -150,11 +150,9 @@
 						);
 
 						if ( $result === 1 ) {
-							$coupon_data_array = $coupon_item->get_meta('coupon_data');
-							$coupon_value = $coupon_item->get_discount() + $coupon_item->get_discount_tax();
-
 							// Converteer korting naar pseudo betaalmethode voor correcte omzetrapporten en verwerking van BTW
 							$fee = new WC_Order_Item_Fee();
+							$coupon_data_array = $coupon_item->get_meta('coupon_data');
 							$fee->set_name( $coupon_data_array['description'].': '.$code );
 							$fee->set_amount(0);
 							$fee->set_total(0);
@@ -164,7 +162,7 @@
 							$fee->update_meta_data( 'voucher_code', $code );
 							$fee->update_meta_data( 'voucher_value', $db_coupon->value );
 							// Bewaar het effectieve bedrag dat betaald werd via de voucher (kan minder zijn dan de totale waarde!) for future reference
-							$fee->update_meta_data( 'voucher_amount', $coupon_value );
+							$fee->update_meta_data( 'voucher_amount', $coupon_item->get_discount() + $coupon_item->get_discount_tax() );
 							$fee->save();
 							
 							if ( $order->add_item( $fee ) !== false ) {
