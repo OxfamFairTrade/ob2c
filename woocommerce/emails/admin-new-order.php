@@ -39,17 +39,19 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 
 echo '<p>In bijlage vind je een Excel met alle gegevens in printvriendelijk formaat. Bezorg dit eventueel aan een winkelier zodat hij/zij de bestelling kan klaarzetten. In de laatste kolom is ruimte voorzien om de effectief geleverde aantallen te noteren.</p>';
 
-$digital_vouchers = array();
+$voucher_codes = array();
+$voucher_amount = 0.0;
 foreach ( $order->get_coupons() as $coupon_item ) {
 	// Negeer in deze stap de rate limiting per IP-adres
 	$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
 	if ( is_object( $db_coupon ) ) {
-		$digital_vouchers[] = strtoupper( $coupon_item->get_code() );
+		$voucher_codes[] = strtoupper( $coupon_item->get_code() );
+		$voucher_amount += $coupon_item->get_discount() + $coupon_item->get_discount_tax();
 	}
 }
-if ( count( $digital_vouchers ) > 0 ) {
+if ( count( $voucher_codes ) > 0 ) {
 	$percentage = ( $order->get_total() > 0 ) ? 'gedeeltelijk' : 'volledig';
-	echo '<p><b>Deze bestelling werd '.$percentage.' betaald met '.sprintf( _n( '%d digitale cadeaubon', '%d digitale cadeaubonnen', count( $digital_vouchers ) ), count( $digital_vouchers ) ).' ('.implode( ', ', $digital_vouchers ).').</b> De totale waarde zal volgende maand automatisch gecrediteerd worden aan de winkel die de bestelling behandelt. Contacteer de <a href="mailto:webshop@oft.be">Helpdesk E-Commerce</a> indien je door onvoorziene omstandigheden een (grote) terugbetaling dient uit te voeren op dit order.</p>';
+	echo '<p><b>Deze bestelling werd '.$percentage.' betaald met '.sprintf( _n( '%d digitale cadeaubon', '%d digitale cadeaubonnen', count( $voucher_codes ) ), count( $voucher_codes ) ).' ('.implode( ', ', $voucher_codes ).') t.w.v. '.wc_price( $voucher_amount ).'.</b> Dit bedrag zal volgende maand automatisch gecrediteerd worden aan de winkel die de bestelling behandelt. Contacteer de <a href="mailto:webshop@oft.be?subject=Terugbetaling digitale cadeaubon in '.$order->get_order_number().'">Helpdesk E-Commerce</a> indien je door onvoorziene omstandigheden een (grote) terugbetaling dient uit te voeren op dit order.</p>';
 }
 
 if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
