@@ -5258,6 +5258,31 @@
 			}
 		}
 	}
+
+	// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
+	add_filter( 'woocommerce_shipping_free_shipping_is_available', 'ignore_digital_vouchers_for_free_shipping', 10, 3 );
+
+	function ignore_digital_vouchers_for_free_shipping( $is_available, $package, $shipping_method ) {
+		$total = WC()->cart->get_displayed_subtotal();
+		write_log( "OLD TOTAL: ".$total );
+
+		$voucher_total = 0.0;
+		foreach ( WC()->cart->get_coupons() as $coupon ) {
+			if ( $coupon->get_virtual() ) {
+				$voucher_total = $coupon->get_discount_amount();
+			}
+		}
+
+		write_log( "VOUCHER AMOUNT: ".$voucher_total );
+		$total = $total - WC()->cart->get_discount_total() - WC()->cart->get_discount_tax() + $voucher_total;
+		write_log( "NEW TOTAL: ".$total );
+
+		if ( $total >= $shipping_method->min_amount ) {
+			return true;
+		}
+
+		return $is_available;
+	}
 	
 	// Definieer een globale B2B-levermethode zonder support voor verzendzones
 	add_filter( 'woocommerce_shipping_methods', 'add_b2b_home_delivery_method' );
