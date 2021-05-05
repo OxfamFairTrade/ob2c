@@ -39,11 +39,11 @@
 	}
 
 	// Creëer vouchers on-the-fly op basis van centrale MySQL-tabel
+	// Dit wordt bij elke wijziging aan het winkelmandje opnieuw doorlopen!
 	add_filter( 'woocommerce_get_shop_coupon_data', 'ob2c_load_digital_voucher_on_the_fly', 10, 3 );
 
 	function ob2c_load_digital_voucher_on_the_fly( $bool, $code, $wc_coupon_class ) {
 		$db_coupon = ob2c_is_valid_voucher_code( $code );
-		write_log("CREATE COUPON ON THE FLY");
 		
 		if ( $db_coupon === WC_COUPON::E_WC_COUPON_NOT_EXIST ) {
 			return false;
@@ -199,13 +199,7 @@
 	add_filter( 'woocommerce_get_order_item_totals', 'ob2c_add_voucher_subtotal', 10, 3 );
 
 	function ob2c_add_voucher_subtotal( $total_rows, $order, $tax_display ) {
-		$voucher_total = 0.0;
-		foreach ( $order->get_fees() as $fee_item ) {
-			if ( $fee_item->get_meta('voucher_amount') !== '' ) {
-				$voucher_total += floatval( $fee_item->get_meta('voucher_amount') );
-			}
-		}
-
+		$voucher_total = ob2c_get_total_voucher_amount( $order );
 		if ( $voucher_total > 0 ) {
 			$total_rows['vouchers'] = array( 'label' => __( 'waarvan betaald via digitale cadeaubon', 'oxfam-webshop' ), 'value' => wc_price( $voucher_total ) );
 		}
@@ -776,11 +770,13 @@
 				return false;
 			}
 
-			// WC()->cart->get_total('edit') geeft het totaal NA kortingen inclusief BTW als float MAAR bevat ook de verzendkosten!
+			// Vergelijk met het subtotaal NA kortingen m.u.v. digitale vouchers (inclusief BTW, exclusief verzendkosten)
+			// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
 			$totals = WC()->cart->get_totals();
-			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] < $coupon->get_minimum_amount() ) {
-				// Dit zorgt er ook voor dat de korting niet geactiveerd wordt bij betaling met digitale vouchers ...
-				return false;	
+			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() > $coupon->get_minimum_amount() ) {
+				return true;
+			} else {
+				return false;
 			}
 		}
 
@@ -3506,16 +3502,12 @@
 	add_action( 'woocommerce_checkout_process', 'ob2c_validate_order_total' );
 
 	function ob2c_validate_order_total() {
-		// Skip check indien er vouchers als betaalmiddel gebruikt werden
-		foreach ( WC()->cart->get_coupons() as $coupon ) {
-			if ( $coupon->get_virtual() ) {
-				return;
-			}
-		}
-
 		// Stel een bestelminimum in
 		$min = 10;
-		if ( floatval( WC()->cart->get_total('edit') ) < $min ) {
+		
+		// get_subtotal() = winkelmandje inclusief belastingen, exclusief kortingen en verzending
+		// get_total() = winkelmandje inclusief belastingen, kortingen en verzending
+		if ( WC()->cart->get_total('edit') + ob2c_get_total_voucher_amount() < $min ) {
 			wc_add_notice( sprintf( __( 'Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d).', 'oxfam-webshop' ), $min ), 'error' );
 		}
 	}
@@ -5221,17 +5213,6 @@
 		}
 	}
 
-	// Zet een maximum op het aantal items dat je kunt toevoegen CHECKT NIET OP REEDS AANWEZIGE ITEMS, NIET INTERESSANT
-	// add_action( 'woocommerce_add_to_cart_validation', 'maximum_item_quantity_validation' );
-
-	function maximum_item_quantity_validation( $passed, $product_id, $quantity, $variation_id, $variations ) {
-		if ( $quantity > 10 ) {
-			wc_add_notice( 'Je kunt maximum 10 exemplaren van een product toevoegen aan je winkelmandje.', 'error' );
-		} else {
-			return true;
-		}
-	}
-
 	// Moedig aan om producten toe te voegen om gratis thuislevering te activeren
 	add_action( 'woocommerce_before_cart', 'show_almost_free_shipping_notice' );
 
@@ -5241,7 +5222,7 @@
 			$threshold = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
 			// get_subtotal() = winkelmandje inclusief belastingen, exclusief kortingen en verzending
 			// get_total() = winkelmandje inclusief belastingen, kortingen en verzending
-			$current = WC()->cart->get_total('raw');
+			$current = WC()->cart->get_total('edit') + ob2c_get_total_voucher_amount();
 			if ( $current > ( 0.7 * $threshold ) ) {
 				if ( $current < $threshold ) {
 					// Probeer de boodschap slechts af en toe te tonen via sessiedata
@@ -5260,25 +5241,12 @@
 		}
 	}
 
-	// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes? WORDT BIJ ELKE STAP DOORLOPEN, PAS OP MET ZWARE LOGICA
+	// Wordt bij elke stap doorlopen, pas op met zware logica
+	// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
 	add_filter( 'woocommerce_shipping_free_shipping_is_available', 'ignore_digital_vouchers_for_free_shipping', 10, 3 );
 
 	function ignore_digital_vouchers_for_free_shipping( $is_available, $package, $shipping_method ) {
-		$total = WC()->cart->get_displayed_subtotal();
-		write_log( "OLD TOTAL: ".$total );
-
-		$voucher_total = 0.0;
-		foreach ( WC()->cart->get_coupons() as $coupon ) {
-			if ( $coupon->get_virtual() ) {
-				// Géén get_discount_amount() gebruiken, doet complexe berekening
-				$voucher_total += $coupon->get_amount();
-			}
-		}
-
-		write_log( "VOUCHER AMOUNT: ".$voucher_total );
-		$total = $total - WC()->cart->get_discount_total() - WC()->cart->get_discount_tax() + $voucher_total;
-		write_log( "NEW TOTAL: ".$total );
-
+		$total = WC()->cart->get_displayed_subtotal() - WC()->cart->get_discount_total() - WC()->cart->get_discount_tax() + ob2c_get_total_voucher_amount();
 		if ( $total >= $shipping_method->min_amount ) {
 			return true;
 		}
@@ -5286,26 +5254,28 @@
 		return $is_available;
 	}
 
-	add_filter( 'woocommerce_coupon_validate_minimum_amount', 'ignore_digital_vouchers_in_minimum_amount', 10, 3 );
+	function ob2c_get_total_voucher_amount( $order = false ) {
+		$voucher_total = 0.0;
 
-	function ignore_digital_vouchers_in_minimum_amount( $amount_not_reached, $coupon, $subtotal ) {
-		if ( $amount_not_reached ) {
-			$voucher_total = 0.0;
+		if ( $order instanceof WC_Order ) {
+			foreach ( $order->get_fees() as $fee_item ) {
+				if ( $fee_item->get_meta('voucher_amount') !== '' ) {
+					$voucher_total += floatval( $fee_item->get_meta('voucher_amount') );
+				}
+			}
+		} else {
 			foreach ( WC()->cart->get_coupons() as $coupon ) {
+				// We gaan ervan uit dat virtuele kortingsbonnen steeds vouchers zijn!
 				if ( $coupon->get_virtual() ) {
-					// Géén get_discount_amount() gebruiken, doet complexe berekening
+					// Géén get_discount_amount( $discouting_amount ) gebruiken, doet complexe berekening
 					$voucher_total += $coupon->get_amount();
 				}
 			}
-
-			if ( $coupon->get_minimum_amount() < $subtotal + $voucher_total ) {
-				return false;
-			}
 		}
 
-		return $amount_not_reached;
+		return $voucher_total;
 	}
-	
+
 	// Definieer een globale B2B-levermethode zonder support voor verzendzones
 	add_filter( 'woocommerce_shipping_methods', 'add_b2b_home_delivery_method' );
 	add_action( 'woocommerce_shipping_init', 'create_b2b_home_delivery_method' );
