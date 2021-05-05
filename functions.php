@@ -5271,7 +5271,7 @@
 		foreach ( WC()->cart->get_coupons() as $coupon ) {
 			if ( $coupon->get_virtual() ) {
 				// Géén get_discount_amount() gebruiken, doet complexe berekening
-				$voucher_total = $coupon->get_amount();
+				$voucher_total += $coupon->get_amount();
 			}
 		}
 
@@ -5284,6 +5284,26 @@
 		}
 
 		return $is_available;
+	}
+
+	add_filter( 'woocommerce_coupon_validate_minimum_amount', 'ignore_digital_vouchers_in_minimum_amount', 10, 3 );
+
+	function ignore_digital_vouchers_in_minimum_amount( $amount_not_reached, $coupon, $subtotal ) {
+		if ( $amount_not_reached ) {
+			$voucher_total = 0.0;
+			foreach ( WC()->cart->get_coupons() as $coupon ) {
+				if ( $coupon->get_virtual() ) {
+					// Géén get_discount_amount() gebruiken, doet complexe berekening
+					$voucher_total += $coupon->get_amount();
+				}
+			}
+
+			if ( $coupon->get_minimum_amount() < $subtotal + $voucher_total ) {
+				return false;
+			}
+		}
+
+		return $amount_not_reached;
 	}
 	
 	// Definieer een globale B2B-levermethode zonder support voor verzendzones
