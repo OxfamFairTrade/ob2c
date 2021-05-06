@@ -4778,13 +4778,13 @@
 
 	function ob2c_add_custom_email_css( $css, $email ) {
 		$css .= '
-			#wrapper { padding: 40px 0; }
+			#wrapper { padding: 40px 0 20px 0; }
 			#template_header_image { text-align: left; max-width: 600px; }
 			#template_header_image img { margin-bottom: 10px; max-width: 275px; }
 			#header_wrapper { padding: 36px 24px; }
 			.link { font-weight: inherit; }
 			#body_content table { border-collapse: collapse; border: none; }
-			#body_content table td { padding: 24px; }
+			#body_content table td { padding: 36px; }
 			#body_content table td th, #body_content table td td { padding: 8px; }
 			#body_content table td th { border-top-width: 0; }
 			#body_content table td td img { padding: 0; margin: 0; }
