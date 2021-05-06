@@ -32,19 +32,18 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 	<table class="td" cellspacing="0" cellpadding="3" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
 		<thead>
 			<tr>
-				<th class="td" width="65%" scope="col" style="text-align: center; border-left-width: 0;"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
+				<th class="td" width="65%" scope="col" colspan="2" style="text-align: center; border-left-width: 0;"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
 				<th class="td" width="15%" scope="col" style="text-align: center;"><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
 				<th class="td" width="20%" scope="col" style="text-align: center; border-right-width: 0;"><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php
-			// GEWIJZIGD: Fotootjes tonen aan klanten (op iets groter formaat)
 			echo wc_get_email_order_items( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				$order,
 				array(
-					'show_sku'      => $sent_to_admin,
-					'show_image'    => ! $sent_to_admin,
+					'show_sku'      => true,
+					'show_image'    => true,
 					'image_size'    => array( 48, 48 ),
 					'plain_text'    => $plain_text,
 					'sent_to_admin' => $sent_to_admin,
@@ -62,7 +61,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 					$i++;
 					?>
 					<tr>
-						<th class="td" scope="row" style="text-align: right; <?php echo ( count($totals) === $i ) ? 'border-bottom-width: 0;' : ''; ?> <?php echo ( 1 === $i ) ? 'border-top: 2px solid black;' : ''; ?>"><?php echo wp_kses_post( $total['label'] ); ?></th>
+						<th class="td" scope="row" colspan="2" style="text-align: right; <?php echo ( count($totals) === $i ) ? 'border-bottom-width: 0;' : ''; ?> <?php echo ( 1 === $i ) ? 'border-top: 2px solid black;' : ''; ?>"><?php echo wp_kses_post( $total['label'] ); ?></th>
 						<td class="td" colspan="2" style="text-align: right; padding-right: 0; <?php echo ( count($totals) === $i ) ? 'border-bottom-width: 0;' : ''; ?> <?php echo ( 1 === $i ) ? 'border-top: 2px solid black;' : ''; ?>"><?php echo wp_kses_post( $total['value'] ); ?></td>
 					</tr>
 					<?php
@@ -73,7 +72,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 			if ( $order->get_customer_note() ) {
 				?>
 				<tr>
-					<th class="td" scope="row" style="text-align: right;"><?php esc_html_e( 'Note:', 'woocommerce' ); ?></th>
+					<th class="td" scope="row" colspan="2" style="text-align: right;"><?php esc_html_e( 'Note:', 'woocommerce' ); ?></th>
 					<td class="td" colspan="2" style="text-align: right; padding-right: 0;"><?php echo wp_kses_post( nl2br( wptexturize( $order->get_customer_note() ) ) ); ?></td>
 				</tr>
 				<?php
