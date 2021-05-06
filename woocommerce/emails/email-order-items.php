@@ -3,7 +3,7 @@
  * Email Order Items
  *
  * @see     https://docs.woocommerce.com/document/template-structure/
- * @package WooCommerce\Templates\Emails
+ * @package WooCommerce/Templates/Emails
  * @version 3.7.0
  */
 
@@ -23,31 +23,27 @@ foreach ( $items as $item_id => $item ) :
 	}
 
 	if ( is_object( $product ) ) {
-		$sku           = $product->get_sku();
+		// Vermeld ShopPlus-referentie i.p.v. ompaknummer
+		$sku           = $product->get_meta('_shopplus_code');
 		$purchase_note = $product->get_purchase_note();
 		$image         = $product->get_image( $image_size );
 	}
 
 	?>
 	<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_order_item_class', 'order_item', $item, $order ) ); ?>">
-		<td class="td" style="text-align:<?php echo esc_attr( $text_align ); ?>; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; word-wrap:break-word;">
+		<!-- GEWIJZIGD: Expliciete breedte -->
+		<td class="td" width="65%" style="text-align: <?php echo esc_attr( $text_align ); ?>; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; word-wrap: break-word;">
 		<?php
 
 		if ( $show_image ) {
 			echo wp_kses_post( apply_filters( 'woocommerce_order_item_thumbnail', $image, $item ) );
 		}
 
-		// GEWIJZIGD: Voeg ondersteuning voor Frans toe (Test Aankoop)
-		if ( $order->get_meta('wpml_language') === 'fr' and in_array( $sku, array( '19066', '19073' ) ) ) {
-			$item_name = 'Chèque-cadeau 5 euros (valable jusqu\'au 31/12/2022)';
-		} else {
-			$item_name = $item->get_name();
-		}
-		echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', $item_name, $item, false ) );
+		echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', $item->get_name(), $item, false ) );
 
-		// GEWIJZIGD: Verwijder hastag en vermeld ShopPlus-referentie i.p.v. ompaknummer
-		if ( $show_sku and is_object( $product ) and $product->get_meta('_shopplus_code') !== '' ) {
-			echo wp_kses_post( ' (' . $product->get_meta('_shopplus_code') . ')' );
+		// GEWIJZIGD: Vermeld artikelnummer achteraan
+		if ( $show_sku && $sku ) {
+			echo wp_kses_post( ' (' . $sku . ')' );
 		}
 
 		do_action( 'woocommerce_order_item_meta_start', $item_id, $item, $order, $plain_text );
@@ -63,21 +59,30 @@ foreach ( $items as $item_id => $item ) :
 
 		?>
 		</td>
-		<td class="td" style="text-align:<?php echo esc_attr( $text_align ); ?>; vertical-align:middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
+		<!-- GEWIJZIGD: Expliciete breedte en aantallen centreren -->
+		<td class="td" width="15%" style="text-align: center; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
 			<?php
-			$qty          = $item->get_quantity();
+			$qty = $item->get_quantity();
 			$refunded_qty = $order->get_qty_refunded_for_item( $item_id );
 
 			if ( $refunded_qty ) {
-				$qty_display = '<del>' . esc_html( $qty ) . '</del> <ins>' . esc_html( $qty - ( $refunded_qty * -1 ) ) . '</ins>';
+				$qty_display = '<del>' . esc_html( $qty ) . '</del><br/><ins>' . esc_html( $qty - ( $refunded_qty * -1 ) ) . '</ins>';
 			} else {
 				$qty_display = esc_html( $qty );
 			}
 			echo wp_kses_post( apply_filters( 'woocommerce_email_order_item_quantity', $qty_display, $item ) );
 			?>
 		</td>
-		<td class="td" style="text-align:<?php echo esc_attr( $text_align ); ?>; vertical-align:middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
-			<?php echo wp_kses_post( $order->get_formatted_line_subtotal( $item ) ); ?>
+		<!-- GEWIJZIGD: Expliciete breedte en prijzen rechts uitlijnen -->
+		<td class="td" width="20%" style="text-align: right; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
+			<?php
+				// GEWIJZIGD: Refundbedrag tonen ZONDER taxlabels
+				if ( $refunded_qty ) {
+					echo '<del>' . wc_price( $order->get_line_subtotal( $item ) ) . '</del><br/><ins>' . wc_price( abs( $order->get_line_subtotal( $item ) - $order->get_total_refunded_for_item( $item_id ) ) ) . '</ins>';
+				} else {
+					echo wc_price( $order->get_line_subtotal( $item ) );
+				}
+			?>
 		</td>
 	</tr>
 	<?php
