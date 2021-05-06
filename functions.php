@@ -4780,7 +4780,7 @@
 		$css .= '
 			#wrapper { padding: 40px 0 20px 0; }
 			#template_header_image { text-align: left; max-width: 600px; }
-			#template_header_image img { margin-bottom: 10px; max-width: 275px; }
+			.logo { margin-left: 30px; margin-bottom: 10px; max-width: 250px; }
 			#header_wrapper { padding: 24px 36px; }
 			.link { font-weight: inherit; }
 			#body_content table { border-collapse: collapse; border: none; }
