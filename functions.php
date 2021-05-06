@@ -4772,6 +4772,28 @@
 		return $headers;
 	}
 
+	// Tweak lay-out van WooCommerce-
+	add_action( 'woocommerce_email_styles', 'ob2c_add_custom_email_css', 100, 2 );
+
+	function ob2c_add_custom_email_css( $css, $email ) {
+		$css .= '
+			#template_header_image { max-width: 600px; }
+			#template_header_image img { max-width: 275px; }
+			.link { font-weight: inherit; }
+			#body_content table { border-collapse: collapse; border: none; }
+			#body_content table td th, #body_content table td td { padding: 8px; }
+			#body_content table td th { border-top-width: 0; }
+			#body_content table td td img { padding: 0; margin: 0; }
+			.complete { color: green; }
+			.refunded { color: red; }
+			#body_content table td tfoot th { border-width: 0; border-right: 2px solid black; }
+			#body_content table td tfoot td { border-width: 0; border-left: 2px solid black; }
+			.address { padding: 0; border: 0; margin-right: 12px; }
+			blockquote { font-style: italic; }
+		';
+		return $css;
+	}
+
 	add_filter( 'woocommerce_mail_callback_params', 'divert_and_flag_all_mails_in_dev', 10, 2 );
 
 	function divert_and_flag_all_mails_in_dev( $params, $object ) {

@@ -3,7 +3,7 @@
  * Order details table shown in emails.
  *
  * @see https://docs.woocommerce.com/document/template-structure/
- * @package WooCommerce\Templates\Emails
+ * @package WooCommerce/Templates/Emails
  * @version 3.7.0
  */
 
@@ -29,23 +29,23 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 </h2>
 
 <div style="margin-bottom: 40px;">
-	<table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
+	<table class="td" cellspacing="0" cellpadding="3" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
 		<thead>
 			<tr>
-				<th class="td" scope="col" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
-				<th class="td" scope="col" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
-				<th class="td" scope="col" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
+				<th class="td" scope="col" width="65%" style="text-align: center; border-left-width: 0;"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
+				<th class="td" scope="col" width="12.5%" style="text-align: center;"><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
+				<th class="td" scope="col" width="22.5%" style="padding-right: 0; text-align: right; border-right-width: 0;"><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 			<?php
-			// GEWIJZIGD: Fotootjes tonen aan klanten (met iets grotere thumbnail)
+			// GEWIJZIGD: Fotootjes tonen aan klanten (op iets groter formaat)
 			echo wc_get_email_order_items( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				$order,
 				array(
 					'show_sku'      => $sent_to_admin,
 					'show_image'    => ! $sent_to_admin,
-					'image_size'    => array( 64, 64 ),
+					'image_size'    => array( 48, 48 ),
 					'plain_text'    => $plain_text,
 					'sent_to_admin' => $sent_to_admin,
 				)
@@ -60,20 +60,21 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 				$i = 0;
 				foreach ( $item_totals as $total ) {
 					$i++;
+					// GEWIJZIGD: Rechts uitlijnen en border-top aanpassen -->
 					?>
 					<tr>
-						<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr( $text_align ); ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo wp_kses_post( $total['label'] ); ?></th>
-						<td class="td" style="text-align:<?php echo esc_attr( $text_align ); ?>; <?php echo ( 1 === $i ) ? 'border-top-width: 4px;' : ''; ?>"><?php echo wp_kses_post( $total['value'] ); ?></td>
+						<th class="td" scope="row" style="text-align: right; <?php echo ( 1 === $i ) ? 'border-top: 2px solid black;' : ''; ?>"><?php echo wp_kses_post( $total['label'] ); ?></th>
+						<td class="td" colspan="2" style="text-align: right; <?php echo ( 1 === $i ) ? 'border-top: 2px solid black;' : ''; ?>"><?php echo wp_kses_post( $total['value'] ); ?></td>
 					</tr>
 					<?php
 				}
 			}
-			// GEWIJZIGD: Verwijderen want verhuisd naar klantinfo?
+			// Notities te verhuizen naar klantgegevens?
 			if ( $order->get_customer_note() ) {
 				?>
 				<tr>
-					<th class="td" scope="row" colspan="2" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php esc_html_e( 'Note:', 'woocommerce' ); ?></th>
-					<td class="td" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php echo wp_kses_post( nl2br( wptexturize( $order->get_customer_note() ) ) ); ?></td>
+					<th class="td" scope="row" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php esc_html_e( 'Note:', 'woocommerce' ); ?></th>
+					<td class="td" colspan="2" style="text-align:<?php echo esc_attr( $text_align ); ?>;"><?php echo wp_kses_post( nl2br( wptexturize( $order->get_customer_note() ) ) ); ?></td>
 				</tr>
 				<?php
 			}
