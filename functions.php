@@ -4781,7 +4781,7 @@
 			#wrapper { padding: 40px 0 20px 0; }
 			#template_header_image { text-align: left; max-width: 600px; }
 			#template_header_image img { margin-bottom: 10px; max-width: 275px; }
-			#header_wrapper { padding: 36px 24px; }
+			#header_wrapper { padding: 24px 36px; }
 			.link { font-weight: inherit; }
 			#body_content table { border-collapse: collapse; border: none; }
 			#body_content table td { padding: 36px; }
