@@ -5214,8 +5214,8 @@
 		}
 	}
 
-	// Moedig aan om producten toe te voegen om gratis thuislevering te activeren
-	add_action( 'woocommerce_before_cart', 'show_almost_free_shipping_notice' );
+	// Moedig aan om producten toe te voegen om gratis thuislevering te activeren VERSCHIL IS SOMS NIET UP TO DATE
+	// add_action( 'woocommerce_before_cart', 'show_almost_free_shipping_notice' );
 
 	function show_almost_free_shipping_notice() {
 		if ( is_cart() and ! is_b2b_customer() ) {
