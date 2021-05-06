@@ -32,9 +32,9 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 	<table class="td" cellspacing="0" cellpadding="3" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
 		<thead>
 			<tr>
-				<th class="td" scope="col" style="text-align: center;"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
-				<th class="td" scope="col" style="text-align: center; border-right-width: 0;"><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
-				<th class="td" scope="col" style="text-align: center; border-left-width: 0;"><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
+				<th class="td" width="65%" scope="col" style="padding-left: 0; text-align: left; border-left-width: 0;"><?php esc_html_e( 'Product', 'woocommerce' ); ?></th>
+				<th class="td" width="15%" scope="col" style="text-align: center;"><?php esc_html_e( 'Quantity', 'woocommerce' ); ?></th>
+				<th class="td" width="20%" scope="col" style="padding-right: 0; text-align: right; border-right-width: 0;"><?php esc_html_e( 'Price', 'woocommerce' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>

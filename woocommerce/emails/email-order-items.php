@@ -31,8 +31,7 @@ foreach ( $items as $item_id => $item ) :
 
 	?>
 	<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_order_item_class', 'order_item', $item, $order ) ); ?>">
-		<!-- GEWIJZIGD: Expliciete breedte -->
-		<td class="td" width="65%" style="text-align: <?php echo esc_attr( $text_align ); ?>; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; word-wrap: break-word;">
+		<td class="td" style="padding-left: 4px; border-left-width: 0; text-align: left; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; word-wrap: break-word;">
 		<?php
 
 		if ( $show_image ) {
@@ -59,8 +58,7 @@ foreach ( $items as $item_id => $item ) :
 
 		?>
 		</td>
-		<!-- GEWIJZIGD: Expliciete breedte en aantallen centreren -->
-		<td class="td" width="15%" style="text-align: center; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
+		<td class="td" style="text-align: center; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
 			<?php
 			$qty = $item->get_quantity();
 			$refunded_qty = $order->get_qty_refunded_for_item( $item_id );
@@ -73,8 +71,7 @@ foreach ( $items as $item_id => $item ) :
 			echo wp_kses_post( apply_filters( 'woocommerce_email_order_item_quantity', $qty_display, $item ) );
 			?>
 		</td>
-		<!-- GEWIJZIGD: Expliciete breedte en prijzen rechts uitlijnen -->
-		<td class="td" width="20%" style="text-align: right; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
+		<td class="td" style="text-align: right; border-right-width: 0; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
 			<?php
 				// GEWIJZIGD: Refundbedrag tonen ZONDER taxlabels
 				if ( $refunded_qty ) {
