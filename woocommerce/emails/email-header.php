@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
 				<tr>
 					<td align="center" valign="top">
-						<div id="template_header_image" style="text-align: left;">
+						<div id="template_header_image">
 							<?php
 								// GEWIJZIGD: Voeg lokaal logo met link naar homepage toe
 								if ( file_exists( get_stylesheet_directory() . '/images/logos/' . get_current_blog_id() .'.svg' ) ) {
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								} else {
 									$img = get_stylesheet_directory_uri() . '/images/logo-green.svg';
 								}
-								echo '<a href="' . esc_url( get_site_url() ) . '" style="margin-left: 40px;" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a>';
+								echo '<a href="' . esc_url( get_site_url() ) . '" style="margin-left: 40px; margin-bottom: 10px;" title="Naar de webshop" target="_blank"><img src="' . esc_url( $img ) . '" alt="' . get_bloginfo( 'name', 'display' ) . '" /></a>';
 							?>
 						</div>
 						<table border="0" cellpadding="0" cellspacing="0" width="600" id="template_container">

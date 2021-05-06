@@ -4777,7 +4777,8 @@
 
 	function ob2c_add_custom_email_css( $css, $email ) {
 		$css .= '
-			#template_header_image { max-width: 600px; }
+			#wrapper { padding: 40px 0; }
+			#template_header_image { text-align: left; max-width: 600px; }
 			#template_header_image img { max-width: 275px; }
 			.link { font-weight: inherit; }
 			#body_content table { border-collapse: collapse; border: none; }
