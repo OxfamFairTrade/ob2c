@@ -4779,7 +4779,7 @@
 		$css .= '
 			#wrapper { padding: 40px 0; }
 			#template_header_image { text-align: left; max-width: 600px; }
-			#template_header_image img { max-width: 275px; }
+			#template_header_image img { margin-bottom: 10px; max-width: 275px; }
 			.link { font-weight: inherit; }
 			#body_content table { border-collapse: collapse; border: none; }
 			#body_content table td th, #body_content table td td { padding: 8px; }
