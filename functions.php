@@ -773,7 +773,8 @@
 			// Vergelijk met het subtotaal NA kortingen m.u.v. digitale vouchers (inclusief BTW, exclusief verzendkosten)
 			// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
 			$totals = WC()->cart->get_totals();
-			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() > $coupon->get_minimum_amount() ) {
+			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() > $coupon->get_minimum_amount() and date('Y-m-d') < '2021-06-01' ) {
+				// Pas op met expliciet op true zetten: dit zal iedere keer een foutmelding genereren boven het winkelmandje als de coupon om een andere reden ongeldig is!
 				return true;
 			} else {
 				return false;
