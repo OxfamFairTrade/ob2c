@@ -63,7 +63,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 					?>
 					<tr>
 						<th class="td" scope="row" style="text-align: right; <?php echo ( count($totals) === $i ) ? 'border-bottom-width: 0;' : ''; ?> <?php echo ( 1 === $i ) ? 'border-top: 2px solid black;' : ''; ?>"><?php echo wp_kses_post( $total['label'] ); ?></th>
-						<td class="td" colspan="2" style="text-align: right; <?php echo ( count($totals) === $i ) ? 'border-bottom-width: 0;' : ''; ?> <?php echo ( 1 === $i ) ? 'border-top: 2px solid black;' : ''; ?>"><?php echo wp_kses_post( $total['value'] ); ?></td>
+						<td class="td" colspan="2" style="text-align: right; padding-right: 0; <?php echo ( count($totals) === $i ) ? 'border-bottom-width: 0;' : ''; ?> <?php echo ( 1 === $i ) ? 'border-top: 2px solid black;' : ''; ?>"><?php echo wp_kses_post( $total['value'] ); ?></td>
 					</tr>
 					<?php
 				}
@@ -74,7 +74,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 				?>
 				<tr>
 					<th class="td" scope="row" style="text-align: right;"><?php esc_html_e( 'Note:', 'woocommerce' ); ?></th>
-					<td class="td" colspan="2" style="text-align: right;"><?php echo wp_kses_post( nl2br( wptexturize( $order->get_customer_note() ) ) ); ?></td>
+					<td class="td" colspan="2" style="text-align: right; padding-right: 0;"><?php echo wp_kses_post( nl2br( wptexturize( $order->get_customer_note() ) ) ); ?></td>
 				</tr>
 				<?php
 			}
