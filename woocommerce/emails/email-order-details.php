@@ -44,7 +44,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 				array(
 					'show_sku'      => true,
 					'show_image'    => true,
-					'image_size'    => array( 48, 48 ),
+					'image_size'    => array( 60, 60 ),
 					'plain_text'    => $plain_text,
 					'sent_to_admin' => $sent_to_admin,
 				)
