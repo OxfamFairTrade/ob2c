@@ -184,11 +184,12 @@
 
 	function ob2c_list_voucher_payments( $order_id ) {
 		$order = wc_get_order( $order_id );
-		foreach ( $order->get_fees() as $fee_item ) {
+		$voucher_total = ob2c_get_total_voucher_amount( $order );
+		if ( $voucher_total > 0 ) {
 			?>
 			<tr>
 				<td>
-					<span class="description"><?php echo 'waarvan '.wc_price( $fee_item->get_meta('voucher_amount') ).' via digitale cadeaubon'; ?></span>
+					<span class="description"><?php echo 'waarvan '.wc_price( $voucher_total ).' via digitale cadeaubon'; ?></span>
 				</td>
 			</tr>
 			<?php
@@ -201,7 +202,7 @@
 	function ob2c_add_voucher_subtotal( $total_rows, $order, $tax_display ) {
 		$voucher_total = ob2c_get_total_voucher_amount( $order );
 		if ( $voucher_total > 0 ) {
-			$total_rows['vouchers'] = array( 'label' => __( 'waarvan betaald via digitale cadeaubon', 'oxfam-webshop' ), 'value' => wc_price( $voucher_total ) );
+			$total_rows['vouchers'] = array( 'label' => __( 'waarvan betaald via digitale cadeaubon:', 'oxfam-webshop' ), 'value' => wc_price( $voucher_total ) );
 		}
 		
 		return $total_rows;
