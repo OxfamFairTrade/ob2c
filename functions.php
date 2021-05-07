@@ -4552,7 +4552,7 @@
 			add_filter( 'woocommerce_countries_ex_tax_or_vat', 'remove_ex_tax_label_subtotals' );
 			
 			// Limiteer niet-B2B-kortingsbonnen tot particulieren
-			add_filter( 'wjecf_coupon_can_be_applied', 'restrain_coupons_to_b2c', 10, 2 );
+			add_filter( 'wjecf_coupon_can_be_applied', 'restrain_coupons_to_b2c', 1000, 2 );
 		}
 
 		function suggest_order_unit_multiple( $args, $product ) {
