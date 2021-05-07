@@ -31,7 +31,7 @@ foreach ( $items as $item_id => $item ) :
 
 	?>
 	<tr class="<?php echo esc_attr( apply_filters( 'woocommerce_order_item_class', 'order_item', $item, $order ) ); ?>">
-		<td class="td" style="text-align: center; width: 48px; padding: 4px 0; border-left-width: 0; border-right-width: 0; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; word-wrap: break-word;">
+		<td class="td" style="text-align: center; min-width: 48px; padding: 4px 0; border-left-width: 0; border-right-width: 0; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; word-wrap: break-word;">
 			<?php
 				if ( $show_image ) {
 					echo wp_kses_post( apply_filters( 'woocommerce_order_item_thumbnail', $image, $item ) );
