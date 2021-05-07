@@ -65,7 +65,7 @@ foreach ( $items as $item_id => $item ) :
 				$refunded_qty = $order->get_qty_refunded_for_item( $item_id );
 
 				if ( $refunded_qty ) {
-					$qty_display = '<del>' . esc_html( $qty ) . '</del><br/><ins>' . esc_html( $qty - ( $refunded_qty * -1 ) ) . '</ins>';
+					$qty_display = '<del class="refunded">' . esc_html( $qty ) . '</del><br/>' . esc_html( $qty - ( $refunded_qty * -1 ) );
 				} else {
 					$qty_display = esc_html( $qty );
 				}
@@ -74,9 +74,9 @@ foreach ( $items as $item_id => $item ) :
 		</td>
 		<td class="td" style="text-align: right; padding-right: 0; border-right-width: 0; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
 			<?php
-				// GEWIJZIGD: Refundbedrag tonen ZONDER taxlabels
+				// GEWIJZIGD: Refundbedrag tonen (zonder taxlabels)
 				if ( $refunded_qty ) {
-					echo '<del>' . wc_price( $order->get_line_subtotal( $item ) ) . '</del><br/><ins>' . wc_price( abs( $order->get_line_subtotal( $item ) - $order->get_total_refunded_for_item( $item_id ) ) ) . '</ins>';
+					echo '<del class="refunded">' . wc_price( $order->get_line_subtotal( $item ) ) . '</del><br/>' . wc_price( abs( $order->get_line_subtotal( $item ) - $order->get_total_refunded_for_item( $item_id ) ) );
 				} else {
 					echo wc_price( $order->get_line_subtotal( $item ) );
 				}

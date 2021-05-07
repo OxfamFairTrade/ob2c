@@ -42,7 +42,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 			echo wc_get_email_order_items( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				$order,
 				array(
-					'show_sku'      => true,
+					'show_sku'      => $sent_to_admin,
 					'show_image'    => true,
 					'image_size'    => array( 60, 60 ),
 					'plain_text'    => $plain_text,
