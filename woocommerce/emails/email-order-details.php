@@ -28,7 +28,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 	?>
 </h2>
 
-<div style="margin-bottom: 40px;">
+<div style="margin-bottom: 36px;">
 	<table class="td" cellspacing="0" cellpadding="3" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
 		<thead>
 			<tr>
@@ -44,7 +44,7 @@ do_action( 'woocommerce_email_before_order_table', $order, $sent_to_admin, $plai
 				array(
 					'show_sku'      => $sent_to_admin,
 					'show_image'    => true,
-					'image_size'    => array( 60, 60 ),
+					'image_size'    => array( 48, 48 ),
 					'plain_text'    => $plain_text,
 					'sent_to_admin' => $sent_to_admin,
 				)
