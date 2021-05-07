@@ -4773,7 +4773,7 @@
 		return $headers;
 	}
 
-	// Tweak lay-out van WooCommerce-
+	// Tweak lay-out van WooCommerce-mails
 	add_action( 'woocommerce_email_styles', 'ob2c_add_custom_email_css', 100, 2 );
 
 	function ob2c_add_custom_email_css( $css, $email ) {
