@@ -11,18 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Voeg ondersteuning voor Frans toe (Test Aankoop)
-if ( $order->get_meta('wpml_language') === 'fr' ) {
-	unload_textdomain('woocommerce');
-	unload_textdomain('oxfam-webshop');
-	load_textdomain( 'woocommerce', WP_CONTENT_DIR.'/languages/plugins/woocommerce-fr_FR.mo' );
-	load_textdomain( 'oxfam-webshop', WP_CONTENT_DIR.'/languages/themes/oxfam-webshop-fr_FR.mo' );
-	$email_heading = 'Merci pour votre commande';
-	$hi = 'Che.è.r.e';
-} else {
-	$hi = 'Dag';
-}
-
 /*
  * @hooked WC_Emails::email_header() Output the email header
  */
@@ -32,7 +20,7 @@ $logger = wc_get_logger();
 $context = array( 'source' => 'Oxfam Emails' );
 
 // Is altijd ingevuld, dus geen check doen
-echo '<p>'.$hi.' '.$order->get_billing_first_name().'</p>';
+echo '<p>Dag '.$order->get_billing_first_name().'</p>';
 
 if ( $order->has_shipping_method('local_pickup_plus') ) {
 	$shipping_methods = $order->get_shipping_methods();
@@ -58,6 +46,13 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	echo '<p>' . __( 'Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering).', 'oxfam-webshop' ) . '</p>';
 }
 
+/**
+ * Show user-defined additional content - this is set in each email's settings.
+ */
+if ( $additional_content ) {
+	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
+}
+
 // Eventueel array( 'id' => ... ) doorgeven als argument voor de juiste $pickup_location?
 echo '<p>'.sprintf( __( 'Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op %s en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.', 'oxfam-webshop' ), print_telephone() ).'</p>';
 
@@ -79,13 +74,6 @@ do_action( 'woocommerce_email_order_meta', $order, $sent_to_admin, $plain_text, 
  * @hooked WC_Emails::email_address() Shows email address
  */
 do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text, $email );
-
-/**
- * Show user-defined additional content - this is set in each email's settings.
- */
-if ( $additional_content ) {
-	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
-}
 
 /*
  * @hooked WC_Emails::email_footer() Output the email footer
