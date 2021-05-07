@@ -123,6 +123,8 @@
 						<?php
 					}
 
+					// Functie wc_get_product_ids_on_sale() lijkt geen rekening te houden met promoperiode???
+					// Zie https://github.com/woocommerce/woocommerce/blob/b19500728b4b292562afb65eb3a0c0f50d5859de/includes/data-stores/class-wc-product-data-store-cpt.php#L896
 					if ( count( wc_get_product_ids_on_sale() ) > 0 ) {
 						// Check of ze effectief op voorraad zijn
 						$args = array(

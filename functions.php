@@ -14,9 +14,6 @@
 	}
 
 	function ob2c_is_valid_voucher_code( $code, $ignore_ip_limit = false ) {
-		// O kan nooit voorkomen, automatisch vervangen door 0
-		$code = str_replace( 'O', '0', strtoupper( $code ) );
-		
 		// Vermijd dat we ook autocoupons checken en zo geldige gebruikers blacklisten!
 		if ( ob2c_is_plausible_voucher_code( $code ) ) {
 			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
