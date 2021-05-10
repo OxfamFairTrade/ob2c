@@ -75,10 +75,21 @@ foreach ( $items as $item_id => $item ) :
 		<td class="td" style="text-align: right; padding-right: 0; border-right-width: 0; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
 			<?php
 				// GEWIJZIGD: Refundbedrag tonen (zonder taxlabels)
+				$inc_tax = true;
 				if ( $refunded_qty ) {
-					echo '<del class="refunded">' . wc_price( $order->get_line_subtotal( $item ) ) . '</del><br/>' . wc_price( abs( $order->get_line_subtotal( $item ) - $order->get_total_refunded_for_item( $item_id ) ) );
+					echo '<del class="refunded">' . wp_kses_post( $order->get_formatted_line_subtotal( $item ) ) . '</del><br/>';
+					// Geen BTW-parameter beschikbaar in get_total_refunded_for_item()
+					$refunded = $order->get_total_refunded_for_item( $item_id );
+					if ( $inc_tax ) {
+						$order_taxes = $order->get_taxes();
+						// Functie vereist tax-ID dus loop over alle taxschalen in het order
+						foreach ( $order_taxes as $tax_item ) {
+							$refunded += $order->get_tax_refunded_for_item( $item_id, $tax_item->get_rate_id() );
+						}
+					}
+					echo wc_price( abs( $order->get_line_subtotal( $item, $inc_tax ) - $refunded ) );
 				} else {
-					echo wc_price( $order->get_line_subtotal( $item ) );
+					echo wp_kses_post( $order->get_formatted_line_subtotal( $item ) );
 				}
 			?>
 		</td>
