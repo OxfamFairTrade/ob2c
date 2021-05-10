@@ -5100,6 +5100,7 @@
 		$days = get_office_hours( NULL, $shop_post_id );
 		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
 		foreach ( get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) as $holiday ) {
+			// Argument 'N' want get_office_hours() werkt van 1 tot 7!
 			$weekday_number = date_i18n( 'N', strtotime( $holiday ) );
 			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
 			if ( $weekday_number < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
@@ -5117,9 +5118,9 @@
 	// Zoek het eerstvolgende openeningsuur op een dag (indien $afternoon: pas vanaf 12u)
 	function find_first_opening_hour( $hours, $from, $afternoon = true, $tried = 0 ) {
 		// Argument 'N' want get_office_hours() werkt van 1 tot 7!
-		$i = date_i18n( 'N', $from );
-		if ( $hours[$i] ) {
-			$day_part = $hours[$i][0];
+		$weekday_number = date_i18n( 'N', $from );
+		if ( $hours[ $weekday_number ] ) {
+			$day_part = $hours[ $weekday_number ][0];
 			$start = intval( substr( $day_part['start'], 0, -2 ) );
 			$end = intval( substr( $day_part['end'], 0, -2 ) );
 			if ( $afternoon ) {
@@ -5134,7 +5135,7 @@
 				} else {
 					unset( $day_part );
 					// Ga naar het tweede dagdeel (we gaan er van uit dat er nooit drie zijn!)
-					$day_part = $hours[$i][1];
+					$day_part = $hours[ $weekday_number ][1];
 					$start = intval( substr( $day_part['start'], 0, -2 ) );
 					$end = intval( substr( $day_part['end'], 0, -2 ) );
 					if ( $end > 12 ) {

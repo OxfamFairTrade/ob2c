@@ -64,7 +64,6 @@
   @media (max-width: 991px) {
     width: 710px;
     padding: 0;
-    max-width: calc(100% - 40px);
   }
 
   > div {
@@ -93,6 +92,7 @@
       span {
         position: relative;
         padding-left: 24px;
+        font-size: 0.9em;
 
         &:before {
           content: "";
