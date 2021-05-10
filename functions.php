@@ -4901,7 +4901,7 @@
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7)
 	function get_office_hours( $node = 0, $shop_post_id = 0 ) {
 		if ( $node !== 0 ) {
-			// write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
+			write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
 		}
 
 		if ( $shop_post_id === 0 ) {
@@ -4913,7 +4913,7 @@
 		} else {
 			for ( $day = 0; $day <= 6; $day++ ) {
 				// Forceer 'natuurlijke' nummering
-				$hours[$day+1] = get_office_hours_for_day( $day, $node, $shop_post_id );
+				$hours[ $day+1 ] = get_office_hours_for_day( $day, $node, $shop_post_id );
 			}
 		}
 
@@ -5095,15 +5095,19 @@
 		}
 		// In dit formaat zijn datum- en tekstsortering equivalent!
 		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
-		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
+		$last = date_i18n( 'Y-m-d', $first+12*60*60 );
 		
+		$days = get_office_hours( NULL, $shop_post_id );
 		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
 		foreach ( get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) as $holiday ) {
+			$weekday_number = date_i18n( 'N', strtotime( $holiday ) );
 			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
-			if ( date_i18n( 'N', strtotime($holiday) ) < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
-				// TO DO: Enkel werkdag bijtellen indien de winkel niet sowieso al gesloten is op deze weekdag?
-				$till = strtotime( '+1 weekday', $till );
-				$last = date_i18n( 'Y-m-d', $till+12*60*60 );
+			if ( $weekday_number < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
+				// @toCheck: Enkel werkdag bijtellen indien de winkel niet sowieso al gesloten is op deze weekdag
+				if ( $days[ $weekday_number ] ) {
+					$till = strtotime( '+1 weekday', $till );
+					$last = date_i18n( 'Y-m-d', $till+12*60*60 );
+				}
 			}
 		}
 		
