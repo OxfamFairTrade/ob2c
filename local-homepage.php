@@ -129,13 +129,6 @@
 							'stock_status' => 'instock',
 							'include' => wc_get_product_ids_on_sale(),
 						);
-						
-						// Extra filter want wc_get_product_ids_on_sale() lijkt geen rekening te houden met promoperiode!
-						// Zie https://github.com/woocommerce/woocommerce/blob/master/includes/data-stores/class-wc-product-data-store-cpt.php#L916
-						if ( is_main_site() ) {
-							$args['date_on_sale_from'] = '<='.date_i18n('Y-m-d');
-						}
-
 						$sale_products = wc_get_products( $args );
 						
 						if ( count( $sale_products ) > 0 ) {
@@ -150,7 +143,10 @@
 							</div>
 							<div class="col-row lh-promo">
 								<div class="col-xs-12">
-									<?php echo do_shortcode('[nm_product_slider shortcode="sale_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
+									<?php
+										// Shortcode lijkt geen rekening te houden met toekomstige promoperiodes?
+										echo do_shortcode('[nm_product_slider shortcode="sale_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]');
+									?>
 								</div>
 							</div>
 							<?php
