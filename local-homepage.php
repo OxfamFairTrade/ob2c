@@ -128,10 +128,14 @@
 						$args = array(
 							'stock_status' => 'instock',
 							'include' => wc_get_product_ids_on_sale(),
-							// Extra filter want wc_get_product_ids_on_sale() lijkt geen rekening te houden met promoperiode!
-							// Zie https://github.com/woocommerce/woocommerce/blob/master/includes/data-stores/class-wc-product-data-store-cpt.php#L916
-							'date_on_sale_from' => '<='.date_i18n('Y-m-d'),
 						);
+						
+						// Extra filter want wc_get_product_ids_on_sale() lijkt geen rekening te houden met promoperiode!
+						// Zie https://github.com/woocommerce/woocommerce/blob/master/includes/data-stores/class-wc-product-data-store-cpt.php#L916
+						if ( is_main_site() ) {
+							$args['date_on_sale_from'] = '<='.date_i18n('Y-m-d');
+						}
+
 						$sale_products = wc_get_products( $args );
 						
 						if ( count( $sale_products ) > 0 ) {
