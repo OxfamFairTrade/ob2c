@@ -5110,10 +5110,10 @@
 				// @toCheck: Enkel werkdag bijtellen indien de winkel niet sowieso al gesloten is op deze weekdag
 				if ( $days[ $weekday_number ] ) {
 					write_log( 'NORMALLY OPENED ON '.$holiday.', MOVE DATE' );
-					write_log( 'BEFORE: '.$till );
+					write_log( 'BEFORE: '.$last );
 					$till = strtotime( '+1 weekday', $till );
 					$last = date_i18n( 'Y-m-d', $till );
-					write_log( 'AFTER: '.$till );
+					write_log( 'AFTER: '.$last );
 				}
 			}
 		}
