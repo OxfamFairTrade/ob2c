@@ -4900,7 +4900,7 @@
 
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7)
 	function get_office_hours( $node = 0, $shop_post_id = 0 ) {
-		if ( $node !== 0 ) {
+		if ( intval( $node ) > 0 ) {
 			write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
 		}
 
@@ -4922,7 +4922,9 @@
 
 	// Stop de uitzonderlijke sluitingsdagen in een array
 	function get_closing_days( $shop_post_id = 0 ) {
-		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
+		if ( $shop_post_id === 0 ) {
+			$shop_post_id = get_option('oxfam_shop_post_id');
+		}
 		
 		if ( ! is_numeric( $shop_post_id ) ) {
 			// Retourneert ook false indien onbestaande
@@ -5095,11 +5097,13 @@
 		}
 		// In dit formaat zijn datum- en tekstsortering equivalent!
 		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
-		$last = date_i18n( 'Y-m-d', $first+12*60*60 );
+		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 		
 		$days = get_office_hours( NULL, $shop_post_id );
 		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
 		foreach ( get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) as $holiday ) {
+			write_log( $holiday );
+			write_log( $last );
 			// Argument 'N' want get_office_hours() werkt van 1 tot 7!
 			$weekday_number = date_i18n( 'N', strtotime( $holiday ) );
 			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
