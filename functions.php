@@ -5102,21 +5102,19 @@
 		$days = get_office_hours( NULL, $shop_post_id );
 		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
 		foreach ( get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) as $holiday ) {
-			write_log( $holiday );
-			write_log( 'BEFORE: '.$last );
-
 			// Argument 'N' want get_office_hours() werkt van 1 tot 7!
 			$weekday_number = date_i18n( 'N', strtotime( $holiday ) );
 			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
 			if ( $weekday_number < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				// @toCheck: Enkel werkdag bijtellen indien de winkel niet sowieso al gesloten is op deze weekdag
 				if ( $days[ $weekday_number ] ) {
+					write_log( 'NORMALLY OPENED ON '.$holiday.', MOVE DATE' );
+					write_log( 'BEFORE: '.$last );
 					$till = strtotime( '+1 weekday', $till );
 					$last = date_i18n( 'Y-m-d', $till+12*60*60 );
+					write_log( 'AFTER: '.$last );
 				}
 			}
-
-			write_log( 'AFTER: '.$last );
 		}
 		
 		return $till;
