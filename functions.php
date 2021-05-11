@@ -5103,7 +5103,8 @@
 		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
 		foreach ( get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) as $holiday ) {
 			write_log( $holiday );
-			write_log( $last );
+			write_log( 'BEFORE: '.$last );
+
 			// Argument 'N' want get_office_hours() werkt van 1 tot 7!
 			$weekday_number = date_i18n( 'N', strtotime( $holiday ) );
 			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
@@ -5114,6 +5115,8 @@
 					$last = date_i18n( 'Y-m-d', $till+12*60*60 );
 				}
 			}
+
+			write_log( 'AFTER: '.$last );
 		}
 		
 		return $till;
