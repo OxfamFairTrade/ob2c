@@ -5097,7 +5097,8 @@
 		}
 		// In dit formaat zijn datum- en tekstsortering equivalent!
 		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
-		$last = date_i18n( 'Y-m-d', $till+12*60*60 );
+		// INDIEN HET OPENINGSUUR VOOR AFHALING NA DE MIDDAG VALT, KAN +12*60*60 DE DAG OVER MIDDERNACHT DOEN SCHUIVEN => NIET DOEN
+		$last = date_i18n( 'Y-m-d', $till );
 		
 		$days = get_office_hours( NULL, $shop_post_id );
 		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
@@ -5111,7 +5112,7 @@
 					write_log( 'NORMALLY OPENED ON '.$holiday.', MOVE DATE' );
 					write_log( 'BEFORE: '.$till );
 					$till = strtotime( '+1 weekday', $till );
-					$last = date_i18n( 'Y-m-d', $till+12*60*60 );
+					$last = date_i18n( 'Y-m-d', $till );
 					write_log( 'AFTER: '.$till );
 				}
 			}
