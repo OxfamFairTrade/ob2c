@@ -5096,8 +5096,7 @@
 			$first = date_i18n( 'Y-m-d', $from );
 		}
 		// In dit formaat zijn datum- en tekstsortering equivalent!
-		// Tel er een halve dag bij om tijdzoneproblemen te vermijden
-		// INDIEN HET OPENINGSUUR VOOR AFHALING NA DE MIDDAG VALT, KAN +12*60*60 DE DAG OVER MIDDERNACHT DOEN SCHUIVEN => NIET DOEN
+		// Géén halve dag bijtellen, kan de dag over middernacht doen schuiven indien het openingsuur voor afhaling na de middag valt
 		$last = date_i18n( 'Y-m-d', $till );
 		
 		$days = get_office_hours( NULL, $shop_post_id );
@@ -5109,11 +5108,15 @@
 			if ( $weekday_number < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				// @toCheck: Enkel werkdag bijtellen indien de winkel niet sowieso al gesloten is op deze weekdag
 				if ( $days[ $weekday_number ] ) {
-					write_log( 'NORMALLY OPENED ON '.$holiday.', MOVE DATE' );
-					write_log( 'BEFORE: '.$last );
+					if ( current_user_can('update_core') ) {
+						write_log( 'NORMALLY OPENED ON '.$holiday.', MOVE DATE' );
+						write_log( 'BEFORE: '.$last );
+					}
 					$till = strtotime( '+1 weekday', $till );
 					$last = date_i18n( 'Y-m-d', $till );
-					write_log( 'AFTER: '.$last );
+					if ( current_user_can('update_core') ) {
+						write_log( 'AFTER: '.$last );
+					}
 				}
 			}
 		}
