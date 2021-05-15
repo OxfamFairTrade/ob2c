@@ -113,7 +113,7 @@
 			<div class="col-row">
 				<div class="col-md-10">
 					<div class="col-row">
-						<div class="col-md-3">
+						<div class="col-md-3 col-sm-6">
 							<div class="footer-menu">
 								<?php
 									// Dynamisch maken m.b.v. wp_remote_get() naar https://OXFAM_MAIN_SITE_DOMAIN/wp-json/menus/v1/menus/footer-menu-1
@@ -136,7 +136,7 @@
 								</ul>
 							</div>
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-3 col-sm-6">
 							<div class="footer-menu">
 								<h3>Meer over fair trade</h3>
 								<ul id="menu-footer-menu-2" class="menu">
@@ -148,7 +148,7 @@
 								</ul>
 							</div>
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-3 col-sm-6">
 							<div class="footer-menu">
 								<h3>Ik ben</h3>
 								<ul id="menu-footer-menu-3" class="menu">
@@ -160,7 +160,7 @@
 								</ul>
 							</div>
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-3 col-sm-6">
 							<div class="footer-menu">
 								<h3>Blijf op de hoogte</h3>
 								<ul id="menu-footer-menu-4" class="menu">
