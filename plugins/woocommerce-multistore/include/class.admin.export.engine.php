@@ -233,7 +233,7 @@ class WOO_MSTORE_EXPORT_ENGINE {
 				} else {
 					$value = 'no';
 				}
-			} elseif ( $field_name === 'productcategorie' ) {
+			} elseif ( $field_name === 'hoofdcategorie' ) {
 				// GEWIJZIGD: Haal een leesbare versie van de hoofdproductcategorie op
 				$value = '';
 				if ( $order_item_product instanceof WC_Product ) {
