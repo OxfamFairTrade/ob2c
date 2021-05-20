@@ -226,12 +226,31 @@ class WOO_MSTORE_EXPORT_ENGINE {
 					write_log( $order->get_order_number().": shipping method is lacking" );
 					$value = null;
 				}
-			} elseif ( $field_name === 'local_product' ) {
+			} elseif ( $field_name === 'is_lokaal_product' ) {
 				// GEWIJZIGD: Zoek op of het een lokaal product is
 				if ( $order_item_product instanceof WC_Product and ! is_national_product( $order_item_product ) ) {
 					$value = 'yes';
 				} else {
 					$value = 'no';
+				}
+			} elseif ( $field_name === 'productcategorie' ) {
+				// GEWIJZIGD: Haal een leesbare versie van de hoofdproductcategorie op
+				$value = '';
+				if ( $order_item_product instanceof WC_Product ) {
+					$categories = get_the_terms( $order_item_product->get_id(), 'product_cat' );
+					// $categories = $order_item_product->get_category_ids();
+					if ( is_array( $categories ) ) {
+						// We houden enkel rekening met de eerste categorie
+						$category = reset( $categories );
+						$main_category = $category;
+						
+						// Check de bovenliggende cateogrie(ën)
+						while ( ! empty( $main_category->parent ) ) {
+							$main_category = get_term( $main_category->parent, 'product_cat' );
+						}
+
+						$value = $main_category->name;
+					}
 				}
 			} elseif ( isset( ${ $class_name } ) && method_exists( ${$class_name}, $get_field_value_function_name ) ) {
 				$value = $this->maybe_jsonify( ${$class_name}->$get_field_value_function_name() );
