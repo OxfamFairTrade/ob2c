@@ -10,7 +10,7 @@
 	<form method="post" action="options.php">
 		<table class="form-table" id="oxfam-options">
 			<tr valign="top">
-				<th class='left'><a href='https://outlook.office.com/oww.be?login_hint=<?php echo get_webshop_email(); ?>' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>
+				<th class='left'><a href='https://outlook.office.com/oxfamwereldwinkels.be?login_hint=<?php echo get_webshop_email(); ?>' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>
 				<td class='right'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>
 			</tr>
 
