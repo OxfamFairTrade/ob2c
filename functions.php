@@ -7292,24 +7292,27 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
+			echo '<div class="notice notice-warning">';
+				echo '<p>Sinds de migratie van alle @oww.be en @oft.be mailboxen naar de Microsoft-account van Oxfam International in het weekend van 22-23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar je winkeladres <i>gemeente@oww.be</i> dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... account? Log dan in op de webshopmailbox en laat de forward rechtstreeks naar de uiteindelijke bestemmeling wijzen. Of beter: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
+			echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				echo '<div class="notice notice-success">';
-					echo '<p>7 \'Oxfam Pakt Uit\'-kaartjes en de 36 reeds geleverde aprilmagazineproducten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 48500, 48501, 48502, 48503, 48504, 48505, 49112, 41380, 65275, 65388, 65389, 65390, 65391, 66175, 66176, 66177, 66198, 66230, 66231, 66232, 66233, 66234, 66235, 66236, 66237, 66238, 66239, 68495, 68497, 68498, 68608, 68609, 68610, 68612, 68618, 68619, 68620, 68621, 68624, 68626, 68627, 68628, 87499 );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Het tweede deel aprilmagazineproducten wordt vanaf deze week uitgeleverd door Wondelgem en verschijnt vrijdag in de webshops.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>De resterende aprilmagazineproducten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 		$skus = array( 48500, 48501, 48502, 48503, 48504, 48505, 49112, 41380, 65275, 65388, 65389, 65390, 65391, 66175, 66176, 66177, 66198, 66230, 66231, 66232, 66233, 66234, 66235, 66236, 66237, 66238, 66239, 68495, 68497, 68498, 68608, 68609, 68610, 68612, 68618, 68619, 68620, 68621, 68624, 68626, 68627, 68628, 87499 );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku( $sku );
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+				// echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-mei-2021-update.html" target="_blank">promo\'s voor mei</a> zijn geactiveerd in alle webshops. De gratis clip JUSTE Tripel bij aankoop van minstens 50 euro (incl. kortingen, excl. verzendkosten) zal in juni automatisch gecrediteerd worden en dient <u>niet</u> geturfd te worden in de winkel. Opgelet: deze promotie wordt enkel automatisch geactiveerd indien je webshop JUSTE Tripel op voorraad heeft (in clips of als losse flesjes).';
 				echo '</div>';
