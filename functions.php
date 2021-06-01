@@ -6972,7 +6972,7 @@
 	}
 
 	// Check of de nieuwe plugin zijn werk goed doet
-	add_action( 'WOO_MSTORE_admin_product/slave_product_updated', 'do_something_after_local_product_was_saved_in_db', 10, 1 );
+	// add_action( 'WOO_MSTORE_admin_product/slave_product_updated', 'do_something_after_local_product_was_saved_in_db', 10, 1 );
 
 	function do_something_after_local_product_was_saved_in_db( $data ) {
 		write_log( "FINAL SAVE ".$data['master_product']->get_sku()." IN BLOG-ID ".get_current_blog_id() );
