@@ -107,22 +107,6 @@
 						<?php
 					}
 
-					// World Fair Trade Day 2021 UITGESCHAKELD
-					$juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') );
-					$juste_tripel_solo = wc_get_product( wc_get_product_id_by_sku('20810') );
-					
-					if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) or ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() === 'instock' ) and 1 === 2 ) {
-						?>
-						<div class="col-row lh-banner">
-							<div class="col-xs-12">
-								<?php
-									echo '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/promo-wftd-2021-juste-home.jpg' ).'" />';
-								?>
-							</div>
-						</div>
-						<?php
-					}
-
 					if ( count( wc_get_product_ids_on_sale() ) > 0 ) {
 						// Check of ze effectief op voorraad zijn
 						$args = array(
