@@ -6325,14 +6325,16 @@
 		$product = wc_get_product( $product_id );
 		if ( $product ) {
 			if ( $meta === 'stockstatus' ) {
-				// Beter checken op get_option('woocommerce_manage_stock')?
-				if ( is_main_site() ) {
+				// Na activeren van voorraadbeheer veralgemenen naar subsites?
+				if ( is_main_site() and get_option('woocommerce_manage_stock') ) {
 					// Omdat voorraadbeheer hier geactiveerd is, werkt de gewone set_stock_status() niet!
 					if ( $value === 'outofstock' ) {
 						$product->set_stock_quantity(0);
 						$product->set_backorders('no');
-						$message = 'Voorraadstatus vertaald en opgeslagen!';
+					} else {
+						$product->set_backorders('yes');
 					}
+					$message = 'Voorraadstatus vertaald en opgeslagen!';
 				} else {
 					$product->set_stock_status( $value );
 					$message = 'Voorraadstatus opgeslagen!';
