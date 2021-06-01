@@ -135,7 +135,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     </div>
 </li>
 
-<?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 ) : ?>
+<?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 and 1 === 2 ) : ?>
     <?php $juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') ); ?>
     <?php $juste_tripel_solo = wc_get_product( wc_get_product_id_by_sku('20810') ); ?>
     <?php if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) or ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() === 'instock' ) ) : ?>

@@ -92,10 +92,10 @@
 						<?php
 					}
 
-					// Beste van de Test UITGESCHAKELD
+					// Beste van de Test
 					$campesino = wc_get_product( wc_get_product_id_by_sku('20263') );
 					
-					if ( $campesino !== false and $campesino->get_stock_status() === 'instock' and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' and 1 === 2 ) {
+					if ( $campesino !== false and $campesino->get_stock_status() === 'instock' and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' ) {
 						?>
 						<div class="col-row lh-banner">
 							<div class="col-xs-12">
@@ -107,11 +107,11 @@
 						<?php
 					}
 
-					// World Fair Trade Day 2021
+					// World Fair Trade Day 2021 UITGESCHAKELD
 					$juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') );
 					$juste_tripel_solo = wc_get_product( wc_get_product_id_by_sku('20810') );
 					
-					if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) or ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() === 'instock' ) ) {
+					if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) or ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() === 'instock' ) and 1 === 2 ) {
 						?>
 						<div class="col-row lh-banner">
 							<div class="col-xs-12">
