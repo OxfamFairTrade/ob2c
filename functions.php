@@ -6325,10 +6325,20 @@
 		$product = wc_get_product( $product_id );
 		if ( $product ) {
 			if ( $meta === 'stockstatus' ) {
-				$product->set_stock_status( $value );
-				$message = 'Voorraadstatus opgeslagen!';
+				// Beter checken op get_option('woocommerce_manage_stock')?
+				if ( is_main_site() ) {
+					// Omdat voorraadbeheer hier geactiveerd is, werkt de gewone set_stock_status() niet!
+					if ( $value === 'outofstock' ) {
+						$product->set_stock_quantity(0);
+						$product->set_backorders('no');
+						$message = 'Voorraadstatus vertaald en opgeslagen!';
+					}
+				} else {
+					$product->set_stock_status( $value );
+					$message = 'Voorraadstatus opgeslagen!';
+				}
 			} elseif ( $meta === 'featured' ) {
-				$product->set_featured($value);
+				$product->set_featured( $value );
 				$message = 'Uitlichting opgeslagen!';
 			}
 			
