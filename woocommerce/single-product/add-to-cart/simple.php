@@ -17,19 +17,23 @@ if ( ! $product->is_purchasable() ) {
 
 if ( is_main_site() ) {
 	if ( strstr( $product->get_name(), 'Geschenkencheque' ) !== false ) {
-		return '<a href="https://www.oxfamwereldwinkels.be/cadeaubon-voor-eerlijke-producten/"><button type="button" class="button alt">Bestel online</button></a>';
+		echo '<a href="https://www.oxfamwereldwinkels.be/cadeaubon-voor-eerlijke-producten/"><button type="button" class="button alt" style="margin-top: 10px;">Bestel online</button></a>';
+		return;
 	} elseif ( strstr( $product->get_name(), 'Oxfam Pakt Uit' ) !== false ) {
-		return '<a href="https://shop.oxfampaktuit.be/nl/koop-een-cadeau/" target="_blank"><button type="button" class="button alt">Bestel online</button></a>';
+		echo '<a href="https://shop.oxfampaktuit.be/nl/koop-een-cadeau/" target="_blank"><button type="button" class="button alt" style="margin-top: 10px;">Bestel online</button></a>';
+		return;
 	} elseif ( $product->get_meta('_woonet_publish_to_23') === 'yes' ) {
 		if ( $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-2 weeks') ) ) {
 			//  Geef 2 weken buffer om lokale voorraad aan te leggen
-			return '<span class="soon-available">Weldra online beschikbaar</span>';
+			echo '<span class="soon-available">Weldra online beschikbaar</span>';
+			return;
 		} else {
 			// Toon de gebruikelijke button die in dit geval de store selector triggert
 		}
 	} else {
 		// Het product wordt niet online verkocht (o.b.v. aanwezigheid in webshop Oostende als test case)
-		return '<span class="unavailable">Niet online beschikbaar</span>';
+		echo '<span class="unavailable">Niet online beschikbaar</span>';
+		return;
 	}
 }
 
