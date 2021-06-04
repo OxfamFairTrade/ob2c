@@ -59,7 +59,7 @@
 						get_template_part( 'template-parts/woocommerce/single-product/featured-partner' );
 					} else {
 						if ( ! is_national_product( $product ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
-							// Toon de lange beschrijving bij lokale producten altijd (indien beschikbaar)
+							// Toon de lange beschrijving bij lokale producten en artisanaat altijd (indien beschikbaar)
 							?>
 							<div class="col-row">
 								<div class="col-md-12">

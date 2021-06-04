@@ -7308,6 +7308,7 @@
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
+					//  De resterende aprilmagazineproducten en de nieuwe Doppers volgen morgen.
 					echo '<p>Drie nieuwe voedingsproducten (ter vervanging van uitdovende producten) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 20699, 23696, 26017 );
 						foreach ( $skus as $sku ) {
@@ -7321,7 +7322,7 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De resterende aprilmagazineproducten en de nieuwe Doppers volgen morgen.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/k/n118/news/view/20167/12894/promo-s-online-winkel-juni-2021-update.html" target="_blank">promo\'s voor juni</a> zijn geactiveerd in alle webshops. De gratis clips JUSTE Tripel bij aankoop van minstens 50 euro (incl. kortingen, excl. verzendkosten) die tijdens de maand mei automatisch toegekend werden op online bestellingen zullen eind juni gecrediteerd worden en dienen <u>niet</u> doorgegeven te worden via de rollijst.</p>';

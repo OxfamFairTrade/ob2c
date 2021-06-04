@@ -24,10 +24,13 @@ if ( ! $short_description ) {
 ?>
 <div class="woocommerce-product-details__short-description entry-content">
 	<?php
-		// Toon bij wijnen ook altijd de lange (sommeliers)beschrijving
+		// Probleem: als het product een uitgelichte partner heeft (+ het géén wijn is) verschijnt de lange producttekst nergens meer ...
+		// Logica om $featured_partner te bepalen verhuizen naar content-single-product, zodat die info hier ook al beschikbaar is? 
+		echo $short_description;
+	
+		// Toon bij wijnen ook altijd de lange (sommeliers)beschrijving bovenaan
 		if ( stripos( get_permalink(), '/wijn/' ) > 0 ) {
 			the_content();
 		}
 	?>
-	<?php echo $short_description; // WPCS: XSS ok. ?>
 </div>

@@ -85,6 +85,7 @@
 					'fname': form.find("input[name='FNAME']").val(),
 					'email': form.find("input[name='EMAIL']").val(),
 					'list_id': form.find("input[name='LIST_ID']").val(),
+					'source': 'sitebanner',
 					'newsletter': newsletter
 				},
 				dataType: 'json',
