@@ -7380,50 +7380,53 @@
 		}
 	}
 
-	function get_number_of_times_voucher_was_used( $start_date = '2021-05-01', $end_date = '2021-05-31' ) {
-		global $wpdb;
-		$total_value = 0;
-		$distribution = array();
+	// function get_number_of_times_voucher_was_used( $start_date = '2021-05-01', $end_date = '2021-05-31' ) {
+	// 	global $wpdb;
+	// 	$total_value = 0;
+	// 	$distribution = array();
 
-		// Kolom 'sold' hergebruiken als 'credited' en filteren op lege datums?
-		$query = "SELECT * FROM {$wpdb->prefix}universal_coupons WHERE DATE(used) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
-		$rows = $wpdb->get_results( $query );
+	// 	// Kolom 'sold' hergebruiken als 'credited' en filteren op lege datums?
+	// 	$query = "SELECT * FROM {$wpdb->prefix}universal_coupons WHERE DATE(used) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
+	// 	$rows = $wpdb->get_results( $query );
 
-		foreach ( $rows as $key => $row ) {
-			switch_to_blog( $row->blog_id );
+	// 	foreach ( $rows as $key => $row ) {
+	// 		switch_to_blog( $row->blog_id );
 
-			$args = array(
-				'type' => 'shop_order',
-				'status' => array('wc-completed'),
-				'order_number' => $row->order,
-				'limit' => -1,
-			);
-			$orders = wc_get_orders( $args );
+	// 		$args = array(
+	// 			'type' => 'shop_order',
+	// 			'status' => array('wc-completed'),
+	// 			'order_number' => $row->order,
+	// 			'limit' => -1,
+	// 		);
+	// 		$orders = wc_get_orders( $args );
 			
-			if ( count( $orders ) === 1 ) {
-				$total_value += $row->value;
+	// 		if ( count( $orders ) === 1 ) {
+	// 			$order = reset( $orders );
+	// 			// 08899 indien 50 euro Gezinsbond
+	// 			// 08900 indien 25 euro Gezinsbond
+	// 			$total_value += $row->value;
 
-				if ( is_regional_webshop() ) {
-					if ( ! array_key_exists( $order->get_meta('claimed_by'), $distribution ) ) {
-						$distribution[ $order->get_meta('claimed_by') ] = $row->value;
-					} else {
-						$distribution[ $order->get_meta('claimed_by') ] += $row->value;
-					}
-				} else {
-					$distribution[ get_bloginfo('url') ] += $row->value;
-				}
-			} else {
-				echo 'Onverwacht aantal orders gevonden voor '.$row->order.'!';
-			}
+	// 			if ( is_regional_webshop() ) {
+	// 				if ( ! array_key_exists( $order->get_meta('claimed_by'), $distribution ) ) {
+	// 					$distribution[ $order->get_meta('claimed_by') ] = $row->value;
+	// 				} else {
+	// 					$distribution[ $order->get_meta('claimed_by') ] += $row->value;
+	// 				}
+	// 			} else {
+	// 				$distribution[ get_bloginfo('url') ] += $row->value;
+	// 			}
+	// 		} else {
+	// 			echo 'Onverwacht aantal orders gevonden voor '.$row->order.'!';
+	// 		}
 
-			restore_current_blog();
-		}
+	// 		restore_current_blog();
+	// 	}
 
-		echo wc_price( $total_value );
-		echo '<pre>';
-		print_r( $distribution );
-		echo '</pre>';
-	}
+	// 	echo wc_price( $total_value );
+	// 	echo '<pre>';
+	// 	print_r( $distribution );
+	// 	echo '</pre>';
+	// }
 
 	add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'wc_get_orders_handle_custom_query_var', 10, 2 );
 
