@@ -31,15 +31,12 @@
 		// Laad het collisjabloon en selecteer het eerste werkblad
 		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 		$spreadsheet = $reader->load( get_stylesheet_directory().'/voucher-export.xlsx' );
-		$spreadsheet->setActiveSheetIndex(0);
 		foreach ( $distribution as $credit_ref => $number_of_credits_per_shop ) {
-			// Voorlopig enkel 1ste werkblad opvullen
-			if ( $credit_ref === '08899' ) {
-				$i = 2;
-				foreach ( $number_of_credits_per_shop as $shop => $numbers_of_credits ) {
-					$spreadsheet->getActiveSheet()->setCellValue( 'A'.$i, $shop )->setCellValue( 'B'.$i, $numbers_of_credits );
-					$i++;
-				}
+			$i = 2;
+			$spreadsheet->setActiveSheetIndexByName( $credit_ref );
+			foreach ( $number_of_credits_per_shop as $shop => $numbers_of_credits ) {
+				$spreadsheet->getActiveSheet()->setCellValue( 'A'.$i, $shop )->setCellValue( 'B'.$i, $numbers_of_credits );
+				$i++;
 			}
 		}
 		$writer = new Xlsx( $spreadsheet );
