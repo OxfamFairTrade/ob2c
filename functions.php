@@ -6627,8 +6627,6 @@
 		global $wpdb;
 		$path = $_POST['path'];
 		$voucher_ids = explode( ',', $_POST['voucher_ids'] );
-		write_log("VOUCHERS TO DISABLE FOR CREDITING:");
-		write_log( print_r( $voucher_ids, true ) );
 		
 		if ( strpos( $path, 'latest' ) !== false ) {
 			$new_path = str_replace( 'latest', $_POST['start_date'].'-'.$_POST['end_date'].'-credit-list', $path );
@@ -6653,6 +6651,7 @@
 						'limit' => -1,
 					);
 					$orders = wc_get_orders( $args );
+					write_log( print_r( $orders, true ) );
 					if ( count( $orders ) === 1 ) {
 						write_log("ORDER GEVONDEN!");
 						$order = reset( $orders );
