@@ -147,9 +147,10 @@
 	<p>&nbsp;</p>
 
 	<?php
-		output_latest_exports( $start_date, $end_date, $voucher_ids );
+		output_latest_exports( $start_date, $end_dat );
 
-		function output_latest_exports( $start_date, $end_date, $voucher_ids ) {
+		function output_latest_exports( $start_date, $end_date ) {
+			global $voucher_ids;
 			$files = get_latest_exports();
 
 			foreach ( $files as $file ) {
