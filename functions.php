@@ -6210,8 +6210,8 @@
 		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', '<p>'.$body.'</p>' );
 	}
 
-	// Voeg een custom pagina toe onder de algemene opties
-	add_action( 'admin_menu', 'custom_oxfam_options' );
+	// Voeg pagina's toe voor voorraadbeheer en lokale instellingen
+	add_action( 'admin_menu', 'oxfam_register_custom_pages' );
 
 	function custom_oxfam_options() {
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
@@ -6229,20 +6229,26 @@
 		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
+		
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
 		if ( is_main_site() ) {
+			// Enkel tonen op hoofdniveau
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
 		}
-		if ( is_network_admin() ) {
-			add_submenu_page(
-				'woonet-woocommerce',
-				'Voucher Export',
-				'Voucher Export',
-				'create_sites',
-				'woonet-woocommerce-vouchers-export',
-				'oxfam_vouchers_callback'
-			);
-		}
+	}
+
+	// Voeg netwerkpagina's toe voor exports en rapporten
+	add_action( 'network_admin_menu', 'oxfam_register_custom_network_pages' );
+
+	function oxfam_register_custom_network_pages() {
+		add_submenu_page(
+			'woonet-woocommerce',
+			'Voucher Export',
+			'Voucher Export',
+			'create_sites',
+			'woonet-woocommerce-vouchers-export',
+			'oxfam_vouchers_callback'
+		);
 	}
 
 	function oxfam_photos_callback() {
