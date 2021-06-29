@@ -6640,25 +6640,28 @@
 				array( 'id' => $voucher_id )
 			);
 
-			// if ( $rows_updated === 1 ) {
+			if ( $rows_updated === 1 ) {
 				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE id = '".$voucher_id."';";
 				$results = $wpdb->get_results( $query );
 				foreach ( $results as $row ) {
-					write_log("ZOEK ".$row->order." ...");
+					switch_to_blog( $row->blog_id );
+					
 					$args = array(
 						'type' => 'shop_order',
 						'order_number' => $row->order,
 						'limit' => -1,
 					);
 					$orders = wc_get_orders( $args );
-					write_log( print_r( $orders, true ) );
+					
 					if ( count( $orders ) === 1 ) {
-						write_log("ORDER GEVONDEN!");
+						write_log("Crediteringsnota toegevoegd aan ".$order->get_order_number()."!");
 						$order = reset( $orders );
 						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', strtotime('first day of next month') ).' gecrediteerd worden door het NS.', 0, false );
 					}
+
+					restore_current_blog();
 				}
-			// }
+			}
 		}
 
 		if ( isset( $new_path ) and rename( $path, $new_path ) ) {

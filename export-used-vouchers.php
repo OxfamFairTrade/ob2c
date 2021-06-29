@@ -69,8 +69,8 @@
 			$repartition = array();
 			$warnings = array();
 
-			// Filteren op lege 'credited'-datums? AND DATE(credited) < "'.$end_date.'"
-			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE issuer = '".$issuer."' AND value = ".$value." AND DATE(used) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
+			// Vereis een lege 'credited'-datum zodat we verhinderen dat vouchers twee keer in een opgeslagen export kunnen opduiken 
+			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE issuer = '".$issuer."' AND value = ".$value." AND DATE(used) BETWEEN '" . $start_date . "' AND '" . $end_date . "' AND DATE(credited) < '2001-01-01';";
 			$rows = $wpdb->get_results( $query );
 
 			foreach ( $rows as $key => $row ) {
@@ -199,7 +199,7 @@
 		function ends_with( $haystack, $needle ) {
 			return $needle === '' or ( ( $temp = strlen( $haystack ) - strlen( $needle ) ) >= 0 and strpos( $haystack, $needle, $temp ) !== false );
 		}
-		
+
 		function sort_by_time( $a, $b ) {
 			return $a['timestamp'] - $b['timestamp'];
 		}
