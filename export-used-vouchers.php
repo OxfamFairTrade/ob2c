@@ -22,25 +22,34 @@
 		$end_date = date_i18n( 'Y-m-d', strtotime('last day of previous month') );
 		echo 'Startdatum: '.$start_date.'<br/>';
 		echo 'Einddatum: '.$end_date.'<br/>';
+		
+		// Haal data van voorbije maand op
 		$distribution = get_credit_report_used_vouchers( $start_date, $end_date );
 
+		// Toon resultaat op scherm
 		echo '<pre>';
 		print_r( $distribution );
 		echo '</pre>';
 
-		// Laad het collisjabloon en selecteer het eerste werkblad
-		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-		$spreadsheet = $reader->load( get_stylesheet_directory().'/voucher-export.xlsx' );
-		foreach ( $distribution as $credit_ref => $number_of_credits_per_shop ) {
-			$i = 2;
-			$spreadsheet->setActiveSheetIndexByName( $credit_ref );
-			foreach ( $number_of_credits_per_shop as $shop => $numbers_of_credits ) {
-				$spreadsheet->getActiveSheet()->setCellValue( 'A'.$i, $shop )->setCellValue( 'B'.$i, $numbers_of_credits );
-				$i++;
+		// Schrijf resultaat weg naar Excel
+		export_to_excel( $distribution );
+
+		function export_to_excel( $distribution ) {
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$spreadsheet = $reader->load( get_stylesheet_directory().'/voucher-export.xlsx' );
+			foreach ( $distribution as $credit_ref => $number_of_credits_per_shop ) {
+				$i = 2;
+				$spreadsheet->setActiveSheetIndexByName( $credit_ref );
+				foreach ( $number_of_credits_per_shop as $shop => $numbers_of_credits ) {
+					$spreadsheet->getActiveSheet()->setCellValue( 'A'.$i, $shop )->setCellValue( 'B'.$i, $numbers_of_credits );
+					$i++;
+				}
 			}
+			$writer = new Xlsx( $spreadsheet );
+			// $writer->save( ABSPATH . '/../'.str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-vouchers-to-credit.xlsx' );
+			$writer->save( WP_CONTENT_DIR . '/latest.xlsx' );
 		}
-		$writer = new Xlsx( $spreadsheet );
-		$writer->save( ABSPATH . '/../'.str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-vouchers-to-credit.xlsx' );
+	
 
 		function get_credit_report_used_vouchers( $start_date = '2021-05-01', $end_date = '2021-05-31' ) {
 			$distribution = array();
@@ -120,7 +129,8 @@
 			}
 
 			echo 'Total amount of '.$value.' euro vouchers to be credited for '.$issuer.' from '.$start_date.' till '.$end_date.': '.wc_price( $total_value ).'<br/>';
-			return $repartition;
+			// Sorteer alfabetisch op naam van de winkel
+			return ksort( $repartition );
 		}
 	?>
 
@@ -136,10 +146,12 @@
 				$title = str_replace( '-', ' ', $file['name'] );
 				$extras = '';
 				
-				$id = 'no';
-				$title = 'Openstaande collilijst';
-				$extras = ' <button id="no" class="button close-list" disabled>Bevestig download</button>';
+				if ( $file['name'] === 'latest.xlsx' ) {
+					$id = 'no';
+					$extras = ' <button id="no" class="button close-list" disabled>Bevestig download</button>';
+				}
 
+				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
 				echo '<a href="'.content_url( '/'.$file['name'] ).'" download><button id="'.$id.'" class="button download-excel">'.$title.'</button></a>'.$extras;
 				echo '<br/><br/>';
 			}
@@ -148,7 +160,8 @@
 		function get_latest_exports( $max = 10 ) {
 			$exports = array();
 
-			$local_path = ABSPATH . '/../';
+			// $local_path = ABSPATH . '/../';
+			$local_path = WP_CONTENT_DIR . '/';
 			if ( $handle = opendir( $local_path ) ) {
 				// Loop door alle files in de map
 				while ( false !== ( $file = readdir( $handle ) ) ) {
@@ -167,7 +180,7 @@
 				closedir( $handle );
 			}
 			
-			// Orden chronologisch met laatste bovenaan
+			// Orden chronologisch
 			if ( count( $exports ) > 1 ) {
 				usort( $exports, 'sort_by_time' );
 			}
@@ -181,6 +194,5 @@
 		}
 	?>
 
-	<button class="run" style="float: right; margin-right: 20px; width: 300px;" disabled>Registreer nieuwe / gewijzigde foto's</button>
 	<div class="output"></div>
 </div>
