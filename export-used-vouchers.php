@@ -109,9 +109,9 @@
 						}
 						$warning = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat een terugbetaling t.w.v. '.wc_price( $refund_amount );
 						if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
-							$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: red">dit mag in principe niet</span>';
+							$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: red">dit mag in principe niet!</span>';
 						} else {
-							$warning .= ' die kleiner is dan het restbedrag dat niet met vouchers betaald werd, geen probleem';
+							$warning .= ' die kleiner is dan het restbedrag dat niet met vouchers betaald werd';
 						}
 						$warnings[ $row->order ] = $warning;
 					}
@@ -161,7 +161,7 @@
 				if ( $file['name'] === 'latest.xlsx' ) {
 					$id = 'latest';
 					$title = 'Huidige export';
-					$extras = ' <button id="'.$id.'" data-vouchers-ids="'.implode( ',', $voucher_ids ).'" data-start-date="'.str_replace( '-', '', $start_date ).'" data-end-date="'.str_replace( '-', '', $end_date ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
+					$extras = ' <button id="'.$id.'" data-voucher-ids="'.implode( ',', $voucher_ids ).'" data-start-date="'.str_replace( '-', '', $start_date ).'" data-end-date="'.str_replace( '-', '', $end_date ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
 				}
 
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
