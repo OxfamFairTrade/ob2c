@@ -215,7 +215,10 @@
 						
 					jQuery(".confirm-export").on( "click", function() {
 						var button = jQuery(this);
-						var go = confirm("Ben je zeker dat deze lijst wil afsluiten? De vouchers worden als terugbetaald gemarkeerd in de database en zullen niet meer opduiken in volgende exports! Bij de bestellingen waarop de vouchers ingeruild werden zal een nota toegevoegd worden dat de cadeaubon op <?php echo date_i18n( 'd/m/Y', strtotime('first day of next month') ); ?> gecrediteerd wordt.");
+						var startDate = button.data('start-date');
+						var endDate = button.data('end-date');
+						var voucherIds = button.data('voucher-ids');
+						var go = confirm("Ben je zeker dat deze lijst van "+startDate+" tot "+endDate+" wil afsluiten? De vouchers worden als terugbetaald gemarkeerd in de database en zullen niet meer opduiken in volgende exports! Bij de bestellingen waarop de vouchers ingeruild werden zal een nota toegevoegd worden dat de cadeaubon op <?php echo date_i18n( 'd/m/Y', strtotime('first day of next month') ); ?> gecrediteerd wordt.");
 						if ( go == true ) {
 							button.prop( "disabled", true );
 							button.text("Laden ...");
