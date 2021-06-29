@@ -40,7 +40,7 @@
 			}
 		}
 		$writer = new Xlsx( $spreadsheet );
-		$writer->save( WP_CONTENT_DIR.'/'.str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-vouchers-to-credit.xlsx' );
+		$writer->save( ABSPATH . '/../'.str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-vouchers-to-credit.xlsx' );
 
 		function get_credit_report_used_vouchers( $start_date = '2021-05-01', $end_date = '2021-05-31' ) {
 			$distribution = array();
@@ -124,10 +124,63 @@
 		}
 	?>
 
-	<div class="output"></div>
-
 	<p>&nbsp;</p>
 
+	<?php
+		output_shipping_list_buttons();
+
+		function output_shipping_list_buttons() {
+			$files = get_latest_shipping_lists();
+			foreach ( $files as $file ) {
+				$id = '';
+				$title = str_replace( '-', ' ', $file['name'] );
+				$extras = '';
+				
+				$id = 'no';
+				$title = 'Openstaande collilijst';
+				$extras = ' <button id="no" class="button close-list" disabled>Bevestig download</button>';
+
+				echo '<a href="'.content_url( '/'.$file['name'] ).'" download><button id="'.$id.'" class="button download-excel">'.$title.'</button></a>'.$extras;
+				echo '<br/><br/>';
+			}
+		}
+
+		function get_latest_exports( $max = 10 ) {
+			$exports = array();
+
+			$local_path = ABSPATH . '/../';
+			if ( $handle = opendir( $local_path ) ) {
+				// Loop door alle files in de map
+				while ( false !== ( $file = readdir( $handle ) ) ) {
+					$filepath = $local_path . $file;
+					// Beschouw enkel XLSX-bestanden
+					if ( ends_with( $file, '.xlsx' ) ) {
+						// Zet naam, timestamp, datum en pad van de upload in de array
+						$exports[] = array(
+							'name' => basename( $filepath ),
+							'timestamp' => filemtime( $filepath ),
+							'date' => get_date_from_gmt( date( 'Y-m-d H:i', filemtime( $filepath ) ), 'd/m/Y H:i' ),
+							'path' => $filepath,
+						);
+					}
+				}
+				closedir( $handle );
+			}
+			
+			// Orden chronologisch met laatste bovenaan
+			if ( count( $exports ) > 1 ) {
+				usort( $exports, 'sort_by_time' );
+			}
+
+			// Zet recentste bestanden bovenaan en geef enkel de eerste X weer
+			return array_slice( array_reverse( $exports ), 0, $max );
+		}
+
+		function ends_with( $haystack, $needle ) {
+			return $needle === '' or ( ( $temp = strlen( $haystack ) - strlen( $needle ) ) >= 0 and strpos( $haystack, $needle, $temp ) !== false );
+		}
+	?>
+
 	<button class="run" style="float: right; margin-right: 20px; width: 300px;" disabled>Registreer nieuwe / gewijzigde foto's</button>
-	<div class="input"></div>
+	<div class="output"></div>
 </div>
