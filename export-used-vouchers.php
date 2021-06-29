@@ -147,7 +147,7 @@
 	<p>&nbsp;</p>
 
 	<?php
-		output_latest_exports( $start_date, $end_dat );
+		output_latest_exports( $start_date, $end_date );
 
 		function output_latest_exports( $start_date, $end_date ) {
 			global $voucher_ids;
@@ -155,7 +155,7 @@
 
 			foreach ( $files as $file ) {
 				$id = '';
-				$title = str_replace( '-', ' ', $file['name'] );
+				$title = ucwords( str_replace( '-', ' ', $file['name'] ) );
 				$extras = '';
 				
 				if ( $file['name'] === 'latest.xlsx' ) {
@@ -166,7 +166,6 @@
 
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
 				echo '<a href="'.content_url( '/'.$file['name'] ).'" download><button id="'.$id.'" class="button download-excel">'.$title.'</button></a>'.$extras;
-				echo '<br/><br/>';
 			}
 		}
 
