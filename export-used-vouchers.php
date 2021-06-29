@@ -130,7 +130,7 @@
 		output_shipping_list_buttons();
 
 		function output_shipping_list_buttons() {
-			$files = get_latest_shipping_lists();
+			$files = get_latest_exports();
 			foreach ( $files as $file ) {
 				$id = '';
 				$title = str_replace( '-', ' ', $file['name'] );
