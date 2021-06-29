@@ -6656,12 +6656,11 @@
 		$path = $_POST['path'];
 		$start_date = $_POST['start_date'];
 		$end_date = $_POST['end_date'];
-		$voucher_ids = $_POST['voucher_ids'];
+		$voucher_ids = explode( ',', $_POST['voucher_ids'] );
+		write_log( print_r( $voucher_ids, true ) );
 
-		$timestamp = strtotime('+1 weekday');
-		
 		if ( strpos( $path, 'latest' ) !== false ) {
-			$new_path = str_replace( 'latest', str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-vouchers-to-credit', $path );
+			$new_path = str_replace( 'latest', str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-credit-list', $path );
 		}
 		
 		// Markeer geëxporteerde vouchers als gecrediteerd in de database

@@ -105,7 +105,7 @@
 					if ( count( $refunds ) > 0 ) {
 						$refund_amount = 0.0;
 						foreach ( $refunds as $refund ) {
-							$refund_amount += $refund->get_refund_amount();
+							$refund_amount += $refund->get_amount();
 						}
 						$warning = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat een terugbetaling t.w.v. '.wc_price( $refund_amount );
 						if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
@@ -152,7 +152,7 @@
 		function output_latest_exports() {
 			global $voucher_ids;
 			$files = get_latest_exports();
-			
+
 			foreach ( $files as $file ) {
 				$id = '';
 				$title = str_replace( '-', ' ', $file['name'] );
@@ -208,6 +208,7 @@
 		add_action( 'admin_footer', 'close_voucher_export' );
 
 		function close_voucher_export() {
+			global $start_date, $end_date;
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready(function() {
@@ -228,14 +229,12 @@
 					var max = 5;
 
 					function closeCurrentList(button) {
-						var path = "<?php echo WP_CONTENT_DIR . '/exports/latest.xlsx'; ?>"; 
-						
 						jQuery.ajax({
 							type: 'POST',
 							url: ajaxurl,
 							data: {
 								'action': 'oxfam_close_voucher_export_action',
-								'path': path,
+								'path': '<?php echo WP_CONTENT_DIR . '/exports/latest.xlsx'; ?>',
 								'start_date': '<?php echo $start_date; ?>',
 								'end_date': '<?php echo $end_date; ?>',
 								'voucher_ids': button.data('voucher-ids'),
