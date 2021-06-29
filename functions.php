@@ -6646,15 +6646,16 @@
 				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE id = '".$voucher_id."';";
 				$results = $wpdb->get_results( $query );
 				foreach ( $results as $row ) {
+					write_log("ZOEK ".$row->order." ...");
 					$args = array(
 						'type' => 'shop_order',
 						'order_number' => $row->order,
 						'limit' => -1,
 					);
 					$orders = wc_get_orders( $args );
-					$order = reset( $orders );
-					if ( $order !== false ) {
+					if ( count( $orders ) === 1 ) {
 						write_log("ORDER GEVONDEN!");
+						$order = reset( $orders );
 						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', strtotime('first day of next month') ).' gecrediteerd worden door het NS.', 0, false );
 					}
 				}
