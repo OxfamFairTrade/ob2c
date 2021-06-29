@@ -6328,6 +6328,7 @@
 	add_action( 'wp_ajax_oxfam_bulk_stock_action', 'oxfam_bulk_stock_action_callback' );
 	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
 	add_action( 'wp_ajax_oxfam_invitation_action', 'oxfam_invitation_action_callback' );
+	add_action( 'wp_ajax_oxfam_close_voucher_export_action', 'oxfam_close_voucher_export_action_callback' );
 
 	function oxfam_stock_action_callback() {
 		echo ob2c_save_local_product_details( $_POST['id'], $_POST['meta'], $_POST['value'] );
@@ -6649,6 +6650,53 @@
 		do_action( 'woocommerce_reset_password_notification', $user->user_login, $key );
 
 		return true;
+	}
+
+	function oxfam_close_voucher_export_action_callback() {
+		$path = $_POST['path'];
+		$start_date = $_POST['start_date'];
+		$end_date = $_POST['end_date'];
+		$voucher_ids = $_POST['voucher_ids'];
+
+		$timestamp = strtotime('+1 weekday');
+		
+		if ( strpos( $path, 'latest' ) !== false ) {
+			$new_path = str_replace( 'latest', str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-vouchers-to-credit', $path );
+		}
+		
+		// Markeer geëxporteerde vouchers als gecrediteerd in de database
+		foreach ( $voucher_ids as $voucher_id ) {
+			$rows_updated = $wpdb->update(
+				$wpdb->base_prefix.'universal_coupons',
+				array( 'sold' => date_i18n( 'Y-m-d H:i:s', strtotime('first day of next month') ) ),
+				array( 'id' => $voucher_id )
+			);
+
+			if ( $rows_updated > 0 ) {
+				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE id = '".$voucher_id."';";
+				$results = $wpdb->get_results( $query );
+				foreach ( $results as $row ) {
+					$args = array(
+						'type' => 'shop_order',
+						'order_number' => $row->order,
+						'limit' => -1,
+					);
+					$orders = wc_get_orders( $args );
+					$order = reset( $orders );
+					if ( $order !== false ) {
+						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', strtotime('first day of next month') ).' gecrediteerd worden door het NS.', 0, false );
+					}
+				}
+			}
+		}
+
+		if ( isset( $new_path ) and rename( $path, $new_path ) ) {
+			// Enkel verder gaan als het hernoemen van de Excel lukte
+			$parts = explode( '/wp-content', $new_path );
+			echo content_url( $parts[1] );
+		}
+
+		wp_die();
 	}
 
 	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan

@@ -14,13 +14,13 @@
 	<ol>
 		<li>Vorige exports opslaan</li>
 		<li>Creditering registeren bij het bevestigen van de Excel (= vermijd dat vouchers dubbel gecrediteerd worden)</li>
-		<li>Enkel waarschuwing tonen indien de terugbetaling groter was dan het restbedrag dat niet via vouchers betaald werd</li>
 	</ol>
 
 	<?php
 		$start_date = date_i18n( 'Y-m-d', strtotime('first day of previous month') );
 		$end_date = date_i18n( 'Y-m-d', strtotime('last day of previous month') );
 		echo '<p><b>Startdatum</b>: '.$start_date.'<br/><b>Einddatum</b>: '.$end_date.'</p>';
+		$voucher_ids = array();
 		
 		// Haal data van voorbije maand op
 		$distribution = get_credit_report_used_vouchers( $start_date, $end_date );
@@ -45,10 +45,8 @@
 				}
 			}
 			$writer = new Xlsx( $spreadsheet );
-			// $writer->save( ABSPATH . '/../'.str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-vouchers-to-credit.xlsx' );
-			$writer->save( WP_CONTENT_DIR . '/latest.xlsx' );
+			$writer->save( WP_CONTENT_DIR . '/exports/latest.xlsx' );
 		}
-	
 
 		function get_credit_report_used_vouchers( $start_date = '2021-05-01', $end_date = '2021-05-31' ) {
 			$distribution = array();
@@ -72,7 +70,7 @@
 		}
 
 		function get_number_of_times_voucher_was_used( $issuer, $value, $start_date, $end_date ) {
-			global $wpdb;
+			global $wpdb, $voucher_ids;
 			$repartition = array();
 			$warnings = array();
 
@@ -102,6 +100,7 @@
 						continue;
 					}
 
+					$voucher_ids[] = $row->id;
 					$refunds = $order->get_refunds();
 					if ( count( $refunds ) > 0 ) {
 						$refund_amount = 0.0;
@@ -110,20 +109,12 @@
 						}
 						$warning = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat een terugbetaling t.w.v. '.wc_price( $refund_amount );
 						if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
-							$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, dit mag niet!';
+							$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: red">dit mag in principe niet</span>';
 						} else {
 							$warning .= ' die kleiner is dan het restbedrag dat niet met vouchers betaald werd, geen probleem';
 						}
 						$warnings[ $row->order ] = $warning;
 					}
-
-					// Markeer voucher als gecrediteerd in de database VERHUIZEN NAAR AJAX-ACTIE
-					// $result = $wpdb->update(
-					// 	$wpdb->base_prefix.'universal_coupons',
-					// 	array( 'sold' => date_i18n( 'Y-m-d H:i:s', strtotime('first day of next month') ) ),
-					// 	array( 'id' => $row->id )
-					// );
-					// $order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', strtotime('first day of next month') ).' gecrediteerd worden door het NS.', 0, false );
 
 					if ( is_regional_webshop() ) {
 						$blog_path = $order->get_meta('claimed_by');
@@ -159,7 +150,9 @@
 		output_latest_exports();
 
 		function output_latest_exports() {
+			global $voucher_ids;
 			$files = get_latest_exports();
+			
 			foreach ( $files as $file ) {
 				$id = '';
 				$title = str_replace( '-', ' ', $file['name'] );
@@ -168,7 +161,7 @@
 				if ( $file['name'] === 'latest.xlsx' ) {
 					$id = 'latest';
 					$title = 'Huidige export';
-					$extras = ' <button id="'.$id.'" class="button confirm-export" disabled>Bevestig creditering</button>';
+					$extras = ' <button id="'.$id.'" data-vouchers-ids="'.implode( ',', $voucher_ids ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
 				}
 
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
@@ -180,8 +173,7 @@
 		function get_latest_exports( $max = 10 ) {
 			$exports = array();
 
-			// $local_path = ABSPATH . '/../';
-			$local_path = WP_CONTENT_DIR . '/';
+			$local_path = WP_CONTENT_DIR . '/exports/';
 			if ( $handle = opendir( $local_path ) ) {
 				// Loop door alle files in de map
 				while ( false !== ( $file = readdir( $handle ) ) ) {
@@ -236,7 +228,7 @@
 					var max = 5;
 
 					function closeCurrentList(button) {
-						var path = "<?php echo WP_CONTENT_DIR.'/latest.xlsx'; ?>"; 
+						var path = "<?php echo WP_CONTENT_DIR . '/exports/latest.xlsx'; ?>"; 
 						
 						jQuery.ajax({
 							type: 'POST',
@@ -244,6 +236,9 @@
 							data: {
 								'action': 'oxfam_close_voucher_export_action',
 								'path': path,
+								'start_date': '<?php echo $start_date; ?>',
+								'end_date': '<?php echo $end_date; ?>',
+								'voucher_ids': button.data('voucher-ids'),
 							},
 							dataType: 'html',
 							success: function(newPath) {
