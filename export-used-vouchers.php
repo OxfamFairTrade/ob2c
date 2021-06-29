@@ -209,14 +209,11 @@
 						
 					jQuery(".confirm-export").on( "click", function() {
 						var button = jQuery(this);
-						var startDate = button.data('start-date');
-						var endDate = button.data('end-date');
-						var voucherIds = button.data('voucher-ids');
-						var go = confirm("Ben je zeker dat deze lijst van "+startDate+" tot "+endDate+" wil afsluiten? De vouchers worden als terugbetaald gemarkeerd in de database en zullen niet meer opduiken in volgende exports! Bij de bestellingen waarop de vouchers ingeruild werden zal een nota toegevoegd worden dat de cadeaubon op <?php echo date_i18n( 'd/m/Y', strtotime('first day of next month') ); ?> gecrediteerd wordt.");
+						var go = confirm("Ben je zeker dat deze lijst wil afsluiten? Alle vouchers uit de Excel worden als terugbetaald gemarkeerd in de database en zullen niet meer opduiken in volgende exports! Bij de bestellingen in kwestie wordt een nota toegevoegd dat de cadeaubon op <?php echo date_i18n( 'd/m/Y', strtotime('first day of next month') ); ?> gecrediteerd zal worden.");
 						if ( go == true ) {
 							button.prop( "disabled", true );
 							button.text("Laden ...");
-							jQuery("#wpcontent").css( "background-color", "orange" );
+							jQuery("#wpcontent").css( "background-color", "gold" );
 							closeCurrentList(button);
 						}
 					});
@@ -238,7 +235,7 @@
 							dataType: 'html',
 							success: function(newPath) {
 								tries = 0;
-								jQuery("#wpcontent").css( "background-color", "limegreen" );
+								jQuery("#wpcontent").css( "background-color", "lightgreen" );
 								button.text("Export succesvol afgesloten!");
 								jQuery(".output").find( ".download-excel#"+button.attr('id') ).html("Afgesloten export");
 								jQuery(".output").find( ".download-excel#"+button.attr('id') ).parent("a").attr( "href", newPath );

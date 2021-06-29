@@ -6642,7 +6642,7 @@
 				array( 'id' => $voucher_id )
 			);
 
-			if ( $rows_updated === 1 ) {
+			// if ( $rows_updated === 1 ) {
 				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE id = '".$voucher_id."';";
 				$results = $wpdb->get_results( $query );
 				foreach ( $results as $row ) {
@@ -6658,7 +6658,7 @@
 						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', strtotime('first day of next month') ).' gecrediteerd worden door het NS.', 0, false );
 					}
 				}
-			}
+			// }
 		}
 
 		if ( isset( $new_path ) and rename( $path, $new_path ) ) {
