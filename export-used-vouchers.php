@@ -147,10 +147,9 @@
 	<p>&nbsp;</p>
 
 	<?php
-		output_latest_exports();
+		output_latest_exports( $start_date, $end_date, $voucher_ids );
 
-		function output_latest_exports() {
-			global $voucher_ids;
+		function output_latest_exports( $start_date, $end_date, $voucher_ids ) {
 			$files = get_latest_exports();
 
 			foreach ( $files as $file ) {
@@ -161,7 +160,7 @@
 				if ( $file['name'] === 'latest.xlsx' ) {
 					$id = 'latest';
 					$title = 'Huidige export';
-					$extras = ' <button id="'.$id.'" data-vouchers-ids="'.implode( ',', $voucher_ids ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
+					$extras = ' <button id="'.$id.'" data-vouchers-ids="'.implode( ',', $voucher_ids ).'" data-start-date="'.str_replace( '-', '', $start_date ).'" data-end-date="'.str_replace( '-', '', $end_date ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
 				}
 
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
@@ -208,7 +207,6 @@
 		add_action( 'admin_footer', 'close_voucher_export' );
 
 		function close_voucher_export() {
-			global $start_date, $end_date;
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready(function() {
@@ -235,8 +233,8 @@
 							data: {
 								'action': 'oxfam_close_voucher_export_action',
 								'path': '<?php echo WP_CONTENT_DIR . '/exports/latest.xlsx'; ?>',
-								'start_date': '<?php echo $start_date; ?>',
-								'end_date': '<?php echo $end_date; ?>',
+								'start_date': button.data('start-date'),
+								'end_date': button.data('end-date'),
 								'voucher_ids': button.data('voucher-ids'),
 							},
 							dataType: 'html',

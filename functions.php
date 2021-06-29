@@ -250,35 +250,6 @@
 		}
 	}
 
-	function get_claimed_digital_vouchers_by_value( $value = 25, $start_date = '2021-04-01', $end_date = '2021-04-30', $return_orders = false ) {
-		global $wpdb;
-		$total_count = 0;
-		$orders = array();
-
-		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-completed' ) ) . "') AND woi.order_item_type = 'fee' AND woi.order_item_name LIKE 'Cadeaubon%' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
-		$rows = $wpdb->get_results( $query );
-
-		foreach ( $rows as $key => $row ) {
-			$order = wc_get_order( $row->order_id );
-			if ( $order !== false ) {
-				$orders[] = $order; 
-				foreach ( $order->get_fees() as $fee_item ) {
-					if ( intval( $fee_item->get_meta('voucher_value') ) == $value ) {
-						$total_count++;
-					}
-				}
-			}
-		}
-
-		if ( $return_orders ) {
-			return $orders;
-		} else {
-			return $total_count;
-		}
-	}
-
-	
-
 	// Verwijder originelen uit srcset (wordt opgepikt door zoekmachines!)
 	add_filter( 'wp_calculate_image_srcset_meta', 'ob2c_remove_large_images_from_srcset' );
 
@@ -6653,14 +6624,12 @@
 	}
 
 	function oxfam_close_voucher_export_action_callback() {
-		$path = $_POST['path'];
-		$start_date = $_POST['start_date'];
-		$end_date = $_POST['end_date'];
+		global $wpdb;
 		$voucher_ids = explode( ',', $_POST['voucher_ids'] );
 		write_log( print_r( $voucher_ids, true ) );
 
 		if ( strpos( $path, 'latest' ) !== false ) {
-			$new_path = str_replace( 'latest', str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-credit-list', $path );
+			$new_path = str_replace( 'latest', $_POST['start_date'].'-'.$_POST['end_date'].'-credit-list', $_POST['path'] );
 		}
 		
 		// Markeer geëxporteerde vouchers als gecrediteerd in de database
