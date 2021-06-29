@@ -6625,12 +6625,13 @@
 
 	function oxfam_close_voucher_export_action_callback() {
 		global $wpdb;
-		write_log( print_r( $_POST['voucher_ids'], true ) );
-		write_log( print_r( json_decode( $_POST['voucher_ids'] ), true ) );
+		$path = $_POST['path'];
 		$voucher_ids = explode( ',', $_POST['voucher_ids'] );
-
+		write_log("VOUCHERS TO DISABLE FOR CREDITING:");
+		write_log( print_r( $voucher_ids, true ) );
+		
 		if ( strpos( $path, 'latest' ) !== false ) {
-			$new_path = str_replace( 'latest', $_POST['start_date'].'-'.$_POST['end_date'].'-credit-list', $_POST['path'] );
+			$new_path = str_replace( 'latest', $_POST['start_date'].'-'.$_POST['end_date'].'-credit-list', $path );
 		}
 		
 		// Markeer geëxporteerde vouchers als gecrediteerd in de database
@@ -6641,7 +6642,7 @@
 				array( 'id' => $voucher_id )
 			);
 
-			if ( $rows_updated > 0 ) {
+			if ( $rows_updated === 1 ) {
 				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE id = '".$voucher_id."';";
 				$results = $wpdb->get_results( $query );
 				foreach ( $results as $row ) {
@@ -6653,6 +6654,7 @@
 					$orders = wc_get_orders( $args );
 					$order = reset( $orders );
 					if ( $order !== false ) {
+						write_log("ORDER GEVONDEN!");
 						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', strtotime('first day of next month') ).' gecrediteerd worden door het NS.', 0, false );
 					}
 				}

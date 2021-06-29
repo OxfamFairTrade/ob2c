@@ -10,11 +10,6 @@
 	<h1>Ingeruilde digitale cadeaubonnen</h1>
 	
 	<p>Hieronder vind je een overzicht van de digitale cadeaubonnen die <u>in de loop van de vorige maand</u> ingeruild werden. Per terugbetalingsreferentie verschijnt in de Excel een werkblad met de winkelnamen en aantallen. Zorg ervoor dat je de export tegen het einde van de maand trekt en de lijnen ingeeft in de Access-file voor creditering op de eerste dag van de volgende maand. (In geval van nood kan Frederik het automatische datumbereik aanpassen en verder teruggaan in de tijd.) Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling afgerond kan worden en eventuele terugbetalingen reeds afgehandeld zijn.</p>
-	<p>To do:</p>
-	<ol>
-		<li>Vorige exports opslaan</li>
-		<li>Creditering registeren bij het bevestigen van de Excel (= vermijd dat vouchers dubbel gecrediteerd worden)</li>
-	</ol>
 
 	<?php
 		$start_date = date_i18n( 'Y-m-d', strtotime('first day of previous month') );
