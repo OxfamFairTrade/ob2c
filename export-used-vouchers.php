@@ -9,7 +9,7 @@
 <div class="wrap">
 	<h1>Maandelijks rapport ingeruilde digitale cadeaubonnen</h1>
 	
-	<p>Hieronder vind je een overzicht van de vouchers die vorige maand ingeruild werden. Controleer de waarschuwingen die verschijnen, indien van toepassing.</p>
+	<p>Hieronder vind je een overzicht van de vouchers die <u>in de loop van de vorige maand</u> ingeruild werden. Zorg ervoor dat je de export tegen het einde van de maand trekt en de creditering bevestigt. (In geval van nood kan Frederik het automatische datumbereik aanpassen en verder teruggaan in de tijd.) Per terugbetalingsreferentie verschijnt in de Excel een werkblad met de winkels en de aantallen.</p>
 	<p>To do:</p>
 	<ol>
 		<li>Vorige exports opslaan</li>
@@ -61,7 +61,7 @@
 
 			foreach ( $credit_refs as $credit_ref => $credit_params ) {
 				$rows = get_number_of_times_voucher_was_used( $credit_refs[ $credit_ref ]['issuer'], $credit_refs[ $credit_ref ]['value'], $start_date, $end_date );
-				echo 'Totaalbedrag te crediteren onder referentie '.$credit_ref.': '.wc_price( array_sum( $rows ) * $credit_refs[ $credit_ref ]['value'] ).'<br/>';
+				echo '<p>Totaalbedrag te crediteren onder referentie '.$credit_ref.': '.wc_price( array_sum( $rows ) * $credit_refs[ $credit_ref ]['value'] ).'</p>';
 
 				if ( count( $rows ) > 0 ) {
 					$distribution[ $credit_ref ] = $rows;
@@ -74,6 +74,7 @@
 		function get_number_of_times_voucher_was_used( $issuer, $value, $start_date, $end_date ) {
 			global $wpdb;
 			$repartition = array();
+			$warnings = array();
 
 			// Kolom 'sold' herinterpreteren als 'credited' en filteren op lege datums?
 			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE issuer = '".$issuer."' AND value = ".$value." AND DATE(used) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
@@ -90,19 +91,20 @@
 				$orders = wc_get_orders( $args );
 				
 				if ( count( $orders ) === 0 ) {
-					echo 'Bestelling '.$row->order.' niet gevonden, voucher '.$row->code.' niet opgenomen in export!<br/>';
+					$warnings[] = 'Bestelling '.$row->order.' niet gevonden, voucher '.$row->code.' niet opgenomen in export';
 				} elseif ( count( $orders ) > 1 ) {
-					echo 'Meerdere bestellingen gevonden voor '.$row->order.', voucher '.$row->code.' niet opgenomen in export!<br/>';
+					$warnings[] = 'Meerdere bestellingen gevonden voor '.$row->order.', voucher '.$row->code.' niet opgenomen in export';
 				} else {
 					$order = reset( $orders );
 					if ( $order->get_status() !== 'completed' ) {
-						echo '<a href="'.$order->get_edit_order_url().'" target="_blank">Bestelling '.$row->order.' is nog niet afgerond, voucher '.$row->code.' niet opgenomen in export!</a><br/>';
+						$warnings[] = '<a href="'.$order->get_edit_order_url().'" target="_blank">Bestelling '.$row->order.' is nog niet afgerond, voucher '.$row->code.' niet opgenomen in export</a>';
 						restore_current_blog();
 						continue;
 					}
 
 					if ( count( $order->get_refunds() ) > 0 ) {
-						echo '<a href="'.$order->get_edit_order_url().'" target="_blank">Controleer '.$row->order.', bestelling bevat terugbetaling!</a><br/>';
+						// @toDo: Check restbedrag
+						$warnings[] = '<a href="'.$order->get_edit_order_url().'" target="_blank">Controleer '.$row->order.', bestelling bevat een terugbetaling</a>';
 					}
 
 					// Markeer voucher als gecrediteerd in de database VERHUIZEN NAAR AJAX-ACTIE
@@ -130,8 +132,13 @@
 				restore_current_blog();
 			}
 
-			// Sorteer alfabetisch op naam van de winkel (niet combineren in één lijn!)
+			// Sorteer alfabetisch op naam van de winkel
 			ksort( $repartition );
+
+			if ( count( $warnings ) > 0 ) {
+				echo '<p>Waarschuwingen:</p><ol><li>'.implode( '</li><li>', $warnings ).'</li></ol>';
+			}
+
 			return $repartition;
 		}
 	?>
