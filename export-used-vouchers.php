@@ -97,14 +97,19 @@
 				} else {
 					$order = reset( $orders );
 					if ( $order->get_status() !== 'completed' ) {
-						$warnings[ $row->order ] = '<a href="'.$order->get_edit_order_url().'" target="_blank">Bestelling '.$row->order.' is nog niet afgerond, voucher '.$row->code.' niet opgenomen in export</a>';
+						$warnings[ $row->order ] = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> is nog niet afgerond, voucher '.$row->code.' niet opgenomen in export';
 						restore_current_blog();
 						continue;
 					}
 
-					if ( count( $order->get_refunds() ) > 0 ) {
-						// @toDo: Check restbedrag
-						$warnings[ $row->order ] = '<a href="'.$order->get_edit_order_url().'" target="_blank">Controleer '.$row->order.', bestelling bevat een terugbetaling</a>';
+					$refunds = $order->get_refunds();
+					if ( count( $refunds ) > 0 ) {
+						$refund_amount = 0.0;
+						foreach ( $refunds as $refund ) {
+							// @toDo: Check restbedrag
+							$refund_amount += $refund->get_total();
+						}
+						$warnings[ $row->order ] = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat terugbetalingen t.w.v. '.wc_price( $refund_amount ).', gelieve te controleren';
 					}
 
 					// Markeer voucher als gecrediteerd in de database VERHUIZEN NAAR AJAX-ACTIE
