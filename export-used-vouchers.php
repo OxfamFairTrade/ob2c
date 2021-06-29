@@ -1,5 +1,9 @@
 <?php
 	if ( ! defined('ABSPATH') ) exit;
+
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	require_once WP_PLUGIN_DIR.'/phpspreadsheet/autoload.php';
 ?>
 
 <div class="wrap">
@@ -38,6 +42,8 @@
 				}
 			}
 		}
+		$writer = new Xlsx( $spreadsheet );
+		$writer->save( WP_CONTENT_DIR.'/'.str_replace( '-', '', $start_date ).'-'.str_replace( '-', '', $end_date ).'-vouchers-to-credit.xlsx' );
 
 		function get_credit_report_used_vouchers( $start_date = '2021-05-01', $end_date = '2021-05-31' ) {
 			$distribution = array();
