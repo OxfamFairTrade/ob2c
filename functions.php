@@ -7430,7 +7430,8 @@
 			$query['meta_query'][] = array(
 				'key' => '_order_number',
 				// Prefix verwijderen, zit niet mee opgeslagen in het metaveld
-				'value' => esc_attr( str_replace( 'OWW', '', $query_vars['order_number'] ) ),
+				// Gebruik intval() om voorloopnullen te verwijderen bij oude orders
+				'value' => intval( str_replace( 'OWW', '', $query_vars['order_number'] ) ),
 			);
 		}
 
