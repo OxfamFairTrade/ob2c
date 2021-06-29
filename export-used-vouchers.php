@@ -7,9 +7,9 @@
 ?>
 
 <div class="wrap">
-	<h1>Maandelijks rapport ingeruilde digitale cadeaubonnen</h1>
+	<h1>Ingeruilde digitale cadeaubonnen</h1>
 	
-	<p>Hieronder vind je een overzicht van de vouchers die <u>in de loop van de vorige maand</u> ingeruild werden. Zorg ervoor dat je de export tegen het einde van de maand trekt en de creditering bevestigt. (In geval van nood kan Frederik het automatische datumbereik aanpassen en verder teruggaan in de tijd.) Per terugbetalingsreferentie verschijnt in de Excel een werkblad met de winkels en de aantallen.</p>
+	<p>Hieronder vind je een overzicht van de digitale cadeaubonnen die <u>in de loop van de vorige maand</u> ingeruild werden. Per terugbetalingsreferentie verschijnt in de Excel een werkblad met de winkelnamen en aantallen. Zorg ervoor dat je de export tegen het einde van de maand trekt en de lijnen ingeeft in de Access-file voor creditering op de eerste dag van de volgende maand. (In geval van nood kan Frederik het automatische datumbereik aanpassen en verder teruggaan in de tijd.) Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling afgerond kan worden en eventuele terugbetalingen reeds afgehandeld zijn.</p>
 	<p>To do:</p>
 	<ol>
 		<li>Vorige exports opslaan</li>
@@ -61,7 +61,7 @@
 
 			foreach ( $credit_refs as $credit_ref => $credit_params ) {
 				$rows = get_number_of_times_voucher_was_used( $credit_refs[ $credit_ref ]['issuer'], $credit_refs[ $credit_ref ]['value'], $start_date, $end_date );
-				echo '<p>Totaalbedrag te crediteren onder referentie '.$credit_ref.': '.wc_price( array_sum( $rows ) * $credit_refs[ $credit_ref ]['value'] ).'</p>';
+				echo '<p><b>Totaalbedrag te crediteren onder referentie '.$credit_ref.': '.wc_price( array_sum( $rows ) * $credit_refs[ $credit_ref ]['value'] ).'</b></p>';
 
 				if ( count( $rows ) > 0 ) {
 					$distribution[ $credit_ref ] = $rows;
@@ -91,20 +91,20 @@
 				$orders = wc_get_orders( $args );
 				
 				if ( count( $orders ) === 0 ) {
-					$warnings[] = 'Bestelling '.$row->order.' niet gevonden, voucher '.$row->code.' niet opgenomen in export';
+					$warnings[ $row->order ] = 'Bestelling '.$row->order.' niet gevonden, voucher '.$row->code.' niet opgenomen in export';
 				} elseif ( count( $orders ) > 1 ) {
-					$warnings[] = 'Meerdere bestellingen gevonden voor '.$row->order.', voucher '.$row->code.' niet opgenomen in export';
+					$warnings[ $row->order ] = 'Meerdere bestellingen gevonden voor '.$row->order.', voucher '.$row->code.' niet opgenomen in export';
 				} else {
 					$order = reset( $orders );
 					if ( $order->get_status() !== 'completed' ) {
-						$warnings[] = '<a href="'.$order->get_edit_order_url().'" target="_blank">Bestelling '.$row->order.' is nog niet afgerond, voucher '.$row->code.' niet opgenomen in export</a>';
+						$warnings[ $row->order ] = '<a href="'.$order->get_edit_order_url().'" target="_blank">Bestelling '.$row->order.' is nog niet afgerond, voucher '.$row->code.' niet opgenomen in export</a>';
 						restore_current_blog();
 						continue;
 					}
 
 					if ( count( $order->get_refunds() ) > 0 ) {
 						// @toDo: Check restbedrag
-						$warnings[] = '<a href="'.$order->get_edit_order_url().'" target="_blank">Controleer '.$row->order.', bestelling bevat een terugbetaling</a>';
+						$warnings[ $row->order ] = '<a href="'.$order->get_edit_order_url().'" target="_blank">Controleer '.$row->order.', bestelling bevat een terugbetaling</a>';
 					}
 
 					// Markeer voucher als gecrediteerd in de database VERHUIZEN NAAR AJAX-ACTIE
