@@ -6625,8 +6625,9 @@
 
 	function oxfam_close_voucher_export_action_callback() {
 		global $wpdb;
+		write_log( print_r( $_POST['voucher_ids'], true ) );
+		write_log( print_r( json_decode( $_POST['voucher_ids'] ), true ) );
 		$voucher_ids = explode( ',', $_POST['voucher_ids'] );
-		write_log( print_r( $voucher_ids, true ) );
 
 		if ( strpos( $path, 'latest' ) !== false ) {
 			$new_path = str_replace( 'latest', $_POST['start_date'].'-'.$_POST['end_date'].'-credit-list', $_POST['path'] );
@@ -6636,7 +6637,7 @@
 		foreach ( $voucher_ids as $voucher_id ) {
 			$rows_updated = $wpdb->update(
 				$wpdb->base_prefix.'universal_coupons',
-				array( 'sold' => date_i18n( 'Y-m-d H:i:s', strtotime('first day of next month') ) ),
+				array( 'credited' => date_i18n( 'Y-m-d H:i:s', strtotime('first day of next month') ) ),
 				array( 'id' => $voucher_id )
 			);
 

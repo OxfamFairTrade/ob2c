@@ -74,7 +74,7 @@
 			$repartition = array();
 			$warnings = array();
 
-			// Kolom 'sold' herinterpreteren als 'credited' en filteren op lege datums?
+			// Filteren op lege 'credited'-datums? AND DATE(credited) < "'.$end_date.'"
 			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE issuer = '".$issuer."' AND value = ".$value." AND DATE(used) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
 			$rows = $wpdb->get_results( $query );
 
