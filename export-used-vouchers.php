@@ -9,19 +9,18 @@
 <div class="wrap">
 	<h1>Maandelijks rapport ingeruilde digitale cadeaubonnen</h1>
 	
-	<p>Hieronder vind je een overzicht van de vouchers die de afgelopen maand. To do:</p>
-	<ul>
-		<li>array omzetten naar Excel</li>
-		<li>vorige exports opslaan</li>
-		<li>registreer creditering bij het downloaden van de Excel (= vermijd dat vouchers dubbel gecrediteerd worden)</li>
-		<li>enkel waarschuwing indien terugbetaling op het order groter was dan het restbedrag dat niet via vouchers betaald werd</li>
-	</ul>
+	<p>Hieronder vind je een overzicht van de vouchers die vorige maand ingeruild werden. Controleer de waarschuwingen die verschijnen, indien van toepassing.</p>
+	<p>To do:</p>
+	<ol>
+		<li>Vorige exports opslaan</li>
+		<li>Creditering registeren bij het bevestigen van de Excel (= vermijd dat vouchers dubbel gecrediteerd worden)</li>
+		<li>Enkel waarschuwing tonen indien de terugbetaling groter was dan het restbedrag dat niet via vouchers betaald werd</li>
+	</ol>
 
 	<?php
 		$start_date = date_i18n( 'Y-m-d', strtotime('first day of previous month') );
 		$end_date = date_i18n( 'Y-m-d', strtotime('last day of previous month') );
-		echo '<b>Startdatum</b>: '.$start_date.'<br/>';
-		echo '<b>Einddatum</b>: '.$end_date.'<br/>';
+		echo '<p><b>Startdatum</b>: '.$start_date.'<br/><b>Einddatum</b>: '.$end_date.'</p>';
 		
 		// Haal data van voorbije maand op
 		$distribution = get_credit_report_used_vouchers( $start_date, $end_date );
@@ -131,8 +130,9 @@
 				restore_current_blog();
 			}
 
-			// Sorteer alfabetisch op naam van de winkel
-			return ksort( $repartition );
+			// Sorteer alfabetisch op naam van de winkel (niet combineren in één lijn!)
+			ksort( $repartition );
+			return $repartition;
 		}
 	?>
 
@@ -151,7 +151,7 @@
 				if ( $file['name'] === 'latest.xlsx' ) {
 					$id = 'latest';
 					$title = 'Huidige export';
-					$extras = ' <button id="'.$id.'" class="button confirm-export" disabled>Bevestig download</button>';
+					$extras = ' <button id="'.$id.'" class="button confirm-export" disabled>Bevestig creditering</button>';
 				}
 
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
@@ -206,7 +206,7 @@
 						
 					jQuery(".confirm-export").on( "click", function() {
 						var button = jQuery(this);
-						var go = confirm("Ben je zeker dat je de huidige lijst wil afsluiten?");
+						var go = confirm("Ben je zeker dat deze lijst wil afsluiten? De vouchers worden als terugbetaald gemarkeerd in de database en zullen niet meer opduiken in volgende exports! Bij de bestellingen waarop de vouchers ingeruild werden zal een nota toegevoegd worden dat de cadeaubon op <?php echo date_i18n( 'd/m/Y', strtotime('first day of next month') ); ?> gecrediteerd wordt.");
 						if ( go == true ) {
 							button.prop( "disabled", true );
 							button.text("Laden ...");
