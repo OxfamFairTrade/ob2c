@@ -108,10 +108,13 @@
 						foreach ( $refunds as $refund ) {
 							$refund_amount += $refund->get_refund_amount();
 						}
+						$warning = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat een terugbetaling t.w.v. '.wc_price( $refund_amount );
 						if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
-							echo 'TE GROTE REFUND!!!<br/>';
+							$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, dit mag niet!';
+						} else {
+							$warning .= ' die kleiner is dan het restbedrag dat niet met vouchers betaald werd, geen probleem';
 						}
-						$warnings[ $row->order ] = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat terugbetalingen t.w.v. '.wc_price( $refund_amount ).', gelieve te controleren';
+						$warnings[ $row->order ] = $warning;
 					}
 
 					// Markeer voucher als gecrediteerd in de database VERHUIZEN NAAR AJAX-ACTIE
