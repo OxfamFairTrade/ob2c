@@ -61,7 +61,10 @@
 			);
 
 			foreach ( $credit_refs as $credit_ref => $credit_params ) {
-				$distribution[ $credit_ref ] = get_number_of_times_voucher_was_used( $credit_refs[ $credit_ref ]['issuer'], $credit_refs[ $credit_ref ]['value'], $start_date, $end_date );
+				$rows = get_number_of_times_voucher_was_used( $credit_refs[ $credit_ref ]['issuer'], $credit_refs[ $credit_ref ]['value'], $start_date, $end_date );
+				if ( count( $rows ) > 0 ) {
+					$distribution[ $credit_ref ] = $rows;
+				}
 			}
 
 			return $distribution;
@@ -137,9 +140,9 @@
 	<p>&nbsp;</p>
 
 	<?php
-		output_shipping_list_buttons();
+		output_latest_exports();
 
-		function output_shipping_list_buttons() {
+		function output_latest_exports() {
 			$files = get_latest_exports();
 			foreach ( $files as $file ) {
 				$id = '';
@@ -147,8 +150,9 @@
 				$extras = '';
 				
 				if ( $file['name'] === 'latest.xlsx' ) {
-					$id = 'no';
-					$extras = ' <button id="no" class="button close-list" disabled>Bevestig download</button>';
+					$id = 'latest';
+					$title = 'Huidige export';
+					$extras = ' <button id="'.$id.'" class="button confirm-export" disabled>Bevestig download</button>';
 				}
 
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
@@ -191,6 +195,68 @@
 
 		function ends_with( $haystack, $needle ) {
 			return $needle === '' or ( ( $temp = strlen( $haystack ) - strlen( $needle ) ) >= 0 and strpos( $haystack, $needle, $temp ) !== false );
+		}
+
+		add_action( 'admin_footer', 'close_voucher_export' );
+
+		function close_voucher_export() {
+			?>
+			<script type="text/javascript">
+				jQuery(document).ready(function() {
+					jQuery(".confirm-export").prop( "disabled", false );
+						
+					jQuery(".confirm-export").on( "click", function() {
+						var button = jQuery(this);
+						var go = confirm("Ben je zeker dat je de huidige lijst wil afsluiten?");
+						if ( go == true ) {
+							button.prop( "disabled", true );
+							button.text("Laden ...");
+							jQuery("#wpcontent").css( "background-color", "orange" );
+							closeCurrentList(button);
+						}
+					});
+
+					var tries = 0;
+					var max = 5;
+
+					function closeCurrentList(button) {
+						var path = "<?php echo WP_CONTENT_DIR.'/latest.xlsx'; ?>"; 
+						
+						jQuery.ajax({
+							type: 'POST',
+							url: ajaxurl,
+							data: {
+								'action': 'oxfam_close_voucher_export_action',
+								'path': path,
+							},
+							dataType: 'html',
+							success: function(newPath) {
+								tries = 0;
+								jQuery("#wpcontent").css( "background-color", "limegreen" );
+								button.text("Export succesvol afgesloten!");
+								jQuery(".output").find( ".download-excel#"+button.attr('id') ).html("Afgesloten export");
+								jQuery(".output").find( ".download-excel#"+button.attr('id') ).parent("a").attr( "href", newPath );
+							},
+							error: function(jqXHR, statusText, errorThrown) {
+								tries++;
+								var message = "Asynchroon laden van PHP-file mislukt ... (poging ###CURRENT### van ###MAXIMUM###: ###ERROR###)";
+								message = message.replace( '###CURRENT###', tries );
+								message = message.replace( '###MAXIMUM###', max );
+								message = message.replace( '###ERROR###', errorThrown );
+								jQuery(".output").prepend("<p>"+message+"</p>");
+								if ( tries < max ) {
+									closeCurrentList();
+								} else {
+									tries = 0;
+									jQuery("#wpcontent").css( "background-color", "red" );
+									button.text("Afsluiten van export mislukt!");
+								}
+							},
+						});
+					}
+				});
+			</script>
+			<?php
 		}
 	?>
 
