@@ -6233,10 +6233,24 @@
 		if ( is_main_site() ) {
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
 		}
+		if ( is_network_admin() ) {
+			add_submenu_page(
+				'woonet-woocommerce',
+				'Voucher Export',
+				'Voucher Export',
+				'create_sites',
+				'woonet-woocommerce-vouchers-export',
+				'oxfam_vouchers_callback'
+			);
+		}
 	}
 
 	function oxfam_photos_callback() {
 		include get_stylesheet_directory().'/register-bulk-images.php';
+	}
+
+	function oxfam_vouchers_callback() {
+		include get_stylesheet_directory().'/export-used-vouchers.php';
 	}
 
 	function oxfam_options_callback() {
@@ -7380,68 +7394,6 @@
 		}
 	}
 
-	// function get_number_of_times_voucher_was_used( $start_date = '2021-05-01', $end_date = '2021-05-31' ) {
-	// 	global $wpdb;
-	// 	$total_value = 0;
-	// 	$distribution = array();
-
-	// 	// Kolom 'sold' hergebruiken als 'credited' en filteren op lege datums?
-	// 	$query = "SELECT * FROM {$wpdb->prefix}universal_coupons WHERE DATE(used) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
-	// 	$rows = $wpdb->get_results( $query );
-
-	// 	foreach ( $rows as $key => $row ) {
-	// 		switch_to_blog( $row->blog_id );
-
-	// 		$args = array(
-	// 			'type' => 'shop_order',
-	// 			'status' => array('wc-completed'),
-	// 			'order_number' => $row->order,
-	// 			'limit' => -1,
-	// 		);
-	// 		$orders = wc_get_orders( $args );
-			
-	// 		if ( count( $orders ) === 1 ) {
-	// 			$order = reset( $orders );
-	// 			// 08899 indien 50 euro Gezinsbond
-	// 			// 08900 indien 25 euro Gezinsbond
-	// 			$total_value += $row->value;
-
-	// 			if ( is_regional_webshop() ) {
-	// 				if ( ! array_key_exists( $order->get_meta('claimed_by'), $distribution ) ) {
-	// 					$distribution[ $order->get_meta('claimed_by') ] = $row->value;
-	// 				} else {
-	// 					$distribution[ $order->get_meta('claimed_by') ] += $row->value;
-	// 				}
-	// 			} else {
-	// 				$distribution[ get_bloginfo('url') ] += $row->value;
-	// 			}
-	// 		} else {
-	// 			echo 'Onverwacht aantal orders gevonden voor '.$row->order.'!';
-	// 		}
-
-	// 		restore_current_blog();
-	// 	}
-
-	// 	echo wc_price( $total_value );
-	// 	echo '<pre>';
-	// 	print_r( $distribution );
-	// 	echo '</pre>';
-	// }
-
-	add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'wc_get_orders_handle_custom_query_var', 10, 2 );
-
-	function wc_get_orders_handle_custom_query_var( $query, $query_vars ) {
-		if ( ! empty( $query_vars['order_number'] ) ) {
-			$query['meta_query'][] = array(
-				'key' => '_order_number',
-				// Prefix verwijderen, zit niet mee opgeslagen in het metaveld
-				'value' => esc_attr( str_replace( 'OWW', '', $query_vars['order_number'] ) ),
-			);
-		}
-
-		return $query;
-	}
-	
 	// Schakel onnuttige widgets uit voor iedereen
 	add_action( 'admin_init', 'remove_dashboard_meta' );
 
@@ -7464,6 +7416,21 @@
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
 	}
 
+	// Ondersteuning voor extra parameters toevoegen aan wc_get_orders()
+	add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'wc_get_orders_handle_custom_query_var', 10, 2 );
+
+	function wc_get_orders_handle_custom_query_var( $query, $query_vars ) {
+		if ( ! empty( $query_vars['order_number'] ) ) {
+			$query['meta_query'][] = array(
+				'key' => '_order_number',
+				// Prefix verwijderen, zit niet mee opgeslagen in het metaveld
+				'value' => esc_attr( str_replace( 'OWW', '', $query_vars['order_number'] ) ),
+			);
+		}
+
+		return $query;
+	}
+	
 	// Beheerd via WooCommerce Order Status Manager of is dit voor het dashboard?
 	// add_filter( 'woocommerce_reports_get_order_report_data_args', 'wc_reports_get_order_custom_report_data_args', 100, 1 );
 
