@@ -9,7 +9,9 @@
 <div class="wrap">
 	<h1>Ingeruilde digitale cadeaubonnen</h1>
 	
-	<p>Hieronder vind je een overzicht van de digitale cadeaubonnen die <u>in de loop van de vorige maand</u> ingeruild werden. Per terugbetalingsreferentie verschijnt in de Excel een werkblad met de winkelnamen en aantallen. Zorg ervoor dat je de export tegen het einde van de maand trekt en de lijnen ingeeft in de Access-file voor creditering op de eerste dag van de volgende maand. (In geval van nood kan Frederik het automatische datumbereik aanpassen en verder teruggaan in de tijd.) Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling afgerond kan worden en eventuele terugbetalingen reeds afgehandeld zijn.</p>
+	<p>Hieronder vind je een overzicht van de digitale cadeaubonnen die <u>in de loop van de vorige maand</u> ingeruild werden. Open deze pagina tegen het einde van de maand, en controleer de eventuele waarschuwingen. Eenmaal alles in orde is, download je de Excel-file. In dit bestand verschijnt per terugbetalingsreferentie een werkblad met per winkel de juiste aantallen. Zet deze gegevens over naar de Access-file voor creditering op de eerste dag van de volgende maand. Vergeet de creditering tot slot niet te bevestigen, zodat alles ook correct geregistreerd wordt in de webshopdatabase!</p>
+
+	<p>Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling afgerond kan worden en eventuele terugbetalingen reeds afgehandeld zijn. In geval van nood kan Frederik het datumbereik aanpassen en/of correcties doorvoeren.</p>
 
 	<?php
 		$start_date = date_i18n( 'Y-m-d', strtotime('first day of previous month') );
@@ -20,30 +22,31 @@
 		// Haal data van voorbije maand op
 		$distribution = get_credit_report_used_vouchers( $start_date, $end_date );
 
-		// Toon resultaat op scherm
-		echo '<pre>';
-		print_r( $distribution );
-		echo '</pre>';
+		if ( count( $distribution ) > 0 ) {
+			// Toon resultaat op scherm
+			echo '<pre>';
+			print_r( $distribution );
+			echo '</pre>';
 
-		// Schrijf resultaat weg naar Excel
-		export_to_excel( $distribution );
+			// Schrijf resultaat weg naar Excel
+			export_to_excel( $distribution );
+		} else {
+			echo '<p><b>Er valt in deze periode niets te crediteren!</b></p>';
+		}
 
 		function export_to_excel( $distribution ) {
-			// Enkel Excel aanmaken indien er iets te crediteren valt
-			if ( count( $distribution ) > 0 ) {
-				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-				$spreadsheet = $reader->load( get_stylesheet_directory().'/voucher-export.xlsx' );
-				foreach ( $distribution as $credit_ref => $number_of_credits_per_shop ) {
-					$i = 2;
-					$spreadsheet->setActiveSheetIndexByName( $credit_ref );
-					foreach ( $number_of_credits_per_shop as $shop => $numbers_of_credits ) {
-						$spreadsheet->getActiveSheet()->setCellValue( 'A'.$i, $shop )->setCellValue( 'B'.$i, $numbers_of_credits );
-						$i++;
-					}
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$spreadsheet = $reader->load( get_stylesheet_directory().'/voucher-export.xlsx' );
+			foreach ( $distribution as $credit_ref => $number_of_credits_per_shop ) {
+				$i = 2;
+				$spreadsheet->setActiveSheetIndexByName( $credit_ref );
+				foreach ( $number_of_credits_per_shop as $shop => $numbers_of_credits ) {
+					$spreadsheet->getActiveSheet()->setCellValue( 'A'.$i, $shop )->setCellValue( 'B'.$i, $numbers_of_credits );
+					$i++;
 				}
-				$writer = new Xlsx( $spreadsheet );
-				$writer->save( WP_CONTENT_DIR . '/exports/latest.xlsx' );
 			}
+			$writer = new Xlsx( $spreadsheet );
+			$writer->save( WP_CONTENT_DIR . '/exports/latest.xlsx' );
 		}
 
 		function get_credit_report_used_vouchers( $start_date = '2021-05-01', $end_date = '2021-05-31' ) {
@@ -141,8 +144,6 @@
 			return $repartition;
 		}
 	?>
-
-	<p>&nbsp;</p>
 
 	<?php
 		output_latest_exports( $start_date, $end_date );
