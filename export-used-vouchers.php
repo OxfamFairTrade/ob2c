@@ -167,7 +167,7 @@
 
 				echo '<br/><br/>';
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
-				echo '<a href="'.content_url( '/'.$file['name'] ).'" download><button id="'.$id.'" class="button download-excel">'.$title.'</button></a>'.$extras;
+				echo '<a href="'.content_url( '/exports/'.$file['name'] ).'" download><button id="'.$id.'" class="button download-excel">'.$title.'</button></a>'.$extras;
 			}
 		}
 
