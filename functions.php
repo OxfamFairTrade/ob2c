@@ -7393,6 +7393,24 @@
 				echo '<div class="updated"><p>' . esc_html( $message ) . ' Ongeldige wijzigingen kunnen tegengehouden zijn door het systeem! Raadpleeg de logs in de rechterkolom van het orderdetail als je merkt dat de status onveranderd gebleven is.</p></div>';
 			}
 		}
+
+		if ( 'admin.php' === $pagenow and $_GET['page'] === 'wc-reports' ) {
+			echo serialize( $screen );
+			
+			global $wpdb;
+			$credit_date = date_i18n( 'Y-m-d', strtotime('first day of this month') );
+			$credit_month = date_i18n( 'F Y',  strtotime( '-1 month', strtotime('first day of previous month') ) );
+			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE blog_id = ".get_current_blog_id()." AND DATE(credited) = '".$credit_date."';";
+			$results = $wpdb->get_results( $query );
+			
+			$sum = array_reduce( $results, function( $carry, $row ) {
+				return $carry + $row->value;
+			}, 0 );
+
+			echo '<div class="notice notice-success">';
+				echo '<p>Op '.$credit_date.' zal vanuit het NS '.wc_price( $sum ).' gecrediteerd worden aan digitiale cadeaubonnen die in de loop van de maand '.$credit_month.' ingeruild werden in jullie webshop.</p>';
+			echo '</div>';
+		}
 	}
 
 	function get_number_of_times_coupon_was_used( $coupon_code, $start_date = '2021-04-01', $end_date = '2021-04-30', $return_orders = false ) {
