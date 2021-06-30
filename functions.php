@@ -6656,7 +6656,7 @@
 					if ( count( $orders ) === 1 ) {
 						$order = reset( $orders );
 						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', strtotime('first day of next month') ).' gecrediteerd worden door het NS.', 0, false );
-						write_log("Crediteringsnota toegevoegd aan ".$order->get_order_number()."!");
+						write_log( "Crediteringsnota toegevoegd aan ".$order->get_order_number() );
 					}
 
 					restore_current_blog();

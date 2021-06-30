@@ -9,11 +9,11 @@
 <div class="wrap">
 	<h1>Ingeruilde digitale cadeaubonnen</h1>
 	
-	<p>Hieronder vind je een overzicht van de digitale cadeaubonnen die <u>in de loop van de vorige maand</u> ingeruild werden.</p>
+	<p>Hieronder vind je een overzicht van de digitale cadeaubonnen die in de loop van <u>vorige maand ingeruild</u> werden én ondertussen <u>nog niet gecrediteerd</u> zijn.</p>
 
-	<p>Open deze pagina tegen het einde van de maand, en controleer de eventuele waarschuwingen. Als alles in orde is, download je de Excel-file die per terugbetalingsreferentie een werkblad bevat met de juiste aantallen per winkel. Zet deze gegevens over naar de Access-file voor creditering op de eerste dag van de volgende maand. Vergeet de creditering tot slot niet te bevestigen, zodat alles ook correct geregistreerd wordt in de webshopdatabase!</p>
+	<p>Open deze pagina tegen het einde van de maand, en controleer de eventuele waarschuwingen. Als alles in orde is (m.a.w. alle bestellingen zijn inmiddels afgerond en bevatten géén terugbetalingen die groter zijn dan het restbedrag), download je de Excel-file. Per terugbetalingsreferentie verschijnt een werkblad met de juiste aantallen per winkel. Zet deze gegevens over naar de Access-file voor creditering op de eerste dag van de volgende maand. Vergeet de creditering tot slot niet te bevestigen, zodat alles correct geregistreerd wordt in de webshopdatabase en de Excel-file gearchiveerd wordt!</p>
 
-	<p>Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling afgerond kan worden en eventuele terugbetalingen reeds afgehandeld zijn. In geval van nood kan Frederik het datumbereik aanpassen en/of correcties doorvoeren.</p>
+	<p>Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling rustig afgerond kan worden en eventuele problemen reeds afgehandeld zijn. In geval van nood kan Frederik het datumbereik aanpassen en/of handmatige correcties doorvoeren.</p>
 
 	<?php
 		$start_date = date_i18n( 'Y-m-d', strtotime('first day of previous month') );

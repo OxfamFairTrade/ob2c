@@ -41,7 +41,8 @@ if ( ! is_main_site() ) {
 					$lat = floatval( get_post_meta( $wpsl_store_ids[0], 'wpsl_lat', true ) );
 					$lng = floatval( get_post_meta( $wpsl_store_ids[0], 'wpsl_lng', true ) );
 				} else {
-					write_log("Geen winkellocatie gevonden, gebruik coördinaten van Manneken Pis");
+					write_log( "Geen winkellocatie gevonden voor shop-ID ".$current_shop_id );
+					// Gebruik coördinaten van Manneken Pis
 					$lat = 50.84510814431842;
 					$lng = 4.349988998666601;
 				}
@@ -69,7 +70,7 @@ if ( ! is_main_site() ) {
 					// Er kunnen dubbels voorkomen (= meerdere winkels onder één webshop) maar dat lossen we later op
 					set_transient( 'oxfam_neighbouring_webshops', $neighbouring_webshops, DAY_IN_SECONDS );
 
-					write_log( count( $stores )." winkels gevonden in de buurt van ".$lat.",".$lng." waarvan ".count( $neighbouring_webshops )." met webshop" );
+					// write_log( count( $stores )." winkels gevonden in de buurt van ".$lat.",".$lng." waarvan ".count( $neighbouring_webshops )." met webshop" );
 				}
 			}
 
@@ -94,7 +95,7 @@ if ( ! is_main_site() ) {
 					restore_current_blog();
 				}
 				
-				write_log( count( $neighbouring_webshops )." webshops gevonden in de buurt, goed voor ".count( $neighbouring_sites )." subsites waarvan ".count( $shops_instock )." met ".$product->get_sku()." wél in voorraad: ".$product->get_permalink() );
+				// write_log( count( $neighbouring_webshops )." webshops gevonden in de buurt, goed voor ".count( $neighbouring_sites )." subsites waarvan ".count( $shops_instock )." met ".$product->get_sku()." wél in voorraad: ".$product->get_permalink() );
 				// We zouden ook dit resultaat in een kortlevende transient per SKU kunnen stoppen, als de data echt frequent opgevraagd wordt ...
 				// var_dump_pre( $shops_instock );
 					
