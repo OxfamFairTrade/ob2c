@@ -161,7 +161,7 @@
 				
 				if ( $file['name'] === 'latest.xlsx' ) {
 					$id = 'latest';
-					$title = 'Huidige export';
+					$title = 'Download openstaande export';
 					$extras = ' <button id="'.$id.'" data-voucher-ids="'.implode( ',', $voucher_ids ).'" data-start-date="'.str_replace( '-', '', $start_date ).'" data-end-date="'.str_replace( '-', '', $end_date ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
 				}
 
