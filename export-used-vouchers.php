@@ -9,7 +9,9 @@
 <div class="wrap">
 	<h1>Ingeruilde digitale cadeaubonnen</h1>
 	
-	<p>Hieronder vind je een overzicht van de digitale cadeaubonnen die <u>in de loop van de vorige maand</u> ingeruild werden. Open deze pagina tegen het einde van de maand, en controleer de eventuele waarschuwingen. Eenmaal alles in orde is, download je de Excel-file. In dit bestand verschijnt per terugbetalingsreferentie een werkblad met per winkel de juiste aantallen. Zet deze gegevens over naar de Access-file voor creditering op de eerste dag van de volgende maand. Vergeet de creditering tot slot niet te bevestigen, zodat alles ook correct geregistreerd wordt in de webshopdatabase!</p>
+	<p>Hieronder vind je een overzicht van de digitale cadeaubonnen die <u>in de loop van de vorige maand</u> ingeruild werden.</p>
+
+	<p>Open deze pagina tegen het einde van de maand, en controleer de eventuele waarschuwingen. Als alles in orde is, download je de Excel-file die per terugbetalingsreferentie een werkblad bevat met de juiste aantallen per winkel. Zet deze gegevens over naar de Access-file voor creditering op de eerste dag van de volgende maand. Vergeet de creditering tot slot niet te bevestigen, zodat alles ook correct geregistreerd wordt in de webshopdatabase!</p>
 
 	<p>Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling afgerond kan worden en eventuele terugbetalingen reeds afgehandeld zijn. In geval van nood kan Frederik het datumbereik aanpassen en/of correcties doorvoeren.</p>
 
@@ -31,7 +33,7 @@
 			// Schrijf resultaat weg naar Excel
 			export_to_excel( $distribution );
 		} else {
-			echo '<p><b>Er valt in deze periode niets te crediteren!</b></p>';
+			echo '<p><b><span style="color: red">Er valt deze maand niets te crediteren!</span></b></p>';
 		}
 
 		function export_to_excel( $distribution ) {
