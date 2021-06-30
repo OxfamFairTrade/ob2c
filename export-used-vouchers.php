@@ -159,9 +159,9 @@
 					$extras = ' <button id="'.$id.'" data-voucher-ids="'.implode( ',', $voucher_ids ).'" data-start-date="'.str_replace( '-', '', $start_date ).'" data-end-date="'.str_replace( '-', '', $end_date ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
 				}
 
+				echo '<br/><br/>';
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
 				echo '<a href="'.content_url( '/'.$file['name'] ).'" download><button id="'.$id.'" class="button download-excel">'.$title.'</button></a>'.$extras;
-				echo '<br/><br/>';
 			}
 		}
 
@@ -241,9 +241,9 @@
 							success: function(newPath) {
 								tries = 0;
 								jQuery("#wpcontent").css( "background-color", "lightgreen" );
-								button.text("Export succesvol afgesloten!");
-								jQuery(".output").find( ".download-excel#"+button.attr('id') ).html("Afgesloten export");
-								jQuery(".output").find( ".download-excel#"+button.attr('id') ).parent("a").attr( "href", newPath );
+								button.text("Creditering succesvol afgesloten!");
+								jQuery( ".download-excel#"+button.attr('id') ).html("Afgesloten creditering");
+								jQuery( ".download-excel#"+button.attr('id') ).parent("a").attr( "href", newPath );
 							},
 							error: function(jqXHR, statusText, errorThrown) {
 								tries++;
@@ -257,7 +257,7 @@
 								} else {
 									tries = 0;
 									jQuery("#wpcontent").css( "background-color", "red" );
-									button.text("Afsluiten van export mislukt!");
+									button.text("Afsluiten van creditering mislukt!");
 								}
 							},
 						});
