@@ -33,7 +33,7 @@
 			// Schrijf resultaat weg naar Excel
 			export_to_excel( $distribution );
 		} else {
-			echo '<p><b><span style="color: red">Er valt deze maand niets te crediteren!</span></b></p>';
+			echo '<p><b><span style="color: red">Er valt deze maand niets (meer) te crediteren!</span></b></p>';
 		}
 
 		function export_to_excel( $distribution ) {
@@ -112,9 +112,9 @@
 						}
 						$warning = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat een terugbetaling t.w.v. '.wc_price( $refund_amount );
 						if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
-							$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: red">dit mag in principe niet!</span>';
+							$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: red">dit mag in principe niet</span>';
 						} else {
-							$warning .= ' die kleiner is dan het restbedrag dat niet met vouchers betaald werd';
+							$warning .= ' die kleiner is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: green">geen probleem</span>';
 						}
 						$warnings[ $row->order ] = $warning;
 					}
