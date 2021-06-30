@@ -7394,9 +7394,7 @@
 			}
 		}
 
-		if ( 'admin.php' === $pagenow and $_GET['page'] === 'wc-reports' ) {
-			echo serialize( $screen );
-			
+		if ( 'woocommerce_page_wc-reports' === $screen->base and ( empty( $_GET['tab'] ) or $_GET['tab'] === 'orders' ) ) {
 			global $wpdb;
 			$credit_date = date_i18n( 'Y-m-d', strtotime('first day of this month') );
 			$credit_month = date_i18n( 'F Y',  strtotime( '-1 month', strtotime('first day of previous month') ) );
@@ -7407,9 +7405,14 @@
 				return $carry + $row->value;
 			}, 0 );
 
-			echo '<div class="notice notice-success">';
-				echo '<p>Op '.$credit_date.' zal vanuit het NS '.wc_price( $sum ).' gecrediteerd worden aan digitiale cadeaubonnen die in de loop van de maand '.$credit_month.' ingeruild werden in jullie webshop.</p>';
-			echo '</div>';
+			if ( $sum > 0 ) {
+				echo '<div class="notice notice-success"><p>';
+					echo 'Op '.$credit_date.' zal het NS '.wc_price( $sum ).' crediteren voor digitiale cadeaubonnen die in de loop van de maand '.$credit_month.' ingeruild werden in jullie webshop.';
+					if ( is_regional_webshop() ) {
+						echo ' Het tegoed wordt automatisch gekoppeld aan het klantnummer van de winkel die de bestelling behandelde.';
+					}
+				echo '</p></div>';
+			}
 		}
 	}
 
