@@ -29,18 +29,21 @@
 		export_to_excel( $distribution );
 
 		function export_to_excel( $distribution ) {
-			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-			$spreadsheet = $reader->load( get_stylesheet_directory().'/voucher-export.xlsx' );
-			foreach ( $distribution as $credit_ref => $number_of_credits_per_shop ) {
-				$i = 2;
-				$spreadsheet->setActiveSheetIndexByName( $credit_ref );
-				foreach ( $number_of_credits_per_shop as $shop => $numbers_of_credits ) {
-					$spreadsheet->getActiveSheet()->setCellValue( 'A'.$i, $shop )->setCellValue( 'B'.$i, $numbers_of_credits );
-					$i++;
+			// Enkel Excel aanmaken indien er iets te crediteren valt
+			if ( count( $distribution ) > 0 ) {
+				$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+				$spreadsheet = $reader->load( get_stylesheet_directory().'/voucher-export.xlsx' );
+				foreach ( $distribution as $credit_ref => $number_of_credits_per_shop ) {
+					$i = 2;
+					$spreadsheet->setActiveSheetIndexByName( $credit_ref );
+					foreach ( $number_of_credits_per_shop as $shop => $numbers_of_credits ) {
+						$spreadsheet->getActiveSheet()->setCellValue( 'A'.$i, $shop )->setCellValue( 'B'.$i, $numbers_of_credits );
+						$i++;
+					}
 				}
+				$writer = new Xlsx( $spreadsheet );
+				$writer->save( WP_CONTENT_DIR . '/exports/latest.xlsx' );
 			}
-			$writer = new Xlsx( $spreadsheet );
-			$writer->save( WP_CONTENT_DIR . '/exports/latest.xlsx' );
 		}
 
 		function get_credit_report_used_vouchers( $start_date = '2021-05-01', $end_date = '2021-05-31' ) {
