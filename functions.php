@@ -7407,7 +7407,12 @@
 
 			if ( $sum > 0 ) {
 				echo '<div class="notice notice-success"><p>';
-					echo 'Op '.date_i18n( 'd/m/Y', $credit_date_timestamp ).' zal Oxfam Fair Trade '.wc_price( $sum ).' crediteren voor de digitale cadeaubonnen die in de loop van de maand '.date_i18n( 'F Y', $credit_month_timestamp ).' gebruikt werden als betaalmiddel in jullie webshop.';
+					if ( $credit_date_timestamp > time() ) {
+						$tense = 'zal Oxfam Fair Trade '.wc_price( $sum ).' crediteren';
+					} else {
+						$tense = 'heeft Oxfam Fair Trade '.wc_price( $sum ).' gecrediteerd';
+					}
+					echo 'Op '.date_i18n( 'd/m/Y', $credit_date_timestamp ).' '.$tense.' voor de digitale cadeaubonnen die in de loop van de maand '.date_i18n( 'F Y', $credit_month_timestamp ).' gebruikt werden als betaalmiddel in jullie webshop.';
 					if ( is_regional_webshop() ) {
 						echo ' Elke cadeaubon wordt automatisch gecrediteerd aan het klantnummer van de winkel die de bestelling behandelde.';
 					}
