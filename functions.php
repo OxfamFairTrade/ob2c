@@ -7396,9 +7396,9 @@
 
 		if ( 'woocommerce_page_wc-reports' === $screen->base and ( empty( $_GET['tab'] ) or $_GET['tab'] === 'orders' ) ) {
 			global $wpdb;
-			$credit_date = date_i18n( 'Y-m-d', strtotime('first day of this month') );
-			$credit_month = date_i18n( 'F Y',  strtotime( '-1 month', strtotime('first day of previous month') ) );
-			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE blog_id = ".get_current_blog_id()." AND DATE(credited) = '".$credit_date."';";
+			$credit_date_timestamp = strtotime('first day of this month');
+			$credit_month_timestamp = strtotime( '-1 month', strtotime('first day of previous month') );
+			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE blog_id = ".get_current_blog_id()." AND DATE(credited) = '".date_i18n( 'Y-m-d', $credit_date_timestamp )."';";
 			$results = $wpdb->get_results( $query );
 			
 			$sum = array_reduce( $results, function( $carry, $row ) {
@@ -7407,7 +7407,7 @@
 
 			if ( $sum > 0 ) {
 				echo '<div class="notice notice-success"><p>';
-					echo 'Op '.$credit_date.' zal het NS '.wc_price( $sum ).' crediteren voor digitale cadeaubonnen die in de loop van de maand '.$credit_month.' ingeruild werden in jullie webshop.';
+					echo 'Op '.date_i18n( 'd/m/Y', $credit_date_timestamp ).' zal Oxfam Fair Trade '.wc_price( $sum ).' crediteren voor de digitale cadeaubonnen die in de loop van de maand '.date_i18n( 'F Y', $credit_month_timestamp ).' gebruikt werden als betaalmiddel in jullie webshop.';
 					if ( is_regional_webshop() ) {
 						echo ' Elke cadeaubon wordt automatisch gecrediteerd aan het klantnummer van de winkel die de bestelling behandelde.';
 					}
