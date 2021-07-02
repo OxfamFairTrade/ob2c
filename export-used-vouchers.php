@@ -223,7 +223,7 @@
 						
 					jQuery(".confirm-export").on( "click", function() {
 						var button = jQuery(this);
-						var go = confirm("Ben je zeker dat deze lijst wil afsluiten? Alle vouchers uit de Excel worden als terugbetaald gemarkeerd in de database en zullen niet meer opduiken in volgende exports! Bij de bestellingen in kwestie wordt een nota toegevoegd dat de cadeaubon op <?php echo date_i18n( 'd/m/Y', strtotime('first day of next month') ); ?> gecrediteerd zal worden.");
+						var go = confirm("Ben je zeker dat deze lijst wil afsluiten? Alle vouchers uit de Excel worden als terugbetaald gemarkeerd in de database en zullen niet meer opduiken in volgende exports! Bij de bestellingen in kwestie wordt een nota toegevoegd dat de cadeaubon op <?php echo date_i18n( 'd/m/Y', strtotime( '+1 weekday', strtotime('last day of this month') ) ); ?> gecrediteerd zal worden.");
 						if ( go == true ) {
 							button.prop( "disabled", true );
 							button.text("Laden ...");

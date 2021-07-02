@@ -6025,6 +6025,7 @@
 		register_setting( 'oxfam-options-local', 'oxfam_disable_local_pickup', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_remove_excel_header', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_b2b_invitation_text', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_custom_webshop_telephone', array( 'type' => 'string', 'sanitize_callback' => 'format_phone_number' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
 	}
 
@@ -6633,10 +6634,11 @@
 		}
 		
 		// Markeer geëxporteerde vouchers als gecrediteerd in de database
+		$credit_date_timestamp = strtotime( '+1 weekday', strtotime('last day of this month') );
 		foreach ( $voucher_ids as $voucher_id ) {
 			$rows_updated = $wpdb->update(
 				$wpdb->base_prefix.'universal_coupons',
-				array( 'credited' => date_i18n( 'Y-m-d H:i:s', strtotime('first day of next month') ) ),
+				array( 'credited' => date_i18n( 'Y-m-d H:i:s', $credit_date_timestamp ) ),
 				array( 'id' => $voucher_id )
 			);
 
@@ -6655,7 +6657,7 @@
 					
 					if ( count( $orders ) === 1 ) {
 						$order = reset( $orders );
-						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', strtotime('first day of next month') ).' gecrediteerd worden door het NS.', 0, false );
+						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', $credit_date_timestamp ).' gecrediteerd worden door het NS.', 0, false );
 						write_log( "Crediteringsnota toegevoegd aan ".$order->get_order_number() );
 					}
 
@@ -7396,7 +7398,7 @@
 
 		if ( 'woocommerce_page_wc-reports' === $screen->base and ( empty( $_GET['tab'] ) or $_GET['tab'] === 'orders' ) ) {
 			global $wpdb;
-			$credit_date_timestamp = strtotime('first day of this month');
+			$credit_date_timestamp = strtotime( '+1 weekday', strtotime('last day of previous month') );
 			$credit_month_timestamp = strtotime( '-1 month', strtotime('first day of previous month') );
 			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE blog_id = ".get_current_blog_id()." AND DATE(credited) = '".date_i18n( 'Y-m-d', $credit_date_timestamp )."';";
 			$results = $wpdb->get_results( $query );
@@ -7407,7 +7409,7 @@
 
 			if ( $sum > 0 ) {
 				echo '<div class="notice notice-success"><p>';
-					if ( $credit_date_timestamp > time() ) {
+					if ( $credit_date_timestamp >= strtotime('today') ) {
 						$tense = 'zal Oxfam Fair Trade '.wc_price( $sum ).' crediteren';
 					} else {
 						$tense = 'heeft Oxfam Fair Trade '.wc_price( $sum ).' gecrediteerd';

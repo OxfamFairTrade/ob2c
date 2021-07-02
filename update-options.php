@@ -70,7 +70,7 @@
 						if ( get_webshop_name() != trim_and_uppercase( $profiles->items->profile->name ) ) {
 							// $name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
 						}
-						// Fix voor winkels met twee nummers (bv. Mariakerke)
+						// Fix voor winkels met twee nummers (bv. Mariakerke) TE VERWIJDEREN?
 						$phones = explode( ' of ', get_oxfam_shop_data('telephone') );
 						$warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
 						if ( $phones[0] != format_phone_number( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
@@ -231,6 +231,14 @@
 			</tr -->
 			<tr valign="top">
 				<th class="left">
+					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Wis het telefoonnummer om opnieuw het algemene telefoonnummer dat vermeld staat op <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a> over te nemen.</small></label>
+				</th>
+				<td class="right">
+					<input type="text" name="oxfam_custom_webshop_telephone" class="text-input" value="<?php echo esc_textarea( get_option('oxfam_custom_webshop_telephone') ); ?>" placeholder="<?php echo get_oxfam_shop_data('telephone'); ?>" readonly>
+				</td>
+			</tr>
+			<tr valign="top">
+				<th class="left">
 					<label for="oxfam_b2b_delivery_enabled">B2B-levering beschikbaar?<br/><small>Standaard is levering op locatie beschikbaar voor alle geregistreerde B2B-klanten (ongeacht de postcode in hun verzendadres). Binnenkort kun je dit hier uitschakelen.</small></label>
 				</th>
 				<td class="right">
@@ -308,14 +316,6 @@
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_city" class="text-input" value="<?php echo get_oxfam_shop_data('city'); ?>" readonly>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th class="left">
-					<label for="oxfam_city" title="Zie je een fout staan? Werk je telefoonnummer bij op de publieke site van Oxfam-Wereldwinkels.">Telefoonnummer: <?php if ( isset($phone_warning) ) echo $phone_warning; ?></label>
-				</th>
-				<td class="right">
-					<input type="text" name="oxfam_telephone" class="text-input" value="<?php echo get_oxfam_shop_data('telephone'); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
