@@ -244,7 +244,8 @@
 				Oxfam-Wereldwinkels/Fair Trade en Oxfam-Solidariteit bundelen de krachten onder de naam Oxfam België.</p>
 			</div>
 			<div class="col-sm-4 text-right">
-				<p><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/privacy/">Privacybeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/cookiebeleid/">Cookiebeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/sitemap/">Sitemap</a></p>
+				<a href="" target="_blank"><img width="230" src="<?php echo get_stylesheet_directory_uri() . '/images/geen-alcohol-minderjarigen.jpg'; ?>" class="attachment-medium size-medium" alt="Geen verkoop van alcohol aan minderjarigen"></a>
+				<p style="display: none;"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/privacy/">Privacybeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/cookiebeleid/">Cookiebeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/sitemap/">Sitemap</a></p>
 			</div>
 		</div>
 	</div>
