@@ -8071,7 +8071,7 @@
 		return $partner_data;
 	}
 
-	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen (mag verdwijnen van zodra logomateriaal uit OWW-site komt)
+	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen
 	function get_oxfam_shop_data( $key, $node = 0, $raw = false, $shop_post_id = 0 ) {
 		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
 
@@ -8082,68 +8082,53 @@
 				// Bestaat in principe altijd
 				$location_data = $oww_store_data['location'];
 				
-				switch ( intval( $shop_post_id ) ) {
-					case 3598:
-						// Uitzonderingen voor Regio Leuven vzw
-						$location_data['tax'] = 'BE 0479.961.641';
-						$location_data['account'] = 'BE86 0014 0233 4050';
-						$location_data['headquarter'] = 'Parijsstraat 56, 3000 Leuven';
-						break;
+				if ( ! $raw ) {
+					switch ( intval( $shop_post_id ) ) {
+						case 3598:
+							// Uitzonderingen voor Regio Leuven vzw
+							$location_data['tax'] = 'BE 0479.961.641';
+							$location_data['account'] = 'BE86 0014 0233 4050';
+							$location_data['headquarter'] = 'Parijsstraat 56, 3000 Leuven';
+							break;
 
-					case 3226:
-						// Uitzonderingen voor Regio Antwerpen vzw
-						$location_data['account'] = 'BE56 0018 1366 6388';
-						break;
-				}
+						case 3226:
+							// Uitzonderingen voor Regio Antwerpen vzw
+							$location_data['account'] = 'BE56 0018 1366 6388';
+							break;
+					}
 
-				if ( get_option( 'oxfam_custom_webshop_telephone', '' ) !== '' ) {
-					// Overschrijf de default waarde met de custom webshopwaarde
-					$location_data['telephone'] = get_option('oxfam_custom_webshop_telephone');
-				}
+					if ( get_option( 'oxfam_custom_webshop_telephone', '' ) !== '' ) {
+						// Overschrijf de default waarde met de custom webshopwaarde
+						$location_data['telephone'] = get_option('oxfam_custom_webshop_telephone');
+					}
 
-				// case 3598:
-				// 	$location_data['telephone'] = '0495325682';
-				// 	break;
+					// Telefoonnummer voor Leuven
+					// $location_data['telephone'] = '0495325682';
+						
+					// Telefoonnummer voor Deinze
+					// $location_data['telephone'] = '0493082695';
+
+					// Telefoonnummer voor Hemiksem
+					// $location_data['telephone'] = '0494626517';
+
+					// Telefoonnummer voor Schelle
+					// $location_data['telephone'] = '0487436822';
 					
-				// case 3362:
-				// 	// Uitzonderingen voor Deinze
-				// 	$location_data['telephone'] = '0493082695';
-				// 	break;
+					// Telefoonnummer voor Diest
+					// $location_data['telephone'] = '0475596166';
 
-				// case 3454:
-				// 	// Uitzonderingen voor Hemiksem
-				// 	$location_data['telephone'] = '0494626517';
-				// 	break;
+					// Telefoonnummer voor Belsele
+					// $location_data['telephone'] = '0471997223';
 
-				// case 3725:
-				// 	// Uitzonderingen voor Schelle
-				// 	$location_data['telephone'] = '0487436822';
-				// 	break;
-
-				// case 3383:
-				// 	// Uitzonderingen voor Diest
-				// 	$location_data['telephone'] = '0475596166';
-				// 	break;
-
-				// case 3249:
-				// 	// Uitzonderingen voor Belsele
-				// 	$location_data['telephone'] = '0471997223';
-				// 	break;
-
-				// case 3468:
-				// 	// Uitzonderingen voor Hoboken
-				// 	$location_data['telephone'] = '038277719';
-				// 	break;
-
-				// case 3700:
-				// 	// Uitzonderingen voor Poperinge
-				// 	$location_data['telephone'] = '0498521548';
-				// 	break;
-
-				// case 3580:
-				// 	// Uitzonderingen voor Kruibeke
-				// 	$location_data['telephone'] = '0493719939';
-				// 	break;
+					// Telefoonnummer voor Hoboken
+					// $location_data['telephone'] = '038277719';
+					
+					// Telefoonnummer voor Poperinge
+					// $location_data['telephone'] = '0498521548';
+					
+					// Telefoonnummer voor Kruibeke
+					// $location_data['telephone'] = '0493719939';
+				}
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[ $key ] !== '' ) {
 					

@@ -201,7 +201,7 @@
 					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Wis het telefoonnummer om het algemene telefoonnummer dat vermeld staat op <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a> opnieuw automatisch over te nemen.</small></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_custom_webshop_telephone" class="text-input" value="<?php echo esc_attr( get_option( 'oxfam_custom_webshop_telephone', '' ) ); ?>" placeholder="<?php echo get_oxfam_shop_data('telephone'); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
+					<input type="text" name="oxfam_custom_webshop_telephone" class="text-input" value="<?php echo esc_attr( get_option( 'oxfam_custom_webshop_telephone', '' ) ); ?>" placeholder="<?php echo get_oxfam_shop_data( 'telephone', 0, true ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
 				</td>
 			</tr>
 			<!-- Deze instelling maakt geen deel meer uit van de geregistreerde opties en worden dus niet automatisch bijgewerkt! -->
