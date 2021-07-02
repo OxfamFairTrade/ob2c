@@ -240,7 +240,7 @@
 	<div class="container">
 		<div class="col-row md-display-flex">
 			<div class="col-sm-8 md-align-self-center">
-				<p style="margin-bottom: 1em;">Oxfam-Wereldwinkels vzw &copy; 2019-<?php echo date_i18n('Y'); ?>. Alle rechten voorbehouden.<br/>
+				<p>Oxfam-Wereldwinkels vzw &copy; 2019-<?php echo date_i18n('Y'); ?>. Alle rechten voorbehouden.<br/>
 				Oxfam-Wereldwinkels/Fair Trade en Oxfam-Solidariteit bundelen de krachten onder de naam Oxfam België.<br/>
 				<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/privacy/">Privacybeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/cookiebeleid/">Cookiebeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/sitemap/">Sitemap</a></p>
 			</div>

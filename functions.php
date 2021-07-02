@@ -8101,33 +8101,6 @@
 						// Overschrijf de default waarde met de custom webshopwaarde
 						$location_data['telephone'] = get_option('oxfam_custom_webshop_telephone');
 					}
-
-					// Telefoonnummer voor Leuven
-					// $location_data['telephone'] = '0495325682';
-						
-					// Telefoonnummer voor Deinze
-					// $location_data['telephone'] = '0493082695';
-
-					// Telefoonnummer voor Hemiksem
-					// $location_data['telephone'] = '0494626517';
-
-					// Telefoonnummer voor Schelle
-					// $location_data['telephone'] = '0487436822';
-					
-					// Telefoonnummer voor Diest
-					// $location_data['telephone'] = '0475596166';
-
-					// Telefoonnummer voor Belsele
-					// $location_data['telephone'] = '0471997223';
-
-					// Telefoonnummer voor Hoboken
-					// $location_data['telephone'] = '038277719';
-					
-					// Telefoonnummer voor Poperinge
-					// $location_data['telephone'] = '0498521548';
-					
-					// Telefoonnummer voor Kruibeke
-					// $location_data['telephone'] = '0493719939';
 				}
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[ $key ] !== '' ) {
