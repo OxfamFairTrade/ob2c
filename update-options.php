@@ -198,16 +198,17 @@
 			?>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_remove_excel_header">Laat header met klantgegevens weg uit pick-Excel:<br/><small>Hierdoor kun je de file zonder aanpassingen overnemen in ShopPlus (druk in het verkoopscherm op F10 en vervolgens op F12, op de kassacomputer moet Microsoft Excel geïnstalleerd zijn). Zo hoef je de producten niet meer handmatig in te scannen. Je verliest wel de dubbelcheck op de compleetheid van de bestelling en ziet het adres van de klant niet meer op het document.</small></label>
+					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Wis het telefoonnummer om het algemene telefoonnummer dat vermeld staat op <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a> opnieuw automatisch over te nemen.</small></label>
 				</th>
 				<td class="right">
-					<input type="checkbox" name="oxfam_remove_excel_header" value="yes" <?php checked( get_option('oxfam_remove_excel_header'), 'yes' ); ?> <?php if ( current_user_can('create_sites') ) echo ' disabled'; ?>>
+					<input type="text" name="oxfam_custom_webshop_telephone" class="text-input" value="<?php echo esc_attr( get_option( 'oxfam_custom_webshop_telephone', '' ) ); ?>" placeholder="<?php echo get_oxfam_shop_data('telephone'); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
 				</td>
 			</tr>
 			<!-- Deze instelling maakt geen deel meer uit van de geregistreerde opties en worden dus niet automatisch bijgewerkt! -->
+			<!-- Ook sluitingsdagen van alle secundaire afhaalpunten tonen ter info? Maar wat met externe leverpunten? -->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden overgenomen uit <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor <u>alle levermethodes en afhaalpunten</u>.</small></label>
+					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden overgenomen uit <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor alle levermethodes. Indien er extra afhaalpunten zijn, wordt bij afhaling rekening gehouden met de sluitingsdagen van de gekozen winkel.</small></label>
 				</th>
 				<td class="right">
 					<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ); ?></textarea>
@@ -221,25 +222,9 @@
 					<textarea name="oxfam_sitewide_banner_top" rows="2" maxlength="200" class="text-input" placeholder="Gratis verzending vanaf <?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?> euro!" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_sitewide_banner_top') ); ?></textarea>
 				</td>
 			</tr>
-			<!-- tr valign="top">
-				<th class="left">
-					<label for="woocommerce_local_pickup_plus_enabled">Afhaling in de winkel tijdelijk volledig uitschakelen?<br/><small>Wereldwinkels die in het kader van de maatregelen tegen de verspreiding van het coronavirus hun winkel sluiten, kunnen voor alle duidelijkheid afhaling in de winkel volledig uitschakelen in hun webshop. Opgelet: indien je slechts enkele dagen sluit en/of beperktere openingsuren hanteert, dien je deze aanpassingen gewoon door te geven via je winkelpagina op oxfamwereldwinkels.be!</small></label>
-				</th>
-				<td class="right">
-					<input type="checkbox" name="woocommerce_local_pickup_plus_enabled" value="yes" <?php // checked( get_option('woocommerce_local_pickup_plus_enabled'), 'yes' ); ?>>
-				</td>
-			</tr -->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Wis het telefoonnummer om opnieuw het algemene telefoonnummer dat vermeld staat op <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a> over te nemen.</small></label>
-				</th>
-				<td class="right">
-					<input type="text" name="oxfam_custom_webshop_telephone" class="text-input" value="<?php echo esc_textarea( get_option('oxfam_custom_webshop_telephone') ); ?>" placeholder="<?php echo get_oxfam_shop_data('telephone'); ?>" readonly>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th class="left">
-					<label for="oxfam_b2b_delivery_enabled">B2B-levering beschikbaar?<br/><small>Standaard is levering op locatie beschikbaar voor alle geregistreerde B2B-klanten (ongeacht de postcode in hun verzendadres). Binnenkort kun je dit hier uitschakelen.</small></label>
+					<label for="oxfam_b2b_delivery_enabled">B2B-levering beschikbaar?<br/><small>Standaard is levering op locatie beschikbaar voor alle geregistreerde B2B-klanten (ongeacht de postcode in hun verzendadres). Op termijn kun je dit hier uitschakelen.</small></label>
 				</th>
 				<td class="right">
 					<input type="checkbox" name="oxfam_b2b_delivery_enabled" value="yes" <?php checked( $b2b_shipping_options['enabled'], 'yes' ); ?> disabled>
@@ -261,13 +246,19 @@
 					<textarea name="oxfam_b2b_invitation_text" rows="2" class="text-input" placeholder="<?php _e( 'Zesde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_b2b_invitation_text') ); ?></textarea>
 				</td>
 			</tr>
+			<tr valign="top">
+				<th class="left">
+					<label for="oxfam_remove_excel_header">Laat header met klantgegevens weg uit pick-Excel:<br/><small>Hierdoor kun je de file zonder aanpassingen overnemen in ShopPlus (druk in het verkoopscherm op F10 en vervolgens op F12, op de kassacomputer moet Microsoft Excel geïnstalleerd zijn). Zo hoef je de producten niet meer handmatig in te scannen. Je verliest wel de dubbelcheck op de compleetheid van de bestelling en ziet het adres van de klant niet meer op het document.</small></label>
+				</th>
+				<td class="right">
+					<input type="checkbox" name="oxfam_remove_excel_header" value="yes" <?php checked( get_option('oxfam_remove_excel_header'), 'yes' ); ?> <?php if ( current_user_can('create_sites') ) echo ' disabled'; ?>>
+				</td>
+			</tr>
 			<?php
 				// Altijd tonen, nu er ook weer lokale instellingen zijn
-				// if ( current_user_can('create_sites') ) {
-					echo "<tr><th class='left'></th><td class='right'>";
-					submit_button();
-					echo "</td></tr>";
-				// }
+				echo "<tr><th class='left'></th><td class='right'>";
+				submit_button();
+				echo "</td></tr>";
 			?>
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database! -->
 			<tr valign="top">

@@ -3753,6 +3753,9 @@
 			$value = '0' . $value;
 		}
 		
+		// Zorg ervoor dat ongeldige nummers gewist worden
+		$phone = '';
+		
 		// Vaste telefoonnummers
 		if ( strlen( $value ) == 9 ) {
 			if ( intval( $value[1] ) == 2 or intval( $value[1] ) == 3 or intval( $value[1] ) == 4 or intval( $value[1] ) == 9 ) {
@@ -6021,12 +6024,13 @@
 		// We geven hier bewust geen defaultwaarde mee, aangezien die in de front-end toch niet geïnterpreteerd wordt ('admin_init')
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
-		register_setting( 'oxfam-options-local', 'oxfam_sitewide_banner_top', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
-		register_setting( 'oxfam-options-local', 'oxfam_disable_local_pickup', array( 'type' => 'boolean' ) );
-		register_setting( 'oxfam-options-local', 'oxfam_remove_excel_header', array( 'type' => 'boolean' ) );
-		register_setting( 'oxfam-options-local', 'oxfam_b2b_invitation_text', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
+		// register_setting( 'oxfam-options-local', 'oxfam_disable_local_pickup', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_custom_webshop_telephone', array( 'type' => 'string', 'sanitize_callback' => 'format_phone_number' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_sitewide_banner_top', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_b2b_invitation_text', array( 'type' => 'string', 'sanitize_callback' => 'clean_banner_text' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_enabled', array( 'type' => 'boolean' ) );
+		// register_setting( 'oxfam-options-local', 'oxfam_b2b_delivery_cost', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_remove_excel_header', array( 'type' => 'boolean' ) );
 	}
 
 	// Zorg ervoor dat je lokale opties ook zonder 'manage_options'-rechten opgeslagen kunnen worden
@@ -8084,54 +8088,62 @@
 						$location_data['tax'] = 'BE 0479.961.641';
 						$location_data['account'] = 'BE86 0014 0233 4050';
 						$location_data['headquarter'] = 'Parijsstraat 56, 3000 Leuven';
-						$location_data['telephone'] = '0495325682';
 						break;
 
 					case 3226:
 						// Uitzonderingen voor Regio Antwerpen vzw
 						$location_data['account'] = 'BE56 0018 1366 6388';
 						break;
-
-					case 3362:
-						// Uitzonderingen voor Deinze
-						$location_data['telephone'] = '0493082695';
-						break;
-
-					case 3454:
-						// Uitzonderingen voor Hemiksem
-						$location_data['telephone'] = '0494626517';
-						break;
-
-					case 3725:
-						// Uitzonderingen voor Schelle
-						$location_data['telephone'] = '0487436822';
-						break;
-
-					case 3383:
-						// Uitzonderingen voor Diest
-						$location_data['telephone'] = '0475596166';
-						break;
-
-					case 3249:
-						// Uitzonderingen voor Belsele
-						$location_data['telephone'] = '0471997223';
-						break;
-
-					case 3468:
-						// Uitzonderingen voor Hoboken
-						$location_data['telephone'] = '038277719';
-						break;
-
-					case 3700:
-						// Uitzonderingen voor Poperinge
-						$location_data['telephone'] = '0498521548';
-						break;
-
-					case 3580:
-						// Uitzonderingen voor Kruibeke
-						$location_data['telephone'] = '0493719939';
-						break;
 				}
+
+				if ( get_option( 'oxfam_custom_webshop_telephone', '' ) !== '' ) {
+					// Overschrijf de default waarde met de custom webshopwaarde
+					$location_data['telephone'] = get_option('oxfam_custom_webshop_telephone');
+				}
+
+				// case 3598:
+				// 	$location_data['telephone'] = '0495325682';
+				// 	break;
+					
+				// case 3362:
+				// 	// Uitzonderingen voor Deinze
+				// 	$location_data['telephone'] = '0493082695';
+				// 	break;
+
+				// case 3454:
+				// 	// Uitzonderingen voor Hemiksem
+				// 	$location_data['telephone'] = '0494626517';
+				// 	break;
+
+				// case 3725:
+				// 	// Uitzonderingen voor Schelle
+				// 	$location_data['telephone'] = '0487436822';
+				// 	break;
+
+				// case 3383:
+				// 	// Uitzonderingen voor Diest
+				// 	$location_data['telephone'] = '0475596166';
+				// 	break;
+
+				// case 3249:
+				// 	// Uitzonderingen voor Belsele
+				// 	$location_data['telephone'] = '0471997223';
+				// 	break;
+
+				// case 3468:
+				// 	// Uitzonderingen voor Hoboken
+				// 	$location_data['telephone'] = '038277719';
+				// 	break;
+
+				// case 3700:
+				// 	// Uitzonderingen voor Poperinge
+				// 	$location_data['telephone'] = '0498521548';
+				// 	break;
+
+				// case 3580:
+				// 	// Uitzonderingen voor Kruibeke
+				// 	$location_data['telephone'] = '0493719939';
+				// 	break;
 				
 				if ( array_key_exists( $key, $location_data ) and $location_data[ $key ] !== '' ) {
 					
