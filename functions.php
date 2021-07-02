@@ -6171,10 +6171,10 @@
 	add_action( 'update_option_oxfam_b2b_invitation_text', 'oxfam_text_field_option_was_updated', 10, 3 );
 
 	function oxfam_text_field_option_was_created( $option, $new_text ) {
+		// Skip mail indien gewoon een lege waarde ingesteld werd
 		if ( strlen( $new_text ) > 0 ) {
-			$body = '"'.$new_text.'"';
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', '<p>"'.$new_text.'"</p>' );
 		}
-		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', '<p>'.$body.'</p>' );
 	}
 
 	function oxfam_text_field_option_was_updated( $old_text, $new_text, $option ) {
@@ -6838,6 +6838,7 @@
 			$parent_id = get_term( $cat_ids[0], 'product_cat' )->parent;
 			
 			if ( get_term( $cat_ids[0], 'product_cat' )->slug === 'spirits' or get_term( $cat_ids[0], 'product_cat' )->slug === 'bier' or ( $parent_id > 0 and get_term( $parent_id, 'product_cat' )->slug === 'wijn' ) ) {
+				$output = '<a href="https://www.vlaanderen.be/regels-voor-verkoop-van-alcohol" target="_blank"><img width="280" src="' . get_stylesheet_directory_uri() . '/images/geen-alcohol-minderjarigen.jpg" class="alcohol-warning" style="float: right; margin: 0 1em 1em 0;" alt="Geen verkoop van alcohol aan minderjarigen"></a>';
 				$output = 'Ons vakmanschap drink je met verstand! Je dient minstens 18 jaar oud te zijn om dit alcoholische product te bestellen. ';
 			}
 
