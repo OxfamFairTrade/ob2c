@@ -6023,6 +6023,7 @@
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		// We geven hier bewust geen defaultwaarde mee, aangezien die in de front-end toch niet geïnterpreteerd wordt ('admin_init')
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		// register_setting( 'oxfam-options-local', 'oxfam_b2c_delivery_cost', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_disable_local_pickup', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_custom_webshop_telephone', array( 'type' => 'string', 'sanitize_callback' => 'format_phone_number' ) );
@@ -6165,6 +6166,8 @@
 		}
 	}
 
+	add_action( 'add_option_oxfam_custom_webshop_telephone', 'oxfam_text_field_option_was_created', 10, 2 );
+	add_action( 'update_option_oxfam_custom_webshop_telephone', 'oxfam_text_field_option_was_updated', 10, 3 );
 	add_action( 'add_option_oxfam_sitewide_banner_top', 'oxfam_text_field_option_was_created', 10, 2 );
 	add_action( 'update_option_oxfam_sitewide_banner_top', 'oxfam_text_field_option_was_updated', 10, 3 );
 	add_action( 'add_option_oxfam_b2b_invitation_text', 'oxfam_text_field_option_was_created', 10, 2 );
