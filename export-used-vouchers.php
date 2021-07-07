@@ -152,7 +152,7 @@
 
 		function output_latest_exports( $start_date, $end_date ) {
 			global $voucher_ids;
-			$files = get_latest_exports();
+			$files = get_latest_exports('xlsx');
 
 			foreach ( $files as $file ) {
 				$id = '';
@@ -168,27 +168,26 @@
 					}
 				}
 
-				echo '<br/><br/>';
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
-				echo '<a href="'.content_url( '/exports/'.$file['name'] ).'" download><button id="'.$id.'" class="button download-excel">'.$title.'</button></a>'.$extras;
+				echo '<br/><a href="'.content_url( '/exports/'.$file['name'] ).'" download><button id="'.$id.'" class="button download-excel">'.$title.'</button></a>'.$extras.'<br/>';
 			}
 		}
 
-		function get_latest_exports( $max = 10 ) {
+		function get_latest_exports( $extension = false, $max = false ) {
 			$exports = array();
+			$local_path = WP_CONTENT_DIR.'/exports/';
 
-			$local_path = WP_CONTENT_DIR . '/exports/';
 			if ( $handle = opendir( $local_path ) ) {
 				// Loop door alle files in de map
 				while ( false !== ( $file = readdir( $handle ) ) ) {
 					$filepath = $local_path . $file;
-					// Beschouw enkel XLSX-bestanden
-					if ( ends_with( $file, '.xlsx' ) ) {
+					// Check of we enkel de opgegeven extensie moeten beschouwen
+					if ( ! $extension or ends_with( $file, '.'.$extension ) ) {
 						// Zet naam, timestamp, datum en pad van de upload in de array
 						$exports[] = array(
 							'name' => basename( $filepath ),
 							'timestamp' => filemtime( $filepath ),
-							'date' => get_date_from_gmt( date( 'Y-m-d H:i', filemtime( $filepath ) ), 'd/m/Y H:i' ),
+							'date' => get_date_from_gmt( date( 'Y-m-d H:i:s', filemtime( $filepath ) ), 'd/m/Y H:i:s' ),
 							'path' => $filepath,
 						);
 					}
@@ -196,13 +195,15 @@
 				closedir( $handle );
 			}
 			
-			// Orden chronologisch
-			if ( count( $exports ) > 1 ) {
-				usort( $exports, 'sort_by_time' );
-			}
+			// Orden in dalende chronologisch volgorde
+			usort( $exports, 'sort_by_time' );
 
-			// Zet recentste bestanden bovenaan en geef enkel de eerste X weer
-			return array_slice( array_reverse( $exports ), 0, $max );
+			if ( $max ) {
+				// Geef enkel de eerste X weer
+				return array_slice( $exports, 0, $max );
+			} else {
+				return $exports;
+			}
 		}
 
 		function ends_with( $haystack, $needle ) {
@@ -210,7 +211,7 @@
 		}
 
 		function sort_by_time( $a, $b ) {
-			return $a['timestamp'] - $b['timestamp'];
+			return $b['timestamp'] - $a['timestamp'];
 		}
 
 		add_action( 'admin_footer', 'close_voucher_export' );
