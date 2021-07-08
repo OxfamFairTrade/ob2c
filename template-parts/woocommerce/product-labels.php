@@ -19,11 +19,16 @@
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
 		
-		$two_plus_two_products = array( 20809, 20810, 20811, 20812 );
+		$two_plus_two_products = array( 20810, 20812 );
 		if ( in_array( $product->get_sku(), $two_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 2+2 gratis';
 		}
 		
+		$fifty_percent_off_products = array( 20809, 20811 );
+		if ( in_array( $product->get_sku(), $fifty_percent_off_products ) ) {
+			$labels['promotion'] = 'Promo -50%';
+		}
+
 		$two_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
