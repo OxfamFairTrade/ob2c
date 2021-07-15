@@ -5006,11 +5006,17 @@
 				// Check of de winkel op deze dag effectief nog geopend is na 12u (tel er indien nodig dagen bij)
 				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
 
+				do_action( 'qm/info', 'Estimate delivery (step 1): {date}', array( 'date' => date_i18n( 'Y-m-d H:i', $timestamp ) ) );
+
 				// Tel alle sluitingsdagen die in de verwerkingsperiode vallen (inclusief de eerstkomende openingsdag!) erbij
-				$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_post_id );
+				$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_post_id, true );
+				
+				do_action( 'qm/info', 'Estimate delivery (step 2): {date}', array( 'date' => date_i18n( 'Y-m-d H:i', $timestamp ) ) );
 
 				// Check of de winkel ook op de nieuwe dag effectief nog geopend is na 12u
 				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
+
+				do_action( 'qm/info', 'Estimate delivery (step 3): {date}', array( 'date' => date_i18n( 'Y-m-d H:i', $timestamp ) ) );
 
 				break;
 
@@ -5062,7 +5068,7 @@
 
 	// Check of er feestdagen in een bepaalde periode liggen, en zo ja: tel die dagen bij de einddag
 	// Neemt een begin- en eindpunt en retourneert het nieuwe eindpunt (allemaal in timestamps)
-	function move_date_on_holidays( $from, $till, $shop_post_id ) {
+	function move_date_on_holidays( $from, $till, $shop_post_id, $is_local_pickup = false ) {
 		// Check of de startdag ook nog in beschouwing genomen moet worden
 		if ( date_i18n( 'N', $from ) < 6 and date_i18n( 'G', $from ) >= 12 ) {
 			$first = date_i18n( 'Y-m-d', strtotime( '+1 weekday', $from ) );
@@ -5073,25 +5079,31 @@
 		// Géén halve dag bijtellen, kan de dag over middernacht doen schuiven indien het openingsuur voor afhaling na de middag valt
 		$last = date_i18n( 'Y-m-d', $till );
 		
-		$days = get_office_hours( NULL, $shop_post_id );
+		$hours = get_office_hours( NULL, $shop_post_id );
 		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
-		foreach ( get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) as $holiday ) {
+		$holidays = get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) );
+		foreach ( $holidays as $holiday ) {
 			// Argument 'N' want get_office_hours() werkt van 1 tot 7!
 			$weekday_number = date_i18n( 'N', strtotime( $holiday ) );
 			// Enkel de feestdagen die niet in het weekend vallen moeten we in beschouwing nemen!
 			if ( $weekday_number < 6 and ( $holiday > $first ) and ( $holiday <= $last ) ) {
 				// @toCheck: Enkel werkdag bijtellen indien de winkel niet sowieso al gesloten is op deze weekdag
-				if ( $days[ $weekday_number ] ) {
-					if ( current_user_can('update_core') ) {
-						write_log( 'NORMALLY OPENED ON '.$holiday.', MOVE DATE' );
-						write_log( 'BEFORE: '.$last );
-					}
+				if ( $hours[ $weekday_number ] ) {
+					do_action( 'qm/info', 'Normally opened on {holiday}, move date ...', array( 'holiday' => $holiday ) );
 					$till = strtotime( '+1 weekday', $till );
 					$last = date_i18n( 'Y-m-d', $till );
-					if ( current_user_can('update_core') ) {
-						write_log( 'AFTER: '.$last );
-					}
+					do_action( 'qm/info', 'New date: {after}', array( 'after' => $last ) );
 				}
+			}
+		}
+
+		if ( $is_local_pickup ) { 
+			// Als de finale dag ook weer een feestdag is OF geen openingsuren heeft, moeten we nog verder opschuiven
+			while ( in_array( $last, $holidays ) or ! $hours[ date_i18n( 'N', $till ) ] ) {
+				do_action( 'qm/info', 'Closed on {before} ...', array( 'before' => $last ) );
+				$till = strtotime( '+1 day', $till );
+				$last = date_i18n( 'Y-m-d', $till );
+				do_action( 'qm/info', 'New date: {after}', array( 'after' => $last ) );
 			}
 		}
 		
@@ -5139,7 +5151,7 @@
 				$timestamp = strtotime( date_i18n( 'Y-m-d', $from )." ".$day_part['start'] );
 			}
 		} else {
-			// Indien alle openingsuren weggehaald zijn (elke dag in $hours === false): stop na 7 pogingen
+			// Indien alle openingsuren weggehaald zijn (elke dag in $hours is een lege array): stop na 7 pogingen
 			if ( $tried < 7 ) {
 				// Vandaag zijn we gesloten, probeer het morgen opnieuw
 				// Het mag nu ook een dag in het weekend zijn, de wachttijd is vervuld!
@@ -7619,7 +7631,7 @@
 		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
 		$output = '';
 
-		$days = get_office_hours( NULL, $atts['id'] );
+		$hours = get_office_hours( NULL, $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array();
 		if ( in_array( $atts['id'], $exceptions ) ) {
@@ -7639,22 +7651,22 @@
 
 		for ( $cnt = 0; $cnt < 7; $cnt++ ) {
 			// Fix voor zondagen
-			$index = ( ( $start + $cnt - 1 ) % 7 ) + 1;
+			$weekday_number = ( ( $start + $cnt - 1 ) % 7 ) + 1;
 			
 			// Check of er voor deze dag wel openingsuren bestaan
-			if ( $days[$index] ) {
+			if ( $hours[ $weekday_number ] ) {
 				$date = "";
 				if ( $atts['start'] === 'today' ) {
-					$date = " ".date( 'j/n', strtotime( "this ".date( 'l', strtotime("Sunday +{$index} days") ) ) );
+					$date = " ".date( 'j/n', strtotime( "this ".date( 'l', strtotime("Sunday +{$weekday_number} days") ) ) );
 				}
 				// Toon sluitingsdagen indien we de specifieke openingsuren voor de komende 7 dagen tonen
 				if ( $atts['start'] === 'today' and in_array( date_i18n( 'Y-m-d', strtotime("+{$cnt} days") ), $holidays ) ) {
-					$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).$date.": uitzonderlijk gesloten";
+					$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$weekday_number} days") ) ).$date.": uitzonderlijk gesloten";
 				} else {
-					foreach ( $days[$index] as $part => $part_hours ) {
-						if ( ! isset( $$index ) ) {
-							$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$index} days") ) ).$date.": " . $part_hours['start'] . " - " . $part_hours['end'];
-							$$index = true;
+					foreach ( $hours[ $weekday_number ] as $part => $part_hours ) {
+						if ( ! isset( $$weekday_number ) ) {
+							$output .= "<br/>".ucwords( date_i18n( 'l', strtotime("Sunday +{$weekday_number} days") ) ).$date.": " . $part_hours['start'] . " - " . $part_hours['end'];
+							$$weekday_number = true;
 						} else {
 							$output .= " en " . $part_hours['start'] . " - " . $part_hours['end'];
 						}
@@ -7769,7 +7781,8 @@
 
 		}
 
-		do_action( 'qm/debug', $shops );
+		// do_action( 'qm/debug', $shops );
+
 		return $shops;
 	}
 
