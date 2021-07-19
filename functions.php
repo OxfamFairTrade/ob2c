@@ -5,6 +5,35 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	// Schakel afrekenen in de webshop van Kortrijk uit van 24/07 t.e.m. 06/08
+	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
+	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
+	add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
+
+	function disable_all_payment_methods( $methods ) {
+		if ( get_current_blog_id() === 18 ) {
+			if ( date_i18n('Y-m-d') >= '2021-07-24' and date_i18n('Y-m-d') <= '2021-08-06' ) {
+				return array();
+			}
+		}
+		return $methods;
+	}
+
+	function print_explanation_if_disabled( $text ) {
+		return get_option('oxfam_sitewide_banner_top');
+	}
+
+	
+	function disable_checkout_button( $html ) {
+		if ( get_current_blog_id() === 18 ) {
+			if ( date_i18n('Y-m-d') >= '2021-07-24' and date_i18n('Y-m-d') <= '2021-07-24' ) {
+				$original_button = __( 'Place order', 'woocommerce' );
+				return str_replace( '<input type="submit"', '<input type="submit" disabled="disabled"', str_replace( $original_button, 'Bestellen tijdelijk onmogelijk', $html ) );
+			}
+		}
+		return $html;
+	}
+
 	function ob2c_is_plausible_voucher_code( $code ) {
 		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
 			return true;

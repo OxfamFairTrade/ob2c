@@ -207,7 +207,10 @@ form.woocommerce-checkout {
     }
   }
 
-    #payment .payment_methods {
+  #payment {
+    margin-bottom: 0;
+
+    .payment_methods {
       li.wc_payment_method {
         &.active {
           background-color: $new-green;
@@ -226,7 +229,15 @@ form.woocommerce-checkout {
           padding-left: 0;
         }
       }
+
+      li:not(.wc_payment_method) {
+        font-size: 0.9em;
+        line-height: 1em;
+        color: white;
+        background-color: $pale-blue;
+      }
     }
+  }
 }
 
 #order_comments-description {
