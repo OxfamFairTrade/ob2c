@@ -207,35 +207,33 @@ form.woocommerce-checkout {
     }
   }
 
-  #payment {
+  #payment .payment_methods {
     margin-bottom: 0;
 
-    .payment_methods {
-      li.wc_payment_method {
-        &.active {
-          background-color: $new-green;
-          color: white;
-
-          label {
-            color: white !important;
-          }
-        }
-
-        .input-radio {
-          display: none !important;
-        }
-
-        .payment_box {
-          padding-left: 0;
-        }
-      }
-
-      li:not(.wc_payment_method) {
-        font-size: 0.9em;
-        line-height: 1em;
+    li.wc_payment_method {
+      &.active {
+        background-color: $new-green;
         color: white;
-        background-color: $pale-blue;
+
+        label {
+          color: white !important;
+        }
       }
+
+      .input-radio {
+        display: none !important;
+      }
+
+      .payment_box {
+        padding-left: 0;
+      }
+    }
+
+    li:not(.wc_payment_method) {
+      font-size: 0.9em;
+      line-height: 1em;
+      color: white;
+      background-color: $pale-blue;
     }
   }
 }
