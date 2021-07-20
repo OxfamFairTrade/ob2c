@@ -5127,12 +5127,24 @@
 		}
 
 		if ( $is_local_pickup ) { 
+			// Pas op met while loop!
+			$tried = 0;
+			
 			// Als de finale dag ook weer een feestdag is OF geen openingsuren heeft, moeten we nog verder opschuiven
 			while ( in_array( $last, $holidays ) or ! $hours[ date_i18n( 'N', $till ) ] ) {
 				do_action( 'qm/info', 'Closed on {before} ...', array( 'before' => $last ) );
 				$till = strtotime( '+1 day', $till );
 				$last = date_i18n( 'Y-m-d', $till );
 				do_action( 'qm/info', 'New date: {after}', array( 'after' => $last ) );
+				
+				if ( ! $hours[ date_i18n( 'N', $till ) ] ) {
+					$tried++;
+				}
+
+				if ( $tried > 7 ) {
+					// Beëndig de loop
+					return false;
+				}
 			}
 		}
 		
