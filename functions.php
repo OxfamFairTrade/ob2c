@@ -6257,6 +6257,7 @@
 		add_submenu_page( 'oxfam-products-list', 'Snacks', 'Snacks', 'manage_network_users', 'oxfam-products-list-snacks', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Wereldkeuken', 'Wereldkeuken', 'manage_network_users', 'oxfam-products-list-wereldkeuken', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Alle craftsproducten', 'Alle craftsproducten', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Augustusmagazine 2021', 'Augustus 2021', 'manage_network_users', 'oxfam-products-list-augustus', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Aprilmagazine 2021', 'April 2021', 'manage_network_users', 'oxfam-products-list-april', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
@@ -6483,6 +6484,12 @@
 
 			case 'crafts':
 				if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
+					return true;
+				}
+				break;
+
+			case 'augustus':
+				if ( has_term( 'augustus-2021', 'product_tag', $product->get_id() ) ) {
 					return true;
 				}
 				break;
@@ -7133,16 +7140,10 @@
 						$product->set_stock_quantity(0);
 						$product->update_meta_data( '_in_bestelweb', 'nee' );
 						
-						// // In principe overbodig ...
-						// $product->set_stock_status('outofstock');
-						// $product->set_backorders('no');
-						
 						if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
-							write_log( $product->get_sku()." DISABLE ON MAIN SITE" );
+							// Metadata lijkt automatisch gesynchroniseerd te worden naar subsites terwijl voorraadstatus behouden wordt, perfect!
 							$product->save();
-
-							// Worden de wijzigingen automatisch gesynchroniseerd naar subsites of moeten we deze actie triggeren?
-							// do_action( 'WOO_MSTORE_admin_product/process_product', $product->get_id() );
+							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
 						} else {
 							write_log( $product->get_sku()." SHOULD BE DISABLED ON MAIN SITE" );
 						}
