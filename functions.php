@@ -6041,6 +6041,9 @@
 		echo 'waarvan XX euro leeggoed';
 	}
 
+	// Schakel de 'bestel opnieuw'-knop tijdelijk uit (probleem met toevoeging van gekoppeld leeggoed + producten tijdelijk uit voorraad)
+	add_filter( 'woocommerce_valid_order_statuses_for_order_again', '__return_empty_array' );
+
 	// Vermijd dat leeggoedlijnen meegekopieerd worden vanuit een vorige bestelling (zonder juiste koppeling met moederproduct)
 	// TRIGGEREN VAN WC FORCE SELLS ACHTERAF LUKT NIET
 	// add_filter( 'woocommerce_add_order_again_cart_item', 'prevent_empties_from_being_copied', 10, 2 );
