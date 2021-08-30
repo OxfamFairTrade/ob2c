@@ -7419,9 +7419,10 @@
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
-					// en alle producten uit het augustusmagazine
 					echo '<p>Twee nieuwe voedingsproducten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 25317, 27055 );
+						// Augustusmagazine, septemberagenda's en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
+						$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '87400', '87401', '87402', '87403', '87404', '87405', '87406', '87407', '87408', '87409', '87410', '87411', '87412', '87413', '87414', '87415', '94068' );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -7964,7 +7965,7 @@
 		foreach ( $zips as $zip => $cities ) {
 			$parts = explode( '/', $cities );
 			foreach ( $parts as $city ) {
-				$content[] = array( 'label' => $zip.' '.trim($city), 'value' => $zip );	
+				$content[] = array( 'label' => $zip.' '.trim($city), 'value' => $zip );
 			}
 		}
 		return $content;

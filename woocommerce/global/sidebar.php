@@ -35,8 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						$products_tags[] = 'promotie';
 					}
 					
-					$products_tags[] = 'april-2021';
-					$products_tags[] = 'januari-2021';
+					$products_tags[] = 'augustus-2021';
 					
 					foreach ( $products_tags as $product_slug ) {
 						$term = get_term_by( 'slug', $product_slug, 'product_tag' );

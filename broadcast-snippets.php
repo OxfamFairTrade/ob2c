@@ -135,7 +135,7 @@
 	// Verwijder partners
 	$taxonomy = 'product_partner';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'altertrade', 'anap', 'beni-ghreb', 'burke-agro', 'consorcio-vinicola', 'fruittiland', 'koman', 'lomas-de-cauquenes', 'miel-maya', 'surin-ricefund', 'terrespoir' );
+		$terms = array( 'sakaran' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {
