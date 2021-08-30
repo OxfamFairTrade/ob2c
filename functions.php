@@ -5014,7 +5014,7 @@
 
 					// Skip check op uitzonderlijke sluitingsdagen
 					return find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
-				} elseif ( intval( $chosen_shop_post_id ) === 3478 ) {
+				} elseif ( $chosen_shop_post_id == 3478 ) {
 					// Meer marge voor Hoogstraten
 					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
 						// Na de deadline van zondag 22u00: begin pas bij 4de werkdag, kwestie van zeker op volgende week uit te komen
@@ -7800,7 +7800,9 @@
 			// Oude versie
 			if ( $locations = get_option('woocommerce_pickup_locations') ) {
 				foreach ( $locations as $location ) {
-					$parts = explode( ' id=', $location['address_1'] );
+					// Let op met externe afhaalpunten met een expliciet ingevuld adres => enkel in de openingsuren staat een (niet-numerieke) ID!
+					// $parts = explode( ' id=', $location['address_1'] );
+					$parts = explode( ' id=', $location['note'] );
 					if ( isset( $parts[1] ) ) {
 						$temporary_shop_post_id = str_replace( ']', '', $parts[1] );
 						if ( is_numeric( $temporary_shop_post_id ) ) {
