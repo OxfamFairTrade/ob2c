@@ -2046,9 +2046,9 @@
 				// Dubbelcheck of deze stad wel tussen de deelnemende winkels zit
 				$owner = $city;
 			} elseif ( strpos( $city, 'boortmeerbeek' ) !== false ) {
-				// HABOBIB Boortmeerbeek is zelf geen lid van de regio!
+				// HaBoBIB Boortmeerbeek is zelf geen lid van de regio!
 				$owner = 'boortmeerbeek';
-				$logger->info( $order->get_order_number().': HABOBIB order attributed to '.$owner, $context );
+				$logger->info( $order->get_order_number().': HaBoBIB order attributed to '.$owner, $context );
 			}
 		}
 
