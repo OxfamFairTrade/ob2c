@@ -276,7 +276,7 @@
 		// Opgelet: dit kijkt naar de (onzichtbare) slug, die kan afwijken van de titel, bv. indien kortingscode achteraf gewijzigd!
 		// WERKT NIET BIJ 'b2b-5%' en 'b2b-10%' (ZELFS MET 'b2b5' en 'b2b10'), GEBRUIK DAARVOOR 'title' => 'b2b-5%' en 'title' => 'b2b-10%'
 		// Criterium voor uitsluiten van B2B-korting beter vervangen door _tax_class = '' OR _tax_class = 'voeding'?
-		'post_name__in' => array( '202107-sauvignon', '202107-worldshake', '202107-juste-tripel-bruin', '202107-juste-tripel-bruin-clips' ),
+		'post_name__in' => array( '202109-noussines', '202109-papajas', '202109-quinoabiscuits', '202109-chocoladerepen', '202109-chocoladerepen-tussenstap' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	
@@ -396,7 +396,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( 25317, 27055 );
+	$outofstocks = array( 17115, 24614, 26489 );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
