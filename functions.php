@@ -2637,7 +2637,7 @@
 	add_filter( 'ure_admin_menu_access_allowed_args', 'ure_allow_args_for_oxfam_options', 10, 1 );
 
 	function ure_allow_args_for_oxfam_options( $args ) {
-		// Default WP-argumenten zoals 's', 'filter_action', 'action', 'action2', 'paged', ... zijn reeds automatisch voorzien!
+		// Default WP-argumenten zoals 's', 'filter_action', 'action', 'action2', 'paged', ... zijn in principe reeds automatisch voorzien!
 		// Sta filteren toe op orderoverzicht
 		$args['edit.php'][''][] = 'claimed_by';
 		$args['edit.php'][''][] = 'stock_status';
@@ -2657,6 +2657,9 @@
 			'start_date',
 			'end_date',
 			'wc_reports_nonce',
+			'paged',
+			'refresh',
+			'_wpnonce',
 		);
 		
 		$args['admin.php']['oxfam-options'] = array(
@@ -2670,6 +2673,8 @@
 			'action2',
 			'page',
 			'paged',
+			'orderby',
+			'order',
 			'wpml-list_table_nonce',
 			'email[]',
 			'_wp_http_referer',
