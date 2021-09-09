@@ -3611,15 +3611,21 @@
 			$value = 'no';
 		}
 		update_post_meta( $order_id, 'is_b2b_sale', $value );
+
+		// Registreer of er ontbijtpakketten in de bestelling zitten of niet
+		if ( cart_contains_breakfast() ) {
+			// @toDo: Veralgemenen tot timestamp van leverdatum?
+			update_post_meta( $order_id, 'contains_breakfast', 'yes' );
+		}
 	}
 
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
 	add_action( 'woocommerce_order_status_pending_to_processing', 'save_estimated_delivery' );
 
 	function save_estimated_delivery( $order_id ) {
-		$order = wc_get_order($order_id);
+		$order = wc_get_order( $order_id );
 		$shipping = $order->get_shipping_methods();
-		$shipping = reset($shipping);
+		$shipping = reset( $shipping );
 
 		if ( $order->get_meta('is_b2b_sale') !== 'yes' ) {
 			$timestamp = estimate_delivery_date( $shipping['method_id'], $order_id );
@@ -4951,15 +4957,51 @@
 		return false;
 	}
 
+	function cart_contains_breakfast() {
+		// Voorlopig enkel checken in Regio Antwerpen
+		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' or get_current_blog_id() === 24 ) {
+			if ( WC()->session->has_session() ) {
+				foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
+					$product_in_cart = $values['data'];
+					if ( strpos( $product_in_cart->get_sku(), 'Merksem' ) > 0 ) {
+						// @toDo: Veralgemenen tot timestamp van leverdatum?
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	function order_contains_breakfast( $order ) {
+		// Voorlopig enkel checken in Regio Antwerpen
+		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' or get_current_blog_id() === 24 ) {
+			if ( $order->get_meta('contains_breakfast') === 'yes' ) {
+				// @toDo: Veralgemenen tot timestamp van leverdatum?
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	// Bereken de eerst mogelijke leverdatum voor de opgegeven verzendmethode (retourneert een timestamp) 
 	function estimate_delivery_date( $shipping_id, $order_id = false ) {
 		// We gebruiken het geregistreerde besteltijdstip OF het live tijdstip voor schattingen van de leverdatum
 		if ( $order_id === false ) {
 			$from = current_time('timestamp');
+			$contains_breakfast = cart_contains_breakfast();
 		} else {
 			$order = wc_get_order( $order_id );
 			// We hebben de timestamp van de besteldatum nodig in de huidige tijdzone, dus pas get_date_from_gmt() toe die het formaat 'Y-m-d H:i:s' vereist!
 			$from = strtotime( get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', strtotime( $order->get_date_created() ) ) ) );
+			$contains_breakfast = order_contains_breakfast( $order );
+		}
+
+		if ( $contains_breakfast ) {
+			do_action( 'qm/info', 'Cart contains breakfast' );
+			return strtotime('2021-10-10 12:00:00');
 		}
 		
 		$timestamp = $from;
@@ -5463,7 +5505,30 @@
 	add_filter( 'woocommerce_package_rates', 'hide_shipping_recalculate_taxes', 10, 2 );
 	
 	function hide_shipping_recalculate_taxes( $rates, $package ) {
-		if ( ! is_b2b_customer() ) {
+		if ( cart_contains_breakfast() ) {
+			validate_zip_code( intval( WC()->customer->get_shipping_postcode() ) );
+			write_log( print_r( $rates, true ) );
+			
+			// Check of er een gratis levermethode beschikbaar is
+			$free_home_available = false;
+			foreach ( $rates as $rate_key => $rate ) {
+				if ( $rate->method_id === 'free_shipping' ) {
+					$free_home_available = true;	
+					break;
+				}
+			}
+
+			foreach ( $rates as $rate_key => $rate ) {
+				$shipping_zones = WC_Shipping_Zones::get_zones();
+				foreach ( $shipping_zones as $shipping_zone ) {
+					// Alle levermethodes uitschakelen
+					foreach ( $shipping_zone['shipping_methods'] as $shipping_method ) {
+						$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
+						unset( $rates[ $method_key ] );
+					}
+				}
+			}
+		} elseif ( ! is_b2b_customer() ) {
 			validate_zip_code( intval( WC()->customer->get_shipping_postcode() ) );
 
 			// Check of er een gratis levermethode beschikbaar is => uniform minimaal bestedingsbedrag!
@@ -5609,7 +5674,6 @@
 			}
 		}
 		
-		// write_log( print_r( $rates, true ) );
 		return $rates;
 	}
 
