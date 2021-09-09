@@ -5516,12 +5516,8 @@
 	
 	function hide_shipping_recalculate_taxes( $rates, $package ) {
 		if ( cart_contains_breakfast() ) {
-			// do_action( 'qm/info', 'Cart contains breakfast' );
-			// write_log( print_r( $rates, true ) );
-			
-			validate_zip_code( intval( WC()->customer->get_shipping_postcode() ) );
-			
 			// Enkel gratis thuislevering behouden
+			// Bewust geen postcodevalidatie doen zodat ook o.a. Ekeren kan bestellen!
 			// Bestelminimum voor gratis levering is automatisch verlaagd naar 0 via 'woocommerce_shipping_free_shipping_is_available'-filter
 			foreach ( $rates as $rate_key => $rate ) {
 				if ( $rate->method_id !== 'free_shipping' ) {
@@ -5674,6 +5670,7 @@
 			}
 		}
 		
+		// write_log( print_r( $rates, true ) );
 		return $rates;
 	}
 
