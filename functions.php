@@ -2783,7 +2783,7 @@
 	add_filter( 'product_type_selector', function( $types ) {
 		unset( $types['grouped'] );
 		unset( $types['external'] );
-		unset( $types['variable'] );
+		// unset( $types['variable'] );
 		return $types;
 	}, 10, 1 );
 
@@ -3614,8 +3614,7 @@
 
 		// Registreer of er ontbijtpakketten in de bestelling zitten of niet
 		if ( cart_contains_breakfast() ) {
-			// @toDo: Veralgemenen tot timestamp van leverdatum?
-			update_post_meta( $order_id, 'contains_breakfast', 'yes' );
+			update_post_meta( $order_id, 'contains_breakfast', cart_contains_breakfast() );
 		}
 	}
 
@@ -4864,7 +4863,7 @@
 			// Alle instances van gratis thuislevering
 			case stristr( $method->id, 'free_shipping' ):
 				if ( cart_contains_breakfast() ) {
-					$descr .= sprintf( 'Ontbijt aan huis geleverd op %1$s vanaf %2$s uur', date_i18n( 'l d/m/Y', $timestamp ), date_i18n( 'G', $timestamp ) );
+					$descr .= sprintf( 'Ontbijtpakket aan huis geleverd op %1$s vanaf %2$s', date_i18n( 'l d/m/Y', $timestamp ), date_i18n( 'G\ui', $timestamp ) );
 				} else {
 					$descr .= sprintf( __( 'Uiterste dag (%s) waarop de levering zal plaatsvinden', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
 				}
@@ -4967,9 +4966,10 @@
 			if ( WC()->session->has_session() ) {
 				foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					$product_in_cart = $values['data'];
-					if ( strpos( $product_in_cart->get_sku(), 'Merksem' ) !== false ) {
-						// @toDo: Veralgemenen tot timestamp van leverdatum?
-						return true;
+					if ( strpos( $product_in_cart->get_sku(), 'OBP' ) !== false ) {
+						// @toDo: Veralgemenen tot timestamp van leverdatum, ingesteld op product?
+						$parts = explode( '-', $product_in_cart->get_sku() );
+						return strtolower( $parts[1] );
 					}
 				}
 			}
@@ -4981,9 +4981,8 @@
 	function order_contains_breakfast( $order ) {
 		// Voorlopig enkel checken in Regio Antwerpen
 		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' or get_current_blog_id() === 24 ) {
-			if ( $order->get_meta('contains_breakfast') === 'yes' ) {
-				// @toDo: Veralgemenen tot timestamp van leverdatum?
-				return true;
+			if ( $order->get_meta('contains_breakfast') !== '' ) {
+				return $order->get_meta('contains_breakfast');
 			}
 		}
 
@@ -5003,9 +5002,12 @@
 			$contains_breakfast = order_contains_breakfast( $order );
 		}
 
-		if ( $contains_breakfast ) {
-			do_action( 'qm/info', 'Cart contains breakfast' );
-			return strtotime('2021-10-10 08:00:00');
+		if ( $contains_breakfast !== false ) {
+			if ( $contains_breakfast === 'laat' ) {
+				return strtotime('2021-10-10 10:30:00');
+			} else {
+				return strtotime('2021-10-10 09:00:00');
+			}
 		}
 		
 		$timestamp = $from;
