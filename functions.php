@@ -4863,7 +4863,11 @@
 				break;
 			// Alle instances van gratis thuislevering
 			case stristr( $method->id, 'free_shipping' ):
-				$descr .= sprintf( __( 'Uiterste dag (%s) waarop de levering zal plaatsvinden', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
+				if ( cart_contains_breakfast() ) {
+					$descr .= sprintf( 'Ontbijt aan huis geleverd op %1$s vanaf %2$s uur', date_i18n( 'l d/m/Y', $timestamp ), date_i18n( 'G', $timestamp ) );
+				} else {
+					$descr .= sprintf( __( 'Uiterste dag (%s) waarop de levering zal plaatsvinden', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
+				}
 				$label .= ':'.wc_price(0);
 				break;
 			// Alle instances van B2B-levering
@@ -4963,7 +4967,7 @@
 			if ( WC()->session->has_session() ) {
 				foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					$product_in_cart = $values['data'];
-					if ( strpos( $product_in_cart->get_sku(), 'Merksem' ) > 0 ) {
+					if ( strpos( $product_in_cart->get_sku(), 'Merksem' ) !== false ) {
 						// @toDo: Veralgemenen tot timestamp van leverdatum?
 						return true;
 					}
@@ -5001,7 +5005,7 @@
 
 		if ( $contains_breakfast ) {
 			do_action( 'qm/info', 'Cart contains breakfast' );
-			return strtotime('2021-10-10 12:00:00');
+			return strtotime('2021-10-10 08:00:00');
 		}
 		
 		$timestamp = $from;
@@ -5358,6 +5362,10 @@
 	add_filter( 'woocommerce_shipping_free_shipping_is_available', 'ignore_digital_vouchers_for_free_shipping', 10, 3 );
 
 	function ignore_digital_vouchers_for_free_shipping( $is_available, $package, $shipping_method ) {
+		if ( cart_contains_breakfast() ) {
+			return true;
+		}
+		
 		$total = WC()->cart->get_displayed_subtotal() - WC()->cart->get_discount_total() - WC()->cart->get_discount_tax() + ob2c_get_total_voucher_amount();
 		if ( $total >= $shipping_method->min_amount ) {
 			return true;
@@ -5506,26 +5514,16 @@
 	
 	function hide_shipping_recalculate_taxes( $rates, $package ) {
 		if ( cart_contains_breakfast() ) {
-			validate_zip_code( intval( WC()->customer->get_shipping_postcode() ) );
-			write_log( print_r( $rates, true ) );
+			// do_action( 'qm/info', 'Cart contains breakfast' );
+			// write_log( print_r( $rates, true ) );
 			
-			// Check of er een gratis levermethode beschikbaar is
-			$free_home_available = false;
+			validate_zip_code( intval( WC()->customer->get_shipping_postcode() ) );
+			
+			// Enkel gratis thuislevering behouden
+			// Bestelminimum voor gratis levering is automatisch verlaagd naar 0 via 'woocommerce_shipping_free_shipping_is_available'-filter
 			foreach ( $rates as $rate_key => $rate ) {
-				if ( $rate->method_id === 'free_shipping' ) {
-					$free_home_available = true;	
-					break;
-				}
-			}
-
-			foreach ( $rates as $rate_key => $rate ) {
-				$shipping_zones = WC_Shipping_Zones::get_zones();
-				foreach ( $shipping_zones as $shipping_zone ) {
-					// Alle levermethodes uitschakelen
-					foreach ( $shipping_zone['shipping_methods'] as $shipping_method ) {
-						$method_key = $shipping_method->id.':'.$shipping_method->instance_id;
-						unset( $rates[ $method_key ] );
-					}
+				if ( $rate->method_id !== 'free_shipping' ) {
+					unset( $rates[ $rate_key ] );
 				}
 			}
 		} elseif ( ! is_b2b_customer() ) {
@@ -5552,7 +5550,7 @@
 				foreach ( $rates as $rate_key => $rate ) {
 					if ( $rate->method_id !== 'local_pickup_plus' and floatval( $rate->cost ) === 0.0 ) {
 						// IS DIT WEL NODIG, WORDEN TOCH AL VERBORGEN DOOR WOOCOMMERCE?
-						// unset( $rates[$rate_key] );
+						// unset( $rates[ $rate_key ] );
 					}
 				}
 			}
@@ -5695,7 +5693,7 @@
 	
 	function explain_why_shipping_option_is_lacking() {
 		// Als er slechts één methode beschikbaar is in een webshop mét afhaling in de winkel, moet het wel die afhaling zijn!
-		if ( does_local_pickup() and count( WC()->shipping->packages[0]['rates'] ) < 2 ) {
+		if ( does_local_pickup() and count( WC()->shipping->packages[0]['rates'] ) < 2 and ! cart_contains_breakfast() ) {
 		    if ( ! does_home_delivery() ) {
 				$title = 'Deze winkel organiseert geen thuislevering. Ga naar de webshop die voor jouw postcode aan huis levert.';
 			} elseif ( WC()->session->get('no_home_delivery') === 'SHOWN' ) {
