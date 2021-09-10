@@ -449,8 +449,7 @@
 			$breakfast_delivery_date = $breakfast_delivery_date_timestamp ? date_i18n( 'Y-m-d H:i', $breakfast_delivery_date_timestamp ) : '';
 			echo '<p class="form-field breakfast_delivery_date_fields">
 				<label for="_breakfast_delivery_date">' . esc_html__( 'Vaste leverdatum', 'oxfam-webshop' ) . '</label>
-				<input type="text" class="short" name="_breakfast_delivery_date" id="_breakfast_delivery_date" value="' . esc_attr( $breakfast_delivery_date ) . '" placeholder="YYYY-MM-DD" maxlength="10" pattern="' . esc_attr( apply_filters( 'woocommerce_date_input_html_pattern', '[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])' ) ) . '" />
-				<a href="#" class="description cancel_breakfast_delivery_date">' . esc_html__( 'Cancel', 'woocommerce' ) . '</a>' . wc_help_tip( __( 'Van zodra dit product in het winkelmandje gelegd wordt, zal de leverdatum verschuiven naar dit tijdstip. Er is geen deadline, je dient het product zelf uit voorraad te zetten wanneer je de reservaties wil afsluiten. Eventuele andere producten in het winkelmandje volgen dezelfde leverdatum.', 'oxfam-webshop' ) ) . '
+				<input type="text" class="short hasDatepicker" name="_breakfast_delivery_date" id="_breakfast_delivery_date" value="' . esc_attr( $breakfast_delivery_date ) . '" placeholder="JJJJ-MM-DD UU:MM" maxlength="16" />' . wc_help_tip( __( 'Van zodra dit product in het winkelmandje gelegd wordt, zal de leverdatum verschuiven naar dit tijdstip. Eventuele andere producten in het winkelmandje volgen dezelfde leverdatum. Er is geen besteldeadline, je dient het product zelf uit voorraad te zetten wanneer je de reservaties wil afsluiten.', 'oxfam-webshop' ) ) . '
 			</p>';
 
 		echo '</div>';
