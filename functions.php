@@ -441,9 +441,17 @@
 			}
 			
 			woocommerce_wp_select( $net_unit_args );
-			woocommerce_wp_text_input( $net_content_args);
+			woocommerce_wp_text_input( $net_content_args );
 			echo '<p class="form-field"><small>Is het product geen gewichtartikel maar wil je wel aanduiden dat het bv. uit 3 onderdelen bestaat? Laat bovenstaande velden dan leeg en gebruik het veld \'Netto-inhoud\' op het tabblad \'Eigenschappen\'.</small></p>';
-			woocommerce_wp_text_input( $fairtrade_share_args);
+			woocommerce_wp_text_input( $fairtrade_share_args );
+
+			$breakfast_delivery_date_timestamp = $product_object->get_meta('_breakfast_delivery_date') ? $product_object->get_meta('_breakfast_delivery_date') : false;
+			$breakfast_delivery_date = $breakfast_delivery_date_timestamp ? date_i18n( 'Y-m-d H:i', $breakfast_delivery_date_timestamp ) : '';
+			echo '<p class="form-field breakfast_delivery_date_fields">
+				<label for="_breakfast_delivery_date">' . esc_html__( 'Vaste leverdatum', 'oxfam-webshop' ) . '</label>
+				<input type="text" class="short" name="_breakfast_delivery_date" id="_breakfast_delivery_date" value="' . esc_attr( $breakfast_delivery_date ) . '" placeholder="YYYY-MM-DD" maxlength="10" pattern="' . esc_attr( apply_filters( 'woocommerce_date_input_html_pattern', '[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])' ) ) . '" />
+				<a href="#" class="description cancel_breakfast_delivery_date">' . esc_html__( 'Cancel', 'woocommerce' ) . '</a>' . wc_help_tip( __( 'Van zodra dit product in het winkelmandje gelegd wordt, zal de leverdatum verschuiven naar dit tijdstip. Er is geen deadline, je dient het product zelf uit voorraad te zetten wanneer je de reservaties wil afsluiten. Eventuele andere producten in het winkelmandje volgen dezelfde leverdatum.', 'oxfam-webshop' ) ) . '
+			</p>';
 
 		echo '</div>';
 	}
@@ -2783,7 +2791,7 @@
 	add_filter( 'product_type_selector', function( $types ) {
 		unset( $types['grouped'] );
 		unset( $types['external'] );
-		// unset( $types['variable'] );
+		unset( $types['variable'] );
 		return $types;
 	}, 10, 1 );
 
@@ -4966,11 +4974,16 @@
 			if ( WC()->session->has_session() ) {
 				foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					$product_in_cart = $values['data'];
+					
+					// @toDo: Veralgemenen tot timestamp van leverdatum, ingesteld op product?
+					// if ( $product_in_cart->get_meta('_breakfast_delivery_date') !== '' ) {
+					// 	return $product_in_cart->get_meta('_breakfast_delivery_date');
+					// }
+					
 					if ( strpos( $product_in_cart->get_sku(), 'OBP' ) !== false ) {
-						// @toDo: Veralgemenen tot timestamp van leverdatum, ingesteld op product?
 						$parts = explode( '-', $product_in_cart->get_sku() );
 						return strtolower( $parts[1] );
-					}
+					}					
 				}
 			}
 		}
@@ -5003,6 +5016,9 @@
 		}
 
 		if ( $contains_breakfast !== false ) {
+			// @toDo: Veralgemenen tot timestamp van leverdatum, ingesteld op product?
+			// return strtotime( $contains_breakfast );
+
 			if ( $contains_breakfast === 'laat' ) {
 				return strtotime('2021-10-10 10:30:00');
 			} else {
