@@ -445,12 +445,13 @@
 			echo '<p class="form-field"><small>Is het product geen gewichtartikel maar wil je wel aanduiden dat het bv. uit 3 onderdelen bestaat? Laat bovenstaande velden dan leeg en gebruik het veld \'Netto-inhoud\' op het tabblad \'Eigenschappen\'.</small></p>';
 			woocommerce_wp_text_input( $fairtrade_share_args );
 
-			$breakfast_delivery_date_timestamp = $product_object->get_meta('_breakfast_delivery_date') ? $product_object->get_meta('_breakfast_delivery_date') : false;
-			$breakfast_delivery_date = $breakfast_delivery_date_timestamp ? date_i18n( 'Y-m-d H:i', $breakfast_delivery_date_timestamp ) : '';
-			echo '<p class="form-field breakfast_delivery_date_fields">
-				<label for="_breakfast_delivery_date">' . esc_html__( 'Vaste leverdatum', 'oxfam-webshop' ) . '</label>
-				<input type="text" class="short hasDatepicker" name="_breakfast_delivery_date" id="_breakfast_delivery_date" value="' . esc_attr( $breakfast_delivery_date ) . '" placeholder="JJJJ-MM-DD UU:MM" maxlength="16" />' . wc_help_tip( __( 'Van zodra dit product in het winkelmandje gelegd wordt, zal de leverdatum verschuiven naar dit tijdstip. Eventuele andere producten in het winkelmandje volgen dezelfde leverdatum. Er is geen besteldeadline, je dient het product zelf uit voorraad te zetten wanneer je de reservaties wil afsluiten.', 'oxfam-webshop' ) ) . '
-			</p>';
+			// @toDo: Datepicker actief maken mét ingave van uur
+			// $breakfast_delivery_date_timestamp = $product_object->get_meta('_breakfast_delivery_date') ? $product_object->get_meta('_breakfast_delivery_date') : false;
+			// $breakfast_delivery_date = $breakfast_delivery_date_timestamp ? date_i18n( 'Y-m-d H:i', $breakfast_delivery_date_timestamp ) : '';
+			// echo '<p class="form-field breakfast_delivery_date_fields">
+			// 	<label for="_breakfast_delivery_date">' . esc_html__( 'Vast levertijdstip', 'oxfam-webshop' ) . '</label>
+			// 	<input type="text" class="short hasDatepicker" name="_breakfast_delivery_date" id="_breakfast_delivery_date" value="' . esc_attr( $breakfast_delivery_date ) . '" placeholder="JJJJ-MM-DD UU:MM" maxlength="16" />' . wc_help_tip( __( 'Van zodra dit product in het winkelmandje gelegd wordt, zal de leverdatum verschuiven naar dit tijdstip. Eventuele andere producten in het winkelmandje volgen dezelfde leverdatum. Er is geen besteldeadline, je dient het product zelf uit voorraad te zetten wanneer je de reservaties wil afsluiten.', 'oxfam-webshop' ) ) . '
+			// </p>';
 
 		echo '</div>';
 	}
@@ -4981,7 +4982,11 @@
 					
 					if ( strpos( $product_in_cart->get_sku(), 'OBP' ) !== false ) {
 						$parts = explode( '-', $product_in_cart->get_sku() );
-						return strtolower( $parts[1] );
+						if ( $parts[1] === 'laat' ) {
+							return '2021-10-10 10:30';
+						} else {
+							return '2021-10-10 09:00';
+						}
 					}					
 				}
 			}
@@ -4991,14 +4996,11 @@
 	}
 
 	function order_contains_breakfast( $order ) {
-		// Voorlopig enkel checken in Regio Antwerpen
-		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' or get_current_blog_id() === 24 ) {
-			if ( $order->get_meta('contains_breakfast') !== '' ) {
-				return $order->get_meta('contains_breakfast');
-			}
+		if ( $order->get_meta('contains_breakfast') !== '' ) {
+			return $order->get_meta('contains_breakfast');
+		} else {
+			return false;
 		}
-
-		return false;
 	}
 
 	// Bereken de eerst mogelijke leverdatum voor de opgegeven verzendmethode (retourneert een timestamp) 
@@ -5015,14 +5017,8 @@
 		}
 
 		if ( $contains_breakfast !== false ) {
-			// @toDo: Veralgemenen tot timestamp van leverdatum, ingesteld op product?
-			// return strtotime( $contains_breakfast );
-
-			if ( $contains_breakfast === 'laat' ) {
-				return strtotime('2021-10-10 10:30:00');
-			} else {
-				return strtotime('2021-10-10 09:00:00');
-			}
+			// Retourneer de leverdatum van het product en stop alle verdere logica 
+			return strtotime( $contains_breakfast );
 		}
 		
 		$timestamp = $from;
