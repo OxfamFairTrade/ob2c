@@ -4982,7 +4982,7 @@
 					
 					if ( strpos( $product_in_cart->get_sku(), 'OBP' ) !== false ) {
 						$parts = explode( '-', $product_in_cart->get_sku() );
-						if ( $parts[1] === 'laat' ) {
+						if ( strtolower( $parts[1] ) === 'laat' ) {
 							return '2021-10-10 10:30';
 						} else {
 							return '2021-10-10 09:00';
