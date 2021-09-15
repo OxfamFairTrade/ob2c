@@ -234,7 +234,7 @@
 		return $total_rows;
 	}
 
-	function ob2c_bulk_create_digital_vouchers( $issuer = 'Gezinsbond', $expires = '2023-01-01', $value = 25, $number = 300 ) {
+	function ob2c_bulk_create_digital_vouchers( $issuer = 'Cera', $expires = '2023-01-01', $value = 30, $number = 1000 ) {
 		global $wpdb;
 		$created_codes = array();
 		
@@ -6785,7 +6785,7 @@
 		foreach ( $voucher_ids as $voucher_id ) {
 			$rows_updated = $wpdb->update(
 				$wpdb->base_prefix.'universal_coupons',
-				array( 'credited' => date_i18n( 'Y-m-d H:i:s', $credit_date_timestamp ) ),
+				array( 'credited' => date_i18n( 'Y-m-d', $credit_date_timestamp ) ),
 				array( 'id' => $voucher_id )
 			);
 
