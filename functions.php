@@ -249,7 +249,7 @@
 
 				if ( $wpdb->insert( $wpdb->base_prefix.'universal_coupons', $data ) === 1 ) {
 					$created_codes[] = $data['code'];
-					file_put_contents( ABSPATH . '/../oxfam-digital-vouchers-'.$value.'-EUR-valid-'.$expires.'.csv', $data['code'], FILE_APPEND );
+					file_put_contents( ABSPATH . '/../oxfam-digital-vouchers-'.$value.'-EUR-valid-'.$expires.'.csv', $data['code']."\n", FILE_APPEND );
 				} else {
 					echo "Error inserting new code row<br/>";
 				}
