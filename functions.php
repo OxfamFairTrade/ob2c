@@ -234,12 +234,12 @@
 		return $total_rows;
 	}
 
-	function ob2c_bulk_create_digital_vouchers( $issuer = 'Cera', $expires = '2023-01-01', $value = 30, $number = 1000 ) {
+	function ob2c_bulk_create_digital_vouchers( $issuer = 'Cera', $expires = '2023-01-01', $value = 30, $number = 5000 ) {
 		global $wpdb;
 		$created_codes = array();
 		
-		for ( $i = 0; $i < $number; $i++ ) {
-			if ( current_user_can('update_core') ) {
+		if ( current_user_can('update_core') ) {
+			for ( $i = 0; $i < $number; $i++ ) {
 				$data = array(
 					'code' => ob2c_generate_new_voucher_code(),
 					'issuer' => $issuer,
@@ -254,6 +254,8 @@
 					echo "Error inserting new code row<br/>";
 				}
 			}
+		} else {
+			echo 'No permission to create vouchers, please log in<br/>';
 		}
 
 		echo implode( '<br/>', $created_codes );
