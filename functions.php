@@ -3947,10 +3947,10 @@
 					$gift_wrap_text = $item->get_meta('wcgwp_note');
 				}
 
-				if ( $product->get_sku() == 20809 and $line_total == 0 ) {
-					// Juiste code voor World Fair Trade Day 2021
+				if ( $product->get_sku() == 24300 and $line_total == 0 ) {
+					// TBD: Juiste artikelcode voor gratis tablet Week van de Fair Trade 2021
 					$shopplus = 'W08897';
-					$ean = '5400164088978';
+					$ean = '5400164190480';
 				} else {
 					$shopplus = $product->get_meta('_shopplus_code');
 					$ean = $product->get_meta('_cu_ean');
@@ -3977,20 +3977,31 @@
 					// Trek voucherwaarde af van kortingstotaal
 					$voucher_total += $coupon_total;
 					
-					// Checken of vervaldatum correspondeert?
-					// Puur theoretisch zou een bon van 50 euro ook voor minder dan 25 euro producten gebruikt kunnen worden ...
-					if ( $coupon_total > 25 ) {
-						$value = 50;
-						$sku = 'WGCD502022';
-						$ean = '5400164190541';
-					} else {
-						$value = 25;
-						$sku = 'WGCD252022';
-						$ean = '5400164190534';
+					// Negeer in deze stap de rate limiting per IP-adres
+					$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
+					$coupon_value = $db_coupon->value;
+						
+					// Checken of de vervaldatum correspondeert?
+					// $coupon_value = $db_coupon->expires;
+					switch ( $coupon_value ) {
+						case 50:
+							$sku = 'WGCD502022';
+							$ean = '5400164190541';
+							break;
+
+						case 25:
+							$sku = 'WGCD252022';
+							$ean = '5400164190534';
+							break;
+						
+						default:
+							$sku = 'WGCD302022';
+							$ean = '5400164190466';
+							break;
 					}
 					
 					// Er is geen BTW op geschenkencheques!
-					$pick_sheet->setCellValue( 'A'.$i, $sku )->setCellValue( 'B'.$i, $coupon_data_array['description'] )->setCellValue( 'C'.$i, -1 )->setCellValue( 'D'.$i, $value )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, -1 * $coupon_total )->setCellValue( 'G'.$i, strtoupper( $coupon_item->get_code() ) )->setCellValue( 'H'.$i, $ean );
+					$pick_sheet->setCellValue( 'A'.$i, $sku )->setCellValue( 'B'.$i, $coupon_data_array['description'] )->setCellValue( 'C'.$i, -1 )->setCellValue( 'D'.$i, $coupon_value )->setCellValue( 'E'.$i, 0.00 )->setCellValue( 'F'.$i, -1 * $coupon_total )->setCellValue( 'G'.$i, strtoupper( $coupon_item->get_code() ) )->setCellValue( 'H'.$i, $ean );
 					$pick_sheet->getStyle('G'.$i)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 					$i++;
 				}

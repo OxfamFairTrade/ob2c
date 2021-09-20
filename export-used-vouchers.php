@@ -57,7 +57,7 @@
 			$credit_refs = array(
 				'08899' => array( 'issuer' => 'Gezinsbond', 'value' => 50 ),
 				'08900' => array( 'issuer' => 'Gezinsbond', 'value' => 25 ),
-				// '08901' => array( 'issuer' => 'Cera', 'value' => 30 ),
+				'08917' => array( 'issuer' => 'Cera', 'value' => 30 ),
 			);
 
 			foreach ( $credit_refs as $credit_ref => $credit_params ) {
