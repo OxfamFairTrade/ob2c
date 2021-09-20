@@ -4344,121 +4344,123 @@
 	add_action( 'edit_user_profile_update', 'save_b2b_customer_fields', 5 );
 
 	function add_b2b_customer_fields( $user ) {
-		$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
-		$is_b2b_customer = get_the_author_meta( $check_key, $user->ID );
-		$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
-		$has_b2b_coupon = get_the_author_meta( $select_key, $user->ID );
-		?>
-		<h3>B2B-verkoop</h3>
-		<table class="form-table">
-			<tr>
-				<th><label for="<?php echo $check_key; ?>">Geverifieerde bedrijfsklant</label></th>
-				<td>
-					<input type="checkbox" class="important-b2b-field" name="<?php echo $check_key; ?>" id="<?php echo $check_key; ?>" value="yes" <?php checked( $is_b2b_customer, 'yes' ); ?> />
-					<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Raadpleeg de handleiding.</a></span>
-				</td>
-			</tr>
-			<tr class="show-if-b2b-checked">
-				<th><label for="<?php echo $select_key; ?>">Kortingspercentage</label></th>
-				<td>
-					<select class="important-b2b-field" name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
-					<?php	
-						$b2b_payment_method = array('cod');
-						$args = array(
-							'posts_per_page' => -1,
-							'post_type' => 'shop_coupon',
-							'post_status' => 'publish',
-							'meta_key' => 'coupon_amount',
-							'orderby' => 'meta_value_num',
-							'order' => 'ASC',
-							'meta_query' => array(
-								array(
-									'key' => '_wjecf_payment_methods',
-									'value' => serialize($b2b_payment_method),
-									'compare' => 'LIKE',
-								)
-							),
-						);
+		if ( ! is_network_admin() ) {
+			$check_key = 'blog_'.get_current_blog_id().'_is_b2b_customer';
+			$is_b2b_customer = get_the_author_meta( $check_key, $user->ID );
+			$select_key = 'blog_'.get_current_blog_id().'_has_b2b_coupon';
+			$has_b2b_coupon = get_the_author_meta( $select_key, $user->ID );
+			?>
+			<h3>B2B-verkoop</h3>
+			<table class="form-table">
+				<tr>
+					<th><label for="<?php echo $check_key; ?>">Geverifieerde bedrijfsklant</label></th>
+					<td>
+						<input type="checkbox" class="important-b2b-field" name="<?php echo $check_key; ?>" id="<?php echo $check_key; ?>" value="yes" <?php checked( $is_b2b_customer, 'yes' ); ?> />
+						<span class="description">Indien aangevinkt moet (en kan) de klant niet op voorhand online betalen. Je maakt zelf een factuur op met de effectief geleverde goederen en volgt achteraf de betaling op. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/8.-B2B-verkoop" target="_blank">Raadpleeg de handleiding.</a></span>
+					</td>
+				</tr>
+				<tr class="show-if-b2b-checked">
+					<th><label for="<?php echo $select_key; ?>">Kortingspercentage</label></th>
+					<td>
+						<select class="important-b2b-field" name="<?php echo $select_key; ?>" id="<?php echo $select_key; ?>">;
+						<?php	
+							$b2b_payment_method = array('cod');
+							$args = array(
+								'posts_per_page' => -1,
+								'post_type' => 'shop_coupon',
+								'post_status' => 'publish',
+								'meta_key' => 'coupon_amount',
+								'orderby' => 'meta_value_num',
+								'order' => 'ASC',
+								'meta_query' => array(
+									array(
+										'key' => '_wjecf_payment_methods',
+										'value' => serialize($b2b_payment_method),
+										'compare' => 'LIKE',
+									)
+								),
+							);
 
-						$b2b_coupons = get_posts($args);
-						echo '<option value="">Geen</option>';
-						foreach ( $b2b_coupons as $b2b_coupon ) {
-							echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.number_format( $b2b_coupon->coupon_amount, 1, ',', '.' ).'%</option>';
-						}
-					?>
-					</select>
-					<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje (met uitzondering van leeggoed en cadeaubonnen).</span>
-				</td>
-			</tr>
-			<tr class="show-if-b2b-checked">
-				<th><label for="send_invitation">Uitnodiging</label></th>
-				<td>
-					<?php
-						$disabled = '';
-						if ( strlen( get_the_author_meta( 'billing_company', $user->ID ) ) < 2 ) {
-							$disabled = ' disabled';
-						}
-						echo '<button type="button" class="button disable-on-b2b-change" id="send_invitation" style="min-width: 600px;"'.$disabled.'>Verstuur welkomstmail naar accounteigenaar</button>';
-						echo '<p class="send_invitation description">';
-						if ( ! empty( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) {
-							printf( 'Laatste uitnodiging verstuurd: %s.', date( 'd-n-Y H:i:s', strtotime( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) );
-						}
-						echo '</p>';
-					?>
-					
-					<script type="text/javascript">
-						jQuery(document).ready(function() {
-							if ( ! jQuery('#<?php echo $check_key; ?>').is(':checked') ) {
-								jQuery('.show-if-b2b-checked').closest('tr').hide();
+							$b2b_coupons = get_posts($args);
+							echo '<option value="">Geen</option>';
+							foreach ( $b2b_coupons as $b2b_coupon ) {
+								echo '<option value="'.$b2b_coupon->ID.'" '.selected( $b2b_coupon->ID, $has_b2b_coupon ).'>'.number_format( $b2b_coupon->coupon_amount, 1, ',', '.' ).'%</option>';
 							}
-
-							jQuery('#<?php echo $check_key; ?>').on( 'change', function() {
-								jQuery('.show-if-b2b-checked').closest('tr').toggle();
-							});
-
-							jQuery('.important-b2b-field').on( 'change', function() {
-								disableInvitation();
-							});
-
-							function disableInvitation() {
-								jQuery('.disable-on-b2b-change').text("Klik op 'Gebruiker bijwerken' vooraleer je de uitnodiging verstuurt").prop( 'disabled', true );
+						?>
+						</select>
+						<span class="description">Pas automatisch deze korting toe op het volledige winkelmandje (met uitzondering van leeggoed en cadeaubonnen).</span>
+					</td>
+				</tr>
+				<tr class="show-if-b2b-checked">
+					<th><label for="send_invitation">Uitnodiging</label></th>
+					<td>
+						<?php
+							$disabled = '';
+							if ( strlen( get_the_author_meta( 'billing_company', $user->ID ) ) < 2 ) {
+								$disabled = ' disabled';
 							}
+							echo '<button type="button" class="button disable-on-b2b-change" id="send_invitation" style="min-width: 600px;"'.$disabled.'>Verstuur welkomstmail naar accounteigenaar</button>';
+							echo '<p class="send_invitation description">';
+							if ( ! empty( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) {
+								printf( 'Laatste uitnodiging verstuurd: %s.', date( 'd-n-Y H:i:s', strtotime( get_the_author_meta( 'blog_'.get_current_blog_id().'_b2b_invitation_sent', $user->ID ) ) ) );
+							}
+							echo '</p>';
+						?>
+						
+						<script type="text/javascript">
+							jQuery(document).ready(function() {
+								if ( ! jQuery('#<?php echo $check_key; ?>').is(':checked') ) {
+									jQuery('.show-if-b2b-checked').closest('tr').hide();
+								}
 
-							jQuery('button#send_invitation').on( 'click', function() {
-								if ( confirm("Weet je zeker dat je dit wil doen?") ) {
-									jQuery(this).prop( 'disabled', true ).text( 'Aan het verwerken ...' );
-									sendB2bWelcome( <?php echo $user->ID; ?> );
+								jQuery('#<?php echo $check_key; ?>').on( 'change', function() {
+									jQuery('.show-if-b2b-checked').closest('tr').toggle();
+								});
+
+								jQuery('.important-b2b-field').on( 'change', function() {
+									disableInvitation();
+								});
+
+								function disableInvitation() {
+									jQuery('.disable-on-b2b-change').text("Klik op 'Gebruiker bijwerken' vooraleer je de uitnodiging verstuurt").prop( 'disabled', true );
+								}
+
+								jQuery('button#send_invitation').on( 'click', function() {
+									if ( confirm("Weet je zeker dat je dit wil doen?") ) {
+										jQuery(this).prop( 'disabled', true ).text( 'Aan het verwerken ...' );
+										sendB2bWelcome( <?php echo $user->ID; ?> );
+									}
+								});
+
+								function sendB2bWelcome( customer_id ) {
+									var input = {
+										'action': 'oxfam_invitation_action',
+										'customer_id': customer_id,
+									};
+									
+									jQuery.ajax({
+										type: 'POST',
+										url: ajaxurl,
+										data: input,
+										dataType: 'html',
+										success: function( msg ) {
+											jQuery( 'button#send_invitation' ).text( msg );
+											var today = new Date();
+											jQuery( 'p.send_invitation.description' ).html( 'Laatste actie ondernomen: '+today.toLocaleString('nl-NL')+'.' );
+										},
+										error: function( jqXHR, statusText, errorThrown ) {
+											jQuery( 'button#send_invitation' ).text( 'Asynchroon laden van PHP-file mislukt!' );
+											jQuery( 'p.send_invitation.description' ).html( 'Herlaad de pagina en probeer het eens opnieuw.' );
+										},
+									});
 								}
 							});
-
-							function sendB2bWelcome( customer_id ) {
-								var input = {
-									'action': 'oxfam_invitation_action',
-									'customer_id': customer_id,
-								};
-								
-								jQuery.ajax({
-									type: 'POST',
-									url: ajaxurl,
-									data: input,
-									dataType: 'html',
-									success: function( msg ) {
-										jQuery( 'button#send_invitation' ).text( msg );
-										var today = new Date();
-										jQuery( 'p.send_invitation.description' ).html( 'Laatste actie ondernomen: '+today.toLocaleString('nl-NL')+'.' );
-									},
-									error: function( jqXHR, statusText, errorThrown ) {
-										jQuery( 'button#send_invitation' ).text( 'Asynchroon laden van PHP-file mislukt!' );
-										jQuery( 'p.send_invitation.description' ).html( 'Herlaad de pagina en probeer het eens opnieuw.' );
-									},
-								});
-							}
-						});
-					</script>
-				</td>
-			</tr>
-		</table>
-		<?php
+						</script>
+					</td>
+				</tr>
+			</table>
+			<?php
+		}
 	}
 
 	function save_b2b_customer_fields( $user_id ) {
