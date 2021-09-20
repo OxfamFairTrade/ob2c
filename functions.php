@@ -3948,8 +3948,8 @@
 				}
 
 				if ( $product->get_sku() == 24300 and $line_total == 0 ) {
-					// TBD: Juiste artikelcode voor gratis tablet Week van de Fair Trade 2021
-					$shopplus = 'W08897';
+					// Gratis tablet Week van de Fair Trade 2021
+					$shopplus = 'W19048';
 					$ean = '5400164190480';
 				} else {
 					$shopplus = $product->get_meta('_shopplus_code');
