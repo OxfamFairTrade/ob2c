@@ -290,6 +290,10 @@
 		$rows = $wpdb->get_results( $query );
 		$checked_orders = array();
 		$total = 0.0;
+		$args = array(
+			'type' => 'shop_order',
+			'limit' => -1,
+		);
 
 		foreach ( $rows as $key => $row ) {
 			// Elk order slechts één keer checken, ook al werden er meerdere bonnen tegelijk ingeruild
@@ -301,35 +305,27 @@
 
 			switch_to_blog( $row->blog_id );
 			
-			$args = array(
-				'type' => 'shop_order',
-				'order_number' => $row->order,
-				'limit' => -1,
-			);
+			$args['order_number'] = $row->order;
 			$orders = wc_get_orders( $args );
 
 			if ( count( $orders ) === 1 ) {
 				$wc_order = reset( $orders );
 				$total += $wc_order->get_total();
 
-				echo '<a href="'.$wc_order->get_edit_order_url().'">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
+				echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
 				
-				$args = array(
+				$new_args = array(
 					'type' => 'shop_order',
 					'billing_email' => $wc_order->get_billing_email(),
-					'limit' => -1,
 					'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
+					'status' => 'wc-completed',
+					'limit' => -1,
 				);
-				$previous_orders_by_customer = wc_get_orders( $args );
+				$previous_orders_by_customer = wc_get_orders( $new_args );
 				
 				if ( count( $previous_orders_by_customer ) === 0 ) {
-					$args = array(
-						'type' => 'shop_order',
-						'billing_email' => $wc_order->get_billing_email(),
-						'limit' => -1,
-						'date_created' => '>'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
-					);
-					$new_orders_by_customer = wc_get_orders( $args );
+					$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
+					$new_orders_by_customer = wc_get_orders( $new_args );
 					
 					if ( count( $new_orders_by_customer ) > 0 ) {
 						$addendum = ', placed '.count( $new_orders_by_customer ).' orders afterwards';
