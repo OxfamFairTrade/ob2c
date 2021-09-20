@@ -323,7 +323,20 @@
 				$previous_orders_by_customer = wc_get_orders( $args );
 				
 				if ( count( $previous_orders_by_customer ) === 0 ) {
-					echo ' <span style="font-weight: bold; color: green;">=> new customer!</span>';
+					$args = array(
+						'type' => 'shop_order',
+						'billing_email' => $wc_order->get_billing_email(),
+						'limit' => -1,
+						'date_created' => '>'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
+					);
+					$new_orders_by_customer = wc_get_orders( $args );
+					
+					if ( count( $previous_orders_by_customer ) === 0 ) {
+						$addendum = ', placed '.count( $previous_orders_by_customer ).' orders afterwards';
+					} else {
+						$addendum = '';
+					}
+					echo ' <span style="font-weight: bold; color: green;">=> new customer'.$addendum.'!</span>';
 				}
 				echo '<br/>';
 			}
