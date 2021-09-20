@@ -292,6 +292,13 @@
 		$total = 0.0;
 
 		foreach ( $rows as $key => $row ) {
+			// Elk order slechts één keer checken, ook al werden er meerdere bonnen tegelijk ingeruild
+			if ( in_array( $row->order, $checked_orders ) ) {
+				continue;
+			} else {
+				$checked_orders[] = $row->order;
+			}
+
 			switch_to_blog( $row->blog_id );
 			
 			$args = array(
@@ -304,12 +311,6 @@
 			if ( count( $orders ) === 1 ) {
 				$wc_order = reset( $orders );
 				$total += $wc_order->get_total();
-				
-				if ( in_array( $wc_order->get_order_number(), $checked_orders ) ) {
-					continue;
-				} else {
-					$checked_orders[] = $wc_order->get_order_number();
-				}
 
 				echo '<a href="'.$wc_order->get_edit_order_url().'">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
 				
@@ -320,6 +321,7 @@
 					'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
 				);
 				$previous_orders_by_customer = wc_get_orders( $args );
+				
 				if ( count( $previous_orders_by_customer ) === 0 ) {
 					echo ' <span style="font-weight: bold; color: green;">=> new customer!</span>';
 				}
