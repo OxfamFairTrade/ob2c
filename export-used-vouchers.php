@@ -286,10 +286,17 @@
 	<?php
 		global $wpdb;
 
-		$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `order` <> ''";
+		$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `order` <> '' ORDER BY `order` ASC";
 		$rows = $wpdb->get_results( $query );
+		$checked_orders = array();
+
 		foreach ( $rows as $key => $row ) {
+			if ( in_array( $row->order, $checked_orders ) ) {
+				continue;
+			}
+
 			switch_to_blog( $row->blog_id );
+			
 			$args = array(
 				'type' => 'shop_order',
 				'order_number' => $row->order,
@@ -311,7 +318,10 @@
 					echo ' <span style="font-weight: bold; color: green;">=> new customer!</span>';
 				}
 				echo '<br/>';
+				$checked_orders[] = $row->order;
 			}
+
+			restore_current_blog();
 		}
 	?>
 </div>
