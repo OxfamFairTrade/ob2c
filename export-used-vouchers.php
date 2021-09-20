@@ -289,12 +289,9 @@
 		$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `order` <> '' ORDER BY `order` ASC";
 		$rows = $wpdb->get_results( $query );
 		$checked_orders = array();
+		$total = 0.0;
 
 		foreach ( $rows as $key => $row ) {
-			if ( in_array( $row->order, $checked_orders ) ) {
-				continue;
-			}
-
 			switch_to_blog( $row->blog_id );
 			
 			$args = array(
@@ -303,10 +300,19 @@
 				'limit' => -1,
 			);
 			$orders = wc_get_orders( $args );
-			
+
 			if ( count( $orders ) === 1 ) {
 				$wc_order = reset( $orders );
+				$total += $wc_order->get_total();
+				
+				if ( in_array( $wc_order->get_order_number(), $checked_orders ) ) {
+					continue;
+				} else {
+					$checked_orders[] = $wc_order->get_order_number();
+				}
+
 				echo '<a href="'.$wc_order->get_edit_order_url().'">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
+				
 				$args = array(
 					'type' => 'shop_order',
 					'billing_email' => $wc_order->get_billing_email(),
@@ -318,10 +324,11 @@
 					echo ' <span style="font-weight: bold; color: green;">=> new customer!</span>';
 				}
 				echo '<br/>';
-				$checked_orders[] = $row->order;
 			}
 
 			restore_current_blog();
 		}
+
+		echo '<p>Totaalbedrag: '.wc_price( $total ).'</p>';
 	?>
 </div>
