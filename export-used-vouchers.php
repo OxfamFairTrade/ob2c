@@ -331,8 +331,8 @@
 					);
 					$new_orders_by_customer = wc_get_orders( $args );
 					
-					if ( count( $previous_orders_by_customer ) === 0 ) {
-						$addendum = ', placed '.count( $previous_orders_by_customer ).' orders afterwards';
+					if ( count( $new_orders_by_customer ) === 0 ) {
+						$addendum = ', placed '.count( $new_orders_by_customer ).' orders afterwards';
 					} else {
 						$addendum = '';
 					}
