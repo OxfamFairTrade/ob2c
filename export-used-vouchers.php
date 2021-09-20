@@ -78,7 +78,7 @@
 			$warnings = array();
 
 			// Vereis een lege 'credited'-datum zodat we verhinderen dat vouchers twee keer in een opgeslagen export kunnen opduiken 
-			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE issuer = '".$issuer."' AND value = ".$value." AND DATE(used) BETWEEN '" . $start_date . "' AND '" . $end_date . "' AND DATE(credited) < '2001-01-01';";
+			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `issuer` = '".$issuer."' AND value = ".$value." AND DATE(`used`) BETWEEN '" . $start_date . "' AND '" . $end_date . "' AND DATE(`credited`) < '2001-01-01'";
 			$rows = $wpdb->get_results( $query );
 
 			foreach ( $rows as $key => $row ) {
@@ -279,4 +279,39 @@
 	?>
 
 	<div class="output"></div>
+
+	<p>&nbsp;</p>
+
+	<h2>Alle bestellingen met cadeaubonnen</h2>
+	<?php
+		global $wpdb;
+
+		$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `order` <> ''";
+		$rows = $wpdb->get_results( $query );
+		foreach ( $rows as $key => $row ) {
+			switch_to_blog( $row->blog_id );
+			$args = array(
+				'type' => 'shop_order',
+				'order_number' => $row->order,
+				'limit' => -1,
+			);
+			$orders = wc_get_orders( $args );
+			
+			if ( count( $orders ) === 1 ) {
+				$wc_order = reset( $orders );
+				echo '<a href="'.$wc_order->get_edit_order_url().'">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
+				$args = array(
+					'type' => 'shop_order',
+					'billing_email' => $wc_order->get_billing_email(),
+					'limit' => -1,
+					'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
+				);
+				$previous_orders_by_customer = wc_get_orders( $args );
+				if ( count( $previous_orders_by_customer ) === 0 ) {
+					echo ' <span style="font-weight: bold; color: green;">=> new customer!</span>';
+				}
+				echo '<br/>';
+			}
+		}
+	?>
 </div>
