@@ -6172,7 +6172,7 @@
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		// We geven hier bewust geen defaultwaarde mee, aangezien die in de front-end toch niet geïnterpreteerd wordt ('admin_init')
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
-		register_setting( 'oxfam-options-local', 'oxfam_b2c_delivery_cost', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_b2c_delivery_cost', array( 'type' => 'number', 'sanitize_callback' => 'floatval' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_disable_local_pickup', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_custom_webshop_telephone', array( 'type' => 'string', 'sanitize_callback' => 'format_phone_number' ) );
@@ -6301,7 +6301,7 @@
 			
 			$settings = get_option( $option_key );
 			if ( is_array( $settings ) ) {
-				var_dump_pre( $settings );
+				write_log( print_r( $settings, true ) );
 				
 				if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
 					if ( $name === 'bpack_delivery_by_bpost' ) {
