@@ -328,7 +328,7 @@
 					$new_orders_by_customer = wc_get_orders( $new_args );
 					
 					if ( count( $new_orders_by_customer ) > 0 ) {
-						$addendum = ', placed '.count( $new_orders_by_customer ).' orders afterwards';
+						$addendum = ', placed '.count( $new_orders_by_customer ).' new orders afterwards';
 					} else {
 						$addendum = '';
 					}

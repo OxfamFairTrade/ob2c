@@ -197,6 +197,7 @@
 								// Gebruik bewust niet de uppercase versie maar de originele waarde!
 								$order->remove_coupon( $coupon_item->get_code() );
 							}
+							// Lokt dit een herberekening van alle kosten uit die het BTW-tarief op betalende verzending verkeerdelijk altijd op 21% zet?
 							$order->save();
 						}
 					}
@@ -6171,7 +6172,7 @@
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		// We geven hier bewust geen defaultwaarde mee, aangezien die in de front-end toch niet geïnterpreteerd wordt ('admin_init')
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
-		// register_setting( 'oxfam-options-local', 'oxfam_b2c_delivery_cost', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		register_setting( 'oxfam-options-local', 'oxfam_b2c_delivery_cost', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_does_risky_delivery', array( 'type' => 'boolean' ) );
 		// register_setting( 'oxfam-options-local', 'oxfam_disable_local_pickup', array( 'type' => 'boolean' ) );
 		register_setting( 'oxfam-options-local', 'oxfam_custom_webshop_telephone', array( 'type' => 'string', 'sanitize_callback' => 'format_phone_number' ) );
@@ -6269,6 +6270,60 @@
 
 		if ( $updated ) {
 			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de limiet voor gratis verzending', '<p>Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!</p>' );
+		} 
+	}
+
+	add_action( 'update_option_oxfam_b2c_delivery_cost', 'update_shipping_methods_b2c_delivery_cost', 10, 3 );
+
+	function update_shipping_methods_b2c_delivery_cost( $old_min_amount, $new_min_amount, $option ) {
+		// Bij Regio Hasselt en Zele hangt het minimumbedrag af van de postcode
+		// Ook als het veld verborgen is, wordt de waarde bijgewerkt!
+		// Custom instellingen niet overschrijven met één universeel bedrag
+		if ( in_array( get_current_blog_id(), array( 27, 38 ) ) ) {
+			return;
+		}
+
+		$updated = false;
+		$shipping_methods = array(
+			'free_delivery_by_shop' => 'free_shipping_1',
+			'free_delivery_by_eco' => 'free_shipping_3',
+			'free_delivery_by_bpost' => 'free_shipping_5',
+			'bpack_delivery_by_bpost' => 'flat_rate_7',
+		);
+
+		foreach ( $shipping_methods as $name => $key ) {
+			// Laad de juiste optie
+			if ( $name === 'bpack_delivery_by_bpost' ) {
+				$option_key = 'sendcloudshipping_service_point_shipping_method_7_settings';
+			} else {
+				$option_key = 'woocommerce_'.$key.'_settings';
+			}
+			
+			$settings = get_option( $option_key );
+			if ( is_array( $settings ) ) {
+				var_dump_pre( $settings );
+				
+				if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
+					if ( $name === 'bpack_delivery_by_bpost' ) {
+						if ( array_key_exists( 'cost', $settings ) ) {
+							$settings['cost'] = $new_min_amount;
+						}
+					} else {
+						if ( array_key_exists( 'cost', $settings ) ) {
+							$settings['cost'] = $new_min_amount;
+						}
+					}
+				}
+
+				// NOG EVEN WACHTEN
+				// if ( update_option( $option_key, $settings ) ) {
+				// 	$updated = true;
+				// }
+			}
+		}
+
+		if ( $updated ) {
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de leverkost voor betalende thuislevering', '<p>Betalende thuisleveringen gebeuren nu voor '.$new_min_amount.' euro!</p>' );
 		} 
 	}
 
