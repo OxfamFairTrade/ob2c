@@ -6251,12 +6251,26 @@
 
 	function oxfam_change_home_delivery_settings( $new_amount, $type = 'min_amount' ) {
 		$updated = false;
-		$shipping_methods = array(
-			'free_delivery_by_shop' => 'free_shipping_1',
-			'free_delivery_by_eco' => 'free_shipping_3',
-			'free_delivery_by_bpost' => 'free_shipping_5',
-			'bpack_delivery_by_bpost' => 'flat_rate_7',
-		);
+		write_log( serialize( $new_amount ) );
+
+		if ( $type === 'min_amount' ) {
+			$shipping_methods = array(
+				'free_delivery_by_shop' => 'free_shipping_1',
+				'free_delivery_by_eco' => 'free_shipping_3',
+				'free_delivery_by_bpost' => 'free_shipping_5',
+				'bpack_delivery_by_bpost' => 'flat_rate_7',
+			);
+		} elseif ( $type === 'cost' ) {
+			$shipping_methods = array(
+				'delivery_by_shop' => 'flat_rate_2',
+				'delivery_by_eco' => 'flat_rate_4',
+				'delivery_by_bpost' => 'flat_rate_6',
+				'bpack_delivery_by_bpost' => 'flat_rate_7',
+			);
+			// Bedrag excl. BTW opslaan
+			$new_amount /= 1.21;
+			write_log( serialize( $new_amount ) );
+		}		
 
 		foreach ( $shipping_methods as $name => $key ) {
 			// Laad de juiste optie
@@ -6270,16 +6284,13 @@
 			if ( is_array( $settings ) ) {
 				write_log( print_r( $settings, true ) );
 				
-				if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
-					if ( $name === 'bpack_delivery_by_bpost' ) {
-						$key = 'free_shipping_'.$type;
-						if ( array_key_exists( $key, $settings ) ) {
-							$settings[ $key ] = $new_amount;
-						}
-					} else {
-						if ( array_key_exists( $type, $settings ) ) {
-							$settings[ $type ] = $new_amount;
-						}
+				if ( $type === 'min_amount' and $name === 'bpack_delivery_by_bpost' ) {
+					if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
+						$settings['free_shipping_min_amount'] = $new_amount;
+					}
+				} else {
+					if ( array_key_exists( $type, $settings ) ) {
+						$settings[ $type ] = $new_amount;
 					}
 				}
 
