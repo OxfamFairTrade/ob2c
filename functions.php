@@ -5317,7 +5317,6 @@
 				// wc_add_notice( __( 'Foutmelding na het ingeven van een onbestaande Vlaamse postcode.', 'oxfam-webshop' ), 'error' );
 				return false;
 			} else {
-				// NIET get_option('oxfam_zip_codes') gebruiken om onterechte foutmeldingen bij overlap te vermijden
 				if ( ! in_array( $zip, get_oxfam_covered_zips() ) ) {
 					$str = date_i18n('d/m/Y H:i:s')."\t\t".get_home_url()."\t\tPostcode ".$zip."\t\tGeen verzending georganiseerd door deze winkel\n";
 					if ( ! current_user_can('update_core') ) {
@@ -6168,6 +6167,7 @@
 	function register_oxfam_settings() {
 		register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		// @toDo: Verwijderen, heeft geen echte betekenis meer (maar wordt in get_webshops_by_postcode() nog gebruikt!)
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		// We geven hier bewust geen defaultwaarde mee, aangezien die in de front-end toch niet geïnterpreteerd wordt ('admin_init')
@@ -6232,41 +6232,7 @@
 			return;
 		}
 
-		$updated = false;
-		$shipping_methods = array(
-			'free_delivery_by_shop' => 'free_shipping_1',
-			'free_delivery_by_eco' => 'free_shipping_3',
-			'free_delivery_by_bpost' => 'free_shipping_5',
-			'bpack_delivery_by_bpost' => 'flat_rate_7',
-		);
-
-		foreach ( $shipping_methods as $name => $key ) {
-			// Laad de juiste optie
-			if ( $name === 'bpack_delivery_by_bpost' ) {
-				$option_key = 'sendcloudshipping_service_point_shipping_method_7_settings';
-			} else {
-				$option_key = 'woocommerce_'.$key.'_settings';
-			}
-			
-			$settings = get_option( $option_key );
-			if ( is_array( $settings ) ) {
-				if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
-					if ( $name === 'bpack_delivery_by_bpost' ) {
-						if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
-							$settings['free_shipping_min_amount'] = $new_min_amount;
-						}
-					} else {
-						if ( array_key_exists( 'min_amount', $settings ) ) {
-							$settings['min_amount'] = $new_min_amount;
-						}
-					}
-				}
-
-				if ( update_option( $option_key, $settings ) ) {
-					$updated = true;
-				}
-			}
-		}
+		$update = oxfam_change_home_delivery_settings( $new_min_amount, 'min_amount' );
 
 		if ( $updated ) {
 			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de limiet voor gratis verzending', '<p>Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!</p>' );
@@ -6275,14 +6241,15 @@
 
 	add_action( 'update_option_oxfam_b2c_delivery_cost', 'update_shipping_methods_b2c_delivery_cost', 10, 3 );
 
-	function update_shipping_methods_b2c_delivery_cost( $old_min_amount, $new_min_amount, $option ) {
-		// Bij Regio Hasselt en Zele hangt het minimumbedrag af van de postcode
-		// Ook als het veld verborgen is, wordt de waarde bijgewerkt!
-		// Custom instellingen niet overschrijven met één universeel bedrag
-		if ( in_array( get_current_blog_id(), array( 27, 38 ) ) ) {
-			return;
-		}
+	function update_shipping_methods_b2c_delivery_cost( $old_cost, $new_cost, $option ) {
+		$update = oxfam_change_home_delivery_settings( $new_cost, 'cost' );
 
+		if ( $updated ) {
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de leverkost voor betalende thuislevering', '<p>Betalende thuisleveringen gebeuren nu voor '.$new_cost.' euro!</p>' );
+		} 
+	}
+
+	function oxfam_change_home_delivery_settings( $new_amount, $type = 'min_amount' ) {
 		$updated = false;
 		$shipping_methods = array(
 			'free_delivery_by_shop' => 'free_shipping_1',
@@ -6305,12 +6272,13 @@
 				
 				if ( in_array( $name, array( 'free_delivery_by_shop', 'free_delivery_by_eco', 'free_delivery_by_bpost', 'bpack_delivery_by_bpost' ) ) ) {
 					if ( $name === 'bpack_delivery_by_bpost' ) {
-						if ( array_key_exists( 'cost', $settings ) ) {
-							$settings['cost'] = $new_min_amount;
+						$key = 'free_shipping_'.$type;
+						if ( array_key_exists( $key, $settings ) ) {
+							$settings[ $key ] = $new_amount;
 						}
 					} else {
-						if ( array_key_exists( 'cost', $settings ) ) {
-							$settings['cost'] = $new_min_amount;
+						if ( array_key_exists( $type, $settings ) ) {
+							$settings[ $type ] = $new_amount;
 						}
 					}
 				}
@@ -6322,9 +6290,7 @@
 			}
 		}
 
-		if ( $updated ) {
-			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de leverkost voor betalende thuislevering', '<p>Betalende thuisleveringen gebeuren nu voor '.$new_min_amount.' euro!</p>' );
-		} 
+		return $update;
 	}
 
 	add_action( 'update_option_oxfam_disable_local_pickup', 'oxfam_disable_local_pickup', 10, 3 );
@@ -8410,6 +8376,7 @@
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
+			// @toDo: Vervangen door get_oxfam_covered_zips(), maar dan kunnen er meerdere webshop per postcode zijn?
 			$local_zips = get_option('oxfam_zip_codes');
 			if ( $local_zips !== false ) {
 				foreach ( $local_zips as $zip ) {
