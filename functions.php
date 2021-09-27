@@ -6247,6 +6247,7 @@
 				'delivery_by_eco' => 'flat_rate_4',
 				'delivery_by_bpost' => 'flat_rate_6',
 				'bpack_delivery_by_bpost' => 'flat_rate_7',
+				'delivery_abroad' => 'flat_rate_8',
 			);
 			// Bedrag excl. BTW opslaan en formatteren als leesbaar kommagetal
 			$new_amount = number_format( $new_amount / 1.06, 4, ",", "" );
@@ -6266,6 +6267,9 @@
 					if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
 						$settings['free_shipping_min_amount'] = $new_amount;
 					}
+				} elseif ( $type === 'cost' and $name === 'delivery_abroad' ) {
+					// Verdubbel de verzendkost voor buitenlandse methodes
+					$settings['cost'] = 2 * $new_amount;
 				} else {
 					if ( array_key_exists( $type, $settings ) ) {
 						$settings[ $type ] = $new_amount;
