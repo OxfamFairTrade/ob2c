@@ -6247,8 +6247,13 @@
 				'delivery_by_eco' => 'flat_rate_4',
 				'delivery_by_bpost' => 'flat_rate_6',
 				'bpack_delivery_by_bpost' => 'flat_rate_7',
-				'delivery_abroad' => 'flat_rate_8',
 			);
+
+			if ( get_current_blog_id() === 20 ) {
+				// Mariakerke doet ook leveringen naar Nederland/Duitsland
+				$shipping_methods['delivery_abroad'] = 'flat_rate_8';
+			}
+
 			// Bedrag excl. BTW opslaan en formatteren als leesbaar kommagetal
 			$new_amount = number_format( $new_amount / 1.06, 4, ",", "" );
 		}		
