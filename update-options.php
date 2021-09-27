@@ -171,7 +171,7 @@
 					?>
 						<tr valign="top">
 							<th class="left">
-								<label for="oxfam_minimum_free_delivery">Minimumbedrag voor gratis thuislevering:<br/><small>Dit bedrag verschijnt ook in de balk bovenaan je webshop, tenzij je een afwijkende boodschap liet plaatsen. Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau.</small></label>
+								<label for="oxfam_minimum_free_delivery">Minimumbedrag voor gratis thuislevering:<br/><small>Dit bedrag verschijnt ook in de balk bovenaan je webshop, tenzij je een afwijkende boodschap liet plaatsen. Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau (50 euro).</small></label>
 							</th>
 							<td class="right">
 								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?>" step="5" min="0" max="<?php echo get_site_option('oxfam_minimum_free_delivery'); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
@@ -179,10 +179,10 @@
 						</tr>
 						<tr valign="top">
 							<th class="left">
-								<label for="oxfam_b2c_delivery_cost">Leverkost voor betalende thuislevering:<br/><small>Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau.</small></label>
+								<label for="oxfam_b2c_delivery_cost">Leverkost voor betalende thuislevering:<br/><small>Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau (4,95 euro). Indien je thuislevering volledig gratis wil maken, dien je het minimumbedrag hierboven op 0 te zetten.</small></label>
 							</th>
 							<td class="right">
-								<input type="number" name="oxfam_b2c_delivery_cost" class="text-input" value="<?php echo get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') ); ?>" step="0.05" min="0" max="4.95" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
+								<input type="number" name="oxfam_b2c_delivery_cost" class="text-input" value="<?php echo get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') ); ?>" step="0.05" min="0.95" max="4.95" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
 							</td>
 						</tr>
 						<tr valign="top">

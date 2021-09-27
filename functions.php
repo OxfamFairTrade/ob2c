@@ -6227,7 +6227,7 @@
 		$updated = oxfam_change_home_delivery_settings( $new_cost, 'cost' );
 
 		if ( $updated ) {
-			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de leverkost voor betalende thuislevering', '<p>Betalende thuisleveringen gebeuren nu voor '.$new_cost.' euro!</p>' );
+			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de kost voor betalende thuislevering', '<p>Betalende thuisleveringen kosten nu '.wc_price( $new_cost ).'.</p>' );
 		} 
 	}
 
