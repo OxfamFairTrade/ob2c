@@ -6232,7 +6232,7 @@
 			return;
 		}
 
-		$update = oxfam_change_home_delivery_settings( $new_min_amount, 'min_amount' );
+		$updated = oxfam_change_home_delivery_settings( $new_min_amount, 'min_amount' );
 
 		if ( $updated ) {
 			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de limiet voor gratis verzending', '<p>Alle thuisleveringen zijn nu gratis vanaf '.$new_min_amount.' euro!</p>' );
@@ -6242,7 +6242,7 @@
 	add_action( 'update_option_oxfam_b2c_delivery_cost', 'update_shipping_methods_b2c_delivery_cost', 10, 3 );
 
 	function update_shipping_methods_b2c_delivery_cost( $old_cost, $new_cost, $option ) {
-		$update = oxfam_change_home_delivery_settings( $new_cost, 'cost' );
+		$updated = oxfam_change_home_delivery_settings( $new_cost, 'cost' );
 
 		if ( $updated ) {
 			send_automated_mail_to_helpdesk( get_webshop_name(true).' wijzigde de leverkost voor betalende thuislevering', '<p>Betalende thuisleveringen gebeuren nu voor '.$new_cost.' euro!</p>' );
@@ -6251,7 +6251,6 @@
 
 	function oxfam_change_home_delivery_settings( $new_amount, $type = 'min_amount' ) {
 		$updated = false;
-		write_log( serialize( $new_amount ) );
 
 		if ( $type === 'min_amount' ) {
 			$shipping_methods = array(
@@ -6267,8 +6266,8 @@
 				'delivery_by_bpost' => 'flat_rate_6',
 				'bpack_delivery_by_bpost' => 'flat_rate_7',
 			);
-			// Bedrag excl. BTW opslaan
-			$new_amount /= 1.21;
+			// Bedrag excl. BTW opslaan en formatteren als leesbaar kommagetal
+			$new_amount = number_format( $new_amount / 1.06, 4, ",", "" );
 			write_log( serialize( $new_amount ) );
 		}		
 
@@ -6294,14 +6293,14 @@
 					}
 				}
 
-				// NOG EVEN WACHTEN
-				// if ( update_option( $option_key, $settings ) ) {
-				// 	$updated = true;
-				// }
+				if ( update_option( $option_key, $settings ) ) {
+					write_log( print_r( $settings, true ) );
+					$updated = true;
+				}
 			}
 		}
 
-		return $update;
+		return $updated;
 	}
 
 	add_action( 'update_option_oxfam_disable_local_pickup', 'oxfam_disable_local_pickup', 10, 3 );
