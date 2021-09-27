@@ -26,9 +26,9 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 
 	if ( $shipping_cost_details['tax_rate'] == 0.21 ) {
 		if ( $shipping_cost_details['qty'] > 1 ) {
-			echo '<p style="color: red;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW met levering naar het buitenland! Zorg ervoor dat je bij de verwerking in ShopPlus ' . $shipping_cost_details['qty'] . 'x de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( $shipping_cost_details['qty'] * REDUCED_VAT_SHIPPING_COST ) ).'</p>';
+			echo '<p style="color: red;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW met levering naar het buitenland! Zorg ervoor dat je bij de verwerking in ShopPlus ' . $shipping_cost_details['qty'] . 'x de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( $shipping_cost_details['qty'] * get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') ) / 1.06 ) ).'</p>';
 		} else {
-			echo '<p style="color: red;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( REDUCED_VAT_SHIPPING_COST ) ).'</p>';
+			echo '<p style="color: red;">Dit is een bestelling met enkel producten aan het tarief van 21% BTW! Zorg ervoor dat je bij de verwerking in ShopPlus de levercode \'WEB21\' inscant. '.sprintf( 'Als winkel hou je aan deze thuislevering netto %1$s i.p.v. %2$s over.', wc_price( $shipping_cost_details['total_excl_tax'] ), wc_price( get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') ) / 1.06 ) ).'</p>';
 		}
 	} else {
 		if ( $shipping_cost_details['qty'] > 1 ) {

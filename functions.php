@@ -6,9 +6,9 @@
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
 	// Schakel afrekenen in de webshop van Kortrijk uit van 24/07 t.e.m. 06/08
-	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
-	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
-	add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
+	// add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
+	// add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
+	// add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
 
 	function disable_all_payment_methods( $methods ) {
 		if ( get_current_blog_id() === 18 ) {
@@ -33,6 +33,73 @@
 		}
 		return $html;
 	}
+
+	// Verwijder originelen uit srcset (wordt opgepikt door zoekmachines!)
+	add_filter( 'wp_calculate_image_srcset_meta', 'ob2c_remove_large_images_from_srcset' );
+
+	function ob2c_remove_large_images_from_srcset( $image_meta ) {
+		if ( ! is_array( $image_meta ) ) {
+			return $image_meta;
+		}
+		
+		// write_log( print_r( $image_meta['sizes'], true ) );
+		if ( ! empty($image_meta['sizes'] ) ) {
+			if ( ! empty( $image_meta['sizes']['wc_order_status_icon'] ) ) {
+				unset( $image_meta['sizes']['wc_order_status_icon'] );
+			}
+			if ( ! empty( $image_meta['sizes']['nm_quick_view'] ) ) {
+				unset( $image_meta['sizes']['nm_quick_view'] );
+			}
+			if ( ! empty( $image_meta['sizes']['large'] ) ) {
+				unset( $image_meta['sizes']['large'] );
+			}
+		}
+		
+		return $image_meta;
+	}
+
+	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
+	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
+
+	// Schrijf shortcodes uit in WooCommerce Local Pickup Plus 2.9+
+	add_filter( 'wc_local_pickup_plus_pickup_location_description', 'do_shortcode' );
+	add_filter( 'wc_local_pickup_plus_pickup_location_phone', 'do_shortcode' );
+	// In de 'WC_Local_Pickup_Plus_Address'-klasse zelf zijn geen filters beschikbaar!
+	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'ob2c_do_shortcode_on_pickup_address_object' );
+
+	function ob2c_do_shortcode_on_pickup_address_object( $address ) {
+		if ( $address instanceof WC_Local_Pickup_Plus_Address ) {
+			$array = $address->get_array();
+			// Deze key wordt niet opgehaald door get_array(), voorkom dat we de naam wissen door ze opnieuw op te vullen!
+			$array['name'] = $address->get_name();
+			$array['address_1'] = do_shortcode( $address->get_address_line_1() );
+			$array['postcode'] = do_shortcode( $address->get_postcode() );
+			$array['city'] = do_shortcode( $address->get_city() );
+			$address->set_address( $array );
+		}
+
+		// write_log( print_r( $address, true ) );
+		return $address;
+	}
+
+	// Wijzig de formattering van de dropdownopties
+	add_filter( 'wc_local_pickup_plus_pickup_location_option_label', 'change_pickup_location_options_formatting', 10, 3 );
+
+	function change_pickup_location_options_formatting( $name, $context, $pickup_location ) {
+		if ( 'frontend' === $context ) {
+			$name = 'Oxfam-Wereldwinkel '.$pickup_location->get_name();
+		}
+		return $name;
+	}
+
+	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
+	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
+
+	
+
+	#########################
+	# DIGITALE CADEAUBONNEN #
+	#########################
 
 	function ob2c_is_plausible_voucher_code( $code ) {
 		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
@@ -282,71 +349,10 @@
 		}
 	}
 
-	// Verwijder originelen uit srcset (wordt opgepikt door zoekmachines!)
-	add_filter( 'wp_calculate_image_srcset_meta', 'ob2c_remove_large_images_from_srcset' );
-
-	function ob2c_remove_large_images_from_srcset( $image_meta ) {
-		if ( ! is_array( $image_meta ) ) {
-			return $image_meta;
-		}
-		
-		// write_log( print_r( $image_meta['sizes'], true ) );
-		if ( ! empty($image_meta['sizes'] ) ) {
-			if ( ! empty( $image_meta['sizes']['wc_order_status_icon'] ) ) {
-				unset( $image_meta['sizes']['wc_order_status_icon'] );
-			}
-			if ( ! empty( $image_meta['sizes']['nm_quick_view'] ) ) {
-				unset( $image_meta['sizes']['nm_quick_view'] );
-			}
-			if ( ! empty( $image_meta['sizes']['large'] ) ) {
-				unset( $image_meta['sizes']['large'] );
-			}
-		}
-		
-		return $image_meta;
-	}
-
-	// Was vroeger 6.5566;
-	define( 'REDUCED_VAT_SHIPPING_COST', 4.6698 );
-	// Was vroeger 5.7438;
-	define( 'STANDARD_VAT_SHIPPING_COST', 4.0909 );
-
-	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
-	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
-
-	// Schrijf shortcodes uit in WooCommerce Local Pickup Plus 2.9+
-	add_filter( 'wc_local_pickup_plus_pickup_location_description', 'do_shortcode' );
-	add_filter( 'wc_local_pickup_plus_pickup_location_phone', 'do_shortcode' );
-	// In de 'WC_Local_Pickup_Plus_Address'-klasse zelf zijn geen filters beschikbaar!
-	add_filter( 'wc_local_pickup_plus_pickup_location_address', 'ob2c_do_shortcode_on_pickup_address_object' );
-
-	function ob2c_do_shortcode_on_pickup_address_object( $address ) {
-		if ( $address instanceof WC_Local_Pickup_Plus_Address ) {
-			$array = $address->get_array();
-			// Deze key wordt niet opgehaald door get_array(), voorkom dat we de naam wissen door ze opnieuw op te vullen!
-			$array['name'] = $address->get_name();
-			$array['address_1'] = do_shortcode( $address->get_address_line_1() );
-			$array['postcode'] = do_shortcode( $address->get_postcode() );
-			$array['city'] = do_shortcode( $address->get_city() );
-			$address->set_address( $array );
-		}
-
-		// write_log( print_r( $address, true ) );
-		return $address;
-	}
-
-	// Wijzig de formattering van de dropdownopties
-	add_filter( 'wc_local_pickup_plus_pickup_location_option_label', 'change_pickup_location_options_formatting', 10, 3 );
-
-	function change_pickup_location_options_formatting( $name, $context, $pickup_location ) {
-		if ( 'frontend' === $context ) {
-			$name = 'Oxfam-Wereldwinkel '.$pickup_location->get_name();
-		}
-		return $name;
-	}
-
-	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
-	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
+	
+	######################
+	# LOKAAL ASSORTIMENT #
+	######################
 
 	// Verwijder het gekoppelde packshot
 	add_action( 'before_delete_post', 'ob2c_delete_coupled_packshot', 10, 1 );
@@ -560,32 +566,6 @@
 				update_post_meta( $post_id, $meta_key, '' );
 			}
 		}
-
-		// NIET MEER NODIG
-		// if ( is_main_site() ) {
-		// 	$product = wc_get_product( $post_id );
-		// 	if ( $product !== false ) {
-		// 		$logger = wc_get_logger();
-		// 		$context = array( 'source' => 'Oxfam' );			
-		// 		if ( $product->get_meta('_multiple') === '' ) {
-		// 			// Het is een hoofdproduct dat nog niet omgezet is naar de nieuwe datastructuur
-		// 			$to_migrate = array(
-		// 				'shopplus' => '_shopplus_code',
-		// 				'ean' => '_cu_ean',
-		// 				'ompak' => '_multiple',
-		// 				'eenheid' => '_stat_uom',
-		// 				'fairtrade' => '_fairtrade_share',
-		// 				'eprijs' => '_unit_price',
-		// 			);
-		// 		}
-		// 		foreach ( $to_migrate as $attribute => $meta_key ) {
-		// 			$migrated_values[] =  $meta_key.': '.$product->get_attribute( $attribute );
-		// 			$product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
-		// 		}
-		// 		$logger->info( 'Migrating SKU '.$product->get_sku().' to new data structure ('.implode( ', ', $migrated_values ).')', $context );
-		// 		$product->save();
-		// 	}
-		// }
 	}
 
 	function update_unit_price( $post_id, $price = false, $content = false, $unit = false ) {
@@ -4145,6 +4125,7 @@
 		$total_tax = 0.00;
 		$tax_rate = 0.06;
 		$qty = 0;
+		$shipping_cost_incl_tax = get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') );
 		
 		// We gaan ervan uit dat er altijd slechts één verzendlijn aanwezig zal zijn!
 		foreach ( $order->get_items('shipping') as $shipping_item ) {
@@ -4154,10 +4135,8 @@
 			// Opgelet: géén $shipping_item->get_tax_class() gebruiken, want dit retourneert gewoon waarde van 'woocommerce_shipping_tax_class'-optie!
 			if ( ! in_array( 'voeding', $order->get_items_tax_classes() ) ) {
 				$tax_rate = 0.21;
-				$qty = round( $total_excl_tax / STANDARD_VAT_SHIPPING_COST );
-			} else {
-				$qty = round( $total_excl_tax / REDUCED_VAT_SHIPPING_COST );
 			}
+			$qty = round( $total_excl_tax / ( $shipping_cost_incl_tax / ( 1 + $tax_rate ) ) );
 		}
 
 		return array( 'total_excl_tax' => $total_excl_tax, 'total_tax' => $total_tax, 'tax_rate' => $tax_rate, 'qty' => $qty );
@@ -5644,10 +5623,11 @@
 			// Slug voor 'standard rate' is een lege string!
 			$standard_vat_rates = WC_Tax::get_rates_for_tax_class('');
 			$standard_vat_rate = reset( $standard_vat_rates );
-			
+			$shipping_cost_incl_tax = get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') );
+
 			if ( ! in_array( 'voeding', WC()->cart->get_cart_item_tax_classes() ) ) {
 				// Brutoprijs verlagen om te compenseren voor hoger BTW-tarief
-				$cost = STANDARD_VAT_SHIPPING_COST;
+				$cost = $shipping_cost_incl_tax / 1.21;
 				if ( WC()->customer->get_shipping_country() !== 'BE' ) {
 					// Verdubbel de verzendkost voor buitenlandse bestellingen
 					$cost *= 2;
@@ -5656,7 +5636,7 @@
 				$tax_cost = 0.21 * $cost;
 				$tax_rate = $standard_vat_rate;
 			} else {
-				$cost = REDUCED_VAT_SHIPPING_COST;
+				$cost = $shipping_cost_incl_tax / 1.06;
 				if ( WC()->customer->get_shipping_country() !== 'BE' ) {
 					// Verdubbel de verzendkost voor buitenlandse bestellingen
 					$cost *= 2;
@@ -6239,6 +6219,8 @@
 		} 
 	}
 
+	// In de praktijk worden deze prijzen volledig overruled door de logica in de 'woocommerce_package_rates'-filter!
+	// Hou beide voor de overzichtelijkheid toch synchroon
 	add_action( 'update_option_oxfam_b2c_delivery_cost', 'update_shipping_methods_b2c_delivery_cost', 10, 3 );
 
 	function update_shipping_methods_b2c_delivery_cost( $old_cost, $new_cost, $option ) {
@@ -6268,7 +6250,6 @@
 			);
 			// Bedrag excl. BTW opslaan en formatteren als leesbaar kommagetal
 			$new_amount = number_format( $new_amount / 1.06, 4, ",", "" );
-			write_log( serialize( $new_amount ) );
 		}		
 
 		foreach ( $shipping_methods as $name => $key ) {
@@ -6281,8 +6262,6 @@
 			
 			$settings = get_option( $option_key );
 			if ( is_array( $settings ) ) {
-				write_log( print_r( $settings, true ) );
-				
 				if ( $type === 'min_amount' and $name === 'bpack_delivery_by_bpost' ) {
 					if ( array_key_exists( 'free_shipping_min_amount', $settings ) ) {
 						$settings['free_shipping_min_amount'] = $new_amount;
@@ -6294,8 +6273,8 @@
 				}
 
 				if ( update_option( $option_key, $settings ) ) {
-					write_log( print_r( $settings, true ) );
 					$updated = true;
+					// write_log( print_r( $settings, true ) );
 				}
 			}
 		}
