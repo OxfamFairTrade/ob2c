@@ -141,25 +141,16 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
         
         <p class="woocommerce-mini-cart__total total">
             <strong><?php
-                $contains_empties = false;
-                $empties = get_oxfam_empties_skus_array();
-                
-                foreach( WC()->cart->get_cart_contents() as $item_key => $item_value ) {
-                    // Verzendklasse 'breekbaar' is niet op alle leeggoed geactiveerd, dus check leeggoed o.b.v. SKU
-                    if ( in_array( $item_value['data']->get_sku(), $empties ) ) {
-                        $contains_empties = true;
-                        break;
-                    } 
-                }
+                $empties_total = ob2c_get_total_empties_amount();
                
                 if ( WC()->cart->get_discount_total() > 0 ) {
-                    if ( $contains_empties ) {
+                    if ( $empties_total > 0 ) {
                         echo 'Subtotaal (incl. leeggoed, excl. korting):';
                     } else {
                         echo 'Subtotaal (excl. korting):';
                     }
                 } else {
-                    if ( $contains_empties ) {
+                    if ( $empties_total > 0 ) {
                         echo 'Subtotaal (incl. leeggoed):';
                     } else {
                         echo 'Subtotaal:';

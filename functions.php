@@ -751,7 +751,7 @@
 	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
-		if ( $coupon->get_code() === '202110-wvdft' ) {
+		if ( $coupon->get_code() === '202110-wvdft' and date('Y-m-d') < '2021-10-17' ) {
 			$melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') );
 			if ( $melkchocolade !== false and $melkchocolade->get_stock_status() !== 'instock' ) {
 				// Pas de korting niet toe als het gratis product niet op voorraad is
@@ -762,7 +762,12 @@
 			// @toDo: Leeggoed ook proberen uitsluiten
 			// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
 			$totals = WC()->cart->get_totals();
-			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() > $coupon->get_minimum_amount() and date('Y-m-d') < '2021-10-17' ) {
+			write_log( print_r( $totals['cart_contents_total'], true ) );
+			write_log( print_r( $totals['cart_contents_tax'], true ) );
+			write_log( print_r( ob2c_get_total_voucher_amount(), true ) );
+			write_log( print_r( ob2c_get_total_empties_amount(), true ) );
+			// $coupon->get_minimum_amount() werkt niet meer, raadpleeg metaveld
+			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() > floatval( $coupon->get_meta('_wjecf_min_matching_product_subtotal') ) ) {
 				// Pas op met expliciet op true zetten: dit zal iedere keer een foutmelding genereren boven het winkelmandje als de coupon om een andere reden ongeldig is!
 				return true;
 			} else {
@@ -5401,6 +5406,25 @@
 		}
 
 		return $voucher_total;
+	}
+
+	function ob2c_get_total_empties_amount( $order = false ) {
+		$empties_total = 0.0;
+		$empties = get_oxfam_empties_skus_array();
+
+		if ( $order instanceof WC_Order ) {
+			// @toDo: Implementeren
+		} else {
+			foreach ( WC()->cart->get_cart_contents() as $item_key => $item_value ) {
+				// Verzendklasse 'breekbaar' is niet op alle leeggoed geactiveerd, dus check leeggoed o.b.v. SKU
+				// write_log( print_r( $item_value, true ) );
+				if ( in_array( $item_value['data']->get_sku(), $empties ) ) {
+					$empties_total += $item_value['line_subtotal'];
+				}
+			}
+		}
+
+		return $empties_total;
 	}
 
 	// Definieer een globale B2B-levermethode zonder support voor verzendzones
