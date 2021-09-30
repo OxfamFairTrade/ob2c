@@ -747,22 +747,22 @@
 		return $html;
 	}
 
-	// Pas winkelmandkorting n.a.v. World Fair Trade Day 2021 toe op het uiteindelijk te betalen bedrag i.p.v. het subtotaal
+	// Pas winkelmandkorting n.a.v. Week van de Fair Trade 2021 toe op het uiteindelijk te betalen bedrag i.p.v. het subtotaal
 	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
-		if ( $coupon->get_code() === '202105-wftd' ) {
-			$juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') );
-			$juste_tripel_solo = wc_get_product( wc_get_product_id_by_sku('20810') );
-			if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() !== 'instock' ) and ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() !== 'instock' ) ) {
+		if ( $coupon->get_code() === '202110-wvdft' ) {
+			$melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') );
+			if ( $melkchocolade !== false and $melkchocolade->get_stock_status() !== 'instock' ) {
 				// Pas de korting niet toe als het gratis product niet op voorraad is
 				return false;
 			}
 
 			// Vergelijk met het subtotaal NA kortingen m.u.v. digitale vouchers (inclusief BTW, exclusief verzendkosten)
+			// @toDo: Leeggoed ook proberen uitsluiten
 			// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
 			$totals = WC()->cart->get_totals();
-			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() > $coupon->get_minimum_amount() and date('Y-m-d') < '2021-06-01' ) {
+			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() > $coupon->get_minimum_amount() and date('Y-m-d') < '2021-10-17' ) {
 				// Pas op met expliciet op true zetten: dit zal iedere keer een foutmelding genereren boven het winkelmandje als de coupon om een andere reden ongeldig is!
 				return true;
 			} else {
@@ -7528,9 +7528,9 @@
 			// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/k/n1074/news/view/20167/20871/promo-s-online-winkel-september-2021-update.html" target="_blank">promo\'s voor september</a> werden geactiveerd in alle webshops.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2021/09/16/Overzicht-promoties-Week-van-de-Fair-Trade-2021" target="_blank">promo\'s n.a.v. Week van de Fair Trade</a> werden geactiveerd in alle webshops.</p>';
+				// echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
 					echo '<p>Drie nieuwe voedingsproducten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';

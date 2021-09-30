@@ -179,7 +179,7 @@
 						</tr>
 						<tr valign="top">
 							<th class="left">
-								<label for="oxfam_b2c_delivery_cost">Leverkost voor betalende thuislevering:<br/><small>Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau (6,95 euro). Opgelet: indien je thuislevering volledig gratis wil maken, dien je het minimumbedrag hierboven op 0 te zetten (en niet dit bedrag).</small></label>
+								<label for="oxfam_b2c_delivery_cost">Leverkost voor betalende thuislevering:<br/><small>Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau (6,95 euro). Opgelet: indien je thuislevering volledig gratis wil maken, dien je het minimumbedrag hierboven op 0 te zetten (en niet dit bedrag). Vergeet de prijs van de artikels WEB6 en WEB21 niet aan te passen in ShopPlus!</small></label>
 							</th>
 							<td class="right">
 								<input type="number" name="oxfam_b2c_delivery_cost" class="text-input" value="<?php echo get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') ); ?>" step="0.50" min="0.95" max="6.95" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
@@ -206,7 +206,7 @@
 			?>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Wis het telefoonnummer om het algemene telefoonnummer dat vermeld staat op <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a> opnieuw automatisch over te nemen. Ongeldige Belgische telefoonnummers (= geen 9 of 10 cijfers) zullen niet opgeslagen worden.</small></label>
+					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Ongeldige Belgische telefoonnummers (= geen 9 of 10 cijfers) zullen niet opgeslagen worden. Wis het telefoonnummer om het algemene telefoonnummer dat vermeld staat op <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a> opnieuw automatisch over te nemen.</small></label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_custom_webshop_telephone" class="text-input" value="<?php echo esc_attr( get_option( 'oxfam_custom_webshop_telephone', '' ) ); ?>" placeholder="<?php echo get_oxfam_shop_data( 'telephone', 0, true ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
