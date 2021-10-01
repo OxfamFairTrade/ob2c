@@ -17,7 +17,9 @@
 
 	<?php
 		$start_date = date_i18n( 'Y-m-d', strtotime('first day of previous month') );
+		$start_date = '2021-08-01';
 		$end_date = date_i18n( 'Y-m-d', strtotime('last day of previous month') );
+		$end_date = '2021-08-31';
 		echo '<p><b>Startdatum</b>: '.$start_date.'<br/><b>Einddatum</b>: '.$end_date.'</p>';
 		$voucher_ids = array();
 		
@@ -163,9 +165,9 @@
 					$id = 'latest';
 					$title = 'Download openstaande export';
 					// Afsluiten ten vroegste toestaan vanaf de 20ste van de maand
-					if ( intval( date_i18n('j') ) >= 20 ) {
+					// if ( intval( date_i18n('j') ) >= 20 ) {
 						$extras = ' <button id="'.$id.'" data-voucher-ids="'.implode( ',', $voucher_ids ).'" data-start-date="'.str_replace( '-', '', $start_date ).'" data-end-date="'.str_replace( '-', '', $end_date ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
-					}
+					// }
 				}
 
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
@@ -319,40 +321,43 @@
 
 				if ( count( $orders ) === 1 ) {
 					$wc_order = reset( $orders );
-					$total += $wc_order->get_total();
 
-					// Percentage OFT-producten proberen tonen?
+					// Bereken het percentage OFT-omzet (excl. BTW en kortingen)
 					$order_total_oft = 0.0;
 					$order_total_non_oft = 0.0;
 					$order_total_unknown = 0.0;
-					foreach ( $order->get_items() as $item ) {
+					foreach ( $wc_order->get_items() as $item ) {
 						$product = $item->get_product();
-						$line_total = $item['line_subtotal'] + $item['line_subtotal_tax'];
+						// Neem 'line_total' i.p.v. 'line_subtotal', zodat kortingen reeds verrekend zijn
+						$line_total = $item['line_total'] + $item['line_total_tax'];
 						if ( $product === false ) {
 							$order_total_unknown += $line_total;
 						} else {
-							if ( $product->get_attribute('merk') === 'Oxfam Fair Trade' ) {
+							if ( in_array( $product->get_attribute('merk'), array( 'Oxfam Fair Trade', 'Maya' ) ) ) {
 								$order_total_oft += $line_total;
 							} else {
 								$order_total_non_oft += $line_total;
 							}
 						}
 					}
+					$order_total = $order_total_oft + $order_total_non_oft + $order_total_unknown;
+					
+					$total += $order_total;
 					$total_oft += $order_total_oft;
 
-					echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' waarvan '.round( $order_total_oft / ( $order_total_oft + $order_total_non_oft + $order_total_unknown ) ).'% OFT &mdash; '.$wc_order->get_billing_email();
+					echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $order_total, array( 'ex_tax_label' => true ) ).' waarvan '.round( 100 * $order_total_oft / $order_total ).'% OFT &mdash; '.$wc_order->get_billing_email();
 					
 					$new_args = array(
 						'type' => 'shop_order',
 						'billing_email' => $wc_order->get_billing_email(),
-						'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d H:i:s'),
+						'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
 						'status' => 'wc-completed',
 						'limit' => -1,
 					);
 					$previous_orders_by_customer = wc_get_orders( $new_args );
 					
 					if ( count( $previous_orders_by_customer ) === 0 ) {
-						$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d H:i:s');
+						$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
 						$new_orders_by_customer = wc_get_orders( $new_args );
 						
 						if ( count( $new_orders_by_customer ) > 0 ) {
@@ -360,7 +365,7 @@
 						} else {
 							$addendum = '';
 						}
-						echo ' <span style="font-weight: bold; color: green;">=> new customer'.$addendum.'!</span>';
+						echo ' <span style="font-weight: bold; color: green;">=> new online customer'.$addendum.'!</span>';
 					}
 
 					echo '<br/>';
@@ -369,7 +374,7 @@
 				restore_current_blog();
 			}
 
-			echo '<p>Totaalbedrag: '.wc_price( $total ).' (waarvan '.wc_price( $total_oft ).' Oxfam Fair Trade-producten)</p>';
+			echo '<p>Totaalbedrag: '.wc_price( $total, array( 'ex_tax_label' => true ) ).' waarvan '.wc_price( $total_oft, array( 'ex_tax_label' => true ) ).' Oxfam Fair Trade-producten</p>';
 		}
 	?>
 </div>
