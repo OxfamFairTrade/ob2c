@@ -63,8 +63,15 @@ if ( $additional_content ) {
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
 }
 
-// Eventueel array( 'id' => ... ) doorgeven als argument voor de juiste $pickup_location?
-echo '<p>'.sprintf( __( 'Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op %s en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.', 'oxfam-webshop' ), print_telephone() ).'</p>';
+if ( order_contains_breakfast( $order ) ) {
+	// Nummer van Cis vermelden
+	$phone_number = '0498/51.87.50';
+} else {
+	// $shop_post_id = get_option('oxfam_shop_post_id');
+	// Eventueel array( 'id' => $shop_post_id ) doorgeven als argument voor de juiste $pickup_location?
+	$phone_number = print_telephone();
+}
+echo '<p>'.sprintf( __( 'Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op %s en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.', 'oxfam-webshop' ), $phone_number ).'</p>';
 
 /*
  * @hooked WC_Emails::order_details() Shows the order details table.
