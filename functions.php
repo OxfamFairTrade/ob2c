@@ -237,13 +237,13 @@
 					} else {
 						// Ongeldig maken in de centrale database
 						global $wpdb;
-						$result = $wpdb->update(
+						$rows_updated = $wpdb->update(
 							$wpdb->base_prefix.'universal_coupons',
 							array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s'), 'blog_id' => get_current_blog_id() ),
 							array( 'code' => $code )
 						);
 
-						if ( $result === 1 ) {
+						if ( $rows_updated === 1 ) {
 							// Converteer korting naar pseudo betaalmethode voor correcte omzetrapporten en verwerking van BTW
 							$fee = new WC_Order_Item_Fee();
 							$coupon_data_array = $coupon_item->get_meta('coupon_data');
@@ -266,6 +266,8 @@
 							}
 							// Lokt dit een herberekening van alle kosten uit die het BTW-tarief op betalende verzending verkeerdelijk altijd op 21% zet?
 							$order->save();
+						} else {
+							send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' kon niet als gebruikt gemarkeerd worden in de database', '<p>Bekijk <u>zo snel mogelijk</u> de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>. Hier is iets niet pluis!</p>' );
 						}
 					}
 				}
@@ -6868,6 +6870,8 @@
 
 					restore_current_blog();
 				}
+			} else {
+				send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' kon niet als gecrediteerd gemarkeerd worden in de database', '<p>Vraag Frederik om uit te pluizen wat hier aan de hand is en eventuele dubbele creditering te vermijden!</p>' );
 			}
 		}
 

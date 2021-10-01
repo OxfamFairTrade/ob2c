@@ -282,64 +282,72 @@
 
 	<p>&nbsp;</p>
 
-	<h2>Alle bestellingen met cadeaubonnen</h2>
+	<h2>Alle bestellingen met cadeaubonnen van Gezinsbond</h2>
+	<?php get_total_revenue_by_voucher_issuer('Gezinsbond'); ?>
+
+	<p>&nbsp;</p>
+
+	<h2>Alle bestellingen met cadeaubonnen van Cera</h2>
+	<?php get_total_revenue_by_voucher_issuer('Cera'); ?>
+	
 	<?php
-		global $wpdb;
+		function get_total_revenue_by_voucher_issuer( $issuer = 'Cera' ) {
+			global $wpdb;
 
-		$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `order` <> '' ORDER BY `order` ASC";
-		$rows = $wpdb->get_results( $query );
-		$checked_orders = array();
-		$total = 0.0;
-		$args = array(
-			'type' => 'shop_order',
-			'limit' => -1,
-		);
+			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `order` <> '' AND `issuer` = '%s' ORDER BY `order` ASC", $issuer ) );
+			$checked_orders = array();
+			$total = 0.0;
+			$args = array(
+				'type' => 'shop_order',
+				'limit' => -1,
+			);
 
-		foreach ( $rows as $key => $row ) {
-			// Elk order slechts één keer checken, ook al werden er meerdere bonnen tegelijk ingeruild
-			if ( in_array( $row->order, $checked_orders ) ) {
-				continue;
-			} else {
-				$checked_orders[] = $row->order;
-			}
-
-			switch_to_blog( $row->blog_id );
-			
-			$args['order_number'] = $row->order;
-			$orders = wc_get_orders( $args );
-
-			if ( count( $orders ) === 1 ) {
-				$wc_order = reset( $orders );
-				$total += $wc_order->get_total();
-
-				echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
-				
-				$new_args = array(
-					'type' => 'shop_order',
-					'billing_email' => $wc_order->get_billing_email(),
-					'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
-					'status' => 'wc-completed',
-					'limit' => -1,
-				);
-				$previous_orders_by_customer = wc_get_orders( $new_args );
-				
-				if ( count( $previous_orders_by_customer ) === 0 ) {
-					$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
-					$new_orders_by_customer = wc_get_orders( $new_args );
-					
-					if ( count( $new_orders_by_customer ) > 0 ) {
-						$addendum = ', placed '.count( $new_orders_by_customer ).' new orders afterwards';
-					} else {
-						$addendum = '';
-					}
-					echo ' <span style="font-weight: bold; color: green;">=> new customer'.$addendum.'!</span>';
+			foreach ( $rows as $key => $row ) {
+				// Elk order slechts één keer checken, ook al werden er meerdere bonnen tegelijk ingeruild
+				if ( in_array( $row->order, $checked_orders ) ) {
+					continue;
+				} else {
+					$checked_orders[] = $row->order;
 				}
-				echo '<br/>';
+
+				switch_to_blog( $row->blog_id );
+				
+				$args['order_number'] = $row->order;
+				$orders = wc_get_orders( $args );
+
+				if ( count( $orders ) === 1 ) {
+					$wc_order = reset( $orders );
+					$total += $wc_order->get_total();
+
+					echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
+					
+					$new_args = array(
+						'type' => 'shop_order',
+						'billing_email' => $wc_order->get_billing_email(),
+						'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
+						'status' => 'wc-completed',
+						'limit' => -1,
+					);
+					$previous_orders_by_customer = wc_get_orders( $new_args );
+					
+					if ( count( $previous_orders_by_customer ) === 0 ) {
+						$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
+						$new_orders_by_customer = wc_get_orders( $new_args );
+						
+						if ( count( $new_orders_by_customer ) > 0 ) {
+							$addendum = ', placed '.count( $new_orders_by_customer ).' new orders afterwards';
+						} else {
+							$addendum = '';
+						}
+						echo ' <span style="font-weight: bold; color: green;">=> new customer'.$addendum.'!</span>';
+					}
+					echo '<br/>';
+				}
+
+				restore_current_blog();
 			}
 
-			restore_current_blog();
+			echo '<p>Totaalbedrag: '.wc_price( $total ).'</p>';
 		}
-
-		echo '<p>Totaalbedrag: '.wc_price( $total ).'</p>';
 	?>
 </div>
