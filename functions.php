@@ -761,13 +761,9 @@
 			}
 
 			// Vergelijk met het subtotaal NA kortingen m.u.v. digitale vouchers (inclusief BTW, exclusief verzendkosten)
-			// @toDo: Leeggoed ook proberen uitsluiten
 			// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
 			$totals = WC()->cart->get_totals();
-			write_log( print_r( $totals['cart_contents_total'], true ) );
-			write_log( print_r( $totals['cart_contents_tax'], true ) );
-			write_log( print_r( ob2c_get_total_voucher_amount(), true ) );
-			write_log( print_r( ob2c_get_total_empties_amount(), true ) );
+			write_log( "Basisbedrag voor toekennen gratis tablet chocolade: ". ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() ) );
 			// $coupon->get_minimum_amount() werkt niet meer, raadpleeg metaveld
 			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() > floatval( $coupon->get_meta('_wjecf_min_matching_product_subtotal') ) ) {
 				// Pas op met expliciet op true zetten: dit zal iedere keer een foutmelding genereren boven het winkelmandje als de coupon om een andere reden ongeldig is!
