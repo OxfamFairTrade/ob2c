@@ -78,8 +78,8 @@
 			$warnings = array();
 
 			// Vereis een lege 'credited'-datum zodat we verhinderen dat vouchers twee keer in een opgeslagen export kunnen opduiken 
-			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `issuer` = '".$issuer."' AND value = ".$value." AND DATE(`used`) BETWEEN '" . $start_date . "' AND '" . $end_date . "' AND DATE(`credited`) < '2001-01-01'";
-			$rows = $wpdb->get_results( $query );
+			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `issuer` = '%s' AND value = %d AND DATE(`used`) BETWEEN '%s' AND '%s' AND DATE(`credited`) < '2001-01-01'";
+			$rows = $wpdb->get_results( $wpdb->prepare( $query, $issuer, $value, $start_date, $end_date ) );
 
 			foreach ( $rows as $key => $row ) {
 				switch_to_blog( $row->blog_id );
@@ -294,9 +294,11 @@
 		function get_total_revenue_by_voucher_issuer( $issuer = 'Cera' ) {
 			global $wpdb;
 
-			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `order` <> '' AND `issuer` = '%s' ORDER BY `order` ASC", $issuer ) );
+			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `order` <> '' AND `issuer` = '%s' ORDER BY `order` ASC";
+			$rows = $wpdb->get_results( $wpdb->prepare( $query, $issuer ) );
 			$checked_orders = array();
 			$total = 0.0;
+			$total_oft = 0.0;
 			$args = array(
 				'type' => 'shop_order',
 				'limit' => -1,
@@ -319,19 +321,38 @@
 					$wc_order = reset( $orders );
 					$total += $wc_order->get_total();
 
-					echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
+					// Percentage OFT-producten proberen tonen?
+					$order_total_oft = 0.0;
+					$order_total_non_oft = 0.0;
+					$order_total_unknown = 0.0;
+					foreach ( $order->get_items() as $item ) {
+						$product = $item->get_product();
+						$line_total = $item['line_subtotal'] + $item['line_subtotal_tax'];
+						if ( $product === false ) {
+							$order_total_unknown += $line_total;
+						} else {
+							if ( $product->get_attribute('merk') === 'Oxfam Fair Trade' ) {
+								$order_total_oft += $line_total;
+							} else {
+								$order_total_non_oft += $line_total;
+							}
+						}
+					}
+					$total_oft += $order_total_oft;
+
+					echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' waarvan '.round( $order_total_oft / ( $order_total_oft + $order_total_non_oft + $order_total_unknown ) ).'% OFT &mdash; '.$wc_order->get_billing_email();
 					
 					$new_args = array(
 						'type' => 'shop_order',
 						'billing_email' => $wc_order->get_billing_email(),
-						'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
+						'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d H:i:s'),
 						'status' => 'wc-completed',
 						'limit' => -1,
 					);
 					$previous_orders_by_customer = wc_get_orders( $new_args );
 					
 					if ( count( $previous_orders_by_customer ) === 0 ) {
-						$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
+						$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d H:i:s');
 						$new_orders_by_customer = wc_get_orders( $new_args );
 						
 						if ( count( $new_orders_by_customer ) > 0 ) {
@@ -341,13 +362,14 @@
 						}
 						echo ' <span style="font-weight: bold; color: green;">=> new customer'.$addendum.'!</span>';
 					}
+
 					echo '<br/>';
 				}
 
 				restore_current_blog();
 			}
 
-			echo '<p>Totaalbedrag: '.wc_price( $total ).'</p>';
+			echo '<p>Totaalbedrag: '.wc_price( $total ).' (waarvan '.wc_price( $total_oft ).' Oxfam Fair Trade-producten)</p>';
 		}
 	?>
 </div>
