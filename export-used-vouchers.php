@@ -17,9 +17,7 @@
 
 	<?php
 		$start_date = date_i18n( 'Y-m-d', strtotime('first day of previous month') );
-		$start_date = '2021-08-01';
 		$end_date = date_i18n( 'Y-m-d', strtotime('last day of previous month') );
-		$end_date = '2021-08-31';
 		echo '<p><b>Startdatum</b>: '.$start_date.'<br/><b>Einddatum</b>: '.$end_date.'</p>';
 		$voucher_ids = array();
 		
@@ -165,9 +163,9 @@
 					$id = 'latest';
 					$title = 'Download openstaande export';
 					// Afsluiten ten vroegste toestaan vanaf de 20ste van de maand
-					// if ( intval( date_i18n('j') ) >= 20 ) {
+					if ( intval( date_i18n('j') ) >= 20 ) {
 						$extras = ' <button id="'.$id.'" data-voucher-ids="'.implode( ',', $voucher_ids ).'" data-start-date="'.str_replace( '-', '', $start_date ).'" data-end-date="'.str_replace( '-', '', $end_date ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
-					// }
+					}
 				}
 
 				// Om downloadlink te leggen naar niet-publieke map hebben we een download manager nodig ...
