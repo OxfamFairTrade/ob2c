@@ -7555,6 +7555,9 @@
 				// echo '<div class="notice notice-success">';
 				// 	echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2021/09/16/Overzicht-promoties-Week-van-de-Fair-Trade-2021" target="_blank">promo\'s n.a.v. Week van de Fair Trade</a> werden geactiveerd in alle webshops.</p>';
 				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Op 1 oktober ging de actie i.s.m. Cera van start. Er worden momenteel veel digitale geschenkencheques ingeruild. <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">Download de handleiding</a> voor alle praktische details.</p>';
+				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
 					echo '<p>Drie nieuwe voedingsproducten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
@@ -7601,8 +7604,8 @@
 
 		if ( 'woocommerce_page_wc-reports' === $screen->base and ( empty( $_GET['tab'] ) or $_GET['tab'] === 'orders' ) ) {
 			global $wpdb;
-			$credit_date_timestamp = strtotime( '+1 weekday', strtotime('last day of previous month') );
-			$credit_month_timestamp = strtotime( '-1 month', strtotime('first day of previous month') );
+			$credit_date_timestamp = strtotime( '+1 weekday', strtotime('last day of this month') );
+			$credit_month_timestamp = strtotime( '-1 month', strtotime('first day of this month') );
 			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE blog_id = ".get_current_blog_id()." AND DATE(credited) = '".date_i18n( 'Y-m-d', $credit_date_timestamp )."';";
 			$results = $wpdb->get_results( $query );
 			
