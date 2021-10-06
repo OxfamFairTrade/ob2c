@@ -750,7 +750,7 @@
 	}
 
 	// Pas winkelmandkorting n.a.v. Week van de Fair Trade 2021 toe op het uiteindelijk te betalen bedrag i.p.v. het subtotaal
-	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 20, 2 );
+	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 1000, 2 );
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
 		if ( $coupon->get_code() === '202110-wvdft' and date('Y-m-d') < '2021-10-17' ) {
@@ -766,8 +766,8 @@
 			if ( current_user_can('update_core') ) {
 				write_log( "Basisbedrag voor toekennen gratis tablet chocolade: ". ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() ) );
 			}
-			// $coupon->get_minimum_amount() werkt niet meer, dus raadpleeg metaveld
-			if ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() > floatval( $coupon->get_meta('_wjecf_min_matching_product_subtotal') ) ) {
+			// Eventueel $coupon->get_meta('_wjecf_min_matching_product_subtotal') gebruiken indien beperkt tot bepaalde producten
+			if ( ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() ) > floatval( $coupon->get_minimum_amount() ) ) {
 				// Pas op met expliciet op true zetten: dit zal iedere keer een foutmelding genereren boven het winkelmandje als de coupon om een andere reden ongeldig is!
 				return true;
 			} else {
