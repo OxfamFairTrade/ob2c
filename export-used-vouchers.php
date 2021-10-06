@@ -91,32 +91,36 @@
 				);
 				$orders = wc_get_orders( $args );
 				
-				if ( count( $orders ) === 0 ) {
+				if ( $row->order !== 'OFFLINE' and count( $orders ) === 0 ) {
 					$warnings[ $row->order ] = 'Bestelling '.$row->order.' niet gevonden, voucher '.$row->code.' niet opgenomen in export';
 				} elseif ( count( $orders ) > 1 ) {
 					$warnings[ $row->order ] = 'Meerdere bestellingen gevonden voor '.$row->order.', voucher '.$row->code.' niet opgenomen in export';
 				} else {
-					$order = reset( $orders );
-					if ( $order->get_status() !== 'completed' ) {
-						$warnings[ $row->order ] = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> is nog niet afgerond, voucher '.$row->code.' niet opgenomen in export';
-						restore_current_blog();
-						continue;
-					}
+					if ( $row->order === 'OFFLINE' ) {
+						$voucher_ids[] = $row->id;
+					} else {
+						$order = reset( $orders );
+						if ( $order->get_status() !== 'completed' ) {
+							$warnings[ $row->order ] = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> is nog niet afgerond, voucher '.$row->code.' niet opgenomen in export';
+							restore_current_blog();
+							continue;
+						}
 
-					$voucher_ids[] = $row->id;
-					$refunds = $order->get_refunds();
-					if ( count( $refunds ) > 0 ) {
-						$refund_amount = 0.0;
-						foreach ( $refunds as $refund ) {
-							$refund_amount += $refund->get_amount();
+						$voucher_ids[] = $row->id;
+						$refunds = $order->get_refunds();
+						if ( count( $refunds ) > 0 ) {
+							$refund_amount = 0.0;
+							foreach ( $refunds as $refund ) {
+								$refund_amount += $refund->get_amount();
+							}
+							$warning = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat een terugbetaling t.w.v. '.wc_price( $refund_amount );
+							if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
+								$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: red">dit mag in principe niet</span>';
+							} else {
+								$warning .= ' die kleiner is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: green">geen probleem</span>';
+							}
+							$warnings[ $row->order ] = $warning;
 						}
-						$warning = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat een terugbetaling t.w.v. '.wc_price( $refund_amount );
-						if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
-							$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: red">dit mag in principe niet</span>';
-						} else {
-							$warning .= ' die kleiner is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: green">geen probleem</span>';
-						}
-						$warnings[ $row->order ] = $warning;
 					}
 
 					if ( is_regional_webshop() ) {
