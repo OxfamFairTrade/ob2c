@@ -140,11 +140,11 @@ if ( ! $nm_theme_options['product_action_link'] ) {
         <li class="promo-banner vertical">
             <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-koffie.png' ); ?>" />
         </li>
-    <?php elseif ( is_shop() and $position_in_grid === 4 ) : ?>
+    <?php elseif ( $position_in_grid === 4 ) : ?>
         <?php $melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') ); ?>
         <?php if ( $melkchocolade !== false and $melkchocolade->get_stock_status() === 'instock' ) : ?>
             <li class="promo-banner horizontal">
-                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2021-chocolade.png" />
+                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-chocolade.png' ); ?>" />
             </li>
         <?php endif; ?>
     <?php endif; ?>
