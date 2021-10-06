@@ -9,42 +9,42 @@
 		// Zoek vervolgens de details van de actie op
 		// Handmatig beheerde lijst, want simpeler dan afleiden uit de kortingsregels!
 		
-		$fifty_percent_off_second_products = array( 25013, 27502 );
+		$fifty_percent_off_second_products = array( 25013, 65216, 65217, 65218, 65219 );
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}
 		
-		$one_plus_one_products = array( 24501 );
+		$one_plus_one_products = array( 24006, 24501 );
 		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
 		
-		$two_plus_two_products = array();
+		$two_plus_two_products = array( 20812 );
 		if ( in_array( $product->get_sku(), $two_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 2+2 gratis';
 		}
 
-		$three_plus_two_products = array( 24102, 24117 );
+		$three_plus_two_products = array( 24100, 24101, 24102, 24103, 24117 );
 		if ( in_array( $product->get_sku(), $three_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 3+2 gratis';
 		}
 		
-		$fifty_percent_off_products = array();
+		$fifty_percent_off_products = array( 20811 );
 		if ( in_array( $product->get_sku(), $fifty_percent_off_products ) ) {
 			$labels['promotion'] = 'Promo -50%';
 		}
 
-		$two_plus_one_products = array();
+		$two_plus_one_products = array( 25452, 87352 );
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
 
-		$three_plus_one_products = array();
+		$three_plus_one_products = array( 20810 );
 		if ( in_array( $product->get_sku(), $three_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 3+1 gratis';
 		}
 
-		$twentyfive_percent_off_products = array();
+		$twentyfive_percent_off_products = array( 20809 );
 		if ( in_array( $product->get_sku(), $twentyfive_percent_off_products ) ) {
 			$labels['promotion'] = 'Promo -25%';
 		}
@@ -54,7 +54,7 @@
 			$labels['promotion'] = 'Promo 4+2 gratis';
 		}
 		
-		$five_plus_one_products = array();
+		$five_plus_one_products = array( 20060, 20253 );
 		if ( in_array( $product->get_sku(), $five_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 5+1 gratis';
 		}

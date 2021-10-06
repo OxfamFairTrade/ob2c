@@ -72,13 +72,14 @@
 	}
 
 	function add_promo_tag( $tags, $from_date, $to_date ) {
-		if ( strtotime($from_date) !== false and strtotime($to_date) !== false ) {
-			if ( strtotime($from_date) < strtotime('today midnight') and strtotime($to_date) > strtotime('tomorrow midnight') ) {
+		// Dit bevat nu timestamps, dus geen strtotime() meer doen!
+		if ( $from_date > 0 and $to_date > 0 ) {
+			if ( $from_date < time() and $to_date > time() ) {
 				$tags .= '|promotie';
 			}
-		} elseif ( strtotime($to_date) !== false ) {
+		} elseif ( $to_date > 0 ) {
 			// Eenmaal de 'vanaf'-datum gepasseerd is, wist WooCommerce dit automatisch!
-			if ( strtotime($to_date) > strtotime('tomorrow midnight') ) {
+			if ( $to_date > time() ) {
 				$tags .= '|promotie';
 			}
 		}
@@ -100,5 +101,10 @@
 	function replace_commas_with_pipes( $string ) {
 		$parts = explode( ', ', $string );
 		return implode( '|', $parts );
+	}
+
+	function calculate_stock( $stock, $multiple ) {
+		// Door backorders toe te staan op voeding, zal het product toch nooit verborgen worden bij stockbreuk
+		return intval($stock) * intval($multiple);
 	}
 ?>
