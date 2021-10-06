@@ -768,11 +768,13 @@
 			}
 			// Eventueel $coupon->get_meta('_wjecf_min_matching_product_subtotal') gebruiken indien beperkt tot bepaalde producten
 			if ( ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() ) > floatval( $coupon->get_minimum_amount() ) ) {
-				// Pas op met expliciet op true zetten: dit zal iedere keer een foutmelding genereren boven het winkelmandje als de coupon om een andere reden ongeldig is!
-				return true;
-			} else {
-				return false;
+				// Pas op met expliciet op true zetten: dit zal iedere keer een foutmelding genereren boven het winkelmandje als de coupon om een andere reden (bv. usage count) ongeldig is!
+				if ( $can_be_applied ) {
+					return true;	
+				}
 			}
+
+			return false;
 		}
 
 		return $can_be_applied;

@@ -92,15 +92,13 @@
 						<?php
 					}
 
-					// Beste van de Test
-					$campesino = wc_get_product( wc_get_product_id_by_sku('20263') );
-					
-					if ( $campesino !== false and $campesino->get_stock_status() === 'instock' and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' ) {
+					// Week van de Fair Trade 2021
+					if ( date_i18n('Y-m-d') < '2021-10-17' ) {
 						?>
 						<div class="col-row lh-banner">
 							<div class="col-xs-12">
 								<?php
-									echo '<a href="'.esc_url( $campesino->get_permalink() ).'"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/campesino-chardonnay-2021.jpg' ).'" /></a>';
+									echo '<a href="tag/promotie/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-algemeen.png' ).'" /></a>';
 								?>
 							</div>
 						</div>

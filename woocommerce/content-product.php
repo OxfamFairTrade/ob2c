@@ -135,23 +135,17 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     </div>
 </li>
 
-<?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 and 1 === 2 ) : ?>
-    <?php $juste_tripel = wc_get_product( wc_get_product_id_by_sku('20809') ); ?>
-    <?php $juste_tripel_solo = wc_get_product( wc_get_product_id_by_sku('20810') ); ?>
-    <?php if ( ( $juste_tripel !== false and $juste_tripel->get_stock_status() === 'instock' ) or ( $juste_tripel_solo !== false and $juste_tripel_solo->get_stock_status() === 'instock' ) ) : ?>
+<?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-10-17' ) : ?>
+    <?php $melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') ); ?>
+    <?php if ( $melkchocolade !== false and $melkchocolade->get_stock_status() === 'instock' ) : ?>
         <li class="promo-banner horizontal">
-            <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wftd-2021-juste-liggend.jpg" />
+            <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2021-chocolade.png" />
         </li>
     <?php endif; ?>
-<?php elseif ( $position_in_grid === 7 and is_shop() and wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' ) : ?>
-    <?php $campesino = wc_get_product( wc_get_product_id_by_sku('20263') ); ?>
-    <?php if ( $campesino !== false and $campesino->get_stock_status() === 'instock' ) : ?>
-        <li class="promo-banner vertical">
-            <a href="<?php echo esc_url( $campesino->get_permalink() ); ?>">
-                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/campesino-chardonnay-2021-bestel-nu.jpg' ); ?>" />
-            </a>
-        </li>
-    <?php endif; ?>
+<?php elseif ( $position_in_grid === 7 and is_product_category( array('koffie') ) and wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-10-17' ) : ?>
+    <li class="promo-banner vertical">
+        <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-koffie.png' ); ?>" />
+    </li>
 
     <!-- Categoriespecifieke blokjes voorlopig uitschakelen, ACF-velden hier niet beschikbaar -->
     <?php $product_cat = get_queried_object(); ?>
