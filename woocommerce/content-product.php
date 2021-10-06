@@ -136,7 +136,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 </li>
 
 <?php if ( wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-10-17' ) : ?>
-    <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) and $position_in_grid === 7 ) : ?>
+    <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) and $position_in_grid === 2 ) : ?>
         <li class="promo-banner vertical">
             <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-koffie.png' ); ?>" />
         </li>
