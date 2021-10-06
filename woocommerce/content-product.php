@@ -135,37 +135,37 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     </div>
 </li>
 
-<?php if ( $position_in_grid === 4 and is_shop() and wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-10-17' ) : ?>
-    <?php $melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') ); ?>
-    <?php if ( $melkchocolade !== false and $melkchocolade->get_stock_status() === 'instock' ) : ?>
-        <li class="promo-banner horizontal">
-            <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2021-chocolade.png" />
+<?php if ( wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-10-17' ) : ?>
+    <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) and $position_in_grid === 7 ) : ?>
+        <li class="promo-banner vertical">
+            <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-koffie.png' ); ?>" />
         </li>
+    <?php elseif ( is_shop() and $position_in_grid === 4 ) : ?>
+        <?php $melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') ); ?>
+        <?php if ( $melkchocolade !== false and $melkchocolade->get_stock_status() === 'instock' ) : ?>
+            <li class="promo-banner horizontal">
+                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/promoties/promo-wvdft-2021-chocolade.png" />
+            </li>
+        <?php endif; ?>
     <?php endif; ?>
-<?php elseif ( $position_in_grid === 7 and is_product_category( array('koffie') ) and wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-10-17' ) : ?>
-    <li class="promo-banner vertical">
-        <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-koffie.png' ); ?>" />
-    </li>
-
+<?php elseif ( 1 === 2 ) : ?>
     <!-- Categoriespecifieke blokjes voorlopig uitschakelen, ACF-velden hier niet beschikbaar -->
     <?php $product_cat = get_queried_object(); ?>
-    <?php if ( 1 === 2 ) : ?>
-        <?php if ( get_field( 'promo_banner_image', $product_cat ) ) : ?>
-            <div class="col-md-8">
-                <div class="promo-banner-block">
-                    <?php echo wp_get_attachment_image( get_field( 'promo_banner_image', $product_cat ), 'large' ); ?>
-                    <div class="cap">
-                        <h2 class="h1"><?php the_field( 'promo_banner_title', $product_cat ); ?></h2>
-                        <?php
-                            $button = get_field( 'promo_banner_button', $product_cat );
-                            if ( $button ) {
-                                echo '<a href="'.$button['url'].'" target="'.$button['target'].'" class="btn">'.$button['title'].'</a>';
-                            }
-                        ?>
-                    </div>
+    <?php if ( get_field( 'promo_banner_image', $product_cat ) ) : ?>
+        <div class="col-md-8">
+            <div class="promo-banner-block">
+                <?php echo wp_get_attachment_image( get_field( 'promo_banner_image', $product_cat ), 'large' ); ?>
+                <div class="cap">
+                    <h2 class="h1"><?php the_field( 'promo_banner_title', $product_cat ); ?></h2>
+                    <?php
+                        $button = get_field( 'promo_banner_button', $product_cat );
+                        if ( $button ) {
+                            echo '<a href="'.$button['url'].'" target="'.$button['target'].'" class="btn">'.$button['title'].'</a>';
+                        }
+                    ?>
                 </div>
             </div>
-        <?php endif; ?>
+        </div>
     <?php endif; ?>
 <?php endif; ?>
 
