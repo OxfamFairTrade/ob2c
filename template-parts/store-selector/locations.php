@@ -104,8 +104,13 @@
 			setCookie( 'latest_shop_id', jQuery(this).data('oxfam-shop-post-id') );
 			setCookie( 'latest_blog_id', jQuery(this).data('webshop-blog-id') );
 			var current_zip = jQuery('#wpsl-search-input').val();
-			/* @toDo: Indien we de store selector meteen opnieuw gebruiken (zonder page refresh) ontstaat er pile-up van GET-parameters */
-			var url_suffix = '?referralZip=' + current_zip;
+			/* Voorkom dat er een pile-up ontstaat van GET-parameters */
+			if ( window.location.search != '' ) {
+				/* Bevat reeds een vraagteken indien niet leeg */
+				var url_suffix = window.location.search + '&referralZip=' + current_zip;
+			} else {
+				var url_suffix = '?referralZip=' + current_zip;
+			}
 			/* Check of de postcode voorkomt in de lijst, anders blokkeert JavaScript op split() */
 			if ( current_zip in zips ) {
 				/* Geef enkel de hoofdgemeente mee (nog beter zou zijn om de effectief geselecteerde gemeente door te geven!) */
@@ -119,7 +124,7 @@
 				url_suffix += '&recipeId=' + urlParams.get('recipeId');
 			}
 			/* @toDo: Indien we op een productdetailpagina van lokaal assortiment zitten, leidt deze redirect tot een 404-error! */
-			window.location.replace( window.location.href.replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + url_suffix );
+			window.location.replace( window.location.href.split(/[?#]/)[0].replace( '<?php echo home_url('/'); ?>', jQuery(this).data('webshop-url') ) + url_suffix );
 		});
 
 		jQuery(".cat-item.current-cat > a").on( 'click', function(e) {
