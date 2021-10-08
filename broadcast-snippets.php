@@ -159,7 +159,7 @@
 	update_site_option( 'oxfam_holidays', $default_holidays );
 
 	// Handige truc om alle vinkjes aan te zetten op https://shop.oxfamwereldwinkels.be/wp-admin/edit.php?post_status=publish&post_type=product&orderby=sku&order=desc
-	// Nieuwe werkwijze sinds WooMultistor 4.0+ met selects en hidden inputs, dit is nog niet getest ...
+	// Nieuwe werkwijze sinds WooMultistore 4.0+ met selects en hidden inputs, dit is nog niet getest ...
 	// jQuery("#woonet-bulk-edit-fields").find("input[name*='_child_inheir']").val('yes');
 
 	// Startpagina instellen
@@ -396,7 +396,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( 17115, 24614, 26489 );
+	$outofstocks = array( 24626, 24635, 24639, 24640 );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {

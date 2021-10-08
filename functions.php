@@ -7558,37 +7558,38 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2021/09/16/Overzicht-promoties-Week-van-de-Fair-Trade-2021" target="_blank">promo\'s n.a.v. Week van de Fair Trade</a> werden geactiveerd in alle webshops. Ter herinnering: de korting bij 2 pakjes koffie én het gratis tablet melkchocolade bij aankoop van 30 euro (indien W14300 Melkchocolade 200 g op voorraad is in jullie webshop) wordt automatisch toegepast met een maximum van één keer per klant. Creditering van beide acties gebeurt via het turfblad.</p>';
+					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2021/09/16/Overzicht-promoties-Week-van-de-Fair-Trade-2021" target="_blank">promo\'s n.a.v. Week van de Fair Trade</a> werden geactiveerd in alle webshops. Ter herinnering: de korting bij 2 pakjes koffie én het gratis tablet melkchocolade bij aankoop van 30 euro (indien <i>W14300 Melkchocolade 200 g</i> op voorraad is in jullie webshop) wordt automatisch toegepast met een maximum van één keer per klant. Creditering van beide acties gebeurt via het turfblad. Ter info: in deze webshop werd de koffiebon tot nu toe '.get_number_of_times_coupon_was_used('202110-koffie').' keer toegepast en werden '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld.</p>';
 				echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>Op 1 oktober ging de actie i.s.m. Cera van start. Er worden momenteel veel digitale geschenkencheques ingeruild. <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">Download de handleiding</a> voor alle praktische details.</p>';
 				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Alle sint/kerstchocolade en de nieuwe versie van de BIO Highland koffiepads (met gewijzigde verpakking!) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 22707, 24626, 24635, 24639, 24640, 24643, 24550 );
-				// 		// Augustusmagazine, septemberagenda's en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
-				// 		$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '87400', '87401', '87402', '87403', '87404', '87405', '87406', '87407', '87408', '87409', '87410', '87411', '87412', '87413', '87414', '87415', '94068' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>De sintfuguren en de nieuwe versie van de BIO Highland koffiepads (met gewijzigde verpakking!) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						// 24550
+						$skus = array( 22707, 24626, 24635, 24639, 24640, 26491 );
+						// Augustusmagazine, septemberagenda's en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
+						$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '87400', '87401', '87402', '87403', '87404', '87405', '87406', '87407', '87408', '87409', '87410', '87411', '87412', '87413', '87414', '87415', '94068' );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet niet dat ook de sintspeculoos, de chocoladeharten en de chocoladefiguurtjes opnieuw leverbaar zijn.</p>';
+				echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 				}
-				// 19073 Geschenkencheque 5 euro (geldig tot 31/12/2021), 19074 Geschenkencheque 15 euro (geldig tot 31/12/2021), 19075 Geschenkencheque 25 euro (geldig tot 31/12/2021), 20260 RAZA Pinot Gris, 23507 BIO Thee 4 smaken assortiment 1,8 g x 25 x 4 (THT: 15/01/2022), 23705 BIO Rooibos African Sunset 1,8 g x 20 (THT: 22/07/2021), 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 27998 BIO Mosterdsalsa, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28327 Zeezout mix chili-peper, 28329 BIO Kurkuma
+				// 19073 Geschenkencheque 5 euro (geldig tot 31/12/2021), 19074 Geschenkencheque 15 euro (geldig tot 31/12/2021), 19075 Geschenkencheque 25 euro (geldig tot 31/12/2021), 20260 RAZA Pinot Gris, 23507 BIO Thee 4 smaken assortiment 1,8 g x 25 x 4 (THT: 15/01/2022), 23705 BIO Rooibos African Sunset 1,8 g x 20 (THT: 22/07/2021), 24643 Sint melkchocolade 2 x 35 g (THT: 16/06/2021), 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 27998 BIO Mosterdsalsa, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28327 Zeezout mix chili-peper, 28329 BIO Kurkuma
 				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: . Opgelet: veel webshops bleven de oude cashewnoten X15715 op voorraad houden terwijl zowel verpakking, netto-inhoud als prijs reeds wijzigden in 2019. Gelieve over te schakelen op de nieuwe cashewnoten X15725.</p>';
@@ -7634,7 +7635,7 @@
 		}
 	}
 
-	function get_number_of_times_coupon_was_used( $coupon_code, $start_date = '2021-04-01', $end_date = '2021-04-30', $return_orders = false ) {
+	function get_number_of_times_coupon_was_used( $coupon_code, $start_date = '2021-10-01', $end_date = '2021-10-31', $return_orders = false ) {
 		global $wpdb;
 		$total_count = 0;
 		$orders = array();
