@@ -116,6 +116,11 @@ class WOO_MSTORE_EXPORT_ENGINE {
 		}
 
 		$query = array();
+		// GEWIJZIGD: Ontbrekende 'claimed'-status toevoegen indien 'All' geselecteerd is
+		// Wordt nochtans wel getoond in de dropdown die dezelfde wc_get_order_statuses() oproept ...
+		if ( count( $this->order_status ) > 1 ) {
+			$this->order_status[] = 'wc-claimed';
+		}
 		foreach ( $blog_ids as $blog_id ) {
 			$query[] = sprintf(
 				$sub_query,
