@@ -264,8 +264,8 @@ class WOO_MSTORE_EXPORT_ENGINE {
 				if ( $field_name === 'quantity' ) {
 					// GEWIJZIGD: Voeg maalteken toe na hoeveelheid
 					$item[ $export_field_column_name ] = $value.'x';
-				} elseif ( in_array( $field_name, array( 'subtotal', 'subtotal_tax', 'local_product' ) ) ) {
-					// GEWIJZIGD: Voeg niet toe aan gegroepeerde data
+				} elseif ( in_array( $field_name, array( 'subtotal', 'subtotal_tax', 'is_lokaal_product', 'hoofdcategorie' ) ) ) {
+					// GEWIJZIGD: Voeg NIET toe aan gegroepeerde data
 				} else {
 					$item[ $export_field_column_name ] = $value;
 				}

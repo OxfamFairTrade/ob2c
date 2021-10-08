@@ -305,6 +305,20 @@
 		return $total_rows;
 	}
 
+	// Verwijder vouchers uit onafgewerkte bestellingen die uiteindelijk geannuleerd worden (oogt netter) NOG NIET GETEST
+	// add_action( 'woocommerce_order_status_pending_to_cancelled', 'ob2c_remove_vouchers_on_cancelled_orders', 1, 2 );
+	
+	function ob2c_remove_vouchers_on_cancelled_orders( $order_id, $order ) {
+		foreach ( $order->get_coupons() as $coupon_item ) {
+			// Negeer in deze stap de rate limiting per IP-adres
+			$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
+			if ( is_object( $db_coupon ) ) {
+				send_automated_mail_to_helpdesk( 'Cadeaubon '.strtoupper( $coupon_item->get_code() ).' werd verwijderd uit onafgewerkte bestelling <a href="'.$order->get_edit_order_url().'">'.$order->get_order_number().'</a>.</p>' );
+				$order->remove_coupon( $coupon_item->get_code() );
+			}
+		}
+	}
+
 	function ob2c_bulk_create_digital_vouchers( $issuer = 'Cera', $expires = '2023-01-01', $value = 30, $number = 5000 ) {
 		global $wpdb;
 		$created_codes = array();
@@ -351,6 +365,7 @@
 			return $random_string;
 		}
 	}
+
 
 	
 	######################
@@ -7581,7 +7596,7 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet niet dat ook de sintspeculoos, de chocoladeharten en de chocoladefiguurtjes opnieuw leverbaar zijn.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet niet dat ook de chocoladeharten en -figuurtjes opnieuw leverbaar zijn.</p>';
 				echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
