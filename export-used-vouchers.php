@@ -303,6 +303,7 @@
 			$checked_orders = array();
 			$total = 0.0;
 			$total_oft = 0.0;
+			$total_incl_tax = 0.0;
 			$args = array(
 				'type' => 'shop_order',
 				'limit' => -1,
@@ -346,6 +347,7 @@
 					
 					$total += $order_total;
 					$total_oft += $order_total_oft;
+					$total_incl_tax += $wc_order->get_total();
 
 					echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $order_total, array( 'ex_tax_label' => true ) ).' waarvan '.round( 100 * $order_total_oft / $order_total ).'% OFT &mdash; '.$wc_order->get_billing_email();
 					
@@ -376,7 +378,7 @@
 				restore_current_blog();
 			}
 
-			echo '<p>Totaalbedrag: '.wc_price( $total, array( 'ex_tax_label' => true ) ).' waarvan '.wc_price( $total_oft, array( 'ex_tax_label' => true ) ).' Oxfam Fair Trade-producten</p>';
+			echo '<p>Totaalbedrag: '.wc_price( $total_incl_tax ).', goed voor '.wc_price( $total, array( 'ex_tax_label' => true ) ).' producten waarvan '.wc_price( $total_oft, array( 'ex_tax_label' => true ) ).' Oxfam Fair Trade</p>';
 		}
 	?>
 </div>
