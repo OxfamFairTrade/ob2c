@@ -139,14 +139,14 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
         <?php if ( $position_in_grid === 2 ) : ?>
             <li class="promo-banner vertical">
-                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-koffie.png' ); ?>" />
+                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-koffie.png' ); ?>" title="Geldig op alle 250 g verpakkingen (gemalen en bonen), pads 112 g, capsules 52 g en oploskoffie 100 g. Combineren mag. 1 korting per online klant. Actie geldig t.e.m. 16/10/2021." />
             </li>
         <?php endif; ?>
     <?php elseif ( is_woocommerce() and $position_in_grid === 8 ) : ?>
         <?php $melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') ); ?>
         <?php if ( $melkchocolade !== false and $melkchocolade->get_stock_status() === 'instock' ) : ?>
             <li class="promo-banner horizontal">
-                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-chocolade.png' ); ?>" />
+                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-chocolade.png' ); ?>" title="Geldig op het aankoopbedrag na aftrek van kortingen en exclusief leeggoed. 1 tablet per online klant. Actie geldig t.e.m. 16/10/2021." />
             </li>
         <?php endif; ?>
     <?php endif; ?>
