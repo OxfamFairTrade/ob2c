@@ -1370,14 +1370,13 @@
 		return $markup;
 	}
 
-	// Activeer Facebook Pixel (JS)
-	add_action( 'wp_head', 'add_facebook_pixel_js', 200 );
+	// Activeer Facebook Pixel
+	add_action( 'wp_head', 'add_facebook_pixel', 200 );
 	add_action( 'woocommerce_thankyou', 'add_fb_purchase_event', 10, 1 );
 
-	function add_facebook_pixel_js() {
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-				global $post;
+	function add_facebook_pixel() {
+		if ( wp_get_environment_type() === 'production' and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
+			if ( cn_cookies_accepted() ) {
 				?>
 				<script>!function(f,b,e,v,n,t,s)
 				{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -1389,9 +1388,13 @@
 				'https://connect.facebook.net/en_US/fbevents.js');
 				fbq('init', '1964131620531187');
 				</script>
+				<noscript><img height="1" width="1" style="display:none"
+				src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
+				/></noscript>
 				<?php
 
 				if ( is_product() ) {
+					global $post;
 					?>
 					<script>
 						fbq('track', 'ViewContent', {
@@ -1446,21 +1449,6 @@
 		<?php
 	}
 
-	// Activeer Facebook Pixel (no JS)
-	add_action( 'wp_head', 'add_facebook_pixel_no_js', 200 );
-
-	function add_facebook_pixel_no_js() {
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-			if ( ! current_user_can('manage_woocommerce') and cn_cookies_accepted() and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-				?>
-				<noscript><img height="1" width="1" style="display:none"
-				src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
-				/></noscript>
-				<?php
-			}
-		}
-	}
-
 	// Activeer Facebook Messenger
 	add_action( 'wp_footer', 'add_facebook_messenger', 300 );
 
@@ -1480,7 +1468,7 @@
 			}
 		}
 
-		if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+		if ( wp_get_environment_type() === 'production' ) {
 			if ( cn_cookies_accepted() and $show_chatbot ) {
 				?>
 				<div id='fb-root'></div>
@@ -7580,7 +7568,7 @@
 				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
-					echo '<p>De sintfuguren en de nieuwe versie van de BIO Highland koffiepads (met gewijzigde verpakking!) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+					echo '<p>De sintfiguren en de nieuwe versie van de BIO Highland koffiepads (met gewijzigde verpakking!) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
 						// 24550
 						$skus = array( 22707, 24626, 24635, 24639, 24640, 26491 );
 						// Augustusmagazine, septemberagenda's en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
