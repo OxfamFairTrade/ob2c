@@ -147,6 +147,8 @@
 				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro', $db_coupon->issuer, $db_coupon->value ),
 				// Eventueel beperken tot OFT-producten?
 				// 'product_ids' => array(),
+				// Alle papieren geschenkencheques uitsluiten?
+				// 'excluded_product_ids' => array(),
 				'usage_limit' => 1,
 			);
 			if ( ! empty( $db_coupon->order ) ) {
@@ -784,6 +786,7 @@
 			// Eventueel $coupon->get_meta('_wjecf_min_matching_product_subtotal') gebruiken indien beperkt tot bepaalde producten
 			if ( ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() ) >= floatval( $coupon->get_minimum_amount() ) ) {
 				// Pas op met expliciet op true zetten: dit zal iedere keer een foutmelding genereren boven het winkelmandje als de coupon om een andere reden (bv. usage count) ongeldig is!
+				// Deze logica was duidelijk niet sluitend voor Cera-bestellingen > 30 euro ...
 				if ( $can_be_applied ) {
 					return true;	
 				}
@@ -5748,7 +5751,7 @@
 	}
 
 	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
-	add_filter( 'woocommerce_checkout_coupon_message', 'remove_msg_filter' );
+	// add_filter( 'woocommerce_checkout_coupon_message', 'remove_msg_filter' );
 
 	function remove_msg_filter( $msg ) {
 		if ( is_checkout() ) {
