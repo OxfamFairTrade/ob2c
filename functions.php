@@ -24,7 +24,7 @@
 	}
 	
 	function disable_checkout_button( $html ) {
-		if ( get_current_blog_id() === 18 ) {
+		if ( get_current_blog_id() === 72 ) {
 			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-07' ) {
 				$original_button = __( 'Place order', 'woocommerce' );
 				return str_replace( '<input type="submit"', '<input type="submit" disabled="disabled"', str_replace( $original_button, 'Bestellen tijdelijk onmogelijk', $html ) );
