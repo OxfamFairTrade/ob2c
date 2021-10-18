@@ -7870,14 +7870,8 @@
 		
 		// Boodschap over afhaling op afspraak enkel toevoegen indien hele week gesloten
 		if ( strpos( $output, ' - ' ) === false ) {
-			if ( get_current_blog_id() === 44 ) {
-				// Uitzondering voor Diksmuide
-				$output = '<p class="corona-notice">Tijdens de lockdown van De Stoasje: gratis thuislevering op donderdag tussen 18u en 20u!</p>';
-			} elseif ( get_current_blog_id() === 72 ) {
-				// Houthalen-Helchteren is tijdelijk dicht
-				$text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
-				$output = '<p class="corona-notice">'.$text.'</p>';
-			}
+			// $text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
+			// $output = '<p class="corona-notice">'.$text.'</p>';
 		} else {
 			// if ( $atts['id'] === 'brugge' ) {
 			// 	// Extra tekst in de mail
