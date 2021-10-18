@@ -4052,7 +4052,11 @@
 						$discount = wc_round_tax_total( $discount + $order->get_discount_tax() );
 					}
 					$i++;
-					$pick_sheet->setCellValue( 'A'.$i, 'Kortingen' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupon_codes ) ) )->setCellValue( 'F'.$i, '-'.$discount );
+					$pick_sheet->setCellValue( 'A'.$i, 'Kortingen' )->setCellValue( 'B'.$i, mb_strtoupper( implode( ', ', $used_coupon_codes ) ) );
+					if ( $discount > 0.01 ) {
+						// Sommige promo's resulteren in een gratis product zonder echte korting
+						$pick_sheet->setCellValue( 'F'.$i, '-'.$discount );	
+					}
 					$i++;
 				}
 
@@ -7908,6 +7912,7 @@
 				$locations = wc_local_pickup_plus()->get_pickup_locations_instance()->get_sorted_pickup_locations( array( 'order' => 'ASC' ) );
 				foreach ( $locations as $location ) {
 					// We kunnen ook $location->get_address() gebruiken (zoals vroeger) maar dat is een object, geen string
+					// Fix voor Vorselaar ook hier toepassen?
 					$parts = explode( ' id=', $location->get_description() );
 					if ( isset( $parts[1] ) ) {
 						$temporary_shop_post_id = str_replace( ']', '', $parts[1] );
@@ -7941,8 +7946,12 @@
 			if ( $locations = get_option('woocommerce_pickup_locations') ) {
 				foreach ( $locations as $location ) {
 					// Let op met externe afhaalpunten met een expliciet ingevuld adres => enkel in de openingsuren staat een (niet-numerieke) ID!
-					// $parts = explode( ' id=', $location['address_1'] );
-					$parts = explode( ' id=', $location['note'] );
+					if ( get_current_blog_id() === 19 ) {
+						// Uitzondering voor Vorselaar onder KLT: geen ID in openingsuren (want ontbreken in OWW-site), wel in adres
+						$parts = explode( ' id=', $location['address_1'] );
+					} else {
+						$parts = explode( ' id=', $location['note'] );
+					}
 					if ( isset( $parts[1] ) ) {
 						$temporary_shop_post_id = str_replace( ']', '', $parts[1] );
 						if ( is_numeric( $temporary_shop_post_id ) ) {
