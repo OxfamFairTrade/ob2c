@@ -92,13 +92,13 @@
 						<?php
 					}
 
-					// Week van de Fair Trade 2021
-					if ( date_i18n('Y-m-d') < '2021-10-17' ) {
+					// Gratis koffiecapsules
+					if ( date_i18n('Y-m-d') < '2021-11-15' ) {
 						?>
 						<div class="col-row lh-banner">
 							<div class="col-xs-12">
 								<?php
-									echo '<a href="tag/promotie/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-algemeen.png' ).'" /></a>';
+									echo '<a href="categorie/koffie/capsules/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-algemeen.png' ).'" title="Maximum 1 doosje gratis per online klant. Actie geldig t.e.m. 14/11/2021." /></a>';
 								?>
 							</div>
 						</div>

@@ -135,18 +135,19 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     </div>
 </li>
 
-<?php if ( wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-10-17' ) : ?>
-    <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
-        <?php if ( $position_in_grid === 2 ) : ?>
-            <li class="promo-banner vertical">
-                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-koffie.png' ); ?>" title="Geldig op alle 250 g verpakkingen (gemalen en bonen), pads 112 g, capsules 52 g en oploskoffie 100 g. Combineren mag. 1 korting per online klant. Actie geldig t.e.m. 16/10/2021." />
-            </li>
-        <?php endif; ?>
-    <?php elseif ( is_woocommerce() and $position_in_grid === 8 ) : ?>
-        <?php $melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') ); ?>
-        <?php if ( $melkchocolade !== false and $melkchocolade->get_stock_status() === 'instock' ) : ?>
+<?php if ( wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-11-15' ) : ?>
+    <?php $lungo = wc_get_product( wc_get_product_id_by_sku('22722') ); ?>
+    <?php $espresso = wc_get_product( wc_get_product_id_by_sku('22723') ); ?>
+    <?php if ( ( $lungo !== false and $lungo->get_stock_status() === 'instock' ) or ( $espresso !== false and $espresso->get_stock_status() === 'instock' ) ) : ?>
+        <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
+            <?php if ( $position_in_grid === 2 ) : ?>
+                <li class="promo-banner vertical">
+                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-staand.png' ); ?>" title="Maximum 1 doosje gratis per online klant. Actie geldig t.e.m. 14/11/2021." />
+                </li>
+            <?php endif; ?>
+        <?php elseif ( is_woocommerce() and $position_in_grid === 8 ) : ?>
             <li class="promo-banner horizontal">
-                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2021-chocolade.png' ); ?>" title="Geldig op het aankoopbedrag na aftrek van kortingen en exclusief leeggoed. 1 tablet per online klant. Actie geldig t.e.m. 16/10/2021." />
+                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-liggend.png' ); ?>" title="Maximum 1 doosje gratis per online klant. Actie geldig t.e.m. 14/11/2021." />
             </li>
         <?php endif; ?>
     <?php endif; ?>
