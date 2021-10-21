@@ -35,6 +35,16 @@
 		}
 	}
 
+	add_action( 'woocommerce_applied_coupon', 'redirect_to_cart_to_choose_version', 10, 1 );
+
+	function redirect_to_cart_to_choose_version( $code ) {
+		if ( $code === 'faircaps21' ) {
+			if ( ! is_cart() ) {
+				wp_safe_redirect( wc_get_cart_url() );
+			}
+		}
+	}
+
 
 
 	// Schakel afrekenen in de webshop van Houthalen uit van 18/10 t.e.m. 07/11
@@ -799,6 +809,7 @@
 	}
 
 	// Pas winkelmandkorting n.a.v. Week van de Fair Trade 2021 toe op het uiteindelijk te betalen bedrag i.p.v. het subtotaal
+	// Deze filter wordt enkel doorlopen bij autocoupons!
 	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 1000, 2 );
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
@@ -829,6 +840,22 @@
 
 		return $can_be_applied;
 	}
+
+	add_action( 'wjecf_assert_coupon_is_valid', 'check_if_free_products_are_on_stock', 1000, 2 );
+
+	function check_if_free_products_are_on_stock( $coupon, $wc_discounts  ) {
+		if ( $coupon->get_code() === 'faircaps21' and date('Y-m-d') < '2021-11-15' ) {
+			$espresso = wc_get_product( wc_get_product_id_by_sku('22724') );
+			$lungo = wc_get_product( wc_get_product_id_by_sku('22725') );
+			if ( ( $espresso !== false and $espresso->get_stock_status() !== 'instock' ) and ( $lungo !== false and $lungo->get_stock_status() !== 'instock' ) ) {
+				// Schakel de kortingsbon uit als de webshop geen enkele capsule op voorraad heeft
+				throw new Exception(
+					__( 'Deze webshop heeft helaas geen koffiecapsules op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ),
+					self::E_WC_COUPON_NOT_FOR_THIS_USER
+				);
+			}
+		}
+	} 
 
 	// Probeer wijnduo's enkel toe te passen op gelijke paren (dus niet 3+1, 5+1, 5+3, ...)
 	// add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_equal_pairs', 100, 4 );

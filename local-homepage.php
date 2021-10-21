@@ -92,17 +92,21 @@
 						<?php
 					}
 
-					// Gratis koffiecapsules
+					// Gratis koffiecapsules 2021
 					if ( date_i18n('Y-m-d') < '2021-11-15' ) {
-						?>
-						<div class="col-row lh-banner">
-							<div class="col-xs-12">
-								<?php
-									echo '<a href="categorie/koffie/capsules/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-algemeen.png' ).'" title="Maximum 1 doosje gratis per online klant. Actie geldig t.e.m. 14/11/2021." /></a>';
-								?>
+						$espresso = wc_get_product( wc_get_product_id_by_sku('22724') );
+						$lungo = wc_get_product( wc_get_product_id_by_sku('22725') );
+						if ( ( $espresso !== false and $espresso->get_stock_status() === 'instock' ) or ( $lungo !== false and $lungo->get_stock_status() === 'instock' ) ) {
+	    					?>
+							<div class="col-row lh-banner">
+								<div class="col-xs-12">
+									<?php
+										echo '<a href="categorie/koffie/capsules/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-algemeen.png' ).'" title="Maximum 1 doosje gratis per online klant. Actie geldig t.e.m. 14/11/2021." /></a>';
+									?>
+								</div>
 							</div>
-						</div>
-						<?php
+							<?php
+						}
 					}
 
 					if ( count( wc_get_product_ids_on_sale() ) > 0 ) {

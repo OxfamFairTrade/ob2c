@@ -136,9 +136,9 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 </li>
 
 <?php if ( wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-11-15' ) : ?>
-    <?php $lungo = wc_get_product( wc_get_product_id_by_sku('22722') ); ?>
-    <?php $espresso = wc_get_product( wc_get_product_id_by_sku('22723') ); ?>
-    <?php if ( ( $lungo !== false and $lungo->get_stock_status() === 'instock' ) or ( $espresso !== false and $espresso->get_stock_status() === 'instock' ) ) : ?>
+    <?php $espresso = wc_get_product( wc_get_product_id_by_sku('22724') ); ?>
+    <?php $lungo = wc_get_product( wc_get_product_id_by_sku('22725') ); ?>
+    <?php if ( ( $espresso !== false and $espresso->get_stock_status() === 'instock' ) or ( $lungo !== false and $lungo->get_stock_status() === 'instock' ) ) : ?>
         <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
             <?php if ( $position_in_grid === 2 ) : ?>
                 <li class="promo-banner vertical">
