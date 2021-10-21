@@ -849,10 +849,7 @@
 			$lungo = wc_get_product( wc_get_product_id_by_sku('22725') );
 			if ( ( $espresso !== false and $espresso->get_stock_status() !== 'instock' ) and ( $lungo !== false and $lungo->get_stock_status() !== 'instock' ) ) {
 				// Schakel de kortingsbon uit als de webshop geen enkele capsule op voorraad heeft
-				throw new Exception(
-					__( 'Deze webshop heeft helaas geen koffiecapsules op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ),
-					self::E_WC_COUPON_NOT_FOR_THIS_USER
-				);
+				throw new Exception( __( 'Deze webshop heeft helaas geen koffiecapsules op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
 			}
 		}
 	} 
