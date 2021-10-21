@@ -469,3 +469,27 @@
     }
   }
 }
+
+.wjecf-select-free-products {
+  li {
+    position: relative;
+
+    > input[type=radio] {
+      display: none;
+    }
+
+    > input[type=radio] + label:after {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 2em;
+      height: 2em;
+      background-color: black;
+      border-radius: 50%;
+    }
+
+    > input[type=radio]:checked + label:after {
+     background-color: green;
+    }
+  }
+}
