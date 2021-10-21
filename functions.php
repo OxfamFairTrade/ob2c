@@ -5,6 +5,38 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	// Registreer aantal gratis capsules over alle webshops heen 
+	add_filter( 'woocommerce_coupon_get_usage_count', 'get_sitewide_coupon_usage', 10, 2 );
+	add_action( 'woocommerce_increase_coupon_usage_count', 'increase_coupon_usage_count_sitewide', 10, 3 );
+	add_action( 'woocommerce_decrease_coupon_usage_count', 'decrease_coupon_usage_count_sitewide', 10, 3 );
+	
+	function get_sitewide_coupon_usage( $usage_count, $coupon ) {
+		write_log( "Aantal keer '".$coupon->get_code()."' gebruikt: ".$usage_count );
+		if ( $coupon->get_code() === 'faircaps21' ) {
+			// TEST
+			// update_site_option( 'free_capsules_given_2021', 100 );
+			return get_site_option( 'free_capsules_given_2021', 0 );
+		} else {
+			return $usage_count;
+		}
+	}
+
+	function increase_coupon_usage_count_sitewide( $coupon, $new_count, $used_by ) {
+		if ( $coupon->get_code() === 'faircaps21' ) {
+			// Gebruik bewust niét $new_count want dat bevat enkel het gebruik in deze site!
+			update_site_option( 'free_capsules_given_2021', get_site_option( 'free_capsules_given_2021', 0 ) + 1 );
+		}
+	}
+
+	function decrease_coupon_usage_count_sitewide( $coupon, $new_count, $used_by ) {
+		if ( $coupon->get_code() === 'faircaps21' ) {
+			// Gebruik bewust niét $new_count want dat bevat enkel het gebruik in deze site!
+			update_site_option( 'free_capsules_given_2021', get_site_option( 'free_capsules_given_2021', 0 ) - 1 );
+		}
+	}
+
+
+
 	// Schakel afrekenen in de webshop van Houthalen uit van 18/10 t.e.m. 07/11
 	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
 	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );

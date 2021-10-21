@@ -480,8 +480,8 @@
       & + label {
         font-weight: bold;
         padding: 1em;
-        border: 2px solid transparent;
-        border-radius: 20px;
+        // border: 2px solid transparent;
+        // border-radius: 20px;
       }
 
       & + label:before,
@@ -492,8 +492,8 @@
         background-repeat: no-repeat;
         background-size: contain;
         position: absolute;
-        right: 1em;
-        top: 1em;
+        right: 1.5em;
+        top: 0.5em;
         z-index: 50;
       }
 
@@ -502,7 +502,8 @@
       }
 
       &:checked + label {
-        border-color: green;
+        // border-color: $oxfam-green;
+        background-color: $oxfam-green;
       }
 
       &:checked + label:after {
