@@ -478,21 +478,27 @@
       display: none;
 
       & + label {
-        border: 1px solid grey;
+        font-weight: bold;
+        padding: 1em;
+        border: 2px solid transparent;
         border-radius: 20px;
       }
 
+      & + label:before,
       & + label:after {
         width: 2.5em;
         height: 2.5em;
         content: '';
-        background-image: url(/wp-content/themes/oxfam-webshop/images/icons/select.svg);
         background-repeat: no-repeat;
         background-size: contain;
         position: absolute;
-        right: 0;
-        top: 0;
+        right: 1em;
+        top: 1em;
         z-index: 50;
+      }
+
+      & + label:before {
+        background-image: url(/wp-content/themes/oxfam-webshop/images/icons/select.svg);
       }
 
       &:checked + label {
