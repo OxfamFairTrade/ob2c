@@ -11,9 +11,9 @@
 	add_action( 'woocommerce_decrease_coupon_usage_count', 'decrease_coupon_usage_count_sitewide', 10, 3 );
 	
 	function get_sitewide_coupon_usage( $usage_count, $coupon ) {
-		write_log( "Aantal keer '".$coupon->get_code()."' gebruikt: ".$usage_count );
 		if ( $coupon->get_code() === 'faircaps21' ) {
 			// TEST
+			write_log( "Aantal keer '".$coupon->get_code()."' gebruikt: ".$usage_count );
 			// update_site_option( 'free_capsules_given_2021', 100 );
 			return get_site_option( 'free_capsules_given_2021', 0 );
 		} else {
