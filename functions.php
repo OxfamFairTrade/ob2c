@@ -38,9 +38,11 @@
 	add_action( 'woocommerce_applied_coupon', 'redirect_to_cart_to_choose_version', 10, 1 );
 
 	function redirect_to_cart_to_choose_version( $code ) {
+		write_log( "Applied ".$code );
 		if ( $code === 'faircaps21' ) {
 			if ( ! is_cart() ) {
-				wp_safe_redirect( wc_get_cart_url() );
+				// Dit doet een redirect in de pop-up ...
+				// wp_safe_redirect( wc_get_cart_url() );
 			}
 		}
 	}

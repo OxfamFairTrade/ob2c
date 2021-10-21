@@ -483,7 +483,7 @@
         text-align: center;
         padding: 1em;
         border: 2px solid $light-grey;
-        border-radius: 20px;
+        border-radius: 10px;
         cursor: pointer;
       }
 
@@ -493,7 +493,8 @@
 
       & + label:before {
         content: '';
-        background-color: transparent;
+        background-color: $oxfam-green;
+        opacity: 0;
         position: absolute;
         top: 0;
         right: 0;
@@ -502,8 +503,9 @@
         z-index: 50;
       }
 
-      & + label:before:hover {
-        background-color: rgba( 50, 50, 50, 0.1 );
+      & + label:hover:before {
+        opacity: 0.25;
+        transition: opacity 0.5s;
       }
 
       // & + label:before,
