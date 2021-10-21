@@ -479,17 +479,23 @@
     }
 
     > input[type=radio] + label:after {
+      width: 2em;
+      height: 2em;
+      content: '';
+      background-color: black;
+      // background-image: url('../week-van-de-fair-trade/select.svg');
+      background-repeat: no-repeat;
+      background-size: contain;
+      border-radius: 50%;
       position: absolute;
       right: 0;
       top: 0;
-      width: 2em;
-      height: 2em;
-      background-color: black;
-      border-radius: 50%;
+      z-index: 50;
     }
 
     > input[type=radio]:checked + label:after {
-     background-color: green;
+      // background-image: url('../week-van-de-fair-trade/selected.svg');
+      background-color: green;
     }
   }
 }
