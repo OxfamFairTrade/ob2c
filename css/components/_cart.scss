@@ -479,38 +479,54 @@
       display: none;
 
       & + label {
-        font-weight: bold;
-        padding: 1em 0;
-        // border: 2px solid transparent;
-        // border-radius: 20px;
-      }
-
-      & + label:before,
-      & + label:after {
-        width: 2em;
-        height: 2em;
-        content: '';
-        background-repeat: no-repeat;
-        background-size: contain;
-        position: absolute;
-        right: 0.5em;
-        top: 0.6em;
-        z-index: 50;
-      }
-
-      & + label:before {
-        background-image: url(/wp-content/themes/oxfam-webshop/images/icons/select.svg);
+        font-weight: bold !important;
+        text-align: center;
+        padding: 1em;
+        border: 2px solid $light-grey;
+        border-radius: 20px;
+        cursor: pointer;
       }
 
       &:checked + label {
-        // border-color: $oxfam-green;
-        color: $oxfam-green;
+        border-color: $oxfam-green;
       }
 
-      &:checked + label:after {
-        right: 0.25em;
-        background-image: url(/wp-content/themes/oxfam-webshop/images/icons/selected.svg);
+      & + label:before {
+        content: '';
+        background-color: transparent;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 50;
       }
+
+      & + label:before:hover {
+        background-color: rgba( 50, 50, 50, 0.1 );
+      }
+
+      // & + label:before,
+      // & + label:after {
+      //   width: 2em;
+      //   height: 2em;
+      //   content: '';
+      //   background-repeat: no-repeat;
+      //   background-size: contain;
+      //   position: absolute;
+      //   top: 0.6em;
+      //   right: 0.5em;
+      //   z-index: 50;
+      // }
+
+      // & + label:before {
+      //   background-image: url(/wp-content/themes/oxfam-webshop/images/icons/select.svg);
+      // }
+
+      // &:checked + label:after {
+      //   right: 0.25em;
+      //   background-image: url(/wp-content/themes/oxfam-webshop/images/icons/selected.svg);
+      // }
     }
   }
 }
