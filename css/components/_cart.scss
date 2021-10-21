@@ -476,26 +476,32 @@
 
     > input[type=radio] {
       display: none;
-    }
 
-    > input[type=radio] + label:after {
-      width: 2em;
-      height: 2em;
-      content: '';
-      background-color: black;
-      // background-image: url('../week-van-de-fair-trade/select.svg');
-      background-repeat: no-repeat;
-      background-size: contain;
-      border-radius: 50%;
-      position: absolute;
-      right: 0;
-      top: 0;
-      z-index: 50;
-    }
+      & + label {
+        border: 1px solid grey;
+        border-radius: 20px;
+      }
 
-    > input[type=radio]:checked + label:after {
-      // background-image: url('../week-van-de-fair-trade/selected.svg');
-      background-color: green;
+      & + label:after {
+        width: 2.5em;
+        height: 2.5em;
+        content: '';
+        background-image: url(/wp-content/themes/oxfam-webshop/images/icons/select.svg);
+        background-repeat: no-repeat;
+        background-size: contain;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 50;
+      }
+
+      &:checked + label {
+        border-color: green;
+      }
+
+      &:checked + label:after {
+        background-image: url(/wp-content/themes/oxfam-webshop/images/icons/selected.svg);
+      }
     }
   }
 }
