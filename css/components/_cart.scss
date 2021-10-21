@@ -473,26 +473,27 @@
 .wjecf-select-free-products {
   li {
     position: relative;
+    margin-bottom: 0;
 
     > input[type=radio] {
       display: none;
 
       & + label {
         font-weight: bold;
-        padding: 1em;
+        padding: 0 1em;
         // border: 2px solid transparent;
         // border-radius: 20px;
       }
 
       & + label:before,
       & + label:after {
-        width: 2.5em;
-        height: 2.5em;
+        width: 2em;
+        height: 2em;
         content: '';
         background-repeat: no-repeat;
         background-size: contain;
         position: absolute;
-        right: 1.5em;
+        right: 0.5em;
         top: 0.5em;
         z-index: 50;
       }
@@ -503,10 +504,11 @@
 
       &:checked + label {
         // border-color: $oxfam-green;
-        background-color: $oxfam-green;
+        color: $oxfam-green;
       }
 
       &:checked + label:after {
+        right: 0em;
         background-image: url(/wp-content/themes/oxfam-webshop/images/icons/selected.svg);
       }
     }
