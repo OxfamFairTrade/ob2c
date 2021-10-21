@@ -142,12 +142,12 @@ if ( ! $nm_theme_options['product_action_link'] ) {
         <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
             <?php if ( $position_in_grid === 2 ) : ?>
                 <li class="promo-banner vertical">
-                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-staand.png' ); ?>" title="Maximum 1 doosje gratis per online klant. Actie geldig t.e.m. 14/11/2021." />
+                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-staand.png' ); ?>" title="<?php get_free_capsules_disclaimer(); ?>" />
                 </li>
             <?php endif; ?>
         <?php elseif ( is_woocommerce() and $position_in_grid === 8 ) : ?>
             <li class="promo-banner horizontal">
-                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-liggend.png' ); ?>" title="Maximum 1 doosje gratis per online klant. Actie geldig t.e.m. 14/11/2021." />
+                <a href="categorie/koffie/capsules/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-liggend.png' ); ?>" title="<?php get_free_capsules_disclaimer(); ?>" /></a>
             </li>
         <?php endif; ?>
     <?php endif; ?>

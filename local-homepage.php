@@ -101,7 +101,7 @@
 							<div class="col-row lh-banner">
 								<div class="col-xs-12">
 									<?php
-										echo '<a href="categorie/koffie/capsules/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-algemeen.png' ).'" title="Maximum 1 doosje gratis per online klant. Actie geldig t.e.m. 14/11/2021." /></a>';
+										echo '<a href="categorie/koffie/capsules/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-algemeen.png' ).'" title="'.get_free_capsules_disclaimer().'" /></a>';
 									?>
 								</div>
 							</div>

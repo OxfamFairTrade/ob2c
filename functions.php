@@ -5,6 +5,10 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	function get_free_capsules_disclaimer() {
+		return 'Maximum 1 gratis doosje per online klant. Actie geldig t.e.m. 14/11/2021. Beperkt tot 500 pakjes.';
+	}
+
 	// Registreer aantal gratis capsules over alle webshops heen 
 	add_filter( 'woocommerce_coupon_get_usage_count', 'get_sitewide_coupon_usage', 10, 2 );
 	add_action( 'woocommerce_increase_coupon_usage_count', 'increase_coupon_usage_count_sitewide', 10, 3 );

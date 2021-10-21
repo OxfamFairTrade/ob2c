@@ -485,27 +485,29 @@
         border: 2px solid $light-grey;
         border-radius: 10px;
         cursor: pointer;
+        opacity: 0.75;
       }
 
       &:checked + label {
         border-color: $oxfam-green;
+        opacity: 1;
       }
 
-      & + label:before {
-        content: '';
-        background-color: $oxfam-green;
-        opacity: 0;
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 50;
-      }
+      // & + label:before {
+      //   content: '';
+      //   background-color: $oxfam-green;
+      //   opacity: 0;
+      //   position: absolute;
+      //   top: 0;
+      //   right: 0;
+      //   bottom: 0;
+      //   left: 0;
+      //   z-index: 50;
+      // }
 
-      & + label:hover:before {
-        opacity: 0.25;
-        transition: opacity 0.5s;
+      & + label:hover {
+        opacity: 1;
+        transition: opacity 0.25s;
       }
 
       // & + label:before,
