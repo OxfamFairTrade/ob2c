@@ -81,12 +81,15 @@ if ( ! is_main_site() ) {
 				$neighbouring_sites = get_sites( array( 'site__not_in' => array( 1, get_current_blog_id() ), 'site__in' => wp_list_pluck( $neighbouring_webshops, 'webshopBlogId' ), 'public' => 1 ) );
 
 				$shops_instock = array();
+				$shops_temp_outofstock = array();
 				$shops_outofstock = array();
 				foreach ( $neighbouring_sites as $site ) {
 					switch_to_blog( $site->blog_id );
 					$local_product = wc_get_product( wc_get_product_id_by_sku( $product->get_sku() ) );
 					if ( $local_product !== false ) {
-						if ( $local_product->is_in_stock() ) {
+						if ( $local_product->is_on_backorder() ) {
+							$shops_temp_outofstock[ $site->blog_id ] = get_webshop_name();
+						} elseif ( $local_product->is_in_stock() ) {
 							$shops_instock[ $site->blog_id ] = get_webshop_name();
 						} else {
 							$shops_outofstock[ $site->blog_id ] = get_webshop_name();
@@ -109,6 +112,9 @@ if ( ! is_main_site() ) {
 							echo '<li class="available"><a href="'.esc_url( str_replace( home_url('/'), $store['webshopUrl'], $product->get_permalink() ) ).'">'.esc_html( $shops_instock[ $blog_id ] ).'</a> <small>('.esc_html( $store['distance'] ).' km)</small></li>';
 							// Verhinder dat we dezelfde webshop nog eens tonen!
 							unset( $shops_instock[ $blog_id ] );
+						} elseif ( array_key_exists( $blog_id, $shops_temp_outofstock ) ) {
+							echo '<li class="temporary-unavailable">'.esc_html( $shops_temp_outofstock[ $blog_id ] ).' <small>('.esc_html( $store['distance'] ).' km)</small></li>';
+							unset( $shops_temp_outofstock[ $blog_id ] );
 						} elseif ( array_key_exists( $blog_id, $shops_outofstock ) ) {
 							echo '<li class="unavailable">'.esc_html( $shops_outofstock[ $blog_id ] ).' <small>('.esc_html( $store['distance'] ).' km)</small></li>';
 							unset( $shops_outofstock[ $blog_id ] );
