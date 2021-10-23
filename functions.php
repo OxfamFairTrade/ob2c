@@ -214,7 +214,8 @@
 	add_filter( 'woocommerce_coupon_error', 'ob2c_coupon_error_message', 10, 3 );
 
 	function ob2c_coupon_error_message( $message, $error_code, $coupon ) {
-		if ( $coupon->get_virtual() ) {
+		// $coupon kan blijkbaar ook null zijn, fatal error opvangen
+		if ( $coupon instanceof WC_Coupon and $coupon->get_virtual() ) {
 			if ( $error_code == WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
 				return sprintf( __( 'De cadeaubon met code %s werd al ingeruild!', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
 			}
@@ -256,8 +257,8 @@
 					$logger = wc_get_logger();
 					$context = array( 'source' => 'Oxfam' );
 					$logger->warning( 'Trying to re-use coupon '.$code.' in '.$order->get_order_number().', previously used in '.$db_coupon->order, $context );
-					wc_add_notice( sprintf( __( 'Deze bestelling bevatte een digitale cadeaubon met code %1$s die reeds ingeruild werd in bestelling %2$s. We verwijderen deze cadeaubon en herberekenden het resterende te betalen bedrag.', 'oxfam-webshop' ), $code, $db_coupon->order ), 'error' );
-					// Wis de voucher en sla het order op, zodat een nieuw betaal
+					wc_add_notice( sprintf( __( 'Deze bestelling bevatte een digitale cadeaubon met code %1$s die reeds ingeruild werd in bestelling %2$s. We verwijderden deze cadeaubon en herberekenden het resterende te betalen bedrag.', 'oxfam-webshop' ), $code, $db_coupon->order ), 'error' );
+					// Wis de voucher en sla het order op, zodat een nieuw betaaltotaal ontstaat
 					$order->remove_coupon( $coupon_item->get_code() );
 					$order->save();
 				}
