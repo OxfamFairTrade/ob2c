@@ -482,10 +482,11 @@
         font-weight: bold !important;
         text-align: center;
         padding: 1em;
-        border: 2px solid $light-grey;
+        border: 1px solid $light-grey;
         border-radius: 10px;
         cursor: pointer;
         opacity: 0.75;
+        transition: opacity 0.25s;
       }
 
       &:checked + label {
@@ -493,44 +494,9 @@
         opacity: 1;
       }
 
-      // & + label:before {
-      //   content: '';
-      //   background-color: $oxfam-green;
-      //   opacity: 0;
-      //   position: absolute;
-      //   top: 0;
-      //   right: 0;
-      //   bottom: 0;
-      //   left: 0;
-      //   z-index: 50;
-      // }
-
       & + label:hover {
         opacity: 1;
-        transition: opacity 0.25s;
       }
-
-      // & + label:before,
-      // & + label:after {
-      //   width: 2em;
-      //   height: 2em;
-      //   content: '';
-      //   background-repeat: no-repeat;
-      //   background-size: contain;
-      //   position: absolute;
-      //   top: 0.6em;
-      //   right: 0.5em;
-      //   z-index: 50;
-      // }
-
-      // & + label:before {
-      //   background-image: url(/wp-content/themes/oxfam-webshop/images/icons/select.svg);
-      // }
-
-      // &:checked + label:after {
-      //   right: 0.25em;
-      //   background-image: url(/wp-content/themes/oxfam-webshop/images/icons/selected.svg);
-      // }
     }
   }
 }

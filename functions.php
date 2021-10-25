@@ -3859,11 +3859,8 @@
 			$value = '0' . $value;
 		}
 		
-		// Zorg ervoor dat ongeldige nummers gewist worden
-		$phone = '';
-		
-		// Vaste telefoonnummers
 		if ( strlen( $value ) == 9 ) {
+			// Vaste telefoonnummers
 			if ( intval( $value[1] ) == 2 or intval( $value[1] ) == 3 or intval( $value[1] ) == 4 or intval( $value[1] ) == 9 ) {
 				// Zonenummer van twee cijfers
 				$phone = substr( $value, 0, 2 ) . $slash . substr( $value, 2, 3 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
@@ -3871,11 +3868,17 @@
 				// Zonenummer van drie cijfers
 				$phone = substr( $value, 0, 3 ) . $slash . substr( $value, 3, 2 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
 			}
-		}
-
-		// Mobiele telefoonnummers
-		if ( strlen( $value ) == 10 ) {
+		} elseif ( strlen( $value ) == 10 ) {
+			// Mobiele telefoonnummers
 			$phone = substr( $value, 0, 4 ) . $slash . substr( $value, 4, 2 ) . $delim . substr( $value, 6, 2 ) . $delim . substr( $value, 8, 2 );
+		} else {
+			// Wis ongeldige nummers
+			if ( is_checkout() ) {
+				// Behalve op checkout, want dan triggeren we een obscure 'Gelieve de verplichte velden in te vullen'-foutmelding!
+				$phone = $value;
+			} else {
+				$phone = '';
+			}
 		}
 		
 		return $phone;
@@ -5814,13 +5817,10 @@
 	}
 
 	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
-	// add_filter( 'woocommerce_checkout_coupon_message', 'remove_msg_filter' );
+	add_filter( 'woocommerce_checkout_coupon_message', 'ob2c_change_coupon_message_on_checkout' );
 
-	function remove_msg_filter( $msg ) {
-		if ( is_checkout() ) {
-			return '';
-		}
-		return $msg;
+	function ob2c_change_coupon_message_on_checkout( $msg ) {
+		return esc_html__( 'Korting scoren?', 'oxfam-webshop' ) . ' <a href="#" class="showcoupon">' . esc_html__( 'Klikkerdeklik', 'oxfam-webshop' ) . '</a>';
 	}
 
 	function get_oxfam_empties_skus_array() {
