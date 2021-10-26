@@ -45,8 +45,12 @@
 		write_log( "Applied ".$code );
 		if ( $code === 'faircaps21' ) {
 			if ( ! is_cart() ) {
-				// Dit doet een redirect in de pop-up ...
-				// wp_safe_redirect( wc_get_cart_url() );
+				// wp_safe_redirect() lokt enkel een redirect in de pop-up uit, gebruik JavaScript om de volledige pagina te refreshen!
+				?>
+				<script type="text/javascript">
+					window.location.href = '<?php echo wc_get_cart_url() ?>#wjecf-select-free-products';
+				</script>
+				<?php
 			}
 		}
 	}
