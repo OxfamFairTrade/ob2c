@@ -126,7 +126,7 @@ $nm_cart_empty_class_attr_escaped = ( WC()->cart->is_empty() ) ? ' class="nm-car
 
     <li class="empty">
         <i class="nm-font nm-font-close2"></i>
-        <span><?php esc_html_e( 'No products in the cart.', 'woocommerce' ); ?></span>
+        <span><?php esc_html_e( 'No products in the cart.', 'woocommerce' ); ?></span><br/><small><?php esc_html_e( 'Wil je een kortingsbon toevoegen? Voeg dan eerst enkele producten toe.', 'oxfam-webshop' ); ?></small>
     </li>
 
 </ul><!-- end product list -->

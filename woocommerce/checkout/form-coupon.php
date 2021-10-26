@@ -23,17 +23,16 @@ $nm_globals['checkout_coupon_message'] = $info_message;
 <div id="nm-coupon-login-form" class="nm-coupon-popup-wrap mfp-hide">
     <form class="checkout_coupon" method="post" style="display:none">
         
-        <!-- GEWIJZIGD: Pas tekst aan -->
-        <h4><?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?></h4>
-        
-        <p><?php esc_html_e( 'If you have a coupon code, please apply it below.', 'woocommerce' ); ?></p>
+        <!-- GEWIJZIGD: Pas teksten aan -->
+        <h4><?php esc_attr_e( 'Activeer je korting', 'oxfam-webshop' ); ?></h4>
+        <p><?php esc_html_e( 'Als je een kortingsbon of digitale cadeaubon hebt, kun je deze hieronder invullen.', 'oxfam-webshop' ); ?></p>
         
         <p class="form-row form-row-first">
-            <input type="text" name="coupon_code" class="input-text" placeholder="<?php esc_attr_e( 'Coupon code', 'woocommerce' ); ?>" id="coupon_code" value="" />
+            <input type="text" name="coupon_code" class="input-text" placeholder="<?php esc_attr_e( 'Kortingscode', 'oxfam-webshop' ); ?>" id="coupon_code" value="" />
         </p>
 
         <p class="form-row form-row-last">
-            <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Apply coupon', 'woocommerce' ); ?>"><?php esc_html_e( 'Apply coupon', 'woocommerce' ); ?></button>
+            <button type="submit" class="button" name="apply_coupon" value="<?php esc_attr_e( 'Pas kortingsbon toe', 'oxfam-webshop' ); ?>"><?php esc_html_e( 'Pas kortingsbon toe', 'oxfam-webshop' ); ?></button>
         </p>
 
         <div class="clear"></div>
