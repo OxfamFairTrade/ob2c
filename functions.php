@@ -16,9 +16,6 @@
 	
 	function get_sitewide_coupon_usage( $usage_count, $coupon ) {
 		if ( $coupon->get_code() === 'faircaps21' ) {
-			// TEST
-			write_log( "Aantal keer '".$coupon->get_code()."' gebruikt: ".$usage_count );
-			// update_site_option( 'free_capsules_given_2021', 100 );
 			return get_site_option( 'free_capsules_given_2021', 0 );
 		} else {
 			return $usage_count;
@@ -29,13 +26,16 @@
 		if ( $coupon->get_code() === 'faircaps21' ) {
 			// Gebruik bewust niét $new_count want dat bevat enkel het gebruik in deze site!
 			update_site_option( 'free_capsules_given_2021', get_site_option( 'free_capsules_given_2021', 0 ) + 1 );
+			write_log( "Aantal keer '".$coupon->get_code()."' gebruikt (na toename): ".get_site_option( 'free_capsules_given_2021', 0 ) );
 		}
 	}
 
 	function decrease_coupon_usage_count_sitewide( $coupon, $new_count, $used_by ) {
 		if ( $coupon->get_code() === 'faircaps21' ) {
+			// Wordt correct doorlopen bij het annuleren / volledig terugbetalen van een order
 			// Gebruik bewust niét $new_count want dat bevat enkel het gebruik in deze site!
 			update_site_option( 'free_capsules_given_2021', get_site_option( 'free_capsules_given_2021', 0 ) - 1 );
+			write_log( "Aantal keer '".$coupon->get_code()."' gebruikt (na afname): ".get_site_option( 'free_capsules_given_2021', 0 ) );
 		}
 	}
 
@@ -195,8 +195,8 @@
 				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro', $db_coupon->issuer, $db_coupon->value ),
 				// Eventueel beperken tot OFT-producten?
 				// 'product_ids' => array(),
-				// Alle papieren geschenkencheques uitsluiten?
-				// 'excluded_product_ids' => array(),
+				// Alle papieren geschenkencheques uitsluiten? MOET NOG VERTAALD WORDEN NAAR LOKALE PRODUCT-ID'S
+				// 'excluded_product_ids' => get_oxfam_cheques_skus_array(),
 				'usage_limit' => 1,
 			);
 			if ( ! empty( $db_coupon->order ) ) {
@@ -5816,15 +5816,13 @@
 		}
 	}
 
-	// Verberg de 'kortingsbon invoeren'-boodschap bij het afrekenen
-	add_filter( 'woocommerce_checkout_coupon_message', 'ob2c_change_coupon_message_on_checkout' );
-
-	function ob2c_change_coupon_message_on_checkout( $msg ) {
-		return esc_html__( 'Korting scoren?', 'oxfam-webshop' ) . ' <a href="#" class="showcoupon">' . esc_html__( 'Klikkerdeklik', 'oxfam-webshop' ) . '</a>';
-	}
-
 	function get_oxfam_empties_skus_array() {
 		return array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917' );
+	}
+
+	function get_oxfam_cheques_skus_array() {
+		// Geldig tot eind 2022 en 2023
+		return array( '19066', '19067', '19068', '19056', '19057', '19058' );
 	}
 
 	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_gift_wrap_explainer', 10, 1 );
