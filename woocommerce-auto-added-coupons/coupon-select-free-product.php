@@ -38,14 +38,14 @@ Or, for radiobuttons:
 
 $input_type = $allow_multiple_products ? 'number' : 'radio';
 $tooltip    = sprintf(
-	// phpcs:ignore
 	_n( 'You can select one free product.', 'You can select up to %d free products.', $max_quantity, 'woocommerce-jos-autocoupon' ),
 	$max_quantity
 );
 
-//Decide what is the prettiest amount of columns to display
-//Defaults to 4, 3 on large screen, 2 on small screen. Use less columns if possible without adding an extra row on screen.
-$n     = count( $form_items );
+// Decide what is the prettiest amount of columns to display
+// Defaults to 4, 3 on large screen, 2 on small screen. Use less columns if possible without adding an extra row on screen.
+// GEWIJZIGD: Toon producten altijd in 2 kolommen
+$n = 2;
 $class = 'wjecf-cols cols-' . ceil( $n / ceil( $n / 4 ) ) . ' cols-lg-' . ceil( $n / ceil( $n / 3 ) ) . ' cols-sm-' . ceil( $n / ceil( $n / 2 ) );
 
 ?>
