@@ -39,6 +39,7 @@
 		}
 	}
 
+	// Vreemd genoeg blijft .wjecf-fragment-checkout-select-free-product op de afrekenpagina leeg, dus redirect naar het winkelmandje indien de code daar toegevoegd werd
 	add_action( 'woocommerce_applied_coupon', 'redirect_to_cart_to_choose_version', 10, 1 );
 
 	function redirect_to_cart_to_choose_version( $code ) {

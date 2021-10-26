@@ -57,27 +57,29 @@ $class = 'wjecf-cols cols-' . ceil( $n / ceil( $n / 4 ) ) . ' cols-lg-' . ceil( 
 	<?php
 	foreach ( $form_items as $key => $form_item ) :
 		$product = $form_item->getProduct();
-	?>
-		<li data-wjecf-free-product-group="<?php echo $form_item->field_id; ?>">
-			<?php
-				//Input
-				$template->render_form_item_input(
-					$form_item, array(
-						'type'  => $input_type,
-						'title' => $tooltip,
-					)
-				);
-				//Label with title and product image inside of it
-				echo ' <label for="' . $form_item->field_id . '">' . esc_html( $product->get_name(), 'woocommerce' ) . '<br>';
-				echo $product->get_image();
-				echo '</label>';
-				//Variable product attributes
-				$template->render_form_item_variations( $form_item );
-			?>
-		</li>
-	<?php
+		// GEWIJZIGD: Check of het product ook niet tijdelijk uit voorraad is
+		if ( ! $product->is_on_backorder() ) :
+		?>
+			<li data-wjecf-free-product-group="<?php echo $form_item->field_id; ?>">
+				<?php
+					//Input
+					$template->render_form_item_input(
+						$form_item, array(
+							'type'  => $input_type,
+							'title' => $tooltip,
+						)
+					);
+					//Label with title and product image inside of it
+					echo ' <label for="' . $form_item->field_id . '">' . esc_html( $product->get_name(), 'woocommerce' ) . '<br>';
+					echo $product->get_image();
+					echo '</label>';
+					//Variable product attributes
+					$template->render_form_item_variations( $form_item );
+				?>
+			</li>
+		<?php
+		endif;
 	endforeach;
 	?>
 	</ul>
-	<p>
 </div>
