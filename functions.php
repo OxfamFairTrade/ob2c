@@ -7611,17 +7611,12 @@
 			remove_all_actions('admin_notices');
 		}
 		add_action( 'admin_notices', 'oxfam_admin_notices' );
+		add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
 	}
 
 	function oxfam_admin_notices() {
 		global $pagenow, $post_type;
 		$screen = get_current_screen();
-
-		if ( is_network_admin() and 'admin.php' === $pagenow and 'woonet-woocommerce' === $screen->base ) {
-			echo '<div class="notice notice-success">';
-				echo '<p>Tot nu toe werd de kortingsbon FAIRCAPS21 al '.get_site_option( 'free_capsules_given_2021', 0 ).' keer gebruikt!</p>';
-			echo '</div>';
-		}
 		
 		if ( 'index.php' === $pagenow and 'dashboard' === $screen->base ) {
 			if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
@@ -7713,6 +7708,17 @@
 					}
 				echo '</p></div>';
 			}
+		}
+	}
+
+	function oxfam_network_admin_notices( ) {
+		global $pagenow;
+		$screen = get_current_screen();
+
+		if ( 'admin.php' === $pagenow and 'woonet-woocommerce' === $screen->parent_base ) {
+			echo '<div class="notice notice-success">';
+				echo '<p>Tot nu toe werd de kortingsbon FAIRCAPS21 al '.get_site_option( 'free_capsules_given_2021', 0 ).' keer gebruikt!</p>';
+			echo '</div>';
 		}
 	}
 
