@@ -58,14 +58,14 @@
 
 
 
-	// Schakel afrekenen in de webshop van Houthalen uit van 18/10 t.e.m. 07/11
+	// Schakel afrekenen in de webshop van Houthalen uit van 18/10 t.e.m. 10/11
 	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
 	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
 	add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
 
 	function disable_all_payment_methods( $methods ) {
 		if ( get_current_blog_id() === 72 ) {
-			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-07' ) {
+			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-10' ) {
 				return array();
 			}
 		}
@@ -78,7 +78,7 @@
 	
 	function disable_checkout_button( $html ) {
 		if ( get_current_blog_id() === 72 ) {
-			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-07' ) {
+			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-10' ) {
 				$original_button = __( 'Place order', 'woocommerce' );
 				return str_replace( '<input type="submit"', '<input type="submit" disabled="disabled"', str_replace( $original_button, 'Bestellen tijdelijk onmogelijk', $html ) );
 			}
@@ -822,10 +822,10 @@
 
 	// Pas winkelmandkorting n.a.v. Week van de Fair Trade 2021 toe op het uiteindelijk te betalen bedrag i.p.v. het subtotaal
 	// Deze filter wordt enkel doorlopen bij autocoupons!
-	add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 1000, 2 );
+	// add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 1000, 2 );
 
 	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
-		if ( $coupon->get_code() === '202110-wvdft' and date('Y-m-d') < '2021-10-17' ) {
+		if ( $coupon->get_code() === '202110-wvdft' and date('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
 			$melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') );
 			if ( $melkchocolade !== false and $melkchocolade->get_stock_status() !== 'instock' ) {
 				// Pas de korting niet toe als het gratis product niet op voorraad is
@@ -856,7 +856,7 @@
 	add_action( 'wjecf_assert_coupon_is_valid', 'check_if_free_products_are_on_stock', 1000, 2 );
 
 	function check_if_free_products_are_on_stock( $coupon, $wc_discounts  ) {
-		if ( $coupon->get_code() === 'faircaps21' and date('Y-m-d') < '2021-11-15' ) {
+		if ( $coupon->get_code() === 'faircaps21' and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
 			$espresso = wc_get_product( wc_get_product_id_by_sku('22724') );
 			$lungo = wc_get_product( wc_get_product_id_by_sku('22725') );
 			if ( ( $espresso !== false and $espresso->get_stock_status() !== 'instock' ) and ( $lungo !== false and $lungo->get_stock_status() !== 'instock' ) ) {
@@ -7616,6 +7616,12 @@
 	function oxfam_admin_notices() {
 		global $pagenow, $post_type;
 		$screen = get_current_screen();
+
+		if ( is_network_admin() and 'admin.php' === $pagenow and 'woonet-woocommerce' === $screen->base ) {
+			echo '<div class="notice notice-success">';
+				echo '<p>Tot nu toe werd de kortingsbon FAIRCAPS21 al '.get_site_option( 'free_capsules_given_2021', 0 ).' keer gebruikt!</p>';
+			echo '</div>';
+		}
 		
 		if ( 'index.php' === $pagenow and 'dashboard' === $screen->base ) {
 			if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
