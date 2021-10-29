@@ -1154,6 +1154,9 @@ function codeAddress( infoWindow ) {
 				case '1934':
 					request.componentRestrictions = { country:"BE", locality:"Brussel X" };
 					break;
+				case '3130':
+					request.componentRestrictions = { country:"BE", locality:"Begijnendijk" };
+					break;
 				default:
 					console.log("No postal code fixing necessary");
 			}
