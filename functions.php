@@ -7718,6 +7718,36 @@
 		if ( 'admin.php' === $pagenow and 'woonet-woocommerce' === $screen->parent_base ) {
 			echo '<div class="notice notice-success">';
 				echo '<p>Tot nu toe werd de kortingsbon FAIRCAPS21 al '.get_site_option( 'free_capsules_given_2021', 0 ).' keer gebruikt!</p>';
+				
+				echo '<ul>';
+				foreach ( get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-14', true ) as $wc_order ) {
+					echo '<li>';
+					echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.$wc_order->get_total().' &mdash; '.$wc_order->get_billing_email();
+					
+					$new_args = array(
+						'type' => 'shop_order',
+						'billing_email' => $wc_order->get_billing_email(),
+						'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
+						'status' => 'wc-completed',
+						'limit' => -1,
+					);
+					$previous_orders_by_customer = wc_get_orders( $new_args );
+					
+					if ( count( $previous_orders_by_customer ) === 0 ) {
+						$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
+						$new_orders_by_customer = wc_get_orders( $new_args );
+						
+						if ( count( $new_orders_by_customer ) > 0 ) {
+							$addendum = ', placed '.count( $new_orders_by_customer ).' new orders afterwards';
+						} else {
+							$addendum = '';
+						}
+						echo ' <span style="font-weight: bold; color: green;">=> new online customer'.$addendum.'!</span>';
+					}
+
+					echo '</li>';
+				}
+				echo '</ul>';
 			echo '</div>';
 		}
 	}
