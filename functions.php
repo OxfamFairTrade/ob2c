@@ -7725,7 +7725,7 @@
 					switch_to_blog( $site->blog_id );
 					foreach ( get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-14', true ) as $wc_order ) {
 						echo '<li>';
-						echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.$wc_order->get_total().' &mdash; '.$wc_order->get_billing_email();
+						echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
 						
 						$new_args = array(
 							'type' => 'shop_order',
@@ -7762,7 +7762,7 @@
 		$total_count = 0;
 		$orders = array();
 
-		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-completed' ) ) . "') AND woi.order_item_type = 'coupon' AND woi.order_item_name = '" . $coupon_code . "' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
+		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-processing', 'wc-completed' ) ) . "') AND woi.order_item_type = 'coupon' AND woi.order_item_name = '" . $coupon_code . "' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
 		$rows = $wpdb->get_results( $query );
 
 		foreach ( $rows as $key => $row ) {
