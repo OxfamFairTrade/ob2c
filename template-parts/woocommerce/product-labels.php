@@ -60,9 +60,9 @@
 		}
 
 		$wijnduos = array( 20225, 20212, 20070, 20073, 20413, 20415, 20262, 20074 );
-		if ( in_array( $product->get_sku(), $wijnduos ) ) {
-			$labels['promotion'] = 'Wijnduo';
-		}
+		// if ( in_array( $product->get_sku(), $wijnduos ) ) {
+		// 	$labels['promotion'] = 'Wijnduo';
+		// }
 	}
 
 	if ( $product->get_date_created() !== NULL and $product->get_date_created()->date_i18n('Y-m-d') > date_i18n( 'Y-m-d', strtotime('-3 months') ) ) {
