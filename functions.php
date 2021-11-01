@@ -200,8 +200,8 @@
 				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro', $db_coupon->issuer, $db_coupon->value ),
 				// Eventueel beperken tot OFT-producten?
 				// 'product_ids' => array(),
-				// Alle papieren geschenkencheques uitsluiten
-				'excluded_product_ids' => get_oxfam_cheques_ids_array(),
+				// Alle papieren geschenkencheques uitsluiten? WORDT PAS AUTOMATISCH TOEGEPAST WANNEER AAN DE VOORWAARDEN VOLDAAN WORDT ...
+				// 'excluded_product_ids' => get_oxfam_cheques_ids_array(),
 				'usage_limit' => 1,
 			);
 			if ( ! empty( $db_coupon->order ) ) {
