@@ -7648,7 +7648,7 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/voeding/2021/10/12/Promos-online--winkel-november-2021-update" target="_blank">promo\'s voor november</a> en de <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> werden rond op 1 november rond 18 uur geactiveerd in alle webshops.</p>';
+					echo '<p>De <a href="https://copain.oww.be/voeding/2021/10/12/Promos-online--winkel-november-2021-update" target="_blank">promo\'s voor november</a> en de <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> werden op 1 november rond 19 uur geactiveerd in alle webshops.</p>';
 				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
@@ -7671,7 +7671,7 @@
 				echo '</div>';
 				if ( get_current_blog_id() !== 1 ) {
 					echo '<div class="notice notice-info">';
-						echo '<p>Tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. De creditering hiervan gebeurt via de rollijst op Copain.</p>';
+						echo '<p>Tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. Creditering gebeurt via de rollijst op Copain.</p>';
 					echo '</div>';
 				}
 				echo '<div class="notice notice-info">';
