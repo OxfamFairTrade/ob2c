@@ -9,42 +9,42 @@
 		// Zoek vervolgens de details van de actie op
 		// Handmatig beheerde lijst, want simpeler dan afleiden uit de kortingsregels!
 		
-		$fifty_percent_off_second_products = array( 27502, 65216, 65217, 65218, 65219 );
+		$fifty_percent_off_second_products = array( 27151, 27995 );
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}
 		
-		$one_plus_one_products = array( 24018, 24501 );
+		$one_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
 		
-		$two_plus_two_products = array( 20812 );
+		$two_plus_two_products = array();
 		if ( in_array( $product->get_sku(), $two_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 2+2 gratis';
 		}
 
-		$three_plus_two_products = array( 24100, 24101, 24102, 24103, 24117 );
+		$three_plus_two_products = array();
 		if ( in_array( $product->get_sku(), $three_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 3+2 gratis';
 		}
 		
-		$fifty_percent_off_products = array( 20811 );
+		$fifty_percent_off_products = array();
 		if ( in_array( $product->get_sku(), $fifty_percent_off_products ) ) {
 			$labels['promotion'] = 'Promo -50%';
 		}
 
-		$two_plus_one_products = array( 25452, 87352 );
+		$two_plus_one_products = array( 25317 );
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
 
-		$three_plus_one_products = array( 20810 );
+		$three_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $three_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 3+1 gratis';
 		}
 
-		$twentyfive_percent_off_products = array( 20809 );
+		$twentyfive_percent_off_products = array();
 		if ( in_array( $product->get_sku(), $twentyfive_percent_off_products ) ) {
 			$labels['promotion'] = 'Promo -25%';
 		}
@@ -54,9 +54,14 @@
 			$labels['promotion'] = 'Promo 4+2 gratis';
 		}
 		
-		$five_plus_one_products = array( 20060, 20253 );
+		$five_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $five_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 5+1 gratis';
+		}
+
+		$wijnduos = array( 20225, 20212, 20070, 20073, 20413, 20415, 20262, 20074 );
+		if ( in_array( $product->get_sku(), $wijnduos ) ) {
+			$labels['promotion'] = 'Wijnduo';
 		}
 	}
 
@@ -74,10 +79,6 @@
 		}
 	}
 	
-	if ( $product->get_sku() === '20263' and date_i18n('Y-m-d') >= '2021-03-01' and date_i18n('Y-m-d') < '2021-09-01' ) {
-		$labels['beste-van-de-test'] = '';
-	}
-
 	if ( count( $labels ) > 0 ) {
 		echo '<ul class="info-labels">';
 		foreach ( $labels as $class => $label ) {

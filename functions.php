@@ -200,8 +200,8 @@
 				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro', $db_coupon->issuer, $db_coupon->value ),
 				// Eventueel beperken tot OFT-producten?
 				// 'product_ids' => array(),
-				// Alle papieren geschenkencheques uitsluiten? MOET NOG VERTAALD WORDEN NAAR LOKALE PRODUCT-ID'S
-				// 'excluded_product_ids' => get_oxfam_cheques_skus_array(),
+				// Alle papieren geschenkencheques uitsluiten
+				'excluded_product_ids' => get_oxfam_cheques_ids_array(),
 				'usage_limit' => 1,
 			);
 			if ( ! empty( $db_coupon->order ) ) {
@@ -311,6 +311,7 @@
 							$fee->update_meta_data( 'voucher_code', $code );
 							$fee->update_meta_data( 'voucher_value', $db_coupon->value );
 							// Bewaar het effectieve bedrag dat betaald werd via de voucher (kan minder zijn dan de totale waarde!) for future reference
+							// Bij bestellingen die VOLLEDIG met vouchers betaald werden wordt toch de waarde van de volledige voucher doorgegeven?
 							$fee->update_meta_data( 'voucher_amount', $coupon_item->get_discount() + $coupon_item->get_discount_tax() );
 							$fee->save();
 							
@@ -867,14 +868,14 @@
 	} 
 
 	// Probeer wijnduo's enkel toe te passen op gelijke paren (dus niet 3+1, 5+1, 5+3, ...)
-	// add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_equal_pairs', 100, 4 );
+	add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_equal_pairs', 100, 4 );
 
 	function limit_coupon_to_equal_pairs( $apply_quantity, $item, $coupon, $wc_discounts ) {
 		if ( is_admin() ) {
 			return $apply_quantity;
 		}
 
-		if ( in_array( $coupon->get_code(), array( 'duo-argentinie', 'duo-chili', 'duo-zuid-afrika' ) ) ) {
+		if ( stristr( $coupon->get_code(), 'wijnduo' ) !== false ) {
 			$this_quantity = 0;
 			$other_quantity = 0;
 			$old_apply_quantity = $apply_quantity;
@@ -903,7 +904,7 @@
 						}
 
 						// We hebben beide producten gevonden en kunnen afsluiten
-						// write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
+						write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
 						break;
 					}
 				}
@@ -5830,6 +5831,19 @@
 		return array( '19066', '19067', '19068', '19056', '19057', '19058' );
 	}
 
+	function get_oxfam_cheques_ids_array() {
+		$product_ids = array();
+
+		foreach ( get_oxfam_cheques_skus_array() as $sku ) {
+			$product_id = wc_get_product_id_by_sku( $sku );
+			if ( $product_id > 0 ) {
+				$product_ids[] = $product_id;
+			}
+		}
+
+		return $product_ids;
+	}
+
 	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_gift_wrap_explainer', 10, 1 );
 	add_filter( 'wcgwp_add_wrap_prompt', 'ob2c_change_gift_wrap_button', 10, 1 );
 
@@ -7634,31 +7648,33 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2021/09/16/Overzicht-promoties-Week-van-de-Fair-Trade-2021" target="_blank">promo\'s n.a.v. Week van de Fair Trade</a> zijn afgelopen. Creditering van de korting bij 2 pakjes koffie én het gratis tablet melkchocolade bij aankoop van 30 euro gebeurt via het turfblad. Ter info: in deze webshop werd de koffiebon tot nu toe '.get_number_of_times_coupon_was_used('202110-koffie').' keer toegepast en werden '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld.</p>';
+					echo '<p>De <a href="https://copain.oww.be/voeding/2021/10/12/Promos-online--winkel-november-2021-update" target="_blank">promo\'s voor november</a> en de <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> zijn geactiveerd in alle webshops.</p>';
 				echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>Op 1 oktober ging de actie i.s.m. Cera van start. Er worden momenteel veel digitale geschenkencheques ingeruild. <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">Download de handleiding</a> voor alle praktische details.</p>';
+				echo '<div class="notice notice-info">';
+					echo '<p>Ter info: tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. De creditering hiervan gebeurt via de rollijst op Copain.</p>';
+				echo '</div>';
+				echo '<div class="notice notice-info">';
+					echo '<p>Op 1 oktober ging de actie i.s.m. Cera van start. Er worden sindsdien veel digitale geschenkencheques ingeruild. <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">Download de handleiding</a> voor alle praktische details.</p>';
 				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				echo '<div class="notice notice-success">';
-					echo '<p>De sintfiguren en de nieuwe versie van de BIO Highland koffiepads (met gewijzigde verpakking!) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						// 24550
-						$skus = array( 22707, 24550, 24626, 24635, 24639, 24640, 26491 );
-						// Augustusmagazine, septemberagenda's en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
-						$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '87400', '87401', '87402', '87403', '87404', '87405', '87406', '87407', '87408', '87409', '87410', '87411', '87412', '87413', '87414', '87415', '94068' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet niet dat ook de chocoladeharten en -figuurtjes opnieuw leverbaar zijn.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Een nieuwe koffie werd toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 		$skus = array( 22031 );
+				// 		// Augustusmagazine, septemberagenda's en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
+				// 		$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '87400', '87401', '87402', '87403', '87404', '87405', '87406', '87407', '87408', '87409', '87410', '87411', '87412', '87413', '87414', '87415', '94068' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku( $sku );
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet niet dat ook de chocoladeharten en -figuurtjes opnieuw leverbaar zijn.</p>';
+				// echo '</div>';
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
@@ -7714,8 +7730,9 @@
 	function oxfam_network_admin_notices( ) {
 		global $pagenow;
 		$screen = get_current_screen();
+		write_log( print_r( $screen, true ) );
 
-		if ( 'admin.php' === $pagenow and 'woonet-woocommerce' === $screen->parent_base ) {
+		if ( 'admin.php' === $pagenow and 'woonet-woocommerce' === $screen->parent_base and 1 === 2 ) {
 			echo '<div class="notice notice-success">';
 				echo '<p>Tot nu toe werd de kortingsbon FAIRCAPS21 al '.get_site_option( 'free_capsules_given_2021', 0 ).' keer gebruikt!</p>';
 				
