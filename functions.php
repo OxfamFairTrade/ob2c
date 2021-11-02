@@ -6340,6 +6340,13 @@
 	add_action( 'update_option_oxfam_b2c_delivery_cost', 'update_shipping_methods_b2c_delivery_cost', 10, 3 );
 
 	function update_shipping_methods_b2c_delivery_cost( $old_cost, $new_cost, $option ) {
+		// Bij Regio Mechelen zal de leverkost in de toekomst wellicht afhangen van de postcode
+		// Ook als het veld verborgen is, wordt de waarde bijgewerkt!
+		// Custom instellingen niet overschrijven met één universeel bedrag
+		// if ( in_array( get_current_blog_id(), array( 40 ) ) ) {
+		// 	return;
+		// }
+
 		$updated = oxfam_change_home_delivery_settings( $new_cost, 'cost' );
 
 		if ( $updated ) {
@@ -7671,7 +7678,12 @@
 				echo '</div>';
 				if ( get_current_blog_id() !== 1 ) {
 					echo '<div class="notice notice-info">';
-						echo '<p>Tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. Creditering gebeurt via de rollijst op Copain.</p>';
+						echo '<p>Tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. Creditering gebeurt via de rollijst op Copain.';
+						$caps = get_number_of_times_coupon_was_used('faircaps21');
+						if ( $caps > 0 ) {
+							echo ' Daarnaast werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt sinds 25 oktober. Creditering van deze online actie gebeurt automatisch op 1 december (tenzij de actie verlengd wordt).';
+						}
+						echo '</p>';
 					echo '</div>';
 				}
 				echo '<div class="notice notice-info">';
@@ -7736,15 +7748,15 @@
 		if ( 'admin.php' === $pagenow and 'toplevel_page_woonet-woocommerce-network' === $screen->base ) {
 			echo '<div class="notice notice-success">';
 				echo '<p>Tot nu toe werd de kortingsbon FAIRCAPS21 al '.get_site_option( 'free_capsules_given_2021', 0 ).' keer gebruikt!</p>';
-				
 				echo '<ul>';
+
+				$orders = array();
 				$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
 				foreach ( $sites as $site ) {
 					switch_to_blog( $site->blog_id );
-					foreach ( get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-14', true ) as $wc_order ) {
-						echo '<li>';
-						echo '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
-						
+					foreach ( get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-15', true ) as $wc_order ) {
+						$output = '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
+					
 						$new_args = array(
 							'type' => 'shop_order',
 							'billing_email' => $wc_order->get_billing_email(),
@@ -7763,13 +7775,19 @@
 							} else {
 								$addendum = '';
 							}
-							echo ' <span style="font-weight: bold; color: green;">=> new online customer'.$addendum.'!</span>';
+							$output .= ' <span style="font-weight: bold; color: green;">=> new online customer'.$addendum.'!</span>';
 						}
 
-						echo '</li>';
+						$orders[ $wc_order->get_order_number() ] = $output;
 					}
 					restore_current_blog();
 				}
+
+				ksort( $orders );
+				foreach( $orders as $string ) {
+					echo '<li>'.$string.'</li>';
+				}
+
 				echo '</ul>';
 			echo '</div>';
 		}
@@ -7780,7 +7798,7 @@
 		$total_count = 0;
 		$orders = array();
 
-		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-processing', 'wc-completed' ) ) . "') AND woi.order_item_type = 'coupon' AND woi.order_item_name = '" . $coupon_code . "' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
+		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-processing', 'wc-claimed', 'wc-completed' ) ) . "') AND woi.order_item_type = 'coupon' AND woi.order_item_name = '" . $coupon_code . "' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
 		$rows = $wpdb->get_results( $query );
 
 		foreach ( $rows as $key => $row ) {
