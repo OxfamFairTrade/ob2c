@@ -7674,14 +7674,14 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet niet dat ook de chocoladeharten en -figuurtjes opnieuw leverbaar zijn.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 				echo '</div>';
 				if ( get_current_blog_id() !== 1 ) {
 					echo '<div class="notice notice-info">';
 						echo '<p>Tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. Creditering gebeurt via de rollijst op Copain.';
 						$caps = get_number_of_times_coupon_was_used('faircaps21');
 						if ( $caps > 0 ) {
-							echo ' Daarnaast werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt sinds 25 oktober. Creditering van deze online actie gebeurt automatisch op 1 december (tenzij de actie verlengd wordt).';
+							echo ' Daarnaast werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt sinds 25 oktober. Creditering van die online actie gebeurt automatisch op 1 december (tenzij de actie verlengd wordt).';
 						}
 						echo '</p>';
 					echo '</div>';
