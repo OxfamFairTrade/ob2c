@@ -875,7 +875,8 @@
 			return $apply_quantity;
 		}
 
-		if ( stristr( $coupon->get_code(), 'wijnduo' ) !== false ) {
+		// Schuimwijnen hebben dezelfde prijs, dus zij mogen wel gemixt worden
+		if ( stristr( $coupon->get_code(), 'wijnduo' ) !== false and stristr( $coupon->get_code(), 'schuimwijn' ) === false ) {
 			$this_quantity = 0;
 			$other_quantity = 0;
 			$old_apply_quantity = $apply_quantity;
@@ -904,7 +905,7 @@
 						}
 
 						// We hebben beide producten gevonden en kunnen afsluiten
-						// write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
+						write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
 						break;
 					}
 				}
@@ -7655,7 +7656,7 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/voeding/2021/10/12/Promos-online--winkel-november-2021-update" target="_blank">promo\'s voor november</a> en de <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> werden op 1 november rond 19 uur geactiveerd in alle webshops.</p>';
+					echo '<p>De <a href="https://copain.oww.be/voeding/2021/10/12/Promos-online--winkel-november-2021-update" target="_blank">promo\'s voor november</a> en de <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> werden op 1 november rond 19 uur geactiveerd in alle webshops. Door een verkeerde instelling werd de korting aanvankelijk ook toegekend per 2 flessen van dezelfde soort i.p.v. een duo. Dit werd op 8 november rond 17 uur gecorrigeerd. Opgelet: bij het schuimwijnduo mogen wél 2 flessen van dezelfde soort gekocht worden!</p>';
 				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
@@ -7681,7 +7682,7 @@
 						echo '<p>Tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. Creditering gebeurt via de rollijst op Copain.';
 						$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-15' );
 						if ( $caps > 0 ) {
-							echo ' Daarnaast werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt sinds 25 oktober. Creditering van die online actie gebeurt automatisch op 1 december (tenzij de actie verlengd wordt).';
+							echo ' Daarnaast werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt sinds 25 oktober. Creditering van die online actie gebeurt automatisch op 1 december (tenzij de actie nog verlengd wordt).';
 						}
 						echo '</p>';
 					echo '</div>';
