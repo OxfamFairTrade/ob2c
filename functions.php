@@ -905,7 +905,7 @@
 						}
 
 						// We hebben beide producten gevonden en kunnen afsluiten
-						write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
+						// write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
 						break;
 					}
 				}
@@ -7173,8 +7173,28 @@
 		if ( ! is_b2b_customer() ) {
 			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
 			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
+				switch ( $product->get_sku() ) {
+					case '20413':
+						$linked_sku = '20415';
+						$search_text = 'Sensus Brut Rosé';
+						break;
+
+					case '20415':
+						$linked_sku = '20413';
+						$search_text = 'Sensus Extra Brut';
+						break;
+				}
+				
+				$promo_text = $product->get_meta('promo_text');
+				if ( isset( $linked_sku ) ) {
+					$linked_product = wc_get_product( wc_get_product_id_by_sku( $linked_sku ) );
+					if ( $linked_product !== false ) {
+						$promo_text = str_replace( $search_text, '<a href="'.$linked_product->get_url().'">'.$linked_product->get_name().'</a>', $promo_text );
+					}
+				}
+				
 				echo '<p class="promotie">';
-					echo $product->get_meta('promo_text').' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').' in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
+					echo $promo_text.' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').' in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
 				echo '</p>';
 			}
 		}
