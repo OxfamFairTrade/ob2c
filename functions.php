@@ -7189,7 +7189,7 @@
 				if ( isset( $linked_sku ) ) {
 					$linked_product = wc_get_product( wc_get_product_id_by_sku( $linked_sku ) );
 					if ( $linked_product !== false ) {
-						$promo_text = str_replace( $search_text, '<a href="'.$linked_product->get_url().'">'.$linked_product->get_name().'</a>', $promo_text );
+						$promo_text = str_replace( $search_text, '<a href="'.$linked_product->get_permalink().'">'.$linked_product->get_name().'</a>', $promo_text );
 					}
 				}
 				
