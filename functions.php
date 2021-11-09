@@ -7174,6 +7174,36 @@
 			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
 			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
 				switch ( $product->get_sku() ) {
+					case '20070':
+						$linked_sku = '20073';
+						$search_text = 'Campesino Cabernet Sauvignon Reserva';
+						break;
+
+					case '20073':
+						$linked_sku = '20070';
+						$search_text = 'VIDSECA País-Carignan-Cabernet';
+						break;
+
+					case '20074':
+						$linked_sku = '20262';
+						$search_text = 'BIO RAZA Selection Chardonnay';
+						break;
+
+					case '20262':
+						$linked_sku = '20074';
+						$search_text = 'BIO RAZA Selection Malbec / Shiraz';
+						break;
+
+					case '20212':
+						$linked_sku = '20225';
+						$search_text = 'Koopmanskloof Chenin Blanc';
+						break;
+
+					case '20225':
+						$linked_sku = '20212';
+						$search_text = 'Lautaro Sauvignon Blanc';
+						break;
+
 					case '20413':
 						$linked_sku = '20415';
 						$search_text = 'Sensus Extra Brut';
