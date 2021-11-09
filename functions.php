@@ -7176,12 +7176,12 @@
 				switch ( $product->get_sku() ) {
 					case '20413':
 						$linked_sku = '20415';
-						$search_text = 'Sensus Brut Rosé';
+						$search_text = 'Sensus Extra Brut';
 						break;
 
 					case '20415':
 						$linked_sku = '20413';
-						$search_text = 'Sensus Extra Brut';
+						$search_text = 'Sensus Brut Rosé';
 						break;
 				}
 				
