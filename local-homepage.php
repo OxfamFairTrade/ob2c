@@ -103,7 +103,7 @@
 							<div class="col-row lh-banner">
 								<div class="col-xs-12">
 									<?php
-										echo '<a href="categorie/koffie/capsules/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-algemeen.png' ).'" title="'.get_free_capsules_disclaimer().'" /></a>';
+										echo '<a href="'.get_home_url().'/categorie/koffie/capsules/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-algemeen.png' ).'" title="'.get_free_capsules_disclaimer().'" /></a>';
 									?>
 								</div>
 							</div>

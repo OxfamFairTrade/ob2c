@@ -148,7 +148,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
             <?php endif; ?>
         <?php elseif ( is_woocommerce() and $position_in_grid === 8 ) : ?>
             <li class="promo-banner horizontal">
-                <a href="categorie/koffie/capsules/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-liggend.png' ); ?>" title="<?php get_free_capsules_disclaimer(); ?>" /></a>
+                <a href="<?php echo get_home_url(); ?>/categorie/koffie/capsules/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-liggend.png' ); ?>" title="<?php get_free_capsules_disclaimer(); ?>" /></a>
             </li>
         <?php endif; ?>
     <?php endif; ?>

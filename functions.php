@@ -6,7 +6,7 @@
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
 	function get_free_capsules_disclaimer() {
-		return 'Maximum 1 gratis doosje per online klant. Actie geldig t.e.m. 14/11/2021. Beperkt tot 500 pakjes.';
+		return 'Maximum 1 gratis doosje per online klant. Actie geldig t.e.m. 30/11/2021. Beperkt tot 500 pakjes.';
 	}
 
 	// Registreer aantal gratis capsules over alle webshops heen 
@@ -7730,7 +7730,7 @@
 				if ( get_current_blog_id() !== 1 ) {
 					echo '<div class="notice notice-info">';
 						echo '<p>Tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. Creditering gebeurt via de rollijst op Copain.';
-						$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-26', '2021-11-31' );
+						$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-26', '2021-11-30' );
 						if ( $caps > 0 ) {
 							echo ' Daarnaast werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt sinds 25 oktober. Creditering van die online actie gebeurt automatisch op 1 december (tenzij de actie nog verlengd wordt).';
 						}
@@ -7805,7 +7805,7 @@
 				$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
 				foreach ( $sites as $site ) {
 					switch_to_blog( $site->blog_id );
-					foreach ( get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-26', '2021-11-31', true ) as $wc_order ) {
+					foreach ( get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-26', '2021-11-30', true ) as $wc_order ) {
 						$output = '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
 					
 						$new_args = array(
