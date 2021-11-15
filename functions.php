@@ -58,14 +58,14 @@
 
 
 
-	// Schakel afrekenen in de webshop van Houthalen uit van 18/10 t.e.m. 10/11
+	// Schakel afrekenen in de webshop van Houthalen uit van 18/10 t.e.m. 14/11
 	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
 	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
 	add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
 
 	function disable_all_payment_methods( $methods ) {
 		if ( get_current_blog_id() === 72 ) {
-			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-10' ) {
+			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-14' ) {
 				return array();
 			}
 		}
@@ -78,7 +78,7 @@
 	
 	function disable_checkout_button( $html ) {
 		if ( get_current_blog_id() === 72 ) {
-			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-10' ) {
+			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-14' ) {
 				$original_button = __( 'Place order', 'woocommerce' );
 				return str_replace( '<input type="submit"', '<input type="submit" disabled="disabled"', str_replace( $original_button, 'Bestellen tijdelijk onmogelijk', $html ) );
 			}
@@ -7706,7 +7706,7 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/voeding/2021/10/12/Promos-online--winkel-november-2021-update" target="_blank">promo\'s voor november</a> en de <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> werden op 1 november rond 19 uur geactiveerd in alle webshops. Door een verkeerde instelling werd de korting aanvankelijk ook toegekend per 2 flessen van dezelfde soort i.p.v. een duo. Dit werd op 8 november rond 17 uur gecorrigeerd. Opgelet: bij het schuimwijnduo mogen wél 2 flessen van dezelfde soort gekocht worden!</p>';
+					echo '<p>De <a href="https://copain.oww.be/voeding/2021/10/12/Promos-online--winkel-november-2021-update" target="_blank">promo\'s voor november</a> en de <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> werden op 1 november rond 19 uur geactiveerd in alle webshops. Door een verkeerde instelling werd de korting aanvankelijk ook toegekend per 2 flessen van dezelfde soort i.p.v. een duo. Dit werd op 8 november rond 17 uur gecorrigeerd, en de betrokken winkels werden gecontacteerd. Opgelet: bij het schuimwijnduo mogen wél 2 flessen van dezelfde soort gekocht worden!</p>';
 				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
@@ -7730,7 +7730,7 @@
 				if ( get_current_blog_id() !== 1 ) {
 					echo '<div class="notice notice-info">';
 						echo '<p>Tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. Creditering gebeurt via de rollijst op Copain.';
-						$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-15' );
+						$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-26', '2021-11-31' );
 						if ( $caps > 0 ) {
 							echo ' Daarnaast werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt sinds 25 oktober. Creditering van die online actie gebeurt automatisch op 1 december (tenzij de actie nog verlengd wordt).';
 						}
@@ -7805,7 +7805,7 @@
 				$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
 				foreach ( $sites as $site ) {
 					switch_to_blog( $site->blog_id );
-					foreach ( get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-15', true ) as $wc_order ) {
+					foreach ( get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-26', '2021-11-31', true ) as $wc_order ) {
 						$output = '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
 					
 						$new_args = array(
@@ -8910,11 +8910,11 @@
 		$new_array = array();
 		foreach ( $array as $key => $value ) {
 			if ( $key == $key1 ) {
-				$new_array[$key2] = $array[$key2];
+				$new_array[ $key2 ] = $array[ $key2 ];
 			} elseif ( $key == $key2 ) {
-				$new_array[$key1] = $array[$key1];
+				$new_array[ $key1 ] = $array[ $key1 ];
 			} else {
-				$new_array[$key] = $value;
+				$new_array[ $key ] = $value;
 			}
 		}
 		return $new_array;
@@ -8923,10 +8923,10 @@
 	// Creëer een random sequentie (niet gebruiken voor echte beveiliging)
 	function generate_pseudo_random_string( $length = 10 ) {
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		$characters_length = strlen($characters);
+		$characters_length = strlen( $characters );
 		$random_string = '';
 		for ( $i = 0; $i < $length; $i++ ) {
-			$random_string .= $characters[rand( 0, $characters_length - 1 )];
+			$random_string .= $characters[ rand( 0, $characters_length - 1 ) ];
 		}
 		return $random_string;
 	}
@@ -8934,8 +8934,8 @@
 	// Overzichtelijkere debugfunctie definiëren
 	function var_dump_pre( $variable ) {
 		echo '<pre>';
-		var_dump($variable);
+		var_dump( $variable );
 		echo '</pre>';
-		return NULL;
+		return;
 	}
 ?>

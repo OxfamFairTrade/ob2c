@@ -93,7 +93,9 @@
 					}
 
 					// Gratis koffiecapsules 2021
-					if ( date_i18n('Y-m-d') < '2021-11-15' ) {
+					// Methode geeft steeds een object terug, ook als de code eigenlijk niet bestaat!
+					$faircaps21 = new WC_Coupon('faircaps21');
+					if ( $faircaps21->is_valid() ) {
 						$espresso = wc_get_product( wc_get_product_id_by_sku('22724') );
 						$lungo = wc_get_product( wc_get_product_id_by_sku('22725') );
 						if ( ( $espresso !== false and $espresso->get_stock_status() === 'instock' ) or ( $lungo !== false and $lungo->get_stock_status() === 'instock' ) ) {

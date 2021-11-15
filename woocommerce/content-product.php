@@ -135,7 +135,8 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     </div>
 </li>
 
-<?php if ( wc_get_loop_prop('current_page') === 1 and date_i18n('Y-m-d') < '2021-11-15' ) : ?>
+<?php $faircaps21 = new WC_Coupon('faircaps21'); ?>
+<?php if ( wc_get_loop_prop('current_page') === 1 and $faircaps21->is_valid() ) : ?>
     <?php $espresso = wc_get_product( wc_get_product_id_by_sku('22724') ); ?>
     <?php $lungo = wc_get_product( wc_get_product_id_by_sku('22725') ); ?>
     <?php if ( ( $espresso !== false and $espresso->get_stock_status() === 'instock' ) or ( $lungo !== false and $lungo->get_stock_status() === 'instock' ) ) : ?>
