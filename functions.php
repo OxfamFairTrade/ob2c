@@ -7732,7 +7732,7 @@
 						echo '<p>Tijdens de Week van de Fair Trade werden in deze webshop '.get_number_of_times_coupon_was_used('202110-koffie').' koffiekortingen toegepast en '.get_number_of_times_coupon_was_used('202110-wvdft').' gratis tabletten chocolade uitgedeeld. Creditering gebeurt via de rollijst op Copain.';
 						$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );
 						if ( $caps > 0 ) {
-							echo ' Daarnaast werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt sinds 25 oktober. <b>Deze online actie wordt verlegnd tot en met 26 november 2021.</b> Creditering gebeurt automatisch op 1 december.';
+							echo ' Daarnaast werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt sinds 25 oktober. <b>Deze online actie wordt verlengd tot en met 26 november 2021.</b> Creditering gebeurt automatisch op 1 december.';
 						}
 						echo '</p>';
 					echo '</div>';
