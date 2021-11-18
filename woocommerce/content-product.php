@@ -159,7 +159,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 
     <?php $wijnduo = new WC_Coupon('wijnduo-schuimwijn'); ?>
     <!-- Geen is_valid() gebruiken, zal pas true retourneren als de wijnen al effectief in het winkelmandje zitten! -->
-    <?php if ( date_i18n() < $wijnduo->get_date_expires()->date_i18n() ) : ?>
+    <?php if ( date_i18n('Y-m-d') < $wijnduo->get_date_expires()->date_i18n('Y-m-d') ) : ?>
         <?php if ( is_product_category( array( 'wijn', 'rood', 'wit', 'schuimwijn' ) ) ) : ?>
             <?php if ( $position_in_grid === 3 ) : ?>
                 <li class="promo-banner vertical">
