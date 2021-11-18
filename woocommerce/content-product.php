@@ -137,7 +137,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 
 <?php if ( wc_get_loop_prop('current_page') === 1 ) : ?>
     <?php $faircaps21 = new WC_Coupon('faircaps21'); ?>
-    <?php $faircaps21_shown = false; ?>
+    <?php $horizontal_shown = false; ?>
     <?php if ( $faircaps21->is_valid() ) : ?>
         <?php $espresso = wc_get_product( wc_get_product_id_by_sku('22724') ); ?>
         <?php $lungo = wc_get_product( wc_get_product_id_by_sku('22725') ); ?>
@@ -147,12 +147,14 @@ if ( ! $nm_theme_options['product_action_link'] ) {
                     <li class="promo-banner vertical">
                         <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-staand.png' ); ?>" title="<?php get_free_capsules_disclaimer(); ?>" />
                     </li>
+                    <?php $position_in_grid++; ?>
                 <?php endif; ?>
-            <?php elseif ( is_woocommerce() and $position_in_grid === 8 ) : ?>
-                <?php $faircaps21_shown = true; ?>
+            <?php elseif ( ! $horizontal_shown and is_woocommerce() and $position_in_grid === 8 ) : ?>
                 <li class="promo-banner horizontal">
                     <a href="<?php echo get_home_url(); ?>/categorie/koffie/capsules/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-liggend.png' ); ?>" title="<?php get_free_capsules_disclaimer(); ?>" /></a>
                 </li>
+                <?php $horizontal_shown = true; ?>
+                <?php $position_in_grid++; ?>
             <?php endif; ?>
         <?php endif; ?>
     <?php endif; ?>
@@ -165,31 +167,14 @@ if ( ! $nm_theme_options['product_action_link'] ) {
                 <li class="promo-banner vertical">
                     <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2021-staand.jpg' ); ?>" title="<?php get_wijnduos_disclaimer(); ?>" />
                 </li>
+                <?php $position_in_grid++; ?>
             <?php endif; ?>
-        <?php elseif ( ! $faircaps21_shown and is_woocommerce() and $position_in_grid === 8 ) : ?>
+        <?php elseif ( ! $horizontal_shown and is_woocommerce() and $position_in_grid === 8 ) : ?>
             <li class="promo-banner horizontal">
                 <a href="<?php echo get_home_url(); ?>/tag/promotie/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2021-liggend.jpg' ); ?>" title="<?php get_wijnduos_disclaimer(); ?>" /></a>
             </li>
+            <?php $position_in_grid++; ?>
         <?php endif; ?>
-    <?php endif; ?>
-<?php elseif ( 1 === 2 ) : ?>
-    <!-- Categoriespecifieke blokjes voorlopig uitschakelen, ACF-velden hier niet beschikbaar -->
-    <?php $product_cat = get_queried_object(); ?>
-    <?php if ( get_field( 'promo_banner_image', $product_cat ) ) : ?>
-        <div class="col-md-8">
-            <div class="promo-banner-block">
-                <?php echo wp_get_attachment_image( get_field( 'promo_banner_image', $product_cat ), 'large' ); ?>
-                <div class="cap">
-                    <h2 class="h1"><?php the_field( 'promo_banner_title', $product_cat ); ?></h2>
-                    <?php
-                        $button = get_field( 'promo_banner_button', $product_cat );
-                        if ( $button ) {
-                            echo '<a href="'.$button['url'].'" target="'.$button['target'].'" class="btn">'.$button['title'].'</a>';
-                        }
-                    ?>
-                </div>
-            </div>
-        </div>
     <?php endif; ?>
 <?php endif; ?>
 
