@@ -158,9 +158,10 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     <?php endif; ?>
 
     <?php $wijnduo = new WC_Coupon('wijnduo-schuimwijn'); ?>
-    <?php if ( $wijnduo->is_valid() ) : ?>
+    <!-- Geen is_valid() gebruiken, zal pas true retourneren als de wijnen al effectief in het winkelmandje zitten! -->
+    <?php if ( date_i18n() < $wijnduo->get_date_expires()->date_i18n() ) : ?>
         <?php if ( is_product_category( array( 'wijn', 'rood', 'wit', 'schuimwijn' ) ) ) : ?>
-            <?php if ( $position_in_grid === 2 ) : ?>
+            <?php if ( $position_in_grid === 3 ) : ?>
                 <li class="promo-banner vertical">
                     <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2021-staand.jpg' ); ?>" title="<?php get_wijnduos_disclaimer(); ?>" />
                 </li>

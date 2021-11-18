@@ -70,44 +70,53 @@
 					}
 				?>
 				<?php
-					// Wijnduo's 2020 UITGESCHAKELD
+					// Wijnduo's 2021
 					$args = array(
 						'stock_status' => 'instock',
 						'tag' => array('promotie'),
 					);
 					$banner_products = wc_get_products( $args );
 
-					if ( count( $banner_products ) > 0 and 1 === 2 ) {
+					if ( count( $banner_products ) > 0 ) {
 						?>
 						<div class="col-row lh-banner">
 							<div class="col-xs-12">
-								<?php		
+								<?php
+									$image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2021-webshop.jpg' ).'" title="'.get_wijnduos_disclaimer().'" />';
 									$term_link = get_term_link( 'promotie', 'product_tag' );
 									if ( ! is_wp_error( $term_link ) ) {
-				 						echo '<a href="'.esc_url( $term_link ).'#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2020-webshop.png' ).'" /></a>';
+				 						echo '<a href="'.esc_url( $term_link ).'#nm-shop-products">'.$image.'</a>';
+									} else {
+										echo $image;
 									}
 								?>
 							</div>
 						</div>
 						<?php
-					}
-
-					// Gratis koffiecapsules 2021
-					// Methode geeft steeds een object terug, ook als de code eigenlijk niet bestaat!
-					$faircaps21 = new WC_Coupon('faircaps21');
-					if ( $faircaps21->is_valid() ) {
-						$espresso = wc_get_product( wc_get_product_id_by_sku('22724') );
-						$lungo = wc_get_product( wc_get_product_id_by_sku('22725') );
-						if ( ( $espresso !== false and $espresso->get_stock_status() === 'instock' ) or ( $lungo !== false and $lungo->get_stock_status() === 'instock' ) ) {
-	    					?>
-							<div class="col-row lh-banner">
-								<div class="col-xs-12">
-									<?php
-										echo '<a href="'.get_home_url().'/categorie/koffie/capsules/#nm-shop-products"><img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-algemeen.png' ).'" title="'.get_free_capsules_disclaimer().'" /></a>';
-									?>
+					} else {
+						// Gratis koffiecapsules 2021
+						$faircaps21 = new WC_Coupon('faircaps21');
+						// Constructor geeft steeds een object terug, ook als de code eigenlijk niet bestaat!
+						if ( $faircaps21->is_valid() ) {
+							$espresso = wc_get_product( wc_get_product_id_by_sku('22724') );
+							$lungo = wc_get_product( wc_get_product_id_by_sku('22725') );
+							if ( ( $espresso !== false and $espresso->get_stock_status() === 'instock' ) or ( $lungo !== false and $lungo->get_stock_status() === 'instock' ) ) {
+							?>
+								<div class="col-row lh-banner">
+									<div class="col-xs-12">
+										<?php
+											$image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-algemeen.png' ).'" title="'.get_free_capsules_disclaimer().'" />';
+											$term_link = get_term_link( 'capsules', 'product_cat' );
+											if ( ! is_wp_error( $term_link ) ) {
+												echo '<a href="'.esc_url( $term_link ).'#nm-shop-products">'.$image.'</a>';
+											} else {
+												echo $image;
+											}
+										?>
+									</div>
 								</div>
-							</div>
-							<?php
+								<?php
+							}
 						}
 					}
 
