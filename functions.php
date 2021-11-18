@@ -9,6 +9,10 @@
 		return 'Maximum 1 gratis doosje per online klant. Actie geldig t.e.m. 26/11/2021. Beperkt tot 500 pakjes.';
 	}
 
+	function get_wijnduos_disclaimer() {
+		return 'Voeg beide flessen toe aan je winkelmandje om de promotie te activeren (of koop het speciale duo-artikel). Actie geldig van 01/11/2021 t.e.m. 31/12/2021.';
+	}
+
 	// Registreer aantal gratis capsules over alle webshops heen 
 	add_filter( 'woocommerce_coupon_get_usage_count', 'get_sitewide_coupon_usage', 10, 2 );
 	add_action( 'woocommerce_increase_coupon_usage_count', 'increase_coupon_usage_count_sitewide', 10, 3 );
@@ -7799,7 +7803,7 @@
 		if ( 'admin.php' === $pagenow and 'toplevel_page_woonet-woocommerce-network' === $screen->base ) {
 			echo '<div class="notice notice-success">';
 				echo '<p>Tot nu toe werd de kortingsbon FAIRCAPS21 al '.get_site_option( 'free_capsules_given_2021', 0 ).' keer gebruikt!</p>';
-				echo '<ul>';
+				echo '<ul style="margin-left: 2em; column-count: 2;">';
 
 				$orders = array();
 				$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
