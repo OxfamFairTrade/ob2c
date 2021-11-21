@@ -1,5 +1,5 @@
+*htaccess
+*.DS_Store
 *.codekit3
-*.htaccess
+*.nova
 wp-content/
-*/config.php
-htaccess
