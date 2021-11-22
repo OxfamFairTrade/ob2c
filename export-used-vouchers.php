@@ -130,6 +130,10 @@
 						$blog_path = str_replace( '/', '', $current_blog->path );
 					}
 
+					if ( strlen( $blog_path ) < 1 ) {
+						$warnings[ $row->order ] = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> kan niet toegekend worden aan een winkel, <span style="color: red">dit is problematisch</span>';
+					}
+
 					if ( ! array_key_exists( $blog_path, $repartition ) ) {
 						$repartition[ $blog_path ] = 1;
 					} else {
