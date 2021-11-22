@@ -960,54 +960,52 @@
 	add_action( 'woocommerce_before_shop_loop', 'add_custom_dropdown_filters_per_category' );
 
 	function add_custom_dropdown_filters_per_category() {
+		// @toDo: Attributen komen niet consequent door op subsites, check import
 		if ( is_main_site() ) {
 			echo '<div class="small-container"><div class="row">';
-				if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) {
+				// if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) {
+				// 	echo '<div class="col-md-3 supplementary-filter">';
+				// 		$args = array(
+				// 			'display_type' => 'dropdown',
+				// 			'title' => 'Brandgraad',
+				// 			'attribute' => 'roast',
+				// 		);
+				// 		the_widget( 'WC_Widget_Layered_Nav', $args );
+				// 	echo '</div>';
+				// 	echo '<div class="col-md-3 supplementary-filter">';
+				// 		$args['title'] = 'Smaakintensiteit';
+				// 		$args['attribute'] = 'intensity';
+				// 		the_widget( 'WC_Widget_Layered_Nav', $args );
+				// 	echo '</div>';
+				// }
+
+				if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
 					echo '<div class="col-md-3 supplementary-filter">';
 						$args = array(
 							'display_type' => 'dropdown',
-							'title' => 'Brandgraad',
-							'attribute' => 'roast',
+							'title' => 'Druivenrassen',
+							'attribute' => 'grapes',
 						);
 						the_widget( 'WC_Widget_Layered_Nav', $args );
 					echo '</div>';
 					echo '<div class="col-md-3 supplementary-filter">';
-						$args['title'] = 'Smaakintensiteit';
-						$args['attribute'] = 'intensity';
+						$args['title'] = 'Gerechten';
+						$args['attribute'] = 'recipes';
+						the_widget( 'WC_Widget_Layered_Nav', $args );
+					echo '</div>';
+					echo '<div class="col-md-3 supplementary-filter">';
+						$args['title'] = 'Smaken';
+						$args['attribute'] = 'tastes';
 						the_widget( 'WC_Widget_Layered_Nav', $args );
 					echo '</div>';
 				}
+
+				// @toDo: Lay-out tweaken en inschakelen
+				// echo '<div class="col-md-3 supplementary-filter">';
+				// 	woocommerce_catalog_ordering();
+				// echo '</div>';
 			echo '</div></div>';
 		}
-
-		// @toDO: Eigenschappen komen niet door op subsites, check import
-		echo '<div class="small-container"><div class="row">';
-			if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
-				echo '<div class="col-md-3 supplementary-filter">';
-					$args = array(
-						'display_type' => 'dropdown',
-						'title' => 'Druivenrassen',
-						'attribute' => 'grapes',
-					);
-					the_widget( 'WC_Widget_Layered_Nav', $args );
-				echo '</div>';
-				echo '<div class="col-md-3 supplementary-filter">';
-					$args['title'] = 'Gerechten';
-					$args['attribute'] = 'recipes';
-					the_widget( 'WC_Widget_Layered_Nav', $args );
-				echo '</div>';
-				echo '<div class="col-md-3 supplementary-filter">';
-					$args['title'] = 'Smaken';
-					$args['attribute'] = 'tastes';
-					the_widget( 'WC_Widget_Layered_Nav', $args );
-				echo '</div>';
-			}
-
-			// @toDo: Lay-out tweaken en inschakelen
-			// echo '<div class="col-md-3 supplementary-filter">';
-			// 	woocommerce_catalog_ordering();
-			// echo '</div>';
-		echo '</div></div>';
 	}
 
 	// Verberg categorie 'Geschenkverpakkingen' in widgets
@@ -1039,6 +1037,14 @@
 
 	function tweak_layered_nav_any_labels( $label, $raw_label, $taxonomy ) {
 		switch ( $taxonomy ) {
+			case 'pa_roast':
+				$label = '(selecteer een brandgraad)';
+				break;
+
+			case 'pa_intensity':
+				$label = '(selecteer een intensiteit)';
+				break;
+
 			case 'pa_recipes':
 				$label = '(selecteer een gerecht)';
 				break;
