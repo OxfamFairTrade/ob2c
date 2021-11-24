@@ -6,9 +6,9 @@
 	<?php
 		// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
 		require_once __DIR__ . '/../../../wp-load.php';
-		
+
 		// Bied zowel ondersteuning voor wget als php cron jobs!
-		if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'import_key='.IMPORT_KEY ) ) {
+		if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'RUN_FROM_CRON' ) ) {
 			// Vraag alle huidige winkels in de OWW-site op
 			$oww_stores = get_external_wpsl_stores();
 
@@ -25,7 +25,7 @@
 			);
 
 			$trashers = new WP_Query( $all_store_args );
-		
+
 			if ( $trashers->have_posts() ) {
 				while ( $trashers->have_posts() ) {
 					$trashers->the_post();
@@ -53,7 +53,7 @@
 						$txt = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 						// Icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin
 						$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
-						
+
 						foreach ( $locations as $shop_post_id => $shop_name ) {
 							// Want get_shop_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
 							if ( $shop_post_id > 0 ) {
@@ -81,7 +81,7 @@
 						fclose( $local_file );
 					}
 				}
-					
+
 				restore_current_blog();
 			}
 
@@ -97,7 +97,7 @@
 					'meta_value' => $oww_store_data['id'],
 				);
 				$wpsl_stores = new WP_Query( $post_args );
-				
+
 				if ( $wpsl_stores->have_posts() ) {
 					$wpsl_stores->the_post();
 					$wpsl_store_id = get_the_ID();
@@ -108,7 +108,7 @@
 				}
 
 				$ll = explode( ',', $oww_store_data['location']['ll'] );
-				
+
 				if ( array_key_exists( $oww_store_data['id'], $site_ids_vs_blog_ids ) ) {
 					// Dit moét uit de lijst met sites komen (data in OWW-site kan vervuild zijn met andere webshops!)
 					$webshop_url = $site_ids_vs_blog_ids[ $oww_store_data['id'] ]['blog_url'];
@@ -119,7 +119,7 @@
 					$webshop_blog_id = '';
 					$home_delivery = false;
 				}
-				
+
 				$store_args = array(
 					'ID' =>	$wpsl_store_id,
 					'post_title' => $oww_store_data['title']['rendered'],

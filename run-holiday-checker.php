@@ -6,9 +6,9 @@
 	<?php
 		// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
 		require_once __DIR__ . '/../../../wp-load.php';
-		
+
 		// Bied zowel ondersteuning voor wget als php cron jobs!
-		if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'import_key='.IMPORT_KEY ) ) {
+		if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'RUN_FROM_CRON' ) ) {
 			// Sluit hoofdsite en gearchiveerde webshops uit
 			$sites = get_sites( array( 'site__not_in' => array(1), 'public' => 1, ) );
 
