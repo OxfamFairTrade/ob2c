@@ -7712,7 +7712,7 @@
 			remove_all_actions('admin_notices');
 		}
 		add_action( 'admin_notices', 'oxfam_admin_notices' );
-		add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
+		// add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
 	}
 
 	function oxfam_admin_notices() {
@@ -7735,7 +7735,7 @@
 			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/voeding/2021/10/12/Promos-online--winkel-november-2021-update" target="_blank">promo\'s voor november</a> en de <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> werden op 1 november rond 19 uur geactiveerd in alle webshops. Door een verkeerde instelling werd de korting aanvankelijk ook toegekend per 2 flessen van dezelfde soort i.p.v. een duo. Dit werd op 8 november rond 17 uur gecorrigeerd, en de betrokken winkels werden gecontacteerd. Opgelet: bij het schuimwijnduo mogen wél 2 flessen van dezelfde soort gekocht worden!</p>';
+					echo '<p>De <a href="https://copain.oww.be/voeding/2021/10/12/Promos-online--winkel-november-2021-update" target="_blank">promo\'s voor november</a> en de <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> werden op 1 november geactiveerd in alle webshops. Opgelet: bij het schuimwijnduo mogen wél 2 flessen van dezelfde soort gekocht worden!</p>';
 				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
