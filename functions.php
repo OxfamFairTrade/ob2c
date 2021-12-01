@@ -7775,11 +7775,11 @@
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 				}
-				// 19073 Geschenkencheque 5 euro (geldig tot 31/12/2021), 19074 Geschenkencheque 15 euro (geldig tot 31/12/2021), 19075 Geschenkencheque 25 euro (geldig tot 31/12/2021), 20260 RAZA Pinot Gris, 23507 BIO Thee 4 smaken assortiment 1,8 g x 25 x 4 (THT: 15/01/2022), 23705 BIO Rooibos African Sunset 1,8 g x 20 (THT: 22/07/2021), 24643 Sint melkchocolade 2 x 35 g (THT: 16/06/2021), 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 27998 BIO Mosterdsalsa, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28327 Zeezout mix chili-peper, 28329 BIO Kurkuma
+				// 20260 RAZA Pinot Gris, 23507 BIO Thee 4 smaken assortiment 1,8 g x 25 x 4 (THT: 15/01/2022), 24643 Sint melkchocolade 2 x 35 g (THT: 16/06/2021), 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
 				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: . Opgelet: veel webshops bleven de oude cashewnoten X15715 op voorraad houden terwijl zowel verpakking, netto-inhoud als prijs reeds wijzigden in 2019. Gelieve over te schakelen op de nieuwe cashewnoten X15725.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-warning">';
+					echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 19073 Geschenkencheque 5 euro (geldig tot 31/12/2021), 19074 Geschenkencheque 15 euro (geldig tot 31/12/2021), 19075 Geschenkencheque 25 euro (geldig tot 31/12/2021), 23705 BIO Rooibos African Sunset 1,8 g x 20 (THT: 22/07/2021), 25218 Chocolade amandelnoten, 27998 BIO Mosterdsalsa en 28327 Zeezout mix chili-peper.</p>';
+				echo '</div>';
 				if ( does_sendcloud_delivery() ) {
 					// Boodschappen voor winkels die verzenden met SendCloud
 				}

@@ -151,7 +151,7 @@
 	}
 
 	// Subsites afschermen en verbergen op kaart
-	$oxfam_blocked_sites = array( 5, 77, 78, 79, 80, 81, 82, 83, 84, 85 );
+	$oxfam_blocked_sites = array( 5, 75, 81, 86 );
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
@@ -229,7 +229,7 @@
 		}
 		wp_reset_postdata();
 	}
-	
+
 	// Relevanssi-index opbouwen
 	relevanssi_build_index();
 
@@ -279,7 +279,7 @@
 		'post_name__in' => array( '202111-rijstwafels', '202111-pesto', '202111-sesam', 'wijnduo-schuimwijn', 'wijnduo-wit', 'wijnduo-rood', 'wijnduo-wit-rood' ),
 	);
 	$all_coupons = new WP_Query( $args );
-	
+
 	if ( $all_coupons->have_posts() ) {
 		while ( $all_coupons->have_posts() ) {
 			$all_coupons->the_post();
@@ -373,7 +373,7 @@
 	$new_photo_id = oxfam_get_attachment_id_by_file_name( $sku );
 	if ( $product_id and $new_photo_id ) {
 		$product = wc_get_product( $product_id );
-		
+
 		// Update de mapping tussen globale en lokale foto
 		switch_to_blog(1);
 		// NA IMPORT BEVAT DE TITEL OP HET HOOFDNIVEAU DE OMSCHRIJVING VAN HET PRODUCT, DUS NIET OPZOEKEN VIA TITEL
@@ -381,15 +381,15 @@
 		restore_current_blog();
 		$new_value = array( $new_global_photo_id => $new_photo_id );
 		update_post_meta( $product_id, '_woonet_images_mapping', $new_value );
-		
+
 		// Koppel nieuw packshot aan product
 		$product->set_image_id( $new_photo_id );
 		$product->save();
-		
+
 		// Stel de uploadlocatie van de nieuwe afbeelding in
 		wp_update_post(
 			array(
-				'ID' => $new_photo_id, 
+				'ID' => $new_photo_id,
 				'post_parent' => $product_id,
 			)
 		);
@@ -491,12 +491,12 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		'woocommerce_customer_reset_password_settings',
 		'woocommerce_customer_note_settings',
 	);
-	
+
 	$chosen_key = 'woocommerce_customer_processing_order_settings';
 	switch_to_blog(1);
 	$mail_settings = get_option( $chosen_key );
 	restore_current_blog();
-	
+
 	if ( is_array( $mail_settings ) ) {
 		// $mail_settings['enabled'] = 'yes';
 		// Let op in subsites, altijd overschrijven in adminmails!
@@ -505,7 +505,7 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		// $mail_settings['heading'] = 'Hoera, een nieuwe bestelling!';
 		$mail_settings['additional_content'] = '';
 		update_option( $chosen_key, $mail_settings );
-		
+
 		$local_settings = get_option( $chosen_key );
 		// Voor klantenmails bestaat deze waarde niet
 		write_log( "BLOG ".get_current_blog_id().": ".$local_settings['recipient'] );
