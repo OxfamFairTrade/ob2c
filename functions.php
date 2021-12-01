@@ -963,21 +963,21 @@
 		// @toDo: Attributen komen niet consequent door op subsites, check import
 		if ( is_main_site() ) {
 			echo '<div class="small-container"><div class="row">';
-				// if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) {
-				// 	echo '<div class="col-md-3 supplementary-filter">';
-				// 		$args = array(
-				// 			'display_type' => 'dropdown',
-				// 			'title' => 'Brandgraad',
-				// 			'attribute' => 'roast',
-				// 		);
-				// 		the_widget( 'WC_Widget_Layered_Nav', $args );
-				// 	echo '</div>';
-				// 	echo '<div class="col-md-3 supplementary-filter">';
-				// 		$args['title'] = 'Smaakintensiteit';
-				// 		$args['attribute'] = 'intensity';
-				// 		the_widget( 'WC_Widget_Layered_Nav', $args );
-				// 	echo '</div>';
-				// }
+				if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) {
+					echo '<div class="col-md-3 supplementary-filter">';
+						$args = array(
+							'display_type' => 'dropdown',
+							'title' => 'Brandgraad',
+							'attribute' => 'roast',
+						);
+						the_widget( 'WC_Widget_Layered_Nav', $args );
+					echo '</div>';
+					echo '<div class="col-md-3 supplementary-filter">';
+						$args['title'] = 'Smaakintensiteit';
+						$args['attribute'] = 'intensity';
+						the_widget( 'WC_Widget_Layered_Nav', $args );
+					echo '</div>';
+				}
 
 				if ( is_product_category( array( 'wijn', 'rood', 'rose', 'wit', 'schuimwijn', 'dessertwijn' ) ) ) {
 					echo '<div class="col-md-3 supplementary-filter">';
