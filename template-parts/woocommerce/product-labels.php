@@ -1,4 +1,4 @@
-<?php 
+<?php
 	global $product;
 	$labels = array();
 
@@ -8,17 +8,17 @@
 
 		// Zoek vervolgens de details van de actie op
 		// Handmatig beheerde lijst, want simpeler dan afleiden uit de kortingsregels!
-		
-		$fifty_percent_off_second_products = array( 27151, 27995 );
+
+		$fifty_percent_off_second_products = array();
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}
-		
-		$one_plus_one_products = array();
+
+		$one_plus_one_products = array( 22724, 22725, 25618 );
 		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
-		
+
 		$two_plus_two_products = array();
 		if ( in_array( $product->get_sku(), $two_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 2+2 gratis';
@@ -28,13 +28,13 @@
 		if ( in_array( $product->get_sku(), $three_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 3+2 gratis';
 		}
-		
+
 		$fifty_percent_off_products = array();
 		if ( in_array( $product->get_sku(), $fifty_percent_off_products ) ) {
 			$labels['promotion'] = 'Promo -50%';
 		}
 
-		$two_plus_one_products = array( 25317 );
+		$two_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
@@ -53,7 +53,7 @@
 		if ( in_array( $product->get_sku(), $four_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 4+2 gratis';
 		}
-		
+
 		$five_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $five_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 5+1 gratis';
@@ -78,7 +78,7 @@
 			$labels['pickup-only'] = 'Afhaling';
 		}
 	}
-	
+
 	if ( count( $labels ) > 0 ) {
 		echo '<ul class="info-labels">';
 		foreach ( $labels as $class => $label ) {
