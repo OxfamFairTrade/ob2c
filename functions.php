@@ -2829,7 +2829,7 @@
 		);
 
 		// Wordt enkel doorlopen bij niet-admins!
-		// write_log( print_r( $args, true ) );
+		write_log( print_r( $args, true ) );
 		return $args;
 	}
 
@@ -7761,14 +7761,6 @@
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2021/11/10/Promos-online--winkel-december-2021-update" target="_blank">promo\'s voor december</a> werden geactiveerd in alle webshops. Bij de koffiecapsules wordt automatisch een gratis pakje van <u>dezelfde soort</u> toegevoegd. Als de klant daar om vraagt, mag je uiteraard ook de andere smaak meegeven als gratis product (prijzen zijn identiek, dus combineren mag). De <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> blijven uiteraard ook nog actief.</p>';
 				echo '</div>';
-				if ( get_current_blog_id() !== 1 ) {
-					$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );
-					if ( $caps > 0 ) {
-						echo '<div class="notice notice-info">';
-							echo '<p>Van 25/10 t.e.m. 26/11 werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt. Creditering gebeurde automatisch op 1 december.</p>';
-						echo '</div>';
-					}
-				}
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
 					echo '<p>De nieuwe geschenkencheques, agenda\'s, kalenders en OPU-kaartjes werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
@@ -7791,6 +7783,14 @@
 				echo '<div class="notice notice-info">';
 					echo '<p>Op 1 oktober ging de actie i.s.m. Cera van start. Er worden nog steeds veel digitale geschenkencheques ingeruild. <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">Download de handleiding</a> voor alle praktische details.</p>';
 				echo '</div>';
+				if ( get_current_blog_id() !== 1 ) {
+					$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );
+					if ( $caps > 0 ) {
+						echo '<div class="notice notice-info">';
+							echo '<p>Van 25/10 t.e.m. 26/11 werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt. Creditering gebeurde automatisch op 1 december.</p>';
+						echo '</div>';
+					}
+				}
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
