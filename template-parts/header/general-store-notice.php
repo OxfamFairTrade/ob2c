@@ -7,21 +7,9 @@
 		$html = get_option('oxfam_sitewide_banner_top');
 		$single_message = true;
 
-	} elseif ( is_main_site() or does_home_delivery() ) {
+	} else {
 
-		// Neem netwerkinstelling als defaultwaarde
-		$min_amount = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
-
-		if ( $min_amount > 0 ) {
-			$html = 'Gratis verzending vanaf '.$min_amount.' euro';
-		} else {
-			$html = 'Gratis thuislevering';
-		}
-
-	} elseif ( ! is_main_site() and ! does_home_delivery() ) {
-
-		// Standaardboodschap voor winkels die geen thuislevering aanbieden
-		$html = 'Gratis afhaling in de winkel';
+		$html = get_default_local_store_notice();
 
 	}
 ?>

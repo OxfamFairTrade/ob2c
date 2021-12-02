@@ -5,6 +5,30 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	function get_default_local_store_notice() {
+		$html = '';
+
+		if ( is_main_site() or does_home_delivery() ) {
+
+			// Neem netwerkinstelling als defaultwaarde
+			$min_amount = get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') );
+
+			if ( $min_amount > 0 ) {
+				$html = 'Gratis verzending vanaf '.$min_amount.' euro';
+			} else {
+				$html = 'Gratis thuislevering';
+			}
+
+		} elseif ( ! is_main_site() and ! does_home_delivery() ) {
+
+			// Standaardboodschap voor winkels die geen thuislevering aanbieden
+			$html = 'Gratis afhaling in de winkel';
+
+		}
+
+		return $html;
+	}
+
 	function get_free_capsules_disclaimer() {
 		return 'Maximum 1 gratis doosje per online klant. Actie geldig t.e.m. 26/11/2021. Beperkt tot 500 pakjes.';
 	}

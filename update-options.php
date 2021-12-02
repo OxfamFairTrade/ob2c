@@ -6,7 +6,7 @@
 
 <div class="wrap">
 	<h1>Handige gegevens voor je lokale webshop</h1>
-	
+
 	<form method="post" action="options.php">
 		<table class="form-table" id="oxfam-options">
 			<tr valign="top">
@@ -27,7 +27,7 @@
 				Mollie_Autoloader::register();
 				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
 				$partner_id_customer = get_option( 'oxfam_mollie_partner_id', 2485891 );
-				
+
 				// Check of we niet op de hoofdaccount zitten, want anders fatale API-error
 				if ( $partner_id_customer != 2485891 and $partner_id_customer > 2000000 ) {
 					// Verhinder doorklikken naar echte account op demosites
@@ -61,7 +61,7 @@
 										echo strtoupper( $service )."&nbsp;&nbsp;";
 									}
 								echo "</td>";
-							echo "</tr>";	
+							echo "</tr>";
 						}
 					}
 
@@ -158,7 +158,7 @@
 							$extra_info = 'Wat wel van belang blijft, is de lijst van '.count( get_oxfam_covered_zips() ).' postcodes waar deze webshop <u>kan</u> thuisleveren: '.implode( ', ', get_oxfam_covered_zips() ).'. ';
 						} else {
 							$extra_info = '';
-						} 
+						}
 					?>
 					<label for="oxfam_zip_codes" title="">Postcodes waarvoor deze webshop hoofdverantwoordelijke is (<?php echo count( get_option( 'oxfam_zip_codes', array() ) ); ?>):<br/><small>Sinds het vervangen van de portaalpagina door een algemene winkelkiezer (oktober 2020) heeft het begrip 'hoofdverantwoordelijke' geen echte betekenis meer. Er gebeurt immers niet langer een volledig automatische doorsturing na het invullen van een postcode. <?php echo $extra_info; ?>Dit kan enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
@@ -227,7 +227,7 @@
 					<label for="oxfam_sitewide_banner_top">Afwijkende bannertekst:<br/><small>Deze tekst verschijnt in de blauwe balk bovenaan elke pagina van de webshop en vervangt de standaardtekst. Hou het bondig en spelfoutenvrij! HTML-tags zijn niet toegestaan en zullen verwijderd worden. Wis alle tekst om opnieuw de standaardbanner te tonen.</small></label>
 				</th>
 				<td class="right">
-					<textarea name="oxfam_sitewide_banner_top" rows="2" maxlength="200" class="text-input" placeholder="Gratis verzending vanaf <?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?> euro!" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_sitewide_banner_top') ); ?></textarea>
+					<textarea name="oxfam_sitewide_banner_top" rows="2" maxlength="200" class="text-input" placeholder="<?php echo get_default_local_store_notice(); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_sitewide_banner_top') ); ?></textarea>
 				</td>
 			</tr>
 			<tr valign="top">
