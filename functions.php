@@ -7741,7 +7741,7 @@
 					$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );
 					if ( $caps > 0 ) {
 						echo '<div class="notice notice-info">';
-							echo '<p>Van 25/10 t.e.m. 26/11 werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt. Creditering gebeurt automatisch op 1 december.</p>';
+							echo '<p>Van 25/10 t.e.m. 26/11 werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt. Creditering gebeurde automatisch op 1 december.</p>';
 						echo '</div>';
 					}
 				}
@@ -7773,7 +7773,7 @@
 				// 20260 RAZA Pinot Gris, 23507 BIO Thee 4 smaken assortiment 1,8 g x 25 x 4 (THT: 15/01/2022), 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
 				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
 				echo '<div class="notice notice-warning">';
-					echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 19073 Geschenkencheque 5 euro (geldig tot 31/12/2021), 19074 Geschenkencheque 15 euro (geldig tot 31/12/2021), 19075 Geschenkencheque 25 euro (geldig tot 31/12/2021), 23705 BIO Rooibos African Sunset 1,8 g x 20, 25218 Chocolade amandelnoten, 27998 BIO Mosterdsalsa en 28327 Zeezout mix chili-peper.</p>';
+					echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 19073 Geschenkencheque 5 euro (geldig tot 31/12/2021), 19074 Geschenkencheque 15 euro (geldig tot 31/12/2021), 19075 Geschenkencheque 25 euro (geldig tot 31/12/2021), 23705 BIO Rooibos African Sunset 1,8 g x 20, 24647 Schaapjes melkchocolade 3 x 25 g, 25218 Chocolade amandelnoten, 27998 BIO Mosterdsalsa en 28327 Zeezout mix chili-peper.</p>';
 				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen

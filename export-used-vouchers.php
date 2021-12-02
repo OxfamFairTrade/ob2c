@@ -22,10 +22,10 @@
 		$voucher_ids = array();
 
 		// Haal standaard data van voorbije maand op
-		// $distribution = get_credit_report_used_vouchers( $start_date, $end_date );
+		$distribution = get_credit_report_used_vouchers( $start_date, $end_date );
 
 		// Haal specifieke data van bepaalde periode op
-		$distribution = get_credit_report_used_vouchers( '2021-10-25', '2021-11-30', array( '08918' => array( 'issuer' => false, 'value' => 'faircaps21' ) ) );
+		// $distribution = get_credit_report_used_vouchers( '2021-10-25', '2021-11-30', array( '08918' => array( 'issuer' => false, 'value' => 'faircaps21' ) ) );
 
 		if ( count( $distribution ) > 0 ) {
 			// Toon resultaat op scherm
@@ -52,7 +52,7 @@
 	<p>&nbsp;</p>
 
 	<h2>Alle bestellingen met cadeaubonnen van Cera</h2>
-	<?php // get_total_revenue_by_voucher_issuer('Cera'); ?>
+	<?php get_total_revenue_by_voucher_issuer('Cera'); ?>
 
 	<?php
 		function get_credit_report_used_vouchers( $start_date = '2021-05-01', $end_date = '2021-05-31', $credit_refs = false ) {
@@ -114,7 +114,7 @@
 						}
 
 						// Door gebrek aan $voucher_ids werkt de 'Bevestig creditering'-knop niet voor deze orders, dus voeg eventueel meteen toe
-						// $order->add_order_note( 'Kortingscode '.$value.' zal op 1 december 2021 gecrediteerd worden door het NS.', 0, false );
+						// $order->add_order_note( 'Kortingsbon '.strtoupper( $value ).' werd op 1 december 2021 door het NS gecrediteerd aan OWW '.ucfirst( $blog_path ).'.', 0, false );
 						// write_log( "Crediteringsnota toegevoegd aan ".$order->get_order_number() );
 					}
 					restore_current_blog();
@@ -197,6 +197,8 @@
 			ksort( $repartition );
 
 			if ( count( $warnings ) > 0 ) {
+				// Sorteer op ordernummer
+				ksort( $warnings );
 				echo '<p>Waarschuwingen:</p><ol><li>'.implode( '</li><li>', $warnings ).'</li></ol>';
 			}
 
