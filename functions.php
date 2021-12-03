@@ -17,6 +17,25 @@
 				$html = 'Gratis verzending vanaf '.$min_amount.' euro';
 			} else {
 				$html = 'Gratis thuislevering';
+
+				// @toDo: Samenvoegen met print_delivery_zips()
+				$zips = get_oxfam_covered_zips();
+				if ( count( $zips ) <= 3 ) {
+					$cities = get_site_option('oxfam_flemish_zip_codes');
+					$list = array();
+					foreach ( $zips as $zip ) {
+						if ( array_key_exists( $zip, $cities ) ) {
+							// Enkel hoofdgemeente expliciet vermelden
+							$zip_city = explode( '/', $cities[ $zip ] );
+							$list[] = trim( $zip_city[0] );
+						}
+					}
+					$msg = '';
+					if ( count( $list ) > 1 ) {
+						$msg = ' en ' . array_pop( $list );
+					}
+					$html .= ' in ' . implode( ', ', $list ) . $msg;
+				}
 			}
 
 		} elseif ( ! is_main_site() and ! does_home_delivery() ) {
@@ -7754,10 +7773,13 @@
 					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
 				echo '</div>';
 			}
-			// echo '<div class="notice notice-warning">';
-			// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
-			// echo '</div>';
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+				echo '<div class="notice notice-warning">';
+					echo '<p>We onderzoeken momenteel een probleem waarbij enkele webshops op sommige dagen niet opduiken in de resultaten van de winkelzoeker.</p>';
+				echo '</div>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
+				// echo '</div>';
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2021/11/10/Promos-online--winkel-december-2021-update" target="_blank">promo\'s voor december</a> werden geactiveerd in alle webshops. Bij de koffiecapsules wordt automatisch een gratis pakje van <u>dezelfde soort</u> toegevoegd. Als de klant daar om vraagt, mag je uiteraard ook de andere smaak meegeven als gratis product (prijzen zijn identiek, dus combineren mag). De <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> blijven uiteraard ook nog actief.</p>';
 				echo '</div>';
@@ -7779,9 +7801,6 @@
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De craftsproducten van het oktobermagazine volgen vannacht. Met onze excuses voor de verschrikkelijke vertraging ...</p>';
-				echo '</div>';
-				echo '<div class="notice notice-info">';
-					echo '<p>Op 1 oktober ging de actie i.s.m. Cera van start. Er worden nog steeds veel digitale geschenkencheques ingeruild. <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">Download de handleiding</a> voor alle praktische details.</p>';
 				echo '</div>';
 				if ( get_current_blog_id() !== 1 ) {
 					$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );
@@ -7808,12 +7827,18 @@
 			}
 		}
 
-		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type and isset( $_REQUEST['bulk_action'] ) and ! current_user_can('create_sites') ) {
-			if ( $_REQUEST['bulk_action'] === 'marked_completed' ) {
-				$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
-				$message = sprintf( _n( '%d bestelstatus proberen te wijzigen.', '%d bestelstatussen proberen te wijzigen.', $number, 'woocommerce' ), number_format_i18n( $number ) );
-				echo '<div class="updated"><p>' . esc_html( $message ) . ' Ongeldige wijzigingen kunnen tegengehouden zijn door het systeem! Raadpleeg de logs in de rechterkolom van het orderdetail als je merkt dat de status onveranderd gebleven is.</p></div>';
+		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type ) {
+			if ( isset( $_REQUEST['bulk_action'] ) and ! current_user_can('create_sites') ) {
+				if ( $_REQUEST['bulk_action'] === 'marked_completed' ) {
+					$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
+					$message = sprintf( _n( '%d bestelstatus proberen te wijzigen.', '%d bestelstatussen proberen te wijzigen.', $number, 'woocommerce' ), number_format_i18n( $number ) );
+					echo '<div class="updated"><p>' . esc_html( $message ) . ' Ongeldige wijzigingen kunnen tegengehouden zijn door het systeem! Raadpleeg de logs in de rechterkolom van het orderdetail als je merkt dat de status onveranderd gebleven is.</p></div>';
+				}
 			}
+
+			echo '<div class="notice notice-info">';
+				echo '<p>Op 1 oktober ging de actie i.s.m. Cera van start. Er worden nog steeds veel digitale geschenkencheques ingeruild. <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">Download de handleiding</a> voor alle praktische details.</p>';
+			echo '</div>';
 		}
 
 		if ( 'woocommerce_page_wc-reports' === $screen->base and ( empty( $_GET['tab'] ) or $_GET['tab'] === 'orders' ) ) {
@@ -8323,19 +8348,19 @@
 	}
 
 	function print_delivery_zips() {
-		$msg = "";
+		$msg = '';
 		if ( does_home_delivery() ) {
-			$cities = get_site_option( 'oxfam_flemish_zip_codes' );
+			$cities = get_site_option('oxfam_flemish_zip_codes');
 			$zips = get_oxfam_covered_zips();
 			$list = array();
 			foreach ( $zips as $zip ) {
-				// Enkel Vlaamse steden expliciet vermelden
 				if ( array_key_exists( $zip, $cities ) ) {
-					$zip_city = explode( '/', $cities[$zip] );
-					$list[] = $zip." ".trim($zip_city[0]);
+					// Enkel hoofdgemeente expliciet vermelden
+					$zip_city = explode( '/', $cities[ $zip ] );
+					$list[] = $zip.' '.trim( $zip_city[0] );
 				}
 			}
-			$msg = "<small>(*) Oxfam-Wereldwinkels kiest bewust voor lokale verwerking. Deze webshop levert aan huis in ".implode( ', ', $list ).".<br/><br/>Staat je postcode niet in deze lijst? <a href='/'>Keer dan terug naar de portaalpagina</a> en vul daar je postcode in.</small>";
+			$msg = '<small>(*) Oxfam-Wereldwinkels kiest bewust voor lokale verwerking. Deze webshop levert aan huis in '.implode( ', ', $list ).'.<br/><br/>Staat je postcode niet in deze lijst? <a href="#" class="store-selector-open">Open de winkelzoeker</a> en vul daar je postcode in.</small>';
 		}
 		return $msg;
 	}
