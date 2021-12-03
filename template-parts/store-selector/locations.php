@@ -55,13 +55,13 @@
 		var zips = <?php echo json_encode( get_site_option('oxfam_flemish_zip_codes') ); ?>;
 		/* Licht gewijzigde vorm voor autocomplete (proberen samenvoegen?) */
 		var autocomplete_zips = <?php echo json_encode( get_flemish_zips_and_cities() ); ?>;
-		
+
 		/* Gebruik event delegation, de buttons in .nm-shop-products-col zijn niet noodzakelijk al aanwezig bij DOM load! */
 		/* Let op dat elementen niet dubbel getarget worden, dan zal preventDefault() roet in het eten gooien! */
-		jQuery('#header,.nm-shop-products-col,.nm-product-summary-inner-col,#nm-related,.nm-product-slider,.selected-store').on( 'click', '.store-selector-open', function(event) {
+		jQuery('#header,.nm-shop-products-col,.nm-product-summary-inner-col,#nm-related,.nm-product-slider,.selected-store,.how-does-it-work-helper-text').on( 'click', '.store-selector-open', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
-			
+
 			var zip = jQuery('#wpsl-search-input').val();
 			if ( zip.length == 4 && /^\d{4}$/.test(zip) && (zip in zips) ) {
 				jQuery('#wpsl-search-btn').prop( 'disabled', false ).parent().addClass('is-valid');
@@ -72,7 +72,7 @@
 		if ( urlParams.has('triggerStoreLocator') ) {
 			jQuery('.store-selector-modal').toggleClass('open');
 		}
-		
+
 		jQuery('.store-selector-close').on( 'click', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
@@ -97,7 +97,7 @@
 				jQuery('#wpsl-search-btn').trigger('click');
 			}
 		});
-		
+
 		/* Gebruik event delegation, deze nodes zijn nog niet aanwezig bij DOM load! */
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
 			console.log( "Registreer shop-ID "+jQuery(this).data('oxfam-shop-post-id')+" in cookie en doe redirect naar "+jQuery(this).data('webshop-url') );

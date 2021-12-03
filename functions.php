@@ -18,23 +18,9 @@
 			} else {
 				$html = 'Gratis thuislevering';
 
-				// @toDo: Samenvoegen met print_delivery_zips()
-				$zips = get_oxfam_covered_zips();
-				if ( count( $zips ) <= 3 ) {
-					$cities = get_site_option('oxfam_flemish_zip_codes');
-					$list = array();
-					foreach ( $zips as $zip ) {
-						if ( array_key_exists( $zip, $cities ) ) {
-							// Enkel hoofdgemeente expliciet vermelden
-							$zip_city = explode( '/', $cities[ $zip ] );
-							$list[] = trim( $zip_city[0] );
-						}
-					}
-					$msg = '';
-					if ( count( $list ) > 1 ) {
-						$msg = ' en ' . array_pop( $list );
-					}
-					$html .= ' in ' . implode( ', ', $list ) . $msg;
+				$locations = print_delivery_zips(true);
+				if ( $locations !== '' ) {
+					$html .= ' in ' . $locations;
 				}
 			}
 
@@ -7774,8 +7760,8 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-warning">';
-					echo '<p>We onderzoeken momenteel een probleem waarbij enkele webshops op sommige dagen niet opduiken in de resultaten van de winkelzoeker.</p>';
+				echo '<div class="notice notice-error">';
+					echo '<p>We onderzoeken momenteel een probleem waarbij sommige webshops op sommige dagen niet opduiken in de resultaten van de winkelzoeker!</p>';
 				echo '</div>';
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
@@ -8347,8 +8333,9 @@
 		return $msg;
 	}
 
-	function print_delivery_zips() {
+	function print_delivery_zips( $shortened = false ) {
 		$msg = '';
+
 		if ( does_home_delivery() ) {
 			$cities = get_site_option('oxfam_flemish_zip_codes');
 			$zips = get_oxfam_covered_zips();
@@ -8357,11 +8344,31 @@
 				if ( array_key_exists( $zip, $cities ) ) {
 					// Enkel hoofdgemeente expliciet vermelden
 					$zip_city = explode( '/', $cities[ $zip ] );
-					$list[] = $zip.' '.trim( $zip_city[0] );
+					$value = trim( $zip_city[0] );
+					if ( ! $shortened ) {
+						// Postcode enkel toevoegen in lange tekst
+						$value = $zip . ' ' . $value;
+					}
+					$list[] = $value;
 				}
 			}
-			$msg = '<small>(*) Oxfam-Wereldwinkels kiest bewust voor lokale verwerking. Deze webshop levert aan huis in '.implode( ', ', $list ).'.<br/><br/>Staat je postcode niet in deze lijst? <a href="#" class="store-selector-open">Open de winkelzoeker</a> en vul daar je postcode in.</small>';
+
+			if ( count( $list ) > 1 ) {
+				// array_pop() returnt én verwijdert de laatste waarde
+				$msg = ' en ' . array_pop( $list );
+			}
+			$msg = implode( ', ', $list ) . $msg;
+
+			if ( shortened ) {
+				if ( count( $list ) > 2 ) {
+					// Als de lijst meer dan 3 (= 1 + 2) gemeentes bevat, wissen we ze weer
+					$msg = '';
+				}
+			} else {
+				$msg = '<small class="how-does-it-work-helper-text">(*) Oxfam-Wereldwinkels kiest bewust voor lokale verwerking. Deze webshop levert aan huis in ' . $msg . '.<br/><br/>Staat je postcode niet in deze lijst? <a href="#" class="store-selector-open">Open de winkelzoeker</a> en vul daar je postcode in.</small>';
+			}
 		}
+
 		return $msg;
 	}
 
