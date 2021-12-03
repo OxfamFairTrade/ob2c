@@ -34,12 +34,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 					if ( count( $sale_products ) > 0 ) {
 						$products_tags[] = 'promotie';
 					}
-					
-					// $products_tags[] = 'augustus-2021';
-					// $products_tags[] = 'oktober-2021';
-					// $products_tags[] = 'faire-feesten';
+
 					$products_tags[] = 'sinterklaas';
-					
+					$products_tags[] = 'faire-feesten';
+					// $products_tags[] = 'oktober-2021';
+					// $products_tags[] = 'augustus-2021';
+
 					foreach ( $products_tags as $product_slug ) {
 						$term = get_term_by( 'slug', $product_slug, 'product_tag' );
 						if ( $term !== false ) {
@@ -69,7 +69,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					// Toon expliciet bepaalde widgets in plaats van sidebar 'widgets-shop' op te roepen
 					// Voordeel: instellingen moeten niet gesynchroniseerd worden over de webshops heen!
 					// Nadeel: zelfde code moet toegevoegd worden aan woocommerce/ajax/shop-full.php voor AJAX-reload
-					
+
 					// Zie https://developer.wordpress.org/reference/functions/the_widget/
 					$args = array(
 						'before_widget' => '<li class="widget %s">',
@@ -81,7 +81,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					$args['after_title'] = '</h3>';
 					the_widget( 'WC_Widget_Product_Categories', array( 'title' => 'Categorieën', 'orderby' => 'order', 'show_children_only' => 1 ), $args );
 					the_widget( 'WC_Widget_Layered_Nav', array( 'title' => 'Voedingsvoorkeuren', 'attribute' => 'preferences' ), $args );
-					
+
 					if ( is_main_site() ) {
 						// Duidelijk een probleem met het tellen van de termen ...
 						// var_dump_pre( get_terms( 'pa_countries', array( 'hide_empty' => '0' ) ) );
