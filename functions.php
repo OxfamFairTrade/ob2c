@@ -8359,7 +8359,7 @@
 			}
 			$msg = implode( ', ', $list ) . $msg;
 
-			if ( shortened ) {
+			if ( $shortened ) {
 				if ( count( $list ) > 2 ) {
 					// Als de lijst meer dan 3 (= 1 + 2) gemeentes bevat, wissen we ze weer
 					$msg = '';
