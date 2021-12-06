@@ -4035,8 +4035,8 @@
 
 				// Bedrijfsnaam en BTW-nummer vermelden (indien beschikbaar) en contactpersoon verplaatsen naar telefoonnummer
 				if ( $order->get_meta('is_b2b_sale') === 'yes' and ! empty( $order->get_billing_company() ) ) {
-					if ( ! empty( $order->get_meta('billing_vat') ) ) {
-						$vat_number = ' (' . $order->get_meta('billing_vat') . ')';
+					if ( ! empty( $order->get_meta('_billing_vat') ) ) {
+						$vat_number = ' (' . $order->get_meta('_billing_vat') . ')';
 					} else {
 						$vat_number = '';
 					}
@@ -4878,7 +4878,7 @@
 	}
 
 	function show_custom_billing_fields( $order ) {
-		if ( $order->get_meta('_billing_vat') !== '' ) {
+		if ( ! empty( $order->get_meta('_billing_vat') ) ) {
 			echo '<p><strong>'.__( 'BTW-nummer', 'oxfam-webshop' ).':</strong><br/>'.$order->get_meta('_billing_vat').'</p>';
 		}
 	}
