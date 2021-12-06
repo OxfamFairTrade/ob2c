@@ -12,6 +12,9 @@
 		// Altijd bedrijf tonen, indien beschikbaar
 		if ( ! empty( $order->get_billing_company() ) ) {
 			$buyer = $order->get_billing_company();
+			if ( ! empty( $order->get_meta('_billing_vat') ) ) {
+				$buyer .= ' (' . $order->get_meta('_billing_vat') . ')';
+			}
 		}
 		return $buyer;
 	}
