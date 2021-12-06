@@ -10,7 +10,7 @@
 
 	function ob2c_change_buyer_name( $buyer, $order ) {
 		// Altijd bedrijf tonen, indien beschikbaar
-		if ( ! is_empty( $order->get_billing_company() ) ) {
+		if ( ! empty( $order->get_billing_company() ) ) {
 			$buyer = $order->get_billing_company();
 		}
 		return $buyer;
@@ -4034,8 +4034,8 @@
 				$pick_sheet->setCellValue( 'A2', $order->get_billing_phone() )->setCellValue( 'B1', $order->get_billing_first_name().' '.$order->get_billing_last_name() )->setCellValue( 'B2', $order->get_billing_address_1() )->setCellValue( 'B3', $order->get_billing_postcode().' '.$order->get_billing_city() );
 
 				// Bedrijfsnaam en BTW-nummer vermelden (indien beschikbaar) en contactpersoon verplaatsen naar telefoonnummer
-				if ( $order->get_meta('is_b2b_sale') === 'yes' and ! is_empty( $order->get_billing_company() ) ) {
-					if ( ! is_empty( $order->get_meta('billing_vat') ) ) {
+				if ( $order->get_meta('is_b2b_sale') === 'yes' and ! empty( $order->get_billing_company() ) ) {
+					if ( ! empty( $order->get_meta('billing_vat') ) ) {
 						$vat_number = ' (' . $order->get_meta('billing_vat') . ')';
 					} else {
 						$vat_number = '';
