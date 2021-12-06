@@ -2857,9 +2857,9 @@
 
 	function ure_modify_authors_list( $authors ) {
 		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
-		// TO DO: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie?
+		// @toDo: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie?
 		if ( count( get_local_manager_user_ids() ) > 0 ) {
-			// write_log( "Allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
+			write_log( "Allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
 			return $authors . ',' . get_local_manager_user_ids( true );
 		} else {
 			return $authors;
