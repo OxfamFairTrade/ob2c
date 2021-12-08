@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						$products_tags[] = 'promotie';
 					}
 
-					$products_tags[] = 'sinterklaas';
+					// $products_tags[] = 'sinterklaas';
 					$products_tags[] = 'faire-feesten';
 					// $products_tags[] = 'oktober-2021';
 					// $products_tags[] = 'augustus-2021';

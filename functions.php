@@ -53,7 +53,7 @@
 	}
 
 	function get_wijnduos_disclaimer() {
-		return 'Voeg beide flessen toe aan je winkelmandje om de promotie te activeren (of koop het speciale duo-artikel). Actie geldig van 01/11/2021 t.e.m. 31/12/2021.';
+		return 'Voeg beide flessen toe aan je winkelmandje om de promotie te activeren. Actie geldig van 01/11/2021 t.e.m. 31/12/2021.';
 	}
 
 	// Registreer aantal gratis capsules over alle webshops heen
@@ -2859,7 +2859,7 @@
 		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
 		// @toDo: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie?
 		if ( count( get_local_manager_user_ids() ) > 0 ) {
-			write_log( "Allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
+			// write_log( "Allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
 			return $authors . ',' . get_local_manager_user_ids( true );
 		} else {
 			return $authors;
@@ -8368,12 +8368,14 @@
 				if ( array_key_exists( $zip, $cities ) ) {
 					// Enkel hoofdgemeente expliciet vermelden
 					$zip_city = explode( '/', $cities[ $zip ] );
-					$value = trim( $zip_city[0] );
 					if ( ! $shortened ) {
-						// Postcode enkel toevoegen in lange tekst
-						$value = $zip . ' ' . $value;
+						// In lange tekst enkel hoofdgemeente vermelden maar wel postcode toevoegen
+						$list[] = $zip . ' ' . trim( $zip_city[0] );
+					} else {
+						foreach ( $zip_city as $value ) {
+							$list[] = trim( $value );
+						}
 					}
-					$list[] = $value;
 				}
 			}
 
