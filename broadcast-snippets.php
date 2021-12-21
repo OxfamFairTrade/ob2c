@@ -155,7 +155,7 @@
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
-	$default_holidays = array( '2021-04-05', '2021-05-01', '2021-05-13', '2021-05-24', '2021-07-21', '2021-08-15', '2021-11-01', '2021-11-11', '2021-12-25', '2022-01-01' );
+	$default_holidays = array( '2022-04-17', '2022-04-18', '2022-05-01', '2022-05-26', '2022-06-05', '2022-06-06', '2022-07-21', '2022-08-15', '2022-11-01', '2022-11-11', '2022-12-25', '2023-01-01' );
 	update_site_option( 'oxfam_holidays', $default_holidays );
 
 	// Handige truc om alle vinkjes aan te zetten op https://shop.oxfamwereldwinkels.be/wp-admin/edit.php?post_status=publish&post_type=product&orderby=sku&order=desc
