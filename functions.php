@@ -7784,34 +7784,34 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-error">';
-					echo '<p>We onderzoeken momenteel een probleem waarbij sommige webshops op sommige dagen niet opduiken in de resultaten van de winkelzoeker!</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-error">';
+				// 	echo '<p>We onderzoeken momenteel een probleem waarbij sommige webshops op sommige dagen niet opduiken in de resultaten van de winkelzoeker!</p>';
+				// echo '</div>';
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				// echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2021/11/10/Promos-online--winkel-december-2021-update" target="_blank">promo\'s voor december</a> werden geactiveerd in alle webshops. Bij de koffiecapsules wordt automatisch een gratis pakje van <u>dezelfde soort</u> toegevoegd. Als de klant daar om vraagt, mag je uiteraard ook de andere smaak meegeven als gratis product (prijzen zijn identiek, dus combineren mag). De <a href="https://copain.oww.be/nieuwsbericht/2021/10/06/Update-wijnduos-eindejaar-21-goed-nieuws" target="_blank">wijnduo\'s voor eindejaar</a> blijven uiteraard ook nog actief.</p>';
+					echo '<p>Gelukkig Nieuwjaar! De 83 prijswijzigingen op voeding die van start gingen op 01/01/2022 werden door het verlengde weekend pas op 3 januari doorgevoerd in de webshops. Ook de <a href="https://copain.oww.be/nieuwsbericht/2021/12/16/Promos-online--winkel-januari-2022-update" target="_blank">promo\'s voor januari</a> werden pas die dag geactiveerd. De gratis chocoladereep bij aankoop van 3 pakjes koffie zal niet automatisch toegekend worden en vergt dus enkele banners. Deze actie wordt online pas later deze week gelanceerd. De 23 prijswijzigingen op Doppers zitten nog niet correct in het ERP-systeem van MDM en konden daardoor nog niet doorgevoerd worden. Bedankt voor jullie begrip!</p>';
 				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe geschenkencheques, agenda\'s, kalenders en OPU-kaartjes werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 19056, 19057, 19058, 87400, 87401, 87402, 87403, 87404, 87405, 87406, 87407, 87408, 87409, 87410, 87411, 41000, 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008, 41009, 66387, 11803, 87556, 87557 );
-						// Augustusmagazine en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
-						$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '94068' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>De nieuwe geschenkencheques, agenda\'s, kalenders en OPU-kaartjes werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 		$skus = array( 19056, 19057, 19058, 87400, 87401, 87402, 87403, 87404, 87405, 87406, 87407, 87408, 87409, 87410, 87411, 41000, 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008, 41009, 66387, 11803, 87556, 87557 );
+				// 		// Augustusmagazine en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
+				// 		$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '94068' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku( $sku );
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+				// echo '</div>';
 				// if ( get_current_blog_id() !== 1 ) {
 				// 	$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );
 				// 	if ( $caps > 0 ) {
@@ -7825,9 +7825,9 @@
 				// echo '</div>';
 				// 20260 RAZA Pinot Gris, 23507 BIO Thee 4 smaken assortiment 1,8 g x 25 x 4 (THT: 15/01/2022), 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
 				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
-				echo '<div class="notice notice-warning">';
-					echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 19073 Geschenkencheque 5 euro (geldig tot 31/12/2021), 19074 Geschenkencheque 15 euro (geldig tot 31/12/2021), 19075 Geschenkencheque 25 euro (geldig tot 31/12/2021), 23705 BIO Rooibos African Sunset 1,8 g x 20, 24647 Schaapjes melkchocolade 3 x 25 g, 25218 Chocolade amandelnoten, 27998 BIO Mosterdsalsa en 28327 Zeezout mix chili-peper.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 19073 Geschenkencheque 5 euro (geldig tot 31/12/2021), 19074 Geschenkencheque 15 euro (geldig tot 31/12/2021), 19075 Geschenkencheque 25 euro (geldig tot 31/12/2021), 23705 BIO Rooibos African Sunset 1,8 g x 20, 24647 Schaapjes melkchocolade 3 x 25 g, 25218 Chocolade amandelnoten, 27998 BIO Mosterdsalsa en 28327 Zeezout mix chili-peper.</p>';
+				// echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 				}
