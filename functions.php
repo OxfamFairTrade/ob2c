@@ -48,12 +48,8 @@
 		return $html;
 	}
 
-	function get_free_capsules_disclaimer() {
-		return 'Maximum 1 gratis doosje per online klant. Actie geldig t.e.m. 26/11/2021. Beperkt tot 500 pakjes.';
-	}
-
-	function get_wijnduos_disclaimer() {
-		return 'Voeg beide flessen toe aan je winkelmandje om de promotie te activeren. Actie geldig van 01/11/2021 t.e.m. 31/12/2021.';
+	function get_koffiechoc22_disclaimer() {
+		return 'Eén gratis reep chocolade per drie pakjes koffie van 250 g (bonen en gemalen), pads en/of capsules. Actie geldig t.e.m. 28/02/2022. Zolang de voorraad strekt. Niet cumuleerbaar met andere acties en kortingen.';
 	}
 
 	// Registreer aantal gratis capsules over alle webshops heen
