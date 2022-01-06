@@ -143,13 +143,13 @@ if ( ! $nm_theme_options['product_action_link'] ) {
         <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
             <?php if ( $position_in_grid === 3 ) : ?>
                 <li class="promo-banner vertical">
-                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-staand.jpg' ); ?>" title="<?php get_koffiechoc22_disclaimer(); ?>" />
+                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-staand.jpg' ); ?>" title="<?php echo get_koffiechoc22_disclaimer(); ?>" />
                 </li>
                 <?php $position_in_grid++; ?>
             <?php endif; ?>
         <?php elseif ( ! $horizontal_shown and is_woocommerce() and $position_in_grid === 8 ) : ?>
             <li class="promo-banner horizontal">
-                <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-liggend.jpg' ); ?>" title="<?php get_koffiechoc22_disclaimer(); ?>" /></a>
+                <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-liggend.jpg' ); ?>" title="<?php echo get_koffiechoc22_disclaimer(); ?>" /></a>
             </li>
             <?php $position_in_grid++; ?>
         <?php endif; ?>
