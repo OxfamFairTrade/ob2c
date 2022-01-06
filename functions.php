@@ -90,8 +90,8 @@
 	add_action( 'woocommerce_applied_coupon', 'redirect_to_cart_to_choose_version', 10, 1 );
 
 	function redirect_to_cart_to_choose_version( $code ) {
-		write_log( "Applied ".$code );
-		if ( $code === 'faircaps21' ) {
+		if ( $code === 'koffiechoc22' ) {
+			write_log( "Applied ".$code );
 			if ( ! is_cart() ) {
 				// wp_safe_redirect() lokt enkel een redirect in de pop-up uit, gebruik JavaScript om de volledige pagina te refreshen!
 				?>
@@ -3235,7 +3235,7 @@
 			<script type="text/javascript">
 				jQuery(document).ready( function() {
 					var wto;
-					jQuery('div.woocommerce').on( 'change', '.qty', function() {
+					jQuery('div.woocommerce').on( 'change', '.qty, .trigger-cart-refresh', function() {
 						clearTimeout(wto);
 						// Time-out net iets groter dan buffertijd zodat we bij ingedrukt houden van de spinner niet gewoon +1/-1 doen
 						wto = setTimeout(function() {
@@ -7791,11 +7791,11 @@
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				// echo '</div>';
 				echo '<div class="notice notice-success">';
-					echo '<p>Gelukkig Nieuwjaar! De 83 prijswijzigingen op voeding die van start gingen op 01/01/2022 werden door het verlengde weekend pas op <b>3 januari</b> doorgevoerd in de webshops. Ook de <a href="https://copain.oww.be/nieuwsbericht/2021/12/16/Promos-online--winkel-januari-2022-update" target="_blank">promo\'s voor januari</a> werden pas die dag geactiveerd. De gratis chocoladereep bij aankoop van 3 pakjes koffie kan omwille van de keuzevrijheid niet automatisch toegekend worden, en vergt dus enkele banners met de juiste kortingscode. Deze actie wordt daarom online pas later deze week gelanceerd. De 23 prijswijzigingen op Dopper-producten zitten nog niet correct in het ERP-systeem van MDM en konden daardoor nog niet doorgevoerd worden. Bedankt voor jullie begrip!</p>';
+					echo '<p>Gelukkig Nieuwjaar! De 83 prijswijzigingen op voeding die van start gingen op 01/01/2022 werden door het verlengde weekend pas op <b>3 januari</b> doorgevoerd in de webshops. Ook de <a href="https://copain.oww.be/nieuwsbericht/2021/12/16/Promos-online--winkel-januari-2022-update" target="_blank">nieuwe promo\'s voor januari</a> werden pas die dag geactiveerd. De gratis chocoladereep bij aankoop van 3 pakjes koffie kan omwille van de keuzevrijheid niet automatisch toegekend worden, en vergt dus banners met de juiste kortingscode. Deze actie wordt online pas later deze week gelanceerd. De 23 prijswijzigingen op Dopper-producten zitten nog niet correct in het ERP-systeem van MDM en konden daardoor nog niet doorgevoerd worden. Bedankt voor jullie begrip!</p>';
 				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				// echo '<div class="notice notice-success">';
-				// 	echo '<p>De nieuwe Dopper-kleuren werden toegevoegd aan de database (+ de koffieverpakkingen werden vernieuwd):</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 	echo '<p>De nieuwe geschenkencheques, agenda\'s, kalenders en OPU-kaartjes werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
 				// 		$skus = array( 19056, 19057, 19058, 87400, 87401, 87402, 87403, 87404, 87405, 87406, 87407, 87408, 87409, 87410, 87411, 41000, 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008, 41009, 66387, 11803, 87556, 87557 );
 				// 		// Augustusmagazine en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
 				// 		$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '94068' );

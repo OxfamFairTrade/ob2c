@@ -67,6 +67,8 @@ $class = 'wjecf-cols cols-' . ceil( $n / ceil( $n / 4 ) ) . ' cols-lg-' . ceil( 
 						$form_item, array(
 							'type'  => $input_type,
 							'title' => $tooltip,
+							// GEWIJZIGD: Voeg een klasse toe zodat we via JavaScript een cart refresh kunnen triggeren
+							'class' => 'trigger-cart-refresh',
 						)
 					);
 					//Label with title and product image inside of it

@@ -136,42 +136,20 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 </li>
 
 <?php if ( wc_get_loop_prop('current_page') === 1 ) : ?>
-    <?php $faircaps21 = new WC_Coupon('faircaps21'); ?>
     <?php $horizontal_shown = false; ?>
-    <?php if ( $faircaps21->is_valid() ) : ?>
-        <?php $espresso = wc_get_product( wc_get_product_id_by_sku('22724') ); ?>
-        <?php $lungo = wc_get_product( wc_get_product_id_by_sku('22725') ); ?>
-        <?php if ( ( $espresso !== false and $espresso->get_stock_status() === 'instock' ) or ( $lungo !== false and $lungo->get_stock_status() === 'instock' ) ) : ?>
-            <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
-                <?php if ( $position_in_grid === 2 ) : ?>
-                    <li class="promo-banner vertical">
-                        <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-staand.png' ); ?>" title="<?php get_free_capsules_disclaimer(); ?>" />
-                    </li>
-                    <?php $position_in_grid++; ?>
-                <?php endif; ?>
-            <?php elseif ( ! $horizontal_shown and is_woocommerce() and $position_in_grid === 8 ) : ?>
-                <li class="promo-banner horizontal">
-                    <a href="<?php echo get_home_url(); ?>/categorie/koffie/capsules/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/gratis-koffiecapsules-2021-liggend.png' ); ?>" title="<?php get_free_capsules_disclaimer(); ?>" /></a>
-                </li>
-                <?php $horizontal_shown = true; ?>
-                <?php $position_in_grid++; ?>
-            <?php endif; ?>
-        <?php endif; ?>
-    <?php endif; ?>
-
-    <?php $wijnduo = new WC_Coupon('wijnduo-schuimwijn'); ?>
-    <!-- Geen is_valid() gebruiken, zal pas true retourneren als de wijnen al effectief in het winkelmandje zitten! -->
-    <?php if ( $wijnduo->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $wijnduo->get_date_expires()->date_i18n('Y-m-d') ) : ?>
-        <?php if ( is_product_category( array( 'wijn', 'rood', 'wit', 'schuimwijn' ) ) ) : ?>
+    <?php $koffiechoc22 = new WC_Coupon('koffiechoc22'); ?>
+    <!-- Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit! -->
+    <?php if ( $koffiechoc22->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $koffiechoc22->get_date_expires()->date_i18n('Y-m-d') ) : ?>
+        <?php if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
             <?php if ( $position_in_grid === 3 ) : ?>
                 <li class="promo-banner vertical">
-                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2021-staand.jpg' ); ?>" title="<?php get_wijnduos_disclaimer(); ?>" />
+                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-staand.jpg' ); ?>" title="<?php get_koffiechoc22_disclaimer(); ?>" />
                 </li>
                 <?php $position_in_grid++; ?>
             <?php endif; ?>
         <?php elseif ( ! $horizontal_shown and is_woocommerce() and $position_in_grid === 8 ) : ?>
             <li class="promo-banner horizontal">
-                <a href="<?php echo get_home_url(); ?>/tag/promotie/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/wijnpromo-2021-liggend.jpg' ); ?>" title="<?php get_wijnduos_disclaimer(); ?>" /></a>
+                <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products"><img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-liggend.jpg' ); ?>" title="<?php get_koffiechoc22_disclaimer(); ?>" /></a>
             </li>
             <?php $position_in_grid++; ?>
         <?php endif; ?>
