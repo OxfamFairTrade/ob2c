@@ -74,7 +74,7 @@
 					// Koffie-actie 2022
 					$koffiechoc22 = new WC_Coupon('koffiechoc22');
 					// Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit!
-					if ( $koffiechoc22->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $koffiechoc22->get_date_expires()->date_i18n('Y-m-d') ) :
+					if ( $koffiechoc22->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $koffiechoc22->get_date_expires()->date_i18n('Y-m-d') ) {
 						?>
 							<div class="col-row lh-banner">
 								<div class="col-xs-12">
