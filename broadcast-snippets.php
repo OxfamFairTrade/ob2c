@@ -103,7 +103,7 @@
 	// Verwijder productcategorieën
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'kinderen-wonen', 'keuken-tafelen-mode' );
+		$terms = array( 'grootverbruik-2', 'basismateriaal', 'vorming-informatie-actie' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {

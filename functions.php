@@ -197,7 +197,7 @@
 	#########################
 
 	function ob2c_is_plausible_voucher_code( $code ) {
-		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false ) {
+		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false and strtolower( $code ) !== 'koffiechoc22' ) {
 			return true;
 		} else {
 			return false;
