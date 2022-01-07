@@ -2883,7 +2883,6 @@
 		$restrict_it = false;
 		write_log( get_webshop_name().": Check restrictions for content type ".$post_type." with user-ID ".get_current_user_id() );
 		if ( $post_type === 'product' ) {
-			$restrict_it = true;
 			$user_meta = get_userdata( get_current_user_id() );
 			if ( in_array( 'local_manager', $user_meta->roles ) ) {
 				write_log( get_webshop_name().": restrict edit products for local managers" );
@@ -2894,6 +2893,7 @@
 	}
 
 	// Lijst ook de posts op die de gebruiker niét kan bewerken (standaard uitgeschakeld)
+	// Toch niet doen, in dat geval retourneert is_restriction_applicable() false en wordt 'ure_restrict_edit_post_type' niet doorlopen! 
 	// add_filter( 'ure_posts_show_full_list', '__return_true' );
 
 	// Enkel admins mogen producten dupliceren
