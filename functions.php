@@ -7785,6 +7785,9 @@
 				// echo '<div class="notice notice-error">';
 				// 	echo '<p>We onderzoeken momenteel een probleem waarbij sommige webshops op sommige dagen niet opduiken in de resultaten van de winkelzoeker!</p>';
 				// echo '</div>';
+				echo '<div class="notice notice-warning">';
+					echo '<p>Door de kerstvakantie werd de creditering van de digitale cadeaubonnen die in de loop van november ingeruild werden per ongeluk niet op 3 januari doorgevoerd, zoals aangekondigd. Deze creditering zal uitzonderlijk pas rond 15 januari plaatsvinden.</p>';
+				echo '</div>';
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				// echo '</div>';
