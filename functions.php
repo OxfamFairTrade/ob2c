@@ -2855,7 +2855,7 @@
 		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
 		// @toDo: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie?
 		if ( count( get_local_manager_user_ids() ) > 0 ) {
-			write_log( "Allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
+			write_log( get_webshop_name().": Allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
 			return $authors . ',' . get_local_manager_user_ids( true );
 		} else {
 			return $authors;
@@ -2881,7 +2881,9 @@
 
 	function exclude_posts_from_edit_restrictions( $post_type ) {
 		$restrict_it = false;
+		write_log( get_webshop_name().": Check content type restrictions" );
 		if ( $post_type === 'product' ) {
+			$restrict_it = true;
 			$user_meta = get_userdata( get_current_user_id() );
 			if ( in_array( 'local_manager', $user_meta->roles ) ) {
 				write_log( get_webshop_name().": restrict edit products for local managers" );
