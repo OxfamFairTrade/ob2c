@@ -2881,7 +2881,7 @@
 
 	function exclude_posts_from_edit_restrictions( $post_type ) {
 		$restrict_it = false;
-		write_log( get_webshop_name().": Check restrictions for content type ".$post_type );
+		write_log( get_webshop_name().": Check restrictions for content type ".$post_type." with user-ID ".get_current_user_id() );
 		if ( $post_type === 'product' ) {
 			$restrict_it = true;
 			$user_meta = get_userdata( get_current_user_id() );
