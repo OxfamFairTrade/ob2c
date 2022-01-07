@@ -2893,8 +2893,8 @@
 		return $restrict_it;
 	}
 
-	// Lijst ook de posts op die de gebruiker niét kan bewerken
-	add_filter( 'ure_posts_show_full_list', '__return_true' );
+	// Lijst ook de posts op die de gebruiker niét kan bewerken (standaard uitgeschakeld)
+	// add_filter( 'ure_posts_show_full_list', '__return_true' );
 
 	// Enkel admins mogen producten dupliceren
 	add_filter( 'woocommerce_duplicate_product_capability', function( $cap ) {
