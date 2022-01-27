@@ -141,8 +141,10 @@
 					} elseif ( count( $orders ) > 1 ) {
 						$warnings[ $row->order ] = 'Meerdere bestellingen gevonden voor '.$row->order.', voucher '.$row->code.' niet opgenomen in export';
 					} else {
+						$current_blog = get_blog_details();
 						if ( $row->order === 'OFFLINE' ) {
 							$voucher_ids[] = $row->id;
+							$blog_path = str_replace( '/', '', $current_blog->path );
 						} else {
 							$order = reset( $orders );
 							if ( $order->get_status() !== 'completed' ) {
@@ -154,7 +156,6 @@
 							if ( is_regional_webshop() ) {
 								$blog_path = $order->get_meta('claimed_by');
 							} else {
-								$current_blog = get_blog_details();
 								$blog_path = str_replace( '/', '', $current_blog->path );
 							}
 

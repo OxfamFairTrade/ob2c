@@ -2893,7 +2893,7 @@
 	}
 
 	// Lijst ook de posts op die de gebruiker niét kan bewerken (standaard uitgeschakeld)
-	// Toch niet doen, in dat geval retourneert is_restriction_applicable() false en wordt 'ure_restrict_edit_post_type' niet doorlopen! 
+	// Toch niet doen, in dat geval retourneert is_restriction_applicable() false en wordt 'ure_restrict_edit_post_type' niet doorlopen!
 	// add_filter( 'ure_posts_show_full_list', '__return_true' );
 
 	// Enkel admins mogen producten dupliceren
@@ -7763,7 +7763,7 @@
 			remove_all_actions('admin_notices');
 		}
 		add_action( 'admin_notices', 'oxfam_admin_notices' );
-		// add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
+		add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
 	}
 
 	function oxfam_admin_notices() {
@@ -7791,28 +7791,28 @@
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				// echo '</div>';
-				echo '<div class="notice notice-success">';
-					echo '<p>Gelukkig Nieuwjaar! De 83 prijswijzigingen op voeding die van start gingen op 01/01/2022 werden door het verlengde weekend pas op <b>3 januari</b> doorgevoerd in de webshops. Ook de <a href="https://copain.oww.be/nieuwsbericht/2021/12/16/Promos-online--winkel-januari-2022-update" target="_blank">nieuwe promo\'s voor januari</a> werden pas die dag geactiveerd. De gratis chocoladereep bij aankoop van elke 3 pakjes koffie werd online op <b>6 januari</b> gelanceerd. Deze actie kan omwille van de grote keuzevrijheid niet automatisch toegekend worden: de klant dient zelf de kortingscode \'KOFFIECHOC22\' in te geven en vervolgens de gewenste gratis repen te kiezen. De 23 prijswijzigingen op Dopper-producten zitten sinds 4 januari correct in het ERP-systeem van MDM en zullen op <b>8 januari</b> in de webshops verschijnen. Bedankt voor jullie begrip!</p>';
-				echo '</div>';
-				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				// echo '<div class="notice notice-success">';
-				// 	echo '<p>De nieuwe Doppers en het boek rond 50 jaar Oxfam-Wereldwinkels werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 19565 );
-				// 		// Augustusmagazine en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
-				// 		$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '94068' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+				// 	echo '<p>Gelukkig Nieuwjaar! De 83 prijswijzigingen op voeding die van start gingen op 01/01/2022 werden door het verlengde weekend pas op <b>3 januari</b> doorgevoerd in de webshops. Ook de <a href="https://copain.oww.be/nieuwsbericht/2021/12/16/Promos-online--winkel-januari-2022-update" target="_blank">nieuwe promo\'s voor januari</a> werden pas die dag geactiveerd. De gratis chocoladereep bij aankoop van elke 3 pakjes koffie werd online op <b>6 januari</b> gelanceerd. Deze actie kan omwille van de grote keuzevrijheid niet automatisch toegekend worden: de klant dient zelf de kortingscode \'KOFFIECHOC22\' in te geven en vervolgens de gewenste gratis repen te kiezen. De 23 prijswijzigingen op Dopper-producten zitten sinds 4 januari correct in het ERP-systeem van MDM en zullen op <b>8 januari</b> in de webshops verschijnen. Bedankt voor jullie begrip!</p>';
 				// echo '</div>';
+				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
+				echo '<div class="notice notice-success">';
+					echo '<p>Het boek rond 50 jaar Oxfam-Wereldwinkels werd toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 19565 );
+						// Augustusmagazine en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
+						$crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '94068' );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+				echo '</div>';
 				// if ( get_current_blog_id() !== 1 ) {
 				// 	$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );
 				// 	if ( $caps > 0 ) {
@@ -7879,49 +7879,55 @@
 		}
 	}
 
-	function oxfam_network_admin_notices( ) {
+	function oxfam_network_admin_notices() {
 		global $pagenow;
 		$screen = get_current_screen();
 
 		if ( 'admin.php' === $pagenow and 'toplevel_page_woonet-woocommerce-network' === $screen->base ) {
-			echo '<div class="notice notice-success">';
-				echo '<p>Tot nu toe werd de kortingsbon FAIRCAPS21 al '.get_site_option( 'free_capsules_given_2021', 0 ).' keer gebruikt!</p>';
-				echo '<ul style="margin-left: 2em; column-count: 2;">';
+			$orders = array();
+			$total = 0;
+			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
 
-				$orders = array();
-				$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
-				foreach ( $sites as $site ) {
-					switch_to_blog( $site->blog_id );
-					foreach ( get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30', true ) as $wc_order ) {
-						$output = '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
+			foreach ( $sites as $site ) {
+				switch_to_blog( $site->blog_id );
+				$orders_with_coupon = get_number_of_times_coupon_was_used( 'koffiechoc22', '2022-01-01', '2022-02-28', true );
+				$total += count( $orders_with_coupon );
 
-						$new_args = array(
-							'type' => 'shop_order',
-							'billing_email' => $wc_order->get_billing_email(),
-							'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
-							'status' => 'wc-completed',
-							'limit' => -1,
-						);
-						$previous_orders_by_customer = wc_get_orders( $new_args );
+				foreach ( $orders_with_coupon as $wc_order ) {
+					$output = '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
 
-						if ( count( $previous_orders_by_customer ) === 0 ) {
-							$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
-							$new_orders_by_customer = wc_get_orders( $new_args );
+// 					$new_args = array(
+// 						'type' => 'shop_order',
+// 						'billing_email' => $wc_order->get_billing_email(),
+// 						'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
+// 						'status' => 'wc-completed',
+// 						'limit' => -1,
+// 					);
+// 					$previous_orders_by_customer = wc_get_orders( $new_args );
+// 					if ( count( $previous_orders_by_customer ) === 0 ) {
+// 						$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
+// 						$new_orders_by_customer = wc_get_orders( $new_args );
+//
+// 						if ( count( $new_orders_by_customer ) > 0 ) {
+// 							$addendum = ', placed '.count( $new_orders_by_customer ).' new orders afterwards';
+// 						} else {
+// 							$addendum = '';
+// 						}
+// 						$output .= ' <span style="font-weight: bold; color: green;">=> new online customer'.$addendum.'!</span>';
+// 					}
 
-							if ( count( $new_orders_by_customer ) > 0 ) {
-								$addendum = ', placed '.count( $new_orders_by_customer ).' new orders afterwards';
-							} else {
-								$addendum = '';
-							}
-							$output .= ' <span style="font-weight: bold; color: green;">=> new online customer'.$addendum.'!</span>';
-						}
-
-						$orders[ $wc_order->get_order_number() ] = $output;
-					}
-					restore_current_blog();
+					$orders[ $wc_order->get_order_number() ] = $output;
 				}
 
-				ksort( $orders );
+				restore_current_blog();
+			}
+
+			ksort( $orders );
+
+			echo '<div class="notice notice-success">';
+				echo '<p>Tot nu toe werd de kortingsbon KOFFIECHOC22 al '.$total.' keer toegekend in '.count( $orders ).' verschillende bestellingen!</p>';
+				echo '<ul style="margin-left: 2em; column-count: 2;">';
+
 				foreach( $orders as $string ) {
 					echo '<li>'.$string.'</li>';
 				}
