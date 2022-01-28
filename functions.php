@@ -7891,9 +7891,10 @@
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
 				$orders_with_coupon = get_number_of_times_coupon_was_used( 'koffiechoc22', '2022-01-01', '2022-02-28', true );
-				$total += count( $orders_with_coupon );
 
 				foreach ( $orders_with_coupon as $wc_order ) {
+					// Om dit correct te tellen, zouden we alle gratis repen in het order moeten opsnorren ...
+					// $total += count( $orders_with_coupon );
 					$output = '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
 
 // 					$new_args = array(
@@ -7925,7 +7926,7 @@
 			ksort( $orders );
 
 			echo '<div class="notice notice-success">';
-				echo '<p>Tot nu toe werd de kortingsbon KOFFIECHOC22 al '.$total.' keer toegekend in '.count( $orders ).' verschillende bestellingen!</p>';
+				echo '<p>Tot nu toe werd de kortingsbon KOFFIECHOC22 al een of meerdere keren toegekend in '.count( $orders ).' verschillende bestellingen!</p>';
 				echo '<ul style="margin-left: 2em; column-count: 2;">';
 
 				foreach( $orders as $string ) {
