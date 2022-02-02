@@ -7253,55 +7253,56 @@
 		if ( ! is_b2b_customer() ) {
 			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
 			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
-				switch ( $product->get_sku() ) {
-					case '20070':
-						$linked_sku = '20073';
-						$search_text = 'Campesino Cabernet Sauvignon Reserva';
-						break;
-
-					case '20073':
-						$linked_sku = '20070';
-						$search_text = 'VIDSECA País-Carignan-Cabernet';
-						break;
-
-					case '20074':
-						$linked_sku = '20262';
-						$search_text = 'BIO RAZA Selection Chardonnay';
-						break;
-
-					case '20262':
-						$linked_sku = '20074';
-						$search_text = 'BIO RAZA Selection Malbec / Shiraz';
-						break;
-
-					case '20212':
-						$linked_sku = '20225';
-						$search_text = 'Koopmanskloof Chenin Blanc';
-						break;
-
-					case '20225':
-						$linked_sku = '20212';
-						$search_text = 'Lautaro Sauvignon Blanc';
-						break;
-
-					case '20413':
-						$linked_sku = '20415';
-						$search_text = 'Sensus Extra Brut';
-						break;
-
-					case '20415':
-						$linked_sku = '20413';
-						$search_text = 'Sensus Brut Rosé';
-						break;
-				}
-
 				$promo_text = $product->get_meta('promo_text');
-				if ( isset( $linked_sku ) ) {
-					$linked_product = wc_get_product( wc_get_product_id_by_sku( $linked_sku ) );
-					if ( $linked_product !== false ) {
-						$promo_text = str_replace( $search_text, '<a href="'.$linked_product->get_permalink().'">'.$linked_product->get_name().'</a>', $promo_text );
-					}
-				}
+				
+// 				switch ( $product->get_sku() ) {
+// 					case '20070':
+// 						$linked_sku = '20073';
+// 						$search_text = 'Campesino Cabernet Sauvignon Reserva';
+// 						break;
+// 
+// 					case '20073':
+// 						$linked_sku = '20070';
+// 						$search_text = 'VIDSECA País-Carignan-Cabernet';
+// 						break;
+// 
+// 					case '20074':
+// 						$linked_sku = '20262';
+// 						$search_text = 'BIO RAZA Selection Chardonnay';
+// 						break;
+// 
+// 					case '20262':
+// 						$linked_sku = '20074';
+// 						$search_text = 'BIO RAZA Selection Malbec / Shiraz';
+// 						break;
+// 
+// 					case '20212':
+// 						$linked_sku = '20225';
+// 						$search_text = 'Koopmanskloof Chenin Blanc';
+// 						break;
+// 
+// 					case '20225':
+// 						$linked_sku = '20212';
+// 						$search_text = 'Lautaro Sauvignon Blanc';
+// 						break;
+// 
+// 					case '20413':
+// 						$linked_sku = '20415';
+// 						$search_text = 'Sensus Extra Brut';
+// 						break;
+// 
+// 					case '20415':
+// 						$linked_sku = '20413';
+// 						$search_text = 'Sensus Brut Rosé';
+// 						break;
+// 				}
+// 
+// 				if ( isset( $linked_sku ) ) {
+// 					$linked_product = wc_get_product( wc_get_product_id_by_sku( $linked_sku ) );
+// 					if ( $linked_product !== false ) {
+// 						$promo_text = str_replace( $search_text, '<a href="'.$linked_product->get_permalink().'">'.$linked_product->get_name().'</a>', $promo_text );
+// 					}
+// 				}
 
 				echo '<p class="promotie">';
 					echo $promo_text.' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').' in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
@@ -7785,15 +7786,12 @@
 				// echo '<div class="notice notice-error">';
 				// 	echo '<p>We onderzoeken momenteel een probleem waarbij sommige webshops op sommige dagen niet opduiken in de resultaten van de winkelzoeker!</p>';
 				// echo '</div>';
-				echo '<div class="notice notice-warning">';
-					echo '<p>Door de kerstvakantie werd de creditering van digitale cadeaubonnen die in de loop van november ingeruild werden per ongeluk niet op 3 januari doorgevoerd, zoals aangekondigd. Deze creditering zal uitzonderlijk pas op 1 februari plaatsvinden, samen met de digitale cheques die in de loop van december ingeruild werden. Onze excuses.</p>';
-				echo '</div>';
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				// echo '</div>';
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Gelukkig Nieuwjaar! De 83 prijswijzigingen op voeding die van start gingen op 01/01/2022 werden door het verlengde weekend pas op <b>3 januari</b> doorgevoerd in de webshops. Ook de <a href="https://copain.oww.be/nieuwsbericht/2021/12/16/Promos-online--winkel-januari-2022-update" target="_blank">nieuwe promo\'s voor januari</a> werden pas die dag geactiveerd. De gratis chocoladereep bij aankoop van elke 3 pakjes koffie werd online op <b>6 januari</b> gelanceerd. Deze actie kan omwille van de grote keuzevrijheid niet automatisch toegekend worden: de klant dient zelf de kortingscode \'KOFFIECHOC22\' in te geven en vervolgens de gewenste gratis repen te kiezen. De 23 prijswijzigingen op Dopper-producten zitten sinds 4 januari correct in het ERP-systeem van MDM en zullen op <b>8 januari</b> in de webshops verschijnen. Bedankt voor jullie begrip!</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/01/11/Promos-online--winkel-februari-2022-update" target="_blank">promo voor februari</a> werd geactiveerd. De koffieactie wordt vanaf nu ook expliciet vermeld op de promopagina. Ter herinnering: omwille van de grote keuzevrijheid kan deze korting niet automatisch toegekend worden: de klant dient zelf de code \'KOFFIECHOC22\' in te geven en vervolgens de gewenste gratis repen aan te duiden.</p>';
+				echo '</div>';
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
 					echo '<p>Het boek rond 50 jaar Oxfam-Wereldwinkels werd toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
@@ -7824,11 +7822,11 @@
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
-				// 20260 RAZA Pinot Gris, 23507 BIO Thee 4 smaken assortiment 1,8 g x 25 x 4 (THT: 15/01/2022), 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
+				// 24117 BIO Witte chocolade 50 g (THT: 23/02/2022), 24501 Noussines (THT: 25/02/2022), 27057 Couscous (in omschakeling naar BIO) (THT: 31/03/2022), 27117 ‘Petit poussin’ rijst (THT: 16/03/2022), 27205 Noedels witte rijst, 27502 Minipapaja’s (THT: 31/01/2022), 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28321 Pepermolen zongedroogde tomaat (THT: 31/03/2022), 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
 				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 19073 Geschenkencheque 5 euro (geldig tot 31/12/2021), 19074 Geschenkencheque 15 euro (geldig tot 31/12/2021), 19075 Geschenkencheque 25 euro (geldig tot 31/12/2021), 23705 BIO Rooibos African Sunset 1,8 g x 20, 24647 Schaapjes melkchocolade 3 x 25 g, 25218 Chocolade amandelnoten, 27998 BIO Mosterdsalsa en 28327 Zeezout mix chili-peper.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-warning">';
+					echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is, of geen enkele webshop ze nog op voorraad had: 20260 RAZA Pinot Gris (zie wijntabel), 20811 JUSTE Bruin bier clip 4 x 33 cl (THT: 31/12/2021), 20812 JUSTE Bruin bier 33 cl (THT: 31/12/2021), 19238 Biergeschenkset JUSTE Bruin (THT: 31/12/2021) en 23507 BIO Thee 4 smaken assortiment 1,8 g x 25 x 4 (THT: 15/01/2022).</p>';
+				echo '</div>';
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
 				}

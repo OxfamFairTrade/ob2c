@@ -136,21 +136,21 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 </li>
 
 <?php if ( wc_get_loop_prop('current_page') === 1 ) : ?>
+    <?php global $woocommerce_loop; ?>
     <?php $vertical_shown = false; ?>
     <?php $koffiechoc22 = new WC_Coupon('koffiechoc22'); ?>
     <!-- Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit! -->
     <?php if ( $koffiechoc22->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $koffiechoc22->get_date_expires()->date_i18n('Y-m-d') ) : ?>
-        <?php if ( is_product_tag('promotie') ) : ?>
-            <?php if ( $position_in_grid === 1 ) : ?>
-                <li class="promo-banner vertical">
-                    <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products">
-                        <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-staand.jpg' ); ?>" title="<?php echo get_koffiechoc22_disclaimer(); ?>" />
-                    </a>
-                </li>
-                <?php $position_in_grid++; ?>
-                <?php $vertical_shown = true; ?>
-            <?php endif; ?>
+        <?php if ( 1 === 2 and $position_in_grid === 3 ) : ?>
+            <li class="promo-banner vertical">
+                <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products">
+                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-staand.jpg' ); ?>" title="<?php echo get_koffiechoc22_disclaimer(); ?>" />
+                </a>
+            </li>
+            <?php $position_in_grid++; ?>
+            <?php $vertical_shown = true; ?>
         <?php elseif ( ! $vertical_shown and is_woocommerce() and $position_in_grid === 4 ) : ?>
+            <?php write_log( $woocommerce_loop['name'] ); ?>
             <li class="promo-banner horizontal">
                 <?php if ( ! is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
                     <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products">
