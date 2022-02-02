@@ -22,7 +22,7 @@ $long_description = get_the_content();
 		if ( is_national_product( $post->ID ) ) {		
 			if ( stripos( get_permalink(), '/wijn/' ) > 0 ) {
 				// Wijn: toon eerst korte 'lekker bij'-omschrijving, en vervolgens lange sommeliersbeschrijving
-				echo $short_description;
+				echo $short_description.'<br/>';
 				echo $long_description;
 			} else {
 				if ( ! $short_description ) {
@@ -30,8 +30,8 @@ $long_description = get_the_content();
 					echo $long_description;
 				} else {
 					// Als het product géén uitgelichte partner heeft, zou hier enkel de korte beschrijving moeten verschijnen ...
+					echo $long_description.'<br/>';
 					echo $short_description;
-					echo $long_description;
 					
 					// Logica om $featured_partner te bepalen verhuizen van product-origin.php naar content-single-product.php, zodat die info hier ook al beschikbaar is?
 					// global $featured_partner;
