@@ -14,7 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $post;
 $short_description = apply_filters( 'woocommerce_short_description', $post->post_excerpt );
-$long_description = get_the_content();
 
 ?>
 <div class="woocommerce-product-details__short-description entry-content">
@@ -22,15 +21,16 @@ $long_description = get_the_content();
 		if ( is_national_product( $post->ID ) ) {		
 			if ( stripos( get_permalink(), '/wijn/' ) > 0 ) {
 				// Wijn: toon eerst korte 'lekker bij'-omschrijving, en vervolgens lange sommeliersbeschrijving
-				echo $short_description.'<br/>';
-				echo $long_description;
+				echo $short_description;
+				// Géén get_the_content() gebruiken, want dan wordt 'the_content'-filter niet doorlopen en ontbreken de paragrafen
+				the_content();
 			} else {
 				if ( ! $short_description ) {
 					// Toon enkel lange beschrijving
-					echo $long_description;
+					the_content();
 				} else {
 					// Als het product géén uitgelichte partner heeft, zou hier enkel de korte beschrijving moeten verschijnen ...
-					echo $long_description.'<br/>';
+					the_content();
 					echo $short_description;
 					
 					// Logica om $featured_partner te bepalen verhuizen van product-origin.php naar content-single-product.php, zodat die info hier ook al beschikbaar is?
