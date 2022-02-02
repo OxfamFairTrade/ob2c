@@ -136,7 +136,6 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 </li>
 
 <?php if ( wc_get_loop_prop('current_page') === 1 ) : ?>
-    <?php global $woocommerce_loop; ?>
     <?php $vertical_shown = false; ?>
     <?php $koffiechoc22 = new WC_Coupon('koffiechoc22'); ?>
     <!-- Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit! -->
@@ -149,10 +148,11 @@ if ( ! $nm_theme_options['product_action_link'] ) {
             </li>
             <?php $position_in_grid++; ?>
             <?php $vertical_shown = true; ?>
-        <?php elseif ( ! $vertical_shown and is_woocommerce() and $position_in_grid === 4 ) : ?>
+        <?php elseif ( ! $vertical_shown and is_woocommerce() and $woocommerce_loop['name'] !== 'related' and $position_in_grid === 4 ) : ?>
+            <?php global $woocommerce_loop; ?>
             <?php write_log( $woocommerce_loop['name'] ); ?>
             <li class="promo-banner horizontal">
-                <?php if ( ! is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
+                <?php if ( ! is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) and ! is_product_tag('promotie') ) : ?>
                     <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products">
                         <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-liggend.jpg' ); ?>" title="<?php echo get_koffiechoc22_disclaimer(); ?>" />
                     </a>

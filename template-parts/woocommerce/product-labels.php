@@ -61,7 +61,7 @@
 
 		$koffiechoc22 = array( 22005, 22013, 22019, 22023, 22024, 22025, 22026, 22029, 22031, 22200, 22206, 22209, 22706, 22707, 22724, 22725 );
 		if ( in_array( $product->get_sku(), $koffiechoc22 ) ) {
-			$labels['promotion'] = 'KOFFIECHOC22';
+			$labels['promotion'] = 'koffiechoc22';
 		}
 	}
 
