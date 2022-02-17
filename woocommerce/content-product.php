@@ -140,6 +140,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     <?php $koffiechoc22 = new WC_Coupon('koffiechoc22'); ?>
     <!-- Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit! -->
     <?php if ( $koffiechoc22->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $koffiechoc22->get_date_expires()->date_i18n('Y-m-d') ) : ?>
+        <?php global $woocommerce_loop; ?>
         <?php if ( 1 === 2 and $position_in_grid === 3 ) : ?>
             <li class="promo-banner vertical">
                 <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products">
@@ -148,9 +149,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
             </li>
             <?php $position_in_grid++; ?>
             <?php $vertical_shown = true; ?>
-        <?php elseif ( ! $vertical_shown and is_woocommerce() and $woocommerce_loop['name'] !== 'related' and $position_in_grid === 4 ) : ?>
-            <?php global $woocommerce_loop; ?>
-            <?php write_log( $woocommerce_loop['name'] ); ?>
+        <?php elseif ( ! $vertical_shown and is_woocommerce() and $woocommerce_loop['name'] === '' and $position_in_grid === 4 ) : ?>
             <li class="promo-banner horizontal">
                 <?php if ( ! is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) and ! is_product_tag('promotie') ) : ?>
                     <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products">
