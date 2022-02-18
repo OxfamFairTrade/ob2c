@@ -63,6 +63,7 @@
 					'08899' => array( 'issuer' => 'Gezinsbond', 'value' => 50 ),
 					'08900' => array( 'issuer' => 'Gezinsbond', 'value' => 25 ),
 					'08917' => array( 'issuer' => 'Cera', 'value' => 30 ),
+					'08924' => array( 'issuer' => 'CM', 'value' => 10 ),
 				);
 			}
 
