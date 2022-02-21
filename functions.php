@@ -4140,6 +4140,11 @@
 							$sku = 'WGCD252022';
 							$ean = '5400164190534';
 							break;
+							
+						case 10:
+							$sku = 'WGCD102022';
+							$ean = '5400164190442';
+							break;
 
 						default:
 							$sku = 'WGCD302022';
@@ -7867,7 +7872,7 @@
 				// echo '</div>';
 				
 				echo '<div class="notice notice-info">';
-					echo '<p>Eind februari gaat een nieuwe actie van start met digitale vouchers, uitgereikt aan personeelsleden van Christelijke Mutualiteit. De verwerking verloopt volledig analoog als bij <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">de Gezinsbond- en Cera-cheques</a>. Enige verschil is het kleinere bedrag: 10 i.p.v. 25, 30 of 50 euro. Een nieuwe artikelcode volgt in de ShopPlus-update van 1 maart en wordt spoedig toegevoegd aan het scanblad. Meer info in de webshopnieuwsbrief van 21 februari!</p>';
+					echo '<p>Eind februari gaat een nieuwe actie van start met digitale vouchers, uitgereikt aan personeelsleden van Christelijke Mutualiteit. De verwerking verloopt volledig analoog als bij <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">de Gezinsbond- en Cera-cheques</a>. Enige verschil is het kleinere bedrag: 10 i.p.v. 25, 30 of 50 euro. Een nieuwe artikelcode WGCD102022 volgt in de ShopPlus-update van 1 maart en wordt spoedig toegevoegd aan het scanblad. Meer info in de webshopnieuwsbrief van 21 februari!</p>';
 				echo '</div>';
 				
 				echo '<div class="notice notice-success">';
