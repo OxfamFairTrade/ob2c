@@ -60,7 +60,7 @@ foreach ( $order->get_fees() as $fee_item ) {
 
 if ( count( $voucher_codes ) > 0 ) {
 	$percentage = ( $order->get_total() > 0 ) ? 'gedeeltelijk' : 'volledig';
-	echo '<p><b>Deze bestelling werd '.$percentage.' betaald met '.sprintf( _n( '%d digitale cadeaubon', '%d digitale cadeaubonnen', count( $voucher_codes ) ), count( $voucher_codes ) ).' t.w.v. '.wc_price( $voucher_amount ).'.</b> Gebruik het scanblad om deze korting te registreren in ShopPlus. Het bedrag zal volgende maand automatisch gecrediteerd worden aan de winkel die de bestelling behandelt. Contacteer de <a href="mailto:webshop@oft.be?subject=Terugbetaling digitale cadeaubon in '.$order->get_order_number().'">Helpdesk E-Commerce</a> indien je door onvoorziene omstandigheden een (grote) terugbetaling dient uit te voeren op dit order.</p>';
+	echo '<p><b>Deze bestelling werd '.$percentage.' betaald met '.sprintf( _n( '%d digitale cadeaubon', '%d digitale cadeaubonnen', count( $voucher_codes ) ), count( $voucher_codes ) ).' t.w.v. '.wc_price( $voucher_amount ).'.</b> Gebruik het scanblad om deze korting te registreren in ShopPlus. Als het order succesvol afgerond wordt, zal het bedrag rond '.date_i18n( 'j F Y', strtotime( '+1 weekday', strtotime('last day of next month') ) ).' automatisch gecrediteerd worden aan de winkel die de bestelling behandelde. Contacteer de <a href="mailto:webshop@oft.be?subject=Terugbetaling digitale cadeaubon in '.$order->get_order_number().'">Helpdesk E-Commerce</a> indien je door onvoorziene omstandigheden een (grote) terugbetaling dient uit te voeren op dit order.</p>';
 }
 
 if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
