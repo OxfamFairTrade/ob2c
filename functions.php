@@ -7871,10 +7871,6 @@
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				// echo '</div>';
 				
-				echo '<div class="notice notice-info">';
-					echo '<p>Eind februari gaat een nieuwe actie van start met digitale vouchers, uitgereikt aan personeelsleden van Christelijke Mutualiteit. De verwerking verloopt volledig analoog als bij <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">de Gezinsbond- en Cera-cheques</a>. Enige verschil is het kleinere bedrag: 10 i.p.v. 25, 30 of 50 euro. Een nieuwe artikelcode WGCD102022 volgt in de ShopPlus-update van 1 maart en wordt spoedig toegevoegd aan het scanblad. Meer info in de webshopnieuwsbrief van 21 februari!</p>';
-				echo '</div>';
-				
 				echo '<div class="notice notice-success">';
 					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/01/11/Promos-online--winkel-februari-2022-update" target="_blank">promo voor februari</a> werd geactiveerd. De koffieactie wordt vanaf nu ook expliciet vermeld op de promopagina. Ter herinnering: omwille van de grote keuzevrijheid kan deze korting niet automatisch toegekend worden. De klant dient zelf de code \'koffiechoc22\' in te geven en vervolgens de gewenste gratis repen aan te duiden.</p>';
 				echo '</div>';
@@ -7938,7 +7934,7 @@
 			}
 
 			echo '<div class="notice notice-info">';
-				echo '<p>Op 1 oktober ging de actie i.s.m. Cera van start. Er worden nog steeds veel digitale geschenkencheques ingeruild. <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">Download de handleiding</a> voor alle praktische details.</p>';
+				echo '<p>Op 21 februari ging een nieuwe actie van start met digitale vouchers, uitgereikt aan personeelsleden van Christelijke Mutualiteit. De verwerking verloopt volledig analoog als bij <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">de Gezinsbond- en Cera-cheques</a>. Enige verschil is het kleinere bedrag: 10 i.p.v. 25, 30 of 50 euro. Een nieuwe artikelcode WGCD102022 volgt later deze week in de ShopPlus-update voor maart en is inmiddels toegevoegd aan <a href="https://copain.oww.be/l/nl/library/download/urn:uuid:027125de-b104-4946-a55d-b67f0ac47d67/028-nuttige_barcodes-02-2022.pdf?format=save_to_disk">het scanblad</a>. Meer info in <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:49ec55a0-282e-42dd-838a-96c8f1a21b29" target="_blank">de webshopnieuwsbrief van 22 februari</a>, met o.a. een handleiding om de bonnen toch reeds te verwerken in ShopPlus.</p>';
 			echo '</div>';
 		}
 
