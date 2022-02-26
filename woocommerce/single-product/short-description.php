@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-global $post;
+global $post, $featured_partner;
 $short_description = apply_filters( 'woocommerce_short_description', $post->post_excerpt );
 
 ?>
@@ -30,16 +30,11 @@ $short_description = apply_filters( 'woocommerce_short_description', $post->post
 					the_content();
 				} else {
 					// Als het product géén uitgelichte partner heeft, zou hier enkel de korte beschrijving moeten verschijnen ...
-					the_content();
-					echo $short_description;
-					
-					// Logica om $featured_partner te bepalen verhuizen van product-origin.php naar content-single-product.php, zodat die info hier ook al beschikbaar is?
-					// global $featured_partner;
-					// if ( $featured_partner ) {
-					// 	echo $long_description;
-					// } else {
-					// 	echo $short_description;
-					// }
+					if ( $featured_partner ) {
+						the_content();
+					} else {
+						echo $short_description;
+					}
 				}
 			}
 		} else {

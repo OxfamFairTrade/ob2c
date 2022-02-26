@@ -78,6 +78,32 @@ if ( post_password_required() ) {
     echo get_the_password_form();
     return;
 }
+
+// Instellen als extra global, zodat info ook beschikbaar is in short-description.php (zonder expliciet door te geven als argument)
+global $featured_partner;
+
+$partners = array();
+$featured_partner = false;
+$partner_terms = get_partner_terms_by_product( $product );
+
+if ( count( $partner_terms ) > 0 ) {
+    foreach ( $partner_terms as $term_id => $partner_name ) {
+        $partners[] = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
+    }
+
+    $a_partners = wp_list_filter( $partners, array( 'type' => 'A' ) );
+    $b_partners = wp_list_filter( $partners, array( 'type' => 'B' ) );
+    
+    // Zoek een random A/B-partner om uit te lichten
+    if ( count( $a_partners ) > 0 ) {
+        $featured_partner = $a_partners[ array_rand( $a_partners ) ];
+    } elseif ( count( $b_partners ) > 0 ) {
+        $featured_partner = $b_partners[ array_rand( $b_partners ) ];
+    }
+
+    // var_dump_pre( $partners );
+    // var_dump_pre( $featured_partner );
+}
 ?>
 
 <div id="product-<?php the_ID(); ?>" <?php wc_product_class( $post_class, $product ); ?>>
@@ -130,7 +156,7 @@ if ( post_password_required() ) {
 	<div class="container product-origin-block">
         <div class="col-row">
             <div class="col-md-12">
-                <?php get_template_part( 'template-parts/woocommerce/product-origin' ); ?>
+                <?php get_template_part( 'template-parts/woocommerce/product-origin', NULL, array( 'partners' => $partners ) ); ?>
             </div>
         </div>
     </div>

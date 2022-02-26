@@ -1,5 +1,5 @@
 <?php 
-	global $product, $partners, $featured_partner;
+	global $product, $featured_partner;
 	
 	// @toDo: Globals vervangen door template parameters (WP 5.5+)
 	global $food_api_labels, $oft_quality_data;
