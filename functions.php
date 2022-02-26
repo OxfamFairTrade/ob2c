@@ -3465,8 +3465,9 @@
 		
 		if ( get_current_blog_id() === 25 ) {
 			$address_fields['blog_'.get_current_blog_id().'_client_number'] = array(
-				'label' => 'Klantnummer (te bewaren op order)',
 				'type' => 'hidden',
+				'label' => 'Klantnummer',
+				'class' => array('hidden'),
 			);
 		}
 
@@ -4337,9 +4338,12 @@
 		}
 		$orderrec->addChild( 'boeken_code', $shop_codes[ $location ] );
 		
+		$client_number_key = 'blog_'.get_current_blog_id().'_client_number';
 		$customer = new WC_Customer( $wc_order->get_customer_id() );
-		if ( $customer and ! empty( $customer->get_meta('blog_'.get_current_blog_id().'_client_number') ) ) {
-			$client_number_adsolut = $customer->get_meta('blog_'.get_current_blog_id().'_client_number');
+		if ( ! empty( $wc_order->get_meta( $client_number_key ) ) ) {
+			$client_number_adsolut = $wc_order->get_meta( $client_number_key );
+		} elseif ( $customer and ! empty( $customer->get_meta( $client_number_key ) ) ) {
+			$client_number_adsolut = $customer->get_meta( $client_number_key );
 		} else {
 			// Nieuw nummer aanmaken in webshop
 			$client_number_adsolut = get_option( 'ob2c_last_local_client_number', 900000 ) + 1;
@@ -4368,10 +4372,10 @@
 			$orderrec->addChild( 'relaties_postcode', $wc_order->get_billing_postcode() );
 			$orderrec->addChild( 'relaties_gemeente', $wc_order->get_billing_city() );
 			// BTW-nodes weglaten indien niet van toepassing?
-			$orderrec->addChild( 'relaties_btwnr', '0694604330' );
+			$orderrec->addChild( 'relaties_btwnr', '' );
 			$orderrec->addChild( 'relaties_landen_code_0', 'BE' );
 			// P = Particulier, H = Handelaar, I = Intracommunautaire
-			$orderrec->addChild( 'relaties_btwregimes_btwregime', 'H' );
+			$orderrec->addChild( 'relaties_btwregimes_btwregime', 'P' );
 			// N - Nederlands, F - Frans, E - Engels, D - Duits
 			$orderrec->addChild( 'relaties_taalcodes_taalcode', 'N' );
 			$orderrec->addChild( 'relaties_email', $wc_order->get_billing_email() );
@@ -7920,18 +7924,18 @@
 						$skus = array( 23695, 24529, 24631, 24634, 24642, 24648, 28021 );
 						// Augustusmagazine en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
 						// $crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '94068' );
-						// foreach ( $skus as $sku ) {
-						// 	$product_id = wc_get_product_id_by_sku( $sku );
-						// 	if ( $product_id ) {
-						// 		$product = wc_get_product($product_id);
-						// 		echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-						// 	}
-						// }
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
 					echo '</ul><p>';
 					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list-koffie">Voorraadbeheer</a>\'. ';
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke olijfolie je beschikbaar houdt/maakt: de vierge van vorig jaar, of de (duurdere) extra vierge van dit jaar, die sinds half februari bestelbaar is.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke olijfolie je beschikbaar houdt/maakt: de vierge van vorig jaar, of de (duurdere) extra vierge van dit jaar, die sinds half februari bestelbaar is. De sintproducten vertrokken naar de Spaanse zon.</p>';
 				echo '</div>';
 				
 				// if ( get_current_blog_id() !== 1 ) {
@@ -7947,11 +7951,11 @@
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
 				// echo '</div>';
 				
-				// 24117 BIO Witte chocolade 50 g (THT: 23/02/2022), 24501 Noussines (THT: 25/02/2022), 27057 Couscous (in omschakeling naar BIO) (THT: 31/03/2022), 27117 ‘Petit poussin’ rijst (THT: 16/03/2022), 27205 Noedels witte rijst, 27502 Minipapaja’s (THT: 31/01/2022), 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28321 Pepermolen zongedroogde tomaat (THT: 31/03/2022), 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
+				// 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
 				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
-				echo '<div class="notice notice-warning">';
-					echo '<p>Deze uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 20260 RAZA Pinot Gris (zie <a href="https://bestelweb.oww.be/l/nl/library/download/urn:uuid:8e4e76cd-23c1-4847-8b61-3ddc31ffcd3c/houdbaarheidstabel+wijnen+juli+2021.pdf?format=save_to_disk" target="_blank">wijntabel</a>), 20811 JUSTE Bruin bier clip 4 x 33 cl (THT: 31/12/2021), 20812 JUSTE Bruin bier 33 cl (THT: 31/12/2021), 19238 Biergeschenkset JUSTE Bruin (THT: 31/12/2021) en 23507 BIO Thee 4 smaken assortiment 1,8 g x 25 x 4 (THT: 15/01/2022).</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>Een volgende reeks uitgefaseerde producten werd uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 24117 BIO Witte chocolade 50 g (THT: 23/02/2022), 24501 Noussines (THT: 25/02/2022), 27057 Couscous (in omschakeling naar BIO) (THT: 31/03/2022), 27117 ‘Petit poussin’ rijst (THT: 16/03/2022), 27502 Minipapaja’s (THT: 31/01/2022) en 28321 Pepermolen zongedroogde tomaat (THT: 31/03/2022).</p>';
+				// echo '</div>';
 				
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
