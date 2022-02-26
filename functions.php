@@ -7914,10 +7914,6 @@
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				// echo '</div>';
 				
-				echo '<div class="notice notice-warning">';
-					echo '<p>In de loop van februari werd onverwacht een prijsverhoging doorgevoerd op 24614 Hart fondantchocolade (2,95 => 3,15 euro), 24644 Hart melkchocolade (2,85 => 2,95 euro) en 24645 Minifiguurtjes melkchocolade 5 x 15 g (2,85 => 3,15 euro). De webshops werden in overeenstemming gebracht met ShopPlus. Gewijzigde prijskaartjes volgen later!</p>';
-				echo '</div>';
-				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
 					echo '<p>Het paasassortiment en twee nieuwe producten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
@@ -7936,6 +7932,10 @@
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke olijfolie je beschikbaar houdt/maakt: de vierge van vorig jaar, of de (duurdere) extra vierge van dit jaar, die sinds half februari bestelbaar is. De sintproducten vertrokken naar de Spaanse zon.</p>';
+				echo '</div>';
+				
+				echo '<div class="notice notice-warning">';
+					echo '<p>In de loop van februari werd onverwacht een prijsverhoging doorgevoerd op 24614 Hart fondantchocolade (2,95 => 3,15 euro), 24644 Hart melkchocolade (2,85 => 2,95 euro) en 24645 Minifiguurtjes melkchocolade 5 x 15 g (2,85 => 3,15 euro). De webshops werden in overeenstemming gebracht met ShopPlus. Gewijzigde prijskaartjes volgen later!</p>';
 				echo '</div>';
 				
 				// if ( get_current_blog_id() !== 1 ) {

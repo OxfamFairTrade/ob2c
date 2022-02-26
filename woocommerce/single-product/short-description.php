@@ -26,13 +26,18 @@ $short_description = apply_filters( 'woocommerce_short_description', $post->post
 				the_content();
 			} else {
 				if ( ! $short_description ) {
-					// Toon enkel lange beschrijving
+					// Toon noodgedwongen lange beschrijving
 					the_content();
+				} elseif ( strlen( get_the_content() ) < 10 ) {
+					// Toon noodgedwongen korte beschrijving
+					echo $short_description;
 				} else {
-					// Als het product géén uitgelichte partner heeft, zou hier enkel de korte beschrijving moeten verschijnen ...
+					// Beide productteksten bestaan
 					if ( $featured_partner ) {
 						the_content();
 					} else {
+						// Als het product géén uitgelichte partner heeft, mag hier enkel de korte beschrijving verschijnen
+						// De lange beschrijving verschijnt dan op de plek van de uitgelichte partner 
 						echo $short_description;
 					}
 				}
