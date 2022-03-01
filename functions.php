@@ -2565,7 +2565,7 @@
 		}
 
 		if ( get_current_blog_id() === 25 ) {
-			$actions['oxfam_generate_xml'] = 'Maak XML aan voor Adsolut';
+			$actions['oxfam_generate_xml'] = 'Regenereer XML voor Adsolut';
 		}
 
 		unset( $actions['send_order_details'] );
@@ -4305,8 +4305,7 @@
 				}
 				
 				if ( get_current_blog_id() === 25 ) {
-					// Voorlopig nog niet inschakelen!
-					// ob2c_create_xml_for_adsolut( $order );
+					ob2c_create_xml_for_adsolut( $order );
 				}
 			} catch ( InvalidArgumentException $e ) {
 				$logger = wc_get_logger();
@@ -4347,7 +4346,7 @@
 		} else {
 			// Nieuw nummer aanmaken in webshop
 			$client_number_adsolut = get_option( 'ob2c_last_local_client_number', 900000 ) + 1;
-			update_option( 'ob2c_last_local_client_number', $client_number_adsolut );
+			update_option( 'ob2c_last_local_client_number', $client_number_adsolut, false );
 			
 			// Enkel indien de gebruiker ingelogd was, kunnen we het klantnummer opslaan!
 			if ( $customer ) {
@@ -4356,7 +4355,7 @@
 		}
 		$orderrec->addChild( 'relaties_code', $client_number_adsolut );
 		
-		// Opgepast: indien een waarde leeg is, wordt er een node geopend i.p.v. toegevoegd!
+		// Opgepast: indien een waarde leeg is, wordt er een node geopend i.p.v. toegevoegd! ENKEL IN HTML PREVIEW
 		$orderrec->addChild( 'naam', $wc_order->get_billing_first_name().' '.$wc_order->get_billing_last_name() );
 		$orderrec->addChild( 'adres1', $wc_order->get_billing_address_1() );
 		$orderrec->addChild( 'importland', $wc_order->get_billing_country() );
@@ -6687,7 +6686,9 @@
 	add_action( 'admin_menu', 'oxfam_register_custom_pages' );
 
 	function oxfam_register_custom_pages() {
-		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', '56' );
+		// @toActivate: rechten verlagen naar 'edit_shop_orders'
+		add_submenu_page( 'woocommerce', 'Ingeruilde vouchers', 'Vouchers', 'create_sites', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 100 );
+		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', 56 );
 		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
 		// Opgelet: vergeet de nieuwe paginaslugs niet te whitelisten voor de rol 'local_manager' in User Role Editor!
 		add_submenu_page( 'oxfam-products-list', 'Chocolade', 'Chocolade', 'manage_network_users', 'oxfam-products-list-chocolade', 'oxfam_products_list_callback' );
@@ -6704,7 +6705,7 @@
 		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
 
-		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', '58' );
+		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', 58 );
 		if ( is_main_site() ) {
 			// Enkel tonen op hoofdniveau
 			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
@@ -6721,16 +6722,16 @@
 			'Voucher Export',
 			'create_sites',
 			'woonet-woocommerce-vouchers-export',
-			'oxfam_vouchers_callback'
+			'oxfam_export_vouchers_callback'
 		);
 	}
 
+	function oxfam_export_vouchers_callback() {
+		include get_stylesheet_directory().'/export-used-vouchers.php';
+	}
+	
 	function oxfam_photos_callback() {
 		include get_stylesheet_directory().'/register-bulk-images.php';
-	}
-
-	function oxfam_vouchers_callback() {
-		include get_stylesheet_directory().'/export-used-vouchers.php';
 	}
 
 	function oxfam_options_callback() {
@@ -6743,6 +6744,10 @@
 
 	function oxfam_products_list_callback() {
 		include get_stylesheet_directory().'/update-stock-list.php';
+	}
+	
+	function oxfam_vouchers_callback() {
+		include get_stylesheet_directory().'/get-vouchers-list.php';
 	}
 
 	// Vervang onnutige links in netwerkmenu door Oxfam-pagina's
