@@ -3,7 +3,7 @@
 	Author:			Frederik Neirynck
 	Author URI:		https://www.oxfamfairtrade.be
 	Description:	Toevoegingen voor custom Oxfam-pagina's in de back-end.
-	Version:		1.3.2
+	Version:		1.3.3
 	Text Domain:	oxfam-admin
 */
 
@@ -28,22 +28,22 @@
 
 .dashboard_page_relevanssi-premium-relevanssi .postbox-container {
 	width: 100%;
-}
-
-.dashboard_page_relevanssi-premium-relevanssi .postbox-container .widefat {
-	margin-bottom: 4em;
-}
-
-.dashboard_page_relevanssi-premium-relevanssi .postbox-container th,
-.dashboard_page_relevanssi-premium-relevanssi .postbox-container tr {
-	text-align: center;
+	
+	.widefat {
+		margin-bottom: 4em;
+	}
+	
+	th,
+	tr {
+		text-align: center;
+	}
 }
 
 #oxfam-products {
 	display: table;
 	width: 100%;
 	border-collapse: separate;
-	border-spacing: 0px 25px;
+	border-spacing: 0px 10px;
 
 	.pane-left {
 		display: table-cell;
@@ -113,35 +113,61 @@
 	}
 }
 
-#oxfam-options .left {
-	width: 40%;
-	min-width: 300px;
+#oxfam-options {
+	.left {
+		width: 40%;
+		min-width: 300px;
+	}
+
+	.right {
+		width: 60%;
+		min-width: 300px;
+	}
+	
+	.text-input {
+		width: 50%;
+		min-width: 100px;
+	}
+	
+	.left {
+		width: 30%;
+		min-width: 400px;
+		text-align: right;
+	}
+	
+	.right {
+		width: 70%;
+		min-width: 300px;
+	}
+	
+	.text-input {
+		width: 70%;
+		max-width: 400px;
+	}
 }
 
-#oxfam-options .right {
-	width: 60%;
-	min-width: 300px;
-}
-
-#oxfam-options .text-input {
-	width: 50%;
-	min-width: 100px;
-}
-
-#oxfam-options .left {
-	width: 30%;
-	min-width: 400px;
-	text-align: right;
-}
-
-#oxfam-options .right {
-	width: 70%;
-	min-width: 300px;
-}
-
-#oxfam-options .text-input {
-	width: 70%;
-	max-width: 400px;
+#oxfam-vouchers {
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin-bottom: 5px;
+	}
+	
+	.column {
+		&.first-column {
+			min-width: 225px;
+		}
+		
+		ul {
+			list-style: initial;
+			margin-inline-start: 1.5em;
+			margin: 0;
+		}
+	}
+	
+	.warning {
+		color: orange;
+	}
 }
 
 /* Handmatige knop 'Bestelling toevoegen' verbergen op overzichtsscherm (ondanks beperkte rechten) */
@@ -173,7 +199,7 @@ button.do-manual-refund {
 	display: none !important;
 }
 
-/* Meldingen van framework voor WP Mail Log verbergen*/
+/* Meldingen van framework voor WP Mail Log verbergen */
 div.redux-notice {
 	display: none;
 }

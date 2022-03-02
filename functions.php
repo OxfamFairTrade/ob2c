@@ -1707,7 +1707,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.2' );
+		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.3' );
 	}
 
 	// Fixes i.v.m. cURL NIET MEER NODIG?
@@ -6686,8 +6686,7 @@
 	add_action( 'admin_menu', 'oxfam_register_custom_pages' );
 
 	function oxfam_register_custom_pages() {
-		// @toActivate: rechten verlagen naar 'edit_shop_orders'
-		add_submenu_page( 'woocommerce', 'Ingeruilde digicheques', 'Digicheques', 'create_sites', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 100 );
+		add_submenu_page( 'woocommerce', 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 100 );
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', 56 );
 		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
 		// Opgelet: vergeet de nieuwe paginaslugs niet te whitelisten voor de rol 'local_manager' in User Role Editor!
@@ -7940,7 +7939,7 @@
 				echo '</div>';
 				
 				echo '<div class="notice notice-warning">';
-					echo '<p>In de loop van februari werd onverwacht een prijsverhoging doorgevoerd op 24614 Hart fondantchocolade (2,95 => 3,15 euro), 24644 Hart melkchocolade (2,85 => 2,95 euro) en 24645 Minifiguurtjes melkchocolade 5 x 15 g (2,85 => 3,15 euro). De webshops werden in overeenstemming gebracht met ShopPlus. Gewijzigde prijskaartjes volgen later!</p>';
+					echo '<p>In de loop van februari werd onverwacht een prijsverhoging doorgevoerd op 24614 Hart fondantchocolade (2,95 => 3,15 euro), 24644 Hart melkchocolade (2,85 => 2,95 euro) en 24645 Minifiguurtjes melkchocolade 5 x 15 g (2,85 => 3,15 euro). De webshops werden in overeenstemming gebracht met ShopPlus. <a href="https://copain.oww.be/l/library/download/17670/Digitale+update+%28maart+2022%29.pdf?format=save_to_disk" target="_blank">Download de gewijzigde prijskaartjes op Copain.</a></p>';
 				echo '</div>';
 				
 				// if ( get_current_blog_id() !== 1 ) {
