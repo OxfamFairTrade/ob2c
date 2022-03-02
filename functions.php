@@ -4403,7 +4403,7 @@
 		$path = WP_CONTENT_DIR.'/uploads/xlsx/'.str_replace( '.xlsx', '.xml', $wc_order->get_meta('_excel_file_name') );
 		if ( $xml->saveXML( $path ) ) {
 			$logger->info( $wc_order->get_order_number().": XML creation succeeded", $context );
-			$wc_order->add_order_note( 'Adsolut gegenereerd en opgeslagen in zelfde map als Excel ('.get_picklist_download_link( $wc_order, true ).').', 0, false );
+			$wc_order->add_order_note( 'XML voor Adsolut gegenereerd en opgeslagen in zelfde map als Excel ('.get_picklist_download_link( $wc_order, true ).').', 0, false );
 		} else {
 			$logger->error( $wc_order->get_order_number().": XML creation failed", $context );
 		}
@@ -6687,7 +6687,7 @@
 
 	function oxfam_register_custom_pages() {
 		// @toActivate: rechten verlagen naar 'edit_shop_orders'
-		add_submenu_page( 'woocommerce', 'Ingeruilde vouchers', 'Vouchers', 'create_sites', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 100 );
+		add_submenu_page( 'woocommerce', 'Ingeruilde digicheques', 'Digicheques', 'create_sites', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 100 );
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', 56 );
 		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
 		// Opgelet: vergeet de nieuwe paginaslugs niet te whitelisten voor de rol 'local_manager' in User Role Editor!
@@ -6746,7 +6746,7 @@
 		include get_stylesheet_directory().'/update-stock-list.php';
 	}
 	
-	function oxfam_vouchers_callback() {
+	function oxfam_vouchers_list_callback() {
 		include get_stylesheet_directory().'/get-vouchers-list.php';
 	}
 

@@ -1,17 +1,28 @@
+
 <?php
 	if ( ! defined('ABSPATH') ) exit;
 ?>
 
 <div class="wrap">
-	<h1>Ingeruilde vouchers</h1>
+	<h1>Ingeruilde digicheques</h1>
 
-	<p>Hier tonen we alle vouchers van de voorbije maanden, en hun crediteringsstatus.</p>
+	<p>Hieronder vind je een overzicht van alle vouchers voor Gezinsbond, Cera, CM, ... die de voorbije 3 maanden ingeruild werden in deze webshop, inclusief crediteringsstatus.</p>
 
 	<div id="oxfam-products" style="border-spacing: 0 10px;">
 		<?php
+			$credit_refs = array(
+				'08899' => array( 'issuer' => 'Gezinsbond', 'value' => 50 ),
+				'08900' => array( 'issuer' => 'Gezinsbond', 'value' => 25 ),
+				'08917' => array( 'issuer' => 'Cera', 'value' => 30 ),
+				'08924' => array( 'issuer' => 'CM', 'value' => 10 ),
+			);
+			
 			global $wpdb;
-			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `blog_id` = '%s' AND DATE(`used`) BETWEEN '%s' AND '%s' AND DATE(`credited`) > '%s'";
+			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `blog_id` = %d AND DATE(`used`) BETWEEN '%s' AND '%s' AND DATE(`credited`) > '%s' ORDER BY `used` ASC";
 			$rows = $wpdb->get_results( $wpdb->prepare( $query, get_current_blog_id(), '2021-01-01', '2022-12-31', '2022-01-01' ) );
+			
+			$credit_dates = array_column( $rows, 'credited' );
+			var_dump_pre( $credit_dates );
 			
 			foreach ( $rows as $key => $row ) {
 				$args = array(
@@ -25,13 +36,13 @@
 					$current_blog = get_blog_details();
 					if ( $row->order === 'OFFLINE' ) {
 						$blog_path = str_replace( '/', '', $current_blog->path );
+						echo $row->order.' - '.$row->used.' - '.$row->code.' - '.wc_price( $row->value ).'<br/>';
 					} else {
 						$order = reset( $orders );
-						
-						var_dump_pre( $row );
+						echo '<a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> - '.date( 'd/m/Y H:i', strtotime( $row->used ) ).' - '.$row->code.': '.wc_price( $row->value ).' gecrediteerd op '.date( 'd/m/Y', strtotime( $row->credited ) ).'<br/>';
 						
 						if ( $order->get_status() !== 'completed' ) {
-							echo 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> is nog niet afgerond, voucher '.$row->code.' niet opgenomen in export';
+							echo 'is nog niet afgerond, zal niet gecrediteerd worden<br/>';
 							continue;
 						}
 			
@@ -42,7 +53,7 @@
 						}
 			
 						if ( strlen( $blog_path ) < 1 ) {
-							echo 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> is niet toegekend aan een winkel, voucher '.$row->code.' niet opgenomen in export';
+							echo 'is niet toegekend aan een winkel, kan niet gecrediteerd worden<br/>';
 							continue;
 						}
 			
@@ -52,13 +63,13 @@
 							foreach ( $refunds as $refund ) {
 								$refund_amount += $refund->get_amount();
 							}
-							$warning = 'Bestelling <a href="'.$order->get_edit_order_url().'" target="_blank">'.$row->order.'</a> bevat een terugbetaling t.w.v. '.wc_price( $refund_amount );
+							$warning = 'bevat een terugbetaling t.w.v. '.wc_price( $refund_amount );
 							if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
 								$warning .= ' die groter is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: red">dit mag in principe niet</span>';
 							} else {
 								$warning .= ' die kleiner is dan het restbedrag dat niet met vouchers betaald werd, <span style="color: green">geen probleem</span>';
 							}
-							echo $warning;
+							echo $warning.'<br/>';
 						}
 					}
 				}
