@@ -8,6 +8,8 @@
 
 	<p>Hieronder vind je een overzicht van alle vouchers (uitgegeven door Gezinsbond, Cera, CM, ...) die de voorbije 4 maanden ingeruild werden in deze webshop.<br/>
 	De weergave is gegroepeerd per kredietnota, en vervolgens per bestelling.</p>
+	
+	<p>&nbsp;</p>
 
 	<div id="oxfam-vouchers">
 		<?php
@@ -158,17 +160,21 @@
 						echo '</div>';
 					}
 					
+					echo '</div>';
+				}
+				
+				if ( $credit_date !== '0000-00-00' ) {
 					$sum = 0;
 					$output = array();
 					foreach ( $credit_refs as $credit_ref => $credit_ref_info ) {
 						if ( $credit_ref_info['count'] > 0 ) {
 							$sum += $credit_ref_info['count'] * $credit_ref_info['value'];
-							$output[] = $credit_ref_info['count'].'x '.$paid_credit_ref;
+							$output[] = $credit_ref_info['count'].'x '.$credit_ref.' à '.wc_price( $credit_ref_info['value'] );
 						}
 					}
-					echo '<h4>Gecrediteerd: '.implode( ', ', $output ).' = '.wc_price( $sum ).'</h4>';
-					echo '</div>';
+					echo '<h4>Gecrediteerd: '.implode( ' + ', $output ).' = '.wc_price( $sum ).'</h4>';
 				}
+				echo '<p>&nbsp;</p>';
 			}
 		?>
 	</div>
