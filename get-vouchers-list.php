@@ -7,7 +7,7 @@
 	<h1>Ingeruilde digicheques</h1>
 
 	<p>Hieronder vind je een overzicht van alle vouchers (uitgegeven door Gezinsbond, Cera, CM, ...) die de voorbije 4 maanden ingeruild werden in deze webshop.<br/>
-	De weergave is gegroepeerd per kredietnota, en vervolgens per bestelling. (Maar misschien is het logischer om te groeperen per crediteringsreferentie?)</p>
+	De weergave is gegroepeerd per kredietnota, en vervolgens per bestelling.</p>
 
 	<div id="oxfam-vouchers">
 		<?php
@@ -20,18 +20,20 @@
 			$credit_dates = array_unique( array_column( $rows, 'credited' ) );
 			rsort( $credit_dates );
 			if ( in_array( '0000-00-00', $credit_dates ) ) {
+				// Blok met nog niet gecrediteerde vouchers bovenaan plaatsen
 				array_unshift( $credit_dates, $last = array_pop( $credit_dates ) );
 			}
 			
-			$credit_refs = array(
-				'08899' => array( 'issuer' => 'Gezinsbond', 'value' => 50 ),
-				'08900' => array( 'issuer' => 'Gezinsbond', 'value' => 25 ),
-				'08917' => array( 'issuer' => 'Cera', 'value' => 30 ),
-				'08924' => array( 'issuer' => 'CM', 'value' => 10 ),
-			);
-			
 			foreach ( $credit_dates as $credit_date ) {
 				$credit_date_formatted = date_i18n( 'j F Y', strtotime( $credit_date ) );
+				
+				// Tellers op 0 zetten
+				$credit_refs = array(
+					'08899' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'count' => 0 ),
+					'08900' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'count' => 0 ),
+					'08917' => array( 'issuer' => 'Cera', 'value' => 30, 'count' => 0 ),
+					'08924' => array( 'issuer' => 'CM', 'value' => 10, 'count' => 0 ),
+				);
 				
 				if ( $credit_date === '0000-00-00' ) {
 					echo '<h2>Nog te verwerken crediteringen</h2>';
@@ -84,71 +86,87 @@
 						}
 						
 						echo '<div class="column first-column">';
-						if ( $order ) {
-							echo '<a href="'.$order->get_edit_order_url().'">'.$order_number.'</a> ('.$order->get_date_created()->date_i18n('d/m/Y').')';
-							
 							if ( $order ) {
-								$refunds = $order->get_refunds();
-								if ( count( $refunds ) > 0 ) {
-									$refund_amount = 0.0;
-									foreach ( $refunds as $refund ) {
-										$refund_amount += $refund->get_amount();
-									}
-									if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
-										$messages[] = 'bevat een terugbetaling t.w.v. '.wc_price( $refund_amount ).' die groter is dan het restbedrag dat niet met vouchers betaald werd!';
+								echo '<a href="'.$order->get_edit_order_url().'">'.$order_number.'</a> ('.$order->get_date_created()->date_i18n('d/m/Y').')';
+								
+								if ( $order ) {
+									$refunds = $order->get_refunds();
+									if ( count( $refunds ) > 0 ) {
+										$refund_amount = 0.0;
+										foreach ( $refunds as $refund ) {
+											$refund_amount += $refund->get_amount();
+										}
+										if ( $refund_amount > ( $order->get_total() - ob2c_get_total_voucher_amount( $order ) ) ) {
+											$text = 'bevat een terugbetaling t.w.v. '.wc_price( $refund_amount ).' die groter is dan het restbedrag dat niet met vouchers betaald werd!';
+											if ( $credit_date === '0000-00-00' ) {
+												$warnings[] = $text;
+											} else {
+												$messages[] = $text;
+											}
+										}
 									}
 								}
+							} else {
+								echo $order_number;
 							}
-						} else {
-							echo $order_number;
-						}
 						echo '</div>';
 						
 						echo '<div class="column second-column">';
-						echo '<ul>';
-						
-						foreach ( $all_codes_for_order_number as $row ) {
-							echo '<li>'.$row->code.' ('.$row->issuer.') t.w.v. '.wc_price( $row->value );
+							echo '<ul>';
 							
-							if ( count( $warnings ) === 0 ) {
-								echo ': ';
+							foreach ( $all_codes_for_order_number as $row ) {
+								echo '<li>'.$row->code.' ('.$row->issuer.') t.w.v. '.wc_price( $row->value );
 								
-								if ( $row->credited > date('Y-m-d') ) {
-									echo 'ingepland voor creditering';
-								} else {
-									if ( $row->credited === '0000-00-00' ) {
-										echo 'creditering nog in te plannen';
+								if ( count( $warnings ) === 0 ) {
+									echo ': ';
+									
+									if ( $row->credited > date('Y-m-d') ) {
+										echo 'ingepland voor creditering';
 									} else {
-										echo 'gecrediteerd';
+										if ( $row->credited === '0000-00-00' ) {
+											echo 'creditering nog in te plannen';
+										} else {
+											echo 'gecrediteerd';
+										}
+									}
+									
+									$filtered_refs = array_filter( $credit_refs, function($ref) use ($row) {
+										// Eventueel $row->expires == $ref['expires'] toevoegen als er bonnen met zelfde waarde maar andere vervaldatum bij komen
+										return ( $row->value == $ref['value'] );
+									});
+									$credit_ref = key( $filtered_refs );
+									
+									$credit_refs[ $credit_ref ]['count']++;
+									echo ' (art.nr. '.$credit_ref.')';
+									
+									if ( $shop_to_credit ) {
+										echo ' aan OWW '.ucfirst( $shop_to_credit );	
 									}
 								}
 								
-								$filtered_refs = array_filter( $credit_refs, function($ref) use ($row) {
-									// Eventueel $row->expires == $ref['expires'] toevoegen als er bonnen met zelfde waarde maar andere vervaldatum bij komen
-									return ( $row->value == $ref['value'] );
-								});
-								echo ' (art.nr. '.key( $filtered_refs ).')';
-								
-								if ( $shop_to_credit ) {
-									echo ' aan OWW '.ucfirst( $shop_to_credit );	
-								}
+								echo '</li>';
+							}
+						
+							if ( count( $warnings ) > 0 ) {
+								echo '<li class="warning">'.implode( ', ', $warnings ).'</li>';
+							}
+							if ( count( $messages ) > 0 ) {
+								echo '<li class="message">'.implode( ', ', $messages ).'</li>';
 							}
 							
-							echo '</li>';
-						}
-						
-						if ( count( $warnings ) > 0 ) {
-							echo '<li class="warning">'.implode( ', ', $warnings ).'</li>';
-						}
-						
-						if ( count( $messages ) > 0 ) {
-							echo '<li class="message">'.implode( ', ', $messages ).'</li>';
-						}
-						
-						echo '</ul>';
+							echo '</ul>';
 						echo '</div>';
 					}
 					
+					$sum = 0;
+					$output = array();
+					foreach ( $credit_refs as $credit_ref => $credit_ref_info ) {
+						if ( $credit_ref_info['count'] > 0 ) {
+							$sum += $credit_ref_info['count'] * $credit_ref_info['value'];
+							$output[] = $credit_ref_info['count'].'x '.$paid_credit_ref;
+						}
+					}
+					echo '<h4>Gecrediteerd: '.implode( ', ', $output ).' = '.wc_price( $sum ).'</h4>';
 					echo '</div>';
 				}
 			}
