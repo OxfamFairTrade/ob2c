@@ -7910,9 +7910,9 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-error">';
-				// 	echo '<p>We onderzoeken momenteel een probleem waarbij sommige webshops op sommige dagen niet opduiken in de resultaten van de winkelzoeker!</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Om de creditering van de vele digitale geschenkencheques overzichtelijker te maken, creëerden we onder \'<a href="admin.php?page=oxfam-vouchers-list">Digicheques</a>\' een handig overzicht van alle codes die de voorbije maanden ingeruild werden in jullie webshop. Je vindt er per kredietnota een overzicht van welke bestellingen er uitbetaald werden. Bovenaan staan de vouchers opgelijst die nog in verwerking zijn, samen met eventuele waarschuwingen.</p>';
+				echo '</div>';
 				
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
@@ -7981,7 +7981,7 @@
 			}
 
 			echo '<div class="notice notice-info">';
-				echo '<p>Op 21 februari ging een nieuwe actie van start met digitale vouchers, uitgereikt aan personeelsleden van Christelijke Mutualiteit. De verwerking verloopt volledig analoog als bij <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">de Gezinsbond- en Cera-cheques</a>. Enige verschil is het kleinere bedrag: 10 i.p.v. 25, 30 of 50 euro. Een nieuwe artikelcode WGCD102022 vind je in <a href="https://copain.oww.be/shopplus" target="_blank">de ShopPlus-update voor maart</a> en is inmiddels toegevoegd aan <a href="https://copain.oww.be/l/nl/library/download/urn:uuid:027125de-b104-4946-a55d-b67f0ac47d67/028-nuttige_barcodes-02-2022.pdf?format=save_to_disk">het scanblad</a>. Meer info in <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:49ec55a0-282e-42dd-838a-96c8f1a21b29" target="_blank">de webshopnieuwsbrief van 22 februari</a>, met o.a. een handleiding om de bonnen toch reeds te verwerken in ShopPlus.</p>';
+				echo '<p>Op 21 februari ging een nieuwe actie van start met digitale vouchers, uitgereikt aan personeelsleden van Christelijke Mutualiteit. De verwerking verloopt volledig analoog als bij <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">de Gezinsbond- en Cera-cheques</a>. Enige verschil is het kleinere bedrag: 10 i.p.v. 25, 30 of 50 euro. Een nieuwe artikelcode WGCD102022 vind je in <a href="https://copain.oww.be/shopplus" target="_blank">de ShopPlus-update voor maart</a> en werd toegevoegd aan <a href="https://copain.oww.be/l/nl/library/download/urn:uuid:027125de-b104-4946-a55d-b67f0ac47d67/028-nuttige_barcodes-02-2022.pdf?format=save_to_disk">het scanblad met nuttige barcodes</a>. Meer info in <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:49ec55a0-282e-42dd-838a-96c8f1a21b29" target="_blank">de webshopnieuwsbrief van 22 februari</a>.</p>';
 			echo '</div>';
 		}
 

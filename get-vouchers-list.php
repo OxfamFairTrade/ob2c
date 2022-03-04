@@ -7,7 +7,7 @@
 	<h1>Ingeruilde digicheques</h1>
 
 	<p>Hieronder vind je een overzicht van alle vouchers (uitgegeven door Gezinsbond, Cera, CM, ...) die de voorbije 4 maanden ingeruild werden in deze webshop.<br/>
-	De weergave is gegroepeerd per kredietnota, en vervolgens per bestelling.</p>
+	De weergave is gegroepeerd per kredietnota, en vervolgens per bestelling. De reële crediteringsdatum kan enkele dagen afwijken van de geafficheerde datum, dit hangt af van de drukte op onze Klantendienst!</p>
 	
 	<p>&nbsp;</p>
 
@@ -39,9 +39,12 @@
 				
 				if ( $credit_date === '0000-00-00' ) {
 					echo '<h2>Nog te verwerken crediteringen</h2>';
-					echo '<p>Deze codes zijn nog niet verwerkt op het Nationaal Secretariaat. Als de bestelling al afgerond is, hoef je zelf niets meer te doen.<br/>Hou er rekening mee dat we een wachtperiode van 1 maand hanteren vòòr we overgaan tot creditering, om ruimte te laten voor retours en correcties.</p>';
+					echo '<p>Deze codes zijn nog niet verwerkt op het Nationaal Secretariaat. Als de bestelling al afgerond is, hoef je zelf niets meer te doen.<br/>Hou er rekening mee dat we een wachtperiode inlassen van min. 1 maand na de besteldatum vòòr we overgaan tot creditering, om ruimte te laten voor retours en correcties.</p>';
 				} else {
 					echo '<h2>Kredietnota van '.$credit_date_formatted.'</h2>';
+					if ( $credit_date === '2022-01-03' ) {
+						echo '<p>Opgelet: door een vergetelheid tijdens de kerstvakantie werd deze creditering uiteindelijk pas rond 1 februari doorgevoerd!</p>';
+					}
 				}
 				
 				// Externe variabelen zijn standaard niet beschikbaar binnen callback, gebruik 'use'!
