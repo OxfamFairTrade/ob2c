@@ -35,7 +35,7 @@
 				
 				if ( $credit_date === '0000-00-00' ) {
 					echo '<h2>Nog te verwerken crediteringen</h2>';
-					echo '<p>Deze codes zijn nog niet verwerkt op het Nationaal Secretariaat. Als de bestelling al afgerond is, hoef je zelf niets meer te doen.<br/>Hou er rekening mee dat we een minimum wachtperiode van 1 maand hanteren vòòr we overgaan tot creditering, om ruimte te laten voor retours en correcties.</p>';
+					echo '<p>Deze codes zijn nog niet verwerkt op het Nationaal Secretariaat. Als de bestelling al afgerond is, hoef je zelf niets meer te doen.<br/>Hou er rekening mee dat we een wachtperiode van 1 maand hanteren vòòr we overgaan tot creditering, om ruimte te laten voor retours en correcties.</p>';
 				} else {
 					echo '<h2>Kredietnota van '.$credit_date_formatted.'</h2>';
 				}
@@ -85,7 +85,7 @@
 						
 						echo '<div class="column first-column">';
 						if ( $order ) {
-							echo '<a href="'.$order->get_edit_order_url().'" target="_blank">'.$order_number.'</a> ('.$order->get_date_created()->date_i18n('d/m/Y').')';
+							echo '<a href="'.$order->get_edit_order_url().'">'.$order_number.'</a> ('.$order->get_date_created()->date_i18n('d/m/Y').')';
 							
 							if ( $order ) {
 								$refunds = $order->get_refunds();
@@ -108,9 +108,11 @@
 						echo '<ul>';
 						
 						foreach ( $all_codes_for_order_number as $row ) {
-							echo '<li>'.$row->code.' ('.$row->issuer.') t.w.v. '.wc_price( $row->value ).': ';
+							echo '<li>'.$row->code.' ('.$row->issuer.') t.w.v. '.wc_price( $row->value );
 							
 							if ( count( $warnings ) === 0 ) {
+								echo ': ';
+								
 								if ( $row->credited > date('Y-m-d') ) {
 									echo 'ingepland voor creditering';
 								} else {
@@ -145,8 +147,6 @@
 						
 						echo '</ul>';
 						echo '</div>';
-					} else {
-						echo '<p>Geen / te veel orders gevonden!</p>';
 					}
 					
 					echo '</div>';
