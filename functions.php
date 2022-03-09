@@ -6682,11 +6682,13 @@
 		send_automated_mail_to_helpdesk( get_webshop_name(true).' paste \''.$option.'\'-tekst aan', '<p>'.$body.'</p>' );
 	}
 
-	// Voeg pagina's toe voor voorraadbeheer en lokale instellingen
-	add_action( 'admin_menu', 'oxfam_register_custom_pages' );
+	// Voeg custom Oxfam-pagina's toe (hoge prioriteit, zodat subpagina's zeker na hoofdpagina's geregistreerd worden)
+	add_action( 'admin_menu', 'oxfam_register_custom_pages', 1000 );
 
 	function oxfam_register_custom_pages() {
-		add_submenu_page( 'woocommerce', 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 100 );
+		// Waarom blijft het 'WooCommerce'-menu niet opengeklapt als we deze pagina bekijken?
+		add_submenu_page( 'woocommerce', 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 75 );
+		
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', 56 );
 		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
 		// Opgelet: vergeet de nieuwe paginaslugs niet te whitelisten voor de rol 'local_manager' in User Role Editor!
