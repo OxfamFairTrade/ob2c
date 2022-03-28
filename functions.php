@@ -7921,28 +7921,24 @@
 				// echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				echo '<div class="notice notice-success">';
-					echo '<p>Het paasassortiment en twee nieuwe producten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 23695, 24529, 24631, 24634, 24642, 24648, 28021 );
-						// Augustusmagazine en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
-						// $crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '94068' );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke olijfolie je beschikbaar houdt/maakt: de vierge van vorig jaar, of de (duurdere) extra vierge van dit jaar, die sinds half februari bestelbaar is. De sintproducten vertrokken naar de Spaanse zon.</p>';
-				echo '</div>';
-				
-				echo '<div class="notice notice-warning">';
-					echo '<p>In de loop van februari werd onverwacht een prijsverhoging doorgevoerd op 24614 Hart fondantchocolade (2,95 => 3,15 euro), 24644 Hart melkchocolade (2,85 => 2,95 euro) en 24645 Minifiguurtjes melkchocolade 5 x 15 g (2,85 => 3,15 euro). De webshops werden in overeenstemming gebracht met ShopPlus. <a href="https://copain.oww.be/l/library/download/17670/Digitale+update+%28maart+2022%29.pdf?format=save_to_disk" target="_blank">Download de gewijzigde prijskaartjes op Copain.</a></p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Het paasassortiment en twee nieuwe producten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 		$skus = array( 23695, 24529, 24631, 24634, 24642, 24648, 28021 );
+				// 		// Augustusmagazine en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
+				// 		// $crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '94068' );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku( $sku );
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke olijfolie je beschikbaar houdt/maakt: de vierge van vorig jaar, of de (duurdere) extra vierge van dit jaar, die sinds half februari bestelbaar is. De sintproducten vertrokken naar de Spaanse zon.</p>';
+				// echo '</div>';
 				
 				// if ( get_current_blog_id() !== 1 ) {
 				// 	$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );

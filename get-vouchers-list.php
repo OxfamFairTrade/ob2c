@@ -175,7 +175,13 @@
 							$output[] = $credit_ref_info['count'].'x '.$credit_ref.' à '.wc_price( $credit_ref_info['value'] );
 						}
 					}
-					echo '<h4>Gecrediteerd: '.implode( ' + ', $output ).' = '.wc_price( $sum ).'</h4>';
+					
+					if ( $credit_date > date('Y-m-d') ) {
+						$prefix = 'Te crediteren';
+					} else {
+						$prefix = 'Gecrediteerd';
+					}
+					echo '<h4>'.$prefix.': '.implode( ' + ', $output ).' = '.wc_price( $sum ).'</h4>';
 				}
 				echo '<p>&nbsp;</p>';
 			}
