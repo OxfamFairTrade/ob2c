@@ -6723,12 +6723,25 @@
 			'Voucher Export',
 			'create_sites',
 			'woonet-woocommerce-vouchers-export',
-			'oxfam_export_vouchers_callback'
+			'oxfam_export_used_vouchers_callback'
+		);
+		
+		add_submenu_page(
+			'woonet-woocommerce',
+			'Voucher Order Export',
+			'Voucher Order Export',
+			'create_sites',
+			'woonet-woocommerce-vouchers-export',
+			'oxfam_export_voucher_orders_callback'
 		);
 	}
 
-	function oxfam_export_vouchers_callback() {
+	function oxfam_export_used_vouchers_callback() {
 		include get_stylesheet_directory().'/export-used-vouchers.php';
+	}
+	
+	function oxfam_export_voucher_orders_callback() {
+		include get_stylesheet_directory().'/export-voucher-orders.php';
 	}
 	
 	function oxfam_photos_callback() {
