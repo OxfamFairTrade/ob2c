@@ -7893,7 +7893,7 @@
 			remove_all_actions('admin_notices');
 		}
 		add_action( 'admin_notices', 'oxfam_admin_notices' );
-		add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
+		// add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
 	}
 
 	function oxfam_admin_notices() {

@@ -71,16 +71,16 @@
 				?>
 				
 				<?php
-					// Koffie-actie 2022
-					$koffiechoc22 = new WC_Coupon('koffiechoc22');
+					// $koffiechoc22 = new WC_Coupon('koffiechoc22');
 					// Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit!
-					if ( $koffiechoc22->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $koffiechoc22->get_date_expires()->date_i18n('Y-m-d') ) {
+					// $koffiechoc22->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $koffiechoc22->get_date_expires()->date_i18n('Y-m-d')
+					if ( date_i18n('Y-m-d') >= '2022-04-01' and date_i18n('Y-m-d') < '2022-05-01' ) {
 						?>
 							<div class="col-row lh-banner">
 								<div class="col-xs-12">
 									<?php
-										$image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/promo-koffiechoc22-home.jpg' ).'" title="'.get_koffiechoc22_disclaimer().'" />';
-										$term_link = get_term_link( 'koffie', 'product_cat' );
+										$image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/promo-sap-2022-home.png' ).'" title="" />';
+										$term_link = get_term_link( '1-liter', 'product_cat' );
 										if ( ! is_wp_error( $term_link ) ) {
 											echo '<a href="'.esc_url( $term_link ).'#nm-shop-products">'.$image.'</a>';
 										} else {
