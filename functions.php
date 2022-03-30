@@ -6722,7 +6722,7 @@
 			'Voucher Export',
 			'Voucher Export',
 			'create_sites',
-			'woonet-woocommerce-vouchers-export',
+			'woonet-woocommerce-used-vouchers-export',
 			'oxfam_export_used_vouchers_callback'
 		);
 		
@@ -6731,7 +6731,7 @@
 			'Voucher Order Export',
 			'Voucher Order Export',
 			'create_sites',
-			'woonet-woocommerce-vouchers-export',
+			'woonet-woocommerce-voucher-orders-export',
 			'oxfam_export_voucher_orders_callback'
 		);
 	}

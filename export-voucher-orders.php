@@ -98,7 +98,7 @@
 
 					echo '<br/>';
 					
-					// Gegevens groeperen per klant i.p.v. per bestelling?
+					// Gegevens beter groeperen per klant i.p.v. per bestelling?
 					fputcsv( $writer_handle, array( $wc_order->get_order_number(), $order_total, $order_total_oft, count( $previous_orders_by_customer ), count( $new_orders_by_customer ) ), ';' );
 				}
 
