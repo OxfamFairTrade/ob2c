@@ -2439,7 +2439,12 @@
 		
 		$skus = array();
 		foreach ( $order->get_items() as $item ) {
-			$shopplus = $item->get_meta('_shopplus_code');
+			$product = $item->get_product();
+			if ( $product === false ) {
+				continue;
+			}
+			
+			$shopplus = $product->get_meta('_shopplus_code');
 			if ( $shopplus !== '' ) {
 				// Alle leeggoed weren
 				if ( in_array( $shopplus, get_oxfam_empties_skus_array() ) ) {
@@ -2447,12 +2452,12 @@
 				}
 				
 				// Alle non-food van MDM weren
-				if ( ! $mdm and strpos( $shopplus, 'M' ) !== false ) {
+				if ( ! $mdm and strpos( $shopplus, 'M' ) === false ) {
 					$skus[] = $shopplus.'|'.$item->get_quantity();
 				}
 				
 				// Enkel non-food van MDM behouden
-				if ( $mdm and strpos( $shopplus, 'M' ) === false ) {
+				if ( $mdm and strpos( $shopplus, 'M' ) !== false ) {
 					$skus[] = $shopplus.'|'.$item->get_quantity();
 				}
 			}
