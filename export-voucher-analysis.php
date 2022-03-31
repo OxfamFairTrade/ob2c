@@ -3,18 +3,18 @@
 ?>
 
 <div class="wrap">
-	<h1>Bestellingen met digitale cadeaubonnen</h1>
+	<h1>Analyse bestellingen met digitale cadeaubonnen</h1>
 
-	<p>Een aanzet tot analyse ...</p>
+	<p>Het openen van deze pagina genereert een CSV op de server voor verdere verwerking in Excel. Ter info worden de gegevens hieronder ook tekstueel weergegeven.</p>
 
 	<p>&nbsp;</p>
 
-	<!-- <h2>Alle bestellingen met cadeaubonnen van Gezinsbond</h2> -->
-	<?php // get_total_revenue_by_voucher_issuer('Gezinsbond'); ?>
+	<h2>Gezinsbond</h2>
+	<?php get_total_revenue_by_voucher_issuer('Gezinsbond'); ?>
 
-	<!-- <p>&nbsp;</p> -->
+	<p>&nbsp;</p>
 
-	<h2>Alle bestellingen met cadeaubonnen van Cera</h2>
+	<h2>Cera</h2>
 	<?php get_total_revenue_by_voucher_issuer('Cera'); ?>
 
 	<?php
@@ -31,7 +31,7 @@
 				'type' => 'shop_order',
 				'limit' => -1,
 			);
-			$writer_handle = fopen( ABSPATH.'../vouchers.csv', 'w' );
+			$writer_handle = fopen( ABSPATH.'../vouchers-'.sanitize_title( $issuer ).'.csv', 'w' );
 
 			foreach ( $rows as $key => $row ) {
 				// Elk order slechts één keer checken, ook al werden er meerdere bonnen tegelijk ingeruild

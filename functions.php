@@ -2431,6 +2431,43 @@
 			return '<i>niet beschikbaar</i>';
 		}
 	}
+	
+	function get_backorder_link_for_central_depot( $order, $mdm = false ) {
+		if ( ! $order instanceof WC_Order ) {
+			return false;
+		}
+		
+		$skus = array();
+		foreach ( $order->get_items() as $item ) {
+			$shopplus = $item->get_meta('_shopplus_code');
+			if ( $shopplus !== '' ) {
+				// Alle leeggoed weren
+				if ( in_array( $shopplus, get_oxfam_empties_skus_array() ) ) {
+					continue;
+				}
+				
+				// Alle non-food van MDM weren
+				if ( ! $mdm and strpos( $shopplus, 'M' ) !== false ) {
+					$skus[] = $shopplus.'|'.$item->get_quantity();
+				}
+				
+				// Enkel non-food van MDM behouden
+				if ( $mdm and strpos( $shopplus, 'M' ) === false ) {
+					$skus[] = $shopplus.'|'.$item->get_quantity();
+				}
+			}
+		}
+		
+		if ( count( $skus ) > 0 ) {
+			if ( $mdm ) {
+				return '<a href="https://www.fairtradecrafts.be/nl/winkelmandje/?addSkus='.implode( ',', $skus ).'" target="_blank">Bestel alle crafts uit deze bestelling</a>';
+			} else {
+				return '<a href="https://www.oxfamfairtrade.be/nl/bestellen/?addSkus='.implode( ',', $skus ).'&customerReference='.$order->get_order_number().'" target="_blank">Bestel alle voeding uit deze bestelling</a>';
+			}
+		} else {
+			return false;
+		}
+	}
 
 	function put_claimed_after_processing( $array ) {
 		// Check eerst of de statusknop wel aanwezig is op dit moment!
@@ -2538,6 +2575,12 @@
 		echo '<p><strong>Picklijst:</strong><br/>';
 		echo get_picklist_download_link( $order );
 		echo '</p>';
+		
+		$url = get_backorder_link_for_central_depot( $order );
+		if ( $url and current_user_can('update_core') ) {
+			echo '<p><strong>BestelWeb:</strong><br/>';
+			echo $url.'</p>';
+		}
 	}
 
 	// Voeg gebruiksvriendelijke acties toe op orderdetailscherm om status te wijzigen
@@ -6728,11 +6771,11 @@
 		
 		add_submenu_page(
 			'woonet-woocommerce',
-			'Voucher Order Export',
-			'Voucher Order Export',
+			'Voucher Analysis',
+			'Voucher Analysis',
 			'create_sites',
 			'woonet-woocommerce-voucher-orders-export',
-			'oxfam_export_voucher_orders_callback'
+			'oxfam_export_voucher_analysis_callback'
 		);
 	}
 
@@ -6740,8 +6783,8 @@
 		include get_stylesheet_directory().'/export-used-vouchers.php';
 	}
 	
-	function oxfam_export_voucher_orders_callback() {
-		include get_stylesheet_directory().'/export-voucher-orders.php';
+	function oxfam_export_voucher_analysis_callback() {
+		include get_stylesheet_directory().'/export-voucher-analysis.php';
 	}
 	
 	function oxfam_photos_callback() {
