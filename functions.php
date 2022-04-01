@@ -7974,6 +7974,10 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
+					echo '<p>De <a href="https://copain.oww.be/voeding/2022/03/09/Promos-online--winkel-april-2022-update" target="_blank">promo\'s voor april</a> werden geactiveerd. Mixen van sinaasappelsap en Worldshake is toegestaan.</p>';
+				echo '</div>';
+				
+				echo '<div class="notice notice-success">';
 					echo '<p>Om de creditering van de vele digitale geschenkencheques overzichtelijker te maken, creëerden we onder \'<a href="admin.php?page=oxfam-vouchers-list">Digicheques</a>\' een handig overzicht van alle codes die de voorbije maanden ingeruild werden in jullie webshop. Je vindt er per kredietnota een overzicht van welke bestellingen er uitbetaald werden. Bovenaan staan de vouchers opgelijst die nog in verwerking zijn, samen met eventuele waarschuwingen.</p>';
 				echo '</div>';
 				
