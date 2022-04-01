@@ -2465,9 +2465,9 @@
 		
 		if ( count( $skus ) > 0 ) {
 			if ( $mdm ) {
-				return '<a href="https://www.fairtradecrafts.be/nl/winkelmandje/?addSkus='.implode( ',', $skus ).'" target="_blank">Bestel alle crafts uit deze bestelling</a>';
+				return '<a href="https://www.fairtradecrafts.be/nl/winkelmandje/?addSkus='.implode( ',', $skus ).'" target="_blank">Bestel alle crafts</a>';
 			} else {
-				return '<a href="https://www.oxfamfairtrade.be/nl/bestellen/?addSkus='.implode( ',', $skus ).'&customerReference='.$order->get_order_number().'" target="_blank">Bestel alle voeding uit deze bestelling</a>';
+				return '<a href="https://www.oxfamfairtrade.be/nl/bestellen/?addSkus='.implode( ',', $skus ).'&customerReference='.$order->get_order_number().'" target="_blank">Bestel alle voeding</a>';
 			}
 		} else {
 			return false;
