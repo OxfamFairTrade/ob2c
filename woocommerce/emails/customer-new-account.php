@@ -98,10 +98,10 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
 <?php
 	/**
-	 * Show user-defined additional content - this is set in each email's settings.
+	 * Show user-defined additional content - this is set in each email's settings. DISABLED
 	 */
 	if ( $additional_content ) {
-		echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
+		// echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
 	}
 ?>
 

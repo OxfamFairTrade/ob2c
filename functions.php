@@ -6858,6 +6858,7 @@
 		unset( $actions['clone'] );
 
 		$actions['orders'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/edit.php?post_type=shop_order' ).'">Bestellingen</a>';
+		$actions['digicheques'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-vouchers-list' ).'">Digicheques</a>';
 		$actions['settings'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-options' ).'">Winkelgegevens</a>';
 		$actions['stock'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-products-list' ).'">Voorraadbeheer</a>';
 
@@ -7050,6 +7051,13 @@
 		// Beter: check of $reset_password_path wel bestaat (= template werd overschreven)
 		rename( $reset_password_path, $temporary_path );
 		rename( $new_account_path, $reset_password_path );
+		if ( opcache_invalidate( $new_account_path, true ) ) {
+			write_log("Opcache for customer-new-account.php cleared");	
+		}
+		if ( opcache_invalidate( $reset_password_path, true ) ) {
+			write_log("Opcache for customer-reset-password.php cleared");	
+		}
+		
 		$user = get_user_by( 'id', $_POST['customer_id'] );
 		if ( retrieve_password_for_customer( $user ) ) {
 			printf( 'Succesvol uitgenodigd, kopie verstuurd naar %s!', get_webshop_email() );
@@ -7057,8 +7065,16 @@
 		} else {
 			printf( 'Uitnodigen eigenaar \'%s\' mislukt, herlaad pagina en probeer eens opnieuw!', $user->user_login );
 		}
+		
 		rename( $reset_password_path, $new_account_path );
 		rename( $temporary_path, $reset_password_path );
+		if ( opcache_invalidate( $new_account_path, true ) ) {
+			write_log("Opcache for customer-new-account.php cleared");	
+		}
+		if ( opcache_invalidate( $reset_password_path, true ) ) {
+			write_log("Opcache for customer-reset-password.php cleared");	
+		}
+		
 		wp_die();
 	}
 
