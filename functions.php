@@ -6731,11 +6731,11 @@
 	}
 
 	// Voeg custom Oxfam-pagina's toe (hoge prioriteit, zodat subpagina's zeker na hoofdpagina's geregistreerd worden)
-	add_action( 'admin_menu', 'oxfam_register_custom_pages', 1000 );
+	add_action( 'admin_menu', 'oxfam_register_custom_pages', 50 );
 
 	function oxfam_register_custom_pages() {
 		// Waarom blijft het 'WooCommerce'-menu niet opengeklapt als we deze pagina bekijken?
-		add_submenu_page( 'woocommerce', 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 75 );
+		add_submenu_page( 'woocommerce', 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback' );
 		
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', 56 );
 		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
