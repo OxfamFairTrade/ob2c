@@ -7051,12 +7051,9 @@
 		// Beter: check of $reset_password_path wel bestaat (= template werd overschreven)
 		rename( $reset_password_path, $temporary_path );
 		rename( $new_account_path, $reset_password_path );
-		if ( opcache_invalidate( $new_account_path, true ) ) {
-			write_log("Opcache for customer-new-account.php cleared");	
-		}
-		if ( opcache_invalidate( $reset_password_path, true ) ) {
-			write_log("Opcache for customer-reset-password.php cleared");	
-		}
+		// Pas op met OPCache die niet automatisch geflusht wordt na hernoemen!
+		opcache_invalidate( $new_account_path, true );
+		opcache_invalidate( $reset_password_path, true );
 		
 		$user = get_user_by( 'id', $_POST['customer_id'] );
 		if ( retrieve_password_for_customer( $user ) ) {
@@ -7068,12 +7065,9 @@
 		
 		rename( $reset_password_path, $new_account_path );
 		rename( $temporary_path, $reset_password_path );
-		if ( opcache_invalidate( $new_account_path, true ) ) {
-			write_log("Opcache for customer-new-account.php cleared");	
-		}
-		if ( opcache_invalidate( $reset_password_path, true ) ) {
-			write_log("Opcache for customer-reset-password.php cleared");	
-		}
+		// Pas op met OPCache die niet automatisch geflusht wordt na hernoemen!
+		opcache_invalidate( $new_account_path, true );
+		opcache_invalidate( $reset_password_path, true );
 		
 		wp_die();
 	}
