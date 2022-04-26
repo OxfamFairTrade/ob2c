@@ -4449,6 +4449,9 @@
 		$context = array( 'source' => 'SimpleXml' );
 		// Dit gaat ervan uit dat de Excel reeds aangemaakt werd én het pad correct opgeslagen is!
 		$path = WP_CONTENT_DIR.'/uploads/xlsx/'.str_replace( '.xlsx', '.xml', $wc_order->get_meta('_excel_file_name') );
+		
+		// Elke node moet op een nieuwe lijn staan in de XML, anders begrijpt Adsolut het niet ...
+		// Zie https://stackoverflow.com/questions/1840148/php-simplexml-new-line voor mogelijke oplossing
 		if ( $xml->saveXML( $path ) ) {
 			$logger->info( $wc_order->get_order_number().": XML creation succeeded", $context );
 			$wc_order->add_order_note( 'XML voor Adsolut gegenereerd en opgeslagen in zelfde map als Excel ('.get_picklist_download_link( $wc_order, true ).').', 0, false );
