@@ -7986,8 +7986,8 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/voeding/2022/03/09/Promos-online--winkel-april-2022-update" target="_blank">promo\'s voor april</a> werden geactiveerd. Mixen van sinaasappelsap en Worldshake is toegestaan.</p>';
+				echo '<div class="notice notice-warning">';
+					echo '<p>Omwille van Feest van de Arbeid en aansluitende vakantie zullen de <a href="https://copain.oww.be/nieuwsbericht/2022/04/13/Promos-online--winkel-mei-2022-update?originNode=1417" target="_blank">promo\'s voor mei</a> online uitzonderlijk pas op 5 mei van start gaan. (Promoties kunnen momenteel niet op voorhand ingepland worden in het systeem, er is een handmatige tussenkomst nodig.) Bedankt voor jullie begrip!</p>';
 				echo '</div>';
 				
 				echo '<div class="notice notice-success">';
