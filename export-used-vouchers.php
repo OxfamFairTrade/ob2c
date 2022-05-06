@@ -90,7 +90,8 @@
 							$blog_path = $order->get_meta('claimed_by');
 						} else {
 							$current_blog = get_blog_details();
-							$blog_path = str_replace( '/', '', $current_blog->path );
+							// Wis de bewoording 'regio' bij pseudo-regiowebshops, om verwarring bij het ingeven in Access te vermijden
+							$blog_path = str_replace( array( '/regio', '/' ), '', $current_blog->path );
 						}
 
 						if ( strlen( $blog_path ) < 1 ) {
@@ -135,7 +136,8 @@
 						$current_blog = get_blog_details();
 						if ( $row->order === 'OFFLINE' ) {
 							$voucher_ids[] = $row->id;
-							$blog_path = str_replace( '/', '', $current_blog->path );
+							// Wis de bewoording 'regio' bij pseudo-regiowebshops, om verwarring bij het ingeven in Access te vermijden
+							$blog_path = str_replace( array( '/regio', '/' ), '', $current_blog->path );
 						} else {
 							$order = reset( $orders );
 							if ( $order->get_status() !== 'completed' ) {
@@ -147,7 +149,8 @@
 							if ( is_regional_webshop() ) {
 								$blog_path = $order->get_meta('claimed_by');
 							} else {
-								$blog_path = str_replace( '/', '', $current_blog->path );
+								// Wis de bewoording 'regio' bij pseudo-regiowebshops, om verwarring bij het ingeven in Access te vermijden
+								$blog_path = str_replace( array( '/regio', '/' ), '', $current_blog->path );
 							}
 
 							if ( strlen( $blog_path ) < 1 ) {

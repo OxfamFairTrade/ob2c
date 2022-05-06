@@ -5931,7 +5931,7 @@
 						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
 							$glass_cnt += intval( $item_value['quantity'] );
 						}
-						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29917') ) {
+						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29917') or $item_value['product_id'] === wc_get_product_id_by_sku('W29919') ) {
 							$plastic_cnt += intval( $item_value['quantity'] );
 						}
 						if ( in_array( get_option( 'wcgwp_category_id', 0 ), $item_value['data']->get_category_ids() ) ) {
@@ -6077,7 +6077,7 @@
 	}
 
 	function get_oxfam_empties_skus_array() {
-		return array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917' );
+		return array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917', 'W29919' );
 	}
 
 	function get_oxfam_cheques_skus_array() {
@@ -6203,6 +6203,8 @@
 
 						case 'WLFSK':
 							$plastic_sku = 'WLBS24';
+							// Op termijn te vervangen door nieuwe bak?
+							// $plastic_sku = 'W29919';
 							$plastic_step = 24;
 							break;
 
@@ -6297,6 +6299,8 @@
 
 						case 'WLFSK':
 							$plastic_sku = 'WLBS24';
+							// Op termijn te vervangen door nieuwe bak?
+							// $plastic_sku = 'W29919';
 							$plastic_step = 24;
 							break;
 
@@ -6357,6 +6361,7 @@
 						return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 6 flessen)';
 					case 'WLBS24':
 					case 'W29917':
+					case 'W29919':
 						return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 24 flesjes)';
 					default:
 						return sprintf( _n( '%d fles', '%d flessen', $qty ), $qty );
@@ -7986,37 +7991,35 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-warning">';
-					echo '<p>Omwille van Feest van de Arbeid en aansluitende vakantie zullen de <a href="https://copain.oww.be/nieuwsbericht/2022/04/13/Promos-online--winkel-mei-2022-update?originNode=1417" target="_blank">promo\'s voor mei</a> online uitzonderlijk pas op 5 mei van start gaan. (Promoties kunnen momenteel niet op voorhand ingepland worden in het systeem, er is een handmatige tussenkomst nodig.) Bedankt voor jullie begrip!</p>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Omwille van Feest van de Arbeid en aansluitende vakantie werden de <a href="https://copain.oww.be/nieuwsbericht/2022/04/13/Promos-online--winkel-mei-2022-update" target="_blank">promo\'s voor mei</a> uitzonderlijk pas op 6 mei geactiveerd in de webshops. (Promoties kunnen momenteel niet op voorhand ingepland worden in het systeem, er is een handmatige tussenkomst nodig.) Bedankt voor jullie begrip!</p>';
 				echo '</div>';
 				
-				echo '<div class="notice notice-success">';
-					echo '<p>Om de creditering van de vele digitale geschenkencheques overzichtelijker te maken, creëerden we onder \'<a href="admin.php?page=oxfam-vouchers-list">Digicheques</a>\' een handig overzicht van alle codes die de voorbije maanden ingeruild werden in jullie webshop. Je vindt er per kredietnota een overzicht van welke bestellingen er uitbetaald werden. Bovenaan staan de vouchers opgelijst die nog in verwerking zijn, samen met eventuele waarschuwingen.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Om de creditering van de vele digitale geschenkencheques overzichtelijker te maken, creëerden we onder \'<a href="admin.php?page=oxfam-vouchers-list">Digicheques</a>\' een handig overzicht van alle codes die de voorbije maanden ingeruild werden in jullie webshop. Je vindt er per kredietnota een overzicht van welke bestellingen er uitbetaald werden. Bovenaan staan de vouchers opgelijst die nog in verwerking zijn, samen met eventuele waarschuwingen.</p>';
+				// echo '</div>';
 				
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				// echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Het paasassortiment en twee nieuwe producten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 23695, 24529, 24631, 24634, 24642, 24648, 28021 );
-				// 		// Augustusmagazine en enkele opgedoken restjes van vorige pakketten (oktober/januari/april)
-				// 		// $crafts_skus = array( '12374', '12375', '12376', '12377', '12378', '12379', '12380', '12381', '16413', '16921', '16929', '16935', '28414', '28415', '28416', '30139', '32180', '32181', '32550', '33030', '45247', '45255', '45256', '45257', '45258', '45259', '45260', '45262', '45263', '45265', '45266', '45267', '45390', '57301', '64494', '64925', '65200', '65202', '65204', '65205', '65207', '65208', '65209', '65215', '65226', '65228', '65229', '65268', '65269', '65270', '65273', '65274', '65716', '65763', '66178', '66182', '66183', '66188', '66193', '66226', '66227', '66243', '66248', '66249', '66250', '66254', '66260', '66261', '66267', '66268', '66270', '66272', '66273', '66274', '66275', '66334', '66335', '66336', '66337', '66338', '66339', '66340', '66341', '68452', '68456', '68457', '68460', '68571', '68572', '68575', '68611', '68613', '68614', '68617', '68623', '68706', '68707', '68708', '68709', '87309', '87312', '87351', '87359', '87360', '87361', '87365', '87366', '87367', '94068' );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke olijfolie je beschikbaar houdt/maakt: de vierge van vorig jaar, of de (duurdere) extra vierge van dit jaar, die sinds half februari bestelbaar is. De sintproducten vertrokken naar de Spaanse zon.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Het paasassortiment en twee nieuwe producten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 21109, 21110, 27519, 27520 );
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product($product_id);
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke olijfolie je beschikbaar houdt/maakt: de vierge van vorig jaar, of de (duurdere) extra vierge van dit jaar, die sinds half februari bestelbaar is. De sintproducten vertrokken naar de Spaanse zon.</p>';
+				echo '</div>';
 				
 				// if ( get_current_blog_id() !== 1 ) {
 				// 	$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );
