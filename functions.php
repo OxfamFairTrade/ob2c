@@ -7991,12 +7991,8 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-success">';
-					echo '<p>Omwille van Feest van de Arbeid en aansluitende vakantie werden de <a href="https://copain.oww.be/nieuwsbericht/2022/04/13/Promos-online--winkel-mei-2022-update" target="_blank">promo\'s voor mei</a> uitzonderlijk pas op 6 mei geactiveerd in de webshops. (Promoties kunnen momenteel niet op voorhand ingepland worden in het systeem, er is een handmatige tussenkomst nodig.) Bedankt voor jullie begrip! <em>De promo op Pinotage-Syrah Rosé 75 cl was over het hoofd gezien, die werd toegevoegd op 8 mei.</em></p>';
-				echo '</div>';
-				
 				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Om de creditering van de vele digitale geschenkencheques overzichtelijker te maken, creëerden we onder \'<a href="admin.php?page=oxfam-vouchers-list">Digicheques</a>\' een handig overzicht van alle codes die de voorbije maanden ingeruild werden in jullie webshop. Je vindt er per kredietnota een overzicht van welke bestellingen er uitbetaald werden. Bovenaan staan de vouchers opgelijst die nog in verwerking zijn, samen met eventuele waarschuwingen.</p>';
+				// 	echo '<p>Omwille van Feest van de Arbeid en aansluitende vakantie werden de <a href="https://copain.oww.be/nieuwsbericht/2022/04/13/Promos-online--winkel-mei-2022-update" target="_blank">promo\'s voor mei</a> uitzonderlijk pas op 6 mei geactiveerd in de webshops. (Promoties kunnen momenteel niet op voorhand ingepland worden in het systeem, er is een handmatige tussenkomst nodig.) Bedankt voor jullie begrip! <em>De promo op Pinotage-Syrah Rosé 75 cl was over het hoofd gezien, die werd toegevoegd op 8 mei.</em></p>';
 				// echo '</div>';
 				
 				// echo '<div class="notice notice-warning">';

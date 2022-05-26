@@ -1,4 +1,5 @@
 <?php
+<?php
 
 class WOO_MSTORE_EXPORT_ENGINE {
 	public $errors_log = array();
@@ -220,6 +221,11 @@ class WOO_MSTORE_EXPORT_ENGINE {
 							$value .= ' (webshopmedewerker)';
 						}
 					}
+				}
+			} elseif ( $field_name === 'payment_method_title' ) {
+				// GEWIJZIGD: Indien leeg, ga ervan uit dat de bestelling volledig met digitale cadeaubonnen betaald werd
+				if ( $value === '' ) {
+					$value = 'Digicheques';
 				}
 			} elseif ( $field_name === 'levermethode' ) {
 				// GEWIJZIGD: Haal waarde van custom Oxfam-leverveld op
