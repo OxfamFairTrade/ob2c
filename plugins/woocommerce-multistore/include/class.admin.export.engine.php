@@ -1,5 +1,4 @@
 <?php
-<?php
 
 class WOO_MSTORE_EXPORT_ENGINE {
 	public $errors_log = array();
@@ -222,11 +221,6 @@ class WOO_MSTORE_EXPORT_ENGINE {
 						}
 					}
 				}
-			} elseif ( $field_name === 'payment_method_title' ) {
-				// GEWIJZIGD: Indien leeg, ga ervan uit dat de bestelling volledig met digitale cadeaubonnen betaald werd
-				if ( $value === '' ) {
-					$value = 'Digicheques';
-				}
 			} elseif ( $field_name === 'levermethode' ) {
 				// GEWIJZIGD: Haal waarde van custom Oxfam-leverveld op
 				$shipping_methods = $order->get_shipping_methods();
@@ -279,6 +273,13 @@ class WOO_MSTORE_EXPORT_ENGINE {
 					// GEWIJZIGD: Voeg NIET toe aan gegroepeerde data
 				} else {
 					$item[ $export_field_column_name ] = $value;
+				}
+			}
+			
+			// GEWIJZIGD: Ga ervan uit dat de bestelling volledig met digitale cadeaubonnen betaald werd, indien leeg
+			if ( $field_name === 'payment_method_title' ) {
+				if ( $value === '' ) {
+					$value = 'Digicheques';
 				}
 			}
 
