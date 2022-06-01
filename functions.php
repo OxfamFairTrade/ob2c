@@ -7991,9 +7991,9 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Omwille van Feest van de Arbeid en aansluitende vakantie werden de <a href="https://copain.oww.be/nieuwsbericht/2022/04/13/Promos-online--winkel-mei-2022-update" target="_blank">promo\'s voor mei</a> uitzonderlijk pas op 6 mei geactiveerd in de webshops. (Promoties kunnen momenteel niet op voorhand ingepland worden in het systeem, er is een handmatige tussenkomst nodig.) Bedankt voor jullie begrip! <em>De promo op Pinotage-Syrah Rosé 75 cl was over het hoofd gezien, die werd toegevoegd op 8 mei.</em></p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>De 118 prijswijzigingen van 01/06/2022 werden tussen 7 en 11 uur doorgevoerd in alle webshops. Ter herinnering: er zijn deze maand geen promoties!</p>';
+				echo '</div>';
 				
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
@@ -8001,8 +8001,8 @@
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
-					echo '<p>Vier nieuwe producten werden toegevoegd aan de database, waaronder twee met automatisch gekoppeld leeggoed:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 21109, 21110, 27519, 27520 );
+					echo '<p>Het appelsap in tetrabrik en de biologische speculoospasta (weldra bestelbaar) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 21054, 26488 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {

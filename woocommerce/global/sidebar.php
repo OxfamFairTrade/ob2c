@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		?>
 
 		<div class="catalog-filters">
-			<div class="nm-shop-widget-col">
+			<div class="nm-shop-widget-col" style="display: none;">
 				<h3 class="nm-widget-title">In de kijker</h3>
 				<?php
 					$products_tags = array();
