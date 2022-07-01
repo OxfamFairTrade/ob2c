@@ -7992,7 +7992,7 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De 118 prijswijzigingen van 01/06/2022 werden tussen 7 en 11 uur doorgevoerd in alle webshops. Ter herinnering: er zijn deze maand geen promoties!</p>';
+					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/06/15/Promos-online--winkel-juli-aug-2022-update" target="_blank">promoties voor juli en augustus</a> zijn geactiveerd. Opgelet: op de pancarte en in de kortingsregel voor ShopPlus werd een verkeerde consumentenprijs gehanteerd voor de muesli (4,25 i.p.v. 3,95 euro). Hierdoor klopt ook het kortingsbedrag niet. Dit wordt volgende week gecorrigeerd. De webshop past alvast de juiste korting toe (1,97 i.p.v. 2,12 euro per 2 dozen).</p>';
 				echo '</div>';
 				
 				// echo '<div class="notice notice-warning">';
@@ -8000,22 +8000,22 @@
 				// echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				echo '<div class="notice notice-success">';
-					echo '<p>Het appelsap in tetrabrik en de biologische speculoospasta (weldra bestelbaar) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 21054, 26488 );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product($product_id);
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke kikkererwten je voorradig houdt: netto-inhoud, verpakking én prijs wijken af t.o.v. de bestaande versie in blik van Fairtrade Original. De paashazen doken weer onder in hun knusse holletje.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>Het appelsap in tetrabrik en de biologische speculoospasta (weldra bestelbaar) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+				// 		$skus = array( 21054, 26488 );
+				// 		foreach ( $skus as $sku ) {
+				// 			$product_id = wc_get_product_id_by_sku( $sku );
+				// 			if ( $product_id ) {
+				// 				$product = wc_get_product($product_id);
+				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+				// 			}
+				// 		}
+				// 	echo '</ul><p>';
+				// 	if ( current_user_can('manage_network_users') ) {
+				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+				// 	}
+				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke kikkererwten je voorradig houdt: netto-inhoud, verpakking én prijs wijken af t.o.v. de bestaande versie in blik van Fairtrade Original. De paashazen doken weer onder in hun knusse holletje.</p>';
+				// echo '</div>';
 				
 				// if ( get_current_blog_id() !== 1 ) {
 				// 	$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );

@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		?>
 
 		<div class="catalog-filters">
-			<div class="nm-shop-widget-col" style="display: none;">
+			<div class="nm-shop-widget-col">
 				<h3 class="nm-widget-title">In de kijker</h3>
 				<?php
 					$products_tags = array();
@@ -37,7 +37,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					// $products_tags[] = 'pasen';
 					// $products_tags[] = 'faire-feesten';
-					// $products_tags[] = 'januari-2022';
 
 					foreach ( $products_tags as $product_slug ) {
 						$term = get_term_by( 'slug', $product_slug, 'product_tag' );
