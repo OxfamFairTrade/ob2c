@@ -7992,7 +7992,7 @@
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/06/15/Promos-online--winkel-juli-aug-2022-update" target="_blank">promoties voor juli en augustus</a> zijn geactiveerd. Opgelet: op de pancarte en in de kortingsregel voor ShopPlus werd een verkeerde consumentenprijs gehanteerd voor de muesli (4,25 i.p.v. 3,95 euro). Hierdoor klopt ook het kortingsbedrag niet. Dit wordt volgende week gecorrigeerd. De webshop past alvast de juiste korting toe (1,97 i.p.v. 2,12 euro per 2 dozen).</p>';
+					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/06/15/Promos-online--winkel-juli-aug-2022-update" target="_blank">promoties voor juli en augustus</a> zijn geactiveerd. Opgelet: op de pancarte en in de kortingsregel voor ShopPlus werd een verkeerde consumentenprijs gehanteerd voor de muesli (4,25 i.p.v. 3,95 euro). Hierdoor klopte ook het kortingsbedrag niet. Dit werd inmiddels gecorrigeerd, <a href="https://copain.oww.be/nieuwsbericht/2022/07/04/ShopPlus-juli-augustus-correctie-korting-Muesli" target="_blank">zie</a> <a href="https://copain.oww.be/nieuwsbericht/2022/07/04/Correctie-promopancarte-juli-augustus-2022-Op-een-knapperige-vakantie" target="_blank">Copain</a>. De webshop paste steeds de juiste korting toe (1,97 i.p.v. 2,12 euro per 2 dozen).</p>';
 				echo '</div>';
 				
 				// echo '<div class="notice notice-warning">';
@@ -8854,8 +8854,7 @@
 							// Geef alternatieve formatteringsfunctie en delimiter mee
 							return call_user_func( 'format_phone_number', $location_data[ $key ], '.' );
 						case 'headquarter':
-							// Plak de adresgegevens van de vzw aan elkaar
-							return call_user_func( 'format_place', $location_data[ $key ]['place'] ).', '.call_user_func( 'format_zipcode', $location_data[ $key ]['zipcode'] ).' '.call_user_func( 'format_city', $location_data[ $key ]['city'] );
+							return call_user_func( 'format_place', $location_data[ $key ]['place'] );
 						case 'll':
 							// Er bestaat geen formatteerfunctie voor coördinaten
 							return $location_data[ $key ];
