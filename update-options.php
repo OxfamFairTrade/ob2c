@@ -2,6 +2,97 @@
 	if ( ! defined('ABSPATH') ) exit;
 	
 	require_once WP_CONTENT_DIR.'/plugins/mollie-reseller-api/autoloader.php';
+	
+	function do_mollie_reseller_api_logic( $partner_id ) {
+		Mollie_Autoloader::register();
+		$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
+		
+		// Check of we niet op de hoofdaccount zitten, want anders fatale API-error
+		if ( $partner_id != 2485891 and $partner_id > 2000000 ) {
+			$href = 'https://my.mollie.com/dashboard/';
+			
+			// Verhinder doorklikken naar echte account op demosites
+			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
+				try {
+					$login_link = $mollie->getLoginLink( $partner_id );
+					$href = $login_link->redirect_url;
+				} catch (Exception $e) {
+					echo 'Caught exception: ',  $e->getMessage(), '<br/>';
+					return;
+				}
+			}
+			
+			echo "<tr>";
+				echo "<th class='left'><a href='".$href."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
+				echo "<td class='right'>Opgelet: deze link is slechts 60 seconden geldig! Herlaad desnoods even deze pagina.</td>";
+			echo "</tr>";
+			
+			$methods = $mollie->availablePaymentMethodsByPartnerId( $partner_id );
+			if ( $methods->resultcode == '10' ) {
+				$lacking = array();
+				// Er bestaat geen aparte service voor Apple Pay, wel voor 'voucher'
+				$must_be = array( 'mistercash', 'kbc', 'belfius', 'creditcard', 'ideal' );
+				foreach ( $must_be as $service ) {
+					if ( $methods->services->{$service} == 'false' ) {
+						$lacking[] = $service;
+					}
+				}
+				
+				if ( count( $lacking ) > 0 ) {
+					echo "<tr>";
+						echo "<th class='left' style='color: red;'>Activeer volgende verplichte betaalmethodes:</th>";
+						echo "<td class='right'>";
+							foreach ( $lacking as $service ) {
+								echo strtoupper( $service )."&nbsp;&nbsp;";
+							}
+						echo "</td>";
+					echo "</tr>";
+				}
+			}
+			
+			$profiles = $mollie->profilesByPartnerId( $partner_id );
+			if ( $profiles->resultcode == '10' ) {
+				// if ( get_webshop_name() != trim_and_uppercase( $profiles->items->profile->name ) ) {
+				// 	$name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
+				// }
+				
+				// Fix voor winkels met twee nummers (bv. Mariakerke) TE VERWIJDEREN?
+				$phones = explode( ' of ', get_oxfam_shop_data('telephone') );
+				$warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
+				if ( $phones[0] != format_phone_number( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
+					if ( count($phones) === 2 ) {
+						if ( $phones[1] != format_phone_number( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
+							$phone_warning = $warning;
+						}
+					} else {
+						$phone_warning = $warning;
+					}
+				}
+				
+				if ( get_webshop_email() != $profiles->items->profile->email ) {
+					$mail_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactadres geregistreerd!</small>";
+				}
+			}
+			
+			$accounts = $mollie->bankAccountsByPartnerId( $partner_id );
+			if ( $accounts->resultcode == '10' ) {
+				// Er kunnen meerdere rekeningnummers in de account zitten!
+				foreach ( $accounts->items->bankaccount as $bankaccount ) {
+					if ( $bankaccount->selected == 'true' and get_oxfam_shop_data('account') !== format_account( $bankaccount->iban_number ) ) {
+						$account_warning = "<br/><small style='color: red;'>Opgelet, Mollie gebruikt een ander rekeningnummer voor de uitbetalingen!</small>";
+					}
+					if ( get_oxfam_shop_data('account') === format_account( $bankaccount->iban_number ) and $bankaccount->verified == 'false' ) {
+						$account_warning = "<br/><small style='color: red;'>Opgelet, dit rekeningnummer is bij Mollie (nog) niet geverifieerd!</small>";
+					}
+				}
+			}
+		} else {
+			echo "<tr>";
+				echo "<th class='left' style='color: red;'>Reseller API Deprecated</th>";
+				echo "<td class='right'>Helaas kunnen we hier geen automatische inloglink naar jullie Mollie-account meer tonen. Gelieve handmatig in te loggen via <a href='https://my.mollie.com/dashboard/login' target='_blank'>mollie.com</a>. We bekijken of er alternatieve oplossingen zijn om deze functionaliteit terug te brengen.</td>";
+			echo "</tr>";
+		}
+	}
 ?>
 
 <div class="wrap">
@@ -24,93 +115,8 @@
 					settings_fields('oxfam-options-local');
 				}
 				
-				Mollie_Autoloader::register();
-				$mollie = new Mollie_Reseller( MOLLIE_PARTNER, MOLLIE_PROFILE, MOLLIE_APIKEY );
-				$partner_id_customer = get_option( 'oxfam_mollie_partner_id', 2485891 );
+				do_mollie_reseller_api_logic( get_option( 'oxfam_mollie_partner_id', 2485891 ) );
 				
-				// Check of we niet op de hoofdaccount zitten, want anders fatale API-error
-				if ( $partner_id_customer != 2485891 and $partner_id_customer > 2000000 ) {
-					$href = 'https://my.mollie.com/dashboard/';
-					
-					// Verhinder doorklikken naar echte account op demosites
-					if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-						try {
-							$login_link = $mollie->getLoginLink( $partner_id_customer );
-							$href = $login_link->redirect_url;
-						} catch (Exception $e) {
-							echo 'Caught exception: ',  $e->getMessage(), '<br/>';
-						}
-					}
-					
-					echo "<tr>";
-						echo "<th class='left'><a href='".$href."' target='_blank'>Log volautomatisch in op je Mollie-betaalaccount &raquo;</a></th>";
-						echo "<td class='right'>Opgelet: deze link is slechts 60 seconden geldig! Herlaad desnoods even deze pagina.</td>";
-					echo "</tr>";
-					
-					$methods = $mollie->availablePaymentMethodsByPartnerId( $partner_id_customer );
-					if ( $methods->resultcode == '10' ) {
-						$lacking = array();
-						// Er bestaat geen aparte service voor Apple Pay, wel voor 'voucher'
-						$must_be = array( 'mistercash', 'kbc', 'belfius', 'creditcard', 'ideal' );
-						foreach ( $must_be as $service ) {
-							if ( $methods->services->{$service} == 'false' ) {
-								$lacking[] = $service;
-							}
-						}
-						
-						if ( count( $lacking ) > 0 ) {
-							echo "<tr>";
-								echo "<th class='left' style='color: red;'>Activeer volgende verplichte betaalmethodes:</th>";
-								echo "<td class='right'>";
-									foreach ( $lacking as $service ) {
-										echo strtoupper( $service )."&nbsp;&nbsp;";
-									}
-								echo "</td>";
-							echo "</tr>";
-						}
-					}
-					
-					$profiles = $mollie->profilesByPartnerId( $partner_id_customer );
-					if ( $profiles->resultcode == '10' ) {
-						if ( get_webshop_name() != trim_and_uppercase( $profiles->items->profile->name ) ) {
-							// $name_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een andere bedrijfsnaam geregistreerd!</small>";
-						}
-						// Fix voor winkels met twee nummers (bv. Mariakerke) TE VERWIJDEREN?
-						$phones = explode( ' of ', get_oxfam_shop_data('telephone') );
-						$warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactnummer geregistreerd!</small>";
-						if ( $phones[0] != format_phone_number( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
-							if ( count($phones) === 2 ) {
-								if ( $phones[1] != format_phone_number( '0'.substr( $profiles->items->profile->phone, 2 ), '.' ) ) {
-									$phone_warning = $warning;
-								}
-							} else {
-								$phone_warning = $warning;
-							}
-						}
-						if ( get_webshop_email() != $profiles->items->profile->email ) {
-							$mail_warning = "<br/><small style='color: red;'>Opgelet, bij Mollie staat een ander contactadres geregistreerd!</small>";
-						}
-					}
-					
-					// Rekeningnummer zit niet langer in winkelpagina's, dus uitschakelen
-					// $accounts = $mollie->bankAccountsByPartnerId( $partner_id_customer );
-					// if ( $accounts->resultcode == '10' ) {
-					// 	// Er kunnen meerdere rekeningnummers in de account zitten!
-					// 	foreach ( $accounts->items->bankaccount as $bankaccount ) {
-					// 		if ( $bankaccount->selected == 'true' and get_oxfam_shop_data('account') !== format_account( $bankaccount->iban_number ) ) {
-					// 			$account_warning = "<br/><small style='color: red;'>Opgelet, Mollie gebruikt een ander rekeningnummer voor de uitbetalingen!</small>";
-					// 		}
-					// 		if ( get_oxfam_shop_data('account') === format_account( $bankaccount->iban_number ) and $bankaccount->verified == 'false' ) {
-					// 			$account_warning = "<br/><small style='color: red;'>Opgelet, dit rekeningnummer is bij Mollie (nog) niet geverifieerd!</small>";
-					// 		}
-					// 	}
-					// }
-				} else {
-					echo "<tr>";
-						echo "<th class='left' style='color: red;'>Reseller API Deprecated</th>";
-						echo "<td class='right'>Helaas kunnen we hier geen automatische inloglink naar jullie Mollie-account meer tonen. Gelieve handmatig in te loggen via <a href='https://my.mollie.com/dashboard/login' target='_blank'>mollie.com</a>. We bekijken of er alternatieve oplossingen zijn om deze functionaliteit terug te brengen.</td>";
-					echo "</tr>";
-				}
 				if ( does_sendcloud_delivery() ) {
 					echo "<tr>";
 						echo "<th class='left'><a href='https://panel.sendcloud.sc/' target='_blank'>Log in op je SendCloud-verzendaccount &raquo;</a></th>";
@@ -283,7 +289,8 @@
 					<input type="text" name="oxfam_tax" class="text-input" value="<?php echo get_oxfam_shop_data('tax'); ?>" readonly>
 				</td>
 			</tr>
-			<tr valign="top">
+			<!-- Rekeningnummer zit niet langer in winkelpagina's, dus verbergen -->
+			<tr valign="top" style="display: none;">
 				<th class="left">
 					<label for="oxfam_account" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">IBAN-rekeningnummer: <?php if ( isset($account_warning) ) echo $account_warning; ?></label>
 				</th>
