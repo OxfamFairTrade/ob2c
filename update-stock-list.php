@@ -256,6 +256,7 @@
 					data: input,
 					dataType: 'html',
 					success: function(msg) {
+						console.log(msg);
 						if ( msg.substr(0, 5) == 'ERROR' ) {
 							alert("Er liep iets mis, probeer het later eens opnieuw! "+msg);
 							jQuery(this).val('');

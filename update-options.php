@@ -17,7 +17,7 @@
 					$login_link = $mollie->getLoginLink( $partner_id );
 					$href = $login_link->redirect_url;
 				} catch (Exception $e) {
-					echo 'Caught exception: ',  $e->getMessage(), '<br/>';
+					echo 'Caught exception: ', $e->getMessage(), '<br/>';
 					return;
 				}
 			}
