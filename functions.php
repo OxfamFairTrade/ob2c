@@ -5,6 +5,13 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 
+	// Als de Mollie-account geblokkeerd geraakt, verdwijnen alle betaalmethodes!
+	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_when_mollie_account_blocked' );
+	
+	function print_explanation_when_mollie_account_blocked( $text ) {
+		return 'Door een administratief probleem bij onze betaalprovider is het momenteel niet mogelijk om bestellingen te plaatsen. We werken aan een oplossing!';
+	}
+	
 	// Wijzig de naam van de besteller in de lijst in de back-end
 	add_filter( 'woocommerce_admin_order_buyer_name', 'ob2c_change_buyer_name', 10, 2 );
 
