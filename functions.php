@@ -7732,7 +7732,7 @@
 							$product->save();
 							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
 						} else {
-							write_log( $product->get_sku()." SHOULD BE DISABLED ON MAIN SITE" );
+							write_log( $product->get_sku()." SHOULD BE DISABLED ON MAIN SITE (".$product->get_meta('touched_by_import').")" );
 						}
 					}
 				}
@@ -7999,9 +7999,9 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/06/15/Promos-online--winkel-juli-aug-2022-update" target="_blank">promoties voor juli en augustus</a> zijn geactiveerd. Opgelet: op de pancarte en in de kortingsregel voor ShopPlus werd een verkeerde consumentenprijs gehanteerd voor de muesli (4,25 i.p.v. 3,95 euro). Hierdoor klopte ook het kortingsbedrag niet. Dit werd inmiddels gecorrigeerd, <a href="https://copain.oww.be/nieuwsbericht/2022/07/04/ShopPlus-juli-augustus-correctie-korting-Muesli" target="_blank">zie</a> <a href="https://copain.oww.be/nieuwsbericht/2022/07/04/Correctie-promopancarte-juli-augustus-2022-Op-een-knapperige-vakantie" target="_blank">Copain</a>. De webshop paste steeds de juiste korting toe (1,97 i.p.v. 2,12 euro per 2 dozen).</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>De <a href="https://copain.oww.be/voeding/2022/08/10/Promos-online--winkel-september-2022-update" target="_blank">promoties voor september</a> zijn geactiveerd. Opgelet: wegens nachtelijk onderhoud door onze hostingprovider werd de gisteren <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:08ecd669-f744-453a-b589-fb1a8a3d21f4" target="_blank">aangekondigde update van het craftsaanbod</a> onderbroken. Deze wordt in de loop van de dag hernomen, nog even geduld.</p>';
+				echo '</div>';
 				
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
