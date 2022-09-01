@@ -73,6 +73,23 @@ if ( order_contains_breakfast( $order ) ) {
 }
 echo '<p>'.sprintf( __( 'Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op %s en vermeld je bestelnummer. Op die manier kunnen we je snel verder helpen.', 'oxfam-webshop' ), $phone_number ).'</p>';
 
+// In principe zouden we ook naar oude bakken van 24 flesjes moeten zoeken, maar onmogelijk aangezien  
+// $old_empties = array( 'WLFSG', 'WLBS6' );
+$old_glass_cnt = 0;
+
+foreach ( $order->get_items() as $item ) {
+	// Opgelet: deze methode is enkel beschikbaar op WC_Order_Item_Product, wat als we een ander soort item tegenkomen?
+	if ( $product = $item->get_product() ) {
+		if ( $product->get_sku() === 'WLFSG' ) {
+			$old_glass_cnt += $item->get_quantity();
+		}
+	}
+}
+
+if ( $old_glass_cnt > 0 ) {
+	echo '<p><b>'.sprintf( __( 'Opgelet: deze bestelling bevat %d grote flessen fruitsap in retourglas. Gelieve dit leeggoed, inclusief eventuele plastic bakken, vòòr 15 oktober 2022 in te leveren bij een Oxfam-Wereldwinkel naar keuze. Na deze datum kunnen we de terugbetaling van de waarborg niet meer garanderen. <a href="https://www.oxfamfairtrade.be/nl/2021/12/oxfam-fair-trade-sappen-wat-is-nieuw-vanaf-2022/" target="_blank">Meer info over onze switch naar Tetra Paks.</a>', 'oxfam-webshop' ), $old_glass_cnt ).'</b></p>';
+}
+
 /*
  * @hooked WC_Emails::order_details() Shows the order details table.
  * @hooked WC_Structured_Data::generate_order_data() Generates structured data.

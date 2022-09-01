@@ -7999,13 +7999,14 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/voeding/2022/08/10/Promos-online--winkel-september-2022-update" target="_blank">promoties voor september</a> zijn geactiveerd. Opgelet: wegens nachtelijk onderhoud door onze hostingprovider werd de gisteren <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:08ecd669-f744-453a-b589-fb1a8a3d21f4" target="_blank">aangekondigde update van het craftsaanbod</a> onderbroken. Deze wordt in de loop van de dag hernomen, nog even geduld.</p>';
+				echo '<div class="notice notice-warning">';
+					echo '<p>Wegens nachtelijk onderhoud aan de database door onze hostingprovider werd de <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:08ecd669-f744-453a-b589-fb1a8a3d21f4" target="_blank">aangekondigde update van het craftsaanbod</a> onvoorzien afgebroken. De update wordt in de loop van de dag hernomen, nog even geduld.</p>';
+					// echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				echo '</div>';
 				
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>De <a href="https://copain.oww.be/voeding/2022/08/10/Promos-online--winkel-september-2022-update" target="_blank">promoties voor september</a> zijn geactiveerd in alle webshops. Er zijn deze maand geen nieuwe producten maar er werden wel een tiental producten uitgefaseerd (= oranje gemarkeerd in het voorraadbeheer).</p>';
+				echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				// echo '<div class="notice notice-success">';
