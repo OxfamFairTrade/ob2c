@@ -87,7 +87,7 @@ foreach ( $order->get_items() as $item ) {
 }
 
 if ( $old_glass_cnt > 0 ) {
-	echo '<p><b>'.sprintf( __( 'Opgelet: deze bestelling bevat %d grote flessen fruitsap in retourglas. Gelieve dit leeggoed, inclusief eventuele plastic bakken, vòòr 15 oktober 2022 in te leveren bij een Oxfam-Wereldwinkel naar keuze. Na deze datum kunnen we de terugbetaling van de waarborg niet meer garanderen. <a href="https://www.oxfamfairtrade.be/nl/2021/12/oxfam-fair-trade-sappen-wat-is-nieuw-vanaf-2022/" target="_blank">Meer info over onze switch naar Tetra Paks.</a>', 'oxfam-webshop' ), $old_glass_cnt ).'</b></p>';
+	echo '<p>'.sprintf( __( 'Opgelet: deze bestelling bevat %d grote flessen fruitsap van 1 liter in retourglas. Gelieve dit leeggoed, inclusief eventuele plastic bakken, <b>vòòr 15 oktober 2022</b> in te leveren bij een Oxfam-Wereldwinkel naar keuze. Na deze datum kunnen we de terugbetaling van de waarborg niet meer garanderen. <a href="https://www.oxfamfairtrade.be/nl/2021/12/oxfam-fair-trade-sappen-wat-is-nieuw-vanaf-2022/" target="_blank">Meer info over onze switch naar Tetra Paks.</a>', 'oxfam-webshop' ), $old_glass_cnt ).'</p>';
 }
 
 /*
