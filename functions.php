@@ -5411,7 +5411,7 @@
 						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
 					}
-
+					
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
 				} elseif ( $chosen_shop_post_id === 'vorselaar' ) {
@@ -5419,10 +5419,21 @@
 						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
 					}
-
+					
 					// Zoek de eerste vrijdag na de volgende middagdeadline (wordt wegens openingsuren automatisch zaterdagochtend)
 					$timestamp = strtotime( 'next Friday', $from );
-
+					
+					// Skip check op uitzonderlijke sluitingsdagen
+					return find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
+				} elseif ( $chosen_shop_post_id === 'stoasje' ) {
+					if ( date_i18n( 'N', $from ) > 3 or ( date_i18n( 'N', $from ) == 3 and date_i18n( 'G', $from ) >= 12 ) ) {
+						// Na de deadline van woensdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
+						$from = strtotime( '+1 weekday', $from );
+					}
+					
+					// Zoek de eerste donderdag na de volgende middagdeadline
+					$timestamp = strtotime( 'next Thursday', $from );
+					
 					// Skip check op uitzonderlijke sluitingsdagen
 					return find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
 				} elseif ( $chosen_shop_post_id == 3478 ) {
@@ -5431,7 +5442,7 @@
 						// Na de deadline van zondag 22u00: begin pas bij 4de werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+4 weekdays', $from );
 					}
-
+					
 					// Zoek de eerste donderdag na de volgende middagdeadline (wordt wegens openingsuren automatisch vrijdagochtend)
 					$timestamp = strtotime( 'next Thursday', $from );
 				} else {
