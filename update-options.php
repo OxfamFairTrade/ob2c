@@ -194,7 +194,7 @@
 								<label for="oxfam_b2c_delivery_cost">Leverkost voor betalende thuislevering:<br/><small>Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau (6,95 euro). Opgelet: indien je thuislevering volledig gratis wil maken, dien je het minimumbedrag hierboven op 0 te zetten (en niet dit bedrag). Vergeet de prijs van de artikels WEB6 en WEB21 niet aan te passen in ShopPlus!</small></label>
 							</th>
 							<td class="right">
-								<input type="number" name="oxfam_b2c_delivery_cost" class="text-input" value="<?php echo get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') ); ?>" step="0.50" min="0.95" max="6.95" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
+								<input type="number" name="oxfam_b2c_delivery_cost" class="text-input" value="<?php echo get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') ); ?>" step="0.05" min="0.95" max="6.95" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
 							</td>
 						</tr>
 						<tr valign="top">
