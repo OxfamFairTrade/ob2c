@@ -8015,14 +8015,14 @@
 				echo '</div>';
 			}
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				echo '<div class="notice notice-warning">';
-					echo '<p>Wegens nachtelijk onderhoud aan de database door onze hostingprovider werd de <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:08ecd669-f744-453a-b589-fb1a8a3d21f4" target="_blank">aangekondigde update van het craftsaanbod</a> onvoorzien afgebroken. De update wordt in de loop van de dag hernomen, nog even geduld.</p>';
-					// echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-warning">';
+				// 	echo '<p>Wegens nachtelijk onderhoud aan de database door onze hostingprovider werd de <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:08ecd669-f744-453a-b589-fb1a8a3d21f4" target="_blank">aangekondigde update van het craftsaanbod</a> onvoorzien afgebroken. De update wordt in de loop van de dag hernomen, nog even geduld.</p>';
+				// 	// echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
+				// echo '</div>';
 				
-				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/voeding/2022/08/10/Promos-online--winkel-september-2022-update" target="_blank">promoties voor september</a> zijn geactiveerd in alle webshops. Er zijn deze maand geen nieuwe producten maar er werden wel een tiental producten uitgefaseerd (= oranje gemarkeerd in het voorraadbeheer).</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-success">';
+				// 	echo '<p>De <a href="https://copain.oww.be/voeding/2022/08/10/Promos-online--winkel-september-2022-update" target="_blank">promoties voor september</a> zijn geactiveerd in alle webshops. Er zijn deze maand geen nieuwe producten maar er werden wel een tiental producten uitgefaseerd (= oranje gemarkeerd in het voorraadbeheer).</p>';
+				// echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				// echo '<div class="notice notice-success">';
@@ -8079,10 +8079,10 @@
 					echo '<div class="updated"><p>' . esc_html( $message ) . ' Ongeldige wijzigingen kunnen tegengehouden zijn door het systeem! Raadpleeg de logs in de rechterkolom van het orderdetail als je merkt dat de status onveranderd gebleven is.</p></div>';
 				}
 			}
-
-			echo '<div class="notice notice-info">';
-				echo '<p>Op 21 februari ging een nieuwe actie van start met digitale vouchers, uitgereikt aan personeelsleden van Christelijke Mutualiteit. De verwerking verloopt volledig analoog als bij <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">de Gezinsbond- en Cera-cheques</a>. Enige verschil is het kleinere bedrag: 10 i.p.v. 25, 30 of 50 euro. Een nieuwe artikelcode WGCD102022 vind je in <a href="https://copain.oww.be/shopplus" target="_blank">de ShopPlus-update voor maart</a> en werd toegevoegd aan <a href="https://copain.oww.be/l/nl/library/download/urn:uuid:027125de-b104-4946-a55d-b67f0ac47d67/028-nuttige_barcodes-02-2022.pdf?format=save_to_disk">het scanblad met nuttige barcodes</a>. Meer info in <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:49ec55a0-282e-42dd-838a-96c8f1a21b29" target="_blank">de webshopnieuwsbrief van 22 februari</a>.</p>';
-			echo '</div>';
+			
+			// echo '<div class="notice notice-info">';
+			// 	echo '<p>Op 21 februari ging een nieuwe actie van start met digitale vouchers, uitgereikt aan personeelsleden van Christelijke Mutualiteit. De verwerking verloopt volledig analoog als bij <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">de Gezinsbond- en Cera-cheques</a>. Enige verschil is het kleinere bedrag: 10 i.p.v. 25, 30 of 50 euro. Een nieuwe artikelcode WGCD102022 vind je in <a href="https://copain.oww.be/shopplus" target="_blank">de ShopPlus-update voor maart</a> en werd toegevoegd aan <a href="https://copain.oww.be/l/nl/library/download/urn:uuid:027125de-b104-4946-a55d-b67f0ac47d67/028-nuttige_barcodes-02-2022.pdf?format=save_to_disk">het scanblad met nuttige barcodes</a>. Meer info in <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:49ec55a0-282e-42dd-838a-96c8f1a21b29" target="_blank">de webshopnieuwsbrief van 22 februari</a>.</p>';
+			// echo '</div>';
 		}
 
 		if ( 'woocommerce_page_wc-reports' === $screen->base and ( empty( $_GET['tab'] ) or $_GET['tab'] === 'orders' ) ) {
