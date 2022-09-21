@@ -3452,8 +3452,9 @@
 					/* Disbable prijswijzigingen bij terugbetalingen */
 					jQuery('#order_line_items').find('.refund_line_total.wc_input_price').prop( 'disabled', true );
 					jQuery('#order_line_items').find('.refund_line_tax.wc_input_price').prop( 'disabled', true );
-					// Niet langer blokkeren, is de enige manier om terugbetalingen te doen op bestellingen met digicheques (geen prijsvergelijking met Mollie-order)
-					// jQuery('.wc-order-totals').find ('#refund_amount').prop( 'disabled', true );
+					/* Niet langer disabelen én readonly (geïnjecteerd door Mollie-plugin?) expliciet weghalen */
+					/* Dit veld is de enige manier om terugbetalingen te doen op bestellingen met digicheques (geen prijsvergelijking met product in Mollie-order) */
+					jQuery('.wc-order-totals').find ('#refund_amount').prop( 'readonly', false );
 				});
 			</script>
 
