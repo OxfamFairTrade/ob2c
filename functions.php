@@ -5429,10 +5429,14 @@
 					if ( date_i18n( 'N', $from ) > 3 or ( date_i18n( 'N', $from ) == 3 and date_i18n( 'G', $from ) >= 12 ) ) {
 						// Na de deadline van woensdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
+						do_action( 'qm/info', 'We are after Wednesday 12:00, start from: '.date( 'c', $from ) );
+					} else {
+						do_action( 'qm/info', 'We are before Wednesday 12:00, start from: '.date( 'c', $from ) );
 					}
 					
 					// Zoek de eerste donderdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Thursday', $from );
+					do_action( 'qm/info', 'Next Thursday: '.date( 'c', $timestamp ) );
 					
 					// Skip check op uitzonderlijke sluitingsdagen
 					return find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
