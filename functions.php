@@ -6604,10 +6604,10 @@
 	add_action( 'update_option_oxfam_minimum_free_delivery', 'update_shipping_methods_free_delivery', 10, 3 );
 
 	function update_shipping_methods_free_delivery( $old_min_amount, $new_min_amount, $option ) {
-		// Bij Regio Hasselt en Zele hangt het minimumbedrag af van de postcode
+		// Bij Regio Hasselt hangt het minimumbedrag af van de postcode
 		// Ook als het veld verborgen is, wordt de waarde bijgewerkt!
 		// Custom instellingen niet overschrijven met één universeel bedrag
-		if ( in_array( get_current_blog_id(), array( 27, 38 ) ) ) {
+		if ( in_array( get_current_blog_id(), array( 27 ) ) ) {
 			return;
 		}
 
@@ -8056,6 +8056,7 @@
 				// echo '</div>';
 				
 				// 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
+				// 26008 BIO Vloeibare honing, 23702 BIO Rooibos African Sunset 1,8 g x 20
 				// Sommige producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare?
 				// echo '<div class="notice notice-warning">';
 				// 	echo '<p>Een volgende reeks uitgefaseerde producten werd uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 24117 BIO Witte chocolade 50 g (THT: 23/02/2022), 24501 Noussines (THT: 25/02/2022), 27057 Couscous (in omschakeling naar BIO) (THT: 31/03/2022), 27117 ‘Petit poussin’ rijst (THT: 16/03/2022), 27502 Minipapaja’s (THT: 31/01/2022) en 28321 Pepermolen zongedroogde tomaat (THT: 31/03/2022).</p>';
