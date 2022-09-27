@@ -216,14 +216,14 @@
 		// Vermijd dat we ook autocoupons checken en zo geldige gebruikers blacklisten!
 		if ( ob2c_is_plausible_voucher_code( $code ) ) {
 			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
-			if ( ! $ignore_ip_limit and $tries > 5 ) {
+			if ( ! $ignore_ip_limit and $tries > 10 ) {
 				write_log( "Too many coupon attempts by ".$_SERVER['REMOTE_ADDR'].", code lookup temporarily blocked" );
 				return WC_COUPON::E_WC_COUPON_NOT_EXIST;
 			}
-
+			
 			global $wpdb;
 			$coupon = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `code` = %s", $code ) );
-
+			
 			if ( NULL !== $coupon ) {
 				return $coupon;
 			} else {
