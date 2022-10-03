@@ -6780,7 +6780,6 @@
 		add_submenu_page( 'oxfam-products-list', 'Snacks', 'Snacks', 'manage_network_users', 'oxfam-products-list-snacks', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Wereldkeuken', 'Wereldkeuken', 'manage_network_users', 'oxfam-products-list-wereldkeuken', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Alle craftsproducten', 'Alle craftsproducten', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Augustusmagazine 2021', 'Augustus 2021', 'manage_network_users', 'oxfam-products-list-augustus', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Aprilmagazine 2021', 'April 2021', 'manage_network_users', 'oxfam-products-list-april', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Januarimagazine 2021', 'Januari 2021', 'manage_network_users', 'oxfam-products-list-januari', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Oktobermagazine 2020', 'Oktober 2020', 'manage_network_users', 'oxfam-products-list-oktober', 'oxfam_products_list_callback' );
@@ -8025,22 +8024,36 @@
 				// echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				// echo '<div class="notice notice-success">';
-				// 	echo '<p>Het appelsap in tetrabrik en de biologische speculoospasta (weldra bestelbaar) werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 21054, 26488 );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product($product_id);
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>';
-				// 	if ( current_user_can('manage_network_users') ) {
-				// 		echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-				// 	}
-				// 	echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Let goed op welke kikkererwten je voorradig houdt: netto-inhoud, verpakking én prijs wijken af t.o.v. de bestaande versie in blik van Fairtrade Original. De paashazen doken weer onder in hun knusse holletje.</p>';
-				// echo '</div>';
+				echo '<div class="notice notice-success">';
+					echo '<p>Een nieuwe biowijn, pralines met krokante hazelnootvulling én alle sintproducten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 20078, 24551, 24553, 24635, 24639, 24640, 24651, 24652, 26491 );
+						// Eerder reeds beschikbaar: 24614, 24550, 24645
+						foreach ( $skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product( $product_id );
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+					
+					echo '<p>Daarnaast zijn er ook twee nieuwe referenties die bestaande producten vervangen omwille van een technische wijziging (netto-inhoud bij notenchocolade, ompakhoeveelheid bij de spaghetti):</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 24302 => 24318, 28802 => 28805 );
+						foreach ( $skus as $old_sku => $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product( $product_id );
+								$old_product_id = wc_get_product_id_by_sku( $old_sku );
+								$old_product = wc_get_product( $old_product_id );
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').'), vervangt <a href="'.$old_product->get_permalink().'" target="_blank">'.$old_product->get_title().'</a> ('.$old_product->get_meta('_shopplus_code').')</li>';
+							}
+						}
+					echo '</ul><p>Let erop dat je de juiste referentie op voorraad zet (en de oude referentie uit assortiment haalt van zodra je de nieuwe uitlevert).</p>';
+				echo '</div>';
 				
 				// if ( get_current_blog_id() !== 1 ) {
 				// 	$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );

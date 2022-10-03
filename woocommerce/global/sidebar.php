@@ -32,10 +32,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 					);
 					$sale_products = wc_get_products( $args );
 					if ( count( $sale_products ) > 0 ) {
-						$products_tags[] = 'promotie';
+						// $products_tags[] = 'promotie';
 					}
 
-					// $products_tags[] = 'pasen';
+					$products_tags[] = 'sinterklaas';
 					// $products_tags[] = 'faire-feesten';
 
 					foreach ( $products_tags as $product_slug ) {
