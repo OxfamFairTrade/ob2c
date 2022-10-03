@@ -8040,8 +8040,10 @@
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-					
-					echo '<p>Daarnaast zijn er ook twee nieuwe referenties die bestaande producten vervangen omwille van een technische wijziging (netto-inhoud bij notenchocolade, ompakhoeveelheid bij de spaghetti):</p><ul style="margin-left: 2em; column-count: 2;">';
+				echo '</div>';
+				
+				echo '<div class="notice notice-success">';
+					echo '<p>Daarnaast zijn er ook twee nieuwe referenties die een bestaand product vervangen, omwille van een technische wijziging (netto-inhoud bij notenchocolade, ompakhoeveelheid bij spaghetti):</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 24302 => 24318, 28802 => 28805 );
 						foreach ( $skus as $old_sku => $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
