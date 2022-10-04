@@ -56,14 +56,14 @@
 		return $html;
 	}
 
-	function get_koffiechoc22_disclaimer() {
-		return 'Eén gratis reep chocolade per drie pakjes koffie van 250 g (bonen en gemalen), pads en/of capsules. Actie geldig t.e.m. 28/02/2022. Zolang de voorraad strekt. Niet cumuleerbaar met andere acties en kortingen.';
+	function get_wvdft2022_disclaimer() {
+		return '1 gratis exemplaar van de afgebeelde shopper bij aankoop van 4 pakjes koffie uit het assortiment van Oxfam Fair Trade (keuze uit alle koffiereferenties: 250 g gemalen of bonen, pads, cups, oploskoffie) of bij aankoop van 1 verpakking van 1 kg (gemalen of bonen), verschillende soorten koffie combineren is toegestaan. Actie geldig t.e.m. 15/10/2022. Zolang de voorraad strekt. Niet cumuleerbaar met andere acties en/of klantenkortingen.';
 	}
 
 	// Registreer aantal gratis capsules over alle webshops heen
-	add_filter( 'woocommerce_coupon_get_usage_count', 'get_sitewide_coupon_usage', 10, 2 );
-	add_action( 'woocommerce_increase_coupon_usage_count', 'increase_coupon_usage_count_sitewide', 10, 3 );
-	add_action( 'woocommerce_decrease_coupon_usage_count', 'decrease_coupon_usage_count_sitewide', 10, 3 );
+	// add_filter( 'woocommerce_coupon_get_usage_count', 'get_sitewide_coupon_usage', 10, 2 );
+	// add_action( 'woocommerce_increase_coupon_usage_count', 'increase_coupon_usage_count_sitewide', 10, 3 );
+	// add_action( 'woocommerce_decrease_coupon_usage_count', 'decrease_coupon_usage_count_sitewide', 10, 3 );
 
 	function get_sitewide_coupon_usage( $usage_count, $coupon ) {
 		if ( $coupon->get_code() === 'faircaps21' ) {
@@ -110,9 +110,9 @@
 
 
 	// Schakel afrekenen in de webshop van Houthalen uit van 18/10 t.e.m. 14/11
-	add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
-	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
-	add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
+	// add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
+	// add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
+	// add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
 
 	function disable_all_payment_methods( $methods ) {
 		if ( get_current_blog_id() === 72 ) {
@@ -905,15 +905,21 @@
 		return $can_be_applied;
 	}
 
+	// Schakel kortingsbon met een gratis product uit als de webshop geen voorraad heeft
 	add_action( 'wjecf_assert_coupon_is_valid', 'check_if_free_products_are_on_stock', 1000, 2 );
 
 	function check_if_free_products_are_on_stock( $coupon, $wc_discounts  ) {
-		if ( $coupon->get_code() === 'faircaps21' and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
-			$espresso = wc_get_product( wc_get_product_id_by_sku('22724') );
-			$lungo = wc_get_product( wc_get_product_id_by_sku('22725') );
-			if ( ( $espresso !== false and $espresso->get_stock_status() !== 'instock' ) and ( $lungo !== false and $lungo->get_stock_status() !== 'instock' ) ) {
-				// Schakel de kortingsbon uit als de webshop geen enkele capsule op voorraad heeft
-				throw new Exception( __( 'Deze webshop heeft helaas geen koffiecapsules op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
+		if ( in_array( $coupon->get_code(), array( '202210-koffie-250g', '202210-koffie-1kg' ) ) and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
+			$shopper = wc_get_product( wc_get_product_id_by_sku('19039') );
+			if ( $shopper !== false and $shopper->get_stock_status() !== 'instock' ) {
+				throw new Exception( __( 'Deze webshop heeft helaas geen shoppers op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
+			}
+		}
+		
+		if ( $coupon->get_code() === '202210-wvdft-sesam' and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
+			$sesamreep = wc_get_product( wc_get_product_id_by_sku('25317') );
+			if ( $sesamreep !== false and $sesamreep->get_stock_status() !== 'instock' ) {
+				throw new Exception( __( 'Deze webshop heeft helaas geen sesamrepen met chocolade op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
 			}
 		}
 	}
