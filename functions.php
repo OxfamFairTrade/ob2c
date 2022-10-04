@@ -8019,19 +8019,26 @@
 				// echo '</div>';
 				
 				echo '<div class="notice notice-info">';
-					$product_id = wc_get_product_id_by_sku('202');
-					if ( $product_id ) {
-						$product = wc_get_product( $product_id );
-						echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+					$sesamreep = 'sesamreep met chocolade';
+					$product_id_sesamreep = wc_get_product_id_by_sku('25317');
+					if ( $product_id_sesamreep ) {
+						$product_sesamreep = wc_get_product( $product_id_sesamreep );
+						$sesamreep = '<a href="'.$product_sesamreep->get_permalink().'" target="_blank">'.$sesamreep.'</a> ('.$product_sesamreep->get_meta('_shopplus_code').')';
 					}
-					echo '<p>Op 5 oktober starten de <a href="https://copain.oww.be/campagne-en-actie/week-van-de-fair-trade2#commerc" target="_blank">promoties voor de Week van de Fair Trade</a>. Ook dit jaar zijn er twee algemene promo\'s: een gratis shopper voor <u>elke</u> kilo aangekochte koffie en één gratis sesamreep met cacao <u>per</u> bestelling van 10 euro (= sowieso van toepassing op alle online bestellingen). Deze promoties werken enkel indien de gratis producten op voorraad staan in jullie webshop. Aangezien we ervan uitgaan dat alle winkels deelnemen aan Week van de Fair Trade hebben we de shopper voorradig gemaakt in alle webshops. Zit je zonder voorraad en moet je de actie beëindigen? Zet het product dan op \'Tijdelijk uit voorraad\' (als je de voorraad zal aanvullen) of \'Niet in assortiment\'.</p>';
+					$shopper = 'een gratis shopper';
+					$product_id_shopper = wc_get_product_id_by_sku('19039');
+					if ( $product_id_shopper ) {
+						$product_shopper = wc_get_product( $product_id_shopper );
+						$shopper = '<a href="'.$product_shopper->get_permalink().'" target="_blank">'.$shopper.'</a> ('.$product_shopper->get_meta('_shopplus_code').')';
+					}
+					echo '<p>Op 5 oktober starten de <a href="https://copain.oww.be/campagne-en-actie/week-van-de-fair-trade2#commerc" target="_blank">promoties voor de Week van de Fair Trade</a>. Ook dit jaar zijn er twee algemene promo\'s: '.$shopper.' voor <u>elke</u> kilo aangekochte koffie en één '.$sesamreep.' <u>per</u> bestelling van 10 euro (= sowieso van toepassing op alle online bestellingen). Deze promoties werken enkel indien de gratis producten op voorraad staan in jullie webshop. <b>Aangezien we ervan uitgaan dat alle winkels deelnemen aan Week van de Fair Trade hebben we de shopper voorradig gemaakt in alle webshops.</b> Zit je zonder voorraad en moet je de actie beëindigen? Zet het product dan op \'Tijdelijk uit voorraad\' (als je de voorraad zal aanvullen) of \'Niet in assortiment\'. Aangezien er niets gecrediteerd zal worden, hoef je niets te turven.</p>';
 				echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
 					echo '<p>Een nieuwe biowijn, pralines met krokante hazelnootvulling én alle sintproducten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 20078, 24551, 24553, 24635, 24639, 24640, 24651, 24652, 26491 );
-						// Eerder reeds beschikbaar: 24614, 24550, 24645
+						$skus = array( 20078, 24550, 24551, 24553, 24635, 24639, 24640, 24651, 24652, 26491 );
+						// Eerder reeds beschikbaar: 24614, 24645
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -8045,9 +8052,9 @@
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 					
-					echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra producten beschikbaar die de voorbije maanden verschenen:</p>';
+					echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra referenties beschikbaar die de voorbije maanden verschenen:</p>';
 					echo '<ul>';
-						echo '<li>de agenda\'s en kalenders voor 2023:<ul style="margin-left: 2em; column-count: 2;">';
+						echo '<li>Kalenders en agenda\'s voor 2023:<ul style="margin-left: 2em; column-count: 2;">';
 							$skus = array( 87570, 87571, 87420, 87421, 87422, 87423, 87424, 87425, 87426, 87427, 87428, 87429, 87430, 87431 );
 							foreach ( $skus as $sku ) {
 								$product_id = wc_get_product_id_by_sku( $sku );
@@ -8058,7 +8065,7 @@
 							}
 						echo '</ul></li>';
 						
-						echo '<li>nieuwe verzorgingsproducten:<ul style="margin-left: 2em; column-count: 2;">';
+						echo '<li>Nieuwe verzorgingsproducten:<ul style="margin-left: 2em; column-count: 2;">';
 							$skus = array( 45247, 45258, 45262, 45267, 45390, 65200, 65202, 65204, 65205, 65207, 65208, 65209, 65215, 65228, 65229, 65269, 65270, 65273, 65274, 87359, 87360, 87361 );
 							foreach ( $skus as $sku ) {
 								$product_id = wc_get_product_id_by_sku( $sku );
@@ -8069,7 +8076,7 @@
 							}
 						echo '</ul></li>';
 						
-						echo '<li>nieuwe onderhoudsproducten:<ul style="margin-left: 2em; column-count: 2;">';
+						echo '<li>Nieuwe onderhoudsproducten:<ul style="margin-left: 2em; column-count: 2;">';
 							$skus = array( 87309, 87312, 87351, 80282, 80283, 80306, 80313, 80314, 80315 );
 							foreach ( $skus as $sku ) {
 								$product_id = wc_get_product_id_by_sku( $sku );
@@ -8080,7 +8087,7 @@
 							}
 						echo '</ul></li>';
 						
-						echo '<li>nieuwe Dopper-drinkflessen:<ul style="margin-left: 2em; column-count: 2;">';
+						echo '<li>Nieuwe Dopper-drinkflessen:<ul style="margin-left: 2em; column-count: 2;">';
 							$skus = array( 12374, 12375, 12376, 12377, 12378, 12379, 12380, 12381 );
 							foreach ( $skus as $sku ) {
 								$product_id = wc_get_product_id_by_sku( $sku );
@@ -8122,7 +8129,7 @@
 				// Sommige FTO-producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare => toch wissen (onmogelijk te beheren)
 				// 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
 				echo '<div class="notice notice-warning">';
-					echo '<p>Volgende reeks uitgefaseerde producten werd uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 20180 Pinotage-Syrah Rosé BOX 3 l, 22704 BIO Highland koffiepads 7 g x 16 (THT: 16/07/2022), 23699 BIO Losse groene thee Vitality (THT: 31/08/2022), 24117 BIO Witte chocolade 50 g (THT: 23/02/2022), 24501 Noussines (THT: 25/02/2022), 26008 BIO Vloeibare honing (THT: 21/09/2022), 26494 Maya Speculoos 225 g (THT: 31/05/2022), 27057 Couscous (in omschakeling naar BIO) (THT: 31/03/2022), 27117 ‘Petit poussin’ rijst (THT: 16/03/2022), 27518 BIO Rode kidneybonen (THT: 31/08/2022), 28321 Pepermolen zongedroogde tomaat (THT: 31/03/2022) en 28328 Zeezout mix groene kruiden (THT: 30/09/2022).</p>';
+					echo '<p>Volgende uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 20180 Pinotage-Syrah Rosé BOX 3 l, 22704 BIO Highland koffiepads 7 g x 16 (THT: 16/07/2022), 23699 BIO Losse groene thee Vitality (THT: 31/08/2022), 24117 BIO Witte chocolade 50 g (THT: 23/02/2022), 24501 Noussines (THT: 25/02/2022), 26008 BIO Vloeibare honing (THT: 21/09/2022), 26494 Maya Speculoos 225 g (THT: 31/05/2022), 27057 Couscous (in omschakeling naar BIO) (THT: 31/03/2022), 27117 ‘Petit poussin’ rijst (THT: 16/03/2022), 27518 BIO Rode kidneybonen (THT: 31/08/2022), 28321 Pepermolen zongedroogde tomaat (THT: 31/03/2022) en 28328 Zeezout mix groene kruiden (THT: 30/09/2022).</p>';
 				echo '</div>';
 				
 				if ( does_home_delivery() ) {
