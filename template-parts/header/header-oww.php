@@ -9,7 +9,7 @@
 		<div class="col-row md-display-flex">
 			<div class="col-md-3 md-align-self-center">
 				<div class="logo">
-					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">
+					<a href="<?php echo home_url(); ?>">
 						<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green-50-jaar.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
 					</a>
 				</div>
@@ -17,8 +17,8 @@
 			<div class="col-md-9 md-align-self-center">
 				<div class="topbar">
 					<div class="top-menu">
-						<ul id="menu-top-menu" class="menu"><li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/pers/">Voor pers</a></li>
-							<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/oxfam-op-school/">Voor scholen</a></li>
+						<ul id="menu-top-menu" class="menu"><li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://oxfambelgie.be/pers">Voor pers</a></li>
+							<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee/oxfam-op-jouw-school">Voor scholen</a></li>
 							<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Voor bedrijven</a></li>
 						</ul>
 					</div>
@@ -56,11 +56,11 @@
 				</div>
 				<div id="nav" class="nav">
 					<ul id="menu-main-menu" class="menu">
-						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/">Over Oxfam</a></li>
+						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/wij-zijn-oxfam">Over Oxfam</a></li>
 						<li class="menu-item menu-item-type-post_type menu-item-object-page<?php echo is_shop() ? ' current-menu-item' : ''; ?>"><a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
 						<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/recepten/">Recepten</a></li>
 						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/doe-mee/">Doe mee</a></li>
-						<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/winkels/">Vind winkel</a></li>
+						<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/shop-finder">Vind winkel</a></li>
 						<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/word-vrijwilliger/">Word vrijwilliger</a></li>
 					</ul>
                     <?php if ( ! is_main_site() ) : ?>
@@ -110,7 +110,7 @@
 			<div class="col-xs-6 align-self-center">
 				<div class="header-items display-flex">
 					<div class="header__item header__item_winkel">
-						<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/winkels/">Winkels</a>
+						<a href="https://oxfambelgie.be/shop-finder">Winkels</a>
 					</div>
 					<div class="header__item header__item_shop">
 						<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a>
@@ -169,24 +169,24 @@
 	</div>
 	<div class="nav items">
 		<ul id="menu-main-menu-1" class="menu">
-			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/">Over Oxfam</a></li>
+			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/wij-zijn-oxfam">Over Oxfam</a></li>
 			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
 			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/recepten/">Recepten</a></li>
 			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/doe-mee/">Doe mee</a></li>
-			<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/winkels/">Vind winkel</a></li>
+			<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/shop-finder">Vind winkel</a></li>
 			<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/word-vrijwilliger/">Word vrijwilliger</a></li>
 		</ul>
 	</div>
 	<div class="top-menu">
 		<ul id="menu-top-menu-1" class="menu">
-			<li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/pers/">Voor pers</a></li>
-			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/oxfam-op-school/">Voor scholen</a></li>
+			<li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://oxfambelgie.be/pers">Voor pers</a></li>
+			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee/oxfam-op-jouw-school">Voor scholen</a></li>
 			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Voor bedrijven</a></li>
 		</ul>
 	</div>
 	<div class="nav btns">
 		<ul id="menu-main-menu-2" class="menu">
-			<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/winkels/">Vind winkel</a></li>
+			<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/shop-finder">Vind winkel</a></li>
 			<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/word-vrijwilliger/">Word vrijwilliger</a></li>
 		</ul>
 	</div>
