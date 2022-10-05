@@ -129,11 +129,11 @@
 								?>
 								<h3>Oxfam-Wereldwinkels</h3>
 								<ul id="menu-footer-menu-1" class="menu">
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/">Missie en aanpak</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/steun-ons/">Steun ons</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/wij-zijn-oxfam" target="_blank">Missie en aanpak</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee/doe-een-gift" target="_blank">Steun ons</a></li>
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/bescherming-tegen-misbruik-en-uitbuiting/">Meld wangedrag</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/vacatures/">Vacatures</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/over-ons/bevriende-organisaties/">Bevriende organisaties</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/vacatures" target="_blank">Vacatures</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/netwerken-en-allianties-van-oxfam-belgie" target="_blank">Bevriende organisaties</a></li>
 								</ul>
 							</div>
 						</div>
@@ -141,11 +141,11 @@
 							<div class="footer-menu">
 								<h3>Meer over fair trade</h3>
 								<ul id="menu-footer-menu-2" class="menu">
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/expertise/">Expertise</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/eerlijke-handel" target="_blank">Expertise</a></li>
 									<li class="menu-item menu-item-type-post_type_archive menu-item-object-partner"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/partners/">Producenten</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/nieuws/">Nieuws</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/nieuws" target="_blank">Nieuws</a></li>
 									<li class="menu-item menu-item-type-post_type_archive menu-item-object-recipe"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/recepten/">Recepten</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/magazine-fair/">Magazine FAIR</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/oxfam-magazine" target="_blank">Magazine FAIR</a></li>
 								</ul>
 							</div>
 						</div>
@@ -153,11 +153,11 @@
 							<div class="footer-menu">
 								<h3>Ik ben</h3>
 								<ul id="menu-footer-menu-3" class="menu">
-									<li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/pers/">Pers</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/oxfam-op-school/">School</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/expertise/">Beleidsmedewerker</a></li>
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.oxfamfairtrade.be/nl/">Bedrijf</a></li>
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://copain.oww.be">Vrijwilliger</a></li>
+									<li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://oxfambelgie.be/pers" target="_blank">Pers</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee/oxfam-op-jouw-school" target="_blank">School</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/eerlijke-handel" target="_blank">Beleidsmedewerker</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/" target="_blank">Bedrijf</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://copain.oww.be" target="_blank">Vrijwilliger</a></li>
 								</ul>
 							</div>
 						</div>
@@ -165,11 +165,11 @@
 							<div class="footer-menu">
 								<h3>Blijf op de hoogte</h3>
 								<ul id="menu-footer-menu-4" class="menu">
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/OxfamWereldwinkels">Facebook</a></li>
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/channel/UC4YlGjFoZZ7z0RIC2mv7v4w">YouTube</a></li>
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/oxfam.BE/">Instagram</a></li>
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://twitter.com/OxfamBE">Twitter</a></li>
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/company/oxfam-fair-trade/">LinkedIn</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.facebook.com/OxfamWereldwinkels" target="_blank">Facebook</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.youtube.com/channel/UC4YlGjFoZZ7z0RIC2mv7v4w" target="_blank">YouTube</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.instagram.com/oxfam.BE/" target="_blank">Instagram</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://twitter.com/OxfamBE" target="_blank">Twitter</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a ref="https://www.linkedin.com/company/oxfam-fair-trade/" target="_blank">LinkedIn</a></li>
 								</ul>
 							</div>
 						</div>
@@ -204,29 +204,29 @@
 			<div class="col-row">
 				<div class="col-sm-2 hidden-xs">
 					<div class="logo">
-						<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/"><img src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/themes/oxfam/images/logo-green.svg" alt=""></a>
+						<img src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/themes/oxfam/images/logo-green.svg" alt="">
 					</div>
 				</div>
 				<div class="col-sm-10 col-xs-12">
 					<div class="col-row md-display-flex">
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://www.mo.be/" target="_blank"><img width="111" height="62" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-1.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://www.mo.be" target="_blank"><img width="111" height="62" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-1.png" class="attachment-medium size-medium" alt=""></a>
 							</div>
 						</div>
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://www.11.be/" target="_blank"><img width="140" height="60" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-2.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://11.be" target="_blank"><img width="140" height="60" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-2.png" class="attachment-medium size-medium" alt=""></a>
 							</div>
 						</div>
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://www.vlaanderen.be/" target="_blank"><img width="153" height="60" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-3.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://www.vlaanderen.be" target="_blank"><img width="153" height="60" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-3.png" class="attachment-medium size-medium" alt=""></a>
 							</div>
 						</div>
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://diplomatie.belgium.be/nl/Beleid/Ontwikkelingssamenwerking/" target="_blank"><img width="252" height="60" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-4.png" class="attachment-medium size-medium" alt=""></a>
+								<img width="252" height="60" src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-4.png" class="attachment-medium size-medium" alt="">
 							</div>
 						</div>
 					</div>
@@ -242,7 +242,7 @@
 			<div class="col-sm-8 md-align-self-center">
 				<p>Oxfam-Wereldwinkels vzw &copy; 2019-<?php echo date_i18n('Y'); ?>. Alle rechten voorbehouden.<br/>
 				Oxfam-Wereldwinkels/Fair Trade en Oxfam-Solidariteit bundelen de krachten onder de naam Oxfam België.<br/>
-				<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/privacy/">Privacybeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/cookiebeleid/">Cookiebeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/sitemap/">Sitemap</a></p>
+				<a href="https://oxfambelgie.be/privacy" target="_blank">Privacybeleid</a> / <a href="https://oxfambelgie.be/cookiebeleid" target="_blank">Cookiebeleid</a> / <a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/sitemap/">Sitemap</a></p>
 			</div>
 			<div class="col-sm-4 md-align-self-center alcohol-warning">
 				<a href="https://www.vlaanderen.be/regels-voor-verkoop-van-alcohol" target="_blank"><img width="250" src="<?php echo get_stylesheet_directory_uri() . '/images/geen-alcohol-minderjarigen.jpg'; ?>" class="attachment-medium size-medium" alt="Geen verkoop van alcohol aan minderjarigen"></a>
