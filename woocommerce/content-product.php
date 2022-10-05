@@ -155,12 +155,12 @@ if ( ! $nm_theme_options['product_action_link'] ) {
         
         <?php if ( is_woocommerce() and $woocommerce_loop['name'] === '' and $shopper !== false and $shopper->get_stock_status() === 'instock' and $position_in_grid === 4 ) : ?>
             <li class="promo-banner horizontal">
-                <?php if ( ! is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) and ! is_product_tag('promotie') ) : ?>
-                    <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products">
-                        <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2022-shopper.png' ); ?>" title="<?php echo get_wvdft2022_disclaimer(); ?>" />
+                <?php if ( ! is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) : ?>
+                    <a href="<?= home_url('/categorie/koffie/#nm-shop-products'); ?>">
+                        <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2022-shopper.png' ); ?>" title="<?= get_wvdft2022_disclaimer(); ?>" />
                     </a>
                 <?php else : ?>
-                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2022-shopper.png' ); ?>" title="<?php echo get_wvdft2022_disclaimer(); ?>" />
+                    <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2022-shopper.png' ); ?>" title="<?= get_wvdft2022_disclaimer(); ?>" />
                 <?php endif; ?>
             </li>
             <?php $position_in_grid++; ?>
