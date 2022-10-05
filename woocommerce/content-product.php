@@ -145,13 +145,13 @@ if ( ! $nm_theme_options['product_action_link'] ) {
         <?php $sesamreep = wc_get_product( wc_get_product_id_by_sku('25317') ); ?>
         <?php $shopper = wc_get_product( wc_get_product_id_by_sku('19039') ); ?>
         
-        <?php if ( $sesamreep !== false and $sesamreep->get_stock_status() !== 'instock' and $position_in_grid === 3 ) : ?>
+        <?php if ( $sesamreep !== false and $sesamreep->get_stock_status() === 'instock' and $position_in_grid === 3 ) : ?>
             <li class="promo-banner vertical">
                 <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2022-sesam.png' ); ?>" title="<?php echo get_wvdft2022_disclaimer(); ?>" />
             </li>
             <?php $position_in_grid++; ?>
             <?php $vertical_shown = true; ?>
-        <?php elseif ( is_woocommerce() and $woocommerce_loop['name'] === '' and $shopper !== false and $shopper->get_stock_status() !== 'instock' and $position_in_grid === 8 ) : ?>
+        <?php elseif ( is_woocommerce() and $woocommerce_loop['name'] === '' and $shopper !== false and $shopper->get_stock_status() === 'instock' and $position_in_grid === 8 ) : ?>
             <li class="promo-banner horizontal">
                 <?php if ( ! is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) and ! is_product_tag('promotie') ) : ?>
                     <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products">
