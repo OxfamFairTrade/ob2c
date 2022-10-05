@@ -76,7 +76,7 @@
 							<div class="col-row lh-banner">
 								<div class="col-xs-12">
 									<?php
-										$image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2022-shopper-home.png' ).'" title="'.get_wvdft2022_disclaimer().'" />';
+										$image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/promo-wvdft-2022-shopper-home.png' ).'" />';
 										$term_link = get_term_link( 'promotie', 'product_tag' );
 										if ( ! is_wp_error( $term_link ) ) {
 											echo '<a href="'.esc_url( $term_link ).'#nm-shop-products">'.$image.'</a>';
