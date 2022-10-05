@@ -151,7 +151,9 @@ if ( ! $nm_theme_options['product_action_link'] ) {
             </li>
             <?php $position_in_grid++; ?>
             <?php $vertical_shown = true; ?>
-        <?php elseif ( is_woocommerce() and $woocommerce_loop['name'] === '' and $shopper !== false and $shopper->get_stock_status() === 'instock' and $position_in_grid === 4 ) : ?>
+        <?php endif; ?>
+        
+        <?php if ( is_woocommerce() and $woocommerce_loop['name'] === '' and $shopper !== false and $shopper->get_stock_status() === 'instock' and $position_in_grid === 4 ) : ?>
             <li class="promo-banner horizontal">
                 <?php if ( ! is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) and ! is_product_tag('promotie') ) : ?>
                     <a href="<?php echo get_home_url(); ?>/categorie/koffie/#nm-shop-products">
