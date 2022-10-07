@@ -50,12 +50,10 @@
 			
 			if ( $credit_refs === false ) {
 				$credit_refs = array(
-					// Geldig t.e.m. 31/12/2022
 					'08899' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2023-01-01' ),
 					'08900' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2023-01-01' ),
 					'08917' => array( 'issuer' => 'Cera', 'value' => 30, 'expires' => '2023-01-01' ),
 					'08924' => array( 'issuer' => 'CM', 'value' => 10, 'expires' => '2023-01-01' ),
-					// Geldig t.e.m. 31/12/2023
 					'08935' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2024-01-01' ),
 					'08936' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2024-01-01' ),
 				);
