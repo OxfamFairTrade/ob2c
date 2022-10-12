@@ -10,7 +10,7 @@
 			<div class="col-md-3 md-align-self-center">
 				<div class="logo">
 					<a href="<?= home_url('/'); ?>">
-						<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green-50-jaar.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
+						<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
 					</a>
 				</div>
 			</div>
