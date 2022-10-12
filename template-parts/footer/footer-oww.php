@@ -204,7 +204,7 @@
 			<div class="col-row">
 				<div class="col-sm-2 hidden-xs">
 					<div class="logo">
-						<img src="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/themes/oxfam/images/logo-green.svg" alt="">
+						<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green.svg" alt="Logo Oxfam-Wereldwinkels">
 					</div>
 				</div>
 				<div class="col-sm-10 col-xs-12">
