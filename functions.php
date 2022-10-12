@@ -1641,7 +1641,7 @@
 						fjs.parentNode.insertBefore(js, fjs);
 					}(document, 'script', 'facebook-jssdk'));
 				</script>
-				<div class='fb-customerchat' attribution="wordpress" page_id='<?php echo $fb_page_id; ?>' theme_color='#61A534' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!' logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
+				<div class='fb-customerchat' attribution="wordpress" page_id='<?php echo $fb_page_id; ?>' theme_color='#44841a' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!' logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
 				<?php
 			}
 		}
