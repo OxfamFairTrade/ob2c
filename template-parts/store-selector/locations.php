@@ -58,7 +58,8 @@
 
 		/* Gebruik event delegation, de buttons in .nm-shop-products-col zijn niet noodzakelijk al aanwezig bij DOM load! */
 		/* Let op dat elementen niet dubbel getarget worden, dan zal preventDefault() roet in het eten gooien! */
-		jQuery('#header,.nm-shop-products-col,.nm-product-summary-inner-col,#nm-related,.nm-product-slider,.selected-store,.how-does-it-work-helper-text').on( 'click', '.store-selector-open', function(event) {
+		/* Custom pagina voor wijnfestival = #post-4664 */
+		jQuery('#header,.nm-shop-products-col,.nm-product-summary-inner-col,#nm-related,.nm-product-slider,.selected-store,.how-does-it-work-helper-text,#post-4664').on( 'click', '.store-selector-open', function(event) {
 			event.preventDefault();
 			jQuery('.store-selector-modal').toggleClass('open');
 
