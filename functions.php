@@ -4175,14 +4175,8 @@
 					$gift_wrap_text = $item->get_meta('wcgwp_note');
 				}
 
-				if ( $product->get_sku() == 24300 and $line_total == 0 ) {
-					// Gratis tablet Week van de Fair Trade 2021
-					$shopplus = 'W19048';
-					$ean = '5400164190480';
-				} else {
-					$shopplus = ( ! empty( $product->get_meta('_shopplus_code') ) ) ? $product->get_meta('_shopplus_code') : $product->get_sku();
-					$ean = $product->get_meta('_cu_ean');
-				}
+				$shopplus = ( ! empty( $product->get_meta('_shopplus_code') ) ) ? $product->get_meta('_shopplus_code') : $product->get_sku();
+				$ean = $product->get_meta('_cu_ean');
 				$pick_sheet->setCellValue( 'A'.$i, $shopplus )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $ean );
 				$i++;
 			}
@@ -8024,21 +8018,21 @@
 				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
 				// echo '</div>';
 				
-				echo '<div class="notice notice-info">';
-					$sesamreep = 'sesamreep met chocolade';
-					$product_id_sesamreep = wc_get_product_id_by_sku('25317');
-					if ( $product_id_sesamreep ) {
-						$product_sesamreep = wc_get_product( $product_id_sesamreep );
-						$sesamreep = '<a href="'.$product_sesamreep->get_permalink().'" target="_blank">'.$sesamreep.'</a> ('.$product_sesamreep->get_meta('_shopplus_code').')';
-					}
-					$shopper = 'een gratis shopper';
-					$product_id_shopper = wc_get_product_id_by_sku('19039');
-					if ( $product_id_shopper ) {
-						$product_shopper = wc_get_product( $product_id_shopper );
-						$shopper = '<a href="'.$product_shopper->get_permalink().'" target="_blank">'.$shopper.'</a> ('.$product_shopper->get_meta('_shopplus_code').')';
-					}
-					echo '<p>Op 5 oktober starten de <a href="https://copain.oww.be/campagne-en-actie/week-van-de-fair-trade2#commerc" target="_blank">promoties voor de Week van de Fair Trade</a>. Ook dit jaar zijn er twee algemene promo\'s: '.$shopper.' voor <u>elke</u> kilo aangekochte koffie en één '.$sesamreep.' <u>per</u> bestelling van 10 euro (= sowieso van toepassing op alle online bestellingen). Deze promoties werken enkel indien de gratis producten op voorraad zijn in jullie webshop. <b>Aangezien we ervan uitgaan dat alle winkels deelnemen aan Week van de Fair Trade hebben we de shopper voorradig gemaakt in alle webshops.</b> Zit je zonder voorraad van een product en moet je één van beide acties beëindigen? Zet het product dan op \'Tijdelijk uit voorraad\' (als je de voorraad zal aanvullen) of \'Niet in assortiment\'. Aangezien er niets gecrediteerd zal worden, hoef je niets te turven.</p>';
-				echo '</div>';
+				// echo '<div class="notice notice-info">';
+				// 	$sesamreep = 'sesamreep met chocolade';
+				// 	$product_id_sesamreep = wc_get_product_id_by_sku('25317');
+				// 	if ( $product_id_sesamreep ) {
+				// 		$product_sesamreep = wc_get_product( $product_id_sesamreep );
+				// 		$sesamreep = '<a href="'.$product_sesamreep->get_permalink().'" target="_blank">'.$sesamreep.'</a> ('.$product_sesamreep->get_meta('_shopplus_code').')';
+				// 	}
+				// 	$shopper = 'een gratis shopper';
+				// 	$product_id_shopper = wc_get_product_id_by_sku('19039');
+				// 	if ( $product_id_shopper ) {
+				// 		$product_shopper = wc_get_product( $product_id_shopper );
+				// 		$shopper = '<a href="'.$product_shopper->get_permalink().'" target="_blank">'.$shopper.'</a> ('.$product_shopper->get_meta('_shopplus_code').')';
+				// 	}
+				// 	echo '<p>Op 5 oktober starten de <a href="https://copain.oww.be/campagne-en-actie/week-van-de-fair-trade2#commerc" target="_blank">promoties voor de Week van de Fair Trade</a>. Ook dit jaar zijn er twee algemene promo\'s: '.$shopper.' voor <u>elke</u> kilo aangekochte koffie en één '.$sesamreep.' <u>per</u> bestelling van 10 euro (= sowieso van toepassing op alle online bestellingen). Deze promoties werken enkel indien de gratis producten op voorraad zijn in jullie webshop. <b>Aangezien we ervan uitgaan dat alle winkels deelnemen aan Week van de Fair Trade hebben we de shopper voorradig gemaakt in alle webshops.</b> Zit je zonder voorraad van een product en moet je één van beide acties beëindigen? Zet het product dan op \'Tijdelijk uit voorraad\' (als je de voorraad zal aanvullen) of \'Niet in assortiment\'. Aangezien er niets gecrediteerd zal worden, hoef je niets te turven.</p>';
+				// echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';

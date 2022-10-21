@@ -25,19 +25,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<h3 class="nm-widget-title">In de kijker</h3>
 				<?php
 					$products_tags = array();
-
+					
 					$args = array(
 						'stock_status' => 'instock',
 						'include' => wc_get_product_ids_on_sale(),
 					);
 					$sale_products = wc_get_products( $args );
 					if ( count( $sale_products ) > 0 ) {
-						$products_tags[] = 'promotie';
+						// $products_tags[] = 'promotie';
 					}
-
+					
 					$products_tags[] = 'sinterklaas';
 					// $products_tags[] = 'faire-feesten';
-
+					
 					foreach ( $products_tags as $product_slug ) {
 						$term = get_term_by( 'slug', $product_slug, 'product_tag' );
 						if ( $term !== false ) {
@@ -50,9 +50,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 								$class = '';
 								$url = $term_link.'#nm-shop-products';
 							}
-
+							
 							if ( $product_slug === 'promotie' ) {
-								$label = 'Promoties';
+								$label = 'Wijnfestival';
 							} else {
 								$label = ucfirst( $term->name );
 							}
