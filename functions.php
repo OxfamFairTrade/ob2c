@@ -8019,7 +8019,7 @@
 				// echo '</div>';
 				
 				echo '<div class="notice notice-success">';
-					echo '<p>De kortingsregels voor <a href="https://copain.oww.be/campagne-en-actie/cadeaudagen#Wijnfestival" target="_blank">het wijnfestival</a>, dat loopt gedurende de maanden november en december, werden geactiveerd in alle webshops. Net zoals in ShopPlus wordt de 15% korting enkel per duo geactiveerd, er is dus géén korting bij aankoop van een 3de, 5de, 7de, ... fles.</p>';
+					echo '<p>De kortingsregels voor <a href="https://copain.oww.be/campagne-en-actie/cadeaudagen#Wijnfestival" target="_blank">het wijnfestival</a>, dat loopt gedurende de maanden november en december, werden geactiveerd in alle webshops. Net zoals in ShopPlus wordt de 15% korting enkel per duo geactiveerd, er is dus géén extra korting bij aankoop van een 3de, 5de, 7de, ... fles.</p>';
 				echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
@@ -8092,9 +8092,15 @@
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
 								$product = wc_get_product( $product_id );
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_sku().' '.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')';
+								
 								$old_product_id = wc_get_product_id_by_sku( $old_sku );
 								$old_product = wc_get_product( $old_product_id );
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_sku().' '.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').'), vervangt <a href="'.$old_product->get_permalink().'" target="_blank">'.$old_product->get_sku().' '.$old_product->get_title().'</a></li>';
+								if ( $old_product ) {
+									echo ', vervangt <a href="'.$old_product->get_permalink().'" target="_blank">'.$old_product->get_sku().' '.$old_product->get_title().'</a>';
+								}
+								
+								echo '</li>';
 							}
 						}
 					echo '</ul><p>De voorraadstatus van het bestaande product werd overgenomen en het oude ompaknummer werd gewist.</p>';
