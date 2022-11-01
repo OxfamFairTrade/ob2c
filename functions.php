@@ -8037,7 +8037,7 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet ook de sintproducten niet voorradig te maken, die begin oktober al toegevoegd werden aan de database.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet ook de sintproducten niet voorradig te maken, die begin oktober al toegevoegd werden aan de database. De prijsverhoging op dadels vanaf 01/11/2022 werd doorgevoerd, al is de nieuwe oogst nog niet gearriveerd.</p>';
 					
 					// echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra referenties beschikbaar die de voorbije maanden verschenen:</p>';
 					// echo '<ul>';
@@ -8122,7 +8122,7 @@
 				// Sommige FTO-producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare => toch wissen (onmogelijk te beheren)
 				// 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
 				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Volgende uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 20180 Pinotage-Syrah Rosé BOX 3 l, 22704 BIO Highland koffiepads 7 g x 16 (THT: 16/07/2022), 23699 BIO Losse groene thee Vitality (THT: 31/08/2022), 24117 BIO Witte chocolade 50 g (THT: 23/02/2022), 24501 Noussines (THT: 25/02/2022), 26008 BIO Vloeibare honing (THT: 21/09/2022), 26494 Maya Speculoos 225 g (THT: 31/05/2022), 27057 Couscous (in omschakeling naar BIO) (THT: 31/03/2022), 27117 ‘Petit poussin’ rijst (THT: 16/03/2022), 27518 BIO Rode kidneybonen (THT: 31/08/2022), 28321 Pepermolen zongedroogde tomaat (THT: 31/03/2022) en 28328 Zeezout mix groene kruiden (THT: 30/09/2022).</p>';
+				// 	echo '<p>Volgende uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 17115 BIO Volle jasmijnrijst 5 kg (THT: 31/07/2022), 20248 Chenin Blanc BOX 3 l, 21000 Sinaasappelsap 1 l (THT: 31/12/2022), 21002 Worldshakesap 1 l (THT: 31/12/2022), 21003 Tropicalsap 1 l (THT: 31/10/2022), 21008 BIO Sinaas-mangosap 1 l (THT: 31/12/2022), 21011 Vers geperst Belgisch appelsap 1 l (in omschakeling naar BIO) (THT: 31/12/2022), 21103 Tropicalsap 20 cl (THT: 31/10/2022), 22013 African Blendkoffie (THT: 29/01/2023), 23403 Groene thee citroengras 1 g x 20 (THT: 21/11/2022), 23501 BIO Losse groene thee (THT: 21/11/2022), 26493 Maya Speculoospasta (THT: 23/11/2022), 27517 BIO Zwarte linzen (THT: 31/07/2022). Ook enkele producten van Fairtrade Original die niet langer door Oxfam Fair Trade verdeeld worden (witte noedels, ananasschijven, kruiden, ...) werden gewist, bij gebrek aan masterdata. Je kunt deze producten uiteraard wel als lokaal assortiment toevoegen.</p>';
 				// echo '</div>';
 				
 				if ( does_home_delivery() ) {
