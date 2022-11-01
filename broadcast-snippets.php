@@ -396,10 +396,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	// 30139, 45247, 45258, 45262, 45267, 45390, 64494, 65200, 65202, 65204, 65205, 65207, 65208, 65209, 65215, 65228, 65229, 65269, 65270, 65273, 65274, 66178
-	// 87309, 87312, 87351, 87359, 87360, 87361, 87570, 87571, 87420, 87421, 87422, 87423, 87424, 87425, 87426, 87427, 87428, 87429, 87430, 87431`
-	// 65278, 12338, 12339, 12340, 12341, 12443, 12444, 12445, 12446, '03426', '03427', '03428', '03429', '03642'
-	$outofstocks = array( 11850, 80282, 80283, 80306, 80313, 80314, 80315, 87154, 87369, 19039 );
+	$outofstocks = array( 20080, 20267, 24126, 26486, 26487 );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -408,6 +405,26 @@
 			$product->set_manage_stock('no');
 			$product->set_stock_status('outofstock');
 			$product->save();
+		}
+	}
+	
+	// Voorraad van een reeks oude artikels overnemen naar de overeenkomstige nieuwe artikels
+	$replacements = array( 20050 => 20080, 20250 => 20267, 28802 => 28805 );
+	foreach ( $replacements as $old_sku => $new_sku ) {
+		$product_id = wc_get_product_id_by_sku( $new_sku );
+		if ( $product_id ) {
+			$product = wc_get_product( $product_id );
+			$old_product_id = wc_get_product_id_by_sku( $old_sku );
+			if ( $old_product_id ) {
+				$old_product = wc_get_product( $old_product_id );
+				$product->set_stock_status( $old_product->get_stock_status() );
+				$product->save();
+				write_log("STOCK OF NEW SKU ".$new_sku." COPIED FROM OLD SKU ".$old_sku." (".$old_product->get_stock_status().")");
+			} else {
+				write_log("OLD PRODUCT SKU ".$old_sku." NOT FOUND");
+			}
+		} else {
+			write_log("NEW PRODUCT SKU ".$new_sku." NOT FOUND");
 		}
 	}
 
