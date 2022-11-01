@@ -11,7 +11,7 @@
 
 		$wijnfestival_products = array( 20032, 20068, 20078, 20225, 20261, 20262, 20413, 20415 );
 		if ( in_array( $product->get_sku(), $wijnfestival_products ) ) {
-			$labels['promotion'] = '-15% vanaf 2 flessen';
+			$labels['promotion'] = '-15% per 2 flessen';
 		}
 		
 		$fifty_percent_off_second_products = array();
