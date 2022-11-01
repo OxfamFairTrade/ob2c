@@ -8024,7 +8024,7 @@
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe hageslag van Fairtrade Original (melk én puur) is gearriveerd, samen met een licht gewijzigde Bite to Fight-reep (ander recept en netto-inhoud):</p><ul style="margin-left: 2em; column-count: 2;">';
+					echo '<p>De nieuwe hagelslag van Fairtrade Original (melk én puur) is gearriveerd, samen met een licht gewijzigde Bite to Fight-reep (ander recept en netto-inhoud):</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 24126, 26486, 26487 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
@@ -8037,7 +8037,7 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet ook de sintproducten niet te voorradig te maken, die begin oktober al toegevoegd werden aan de database.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet ook de sintproducten niet voorradig te maken, die begin oktober al toegevoegd werden aan de database.</p>';
 					
 					// echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra referenties beschikbaar die de voorbije maanden verschenen:</p>';
 					// echo '<ul>';
@@ -8086,7 +8086,7 @@
 					// 	echo '</ul><p>Omdat sommige van deze producten al langer dan 3 maanden bestelbaar zijn, krijgen ze niet allemaal een blauwe achtergrond in de voorraadlijst!</p></li>';
 					// echo '</ul>';
 					
-					echo '<p>Tot slot zijn er ook drie nieuwe referenties die een bestaand product vervangen, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
+					echo '<p>Verder zijn er drie nieuwe referenties die een bestaand product vervangen, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 20050 => 20080, 20250 => 20267, 28802 => 28805 );
 						foreach ( $skus as $old_sku => $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
@@ -8097,7 +8097,7 @@
 								$old_product_id = wc_get_product_id_by_sku( $old_sku );
 								$old_product = wc_get_product( $old_product_id );
 								if ( $old_product ) {
-									echo ', vervangt <a href="'.$old_product->get_permalink().'" target="_blank">'.$old_product->get_sku().' '.$old_product->get_title().'</a>';
+									echo ', vervangt '.$old_product->get_sku().' '.$old_product->get_title();
 								}
 								
 								echo '</li>';
