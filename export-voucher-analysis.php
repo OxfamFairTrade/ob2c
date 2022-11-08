@@ -5,7 +5,7 @@
 <div class="wrap">
 	<h1>Analyse bestellingen met digitale cadeaubonnen</h1>
 
-	<p>Het openen van deze pagina genereert een CSV op de server voor verdere verwerking in Excel. Ter info worden de gegevens hieronder ook tekstueel weergegeven.</p>
+	<p>Het openen van deze pagina genereert een CSV op de server (net boven de 'public_html'-map) voor verdere verwerking in Excel. Ter info worden de gegevens hieronder ook tekstueel weergegeven.</p>
 
 	<p>&nbsp;</p>
 
@@ -16,6 +16,11 @@
 
 	<h2>Cera</h2>
 	<?php get_total_revenue_by_voucher_issuer('Cera'); ?>
+	
+	<p>&nbsp;</p>
+	
+	<h2>CM</h2>
+	<?php get_total_revenue_by_voucher_issuer('CM'); ?>
 
 	<?php
 		function get_total_revenue_by_voucher_issuer( $issuer = 'Cera' ) {
@@ -78,13 +83,13 @@
 					$new_args = array(
 						'type' => 'shop_order',
 						'billing_email' => $wc_order->get_billing_email(),
-						'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
+						'date_created' => '<'.$wc_order->get_date_created()->getTimestamp(),
 						'status' => 'wc-completed',
 						'limit' => -1,
 					);
 					$previous_orders_by_customer = wc_get_orders( $new_args );
 					
-					$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
+					$new_args['date_created'] = '>'.$wc_order->get_date_created()->getTimestamp();
 					$new_orders_by_customer = wc_get_orders( $new_args );
 
 					if ( count( $previous_orders_by_customer ) === 0 ) {
