@@ -5,7 +5,7 @@
 <div class="wrap">
 	<h1>Analyse bestellingen met digitale cadeaubonnen</h1>
 
-	<p>Het openen van deze pagina genereert een CSV op de server (net boven de 'public_html'-map) voor verdere verwerking in Excel. Ter info worden de gegevens hieronder ook tekstueel weergegeven.</p>
+	<p>Het openen van deze pagina genereert een CSV op de server (net boven de 'public_html'-map) voor verdere verwerking in Excel. Ter info worden de gegevens hieronder ook tekstueel weergegeven. Door de vele queries (naar het merk van het product + eerdere/latere bestellingen van dezelfde klant) is deze pagina erg traag. Eventueel moet je de analyse uitvoeren per uitgever, of in batches laten verwerken m.b.v. Action Scheduler.</p>
 
 	<p>&nbsp;</p>
 
@@ -37,6 +37,7 @@
 				'limit' => -1,
 			);
 			$writer_handle = fopen( ABSPATH.'../vouchers-'.sanitize_title( $issuer ).'.csv', 'w' );
+			fputcsv( $writer_handle, array( 'Order number', 'Order total (excl. tax)', 'Order total OFT (excl. tax)', 'Previous orders by customer', 'New orders by customer' ), ';' );
 
 			foreach ( $rows as $key => $row ) {
 				// Elk order slechts één keer checken, ook al werden er meerdere bonnen tegelijk ingeruild
@@ -54,14 +55,15 @@
 				if ( count( $orders ) === 1 ) {
 					$wc_order = reset( $orders );
 
-					// Bereken het percentage OFT-omzet (excl. BTW en kortingen)
+					// Bereken het percentage OFT-omzet (excl. BTW, incl. kortingen)
 					$order_total_oft = 0.0;
 					$order_total_non_oft = 0.0;
 					$order_total_unknown = 0.0;
 					foreach ( $wc_order->get_items() as $item ) {
 						$product = $item->get_product();
-						// Neem 'line_total' i.p.v. 'line_subtotal', zodat kortingen reeds verrekend zijn
-						$line_total = $item['line_total'] + $item['line_total_tax'];
+						// Neem 'total' i.p.v. 'subtotal', zodat kortingen reeds verrekend zijn
+						$line_total = $item->get_total();
+						
 						if ( $product === false ) {
 							$order_total_unknown += $line_total;
 						} else {
