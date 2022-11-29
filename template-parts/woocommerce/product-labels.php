@@ -14,12 +14,12 @@
 			$labels['promotion'] = '-15% per 2 flessen';
 		}
 		
-		$fifty_percent_off_second_products = array();
+		$fifty_percent_off_second_products = array( 27506 );
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}
 
-		$one_plus_one_products = array();
+		$one_plus_one_products = array( 27110 );
 		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
@@ -39,7 +39,7 @@
 			$labels['promotion'] = 'Promo -50%';
 		}
 
-		$two_plus_one_products = array();
+		$two_plus_one_products = array( 25210, 25211 );
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
