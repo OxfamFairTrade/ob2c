@@ -3539,7 +3539,7 @@
 			'id' => 'digizine',
 			'type' => 'checkbox',
 			// <span> is nodig om lay-out van checkbox in overeenstemming te brengen met andere
-			'label' => '<span>Abonneer mij op <a href="https://us3.campaign-archive.com/home/?u=d66c099224e521aa1d87da403&id=5cce3040aa" target="_blank">de maandelijkse nieuwsbrief van Oxfam-Wereldwinkels</a></span>',
+			'label' => '<span>Abonneer mij op <a href="https://us3.campaign-archive.com/home/?u=d66c099224e521aa1d87da403&id=5cce3040aa" target="_blank">de maandelijkse nieuwsbrief van Oxfam België</a></span>',
 			'class' => array('form-row-wide no-margin-bottom'),
 			'label_class' => array('woocommerce-form__label woocommerce-form__label-for-checkbox'),
 			'input_class' => array('woocommerce-form__input woocommerce-form__input-checkbox'),
@@ -3547,18 +3547,19 @@
 			'required' => false,
 			'priority' => 101,
 		);
-		$address_fields['marketing'] = array(
-			'id' => 'marketing',
-			'type' => 'checkbox',
-			// <span> is nodig om lay-out van checkbox in overeenstemming te brengen met andere
-			'label' => '<span>Stuur mij commerciële mails (promoties, nieuwigheden, ...)</span>',
-			'class' => array('form-row-wide no-margin-bottom'),
-			'label_class' => array('woocommerce-form__label woocommerce-form__label-for-checkbox'),
-			'input_class' => array('woocommerce-form__input woocommerce-form__input-checkbox'),
-			'clear' => true,
-			'required' => false,
-			'priority' => 102,
-		);
+		// In de praktijk nooit van de grond gekomen in MailChimp, en niet voorzien binnen CRM, dus uitschakelen
+		// $address_fields['marketing'] = array(
+		// 	'id' => 'marketing',
+		// 	'type' => 'checkbox',
+		// 	// <span> is nodig om lay-out van checkbox in overeenstemming te brengen met andere
+		// 	'label' => '<span>Stuur mij commerciële mails (promoties, nieuwigheden, ...)</span>',
+		// 	'class' => array('form-row-wide no-margin-bottom'),
+		// 	'label_class' => array('woocommerce-form__label woocommerce-form__label-for-checkbox'),
+		// 	'input_class' => array('woocommerce-form__input woocommerce-form__input-checkbox'),
+		// 	'clear' => true,
+		// 	'required' => false,
+		// 	'priority' => 102,
+		// );
 
 		return $address_fields;
 	}
@@ -8019,13 +8020,13 @@
 				// echo '</div>';
 				
 				echo '<div class="notice notice-success">';
-					echo '<p>De kortingsregels voor <a href="https://copain.oww.be/campagne-en-actie/cadeaudagen#Wijnfestival" target="_blank">het wijnfestival</a>, dat loopt gedurende de maanden november en december, werden geactiveerd in alle webshops. Net zoals in ShopPlus wordt de 15% korting enkel per duo geactiveerd, er is dus géén extra korting bij aankoop van een 3de, 5de, 7de, ... fles.</p>';
+					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/11/10/Promos-online--winkel-december-2022" target="_blank">promoties voor december</a> werden geactiveerd in alle webshops. Het wijnfestival blijft gewoon doorlopen tot eind december.</p>';
 				echo '</div>';
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe hagelslag van Fairtrade Original (melk én puur) is gearriveerd, samen met een licht gewijzigde Bite to Fight-reep (ander recept en netto-inhoud):</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 24126, 26486, 26487 );
+					echo '<p>De nieuwe cadeaucheques, geldig tot eind 2024 zijn gearriveerd, samen met een licht gewijzigde Bite to Fight-reep (andere netto-inhoud):</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 19041, 19042, 19043, 24317 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -8037,7 +8038,7 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. Vergeet ook de sintproducten niet voorradig te maken, die begin oktober al toegevoegd werden aan de database. De prijsverhoging op dadels vanaf 01/11/2022 werd doorgevoerd, al is de nieuwe oogst nog niet gearriveerd.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De cheques met geldigheidsdatum 31/12/2022 werden gewist uit de database: maar liefst 20 webshops hadden deze referentie (die al een jaar niet meer opgestuurd wordt door het NS) nog op voorraad staan. Gelieve te switchen naar de nieuwere referenties (geldig tot eind 2023 of 2024) zodat de klant duidelijke info krijgt over tot wanneer hij/zij de bestelde cheques zal kunnen gebruiken.</p>';
 					
 					// echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra referenties beschikbaar die de voorbije maanden verschenen:</p>';
 					// echo '<ul>';
@@ -8087,7 +8088,7 @@
 					// echo '</ul>';
 					
 					echo '<p>Verder zijn er drie nieuwe referenties die een bestaand product vervangen, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 20050 => 20080, 20250 => 20267, 28802 => 28805 );
+						$skus = array( 20252 => 20268, 25009 => 25015 );
 						foreach ( $skus as $old_sku => $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {

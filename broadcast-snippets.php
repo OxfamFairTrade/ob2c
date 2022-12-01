@@ -103,7 +103,7 @@
 	// Verwijder productcategorieën
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'grootverbruik-2', 'basismateriaal', 'vorming-informatie-actie' );
+		$terms = array( 'winkelmateriaal', 'koffiezetsystemen' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {
@@ -270,13 +270,12 @@
 	}
 
 	// Product-ID's in kortingsbonnen lokaal maken
+	// Niet langer nodig voor leeggoed / waardebonnen in B2B-kortingsregels: criterium vervangen door regex /(^voeding$|^$)/i op '_tax_class'-metaveld
 	$args = array(
 		'post_type'	=> 'shop_coupon',
 		'post_status' => 'publish',
 		// Opgelet: dit kijkt naar de (onzichtbare) slug, die kan afwijken van de titel, bv. indien kortingscode achteraf gewijzigd!
-		// WERKT NIET BIJ 'b2b-5%' en 'b2b-10%' (ZELFS MET 'b2b5' en 'b2b10'), GEBRUIK DAARVOOR 'title' => 'b2b-5%' / 'b2b-10%' / 'b2b-wereldwinkel'
-		// Criterium voor uitsluiten van B2B-korting beter vervangen door _tax_class = '' OR _tax_class = 'voeding'?
-		'post_name__in' => array( 'wijnfestival-w10032', 'wijnfestival-w10068', 'wijnfestival-w10078', 'wijnfestival-w10225', 'wijnfestival-w10261', 'wijnfestival-w10262', 'wijnfestival-w10413', 'wijnfestival-w10415' ),
+		'post_name__in' => array( '202212-kokos', '202212-beertjes', '202212-rijst' ),
 	);
 	$all_coupons = new WP_Query( $args );
 
@@ -396,7 +395,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( 20080, 20267, 24126, 26486, 26487 );
+	$outofstocks = array( 19041, 19042, 19043, 24317 );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -409,7 +408,7 @@
 	}
 	
 	// Voorraad van een reeks oude artikels overnemen naar de overeenkomstige nieuwe artikels
-	$replacements = array( 20050 => 20080, 20250 => 20267, 28802 => 28805 );
+	$replacements = array( 20252 => 20268, 25009 => 25015 );
 	foreach ( $replacements as $old_sku => $new_sku ) {
 		$product_id = wc_get_product_id_by_sku( $new_sku );
 		if ( $product_id ) {
@@ -417,6 +416,7 @@
 			$old_product_id = wc_get_product_id_by_sku( $old_sku );
 			if ( $old_product_id ) {
 				$old_product = wc_get_product( $old_product_id );
+				$product->set_manage_stock('no');
 				$product->set_stock_status( $old_product->get_stock_status() );
 				$product->save();
 				write_log("STOCK OF NEW SKU ".$new_sku." COPIED FROM OLD SKU ".$old_sku." (".$old_product->get_stock_status().")");
