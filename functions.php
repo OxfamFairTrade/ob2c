@@ -8025,7 +8025,7 @@
 				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe cadeaucheques, geldig tot eind 2024 zijn gearriveerd, samen met een licht gewijzigde Bite to Fight-reep (andere netto-inhoud):</p><ul style="margin-left: 2em; column-count: 2;">';
+					echo '<p>De nieuwe cadeaucheques (geldig tot eind 2024) zijn gearriveerd, samen met een licht gewijzigde Bite to Fight-reep (andere netto-inhoud):</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 19041, 19042, 19043, 24317 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
@@ -8038,7 +8038,7 @@
 					if ( current_user_can('manage_network_users') ) {
 						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten. De cheques met geldigheidsdatum 31/12/2022 werden gewist uit de database: maar liefst 20 webshops hadden deze referentie (die al een jaar niet meer opgestuurd wordt door het NS) nog op voorraad staan. Gelieve te switchen naar de nieuwere referenties (geldig tot eind 2023 of 2024) zodat de klant duidelijke info krijgt over tot wanneer hij/zij de bestelde cheques zal kunnen gebruiken.</p>';
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 					
 					// echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra referenties beschikbaar die de voorbije maanden verschenen:</p>';
 					// echo '<ul>';
@@ -8087,7 +8087,7 @@
 					// 	echo '</ul><p>Omdat sommige van deze producten al langer dan 3 maanden bestelbaar zijn, krijgen ze niet allemaal een blauwe achtergrond in de voorraadlijst!</p></li>';
 					// echo '</ul>';
 					
-					echo '<p>Verder zijn er drie nieuwe referenties die een bestaand product vervangen, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
+					echo '<p>De cheques met geldigheidsdatum 31/12/2022 werden gewist uit de database: maar liefst 20 webshops hadden deze referentie (die al een jaar niet meer opgestuurd wordt door het NS) nog op voorraad staan. Gelieve te switchen naar de nieuwere referenties (geldig tot eind 2023 of 2024) zodat de klant duidelijke info krijgt over tot wanneer hij/zij de bestelde cheques zal kunnen gebruiken. Verder zijn er opnieuw twee nieuwe referenties die een bestaand product vervangen, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 20252 => 20268, 25009 => 25015 );
 						foreach ( $skus as $old_sku => $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
@@ -8104,7 +8104,7 @@
 								echo '</li>';
 							}
 						}
-					echo '</ul><p>De voorraadstatus van het bestaande product werd overgenomen en het oude ompaknummer werd gewist.</p>';
+					echo '</ul><p>De voorraadstatus van het bestaande product werd overgenomen en het oude ompaknummer werd verborgen.</p>';
 				echo '</div>';
 				
 				// if ( get_current_blog_id() !== 1 ) {

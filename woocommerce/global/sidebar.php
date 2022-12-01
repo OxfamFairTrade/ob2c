@@ -52,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							}
 							
 							if ( $product_slug === 'promotie' ) {
-								$label = 'Wijnfestival';
+								$label = 'Promoties';
 							} else {
 								$label = ucfirst( $term->name );
 							}
