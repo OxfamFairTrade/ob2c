@@ -2925,8 +2925,8 @@
 	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
 
 	function ure_modify_authors_list( $authors ) {
-		// Producten die aangemaakt werden door een user die inmiddels beheerder af is, zullen onbewerkbaar worden!
-		// @toDo: Bij het degraderen van een user de auteur van zijn/haar producten aanpassen via 'set_user_role'-actie?
+		// Producten die aangemaakt werden door een voormalige beheerder dreigen onbewerkbaar te worden
+		// Zie daarom change_products_author_on_local_manager_demote()
 		if ( count( get_local_manager_user_ids() ) > 0 ) {
 			// write_log( get_webshop_name().": allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
 			return $authors . ',' . get_local_manager_user_ids( true );
@@ -2934,9 +2934,58 @@
 			return $authors;
 		}
 	}
+	
+	// Pas bij het degraderen van een local manager de auteur van zijn/haar producten aan naar de hoofdbeheerder
+	add_action( 'set_user_role', 'change_products_author_on_local_manager_demote', 10, 3 );
+	
+	function change_products_author_on_local_manager_demote( $user_id, $new_role, $old_roles ) {
+		if ( $new_role === 'local_manager' or ! in_array( 'local_manager', $old_roles ) ) {
+			return;
+		}
+		
+		$args = array(
+			'post_type'	=> 'product',
+			'post_status' => 'any',
+			'posts_per_page' => -1,
+			'author' => $user_id,
+		);
+		$products = new WP_Query( $args );
+		
+		if ( $products->have_posts() ) {
+			write_log( get_webshop_name().": found ".count( $products )." products linked to former local manager with author ID ".$user_id );
+			$main_local_manager = get_local_manager_user_ids( false, true );
+			
+			if ( count( $main_local_manager ) < 1 ) {
+				write_log( get_webshop_name().": MAIN LOCAL MANAGER NOT FOUND" );
+				return;
+			}
+			
+			while ( $products->have_posts() ) {
+				$products->the_post();
+				$new_author_args = array(
+					'ID' => get_the_ID(),
+					'post_author' => $main_local_manager[0],
+				);
+				wp_update_post( $new_author_args );
+				write_log( get_webshop_name().": author ID of ".get_the_title()." changed to ".$main_local_manager[0] );
+			}
+			
+			wp_reset_postdata();
+		}
+	}
 
-	function get_local_manager_user_ids( $implode = false ) {
-		$local_managers = new WP_User_Query( array( 'role' => 'local_manager', 'fields' => 'ID' ) );
+	function get_local_manager_user_ids( $implode = false, $only_main = false ) {
+		$user_args = array(
+			'role' => 'local_manager',
+			'fields' => 'ID',
+		);
+		
+		if ( $only_main ) {
+			$user_args['user_email'] = 'webshop.*';
+		}
+		
+		$local_managers = new WP_User_Query( $user_args );
+		
 		if ( count( $local_managers->get_results() ) > 0 ) {
 			if ( $implode ) {
 				return implode( ',', $local_managers->get_results() );
@@ -6961,7 +7010,7 @@
 		// Query alle gepubliceerde producten, orden op ompaknummer
 		$args = array(
 			'post_type'			=> 'product',
-			'post_status'		=> array('publish'),
+			'post_status'		=> 'publish',
 			'posts_per_page'	=> -1,
 			'meta_key'			=> '_sku',
 			'orderby'			=> 'meta_value',
@@ -7726,7 +7775,7 @@
 			// Zodat 'touched_by_import' ook bij hen op vandaag staat
 			$args = array(
 				'post_type'			=> 'product',
-				'post_status'		=> array('publish'),
+				'post_status'		=> 'publish',
 				'posts_per_page'	=> -1,
 				'meta_key'			=> 'touched_by_import',
 				'meta_value'		=> date( 'Ymd', strtotime('-10 days') ),
