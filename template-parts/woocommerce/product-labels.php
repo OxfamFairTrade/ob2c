@@ -14,7 +14,7 @@
 			$labels['promotion'] = '-15% per 2 flessen';
 		}
 		
-		$fifty_percent_off_second_products = array( 27506 );
+		$fifty_percent_off_second_products = array( 27506, 25452, 25726, 25727 );
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}

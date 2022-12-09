@@ -2944,7 +2944,7 @@
 		}
 		
 		$args = array(
-			'post_type'	=> 'product',
+			'post_type' => 'product',
 			'post_status' => 'any',
 			'posts_per_page' => -1,
 			'author' => $user_id,
@@ -2955,7 +2955,7 @@
 			write_log( get_webshop_name().": found ".count( $products )." products linked to former local manager with author ID ".$user_id );
 			$main_local_manager = get_local_manager_user_ids( false, true );
 			
-			if ( count( $main_local_manager ) < 1 ) {
+			if ( count( $main_local_manager ) !== 1 ) {
 				write_log( get_webshop_name().": MAIN LOCAL MANAGER NOT FOUND" );
 				return;
 			}
