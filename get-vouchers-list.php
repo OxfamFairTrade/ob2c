@@ -10,14 +10,14 @@
 	De weergave is gegroepeerd per kredietnota, en vervolgens per bestelling. De reële crediteringsdatum kan enkele dagen afwijken van de geafficheerde datum, dit hangt af van de drukte op onze Klantendienst!</p>
 	
 	<?php
-		if ( in_array( get_current_blog_id(), array( 14, 48, 51, 67, 76 ) ) and date_i18n('Y-m-d') < '2023-01-20' ) {
+		if ( in_array( get_current_blog_id(), array( 14, 48, 51, 67, 76 ) ) and date_i18n('Y-m-d') < '2023-01-15' ) {
 			if ( get_current_blog_id() === 51 ) {
 				$aantal_bonnen = '2 bonnen';
 			} else {
 				$aantal_bonnen = '1 bon';
 			}
 			
-			echo '<p><b>Door een fout in de exportlogica werden digicheques uit laattijdig afgeronde bestellingen (door bv. een stockbreuk bij OFTL) achteraf niet meer gecrediteerd. We hebben de export gecorrigeerd zodat dit in de toekomst niet meer kan gebeuren. Jullie behoren tot de 5 webshops waar '.$aantal_bonnen.' dit voorjaar niet correct gecrediteerd werd. Deze digicheques duiken inmiddels wél op in onderstaand overzicht en zullen rond 1 januari 2023 gecrediteerd worden. Onze excuses!</b></p>';
+			echo '<p><b>Door een fout in de exportlogica werden digicheques uit laattijdig afgeronde bestellingen (door bv. een stockbreuk bij OFTL) achteraf niet meer gecrediteerd. We hebben de export gecorrigeerd zodat dit in de toekomst niet meer kan gebeuren. Jullie behoren tot de 5 webshops waar '.$aantal_bonnen.' dit voorjaar niet correct gecrediteerd werd. Deze digicheques duiken inmiddels wél op in onderstaand overzicht en zullen rond 30 december 2022 gecrediteerd worden. Onze excuses!</b></p>';
 			
 			$start_date = date( 'Y-m-d', strtotime('first day of this month -12 months') );
 		} else {
