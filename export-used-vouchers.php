@@ -61,7 +61,7 @@
 					'08935' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2024-01-01' ),
 					'08936' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2024-01-01' ),
 					// Nieuwe Cera-actie voorjaar 2023, juiste Odisy-referentie nog te ontvangen van Aike!
-					'AIKE' => array( 'issuer' => 'Cera', 'value' => 30, 'expires' => '2024-04-01' ),
+					// '' => array( 'issuer' => 'Cera', 'value' => 30, 'expires' => '2024-04-01' ),
 				);
 			}
 			
@@ -124,7 +124,7 @@
 				
 				// Vereis een lege 'credited'-datum zodat we verhinderen dat vouchers twee keer in een opgeslagen export kunnen opduiken
 				// Géén startdatum doorgeven, zodat ook bonnen in laattijdig afgewerkte bestellingen nog correct gecrediteerd kunnen worden in een latere maand
-				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `issuer` = '%s' AND value = %d AND DATE(`used`) <= '%s 23:59:59' AND DATE(`credited`) < '2001-01-01' AND `expires` = '%s'";
+				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `issuer` = '%s' AND value = %d AND DATE(`used`) BETWEEN '2001-01-01' AND CONCAT('%s', ' 23:59:59') AND DATE(`credited`) < '2001-01-01' AND `expires` = '%s'";
 				$rows = $wpdb->get_results( $wpdb->prepare( $query, $issuer, $value, $end_date, $expires ) );
 				
 				foreach ( $rows as $key => $row ) {
