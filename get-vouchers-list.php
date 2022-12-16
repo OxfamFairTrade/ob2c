@@ -11,7 +11,17 @@
 	
 	<?php
 		if ( in_array( get_current_blog_id(), array( 14, 48, 51, 67, 76 ) ) and date_i18n('Y-m-d') < '2023-01-20' ) {
-			echo '<p><b>Door een fout in de exportlogica werden enkele digicheques in laattijdig afgeronde bestellingen (bv. door een stockbreuk bij OFTL) per ongeluk niet gecrediteerd. We hebben de logica aangepast zodat dit in de toekomst niet meer kan gebeuren. Jullie behoren tot de 5 betrokken webshops waar 1 of 2 bonnen dit voorjaar niet correct gecrediteerd werden. Deze creditering zal opgenomen worden in de lijst van 1 januari 2023. Onze excuses!</b></p>';
+			if ( get_current_blog_id() === 51 ) {
+				$aantal_bonnen = '2 bonnen';
+			} else {
+				$aantal_bonnen = '1 bon';
+			}
+			
+			echo '<p><b>Door een fout in de exportlogica werden digicheques uit laattijdig afgeronde bestellingen (door bv. een stockbreuk bij OFTL) achteraf niet meer gecrediteerd. We hebben de export gecorrigeerd zodat dit in de toekomst niet meer kan gebeuren. Jullie behoren tot de 5 webshops waar '.$aantal_bonnen.' dit voorjaar niet correct gecrediteerd werd. Deze digicheques duiken inmiddels wél op in onderstaand overzicht en zullen rond 1 januari 2023 gecrediteerd worden. Onze excuses!</b></p>';
+			
+			$start_date = date( 'Y-m-d', strtotime('first day of this month -12 months') );
+		} else {
+			$start_date = date( 'Y-m-d', strtotime('first day of this month -4 months') );
 		}
 	?>
 	
@@ -20,7 +30,6 @@
 	<div id="oxfam-vouchers">
 		<?php
 			global $wpdb;
-			$start_date = date( 'Y-m-d', strtotime('first day of this month -4 months') );
 			$end_date = date( 'Y-m-d', strtotime('last day of this month') );
 			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `blog_id` = %d AND DATE(`used`) BETWEEN '%s' AND '%s' ORDER BY `used` ASC";
 			$rows = $wpdb->get_results( $wpdb->prepare( $query, get_current_blog_id(), $start_date, $end_date ) );
