@@ -11,9 +11,11 @@
 
 	<p>Hieronder vind je een overzicht van de digitale cadeaubonnen die in de loop van <u>vorige maand ingeruild</u> werden én ondertussen <u>nog niet gecrediteerd</u> zijn.</p>
 
-	<p>Open op het einde van de maand (ten vroegste op de 20ste) deze pagina, en controleer de eventuele waarschuwingen. Als alles in orde is (m.a.w. alle bestellingen zijn inmiddels afgerond en bevatten géén terugbetalingen die groter zijn dan het restbedrag), download je de Excel-file. Per terugbetalingsreferentie verschijnt een werkblad met de juiste aantallen per winkel. Zet deze gegevens over naar de Access-file voor creditering op de eerste dag van de volgende maand. Vergeet de creditering tot slot niet te bevestigen, zodat alles correct geregistreerd wordt in de webshopdatabase en de Excel-file gearchiveerd wordt!</p>
-
-	<p>Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling rustig afgerond kan worden en eventuele problemen reeds afgehandeld zijn. In geval van nood kan Frederik het datumbereik aanpassen en/of handmatige correcties doorvoeren.</p>
+	<p>Open op het einde van de maand (ten vroegste op de 20ste) deze pagina, en controleer de eventuele waarschuwingen. Terugbetalingen die iets groter zijn dan het restbedrag dat de klant zelf betaalde, bedekken we met de mantel der liefde. Alleen als we zien dat het een erg groot bedrag was en/of zeer vaak gebeurt, contacteren we de winkel in kwestie even. (Zoals vermeld in de bevestigingsmail naar de webshopmailbox moet bij grote terugbetalingen de volledige bestelling geannuleerd worden en de digicheque gereactiveerd worden in de database. Dit bleek tot nu toe erg zeldzaam te zijn.)</p>
+	
+	<p>Als alles in orde is, download je de Excel-file. Per terugbetalingsreferentie zie je een werkblad staan met de juiste aantallen per winkel. Zet deze gegevens over naar de Access-file voor creditering op de eerste dag van de volgende maand. <b>Vergeet de creditering tot slot niet te bevestigen, zodat de Excel-file gearchiveerd wordt én alles correct geregistreerd wordt in de webshopdatabase (geen dubbele crediteringen).</b></p>
+	
+	<p>Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling rustig afgerond kan worden en eventuele problemen reeds afgehandeld zijn. In geval van nood kan een developer het datumbereik aanpassen en/of handmatige correcties doorvoeren in de database. Ook indien er nieuwe bonnen in omloop gebracht worden dient een developer de juiste Odisy-referenties toe te voegen aan het bronbestand van deze pagina (export-used-vouchers.php).</p>
 
 	<?php
 		$start_date = date_i18n( 'Y-m-d', strtotime('first day of previous month') );
@@ -56,6 +58,8 @@
 					'08924' => array( 'issuer' => 'CM', 'value' => 10, 'expires' => '2023-01-01' ),
 					'08935' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2024-01-01' ),
 					'08936' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2024-01-01' ),
+					// Nieuwe Cera-actie voorjaar 2023, juiste Odisy-referentie nog te ontvangen van Aike!
+					'AIKE' => array( 'issuer' => 'Cera', 'value' => 30, 'expires' => '2024-04-01' ),
 				);
 			}
 			
@@ -117,8 +121,9 @@
 			} else {
 				
 				// Vereis een lege 'credited'-datum zodat we verhinderen dat vouchers twee keer in een opgeslagen export kunnen opduiken
-				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `issuer` = '%s' AND value = %d AND DATE(`used`) BETWEEN '%s' AND '%s' AND DATE(`credited`) < '2001-01-01' AND `expires` = '%s'";
-				$rows = $wpdb->get_results( $wpdb->prepare( $query, $issuer, $value, $start_date, $end_date, $expires ) );
+				// Géén startdatum doorgeven, zodat ook bonnen in laattijdig afgewerkte bestellingen nog correct gecrediteerd kunnen worden in een latere maand
+				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `issuer` = '%s' AND value = %d AND DATE(`used`) <= '%s 23:59:59' AND DATE(`credited`) < '2001-01-01' AND `expires` = '%s'";
+				$rows = $wpdb->get_results( $wpdb->prepare( $query, $issuer, $value, $end_date, $expires ) );
 				
 				foreach ( $rows as $key => $row ) {
 					switch_to_blog( $row->blog_id );
@@ -136,17 +141,18 @@
 						$warnings[ $row->order ] = 'Meerdere bestellingen gevonden voor '.$row->order.', voucher '.$row->code.' niet opgenomen in export';
 					} else {
 						$current_blog = get_blog_details();
+						
+						// Soms worden codes per ongeluk toch fysiek geaccepteerd in een winkel
+						// In dat geval maken we de code handmatig ongeldig in de MySQL-tabel en gebruiken we 'OFFLINE' als ordernummer
 						if ( $row->order === 'OFFLINE' ) {
 							$voucher_ids[] = $row->id;
 							if ( intval( $row->id ) > 0 ) {
 								// Wis de bewoording 'regio' bij pseudo-regiowebshops, om verwarring bij het ingeven in Access te vermijden
 								$blog_path = str_replace( array( '/regio', '/' ), '', $current_blog->path );
 							} else {
-								if ( in_array( $row->code, array( 'NLU9NTVRSLQZ', 'XC1GTSEGC1Q3' ) ) ) {
-									$blog_path = 'dendermonde';
-								} else {
-									$blog_path = 'UNKNOWN';
-								}
+								// Indien de winkel zelf geen webshop heeft kunnen we ze niet linken aan de juiste winkelnaam o.b.v. webshop-ID!
+								// In dat geval zal de code onder 'UNKNOWN' opduiken in de Excel en moet de juiste winkelna(a)m(en) handmatig ingevuld worden na het exporteren
+								$blog_path = 'UNKNOWN';
 							}
 						} else {
 							$order = reset( $orders );

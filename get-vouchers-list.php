@@ -9,6 +9,12 @@
 	<p>Hieronder vind je een overzicht van alle vouchers (uitgegeven door Gezinsbond, Cera, CM, ...) die de voorbije 4 maanden ingeruild werden in deze webshop.<br/>
 	De weergave is gegroepeerd per kredietnota, en vervolgens per bestelling. De reële crediteringsdatum kan enkele dagen afwijken van de geafficheerde datum, dit hangt af van de drukte op onze Klantendienst!</p>
 	
+	<?php
+		if ( in_array( get_current_blog_id(), array( 14, 48, 51, 67, 76 ) ) and date_i18n() < '2023-01-20' ) {
+			echo '<p><b>Door een fout in de exportlogica werden enkele digicheques in laattijdig afgeronde bestellingen (bv. door een stockbreuk bij OFTL) per ongeluk niet gecrediteerd. We hebben de logica aangepast zodat dit in de toekomst niet meer kan gebeuren. Jullie behoren tot de 5 betrokken webshops waar 1 of 2 bonnen dit voorjaar niet correct gecrediteerd werden. Deze creditering zal opgenomen worden in de lijst van 1 januari 2023. Onze excuses!</b></p>';
+		}
+	?>
+	
 	<p>&nbsp;</p>
 
 	<div id="oxfam-vouchers">
