@@ -17,7 +17,7 @@
 	
 	<p>Als alles in orde is, download je de Excel-file. Per terugbetalingsreferentie zie je een werkblad staan met de juiste aantallen per winkel. Zet deze gegevens over naar de Access-file voor creditering op de eerste dag van de volgende maand. <b>Vergeet de creditering tot slot niet te bevestigen, zodat de Excel-file gearchiveerd wordt én alles correct geregistreerd wordt in de webshopdatabase (geen dubbele crediteringen).</b></p>
 	
-	<p>Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling rustig afgerond kan worden en eventuele problemen reeds afgehandeld zijn. In geval van nood kan een developer het datumbereik aanpassen en/of handmatige correcties doorvoeren in de database. Ook indien er nieuwe bonnen in omloop gebracht worden dient een developer de juiste Odisy-referenties toe te voegen aan het bronbestand van deze pagina (<i>export-used-vouchers.php</i>).</p>
+	<p>Er zit dus steeds een veiligheidsmarge van minstens één maand tussen het inruilen en het crediteren van een cadeaubon, zodat de bestelling rustig afgerond kan worden en eventuele problemen reeds afgehandeld zijn. In geval van nood kan een developer het datumbereik aanpassen en/of handmatige correcties doorvoeren in de database. Ook indien er nieuwe bonnen in omloop gebracht worden dient een developer de juiste Odisy-referenties toe te voegen aan het bronbestand van deze pagina (zie <i>/functions/vouchers/</i>).</p>
 
 	<?php
 		$start_date = date_i18n( 'Y-m-d', strtotime('first day of previous month') );
@@ -220,7 +220,7 @@
 		
 		function export_to_excel( $distribution ) {
 			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-			$spreadsheet = $reader->load( get_stylesheet_directory().'/voucher-export.xlsx' );
+			$spreadsheet = $reader->load( get_stylesheet_directory().'/functions/vouchers/template-credit-export.xlsx' );
 			$empty_sheet = clone $spreadsheet->getSheet(0);
 			foreach ( $distribution as $credit_ref => $number_of_credits_per_shop ) {
 				$i = 2;

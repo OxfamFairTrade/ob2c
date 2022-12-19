@@ -6875,11 +6875,11 @@
 	}
 
 	function oxfam_export_used_vouchers_callback() {
-		include get_stylesheet_directory().'/export-used-vouchers.php';
+		include get_stylesheet_directory().'/functions/vouchers/get-credit-export.php';
 	}
 	
 	function oxfam_export_voucher_analysis_callback() {
-		include get_stylesheet_directory().'/export-voucher-analysis.php';
+		include get_stylesheet_directory().'/functions/vouchers/get-global-analysis.php';
 	}
 	
 	function oxfam_photos_callback() {
@@ -6899,7 +6899,7 @@
 	}
 	
 	function oxfam_vouchers_list_callback() {
-		include get_stylesheet_directory().'/get-vouchers-list.php';
+		include get_stylesheet_directory().'/functions/vouchers/get-local-list.php';
 	}
 
 	// Vervang onnutige links in netwerkmenu door Oxfam-pagina's
@@ -8368,7 +8368,7 @@
 	};
 
 	function get_latest_newsletters_in_folder( $list_id = '5cce3040aa', $folder_id = 'bbc1d65c43' ) {
-		require_once WP_PLUGIN_DIR.'/mailchimp-3.0.php';
+		require_once WP_PLUGIN_DIR.'/mailchimp-api-wrapper.php';
 		$mailchimp = new \DrewM\MailChimp\MailChimp( MAILCHIMP_APIKEY );
 		
 		$settings = array(
@@ -8425,7 +8425,7 @@
 	}
 
 	function get_mailchimp_member_in_list_by_email( $email, $list_id ) {
-		require_once WP_PLUGIN_DIR.'/mailchimp-3.0.php';
+		require_once WP_PLUGIN_DIR.'/mailchimp-api-wrapper.php';
 		$mailchimp = new \DrewM\MailChimp\MailChimp( MAILCHIMP_APIKEY );
 		$response = $mailchimp->get( 'lists/'.$list_id.'/members/'.md5( format_mail( $email ) ) );
 		
