@@ -80,7 +80,7 @@
 
 			jQuery.ajax({
 				type: 'POST',
-				url: 'https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php',
+				url: 'https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/mailchimp/subscribe.php',
 				data: {
 					'fname': form.find("input[name='FNAME']").val(),
 					'email': form.find("input[name='EMAIL']").val(),

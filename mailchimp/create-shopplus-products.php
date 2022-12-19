@@ -1,9 +1,15 @@
 <?php
 
-	include('../config.php');
-	include('../mailchimp.php');
+	// WordPress volledig inladen, zodat we alle helper functies en constanten kunnen aanspreken
+	require_once '../../../../wp-load.php';
+	
+	require_once WP_PLUGIN_DIR.'/mailchimp-3.0.php');
 	use \DrewM\MailChimp\MailChimp;
-
+	
+	if ( ! current_user_can('update_core') ) {
+		return;
+	}
+	
 	// BELANGRIJK: zorgt ervoor dat enters uit Mac-files correct geïnterpreteerd worden!
 	ini_set( 'auto_detect_line_endings', true );
 
@@ -78,7 +84,7 @@
 		'Laatst bijgewerkt',
 	);
 
-	$MailChimp = new MailChimp($api_key);
+	$MailChimp = new MailChimp( MAILCHIMP_APIKEY );
 	
 	if ( ( $handle = fopen( $file, 'r' ) ) !== false ) {
 

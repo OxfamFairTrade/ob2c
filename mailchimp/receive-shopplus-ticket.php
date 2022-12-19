@@ -1,9 +1,11 @@
 <?php
 
-	include('../config.php');
-	include('../mailchimp.php');
+	// WordPress volledig inladen, zodat we alle helper functies en constanten kunnen aanspreken
+	require_once '../../../../wp-load.php';
+	
+	require_once WP_PLUGIN_DIR.'/mailchimp-3.0.php');
 	use \DrewM\MailChimp\MailChimp;
-
+	
 	// We laten slechts één ticket toe per request!
 	$object = simplexml_load_file('php://input');
 
@@ -99,9 +101,9 @@
 	echo json_response( $code, $message, $debug );
 
 	function add_order_to_mailchimp_member( $member_hash, $ticket, $location ) {
-		global $api_key, $list_id, $store_id, $mailchimp_promo_products, $debug;
+		global $list_id, $store_id, $mailchimp_promo_products, $debug;
 
-		$MailChimp = new MailChimp($api_key);
+		$MailChimp = new MailChimp( MAILCHIMP_APIKEY );
 		$retrieve = $MailChimp->get( 'lists/'.$list_id.'/members/'.$member_hash );
 		if ( $retrieve['id'] !== $member_hash ) {
 			// Voor ShopPlus is de kous wel af, maar eigenlijk moeten wij nu een queue beginnen met probleemgevallen ...
@@ -202,9 +204,9 @@
 	}
 
 	function get_mailchimp_member_by_client_number( $client_number ) {
-		global $api_key, $list_id, $store_id, $debug;
+		global $list_id, $store_id, $debug;
 		
-		$MailChimp = new MailChimp($api_key);
+		$MailChimp = new MailChimp( MAILCHIMP_APIKEY );
 		$search_args = array(
 			// Zoekt enkel in e-mailadres, MERGE1 en MERGE2!
 			'query' => $client_number,

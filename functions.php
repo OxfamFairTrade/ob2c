@@ -3841,8 +3841,6 @@
 	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_order_fields', 10, 2 );
 
 	function save_b2b_order_fields( $order_id, $data ) {
-		// write_log( print_r( $data, true ) );
-
 		if ( $data['digizine'] === 1 or $data['marketing'] === 1 ) {
 			$post_data = array(
 				// Naam en e-mailadres zijn reeds geformatteerd!
@@ -3853,7 +3851,7 @@
 				'newsletter' => 'yes',
 				'shop' => get_webshop_name(),
 			);
-
+			
 			if ( $data['digizine'] === 1 ) {
 				$post_data['digizine'] = 'yes';
 				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission 496c25fb49\n";
@@ -3861,23 +3859,20 @@
 			} else {
 				$post_data['digizine'] = 'no';
 			}
-
+			
 			if ( $data['marketing'] === 1 ) {
 				$post_data['marketing'] = 'yes';
 				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission c1cbf23458\n";
 				file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", $str, FILE_APPEND );
 			}
-
-			$settings = array(
-				'timeout' => 10,
-				'body' => $post_data,
-			);
-			// BIJ VOORKEUR ASYNCHROON DOEN ZODAT HET CHECKOUT NIET VERTRAAGT
-			$response = wp_remote_post( 'https://www.oxfamwereldwinkels.be/wp-content/themes/oxfam/mailchimp/subscribe.php', $settings );
-			$result = json_decode( wp_remote_retrieve_body( $response ) );
-			file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\t".$result->status."\n", FILE_APPEND );
+			
+			// Gegevens asynchroon doorsturen via Action Scheduler, zodat checkout niet vertraagt!
+			$args = array( 'post_data' => $post_data );
+			if ( ! as_enqueue_async_action( 'call_external_mailchimp_subscribe_action', $args, 'MailChimp' ) > 0 ) {
+				write_log('Something went wrong, could not schedule '.$post_data['email'].' for MailChimp subscribe');
+			}
 		}
-
+		
 		// Registreer of het een B2B-verkoop is of niet
 		if ( is_b2b_customer() ) {
 			$value = 'yes';
@@ -3886,11 +3881,25 @@
 			$value = 'no';
 		}
 		update_post_meta( $order_id, 'is_b2b_sale', $value );
-
+		
 		// Registreer of er ontbijtpakketten in de bestelling zitten of niet
 		if ( cart_contains_breakfast() ) {
 			update_post_meta( $order_id, 'contains_breakfast', cart_contains_breakfast() );
 		}
+	}
+	
+	add_action( 'call_external_mailchimp_subscribe_action', 'call_external_mailchimp_subscribe', 10, 1 );
+	
+	function call_external_mailchimp_subscribe( $post_data ) {
+		$settings = array(
+			'timeout' => 30,
+			'body' => $post_data,
+		);
+		
+		$response = wp_remote_post( 'https://shop.oxfamwereldwinkels.be/wp-content/themes/oxfam-webshop/mailchimp/subscribe.php', $settings );
+		// Eventueel zouden we de actie opnieuw kunnen schedulen indien het antwoord niet bevredigend was, maar dan moet de webservice met duidelijke headers antwoorden
+		$result = json_decode( wp_remote_retrieve_body( $response ) );
+		file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", date_i18n('d/m/Y H:i:s')."\t\t".$post_data['email']."\t\t".$result->status."\n", FILE_APPEND );
 	}
 
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
@@ -8359,29 +8368,33 @@
 	};
 
 	function get_latest_newsletters_in_folder( $list_id = '5cce3040aa', $folder_id = 'bbc1d65c43' ) {
-		$server = substr( MAILCHIMP_APIKEY, strpos( MAILCHIMP_APIKEY, '-' ) + 1 );
-
-		$args = array(
-			'headers' => array(
-				'Authorization' => 'Basic '.base64_encode( 'user:'.MAILCHIMP_APIKEY ),
-			),
+		require_once WP_PLUGIN_DIR.'/mailchimp-3.0.php';
+		$mailchimp = new MailChimp( MAILCHIMP_APIKEY );
+		
+		$settings = array(
+			'list_id' => $list_id,
+			'since_send_time' => date_i18n( 'Y-m-d', strtotime('-6 months') ),
+			'status' => 'sent',
+			'folder_id' => $folder_id,
+			'sort_field' => 'send_time',
+			'sort_dir' => 'ASC',
 		);
-
-		$response = wp_remote_get( 'https://'.$server.'.api.mailchimp.com/3.0/campaigns?since_send_time='.date_i18n( 'Y-m-d', strtotime('-6 months') ).'&status=sent&list_id='.$list_id.'&folder_id='.$folder_id.'&sort_field=send_time&sort_dir=ASC', $args );
-
+		$retrieve = $mailchimp->get( 'campaigns', $settings );
+		var_dump_pre( $retrieve );
+		
 		$mailings = "";
-		if ( $response['response']['code'] == 200 ) {
-			$body = json_decode($response['body']);
+		if ( $mailchimp->success() ) {
+			$body = json_decode( $response['body'] );
 			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen zes maanden:</p>";
 			$mailings .= "<ul style='margin-left: 20px; margin-bottom: 1em;'>";
-
-			foreach ( array_reverse($body->campaigns) as $campaign ) {
-				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.date_i18n( 'j F Y', strtotime($campaign->send_time) ).')</li>';
+			
+			foreach ( array_reverse( $body->campaigns ) as $campaign ) {
+				$mailings .= '<li><a href="'.$campaign->long_archive_url.'" target="_blank">'.$campaign->settings->subject_line.'</a> ('.date_i18n( 'j F Y', strtotime( $campaign->send_time ) ).')</li>';
 			}
-
+			
 			$mailings .= "</ul>";
 		}
-
+		
 		return $mailings;
 	}
 
