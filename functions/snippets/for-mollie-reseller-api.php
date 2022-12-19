@@ -12,8 +12,9 @@
 	 *
 	 */
 
-	// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-	require_once '../../../wp-load.php';
+	// WordPress volledig inladen, zodat we alle helper functies en constanten kunnen aanspreken
+	// Relatief pad enkel geldig vanuit subfolder in subfolder van themamap!
+	require_once '../../../../../wp-load.php';
 
 	if ( $_GET['import_key'] !== IMPORT_KEY ) {
 		die( "Access prohibited!" );

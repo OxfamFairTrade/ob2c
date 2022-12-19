@@ -62,9 +62,9 @@
 		public function endpoint_content() {
 			if ( self::$endpoint === 'nieuwsbrief' ) {
 				echo get_latest_newsletters_in_folder();
-				echo get_mailchimp_status_in_list();
-				// Abonnement op andere nieuwsbrieven tonen?
-				// Klantenkaart linken?
+				echo get_mailchimp_member_status_in_list();
+				// Abonnementen op andere nieuwsbrieven (bv. OSOL) tonen?
+				// Toekomstige klantenkaart linken?
 			}
 		}
 

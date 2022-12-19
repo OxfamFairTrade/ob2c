@@ -1,6 +1,8 @@
 <?php
-	// Laad de WordPress-omgeving (relatief pad geldig vanuit elk thema)
-	require_once __DIR__ . '/../../../wp-load.php';
+	
+	// WordPress volledig inladen, zodat we alle helper functies en constanten kunnen aanspreken
+	// Relatief pad enkel geldig vanuit subfolder in subfolder van themamap!
+	require_once '../../../../../wp-load.php';
 
 	// Bied zowel ondersteuning voor wget als php cron jobs!
 	if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'RUN_FROM_CRON' ) ) {
@@ -191,4 +193,5 @@
 	} else {
 		die("Access prohibited!");
 	}
+	
 ?>
