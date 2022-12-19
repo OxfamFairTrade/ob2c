@@ -6899,7 +6899,7 @@
 	}
 	
 	function oxfam_vouchers_list_callback() {
-		include get_stylesheet_directory().'/functions/vouchers/get-local-list.php';
+		include get_stylesheet_directory().'/functions/vouchers/get-local-report.php';
 	}
 
 	// Vervang onnutige links in netwerkmenu door Oxfam-pagina's
