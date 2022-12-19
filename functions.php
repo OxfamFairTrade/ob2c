@@ -4,7 +4,14 @@
 
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
-
+	
+	require get_stylesheet_directory() . '/functions/helpers.php';
+	require get_stylesheet_directory() . '/functions/relevanssi.php';
+	require get_stylesheet_directory() . '/functions/mailchimp/functions.php';
+	require get_stylesheet_directory() . '/functions/vouchers/functions.php';
+	
+	
+	
 	// Als de Mollie-account geblokkeerd geraakt, verdwijnen alle betaalmethodes
 	// Geef een woordje uitleg (zeer late prioriteit gebruiken om lege tekst te vermijden!)
 	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_when_mollie_account_blocked', 1000, 1 );
@@ -91,11 +98,10 @@
 	}
 
 	// Vreemd genoeg blijft .wjecf-fragment-checkout-select-free-product op de afrekenpagina leeg, dus redirect naar het winkelmandje indien de code daar toegevoegd werd
-	add_action( 'woocommerce_applied_coupon', 'redirect_to_cart_to_choose_version', 10, 1 );
+	// add_action( 'woocommerce_applied_coupon', 'redirect_to_cart_to_choose_version', 10, 1 );
 
 	function redirect_to_cart_to_choose_version( $code ) {
 		if ( $code === 'koffiechoc22' ) {
-			write_log( "Applied ".$code );
 			if ( ! is_cart() ) {
 				// wp_safe_redirect() lokt enkel een redirect in de pop-up uit, gebruik JavaScript om de volledige pagina te refreshen!
 				?>
@@ -197,281 +203,6 @@
 
 	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
 	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
-
-
-
-	#########################
-	# DIGITALE CADEAUBONNEN #
-	#########################
-
-	function ob2c_is_plausible_voucher_code( $code ) {
-		if ( strlen( $code ) === 12 and strpos( $code, '-' ) === false and strtolower( $code ) !== 'koffiechoc22' ) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	function ob2c_is_valid_voucher_code( $code, $ignore_ip_limit = false ) {
-		// Vermijd dat we ook autocoupons checken en zo geldige gebruikers blacklisten!
-		if ( ob2c_is_plausible_voucher_code( $code ) ) {
-			$tries = intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) );
-			if ( ! $ignore_ip_limit and $tries > 10 ) {
-				write_log( "Too many coupon attempts by ".$_SERVER['REMOTE_ADDR'].", code lookup temporarily blocked" );
-				return WC_COUPON::E_WC_COUPON_NOT_EXIST;
-			}
-			
-			global $wpdb;
-			$coupon = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE `code` = %s", $code ) );
-			
-			if ( NULL !== $coupon ) {
-				return $coupon;
-			} else {
-				set_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'], $tries + 1, HOUR_IN_SECONDS );
-			}
-		}
-
-		return WC_COUPON::E_WC_COUPON_NOT_EXIST;
-	}
-
-	// Creëer vouchers on-the-fly op basis van centrale MySQL-tabel
-	// Dit wordt bij elke wijziging aan het winkelmandje opnieuw doorlopen!
-	add_filter( 'woocommerce_get_shop_coupon_data', 'ob2c_load_digital_voucher_on_the_fly', 10, 3 );
-
-	function ob2c_load_digital_voucher_on_the_fly( $bool, $code, $wc_coupon_class ) {
-		$db_coupon = ob2c_is_valid_voucher_code( $code );
-
-		if ( $db_coupon === WC_COUPON::E_WC_COUPON_NOT_EXIST ) {
-			return false;
-		} else {
-			$data = array(
-				'amount' => $db_coupon->value,
-				'date_expires' => $db_coupon->expires,
-				'discount_type' => 'fixed_cart',
-				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro', $db_coupon->issuer, $db_coupon->value ),
-				// Eventueel beperken tot OFT-producten?
-				// 'product_ids' => array(),
-				// Alle papieren geschenkencheques uitsluiten? WORDT PAS AUTOMATISCH TOEGEPAST WANNEER AAN DE VOORWAARDEN VOLDAAN WORDT ...
-				// 'excluded_product_ids' => get_oxfam_cheques_ids_array(),
-				'usage_limit' => 1,
-			);
-			if ( ! empty( $db_coupon->order ) ) {
-				// De code bestaat maar kan niet meer gebruikt worden!
-				// Door deze waarde in te stellen zal meteen een foutmelding getriggerd worden
-				$data['usage_count'] = 1;
-			}
-			return $data;
-		}
-
-		return $bool;
-	}
-
-	// Tweak foutmeldingen
-	add_filter( 'woocommerce_coupon_error', 'ob2c_coupon_error_message', 10, 3 );
-
-	function ob2c_coupon_error_message( $message, $error_code, $coupon ) {
-		// $coupon kan blijkbaar ook null zijn, fatal error opvangen
-		if ( $coupon instanceof WC_Coupon and $coupon->get_virtual() ) {
-			if ( $error_code == WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
-				return sprintf( __( 'De cadeaubon met code %s werd al ingeruild!', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
-			}
-		}
-
-		if ( $error_code == WC_COUPON::E_WC_COUPON_NOT_EXIST ) {
-			if ( intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) ) > 10 ) {
-				return __( 'Je ondernam te veel onsuccesvolle pogingen na elkaar. Probeer het over een uur opnieuw.', 'oxfam-webshop' );
-			} else {
-				return sprintf( __( 'De code %s kennen we helaas niet! Opgelet: papieren geschenkencheques kunnen niet via de webshop ingeruild worden.', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
-			}
-		}
-
-		return $message;
-	}
-
-	// Toon duidelijke omschrijving i.p.v. kortingscode
-	add_filter( 'woocommerce_cart_totals_coupon_label', 'ob2c_modify_digital_voucher_label', 10, 2 );
-
-	function ob2c_modify_digital_voucher_label( $label, $coupon ) {
-		if ( $coupon->get_virtual() ) {
-			$label = $coupon->get_description().': '.strtoupper( $coupon->get_code() ).' <a class="dashicons dashicons-editor-help tooltip" title="Niet spreidbaar over meerdere aankopen. Eventuele restwaarde wordt niet terugbetaald. Niet toepasbaar op verzendkosten."></a>';
-		}
-
-		return $label;
-	}
-
-	// Check net vòòr we de betaling starten nog eens of de code wel geldig is
-	add_action( 'woocommerce_before_pay_action', 'ob2c_revalidate_digital_voucher_before_payment', 10, 1 );
-
-	function ob2c_revalidate_digital_voucher_before_payment( $order ) {
-		foreach ( $order->get_coupons() as $coupon_item ) {
-			// Negeer in deze stap de rate limiting per IP-adres
-			$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
-			if ( is_object( $db_coupon ) ) {
-				// Verhinder het betalen van een bestelling die een inmiddels reeds ingewisselde code bevat!
-				$code = strtoupper( $coupon_item->get_code() );
-				if ( ! empty( $db_coupon->order ) ) {
-					$logger = wc_get_logger();
-					$context = array( 'source' => 'Oxfam' );
-					$logger->warning( 'Trying to re-use coupon '.$code.' in '.$order->get_order_number().', previously used in '.$db_coupon->order, $context );
-					wc_add_notice( sprintf( __( 'Deze bestelling bevatte een digitale cadeaubon met code %1$s die reeds ingeruild werd in bestelling %2$s. We verwijderden deze cadeaubon en herberekenden het resterende te betalen bedrag.', 'oxfam-webshop' ), $code, $db_coupon->order ), 'error' );
-					// Wis de voucher en sla het order op, zodat een nieuw betaaltotaal ontstaat
-					$order->remove_coupon( $coupon_item->get_code() );
-					$order->save();
-				}
-			}
-		}
-	}
-
-	// Maak de code na succesvolle betaling onbruikbaar in de centrale database
-	add_action( 'woocommerce_payment_complete', 'ob2c_invalidate_digital_voucher', 10, 1 );
-
-	function ob2c_invalidate_digital_voucher( $order_id ) {
-		$order = wc_get_order( $order_id );
-		if ( $order !== false ) {
-			foreach ( $order->get_coupons() as $coupon_item ) {
-				// Wees in deze stap niet te kieskeurig met validatie: deze actie is eenmalig én cruciaal voor het ongeldig maken van de voucher!
-				// Negeer in deze stap de rate limiting per IP-adres
-				$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
-				if ( is_object( $db_coupon ) ) {
-					// Nogmaals checken of de code al niet ingewisseld werd!
-					$code = strtoupper( $coupon_item->get_code() );
-					if ( ! empty( $db_coupon->order ) ) {
-						$logger = wc_get_logger();
-						$context = array( 'source' => 'Oxfam' );
-						$logger->critical( 'Coupon '.$code.' was already used in '.$db_coupon->order.', should not be used in '.$order->get_order_number(), $context );
-						send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' werd reeds gebruikt in '.$db_coupon->order, '<p>Bekijk <u>zo snel mogelijk</u> de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>. Hier is iets niet pluis!</p>' );
-					} else {
-						// Ongeldig maken in de centrale database
-						global $wpdb;
-						$rows_updated = $wpdb->update(
-							$wpdb->base_prefix.'universal_coupons',
-							array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s'), 'blog_id' => get_current_blog_id() ),
-							array( 'code' => $code )
-						);
-
-						if ( $rows_updated === 1 ) {
-							// Converteer korting naar pseudo betaalmethode voor correcte omzetrapporten en verwerking van BTW
-							$fee = new WC_Order_Item_Fee();
-							$coupon_data_array = $coupon_item->get_meta('coupon_data');
-							$fee->set_name( $coupon_data_array['description'].': '.$code );
-							$fee->set_amount(0);
-							$fee->set_total(0);
-							// Opgelet: op negatieve kosten wordt sowieso automatisch BTW toegevoegd, ondanks deze instelling
-							// Zie https://github.com/woocommerce/woocommerce/issues/16528#issuecomment-354738929
-							$fee->set_tax_status('none');
-							$fee->update_meta_data( 'voucher_code', $code );
-							$fee->update_meta_data( 'voucher_value', $db_coupon->value );
-							// Bewaar het effectieve bedrag dat betaald werd via de voucher (kan minder zijn dan de totale waarde!) for future reference
-							// Bij bestellingen die VOLLEDIG met vouchers betaald werden wordt toch de waarde van de volledige voucher doorgegeven?
-							$fee->update_meta_data( 'voucher_amount', $coupon_item->get_discount() + $coupon_item->get_discount_tax() );
-							$fee->save();
-
-							if ( $order->add_item( $fee ) !== false ) {
-								// Verwijder de kortingscode volledig van het order
-								// Gebruik bewust niet de uppercase versie maar de originele waarde!
-								$order->remove_coupon( $coupon_item->get_code() );
-							}
-							// Lokt dit een herberekening van alle kosten uit die het BTW-tarief op betalende verzending verkeerdelijk altijd op 21% zet?
-							// Zorgt er ook voor dat kortingsbonnen die slechts per n-de item toegepast werden toch op elk item toegepast worden indien de bestelling VOLLEDIG met vouchers betaald werd?
-							$order->save();
-						} else {
-							send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' kon niet als gebruikt gemarkeerd worden in de database', '<p>Bekijk <u>zo snel mogelijk</u> de bestelling <a href="'.$order->get_edit_order_url().'">in de back-end</a>. Hier is iets niet pluis!</p>' );
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// Vermeld het bedrag dat betaald werd via cadeaubonnen in de back-end (enige beschikbare actie in die buurt ...)
-	add_action( 'woocommerce_admin_order_totals_after_total', 'ob2c_list_voucher_payments', 10, 1 );
-
-	function ob2c_list_voucher_payments( $order_id ) {
-		$order = wc_get_order( $order_id );
-		$voucher_total = ob2c_get_total_voucher_amount( $order );
-		if ( $voucher_total > 0 ) {
-			?>
-			<tr>
-				<td>
-					<span class="description"><?php echo 'waarvan '.wc_price( $voucher_total ).' via digitale cadeaubon'; ?></span>
-				</td>
-			</tr>
-			<?php
-		}
-	}
-
-	// Vermeld het bedrag dat betaald werd via cadeaubonnen in de front-end
-	add_filter( 'woocommerce_get_order_item_totals', 'ob2c_add_voucher_subtotal', 10, 3 );
-
-	function ob2c_add_voucher_subtotal( $total_rows, $order, $tax_display ) {
-		$voucher_total = ob2c_get_total_voucher_amount( $order );
-		if ( $voucher_total > 0 ) {
-			$total_rows['vouchers'] = array( 'label' => __( 'waarvan betaald via digitale cadeaubon:', 'oxfam-webshop' ), 'value' => wc_price( $voucher_total ) );
-		}
-
-		return $total_rows;
-	}
-
-	// Verwijder vouchers uit onafgewerkte bestellingen die uiteindelijk geannuleerd worden (oogt netter) NOG NIET GETEST
-	// add_action( 'woocommerce_order_status_pending_to_cancelled', 'ob2c_remove_vouchers_on_cancelled_orders', 1, 2 );
-
-	function ob2c_remove_vouchers_on_cancelled_orders( $order_id, $order ) {
-		foreach ( $order->get_coupons() as $coupon_item ) {
-			// Negeer in deze stap de rate limiting per IP-adres
-			$db_coupon = ob2c_is_valid_voucher_code( $coupon_item->get_code(), true );
-			if ( is_object( $db_coupon ) ) {
-				send_automated_mail_to_helpdesk( 'Cadeaubon '.strtoupper( $coupon_item->get_code() ).' werd verwijderd uit onafgewerkte bestelling <a href="'.$order->get_edit_order_url().'">'.$order->get_order_number().'</a>.</p>' );
-				$order->remove_coupon( $coupon_item->get_code() );
-			}
-		}
-	}
-
-	function ob2c_bulk_create_digital_vouchers( $issuer = 'Cera', $expires = '2023-01-01', $value = 30, $number = 5000 ) {
-		global $wpdb;
-		$created_codes = array();
-
-		if ( current_user_can('update_core') ) {
-			for ( $i = 0; $i < $number; $i++ ) {
-				$data = array(
-					'code' => ob2c_generate_new_voucher_code(),
-					'issuer' => $issuer,
-					'expires' => $expires,
-					'value' => $value,
-				);
-
-				if ( $wpdb->insert( $wpdb->base_prefix.'universal_coupons', $data ) === 1 ) {
-					$created_codes[] = $data['code'];
-					file_put_contents( ABSPATH . '/../oxfam-digital-vouchers-'.$value.'-EUR-valid-'.$expires.'.csv', $data['code']."\n", FILE_APPEND );
-				} else {
-					echo "Error inserting new code row<br/>";
-				}
-			}
-		} else {
-			echo 'No permission to create vouchers, please log in<br/>';
-		}
-
-		echo implode( '<br/>', $created_codes );
-	}
-
-	function ob2c_generate_new_voucher_code() {
-		// O weglaten om verwarring met 0 te vermijden
-		$characters = '0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
-		$characters_length = strlen( $characters );
-		$random_string = '';
-		for ( $i = 0; $i < 12; $i++ ) {
-			$random_string .= $characters[ rand( 0, $characters_length - 1 ) ];
-		}
-
-		global $wpdb;
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE code = '%s'", $random_string ) );
-		if ( null !== $row ) {
-			// De code bestond al, begin opnieuw
-			echo "Coupon code ".$random_string." already exists, retry ...<br/>";
-			return ob2c_generate_new_voucher_code();
-		} else {
-			return $random_string;
-		}
-	}
 
 
 
@@ -3837,43 +3568,11 @@
 		}
 	}
 
-	// Acties om uit te voeren NA SUCCESVOLLE CHECKOUT (order reeds aangemaakt)
+	// Registreer of het een B2B-verkoop is of niet
+	// Actie wordt doorlopen na SUCCESVOLLE checkout (order reeds aangemaakt)
 	add_action( 'woocommerce_checkout_update_order_meta', 'save_b2b_order_fields', 10, 2 );
 
 	function save_b2b_order_fields( $order_id, $data ) {
-		if ( $data['digizine'] === 1 or $data['marketing'] === 1 ) {
-			$post_data = array(
-				// Naam en e-mailadres zijn reeds geformatteerd!
-				'fname' => $data['billing_first_name'],
-				'lname' => $data['billing_last_name'],
-				'email' => $data['billing_email'],
-				'source' => 'webshop',
-				'newsletter' => 'yes',
-				'shop' => get_webshop_name(),
-			);
-			
-			if ( $data['digizine'] === 1 ) {
-				$post_data['digizine'] = 'yes';
-				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission 496c25fb49\n";
-				file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", $str, FILE_APPEND );
-			} else {
-				$post_data['digizine'] = 'no';
-			}
-			
-			if ( $data['marketing'] === 1 ) {
-				$post_data['marketing'] = 'yes';
-				$str = date_i18n('d/m/Y H:i:s')."\t\t".$data['billing_email']."\t\tEnable marketing permission c1cbf23458\n";
-				file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", $str, FILE_APPEND );
-			}
-			
-			// Gegevens asynchroon doorsturen via Action Scheduler, zodat checkout niet vertraagt!
-			$args = array( 'post_data' => $post_data );
-			if ( ! as_enqueue_async_action( 'call_external_mailchimp_subscribe_action', $args, 'MailChimp' ) > 0 ) {
-				write_log('Something went wrong, could not schedule '.$post_data['email'].' for MailChimp subscribe');
-			}
-		}
-		
-		// Registreer of het een B2B-verkoop is of niet
 		if ( is_b2b_customer() ) {
 			$value = 'yes';
 			// Extra velden met 'billing'-prefix worden automatisch opgeslagen (maar niet getoond), geen actie nodig
@@ -3888,20 +3587,6 @@
 		}
 	}
 	
-	add_action( 'call_external_mailchimp_subscribe_action', 'call_external_mailchimp_subscribe', 10, 1 );
-	
-	function call_external_mailchimp_subscribe( $post_data ) {
-		$settings = array(
-			'timeout' => 30,
-			'body' => $post_data,
-		);
-		
-		$response = wp_remote_post( '/wp-content/themes/oxfam-webshop/functions/mailchimp/subscribe.php', $settings );
-		// Eventueel zouden we de actie opnieuw kunnen schedulen indien het antwoord niet bevredigend was, maar dan moet de webservice met duidelijke headers antwoorden
-		$result = json_decode( wp_remote_retrieve_body( $response ) );
-		file_put_contents( dirname( ABSPATH, 1 )."/mailchimp_instructions.csv", date_i18n('d/m/Y H:i:s')."\t\t".$post_data['email']."\t\t".$result->status."\n", FILE_APPEND );
-	}
-
 	// Wanneer het order BETAALD wordt, slaan we de geschatte leverdatum op
 	add_action( 'woocommerce_order_status_pending_to_processing', 'save_estimated_delivery' );
 
@@ -5594,8 +5279,8 @@
 		$last = date_i18n( 'Y-m-d', $till );
 
 		$hours = get_office_hours( NULL, $shop_post_id );
-		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
-		$holidays = get_site_option( 'oxfam_holidays_'.$shop_post_id, get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) );
+		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met fallback naar algemene feestdagen
+		$holidays = get_site_option( 'oxfam_holidays_'.$shop_post_id, get_site_option('oxfam_holidays') );
 		foreach ( $holidays as $holiday ) {
 			// Argument 'N' want get_office_hours() werkt van 1 tot 7!
 			$weekday_number = date_i18n( 'N', strtotime( $holiday ) );
@@ -6845,10 +6530,6 @@
 		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
 
 		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', 58 );
-		if ( is_main_site() ) {
-			// Enkel tonen op hoofdniveau
-			add_media_page( 'Productfoto\'s', 'Productfoto\'s', 'create_sites', 'oxfam-photos', 'oxfam_photos_callback' );
-		}
 	}
 
 	// Voeg netwerkpagina's toe voor exports en rapporten
@@ -6882,10 +6563,6 @@
 		include get_stylesheet_directory().'/functions/vouchers/get-global-analysis.php';
 	}
 	
-	function oxfam_photos_callback() {
-		include get_stylesheet_directory().'/register-bulk-images.php';
-	}
-
 	function oxfam_options_callback() {
 		include get_stylesheet_directory().'/update-options.php';
 	}
@@ -8365,75 +8042,6 @@
 	function wc_reports_get_order_custom_report_data_args( $args ) {
 		$args['order_status'] = array( 'on-hold', 'processing', 'claimed', 'completed' );
 		return $args;
-	};
-
-	function get_latest_newsletters_in_folder( $list_id = '5cce3040aa', $folder_id = 'bbc1d65c43' ) {
-		require_once WP_PLUGIN_DIR.'/mailchimp-api-wrapper.php';
-		$mailchimp = new \DrewM\MailChimp\MailChimp( MAILCHIMP_APIKEY );
-		
-		$settings = array(
-			'list_id' => $list_id,
-			'since_send_time' => date_i18n( 'Y-m-d', strtotime('-6 months') ),
-			'status' => 'sent',
-			'folder_id' => $folder_id,
-			'sort_field' => 'send_time',
-			'sort_dir' => 'DESC',
-		);
-		$retrieve = $mailchimp->get( 'campaigns', $settings );
-		
-		$mailings = "";
-		if ( $mailchimp->success() ) {
-			$mailings .= "<p>Dit zijn de nieuwsbrieven van de afgelopen zes maanden:</p>";
-			$mailings .= "<ul style='margin-left: 20px; margin-bottom: 1em;'>";
-			
-			foreach ( $retrieve['campaigns'] as $campaign ) {
-				$mailings .= '<li><a href="'.$campaign['long_archive_url'].'" target="_blank">'.$campaign['settings']['subject_line'].'</a> ('.date_i18n( 'j F Y', strtotime( $campaign['send_time'] ) ).')</li>';
-			}
-			
-			$mailings .= "</ul>";
-		}
-		
-		return $mailings;
-	}
-
-	function get_mailchimp_member_status_in_list( $list_id = '5cce3040aa' ) {
-		$current_user = wp_get_current_user();
-		$email = $current_user->user_email;
-		$response = get_mailchimp_member_in_list_by_email( $email, $list_id );
-		
-		switch ( $list_id ) {
-			case '5cce3040aa':
-				$list_name = 'het Digizine';
-				break;
-			
-			default:
-				$list_name = 'lijst '.$list_id;
-		}
-		
-		$msg = "";
-		if ( $response ) {
-			if ( $response['status'] === "subscribed" ) {
-				$msg .= "al geabonneerd op ".$list_name.". Aan het begin van elke maand ontvang je dus een (h)eerlijke mail boordevol fairtradenieuws.";
-			} else {
-				$msg .= "helaas niet langer geabonneerd op ".$list_name.". Vul <a href='https://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$current_user->user_firstname."&LNAME=".$current_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>het formulier</a> in om op je stappen terug te keren!";
-			}
-		} else {
-			$msg .= "nog nooit geabonneerd geweest op ".$list_name.". Vul <a href='https://oxfamwereldwinkels.us3.list-manage.com/subscribe?u=d66c099224e521aa1d87da403&id=".$list_id."&FNAME=".$current_user->user_firstname."&LNAME=".$current_user->user_lastname."&EMAIL=".$email."&SOURCE=webshop' target='_blank'>het formulier</a> in om daar verandering in te brengen!";
-		}
-		
-		return "<p>Je bent met het e-mailadres <a href='mailto:".$email."' target='_blank'>".$email."</a> ".$msg."</p>";
-	}
-
-	function get_mailchimp_member_in_list_by_email( $email, $list_id ) {
-		require_once WP_PLUGIN_DIR.'/mailchimp-api-wrapper.php';
-		$mailchimp = new \DrewM\MailChimp\MailChimp( MAILCHIMP_APIKEY );
-		$response = $mailchimp->get( 'lists/'.$list_id.'/members/'.md5( format_mail( $email ) ) );
-		
-		if ( $mailchimp->success() ) {
-			return $response;
-		} else {
-			return false;
-		}
 	}
 
 
@@ -8491,10 +8099,10 @@
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array();
 		if ( in_array( $atts['id'], $exceptions ) ) {
-			$holidays = array( '2020-12-25', '2021-01-01' );
+			$holidays = array( '2022-12-25', '2023-01-01' );
 		} else {
-			// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
-			$holidays = get_site_option( 'oxfam_holidays_'.$atts['id'], get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) );
+			// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met fallback naar algemene feestdagen
+			$holidays = get_site_option( 'oxfam_holidays_'.$atts['id'], get_site_option('oxfam_holidays') );
 		}
 
 		if ( $atts['start'] === 'today' ) {
@@ -8787,89 +8395,24 @@
 		}
 		return do_shortcode("[flexiblemap src='".content_url( '/maps/site-'.get_current_blog_id().'.kml?v='.rand() )."' width='100%' height='600px' zoom='".$zoom."' hidemaptype='true' hidescale='false' kmlcache='8 hours' locale='nl-BE' id='map-oxfam']");
 	}
+	
+	add_filter( 'flexmap_custom_map_types', function( $map_types, $attrs ) {
+		if ( empty( $attrs['maptype'] ) ) {
+			return $map_types;
+		}
+	
+		if ( $attrs['maptype'] === 'light_monochrome' and empty( $map_types['light_monochrome'] ) ) {
+			$custom_type = '{ "styles" : [{"stylers":[{"hue":"#ffffff"},{"invert_lightness":false},{"saturation":-100}]}], "options" : { "name" : "Light Monochrome" } }';
+			$map_types['light_monochrome'] = json_decode( $custom_type );
+		}
+		return $map_types;
+	}, 10, 2 );
 
 
 
 	###########
 	# HELPERS #
 	###########
-
-	function get_flemish_zips_and_cities() {
-		$zips = get_site_option('oxfam_flemish_zip_codes');
-		foreach ( $zips as $zip => $cities ) {
-			$parts = explode( '/', $cities );
-			foreach ( $parts as $city ) {
-				$content[] = array( 'label' => $zip.' '.trim($city), 'value' => $zip );
-			}
-		}
-		return $content;
-	}
-
-	// CHECK OF DIT VOLSTAAT (NOTICES, FAQ, ...)
-	function does_risky_delivery() {
-		// Zet 'yes'-waarde om in een echte boolean!
-		return ( get_option('oxfam_does_risky_delivery') === 'yes' );
-	}
-
-	function does_home_delivery( $zipcode = 0 ) {
-		if ( intval( $zipcode ) === 0 ) {
-			return boolval( get_oxfam_covered_zips() );
-		} else {
-			// Check of de webshop thuislevering doet voor deze specifieke postcode
-			$response = in_array( $zipcode, get_oxfam_covered_zips() );
-			return $response;
-		}
-	}
-
-	function does_local_pickup() {
-		$pickup_settings = get_option('woocommerce_local_pickup_plus_settings');
-		if ( is_array( $pickup_settings ) ) {
-			return ( 'yes' === $pickup_settings['enabled'] );
-		} else {
-			return false;
-		}
-	}
-
-	function does_sendcloud_delivery() {
-		if ( does_home_delivery() ) {
-			$sendcloud_zone_id = 3;
-			$zone = WC_Shipping_Zones::get_zone_by( 'zone_id', $sendcloud_zone_id );
-			if ( $zone ) {
-				// Enkel actieve methodes meetellen
-				$methods = $zone->get_shipping_methods( true );
-				if ( count( $methods ) > 0 ) {
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	function is_regional_webshop() {
-		// Gentbrugge, Antwerpen, Leuven, Mechelen en Wetteren
-		$regions = array( 15, 24, 28, 40, 53 );
-		// Opgelet: vergeet de custom orderstatus 'claimed' niet te publiceren naar deze subsites!
-		return in_array( get_current_blog_id(), $regions );
-	}
-
-	// Kan zowel productobject als post-ID ontvangen
-	function is_national_product( $object ) {
-		if ( is_main_site() ) {
-			// Producten op het hoofdniveau zijn per definitie nationaal!
-			return true;
-		}
-
-		if ( $object instanceof WC_Product ) {
-			return ( intval( $object->get_meta('_woonet_network_is_child_site_id') ) === 1 );
-		} else {
-			return ( intval( get_post_meta( $object, '_woonet_network_is_child_site_id', true ) ) === 1 );
-		}
-	}
 
 	function get_external_wpsl_store( $shop_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
 		$store_data = false;
@@ -9042,52 +8585,6 @@
 		}
 	}
 
-	function get_webshop_name( $shortened = false ) {
-		$webshop_name = get_bloginfo('name');
-		if ( $shortened ) {
-			$webshop_name = str_replace( 'Oxfam-Wereldwinkel ', '', $webshop_name );
-		}
-		return $webshop_name;
-	}
-
-	function get_webshop_email() {
-		return get_option('admin_email');
-	}
-
-	// Of rechtstreeks ophalen uit WPSL op hoofdniveau?
-	function get_shop_name( $atts = [] ) {
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
-		// Te integreren in get_oxfam_shop_data()
-		$oww_store_data = get_external_wpsl_store( $atts['id'] );
-		if ( $oww_store_data !== false ) {
-			return 'Oxfam-Wereldwinkel '.$oww_store_data['title']['rendered'];
-		} else {
-			return false;
-		}
-	}
-
-	// Of rechtstreeks ophalen uit WPSL op hoofdniveau?
-	function get_shop_email( $atts = [] ) {
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
-		// Te integreren in get_oxfam_shop_data()
-		$oww_store_data = get_external_wpsl_store( $atts['id'] );
-		if ( $oww_store_data !== false ) {
-			return $oww_store_data['location']['mail'];
-		} else {
-			return false;
-		}
-	}
-
-	function get_shop_contact( $atts = [] ) {
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
-		return get_shop_address( $atts )."<br/>".get_oxfam_shop_data( 'telephone', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'tax', 0, false, $atts['id'] );
-	}
-
-	function get_shop_address( $atts = [] ) {
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
-		return get_oxfam_shop_data( 'place', 0, false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'zipcode', 0, false, $atts['id'] )." ".get_oxfam_shop_data( 'city', 0, false, $atts['id'] );
-	}
-
 	function get_webshops_by_postcode( $return_store_id = false ) {
 		$global_zips = array();
 		// Negeer afgeschermde en gearchiveerde sites
@@ -9129,213 +8626,26 @@
 		return $global_zips;
 	}
 
-	add_filter( 'flexmap_custom_map_types', function( $map_types, $attrs ) {
-		if ( empty( $attrs['maptype'] ) ) {
-			return $map_types;
-		}
-
-		if ( $attrs['maptype'] === 'light_monochrome' and empty( $map_types['light_monochrome'] ) ) {
-			$custom_type = '{ "styles" : [{"stylers":[{"hue":"#ffffff"},{"invert_lightness":false},{"saturation":-100}]}], "options" : { "name" : "Light Monochrome" } }';
-			$map_types['light_monochrome'] = json_decode( $custom_type );
-		}
-		return $map_types;
-	}, 10, 2 );
-
-	function get_company_and_year() {
-		return get_webshop_name().' &copy; 2017-'.date_i18n('Y');
-	}
-
-	function get_oxfam_covered_zips() {
-		global $wpdb;
-		$zips = array();
-
-		// Hou enkel rekening met ingeschakelde zones
-		$locations = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."woocommerce_shipping_zone_locations LEFT JOIN ".$wpdb->prefix."woocommerce_shipping_zone_methods ON ".$wpdb->prefix."woocommerce_shipping_zone_methods.zone_id = ".$wpdb->prefix."woocommerce_shipping_zone_locations.zone_id WHERE ".$wpdb->prefix."woocommerce_shipping_zone_locations.location_type = 'postcode' AND ".$wpdb->prefix."woocommerce_shipping_zone_methods.is_enabled = 1" );
-
-		if ( count( $locations ) > 0 ) {
-			foreach ( $locations as $row ) {
-				$zips[] = $row->location_code;
-			}
-			$zips = array_unique( $zips );
-
-			// Verwijder de default '9999'-waarde uit ongebruikte verzendmethodes
-			if ( ( $key = array_search( '9999', $zips ) ) !== false ) {
-				unset( $zips[ $key ] );
-			}
-
-			sort( $zips, SORT_NUMERIC );
-		}
-
-		return $zips;
-	}
 
 
-
-	##########
-	# SEARCH #
-	##########
-
-	// Verander capability van 'manage_options' naar 'create_sites' zodat enkel superbeheerders de instellingen kunnen wijzigen
-	add_filter( 'relevanssi_options_capability', function( $capability ) { return 'create_sites'; } );
-
-	// Verander capability van 'edit_pages' naar 'manage_woocommerce' zodat ook lokale beheerders de logs kunnen bekijken
-	add_filter( 'relevanssi_user_searches_capability', function( $capability ) { return 'manage_woocommerce'; } );
-
-	// Laat logs rechtstreeks doorlinken naar specifieke product search in een nieuw venster
-	add_filter( 'relevanssi_user_searches_query_url', 'redirect_relevanissi_search_terms_to_products', 10, 1 );
-
-	function redirect_relevanissi_search_terms_to_products( $query_url ) {
-		return $query_url.'&post_type=product';
-	}
-
-	// Probeert reguliere meervouden en verkleinwoorden automatisch weg te laten uit zoektermen (én index)
-	add_filter( 'relevanssi_stemmer', 'relevanssi_dutch_stemmer' );
-
-	function relevanssi_dutch_stemmer( $term ) {
-		// De 'synoniemen' die een woord simpelweg verlengen voeren we pas door nu de content opgesplitst is in woorden
-		$synonyms = array( 'blauw' => 'blauwe', 'groen' => 'groene', 'wit' => 'witte', 'zwart' => 'zwarte', 'paars' => 'paarse', 'bruin' => 'bruine' );
-		foreach ( $synonyms as $search => $replace ) {
-			if ( strcmp( $term, $search ) === 0 ) $term = $replace;
-		}
-
-		$len = strlen($term);
-
-		if ( $len > 4 ) {
-			$last_3 = substr($term, -3, 3);
-			$last_4 = substr($term, -4, 4);
-			$vowels = array( "a", "e", "i", "o", "u" );
-
-			// Knip alle meervouden op 's' weg
-			if ( substr($term, -2, 2) === "'s" ) {
-				$term = substr($term, 0, -2);
-			} elseif ( in_array( $last_4, array( "eaus", "eaux" ) ) ) {
-				$term = substr($term, 0, -1);
-			} elseif ( substr($term, -1, 1) === "s" and ! in_array( substr($term, -2, 1), array( "a", "i", "o", "u" ), true ) and ! ( in_array( substr($term, -2, 1), $vowels, true ) and in_array( substr($term, -3, 1), $vowels, true ) ) ) {
-				// Behalve na een klinker (m.u.v. 'e') of een tweeklank!
-				$term = substr($term, 0, -1);
-			}
-
-			// Knip de speciale meervouden op 'en' met een wisselende eindletter weg
-			if ( $last_3 === "'en" ) {
-				$term = substr($term, 0, -3);
-			} elseif ( $last_3 === "eën" ) {
-				$term = substr($term, 0, -3)."e";
-			} elseif ( $last_3 === "iën" ) {
-				$term = substr($term, 0, -3)."ie";
-			} elseif ( $last_4 === "ozen" ) {
-				// Andere onregelmatige meervouden vangen we op via de synoniemen!
-				$term = substr($term, 0, -3)."os";
-			}
-
-			// Knip de gewone meervouden op 'en' weg
-			if ( substr($term, -2, 2) === "en" and ! in_array( substr($term, -3, 1), $vowels, true ) ) {
-				$term = substr($term, 0, -2);
-			}
-
-			// Knip de verkleinende suffixen weg
-			if ( substr($term, -4, 4) === "ltje" ) {
-				$term = substr($term, 0, -3);
-			} elseif ( substr($term, -4, 4) === "mpje" ) {
-				$term = substr($term, 0, -3);
-			} elseif ( substr($term, -4, 4) === "etje" ) {
-				$term = substr($term, 0, -4);
-			} elseif ( substr($term, -2, 2) === "je" ) {
-				// Moeilijk te achterhalen wanneer de laatste 't' ook weg moet!
-				$term = substr($term, 0, -2);
-			}
-
-			// Knip de overblijvende verdubbelde eindletters weg
-			if ( in_array( substr($term, -2, 2), array( "bb", "dd", "ff", "gg", "kk", "ll", "mm", "nn", "pp", "rr", "ss", "tt" ) ) ) {
-				$term = substr($term, 0, -1);
-			}
-		}
-
-		return $term;
-	}
-
-	// Plaats een zoeksuggestie net onder de titel van zoekpagina's als er minder dan 5 resultaten zijn
-	// Probleem: de 'woocommerce_archive_description'-actie wordt niet uitgevoerd door Savoy bovenaan zoekresultaten!
-	// add_action( 'woocommerce_archive_description', 'ob2c_add_didyoumean' );
-
-	function ob2c_add_didyoumean() {
-		if ( is_search() ) {
-			relevanssi_didyoumean( get_search_query(), "<p>Bedoelde je misschien <i>", "</i> ?</p>", 5 );
-		}
-	}
-
-	// Zorg ervoor dat de zoeksuggestie opnieuw linkt naar de productenzoeker
-	add_filter( 'relevanssi_didyoumean_url', 'ob2c_modify_didyoumean_url', 10, 1 );
-
-	function ob2c_modify_didyoumean_url( $url ) {
-		return add_query_arg( 'post_type', 'product', $url );
-	}
-
-	// Verhinder dat termen die slechts 1x in de index voorkomen de automatische suggesties verstoren
-	// add_filter( 'relevanssi_get_words_having', function() { return 2; } );
-
-	// Toon de bestsellers op zoekpagina's zonder resultaten MOET MEER NAAR BOVEN + VERSCHIJNT OOK ALS ER WEL RESULTATEN ZIJN
-	// add_action( 'woocommerce_after_main_content', 'add_bestsellers' );
-
-	function add_bestsellers() {
-		global $wp_query;
-		if ( is_search() and $wp_query->found_posts == 0 ) {
-			echo do_shortcode('[vc_row css=".vc_custom_1487859300634{padding-top: 25px !important;padding-bottom: 25px !important;}"][vc_column][vc_text_separator title="<h2>Werp een blik op onze bestsellers ...</h2>" css=".vc_custom_1487854440279{padding-bottom: 25px !important;}"][best_selling_products per_page="10" columns="5" orderby="rand"][/vc_column][/vc_row]');
-		}
-	}
-
-	// Zorg ervoor dat verborgen producten niet geïndexeerd worden (en dus niet opduiken in de zoekresultaten) SOWIESO AL ONZICHTBAAR, ZIE OPTIE
-	add_filter( 'relevanssi_woocommerce_indexing', 'ob2c_exclude_hidden_products', 10, 1 );
-
-	function ob2c_exclude_hidden_products( $blocks ) {
-		$blocks['outofstock'] = false;
-		// $blocks['exclude-from-catalog'] = false;
-		$blocks['exclude-from-search'] = true;
-		return $blocks;
-	}
-
-	// Voeg de bovenliggende categorie toe aan de te indexeren content van een product (inclusief synoniemen)
-	// @toDo: Gebruik 'relevanssi_index_custom_fields'-filter om verborgen metavelden toe te voegen (kan ook via instellingen)
-	add_filter( 'relevanssi_content_to_index', 'ob2c_index_parent_category_and_origin', 10, 2 );
-
-	function ob2c_index_parent_category_and_origin( $content, $post ) {
-		global $relevanssi_variables;
-		$categories = get_the_terms( $post->ID, 'product_cat' );
-		if ( is_array( $categories ) ) {
-			foreach ( $categories as $category ) {
-				// Check de bovenliggende cateogrie
-				if ( ! empty( $category->parent ) ) {
-					$parent = get_term( $category->parent, 'product_cat' );
-					if ( array_key_exists( 'synonyms', $relevanssi_variables ) ) {
-						// Laat de synoniemenlijst eerst nog even inwerken
-						$search = array_keys( $relevanssi_variables['synonyms'] );
-						$replace = array_values( $relevanssi_variables['synonyms'] );
-						$content .= str_ireplace( $search, $replace, $parent->name ).' ';
-					} else {
-						// Voeg direct toe
-						$content .= $parent->name.' ';
-					}
-				}
-			}
-		}
-		return $content;
-	}
-
-	// Verleng de logs tot 90 dagen
-	add_filter( 'relevanssi_30days', function() { return 90; } );
-
-
-
-	#############
-	# DEBUGGING #
-	#############
-
-	// Verberg updates van plugins die we gehackt hebben!
+	############
+	# SETTINGS #
+	############
+	
+	// Verberg updates van plugins die we gehackt hebben
 	add_filter( 'site_transient_update_plugins', 'disable_plugin_updates' );
-
+	
 	function disable_plugin_updates( $value ) {
 		if ( wp_get_environment_type() === 'production' ) {
 			if ( isset( $value ) and is_object( $value ) ) {
-				$disabled_plugin_updates = array( 'woocommerce', 'woocommerce-force-sells', 'woocommerce-gift-wrapper', 'woocommerce-multistore', 'woocommerce-shipping-local-pickup-plus', 'wp-store-locator' );
+				$disabled_plugin_updates = array(
+					'woocommerce',
+					'woocommerce-force-sells',
+					'woocommerce-gift-wrapper',
+					'woocommerce-multistore',
+					'woocommerce-shipping-local-pickup-plus',
+					'wp-store-locator',
+				);
 				foreach ( $disabled_plugin_updates as $slug ) {
 					if ( isset( $value->response[ $slug.'/'.$slug.'.php' ] ) ) {
 						unset( $value->response[ $slug.'/'.$slug.'.php' ] );
@@ -9345,76 +8655,13 @@
 		}
 		return $value;
 	}
-
+	
 	// Verhinder het lekken van gegevens uit de API aan niet-ingelogde gebruikers
 	add_filter( 'rest_authentication_errors', 'only_allow_administrator_rest_access' );
-
+	
 	function only_allow_administrator_rest_access( $access ) {
 		if ( ! is_user_logged_in() or ! current_user_can('manage_options') ) {
 			return new WP_Error( 'rest_cannot_access', 'Access prohibited!', array( 'status' => rest_authorization_required_code() ) );
 		}
 		return $access;
 	}
-
-	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
-	function send_automated_mail_to_helpdesk( $subject, $body ) {
-		if ( wp_get_environment_type() !== 'production' ) {
-			$subject = 'TEST - '.$subject.' - NO ACTION REQUIRED';
-
-			// Eventueel volledig uitschakelen
-			// return;
-		}
-
-		$headers = array();
-		$headers[] = 'From: '.get_webshop_name().' <'.get_option('admin_email').'>';
-		$headers[] = 'Content-Type: text/html';
-		// $body moét effectief HTML-code bevatten, anders werpt WP Mail Log soms een error op!
-		wp_mail( get_staged_recipients('webshop@oft.be'), $subject, $body, $headers );
-	}
-
-	// Print variabelen op een overzichtelijke manier naar een niet-publieke file
-	if ( ! function_exists( 'write_log' ) ) {
-		function write_log( $log ) {
-			if ( defined('WP_DEBUG_LOG') and WP_DEBUG_LOG ) {
-				if ( is_array( $log ) or is_object( $log ) ) {
-					$log = serialize( $log );
-				}
-				error_log( "[".date_i18n('d/m/Y H:i:s')."] " . $log . "\n", 3, ABSPATH . '/../activity.log' );
-			}
-		}
-	}
-
-	// Verwissel twee associatieve keys in een array
-	function array_swap_assoc( $key1, $key2, $array ) {
-		$new_array = array();
-		foreach ( $array as $key => $value ) {
-			if ( $key == $key1 ) {
-				$new_array[ $key2 ] = $array[ $key2 ];
-			} elseif ( $key == $key2 ) {
-				$new_array[ $key1 ] = $array[ $key1 ];
-			} else {
-				$new_array[ $key ] = $value;
-			}
-		}
-		return $new_array;
-	}
-
-	// Creëer een random sequentie (niet gebruiken voor echte beveiliging)
-	function generate_pseudo_random_string( $length = 10 ) {
-		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		$characters_length = strlen( $characters );
-		$random_string = '';
-		for ( $i = 0; $i < $length; $i++ ) {
-			$random_string .= $characters[ rand( 0, $characters_length - 1 ) ];
-		}
-		return $random_string;
-	}
-
-	// Overzichtelijkere debugfunctie definiëren
-	function var_dump_pre( $variable ) {
-		echo '<pre>';
-		var_dump( $variable );
-		echo '</pre>';
-		return;
-	}
-?>

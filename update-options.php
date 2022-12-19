@@ -231,7 +231,7 @@
 					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden overgenomen uit <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor alle levermethodes. Indien er extra afhaalpunten zijn, wordt bij afhaling rekening gehouden met de sluitingsdagen van de gekozen winkel.</small></label>
 				</th>
 				<td class="right">
-					<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ); ?></textarea>
+					<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?php echo esc_textarea( implode( ', ', get_site_option( 'oxfam_holidays_'.get_option('oxfam_shop_post_id'), get_site_option('oxfam_holidays') ) ) ); ?></textarea>
 				</td>
 			</tr>
 			<tr valign="top">

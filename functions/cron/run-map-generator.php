@@ -46,10 +46,10 @@
 				// Maak de lokale kaart aan met alle deelnemende winkelpunten, exclusief externen
 				$locations = ob2c_get_pickup_locations();
 				if ( count( $locations ) > 0 ) {
-					$local_file = fopen( __DIR__ . '/../../maps/site-'.$site->blog_id.'.kml', 'w' );
+					$local_file = fopen( WP_CONTENT_DIR . '/maps/site-'.$site->blog_id.'.kml', 'w' );
 					$txt = "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>";
 					// Icon upscalen boven 32x32 pixels werkt helaas niet, <BalloonStyle><bgColor>ffffffbb</bgColor></BalloonStyle> evenmin
-					$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
+					$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 
 					foreach ( $locations as $shop_post_id => $shop_name ) {
 						// Want get_shop_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
@@ -147,14 +147,9 @@
 			if ( $webshop_blog_id !== '' ) {
 				// Oude manier: sluitingsdagen opslaan als universele subsite optie
 				switch_to_blog( $webshop_blog_id );
-				if ( count( $oww_store_data['closing_days'] ) > 0 ) {
-					update_option( 'oxfam_holidays', $oww_store_data['closing_days'] );
-				} else {
-					// Verwijder de optie zodat we géén lege array achterlaten die de default waardes blokkeert
-					delete_option('oxfam_holidays');
-				}
+				delete_option('oxfam_holidays');
 				restore_current_blog();
-
+				
 				// Nieuwe manier: sluitingsdagen opslaan als winkelspecifieke site optie
 				if ( count( $oww_store_data['closing_days'] ) > 0 ) {
 					update_site_option( 'oxfam_holidays_'.$oww_store_data['id'], $oww_store_data['closing_days'] );

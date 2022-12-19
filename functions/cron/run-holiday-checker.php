@@ -31,9 +31,7 @@
 						if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
 							write_log("Speciale banner geactiveerd op ".$site->blogname."!");
 						}
-					// @toDo: Kijk naar 'closing_days' van specifieke post-ID, met dubbele fallback naar algemene feestdagen
-					// get_option( 'oxfam_holidays_'.get_option('oxfam_shop_post_id'), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) )
-					} elseif ( in_array( date_i18n('Y-m-d'), get_option( 'oxfam_holidays', get_site_option('oxfam_holidays') ) ) ) {
+					} elseif ( in_array( date_i18n('Y-m-d'), get_site_option( 'oxfam_holidays_'.get_option('oxfam_shop_post_id'), get_site_option('oxfam_holidays') ) ) ) {
 						// Stel de afwezigheidsboodschap in, op voorwaarde dat er momenteel geen andere boodschap getoond wordt
 						if ( get_option('woocommerce_demo_store') === 'no' ) {
 							// @toDo: Personaliseerbaar maken? Eerste werkdag zoeken na vakantie?

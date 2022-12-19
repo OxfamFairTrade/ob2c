@@ -1,7 +1,5 @@
 <?php
 
-	if ( ! defined('ABSPATH') ) exit;
-
 	// Verwijder overtollige BTW-schalen
 	$tax_classes = array( 'gereduceerd-tarief', 'nultarief' );
 	foreach ( $tax_classes as $tax_class ) {
@@ -155,7 +153,7 @@
 	update_site_option( 'oxfam_blocked_sites', $oxfam_blocked_sites );
 
 	// Default feestdagen bijwerken
-	$default_holidays = array( '2022-04-17', '2022-04-18', '2022-05-01', '2022-05-26', '2022-06-05', '2022-06-06', '2022-07-21', '2022-08-15', '2022-11-01', '2022-11-11', '2022-12-25', '2023-01-01' );
+	$default_holidays = array( '2023-04-09', '2023-04-10', '2023-05-01', '2023-05-18', '2023-05-28', '2023-05-29', '2023-07-21', '2023-08-15', '2023-11-01', '2023-11-11', '2023-12-25', '2024-01-01' );
 	update_site_option( 'oxfam_holidays', $default_holidays );
 
 	// Handige truc om alle vinkjes aan te zetten op https://shop.oxfamwereldwinkels.be/wp-admin/edit.php?post_status=publish&post_type=product&orderby=sku&order=desc
@@ -569,9 +567,5 @@ Bij grote bestellingen kan de levering omwille van onze beperkte voorraad iets l
 		$gateway['description'] = 'Betaal snel en veilig met je Belgische bankkaart. Hou je kaartlezer klaar, of scan de QR-code met je Payconiq-app!';
 		update_option( 'mollie_wc_gateway_bancontact_settings', $gateway );
 	}
-
-	// Tabel met stopwoorden kopiëren
-
-	// Sjabloon van WP All Export kopiëren
 
 ?>
