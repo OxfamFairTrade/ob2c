@@ -4,7 +4,7 @@
 	// Relatief pad enkel geldig vanuit subfolder in subfolder van themamap!
 	require_once '../../../../../wp-load.php';
 	
-	require_once WP_PLUGIN_DIR.'/mailchimp-api-wrapper.php');
+	require_once WP_PLUGIN_DIR.'/mailchimp-api-wrapper.php';
 	use \DrewM\MailChimp\MailChimp;
 	
 	if ( ! current_user_can('update_core') ) {
