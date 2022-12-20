@@ -6289,6 +6289,7 @@
 	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
 		register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		register_setting( 'oxfam-options-global', 'oxfam_shop_node', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		// @toDo: Verwijderen, heeft geen echte betekenis meer (maar wordt in get_webshops_by_postcode() nog gebruikt!)
 		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_numeric_array' ) );

@@ -143,6 +143,14 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
+					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam België.">Node OBE-site:</label>
+				</th>
+				<td class="right">
+					<input type="text" name="oxfam_shop_node" class="text-input" value="<?php echo get_option('oxfam_shop_node'); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
+				</td>
+			</tr>
+			<tr valign="top">
+				<th class="left">
 					<label for="oxfam_mollie_partner_id" title="Je betaalaccount valt onder het contract dat Oxfam Fair Trade sloot met Mollie. Aan de hand van deze ID kunnen we de nodige API-keys invullen en in geval van nood inloggen op jullie lokale account.">Partner-ID Mollie:</label>
 				</th>
 				<td class="right">
