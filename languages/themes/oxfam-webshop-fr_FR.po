@@ -1,17 +1,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Oxfam-Wereldwinkels Webshop\n"
-"POT-Creation-Date: 2021-03-01 15:02+0100\n"
-"PO-Revision-Date: 2021-03-01 15:03+0100\n"
+"POT-Creation-Date: 2022-12-21 10:41+0100\n"
+"PO-Revision-Date: 2022-12-21 10:41+0100\n"
 "Last-Translator: Frederik Neirynck <info@fullstackahead.be>\n"
 "Language-Team: Oxfam-Wereldwinkels\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
-"X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.2.2\n"
+"X-Poedit-Basepath: ../..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: style.css\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -27,201 +27,226 @@ msgstr ""
 "X-Poedit-SearchPath-6: woocommerce/emails/customer-new-account.php\n"
 "X-Poedit-SearchPath-7: woocommerce/emails/customer-reset-password.php\n"
 "X-Poedit-SearchPath-8: template-parts\n"
+"X-Poedit-SearchPath-9: functions\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: functions.php:565
+#: functions.php:139
+msgid "Place order"
+msgstr ""
+
+#: functions.php:646
+msgid ""
+"Deze webshop heeft helaas geen shoppers op voorraad. Gelieve een ander "
+"afhaalpunt te kiezen."
+msgstr ""
+
+#: functions.php:653
+msgid ""
+"Deze webshop heeft helaas geen sesamrepen met chocolade op voorraad. Gelieve "
+"een ander afhaalpunt te kiezen."
+msgstr ""
+
+#: functions.php:723
 msgid "Filter by category"
 msgstr ""
 
-#: functions.php:831
+#: functions.php:1013
 msgid "Available on backorder"
 msgstr ""
 
-#: functions.php:1002
+#: functions.php:1015
+msgid "Out of stock"
+msgstr ""
+
+#: functions.php:1186
 #, php-format
 msgid "\"%s\" werd toegevoegd aan je winkelmandje."
 msgstr ""
 
-#: functions.php:1013
+#: functions.php:1197
 #, php-format
 msgid "Sorry, artikelnummer %s is nog niet beschikbaar voor online verkoop."
 msgstr ""
 
-#: functions.php:1020
+#: functions.php:1204
 #, php-format
 msgid ""
 "Sommige Oxfam-ingrediënten voor \"%s\" konden niet toegevoegd worden aan je "
 "winkelmandje."
 msgstr ""
 
-#: functions.php:1022
+#: functions.php:1206
 msgid "Sommige producten konden niet toegevoegd worden aan je winkelmandje."
 msgstr ""
 
-#: functions.php:1027
+#: functions.php:1211
 #, php-format
 msgid ""
 "Alle Oxfam-ingrediënten voor \"%s\" zijn toegevoegd aan je winkelmandje!"
 msgstr ""
 
-#: functions.php:1030
+#: functions.php:1214
 msgid "Alle producten zijn toegevoegd aan je winkelmandje!"
 msgstr ""
 
-#: functions.php:1035
+#: functions.php:1219
 #, php-format
 msgid "De ingrediënten voor \"%s\" waren reeds toegevoegd aan je winkelmandje!"
 msgstr ""
 
-#: functions.php:1472
+#: functions.php:1669
 msgid "Additional Information"
 msgstr ""
 
-#: functions.php:2143
+#: functions.php:2401
 #, php-format
 msgid "Onderwerp van de 1ste bevestigingsmail inclusief besteldatum (%s)"
 msgstr ""
 
-#: functions.php:2153
+#: functions.php:2411
 #, php-format
 msgid ""
 "Onderwerp van de 2de bevestigingsmail (indien afhaling) inclusief "
 "besteldatum (%s)"
 msgstr ""
 
-#: functions.php:2155
+#: functions.php:2413
 #, php-format
 msgid ""
 "Onderwerp van de 2de bevestigingsmail (indien thuislevering) inclusief "
 "besteldatum (%s)"
 msgstr ""
 
-#: functions.php:2166
+#: functions.php:2424
 #, php-format
 msgid ""
 "Onderwerp van de terugbetalingsmail (volledig) inclusief besteldatum (%s)"
 msgstr ""
 
-#: functions.php:2168
+#: functions.php:2426
 #, php-format
 msgid ""
 "Onderwerp van de terugbetalingsmail (gedeeltelijk) inclusief besteldatum (%s)"
 msgstr ""
 
-#: functions.php:2174
+#: functions.php:2432
 #, php-format
 msgid "Onderwerp van de opmerkingenmail inclusief besteldatum (%s)"
 msgstr ""
 
-#: functions.php:2207
+#: functions.php:2480
 msgid "Heading van de mail aan de webshopbeheerder"
 msgstr ""
 
-#: functions.php:2212
+#: functions.php:2485
 msgid "Heading van de 1ste bevestigingsmail"
 msgstr ""
 
-#: functions.php:2218
+#: functions.php:2491
 msgid "Heading van de 2de bevestigingsmail (indien afhaling)"
 msgstr ""
 
-#: functions.php:2220
+#: functions.php:2493
 msgid "Heading van de 2de bevestigingsmail (indien thuislevering)"
 msgstr ""
 
-#: functions.php:2227
+#: functions.php:2500
 msgid "Heading van de terugbetalingsmail (volledig)"
 msgstr ""
 
-#: functions.php:2229
+#: functions.php:2502
 msgid "Heading van de terugbetalingsmail (gedeeltelijk)"
 msgstr ""
 
-#: functions.php:2235
+#: functions.php:2508
 msgid "Heading van de opmerkingenmail"
 msgstr ""
 
-#: functions.php:2240
+#: functions.php:2513
 msgid "Heading van de welkomstmail"
 msgstr ""
 
-#: functions.php:2677
+#: functions.php:3029
 msgid ""
 "Foutmelding indien een gewone klant een B2B-product probeert te bestellen."
 msgstr ""
 
-#: functions.php:2698
+#: functions.php:3050
 #, php-format
 msgid ""
 "Foutmelding indien een gewone klant het B2B-product %s probeert te bekijken."
 msgstr ""
 
-#: functions.php:3096
+#: functions.php:3477
 msgid "Voorbeeldnotitie op afrekenpagina (indien afhaling)."
 msgstr ""
 
-#: functions.php:3099
+#: functions.php:3480
 msgid "Voorbeeldnotitie op afrekenpagina (indien thuislevering)."
 msgstr ""
 
-#: functions.php:3104
+#: functions.php:3485
 #, php-format
 msgid ""
 "Boodschap onder de notities op de afrekenpagina, inclusief telefoonnummer "
 "van de hoofdwinkel (%s)."
 msgstr ""
 
-#: functions.php:3137
+#: functions.php:3521
 #, php-format
 msgid ""
 "Foutmelding bij te kleine bestellingen, inclusief minimumbedrag in euro (%d)."
 msgstr ""
 
-#: functions.php:3149
+#: functions.php:3533
 msgid "Foutmelding na het invullen van slecht geformatteerde datum."
 msgstr ""
 
-#: functions.php:3153
+#: functions.php:3537
 msgid ""
 "Foutmelding na het invullen van een geboortedatum die minder dan 18 jaar in "
 "het verleden ligt."
 msgstr ""
 
-#: functions.php:3174
+#: functions.php:3558
 msgid "Foutmelding na het invullen van een straatnaam zonder huisnummer."
 msgstr ""
 
-#: functions.php:3182
+#: functions.php:3566
 msgid "Foutmelding na het ingeven van een ongeldig BTW-nummer."
 msgstr ""
 
-#: functions.php:4272
+#: functions.php:4806
 msgid "BTW-nummer"
 msgstr ""
 
-#: functions.php:4389
+#: functions.php:4809
+msgid "Klantnummer"
+msgstr ""
+
+#: functions.php:4946
 #, php-format
 msgid ""
 "Dag (%1$s) en uur (%2$s) vanaf wanneer de bestelling klaarstaat voor afhaling"
 msgstr ""
 
-#: functions.php:4395
+#: functions.php:4952
 #, php-format
 msgid ""
 "Uiterste dag (%s) waarop het pakje beschikbaar zal zijn in postpunt / "
 "automaat"
 msgstr ""
 
-#: functions.php:4403 functions.php:4407
+#: functions.php:4960 functions.php:4967
 #, php-format
 msgid "Uiterste dag (%s) waarop de levering zal plaatsvinden"
 msgstr ""
 
-#: functions.php:4417
+#: functions.php:4978
 msgid "Boodschap indien schatting leverdatum niet beschikbaar"
 msgstr ""
 
-#: functions.php:4784
+#: functions.php:5441
 #, php-format
 msgid ""
 "Foutmelding na het ingeven van postcode %1$s waar deze webshop geen "
@@ -229,48 +254,78 @@ msgid ""
 "doet."
 msgstr ""
 
-#: functions.php:4844
+#: functions.php:5549
 msgid "B2B-leveringen"
 msgstr ""
 
-#: functions.php:5010 functions.php:5012
+#: functions.php:5724 functions.php:5726
 #, php-format
 msgid "%d grote fles"
 msgid_plural "%d grote flessen"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:5010 functions.php:5014 functions.php:5389 functions.php:5392
+#: functions.php:5724 functions.php:5728 functions.php:6129 functions.php:6133
 #, php-format
 msgid "%d krat"
 msgid_plural "%d kratten"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:5387
+#: functions.php:6127
 #, php-format
 msgid "%d flesje"
 msgid_plural "%d flesjes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:5394
+#: functions.php:6135
 #, php-format
 msgid "%d fles"
 msgid_plural "%d flessen"
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:6839
+#: functions.php:7879
 #, php-format
 msgid "%d bestelstatus proberen te wijzigen."
 msgid_plural "%d bestelstatussen proberen te wijzigen."
 msgstr[0] ""
 msgstr[1] ""
 
-#: functions.php:7003
+#: functions.php:8082
 #, php-format
 msgid "Verwelkoming (%1$s) van de bezoeker (%2$s) op de webshop (%3$s)."
+msgstr ""
+
+#: functions/vouchers/functions.php:78
+#, php-format
+msgid "De cadeaubon met code %s werd al ingeruild!"
+msgstr ""
+
+#: functions/vouchers/functions.php:84
+msgid ""
+"Je ondernam te veel onsuccesvolle pogingen na elkaar. Probeer het over een "
+"uur opnieuw."
+msgstr ""
+
+#: functions/vouchers/functions.php:86
+#, php-format
+msgid ""
+"De code %s kennen we helaas niet! Opgelet: papieren geschenkencheques kunnen "
+"niet via de webshop ingeruild worden."
+msgstr ""
+
+#: functions/vouchers/functions.php:118
+#, php-format
+msgid ""
+"Deze bestelling bevatte een digitale cadeaubon met code %1$s die reeds "
+"ingeruild werd in bestelling %2$s. We verwijderden deze cadeaubon en "
+"herberekenden het resterende te betalen bedrag."
+msgstr ""
+
+#: functions/vouchers/functions.php:211
+msgid "waarvan betaald via digitale cadeaubon:"
 msgstr ""
 
 #: template-parts/footer/footer-widgets.php:22
@@ -310,7 +365,7 @@ msgstr ""
 "Geraak je er niet uit? <a href=\"mailto:%1$s\">Mail ons </a> of bel naar "
 "%2$s."
 
-#: template-parts/woocommerce/product-origin.php:53
+#: template-parts/woocommerce/product-origin.php:27
 msgid "Producent"
 msgid_plural "Producenten"
 msgstr[0] ""
@@ -334,93 +389,105 @@ msgstr ""
 msgid "No products found."
 msgstr ""
 
-#: woocommerce/emails/customer-completed-order.php:35
+#: woocommerce/emails/customer-completed-order.php:23
 msgid ""
 "Bericht bovenaan de 2de bevestigingsmail (indien afhaling in de winkel)."
 msgstr ""
 
-#: woocommerce/emails/customer-completed-order.php:39
+#: woocommerce/emails/customer-completed-order.php:27
 msgid "Bericht bovenaan de 2de bevestigingsmail (indien thuislevering)."
 msgstr ""
 "Nous venons de préparer votre commande pour expédition ! Le courrier se "
 "rendra bientôt chez vous."
 
-#: woocommerce/emails/customer-completed-order.php:58
+#: woocommerce/emails/customer-completed-order.php:46
 #, php-format
 msgid "Trackinginfo inclusief aanklikbare traceercodes (%s)."
 msgstr "Pour suivre votre colis, voici votre lien(s) de tracking : %s."
 
-#: woocommerce/emails/customer-completed-order.php:63
+#: woocommerce/emails/customer-completed-order.php:51
 msgid ""
 "Bericht bovenaan de 2de bevestigingsmail (indien B2B-levering op locatie)."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:16
+#: woocommerce/emails/customer-completed-order.php:77
+#, php-format
+msgid ""
+"Opgelet: deze bestelling bevat %d grote flessen fruitsap van 1 liter in "
+"retourglas. Gelieve dit leeggoed, inclusief eventuele plastic bakken, "
+"<b>vòòr 15 oktober 2022</b> in te leveren bij een Oxfam-Wereldwinkel naar "
+"keuze. Na deze datum kunnen we de terugbetaling van de waarborg niet meer "
+"garanderen. <a href=\"https://www.oxfamfairtrade.be/nl/2021/12/oxfam-fair-"
+"trade-sappen-wat-is-nieuw-vanaf-2022/\" target=\"_blank\">Meer info over "
+"onze switch naar Tetra Paks.</a>"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:13
 msgid "Titel in de header van de welkomstmail"
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:35
+#: woocommerce/emails/customer-new-account.php:30
 #, php-format
 msgid ""
 "Eerste alinea in de uitnodingsmail aan B2B-gebruikers, inclusief naam van "
 "webshop (%s)."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:60
+#: woocommerce/emails/customer-new-account.php:55
 #, php-format
 msgid ""
 "Tweede alinea in de uitnodingsmail aan B2B-gebruikers, inclusief "
 "gebruikersnaam (%s)."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:64
-#: woocommerce/emails/customer-reset-password.php:42
+#: woocommerce/emails/customer-new-account.php:59
+#: woocommerce/emails/customer-reset-password.php:37
 msgid "Speciale wachtwoordresetlink"
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:70
+#: woocommerce/emails/customer-new-account.php:65
 msgid "Derde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:75
+#: woocommerce/emails/customer-new-account.php:70
 #, php-format
 msgid ""
 "Uitleg over algemeen kortingstarief, inclusief percentage (%1$s) en naam van "
 "webshop (%2$s)."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:80
+#: woocommerce/emails/customer-new-account.php:75
 msgid "Vierde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:82
+#: woocommerce/emails/customer-new-account.php:77
 msgid "Vijfde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:89
+#: woocommerce/emails/customer-new-account.php:84
 msgid "Zesde alinea in de uitnodingsmail aan B2B-gebruikers."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:96
+#: woocommerce/emails/customer-new-account.php:91
 #, php-format
 msgid ""
 "Eerste alinea in de welkomstmail aan nieuwe gebruikers, inclusief naam van "
 "webshop (%1$s) en vetgedrukte gebruikersnaam (%2$s)."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:98
+#: woocommerce/emails/customer-new-account.php:93
 #, php-format
 msgid ""
 "Uitleg over de 'Mijn account'-pagina, inclusief URL in webshop waar de "
 "gebruiker zich registreerde (%s)."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:102
+#: woocommerce/emails/customer-new-account.php:97
 msgid "Uitsmijter van het mailbericht bij nieuwe accounts."
 msgstr ""
 
-#: woocommerce/emails/customer-new-account.php:104
-#: woocommerce/emails/customer-reset-password.php:46
+#: woocommerce/emails/customer-new-account.php:108
+#: woocommerce/emails/customer-reset-password.php:50
 #, php-format
 msgid ""
 "Ondertekening van mails met accountinfo, inclusief regio van webshop (%s)."
@@ -432,7 +499,7 @@ msgid ""
 "toegvoegd wordt aan de bestelling."
 msgstr ""
 
-#: woocommerce/emails/customer-processing-order.php:56
+#: woocommerce/emails/customer-processing-order.php:44
 #, php-format
 msgid ""
 "We hebben je bestelling goed ontvangen. Onze vrijwilligers zetten je "
@@ -440,27 +507,27 @@ msgid ""
 "klaarstaat."
 msgstr ""
 
-#: woocommerce/emails/customer-processing-order.php:59
+#: woocommerce/emails/customer-processing-order.php:47
 #, php-format
 msgid ""
 "Bericht bovenaan de 1ste bevestigingsmail (indien afhaling), inclusief "
 "afhaallocatie (%1$s), -dag (%2$s) en -uur (%3$s)."
 msgstr ""
 
-#: woocommerce/emails/customer-processing-order.php:62
+#: woocommerce/emails/customer-processing-order.php:50
 #, php-format
 msgid ""
 "Bericht bovenaan de 1ste bevestigingsmail van een B2B-bestelling (indien "
 "afhaling), inclusief afhaallocatie (%s)."
 msgstr ""
 
-#: woocommerce/emails/customer-processing-order.php:65
+#: woocommerce/emails/customer-processing-order.php:55
 msgid "Bericht bovenaan de 1ste bevestigingsmail (indien thuislevering)."
 msgstr ""
 "Votre commande a bien été prise en compte. Vous serez tenu.e au courant de "
 "son expédition à travers un deuxième e-mail."
 
-#: woocommerce/emails/customer-processing-order.php:69
+#: woocommerce/emails/customer-processing-order.php:67
 #, php-format
 msgid ""
 "Heb je nog een vraag? Antwoord gewoon op deze mail, of bel ons op %s en "
@@ -478,14 +545,14 @@ msgstr ""
 msgid "Bericht bovenaan de mail van een volledig terugbetaalde bestelling."
 msgstr ""
 
-#: woocommerce/emails/customer-reset-password.php:34
+#: woocommerce/emails/customer-reset-password.php:29
 #, php-format
 msgid ""
 "Iemand heeft verzocht om het wachtwoord van je account &laquo; %1$s &raquo; "
 "bij de webshop van %2$s opnieuw in te stellen."
 msgstr ""
 
-#: woocommerce/emails/customer-reset-password.php:38
+#: woocommerce/emails/customer-reset-password.php:33
 msgid ""
 "Was dit een vergissing? Negeer dan gewoon deze e-mail en er zal niets "
 "gebeuren."
@@ -501,6 +568,10 @@ msgstr ""
 
 #. Theme Name of the plugin/theme
 msgid "Oxfam Webshop"
+msgstr ""
+
+#. Theme URI of the plugin/theme
+msgid "https://github.com/OxfamFairTrade/ob2c"
 msgstr ""
 
 #. Description of the plugin/theme
