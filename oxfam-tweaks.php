@@ -35,13 +35,12 @@
 				// echo '</div>';
 				
 				echo '<div class="notice notice-success">';
-					// echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/12/12/Promos-online--winkel-januari-2023" target="_blank">promoties voor januari</a> werden geactiveerd in alle webshops.</p>';
-					echo '<p>Zoals aangekondigd in de webshopnieuwsbrief zullen <a href="https://copain.oww.be/nieuwsbericht/2022/11/21/Belangrijk-prijswijzigingen-en-nieuwe-prijsstructuur-food-vanaf-010123" target="_blank">de prijswijzigingen van 01/01/2023</a> pas in de ochtend van 2 januari doorgevoerd worden in alle webshops. We verwachten zeer weinig bestellingen op Nieuwjaar, maar wacht eventueel met het updaten van ShopPlus tot de laatste bestellingen aan de oude prijzen verwerkt zijn. Bedankt voor jullie begrip!</p>';
+					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/12/12/Promos-online--winkel-januari-2023" target="_blank">promoties voor januari</a> werden geactiveerd in alle webshops. Zoals aangekondigd in de webshopnieuwsbrief werden de <a href="https://copain.oww.be/nieuwsbericht/2022/11/21/Belangrijk-prijswijzigingen-en-nieuwe-prijsstructuur-food-vanaf-010123" target="_blank">prijswijzigingen van 01/01/2023</a> pas in de vroeger ochtend van 2 januari doorgevoerd in alle webshops. Bedankt voor jullie begrip!</p>';
 				echo '</div>';
 				
 				echo '<div class="notice notice-success">';
 					echo '<p>De nieuwe cadeaucheques (geldig tot eind 2024) zijn gearriveerd, samen met een licht gewijzigde Bite to Fight-reep (andere netto-inhoud):</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 19041, 19042, 19043, 24317 );
+						$skus = array( 24149 );
 						foreach ( $skus as $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
@@ -55,8 +54,8 @@
 					}
 					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 					
-					echo '<p>De cheques met geldigheidsdatum 31/12/2022 werden gewist uit de database: maar liefst 20 webshops hadden deze referentie (die al een jaar niet meer opgestuurd wordt door het NS) nog op voorraad staan. Gelieve te switchen naar de nieuwere referenties (geldig tot eind 2023 of 2024) zodat de klant duidelijke info krijgt over tot wanneer hij/zij de bestelde cheques zal kunnen gebruiken. Verder zijn er opnieuw twee nieuwe referenties die een bestaand product vervangen, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 20252 => 20268, 25009 => 25015 );
+					echo '<p>Verder zijn er opnieuw twee nieuwe referenties die een bestaand product vervangen, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
+						$skus = array( 25010 => 25016 );
 						foreach ( $skus as $old_sku => $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
 							if ( $product_id ) {
