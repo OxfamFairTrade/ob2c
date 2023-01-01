@@ -5,9 +5,9 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 	
+	require get_stylesheet_directory() . '/oxfam-tweaks.php';
 	require get_stylesheet_directory() . '/functions/helpers.php';
 	require get_stylesheet_directory() . '/functions/relevanssi.php';
-	require get_stylesheet_directory() . '/functions/oxfam-tweaks.php';
 	require get_stylesheet_directory() . '/functions/mailchimp/functions.php';
 	require get_stylesheet_directory() . '/functions/vouchers/functions.php';
 	require get_stylesheet_directory() . '/functions/subsites/brugge.php';
