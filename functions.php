@@ -7,8 +7,11 @@
 	
 	require get_stylesheet_directory() . '/functions/helpers.php';
 	require get_stylesheet_directory() . '/functions/relevanssi.php';
+	require get_stylesheet_directory() . '/functions/oxfam-tweaks.php';
 	require get_stylesheet_directory() . '/functions/mailchimp/functions.php';
 	require get_stylesheet_directory() . '/functions/vouchers/functions.php';
+	require get_stylesheet_directory() . '/functions/subsites/brugge.php';
+	require get_stylesheet_directory() . '/functions/subsites/houthalen.php';
 	
 	
 	
@@ -111,36 +114,6 @@
 				<?php
 			}
 		}
-	}
-
-
-
-	// Schakel afrekenen in de webshop van Houthalen uit van 18/10 t.e.m. 14/11
-	// add_filter( 'woocommerce_available_payment_gateways', 'disable_all_payment_methods', 10, 1 );
-	// add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_if_disabled', 10, 1 );
-	// add_filter( 'woocommerce_order_button_html', 'disable_checkout_button', 10, 1 );
-
-	function disable_all_payment_methods( $methods ) {
-		if ( get_current_blog_id() === 72 ) {
-			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-14' ) {
-				return array();
-			}
-		}
-		return $methods;
-	}
-
-	function print_explanation_if_disabled( $text ) {
-		return get_option('oxfam_sitewide_banner_top');
-	}
-
-	function disable_checkout_button( $html ) {
-		if ( get_current_blog_id() === 72 ) {
-			if ( date_i18n('Y-m-d') >= '2021-10-18' and date_i18n('Y-m-d') <= '2021-11-14' ) {
-				$original_button = __( 'Place order', 'woocommerce' );
-				return str_replace( '<input type="submit"', '<input type="submit" disabled="disabled"', str_replace( $original_button, 'Bestellen tijdelijk onmogelijk', $html ) );
-			}
-		}
-		return $html;
 	}
 
 	// Verwijder originelen uit srcset (wordt opgepikt door zoekmachines!)
@@ -2334,7 +2307,7 @@
 	}
 
 	// Voeg gebruiksvriendelijke acties toe op orderdetailscherm om status te wijzigen
-	add_action( 'woocommerce_order_actions', 'add_order_status_changing_actions' );
+	add_action( 'woocommerce_order_actions', 'add_order_status_changing_actions', 10, 1 );
 
 	function add_order_status_changing_actions( $actions ) {
 		global $theorder;
@@ -2357,10 +2330,6 @@
 			}
 		}
 
-		if ( get_current_blog_id() === 25 ) {
-			$actions['oxfam_generate_xml'] = 'Regenereer XML voor Adsolut';
-		}
-
 		unset( $actions['send_order_details'] );
 		// unset( $actions['send_order_details_admin'] );
 		unset( $actions['regenerate_download_permissions'] );
@@ -2370,8 +2339,7 @@
 
 	add_action( 'woocommerce_order_action_oxfam_mark_completed', 'proces_oxfam_mark_completed' );
 	add_action( 'woocommerce_order_action_oxfam_mark_claimed', 'proces_oxfam_mark_claimed' );
-	add_action( 'woocommerce_order_action_oxfam_generate_xml', 'proces_oxfam_generate_xml' );
-
+	
 	function proces_oxfam_mark_completed( $order ) {
 		$order->set_status('completed');
 		$order->save();
@@ -2382,10 +2350,6 @@
 		$order->save();
 	}
 	
-	function proces_oxfam_generate_xml( $order ) {
-		ob2c_create_xml_for_adsolut( $order );
-	}
-
 	// Voer shortcodes ook uit in widgets, titels en e-mailfooters
 	add_filter( 'widget_text', 'do_shortcode' );
 	add_filter( 'the_title', 'do_shortcode' );
@@ -3951,20 +3915,20 @@
 					// $coupon_value = $db_coupon->expires;
 					switch ( $coupon_value ) {
 						case 50:
-							$sku = 'WGCD502022';
-							$ean = '5400164190541';
+							$sku = 'WGCD502023';
+							$ean = '5400164190374';
 							break;
-
+							
 						case 25:
-							$sku = 'WGCD252022';
-							$ean = '5400164190534';
+							$sku = 'WGCD252023';
+							$ean = '5400164190367';
 							break;
 							
 						case 10:
 							$sku = 'WGCD102022';
 							$ean = '5400164190442';
 							break;
-
+							
 						default:
 							$sku = 'WGCD302022';
 							$ean = '5400164190466';
@@ -4090,127 +4054,30 @@
 				mkdir( WP_CONTENT_DIR.'/uploads/xlsx/'.$folder, 0755 );
 				$filename = $folder.'/'.$order_number.'.xlsx';
 			}
-
+			
 			try {
 				// Bewaar de nieuwe file (Excel 2007+)
 				$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx( $spreadsheet );
 				$writer->save( WP_CONTENT_DIR.'/uploads/xlsx/'.$filename );
-
+				
 				// Bewaar de locatie van de file (random file!) als metadata
 				$order->add_meta_data( '_excel_file_name', $filename, true );
 				$order->save_meta_data();
-
+				
 				// Bijlage enkel meesturen in 'new_order'-mail aan admin
 				if ( $status === 'new_order' ) {
 					$attachments[] = WP_CONTENT_DIR.'/uploads/xlsx/'.$filename;
-				}
-				
-				if ( get_current_blog_id() === 25 ) {
-					ob2c_create_xml_for_adsolut( $order );
 				}
 			} catch ( InvalidArgumentException $e ) {
 				$logger = wc_get_logger();
 				$context = array( 'source' => 'PhpSpreadsheet' );
 				$logger->error( $order_number.": ".$e->getMessage(), $context );
 			}
-		}
-
-		return $attachments;
-	}
-	
-	function ob2c_create_xml_for_adsolut( $wc_order ) {
-		$xml = new SimpleXMLElement('<order/>');
-		$orderrec = $xml->addChild('orderrec');
-		
-		$location = 'Brugge';
-		$shop_codes = array( 'Brugge' => 'C1', 'Knokke' => 'C2', 'Gistel' => 'C4' );
-		
-		// Winkelcode variëren volgens afhaalpunt 
-		if ( $wc_order->has_shipping_method('local_pickup_plus') ) {
-			$shipping_methods = $wc_order->get_shipping_methods();
-			$shipping_method = reset( $shipping_methods );
-			$pickup_location = ob2c_get_pickup_location_name( $shipping_method, false );
-			foreach ( $shop_codes as $shop_location => $shop_code ) {
-				if ( stristr( $pickup_location, $shop_location ) ) {
-					$location = $shop_location;
-				}
-			}
-		}
-		$orderrec->addChild( 'boeken_code', $shop_codes[ $location ] );
-		
-		$client_number_key = 'blog_'.get_current_blog_id().'_client_number';
-		$customer = new WC_Customer( $wc_order->get_customer_id() );
-		if ( ! empty( $wc_order->get_meta( $client_number_key ) ) ) {
-			$client_number_adsolut = $wc_order->get_meta( $client_number_key );
-		} elseif ( $customer and ! empty( $customer->get_meta( $client_number_key ) ) ) {
-			$client_number_adsolut = $customer->get_meta( $client_number_key );
-		} else {
-			// Nieuw nummer aanmaken in webshop
-			$client_number_adsolut = get_option( 'ob2c_last_local_client_number', 900000 ) + 1;
-			update_option( 'ob2c_last_local_client_number', $client_number_adsolut, false );
 			
-			// Enkel indien de gebruiker ingelogd was, kunnen we het klantnummer opslaan!
-			if ( $customer ) {
-				$customer->update_meta_data( 'blog_'.get_current_blog_id().'_client_number', $client_number_adsolut );
-			}
-		}
-		$orderrec->addChild( 'relaties_code', $client_number_adsolut );
-		
-		// Opgepast: indien een waarde leeg is, wordt er een node geopend i.p.v. toegevoegd! ENKEL IN HTML PREVIEW
-		$orderrec->addChild( 'naam', $wc_order->get_billing_first_name().' '.$wc_order->get_billing_last_name() );
-		$orderrec->addChild( 'adres1', $wc_order->get_billing_address_1() );
-		$orderrec->addChild( 'importland', $wc_order->get_billing_country() );
-		$orderrec->addChild( 'importpostcode', $wc_order->get_billing_postcode() );
-		$orderrec->addChild( 'importgemeente', $wc_order->get_billing_city() );
-		$orderrec->addChild( 'landen_code', $wc_order->get_billing_country() );
-		$orderrec->addChild( 'datum', $wc_order->get_date_created()->date_i18n('d/m/Y') );
-		$orderrec->addChild( 'omschr', $wc_order->get_order_number() );
-		
-		if ( $client_number_adsolut > 900000 ) {
-			$orderrec->addChild( 'relaties_naam', $wc_order->get_billing_first_name().' '.$wc_order->get_billing_last_name() );
-			$orderrec->addChild( 'relaties_adres1', $wc_order->get_billing_address_1() );
-			$orderrec->addChild( 'relaties_postcode', $wc_order->get_billing_postcode() );
-			$orderrec->addChild( 'relaties_gemeente', $wc_order->get_billing_city() );
-			// BTW-nodes weglaten indien niet van toepassing?
-			$orderrec->addChild( 'relaties_btwnr', '' );
-			$orderrec->addChild( 'relaties_landen_code_0', 'BE' );
-			// P = Particulier, H = Handelaar, I = Intracommunautaire
-			$orderrec->addChild( 'relaties_btwregimes_btwregime', 'P' );
-			// N - Nederlands, F - Frans, E - Engels, D - Duits
-			$orderrec->addChild( 'relaties_taalcodes_taalcode', 'N' );
-			$orderrec->addChild( 'relaties_email', $wc_order->get_billing_email() );
-			$orderrec->addChild( 'relaties_telefoon', $wc_order->get_billing_phone() );
+			do_action( 'ob2c_after_attach_picklist_to_email', $order );
 		}
 		
-		$details = $orderrec->addChild('details');
-		foreach ( $wc_order->get_items() as $item ) {
-			$product = $item->get_product();
-			if ( ! $product ) {
-				continue;
-			}
-			$detail = $details->addChild('detail');
-			$sku = ( ! empty( $product->get_meta('_shopplus_code') ) ) ? $product->get_meta('_shopplus_code') : $product->get_sku();
-			$detail->addChild( 'artnr', $sku );
-			$detail->addChild( 'aantal', $item->get_quantity() );
-			// Prijs incl. BTW
-			// $detail->addChild( 'brutopr', $item->get_subtotal() + $item->get_total_tax() );
-			// Korting incl. BTW
-			// $detail->addChild( 'korting1', $item->get_subtotal() + $item->get_subtotal_tax() - ( $item->get_total() + $item->get_total_tax() ) );
-		}
-		
-		$logger = wc_get_logger();
-		$context = array( 'source' => 'SimpleXml' );
-		// Dit gaat ervan uit dat de Excel reeds aangemaakt werd én het pad correct opgeslagen is!
-		$path = WP_CONTENT_DIR.'/uploads/xlsx/'.str_replace( '.xlsx', '.xml', $wc_order->get_meta('_excel_file_name') );
-		
-		// Elke node moet op een nieuwe lijn staan in de XML, anders begrijpt Adsolut het niet ...
-		// Zie https://stackoverflow.com/questions/1840148/php-simplexml-new-line voor mogelijke oplossing
-		if ( $xml->saveXML( $path ) ) {
-			$logger->info( $wc_order->get_order_number().": XML creation succeeded", $context );
-			$wc_order->add_order_note( 'XML voor Adsolut gegenereerd en opgeslagen in zelfde map als Excel ('.get_picklist_download_link( $wc_order, true ).').', 0, false );
-		} else {
-			$logger->error( $wc_order->get_order_number().": XML creation failed", $context );
-		}
+		return $attachments;
 	}
 
 	function ob2c_get_shipping_cost_details( $order ) {
@@ -7720,258 +7587,6 @@
 		return $params;
 	}
 
-	// Voeg berichten toe bovenaan adminpagina's
-	add_action( 'admin_head', 'show_only_oxfam_notices', 10000 );
-
-	function show_only_oxfam_notices() {
-		// Aanpassingen voor iPhone 10+
-		echo '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">';
-
-		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor niet inschakelen!
-		if ( ! current_user_can('create_sites') ) {
-			remove_all_actions('admin_notices');
-		}
-		add_action( 'admin_notices', 'oxfam_admin_notices' );
-		// add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
-	}
-
-	function oxfam_admin_notices() {
-		global $pagenow, $post_type;
-		$screen = get_current_screen();
-
-		if ( 'index.php' === $pagenow and 'dashboard' === $screen->base ) {
-			if ( in_array( get_current_blog_id(), get_site_option('oxfam_blocked_sites') ) ) {
-				echo '<div class="notice notice-error">';
-					echo '<p>Deze webshop is momenteel reeds bereikbaar (voor o.a. Mollie-controle) maar verschijnt nog niet in de winkelzoeker!</p>';
-				echo '</div>';
-			}
-			if ( get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
-				echo '<div class="notice notice-success">';
-					echo '<p>De betalingen op deze site staan momenteel in testmodus! Voel je vrij om naar hartelust te experimenteren met bestellingen.</p>';
-				echo '</div>';
-			}
-			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Sinds de migratie van alle @oww.be mailboxen naar de Microsoft-account van Oxfam International op 23 mei lijken dubbel geforwarde mails niet langer goed te arriveren. Laat je de webshopmailbox forwarden naar het winkeladres <i>gemeente@oww.be</i>, dat de mail op zijn beurt doorstuurt naar je eigen Gmail / Hotmail / ... adres? Log dan in op de webshopmailbox en stel bij de instellingen onder \'<a href="https://outlook.office.com/mail/options/mail/forwarding" target="_blank">Doorsturen</a>\' een rechtstreekse forward in naar de uiteindelijke bestemmeling. Of beter nog: <a href="https://github.com/OxfamFairTrade/ob2c/wiki/3.-Verwerking#kan-ik-de-webshopmailbox-aan-mijn-bestaande-mailprogramma-toevoegen" target="_blank">voeg de webshopmailbox toe aan je mailprogramma</a> en verstuur professionele antwoorden vanuit @oxfamwereldwinkels.be.</p>';
-				// echo '</div>';
-				
-				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/11/10/Promos-online--winkel-december-2022" target="_blank">promoties voor december</a> werden geactiveerd in alle webshops. Het wijnfestival blijft gewoon doorlopen tot eind december.</p>';
-				echo '</div>';
-				
-				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe cadeaucheques (geldig tot eind 2024) zijn gearriveerd, samen met een licht gewijzigde Bite to Fight-reep (andere netto-inhoud):</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 19041, 19042, 19043, 24317 );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product( $product_id );
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-					
-					// echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra referenties beschikbaar die de voorbije maanden verschenen:</p>';
-					// echo '<ul>';
-					// 	echo '<li>Kalenders en agenda\'s voor 2023:<ul style="margin-left: 2em; column-count: 2;">';
-					// 		$skus = array( 87570, 87571, 87420, 87421, 87422, 87423, 87424, 87425, 87426, 87427, 87428, 87429, 87430, 87431 );
-					// 		foreach ( $skus as $sku ) {
-					// 			$product_id = wc_get_product_id_by_sku( $sku );
-					// 			if ( $product_id ) {
-					// 				$product = wc_get_product( $product_id );
-					// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-					// 			}
-					// 		}
-					// 	echo '</ul></li>';
-					// 	
-					// 	echo '<li>Nieuwe verzorgingsproducten:<ul style="margin-left: 2em; column-count: 2;">';
-					// 		$skus = array( 45247, 45258, 45262, 45267, 45390, 65200, 65202, 65204, 65205, 65207, 65208, 65209, 65215, 65228, 65229, 65269, 65270, 65273, 65274, 87359, 87360, 87361 );
-					// 		foreach ( $skus as $sku ) {
-					// 			$product_id = wc_get_product_id_by_sku( $sku );
-					// 			if ( $product_id ) {
-					// 				$product = wc_get_product( $product_id );
-					// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-					// 			}
-					// 		}
-					// 	echo '</ul></li>';
-					// 	
-					// 	echo '<li>Nieuwe onderhoudsproducten:<ul style="margin-left: 2em; column-count: 2;">';
-					// 		$skus = array( 87309, 87312, 87351, 80282, 80283, 80306, 80313, 80314, 80315 );
-					// 		foreach ( $skus as $sku ) {
-					// 			$product_id = wc_get_product_id_by_sku( $sku );
-					// 			if ( $product_id ) {
-					// 				$product = wc_get_product( $product_id );
-					// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-					// 			}
-					// 		}
-					// 	echo '</ul></li>';
-					// 	
-					// 	echo '<li>Nieuwe Dopper-drinkflessen:<ul style="margin-left: 2em; column-count: 2;">';
-					// 		$skus = array( 12374, 12375, 12376, 12377, 12378, 12379, 12380, 12381 );
-					// 		foreach ( $skus as $sku ) {
-					// 			$product_id = wc_get_product_id_by_sku( $sku );
-					// 			if ( $product_id ) {
-					// 				$product = wc_get_product( $product_id );
-					// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-					// 			}
-					// 		}
-					// 	echo '</ul><p>Omdat sommige van deze producten al langer dan 3 maanden bestelbaar zijn, krijgen ze niet allemaal een blauwe achtergrond in de voorraadlijst!</p></li>';
-					// echo '</ul>';
-					
-					echo '<p>De cheques met geldigheidsdatum 31/12/2022 werden gewist uit de database: maar liefst 20 webshops hadden deze referentie (die al een jaar niet meer opgestuurd wordt door het NS) nog op voorraad staan. Gelieve te switchen naar de nieuwere referenties (geldig tot eind 2023 of 2024) zodat de klant duidelijke info krijgt over tot wanneer hij/zij de bestelde cheques zal kunnen gebruiken. Verder zijn er opnieuw twee nieuwe referenties die een bestaand product vervangen, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 20252 => 20268, 25009 => 25015 );
-						foreach ( $skus as $old_sku => $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product( $product_id );
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_sku().' '.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')';
-								
-								$old_product_id = wc_get_product_id_by_sku( $old_sku );
-								$old_product = wc_get_product( $old_product_id );
-								if ( $old_product ) {
-									echo ', vervangt '.$old_product->get_sku().' '.$old_product->get_title();
-								}
-								
-								echo '</li>';
-							}
-						}
-					echo '</ul><p>De voorraadstatus van het bestaande product werd overgenomen en het oude ompaknummer werd verborgen.</p>';
-				echo '</div>';
-				
-				// if ( get_current_blog_id() !== 1 ) {
-				// 	$caps = get_number_of_times_coupon_was_used( 'faircaps21', '2021-10-25', '2021-11-30' );
-				// 	if ( $caps > 0 ) {
-				// 		echo '<div class="notice notice-info">';
-				// 			echo '<p>Van 25/10 t.e.m. 26/11 werd de kortingsbon \'FAIRCAPS21\' in deze webshop '.$caps.' keer gebruikt. Creditering gebeurde automatisch op 1 december.</p>';
-				// 		echo '</div>';
-				// 	}
-				// }
-				
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
-				// echo '</div>';
-				
-				// Sommige FTO-producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare => toch wissen (onmogelijk te beheren)
-				// 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Volgende uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 17115 BIO Volle jasmijnrijst 5 kg (THT: 31/07/2022), 20248 Chenin Blanc BOX 3 l, 21000 Sinaasappelsap 1 l (THT: 31/12/2022), 21002 Worldshakesap 1 l (THT: 31/12/2022), 21003 Tropicalsap 1 l (THT: 31/10/2022), 21008 BIO Sinaas-mangosap 1 l (THT: 31/12/2022), 21011 Vers geperst Belgisch appelsap 1 l (in omschakeling naar BIO) (THT: 31/12/2022), 21103 Tropicalsap 20 cl (THT: 31/10/2022), 22013 African Blendkoffie (THT: 29/01/2023), 23403 Groene thee citroengras 1 g x 20 (THT: 21/11/2022), 23501 BIO Losse groene thee (THT: 21/11/2022), 26493 Maya Speculoospasta (THT: 23/11/2022), 27517 BIO Zwarte linzen (THT: 31/07/2022). Ook enkele producten van Fairtrade Original die niet langer door Oxfam Fair Trade verdeeld worden (witte noedels, ananasschijven, kruiden, ...) werden gewist, bij gebrek aan masterdata. Je kunt deze producten uiteraard wel als lokaal assortiment toevoegen.</p>';
-				// echo '</div>';
-				
-				if ( does_home_delivery() ) {
-					// Boodschappen voor winkels die thuislevering doen
-				}
-				
-				if ( does_sendcloud_delivery() ) {
-					// Boodschappen voor winkels die verzenden met SendCloud
-				}
-			}
-		}
-
-		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type ) {
-			if ( isset( $_REQUEST['bulk_action'] ) and ! current_user_can('create_sites') ) {
-				if ( $_REQUEST['bulk_action'] === 'marked_completed' ) {
-					$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
-					$message = sprintf( _n( '%d bestelstatus proberen te wijzigen.', '%d bestelstatussen proberen te wijzigen.', $number, 'woocommerce' ), number_format_i18n( $number ) );
-					echo '<div class="updated"><p>' . esc_html( $message ) . ' Ongeldige wijzigingen kunnen tegengehouden zijn door het systeem! Raadpleeg de logs in de rechterkolom van het orderdetail als je merkt dat de status onveranderd gebleven is.</p></div>';
-				}
-			}
-			
-			// echo '<div class="notice notice-info">';
-			// 	echo '<p>Op 21 februari ging een nieuwe actie van start met digitale vouchers, uitgereikt aan personeelsleden van Christelijke Mutualiteit. De verwerking verloopt volledig analoog als bij <a href="https://copain.oww.be/l/library/download/urn:uuid:cabf3637-35e9-4d21-920a-6c2d37f2b11f/handleiding+digitale+cadeaubonnen.pdf?format=save_to_disk" target="_blank">de Gezinsbond- en Cera-cheques</a>. Enige verschil is het kleinere bedrag: 10 i.p.v. 25, 30 of 50 euro. Een nieuwe artikelcode WGCD102022 vind je in <a href="https://copain.oww.be/shopplus" target="_blank">de ShopPlus-update voor maart</a> en werd toegevoegd aan <a href="https://copain.oww.be/l/nl/library/download/urn:uuid:027125de-b104-4946-a55d-b67f0ac47d67/028-nuttige_barcodes-02-2022.pdf?format=save_to_disk">het scanblad met nuttige barcodes</a>. Meer info in <a href="https://copain.oww.be/l/mailing2/archiveview/973/urn:uuid:49ec55a0-282e-42dd-838a-96c8f1a21b29" target="_blank">de webshopnieuwsbrief van 22 februari</a>.</p>';
-			// echo '</div>';
-		}
-
-		if ( 'woocommerce_page_wc-reports' === $screen->base and ( empty( $_GET['tab'] ) or $_GET['tab'] === 'orders' ) ) {
-			global $wpdb;
-			$credit_date_timestamp = strtotime( '+1 weekday', strtotime('last day of this month') );
-			$credit_month_timestamp = strtotime( '-1 month', strtotime('first day of this month') );
-			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE blog_id = ".get_current_blog_id()." AND DATE(credited) = '".date_i18n( 'Y-m-d', $credit_date_timestamp )."';";
-			$results = $wpdb->get_results( $query );
-
-			$sum = array_reduce( $results, function( $carry, $row ) {
-				return $carry + $row->value;
-			}, 0 );
-
-			if ( $sum > 0 ) {
-				echo '<div class="notice notice-success"><p>';
-					if ( $credit_date_timestamp >= strtotime('today') ) {
-						$tense = 'zal Oxfam Fair Trade '.wc_price( $sum ).' crediteren';
-					} else {
-						$tense = 'heeft Oxfam Fair Trade '.wc_price( $sum ).' gecrediteerd';
-					}
-					echo 'Op '.date_i18n( 'd/m/Y', $credit_date_timestamp ).' '.$tense.' voor de digitale cadeaubonnen die in de loop van de maand '.date_i18n( 'F Y', $credit_month_timestamp ).' gebruikt werden als betaalmiddel in jullie webshop.';
-					if ( is_regional_webshop() ) {
-						echo ' Elke cadeaubon wordt automatisch gecrediteerd aan het klantnummer van de winkel die de bestelling behandelde.';
-					}
-				echo '</p></div>';
-			}
-		}
-	}
-
-	function oxfam_network_admin_notices() {
-		global $pagenow;
-		$screen = get_current_screen();
-
-		if ( 'admin.php' === $pagenow and 'toplevel_page_woonet-woocommerce-network' === $screen->base ) {
-			$orders = array();
-			$total = 0;
-			$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
-
-			foreach ( $sites as $site ) {
-				switch_to_blog( $site->blog_id );
-				$orders_with_coupon = get_number_of_times_coupon_was_used( 'koffiechoc22', '2022-01-01', '2022-02-28', true );
-
-				foreach ( $orders_with_coupon as $wc_order ) {
-					// Om dit correct te tellen, zouden we alle gratis repen in het order moeten opsnorren ...
-					// $total += count( $orders_with_coupon );
-					$output = '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a>: '.wc_price( $wc_order->get_total() ).' &mdash; '.$wc_order->get_billing_email();
-
-// 					$new_args = array(
-// 						'type' => 'shop_order',
-// 						'billing_email' => $wc_order->get_billing_email(),
-// 						'date_created' => '<'.$wc_order->get_date_created()->date_i18n('Y-m-d'),
-// 						'status' => 'wc-completed',
-// 						'limit' => -1,
-// 					);
-// 					$previous_orders_by_customer = wc_get_orders( $new_args );
-// 					if ( count( $previous_orders_by_customer ) === 0 ) {
-// 						$new_args['date_created'] = '>'.$wc_order->get_date_created()->date_i18n('Y-m-d');
-// 						$new_orders_by_customer = wc_get_orders( $new_args );
-//
-// 						if ( count( $new_orders_by_customer ) > 0 ) {
-// 							$addendum = ', placed '.count( $new_orders_by_customer ).' new orders afterwards';
-// 						} else {
-// 							$addendum = '';
-// 						}
-// 						$output .= ' <span style="font-weight: bold; color: green;">=> new online customer'.$addendum.'!</span>';
-// 					}
-
-					$orders[ $wc_order->get_order_number() ] = $output;
-				}
-
-				restore_current_blog();
-			}
-
-			ksort( $orders );
-
-			echo '<div class="notice notice-success">';
-				echo '<p>Tot nu toe werd de kortingsbon KOFFIECHOC22 al een of meerdere keren toegekend in '.count( $orders ).' verschillende bestellingen!</p>';
-				echo '<ul style="margin-left: 2em; column-count: 2;">';
-
-				foreach( $orders as $string ) {
-					echo '<li>'.$string.'</li>';
-				}
-
-				echo '</ul>';
-			echo '</div>';
-		}
-	}
-
 	function get_number_of_times_coupon_was_used( $coupon_code, $start_date = '2021-10-01', $end_date = '2021-10-31', $return_orders = false ) {
 		global $wpdb;
 		$total_count = 0;
@@ -7999,6 +7614,36 @@
 		}
 	}
 
+	// Verberg berichten van plugins bovenaan adminpagina's
+	add_action( 'admin_head', 'hide_non_oxfam_notices', 10000 );
+	
+	function hide_non_oxfam_notices() {
+		// Aanpassingen voor iPhone 10+
+		echo '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">';
+	
+		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor niet inschakelen!
+		if ( ! current_user_can('create_sites') ) {
+			remove_all_actions('admin_notices');
+			
+			// Melding tonen bovenaan scherm indien bulkwijziging op orders geblokkeerd werd
+			add_action( 'admin_notices', 'oxfam_admin_notices_orders' );
+		}
+	}
+	
+	function oxfam_admin_notices_orders() {
+		global $pagenow, $post_type;
+		
+		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type ) {
+			if ( isset( $_REQUEST['bulk_action'] ) ) {
+				if ( $_REQUEST['bulk_action'] === 'marked_completed' ) {
+					$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
+					$message = sprintf( _n( '%d bestelstatus proberen te wijzigen.', '%d bestelstatussen proberen te wijzigen.', $number, 'woocommerce' ), number_format_i18n( $number ) );
+					echo '<div class="updated"><p>' . esc_html( $message ) . ' Ongeldige wijzigingen kunnen tegengehouden zijn door het systeem! Raadpleeg de logs in de rechterkolom van het orderdetail als je merkt dat de status onveranderd gebleven is.</p></div>';
+				}
+			}
+		}
+	}
+	
 	// Schakel onnuttige widgets uit voor iedereen
 	add_action( 'admin_init', 'remove_dashboard_meta' );
 

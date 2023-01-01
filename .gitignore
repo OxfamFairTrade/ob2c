@@ -3,3 +3,4 @@
 *.codekit3
 *.nova
 wp-content/
+node_modules/

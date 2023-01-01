@@ -1,0 +1,214 @@
+<?php
+	
+	if ( ! defined('ABSPATH') ) exit;
+	
+	################
+	# REGIO BRUGGE #
+	################
+	
+	add_action( 'init', 'delay_actions_and_filters_till_load_completed_25' );
+	
+	function delay_actions_and_filters_till_load_completed_25() {
+		if ( get_current_blog_id() === 25 ) {
+			// Voeg ondersteuning toe voor XML-import Adsolut
+			add_action( 'woocommerce_order_actions', 'brugge_add_order_status_changing_actions', 20, 1 );
+			add_action( 'woocommerce_order_action_oxfam_generate_xml', 'brugge_create_xml_for_adsolut' );
+			add_action( 'ob2c_after_attach_picklist_to_email', 'brugge_create_xml_for_adsolut' );
+		}
+	}
+	
+	function brugge_add_order_status_changing_actions( $actions ) {
+		$actions['oxfam_generate_xml'] = 'Regenereer XML voor Adsolut';
+		return $actions;
+	}
+	
+	function brugge_create_xml_for_adsolut( $wc_order ) {
+		$xml = new SimpleXMLElement('<order/>');
+		$orderrec = $xml->addChild('orderrec');
+		
+		$location = 'Brugge';
+		$shop_codes = array( 'Brugge' => 'C1', 'Knokke' => 'C2', 'Gistel' => 'C4' );
+		
+		// Winkelcode variëren volgens afhaalpunt 
+		if ( $wc_order->has_shipping_method('local_pickup_plus') ) {
+			$shipping_methods = $wc_order->get_shipping_methods();
+			$shipping_method = reset( $shipping_methods );
+			$pickup_location = ob2c_get_pickup_location_name( $shipping_method, false );
+			foreach ( $shop_codes as $shop_location => $shop_code ) {
+				if ( stristr( $pickup_location, $shop_location ) ) {
+					$location = $shop_location;
+				}
+			}
+		}
+		$orderrec->addChild( 'boeken_code', $shop_codes[ $location ] );
+		
+		$client_number_key = 'blog_'.get_current_blog_id().'_client_number';
+		$customer = new WC_Customer( $wc_order->get_customer_id() );
+		if ( ! empty( $wc_order->get_meta( $client_number_key ) ) ) {
+			$client_number_adsolut = $wc_order->get_meta( $client_number_key );
+		} elseif ( $customer and ! empty( $customer->get_meta( $client_number_key ) ) ) {
+			$client_number_adsolut = $customer->get_meta( $client_number_key );
+		} else {
+			// Nieuw nummer aanmaken in webshop
+			$client_number_adsolut = get_option( 'ob2c_last_local_client_number', 900000 ) + 1;
+			update_option( 'ob2c_last_local_client_number', $client_number_adsolut, false );
+			
+			// Enkel indien de gebruiker ingelogd was, kunnen we het klantnummer opslaan!
+			if ( $customer ) {
+				$customer->update_meta_data( 'blog_'.get_current_blog_id().'_client_number', $client_number_adsolut );
+			}
+		}
+		$orderrec->addChild( 'relaties_code', $client_number_adsolut );
+		
+		// Opgepast: indien een waarde leeg is, wordt er een node geopend i.p.v. toegevoegd! ENKEL IN HTML PREVIEW
+		$orderrec->addChild( 'naam', $wc_order->get_billing_first_name().' '.$wc_order->get_billing_last_name() );
+		$orderrec->addChild( 'adres1', $wc_order->get_billing_address_1() );
+		$orderrec->addChild( 'importland', $wc_order->get_billing_country() );
+		$orderrec->addChild( 'importpostcode', $wc_order->get_billing_postcode() );
+		$orderrec->addChild( 'importgemeente', $wc_order->get_billing_city() );
+		$orderrec->addChild( 'landen_code', $wc_order->get_billing_country() );
+		$orderrec->addChild( 'datum', $wc_order->get_date_created()->date_i18n('d/m/Y') );
+		$orderrec->addChild( 'omschr', $wc_order->get_order_number() );
+		
+		if ( $client_number_adsolut > 900000 ) {
+			$orderrec->addChild( 'relaties_naam', $wc_order->get_billing_first_name().' '.$wc_order->get_billing_last_name() );
+			$orderrec->addChild( 'relaties_adres1', $wc_order->get_billing_address_1() );
+			$orderrec->addChild( 'relaties_postcode', $wc_order->get_billing_postcode() );
+			$orderrec->addChild( 'relaties_gemeente', $wc_order->get_billing_city() );
+			// BTW-nodes weglaten indien niet van toepassing?
+			$orderrec->addChild( 'relaties_btwnr', '' );
+			$orderrec->addChild( 'relaties_landen_code_0', 'BE' );
+			// P = Particulier, H = Handelaar, I = Intracommunautaire
+			$orderrec->addChild( 'relaties_btwregimes_btwregime', 'P' );
+			// N - Nederlands, F - Frans, E - Engels, D - Duits
+			$orderrec->addChild( 'relaties_taalcodes_taalcode', 'N' );
+			$orderrec->addChild( 'relaties_email', $wc_order->get_billing_email() );
+			$orderrec->addChild( 'relaties_telefoon', $wc_order->get_billing_phone() );
+		}
+		
+		$details = $orderrec->addChild('details');
+		foreach ( $wc_order->get_items() as $item ) {
+			$product = $item->get_product();
+			if ( ! $product ) {
+				continue;
+			}
+			$detail = $details->addChild('detail');
+			$sku = ( ! empty( $product->get_meta('_shopplus_code') ) ) ? $product->get_meta('_shopplus_code') : $product->get_sku();
+			$detail->addChild( 'artnr', $sku );
+			$detail->addChild( 'aantal', $item->get_quantity() );
+			// Prijs incl. BTW
+			// $detail->addChild( 'brutopr', $item->get_subtotal() + $item->get_total_tax() );
+			// Korting incl. BTW
+			// $detail->addChild( 'korting1', $item->get_subtotal() + $item->get_subtotal_tax() - ( $item->get_total() + $item->get_total_tax() ) );
+		}
+		
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'SimpleXml' );
+		// Dit gaat ervan uit dat de Excel reeds aangemaakt werd én het pad correct opgeslagen is!
+		$path = WP_CONTENT_DIR.'/uploads/xlsx/'.str_replace( '.xlsx', '.xml', $wc_order->get_meta('_excel_file_name') );
+		
+		// Elke node moet op een nieuwe lijn staan in de XML, anders begrijpt Adsolut het niet ...
+		// Zie https://stackoverflow.com/questions/1840148/php-simplexml-new-line voor mogelijke oplossing
+		$dom = dom_import_simplexml( $xml );
+		$dom->formatOutput = true;
+		
+		$file_handle = fopen( $path, 'w+' );
+		if ( fwrite( $file_handle, $dom->saveXML() ) ) {
+			$logger->info( $wc_order->get_order_number().": XML creation succeeded", $context );
+			$wc_order->add_order_note( 'XML voor Adsolut gegenereerd en opgeslagen in zelfde map als Excel ('.get_picklist_download_link( $wc_order, true ).').', 0, false );
+		} else {
+			$logger->error( $wc_order->get_order_number().": XML creation failed", $context );
+		}
+		
+		fclose( $file_handle );
+		
+		// Voorbeeldje van mogelijke SFTP-upload
+		// try {
+		// 	$user = 'owwshop';
+		// 	$pass = OWW_BRUGGE_PRIV_KEY_PASS;
+		// 	$host = 'andries.oxfambrugge.be';
+		// 	$port = 2323;
+		// 	
+		// 	$client = new SFTPClient( $host, $port );
+		// 	$client->auth_key( $user, $pass, $host );
+		// 	$client->upload_file( $path, 'test.xml' );
+		// 	$client->disconnect();
+		// } catch ( Exception $e ) {
+		// 	echo $e->getMessage() . "<br/>";
+		// }
+	}
+	
+	class SFTPClient {
+		private $connection;
+		private $sftp;
+		
+		public function __construct( $host, $port = 22 ) {
+			$this->connection = @ssh2_connect( $host, $port, array( 'hostkey' => 'ssh-rsa' ) );
+			if ( ! $this->connection ) {
+				throw new Exception("Failed to connect to ${host} on port ${port}");
+			}
+		}
+		
+		public function auth_password( $username, $password ) {
+			echo "Connecting with password ...<br/>";
+			
+			if ( ! @ssh2_auth_password( $this->connection, $username, $password ) ) {
+				throw new Exception("Failed to authenticate with username ${username} and password");
+			}
+			
+			$this->sftp = @ssh2_sftp( $this->connection );
+			if ( ! $this->sftp ) {
+				throw new Exception("Could not initialize SFTP subsystem");
+			}
+			
+			echo "Authentication successful!<br/>";
+		}
+		
+		public function auth_key( $username, $password, $host ) {
+			echo "Connecting with key pair ...<br/>";
+			
+			if ( $host === 'andries.oxfambrugge.be' ) {
+				$pub_key_path = ABSPATH . '../oww-brugge.pub';
+				$priv_key_path = ABSPATH . '../oww-brugge';
+			} else {
+				// Combell-key is niet encrypted, dus wachtwoord in de praktijk niet nodig
+				$pub_key_path = ABSPATH . '../combell.pub';
+				$priv_key_path = ABSPATH . '../combell';
+			}
+			
+			if ( ! ssh2_auth_pubkey_file( $this->connection, $username, $pub_key_path, $priv_key_path, $password ) ) {
+				throw new Exception("Failed to authenticate with key pair");
+			}
+			
+			$this->sftp = @ssh2_sftp( $this->connection );
+			if ( ! $this->sftp ) {
+				throw new Exception("Could not initialize SFTP subsystem");
+			}
+			
+			echo "Authentication successful!<br/>";
+		}
+		
+		public function upload_file( $local_file, $remote_file ) {
+			echo "Uploading [${local_file}] to [${remote_file}] ...<br/>";
+			
+			$sftp = $this->sftp;
+			$realpath = ssh2_sftp_realpath( $sftp, $remote_file );
+			$stream = @fopen( "ssh2.sftp://{$sftp}{$realpath}", 'w' );
+			if ( ! $stream ) {
+				throw new Exception("Could not open file: {$realpath}");
+			}
+			$data_to_send = @file_get_contents( $local_file );
+			if ( $data_to_send === false ) {
+				throw new Exception("Could not open local file: {$local_file}");
+			}  
+			if ( @fwrite( $stream, $data_to_send ) === false ) {
+				throw new Exception("Could not send data from file: {$local_file}");	
+			}
+			@fclose($stream);
+			echo "File uploaded!<br/>";
+		}
+		
+		public function disconnect() {
+			@ssh2_disconnect( $this->connection );
+		}
+	}
