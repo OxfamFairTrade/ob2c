@@ -35,26 +35,26 @@
 				// echo '</div>';
 				
 				echo '<div class="notice notice-success">';
-					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/12/12/Promos-online--winkel-januari-2023" target="_blank">promoties voor januari</a> werden geactiveerd in alle webshops. Zoals aangekondigd in de webshopnieuwsbrief werden de <a href="https://copain.oww.be/nieuwsbericht/2022/11/21/Belangrijk-prijswijzigingen-en-nieuwe-prijsstructuur-food-vanaf-010123" target="_blank">prijswijzigingen van 01/01/2023</a> pas in de vroeger ochtend van 2 januari doorgevoerd in alle webshops. Bedankt voor jullie begrip!</p>';
+					echo '<p>De <a href="https://copain.oww.be/nieuwsbericht/2022/12/12/Promos-online--winkel-januari-2023" target="_blank">promoties voor januari</a> werden geactiveerd in alle webshops. Zoals aangekondigd in de webshopnieuwsbrief werden de <a href="https://copain.oww.be/nieuwsbericht/2022/11/21/Belangrijk-prijswijzigingen-en-nieuwe-prijsstructuur-food-vanaf-010123" target="_blank">prijswijzigingen van 01/01/2023</a> pas in de ochtend van 2 januari doorgevoerd in alle webshops. Bedankt voor jullie begrip!</p>';
 				echo '</div>';
 				
 				echo '<div class="notice notice-success">';
-					echo '<p>De nieuwe cadeaucheques (geldig tot eind 2024) zijn gearriveerd, samen met een licht gewijzigde Bite to Fight-reep (andere netto-inhoud):</p><ul style="margin-left: 2em; column-count: 2;">';
-						$skus = array( 24149 );
-						foreach ( $skus as $sku ) {
-							$product_id = wc_get_product_id_by_sku( $sku );
-							if ( $product_id ) {
-								$product = wc_get_product( $product_id );
-								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-							}
-						}
-					echo '</ul><p>';
-					if ( current_user_can('manage_network_users') ) {
-						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
-					}
-					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+					// echo '<p>De kleine repen witte chocolade zijn terug van weg geweest:</p><ul style="margin-left: 2em; column-count: 2;">';
+					// 	$skus = array( 24149 );
+					// 	foreach ( $skus as $sku ) {
+					// 		$product_id = wc_get_product_id_by_sku( $sku );
+					// 		if ( $product_id ) {
+					// 			$product = wc_get_product( $product_id );
+					// 			echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+					// 		}
+					// 	}
+					// echo '</ul><p>';
+					// if ( current_user_can('manage_network_users') ) {
+					// 	echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					// }
+					// echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
 					
-					echo '<p>Verder zijn er opnieuw twee nieuwe referenties die een bestaand product vervangen, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
+					echo '<p>Er is opnieuw een nieuwe referentie die een bestaand product vervangt, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
 						$skus = array( 25010 => 25016 );
 						foreach ( $skus as $old_sku => $sku ) {
 							$product_id = wc_get_product_id_by_sku( $sku );
