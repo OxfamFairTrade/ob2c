@@ -1,10 +1,11 @@
 <?php
 	
 	// WordPress volledig inladen, zodat we alle helper functies en constanten kunnen aanspreken
+	// Gebruik van dirname() vereist om ook te werken als cron job met PHP i.p.v. WGET
 	// Relatief pad enkel geldig vanuit subfolder in subfolder van themamap!
-	require_once '../../../../../wp-load.php';
+	require_once dirname(__FILE__) . '/../../../../../wp-load.php';
 	
-	if ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) {
+	if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'RUN_FROM_CRON' ) ) {
 		// Sluit afgeschermde en gearchiveerde webshops uit
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, ) );
 		$logger = wc_get_logger();

@@ -1,7 +1,8 @@
 <?php
 
 	// WordPress volledig inladen, zodat we alle helper functies en constanten kunnen aanspreken
-	// Relatief pad enkel geldig vanuit de domeinmap
+	// Gebruik van dirname() vereist om ook te werken als cron job met PHP i.p.v. WGET
+	// Relatief pad enkel geldig vanuit de domeinmap!
 	require_once dirname(__FILE__) . '/public_html/wp-load.php';
 	
 	$sites = get_sites( array( 'public' => 1, 'site__not_in' => get_site_option('oxfam_blocked_sites') ) );
