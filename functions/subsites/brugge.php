@@ -134,7 +134,7 @@
 		// 	$host = 'andries.oxfambrugge.be';
 		// 	$port = 2323;
 		// 	
-		// 	$client = new SFTPClient( $host, $port );
+		// 	$client = new SFTPClientBruges( $host, $port );
 		// 	$client->auth_key( $user, $pass, $host );
 		// 	$client->upload_file( $path, 'test.xml' );
 		// 	$client->disconnect();
@@ -143,7 +143,7 @@
 		// }
 	}
 	
-	class SFTPClient {
+	class SFTPClientBruges {
 		private $connection;
 		private $sftp;
 		
