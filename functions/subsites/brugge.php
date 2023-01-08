@@ -13,8 +13,7 @@
 			// Voeg ondersteuning toe voor XML-import Adsolut
 			add_action( 'woocommerce_order_actions', 'brugge_add_order_status_changing_actions', 20, 1 );
 			add_action( 'woocommerce_order_action_oxfam_generate_xml', 'brugge_create_xml_for_adsolut' );
-			// Wacht nog even met automatische aanmaak
-			// add_action( 'ob2c_after_attach_picklist_to_email', 'brugge_create_xml_for_adsolut' );
+			add_action( 'ob2c_after_attach_picklist_to_email', 'brugge_create_xml_for_adsolut' );
 		}
 	}
 	
@@ -181,7 +180,7 @@
 			}
 			
 			if ( ! ssh2_auth_pubkey_file( $this->connection, $username, $pub_key_path, $priv_key_path, $password ) ) {
-				throw new Exception("Failed to authenticate user '.$username.' with key pair");
+				throw new Exception("Failed to authenticate user '".$username."' with key pair");
 			}
 			
 			$this->sftp = @ssh2_sftp( $this->connection );
