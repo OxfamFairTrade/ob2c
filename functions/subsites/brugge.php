@@ -13,7 +13,8 @@
 			// Voeg ondersteuning toe voor XML-import Adsolut
 			add_action( 'woocommerce_order_actions', 'brugge_add_order_status_changing_actions', 20, 1 );
 			add_action( 'woocommerce_order_action_oxfam_generate_xml', 'brugge_create_xml_for_adsolut' );
-			add_action( 'ob2c_after_attach_picklist_to_email', 'brugge_create_xml_for_adsolut' );
+			// Wacht nog even met automatische aanmaak
+			// add_action( 'ob2c_after_attach_picklist_to_email', 'brugge_create_xml_for_adsolut' );
 		}
 	}
 	
@@ -109,7 +110,11 @@
 		
 		// Elke node moet op een nieuwe lijn staan in de XML, anders begrijpt Adsolut het niet ...
 		// Zie https://stackoverflow.com/questions/1840148/php-simplexml-new-line voor mogelijke oplossing
-		$dom = dom_import_simplexml( $xml );
+		$dom = new DOMDocument();
+		// Dit creëert een DOMElement i.p.v. DOMDocument!
+		$dom_element = dom_import_simplexml( $xml );
+		$dom->importNode( $dom_element, true );
+		$dom->appendChild( $dom_element );
 		$dom->formatOutput = true;
 		
 		$file_handle = fopen( $path, 'w+' );
