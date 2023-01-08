@@ -106,41 +106,40 @@
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'SimpleXml' );
 		// Dit gaat ervan uit dat de Excel reeds aangemaakt werd én het pad correct opgeslagen is!
-		$path = WP_CONTENT_DIR.'/uploads/xlsx/'.str_replace( '.xlsx', '.xml', $wc_order->get_meta('_excel_file_name') );
+		$xml_file_name = str_replace( '.xlsx', '.xml', $wc_order->get_meta('_excel_file_name') );
+		$path = WP_CONTENT_DIR.'/uploads/xlsx/'.$xml_file_name;
 		
 		// Elke node moet op een nieuwe lijn staan in de XML, anders begrijpt Adsolut het niet ...
-		// Zie https://stackoverflow.com/questions/1840148/php-simplexml-new-line voor mogelijke oplossing
-		$dom = new DOMDocument();
-		// Dit creëert een DOMElement i.p.v. DOMDocument!
-		$dom_element = dom_import_simplexml( $xml );
-		$dom->importNode( $dom_element, true );
-		$dom->appendChild( $dom_element );
+		// We volgen we oplossing van https://stackoverflow.com/questions/1840148/php-simplexml-new-line
+		// dom_import_simplexml creëert een DOMElement i.p.v. DOMDocument, daarom nemen we de 'ownerDocument'-property
+		$dom = dom_import_simplexml( $xml )->ownerDocument;
 		$dom->formatOutput = true;
 		
 		$file_handle = fopen( $path, 'w+' );
 		if ( fwrite( $file_handle, $dom->saveXML() ) ) {
 			$logger->info( $wc_order->get_order_number().": XML creation succeeded", $context );
 			$wc_order->add_order_note( 'XML voor Adsolut gegenereerd en opgeslagen in zelfde map als Excel ('.get_picklist_download_link( $wc_order, true ).').', 0, false );
+			
+			// Doe de SFTP-upload
+			try {
+				$user = 'owwshop';
+				$pass = OWW_BRUGGE_PRIV_KEY_PASS;
+				$host = 'andries.oxfambrugge.be';
+				$port = 2323;
+				
+				$client = new SFTPClientBruges( $host, $port );
+				// Inloggen lukt nog niet, check firewall-instellingen met Dirk De Wachter van OWW Brugge
+				$client->auth_key( $user, $pass, $host );
+				$client->upload_file( $path, $xml_file_name );
+				$client->disconnect();
+			} catch ( Exception $e ) {
+				$logger->error( $wc_order->get_order_number().": ".$e->getMessage(), $context );
+			}
 		} else {
 			$logger->error( $wc_order->get_order_number().": XML creation failed", $context );
 		}
 		
 		fclose( $file_handle );
-		
-		// Voorbeeldje van mogelijke SFTP-upload
-		// try {
-		// 	$user = 'owwshop';
-		// 	$pass = OWW_BRUGGE_PRIV_KEY_PASS;
-		// 	$host = 'andries.oxfambrugge.be';
-		// 	$port = 2323;
-		// 	
-		// 	$client = new SFTPClientBruges( $host, $port );
-		// 	$client->auth_key( $user, $pass, $host );
-		// 	$client->upload_file( $path, 'test.xml' );
-		// 	$client->disconnect();
-		// } catch ( Exception $e ) {
-		// 	echo $e->getMessage() . "<br/>";
-		// }
 	}
 	
 	class SFTPClientBruges {
@@ -182,7 +181,7 @@
 			}
 			
 			if ( ! ssh2_auth_pubkey_file( $this->connection, $username, $pub_key_path, $priv_key_path, $password ) ) {
-				throw new Exception("Failed to authenticate with key pair");
+				throw new Exception("Failed to authenticate user '.$username.' with key pair");
 			}
 			
 			$this->sftp = @ssh2_sftp( $this->connection );
