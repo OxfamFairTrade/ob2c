@@ -46,7 +46,11 @@ if ( ! apply_filters( 'woocommerce_order_item_visible', true, $item ) ) {
 	<td class="woocommerce-table__product-image product-image" style="border-left: none;">
 	<?php
 		// GEWIJZIGD: Toon ook productfoto (is eerste value in array)
-		echo $product->get_image('shop_thumbnail');
+		if ( $product ) {
+			echo $product->get_image('shop_thumbnail');
+		} else {
+			echo wc_placeholder_img('shop_thumbnail');
+		}
 	?>
 	</td>
 

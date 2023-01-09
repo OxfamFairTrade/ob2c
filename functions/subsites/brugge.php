@@ -119,7 +119,8 @@
 			$logger->info( $wc_order->get_order_number().": XML creation succeeded", $context );
 			$wc_order->add_order_note( 'XML voor Adsolut gegenereerd en opgeslagen in zelfde map als Excel ('.get_picklist_download_link( $wc_order, true ).').', 0, false );
 			
-			// Doe de SFTP-upload
+			// Doe de upload naar de SFTP-server van OWW Brugge
+			// Beter inplannen via Action Scheduler (langere timeout + eventuele retries)?
 			try {
 				$user = 'owwshop';
 				$pass = OWW_BRUGGE_PRIV_KEY_PASS;
