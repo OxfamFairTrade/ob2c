@@ -1,9 +1,9 @@
 <?php
 	
 	// WordPress volledig inladen, zodat we alle helper functies en constanten kunnen aanspreken
-	// Gebruik van dirname() vereist om ook te werken als cron job met PHP i.p.v. WGET
-	// Relatief pad enkel geldig vanuit subfolder in subfolder van themamap!
-	require_once dirname(__FILE__) . '/../../../../../wp-load.php';
+	// Gebruik van absoluut pad vereist om ook te werken als cron job met PHP i.p.v. WGET
+	// dirname() enkel geldig vanuit subfolder in subfolder van themamap
+	require_once dirname( __FILE__, 6 ) . '/wp-load.php';
 
 	if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'RUN_FROM_CRON' ) ) {
 		// Vraag alle huidige winkels in de OWW-site op
