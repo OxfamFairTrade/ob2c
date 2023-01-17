@@ -203,7 +203,7 @@
 			}
 			@fclose($stream);
 			
-			$logger->info( "[".$remote_file."] uploaded to ".$this->sftp, $context );
+			$logger->info( $remote_file." uploaded to ".$realpath, $context );
 		}
 		
 		public function disconnect() {
