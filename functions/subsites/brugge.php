@@ -105,8 +105,8 @@
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'SimpleXml' );
 		// Dit gaat ervan uit dat de Excel reeds aangemaakt werd én het pad correct opgeslagen is!
-		$xml_file_name = str_replace( '.xlsx', '.xml', $wc_order->get_meta('_excel_file_name') );
-		$path = WP_CONTENT_DIR.'/uploads/xlsx/'.$xml_file_name;
+		$xml_folder_and_file_name = str_replace( '.xlsx', '.xml', $wc_order->get_meta('_excel_file_name') );
+		$path = WP_CONTENT_DIR . '/uploads/xlsx/' . $xml_folder_and_file_name;
 		
 		// Elke node moet op een nieuwe lijn staan in de XML, anders begrijpt Adsolut het niet ...
 		// We volgen we oplossing van https://stackoverflow.com/questions/1840148/php-simplexml-new-line
@@ -123,6 +123,9 @@
 			// Beter inplannen via Action Scheduler (langere timeout + eventuele retries)?
 			try {
 				$client = new SFTPClientBruges();
+				$parts = explode( '/', $xml_folder_and_file_name );
+				$xml_file_name = end( $parts );
+				
 				// Bij connectieproblemen: neem contact op met Dirk De Wachter van OWW Brugge, die deze SFTP-server beheert
 				// Opgelet: de ingebouwde SSH2-extensie van PHP is niet compatibel met ED25519-encryptie, gebruik RSA-ecnryptie van 4096 bits
 				$client->auth_key( 'oxfambrugge\owwshop', OWW_BRUGGE_PRIV_KEY_PASS );
@@ -170,12 +173,12 @@
 			}
 			
 			if ( ! ssh2_auth_pubkey_file( $this->connection, $username, $pub_key_path, $priv_key_path, $password ) ) {
-				throw new Exception("Failed to authenticate user '".$username."' with key pair");
+				throw new Exception( "Failed to authenticate user '".$username."' with key pair" );
 			}
 			
 			$this->sftp = @ssh2_sftp( $this->connection );
 			if ( ! $this->sftp ) {
-				throw new Exception("Could not initialize SFTP subsystem");
+				throw new Exception( "Could not initialize SFTP subsystem" );
 			}
 		}
 		
@@ -187,16 +190,16 @@
 			$realpath = ssh2_sftp_realpath( $this->sftp, $remote_file );
 			$stream = @fopen( "ssh2.sftp://{$this->sftp}{$realpath}", 'w' );
 			if ( ! $stream ) {
-				throw new Exception("Could not open file: {$realpath}");
+				throw new Exception( "Could not open file: ".$realpath );
 			}
 			
 			$data_to_send = @file_get_contents( $local_file );
 			if ( $data_to_send === false ) {
-				throw new Exception("Could not open local file: {$local_file}");
+				throw new Exception( "Could not open local file: ".$local_file );
 			}
 			
 			if ( @fwrite( $stream, $data_to_send ) === false ) {
-				throw new Exception("Could not send data from file: {$local_file}");	
+				throw new Exception( "Could not send data from file: ".$local_file );	
 			}
 			@fclose($stream);
 			
