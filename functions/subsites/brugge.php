@@ -146,25 +146,28 @@
 		private $sftp;
 		
 		public function __construct( $host = 'andries.oxfambrugge.be', $port = 2323 ) {
-			$this->connection = @ssh2_connect( $host, $port, array( 'hostkey' => 'ssh-rsa' ) );
+			$this->host = $host;
+			$this->port = $port;
+			
+			$this->connection = @ssh2_connect( $this->host, $this->port, array( 'hostkey' => 'ssh-rsa' ) );
 			if ( ! $this->connection ) {
-				throw new Exception("Failed to connect to ${host} on port ${port}");
+				throw new Exception( "Failed to connect to ".$this->host." on port ".$this->port );
 			}
 		}
 		
 		public function auth_password( $username, $password ) {
 			if ( ! @ssh2_auth_password( $this->connection, $username, $password ) ) {
-				throw new Exception("Failed to authenticate with username ${username} and password");
+				throw new Exception( "Failed to authenticate with user '".$username."' and password" ) ;
 			}
 			
 			$this->sftp = @ssh2_sftp( $this->connection );
 			if ( ! $this->sftp ) {
-				throw new Exception("Could not initialize SFTP subsystem");
+				throw new Exception( "Could not initialize SFTP subsystem" );
 			}
 		}
 		
-		public function auth_key( $username, $password, $host = 'andries.oxfambrugge.be' ) {
-			if ( $host === 'andries.oxfambrugge.be' ) {
+		public function auth_key( $username, $password ) {
+			if ( $this->host === 'andries.oxfambrugge.be' ) {
 				$pub_key_path = ABSPATH . '../oww-brugge.pub';
 				$priv_key_path = ABSPATH . '../oww-brugge';
 			} else {
@@ -173,7 +176,7 @@
 			}
 			
 			if ( ! ssh2_auth_pubkey_file( $this->connection, $username, $pub_key_path, $priv_key_path, $password ) ) {
-				throw new Exception( "Failed to authenticate user '".$username."' with key pair" );
+				throw new Exception( "Failed to authenticate with user '".$username."' and SSH key" );
 			}
 			
 			$this->sftp = @ssh2_sftp( $this->connection );
@@ -190,7 +193,7 @@
 			$realpath = ssh2_sftp_realpath( $this->sftp, $remote_file );
 			$stream = @fopen( "ssh2.sftp://{$this->sftp}{$realpath}", 'w' );
 			if ( ! $stream ) {
-				throw new Exception( "Could not open file: ".$realpath );
+				throw new Exception( "Could not open remote file: ".$realpath );
 			}
 			
 			$data_to_send = @file_get_contents( $local_file );
@@ -203,7 +206,7 @@
 			}
 			@fclose($stream);
 			
-			$logger->info( $remote_file." uploaded to ".$realpath, $context );
+			$logger->info( $remote_file." uploaded to ".$this->host, $context );
 		}
 		
 		public function disconnect() {
