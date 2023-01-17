@@ -122,14 +122,10 @@
 			// Doe de upload naar de SFTP-server van OWW Brugge
 			// Beter inplannen via Action Scheduler (langere timeout + eventuele retries)?
 			try {
-				$user = 'owwshop';
-				$pass = OWW_BRUGGE_PRIV_KEY_PASS;
-				$host = 'andries.oxfambrugge.be';
-				$port = 2323;
-				
-				$client = new SFTPClientBruges( $host, $port );
-				// Inloggen lukt nog niet, check firewall-instellingen met Dirk De Wachter van OWW Brugge
-				$client->auth_key( $user, $pass, $host );
+				$client = new SFTPClientBruges();
+				// Bij connectieproblemen: neem contact op met Dirk De Wachter van OWW Brugge, die deze SFTP-server beheert
+				// Opgelet: de ingebouwde SSH2-extensie van PHP is niet compatibel met ED25519-encryptie, gebruik RSA-ecnryptie van 4096 bits
+				$client->auth_key( 'oxfambrugge\owwshop', OWW_BRUGGE_PRIV_KEY_PASS );
 				$client->upload_file( $path, $xml_file_name );
 				$client->disconnect();
 			} catch ( Exception $e ) {
@@ -146,7 +142,7 @@
 		private $connection;
 		private $sftp;
 		
-		public function __construct( $host, $port = 22 ) {
+		public function __construct( $host = 'andries.oxfambrugge.be', $port = 2323 ) {
 			$this->connection = @ssh2_connect( $host, $port, array( 'hostkey' => 'ssh-rsa' ) );
 			if ( ! $this->connection ) {
 				throw new Exception("Failed to connect to ${host} on port ${port}");
@@ -154,8 +150,6 @@
 		}
 		
 		public function auth_password( $username, $password ) {
-			echo "Connecting with password ...<br/>";
-			
 			if ( ! @ssh2_auth_password( $this->connection, $username, $password ) ) {
 				throw new Exception("Failed to authenticate with username ${username} and password");
 			}
@@ -164,20 +158,15 @@
 			if ( ! $this->sftp ) {
 				throw new Exception("Could not initialize SFTP subsystem");
 			}
-			
-			echo "Authentication successful!<br/>";
 		}
 		
-		public function auth_key( $username, $password, $host ) {
-			echo "Connecting with key pair ...<br/>";
-			
+		public function auth_key( $username, $password, $host = 'andries.oxfambrugge.be' ) {
 			if ( $host === 'andries.oxfambrugge.be' ) {
 				$pub_key_path = ABSPATH . '../oww-brugge.pub';
 				$priv_key_path = ABSPATH . '../oww-brugge';
 			} else {
-				// Combell-key is niet encrypted, dus wachtwoord in de praktijk niet nodig
-				$pub_key_path = ABSPATH . '../combell.pub';
-				$priv_key_path = ABSPATH . '../combell';
+				$pub_key_path = false;
+				$priv_key_path = false;
 			}
 			
 			if ( ! ssh2_auth_pubkey_file( $this->connection, $username, $pub_key_path, $priv_key_path, $password ) ) {
@@ -188,28 +177,30 @@
 			if ( ! $this->sftp ) {
 				throw new Exception("Could not initialize SFTP subsystem");
 			}
-			
-			echo "Authentication successful!<br/>";
 		}
 		
 		public function upload_file( $local_file, $remote_file ) {
-			echo "Uploading [${local_file}] to [${remote_file}] ...<br/>";
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'SFTPClientBruges' );
+			$logger->info( "Uploading [".$local_file."] to [".$remote_file."] ...", $context );
 			
-			$sftp = $this->sftp;
-			$realpath = ssh2_sftp_realpath( $sftp, $remote_file );
-			$stream = @fopen( "ssh2.sftp://{$sftp}{$realpath}", 'w' );
+			$realpath = ssh2_sftp_realpath( $this->sftp, $remote_file );
+			$stream = @fopen( "ssh2.sftp://{$this->sftp}{$realpath}", 'w' );
 			if ( ! $stream ) {
 				throw new Exception("Could not open file: {$realpath}");
 			}
+			
 			$data_to_send = @file_get_contents( $local_file );
 			if ( $data_to_send === false ) {
 				throw new Exception("Could not open local file: {$local_file}");
-			}  
+			}
+			
 			if ( @fwrite( $stream, $data_to_send ) === false ) {
 				throw new Exception("Could not send data from file: {$local_file}");	
 			}
 			@fclose($stream);
-			echo "File uploaded!<br/>";
+			
+			$logger->info( "[".$remote_file."] uploaded to ".$this->sftp, $context );
 		}
 		
 		public function disconnect() {
