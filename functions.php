@@ -3930,8 +3930,8 @@
 							break;
 							
 						default:
-							$sku = 'WGCD302022';
-							$ean = '5400164190466';
+							$sku = 'WGCD302024';
+							$ean = '5400164190350';
 							break;
 					}
 
