@@ -131,6 +131,8 @@
 				$client->auth_key( 'oxfambrugge\owwshop', OWW_BRUGGE_PRIV_KEY_PASS );
 				$client->upload_file( $path, $xml_file_name );
 				$client->disconnect();
+				
+				$wc_order->add_order_note( 'XML voor Adsolut geüpload naar SFTP-server van OWW Brugge.', 0, false );
 			} catch ( Exception $e ) {
 				$logger->error( $wc_order->get_order_number().": ".$e->getMessage(), $context );
 			}
