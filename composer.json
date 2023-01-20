@@ -4,6 +4,8 @@
 	"require": {
 		// Goede werking van alle plugins controleren op staging vooraleer we updaten naar PHP 8.1
 		"php": ">=7.4",
+		// Voor SFTP-connecties (OWW Brugge)
+		"ext-ssh2": ">=7.4",
 		// Voor aanmaak van Excels
 		"phpoffice/phpspreadsheet": "1.26.0",
 	}
