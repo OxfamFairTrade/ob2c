@@ -23,3 +23,7 @@ De maandelijkse update van de nationale productdata neemt daardoor inmiddels zo'
 Indien het decentrale webshopmodel behouden wordt, geniet een opzet met één grote gemeenschappelijke productdatabase (met voor elke webshop een eigen voorraadwaarde i.p.v. een volledige duplicatie van het moederproduct) de voorkeur. Optioneel kunnen lokale beheerders hier nog steeds eigen producten in aanmaken, die enkel zichtbaar zijn in welbepaalde webshops. Voor tweedehandswinkels (waar elk product uniek is) moet de creatie van lokale producten super vlot kunnen gebeuren.
 
 Voor bestellingen kan ook met een centrale tabel gewerkt worden, waarbij lokale beheerders en assistenten enkel 'view/edit'-rechten krijgen op hun lokale orders. Belangrijk pijnpunt is wel dat de online betalingen gestort moeten worden op de rekening van de lokale vzw. Ideeën om de tegoeden op een centrale rekening te ontvangen en via een crediteringsflow door te storten naar de lokale winkels stootten op een njet van de boekhouding.
+
+## Dependencies
+
+Zie oplijsting in composer.json!

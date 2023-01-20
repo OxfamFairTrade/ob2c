@@ -1,0 +1,10 @@
+{
+	// Het is niet de bedoeling om deze package echt te compilen via Composer, we houden gewoon een overzicht van alle dependencies bij
+	// Elke package wordt apart lokaal gecompileerd en handmatig geüpload naar /wp-content/plugins/ 
+	"require": {
+		// Goede werking van alle plugins controleren op staging vooraleer we updaten naar PHP 8.1
+		"php": ">=7.4",
+		// Voor aanmaak van Excels
+		"phpoffice/phpspreadsheet": "1.26.0",
+	}
+}
