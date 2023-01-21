@@ -4734,7 +4734,7 @@
 					$logger->debug( 'B2B-wachtwoordreset getriggerd voor user-ID '.$object->ID.' zónder beheerders in BCC', $context );
 				}
 			}
-		} elseif ( in_array( $type, array( 'admin_new_order', 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
+		} elseif ( in_array( $type, array( 'new_order', 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
 			$extra_recipients[] = get_staged_recipients('webshop@oft.be');
 		}
 
