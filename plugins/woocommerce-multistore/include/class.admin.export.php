@@ -79,6 +79,7 @@ class WOO_MSTORE_EXPORT {
 			// GEWIJZIGD: Velden toegevoegd
 			'order_number'         => 'Bestelnummer / WooCommerce',
 			'levermethode'         => 'Levermethode / Oxfam',
+			'bpost_of_dpd'         => 'Bpost/DPD / Oxfam',
 		);
 
 		$this->order_item_fields = array(

@@ -238,6 +238,19 @@ class WOO_MSTORE_EXPORT_ENGINE {
 				} else {
 					$value = 'no';
 				}
+			} elseif ( $field_name === 'bpost_of_dpd' ) {
+				// GEWIJZIGD: Zoek op of er een trackingcode in het order zit
+				$value = 0;
+				if ( ! $order->has_shipping_method('local_pickup_plus') ) {
+					if ( false !== ( $tracking_info = get_tracking_info( $order ) ) ) {
+						foreach ( $tracking_info as $shipment ) {
+							if ( array_key_exists( 'carrier', $shipment ) ) {
+								$value = 1;
+								break;
+							}
+						}
+					}
+				}
 			} elseif ( $field_name === 'hoofdcategorie' ) {
 				// GEWIJZIGD: Haal een leesbare versie van de hoofdproductcategorie op
 				$value = '';
