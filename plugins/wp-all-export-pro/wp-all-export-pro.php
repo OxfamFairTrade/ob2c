@@ -3,7 +3,7 @@
 Plugin Name: WP All Export Pro
 Plugin URI: http://www.wpallimport.com/export/
 Description: Export any post type to a CSV or XML file. Edit the exported data, and then re-import it later using WP All Import.
-Version: 1.6.4
+Version: 1.8.1
 Author: Soflyy
 */
 
@@ -32,7 +32,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
 
     include_once __DIR__ . '/src/WordPress/AdminNotice.php';
     include_once __DIR__ . '/src/WordPress/AdminErrorNotice.php';
-    $notice = new \Wpae\WordPress\AdminErrorNotice(printf(__('Please de-activate and remove the free version of the WP All Export before activating the paid version.', 'wp_all_export_plugin')));
+    $notice = new \Wpae\WordPress\AdminErrorNotice(printf(esc_html__('Please de-activate and remove the free version of the WP All Export before activating the paid version.', 'wp_all_export_plugin')));
     $notice->render();
 
     deactivate_plugins(str_replace('\\', '/', dirname(__FILE__)) . '/wp-all-export-pro.php');
@@ -46,7 +46,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
      */
     define('PMXE_PREFIX', 'pmxe_');
 
-	define('PMXE_VERSION', '1.6.4');
+    define('PMXE_VERSION', '1.8.1');
 
     define('PMXE_EDITION', 'paid');
 
@@ -266,7 +266,6 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
          */
         protected function __construct()
         {
-
             require_once(self::ROOT_DIR . '/classes/installer.php');
 
             $installer = new PMXE_Installer();
@@ -334,8 +333,8 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
             }
 
             // register admin page pre-dispatcher
-            add_action('admin_init', array($this, 'adminInit'));
-            add_action('admin_init', array($this, 'fix_db_schema'));
+            add_action('admin_init', array($this, 'fix_db_schema'), 9);
+            add_action('admin_init', array($this, 'adminInit'), 10);
             add_action('init', array($this, 'init'));
 
         }
@@ -370,6 +369,17 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
          */
         public function adminInit()
         {
+            $addons_not_included = get_option('wp_all_export_pro_addons_not_included',false);
+
+            $addons = new \Wpae\App\Service\Addons\AddonService();
+            if( !$addons_not_included && !defined('PMAE_VERSION')) {
+
+	            $this->showDismissibleNotice('<strong>WP All Export add-ons are now required to export ACF and WooCommerce data</strong> <br/><br/>
+Some of the features you used in WP All Export Pro now require paid add-ons. If you had a WP All Export license before this change you are eligible to receive these add-ons free of charge. In that case, they have been added to the account where you originally purchased WP All Export Pro.
+<br/><br/>
+<a href="https://wpallimport.com/portal/downloads/?utm_source=export-plugin-pro&utm_medium=wpae-addons-notice&utm_campaign=export-add-ons-added-to-acount" target="_blank">Click here to download your new export add-ons.</a>', 'wpae_woocommerce_required_notice');
+
+            }
 
             wp_enqueue_style('wp-all-export-updater', PMXE_ROOT_URL . '/static/css/plugin-update-styles.css', array(), PMXE_VERSION);
 
@@ -391,17 +401,38 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
             }
 
             if (!is_dir($uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY) or !is_writable($uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY)) {
-                $this->showNoticeAndDisablePlugin(sprintf(__('Uploads folder %s must be writable', 'wp_all_export_plugin'), $uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY));
+                $this->showNoticeAndDisablePlugin(sprintf(esc_html__('Uploads folder %s must be writable', 'wp_all_export_plugin'), $uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY));
             }
 
             if (!is_dir($uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY) or !is_writable($uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY)) {
-                $this->showNoticeAndDisablePlugin(sprintf(__('Uploads folder %s must be writable', 'wp_all_export_plugin'), $uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY));
+                $this->showNoticeAndDisablePlugin(sprintf(esc_html__('Uploads folder %s must be writable', 'wp_all_export_plugin'), $uploads['basedir'] . DIRECTORY_SEPARATOR . self::UPLOADS_DIRECTORY));
             }
 
+            if (!$addons_not_included && $this->addons->userExportsExistAndAddonNotInstalled() && current_user_can('manage_options')) {
+                $this->showDismissibleNotice(__('<strong style="font-size:16px">WP All Export Pro requires the User Export Add-On Pro</strong><p>Your User and Customer exports will not be able to run until you install the User Export Add-On Pro for WP All Export Pro. That add-on has been added to all customer accounts which had a WP All Export license before this requirement, free of charge.</p>', PMXE_Plugin::LANGUAGE_DOMAIN)
+                    . '<p><a class="button button-primary" href="https://wpallimport.com/portal/downloads" target="_blank">' . __('Download Add-On', PMXE_Plugin::LANGUAGE_DOMAIN) . '</a></p>', 'wpae_user_addon_not_installed_notice');
+            }
 
-            if ($this->addons->userExportsExistAndAddonNotInstalled() && current_user_can('manage_options')) {
-                $this->showDismissibleNotice(__('<strong style="font-size:16px">WP All Export Pro requires the User Export Add-On Pro</strong><p>Your user and customer exports will not be able to run until you install the User Export Add-On Pro for WP All Export Pro. This add-on has been added to your account, free of charge.</p>', PMXE_Plugin::LANGUAGE_DOMAIN)
-                    . '<p><a class="button button-primary" href="https://wpallimport.com/portal" target="_blank">' . __('Download Add-On', PMXE_Plugin::LANGUAGE_DOMAIN) . '</a></p>', 'wpae_user_addon_not_installed_notice');
+            if (!$addons_not_included && $this->addons->wooCommerceExportsExistAndAddonNotInstalled() && current_user_can('manage_options') && \class_exists('WooCommerce')) {
+                $this->showDismissibleNotice(__('<strong style="font-size:16px">WP All Export Pro requires the WooCommerce Export Add-On Pro</strong><p>Your Products, Orders, Reviews and Coupons exports will not be able to run until you install the WooCommerce Export Add-On Pro for WP All Export Pro. That add-on has been added to all customer accounts which had a WP All Export license before this requirement, free of charge.</p>', PMXE_Plugin::LANGUAGE_DOMAIN)
+                    . '<p><a class="button button-primary" href="https://wpallimport.com/portal/downloads" target="_blank">' . __('Download Add-On', PMXE_Plugin::LANGUAGE_DOMAIN) . '</a></p>', 'wpae_woocommerce_addon_not_installed_notice');
+            }
+
+            if (!$addons_not_included && $this->addons->acfExportsExistAndNotInstalled() && current_user_can('manage_options')) {
+                $this->showDismissibleNotice(__('<strong style="font-size:16px">WP All Export Pro requires the ACF Export Add-On Pro</strong><p>Exports that contain ACF fields will not be able to run until you install the ACF Export Add-On Pro for WP All Export Pro. That add-on has been added to all customer accounts which had a WP All Export license before this requirement, free of charge.</p>', PMXE_Plugin::LANGUAGE_DOMAIN)
+                    . '<p><a class="button button-primary" href="https://wpallimport.com/portal/downloads" target="_blank">' . __('Download Add-On', PMXE_Plugin::LANGUAGE_DOMAIN) . '</a></p>', 'wpae_acf_addon_not_installed_notice');
+            }
+
+            if($this->addons->wooCommerceRealTimeExportsExistAndAddonNotInstalled() && current_user_can('manage_options')) {
+                $this->showDismissibleNotice(__('<strong>WP All Export Pro:</strong> An export configured to run in real time requires the WooCommerce Export Add-On and will not export newly created records while the add-on is deactivated.</p>'), 'wpae_real_time_woocommerce_addon_not_installed_notice');
+            }
+
+            if($this->addons->userRealTimeExportsExistAndAddonNotInstalled() && current_user_can('manage_options')) {
+                $this->showDismissibleNotice(__('<strong>WP All Export Pro:</strong> An export configured to run in real time requires the User Export Add-On and will not export newly created users while the add-on is deactivated.</p>'), 'wpae_real_time_woocommerce_addon_not_installed_notice');
+            }
+
+            if($this->addons->acfRealTimeExportsExistAndNotInstalled() && current_user_can('manage_options')) {
+                $this->showDismissibleNotice(__('<strong>WP All Export Pro:</strong> An export configured to run in real time requires the ACF Export Add-On and will not export newly created records while the add-on is deactivated.</p>'), 'wpae_real_time_woocommerce_addon_not_installed_notice');
             }
 
             $functions = $uploads['basedir'] . DIRECTORY_SEPARATOR . WP_ALL_EXPORT_UPLOADS_BASE_DIRECTORY . DIRECTORY_SEPARATOR . 'functions.php';
@@ -414,7 +445,6 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
             $page = strtolower($input->getpost('page', ''));
 
             if (preg_match('%^' . preg_quote(str_replace('_', '-', self::PREFIX), '%') . '([\w-]+)$%', $page)) {
-                //$this->adminDispatcher($page, strtolower($input->getpost('action', 'index')));
 
                 $action = strtolower($input->getpost('action', 'index')).'_action';
 
@@ -454,7 +484,10 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
                         throw new Exception("Administration page `$page` matches to a wrong controller type.");
                     }
 
-                    if ($controller instanceof PMXE_Admin_Manage && $action == 'update' && isset($_GET['id'])) {
+                    $reviewsUI = new \Wpae\Reviews\ReviewsUI();
+                    add_action('admin_notices', [$reviewsUI, 'render']);
+
+                    if ($controller instanceof PMXE_Admin_Manage && $action == 'update_action' && isset($_GET['id'])) {
                         $addons = new \Wpae\App\Service\Addons\AddonService();
                         $exportId = intval($_GET['id']);
 
@@ -466,11 +499,68 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
                             $cpt = array($cpt);
                         }
 
+                        if(isset($export->options['export_type']) && $export->options['export_type'] === 'advanced') {
+
+                            if(!$addons->isWooCommerceAddonActive() && !$addons->isWooCommerceProductAddonActive() && strpos($export->options['wp_query'], 'product') !== false && \class_exists('WooCommerce')) {
+                                die(\__('The WooCommerce Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+                            }
+                            else if(!$addons->isWooCommerceAddonActive() && !$addons->isWooCommerceOrderAddonActive() && strpos($export->options['wp_query'], 'shop_order') !== false) {
+                                die(\__('The WooCommerce Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+                            }
+                            else if(!$addons->isWooCommerceAddonActive() && strpos($export->options['wp_query'], 'shop_coupon') !== false) {
+                                die(\__('The WooCommerce Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+                            }
+                        }
+
+	                    // Block Google Merchant Exports if the supporting add-on isn't active.
+	                    if(isset($export->options['xml_template_type']) && $export->options['xml_template_type'] == \XmlExportEngine::EXPORT_TYPE_GOOLE_MERCHANTS && !$addons->isWooCommerceAddonActive()) {
+
+		                    die(\__('The WooCommerce Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+
+	                    }
+
                         if (
                             ((in_array('users', $cpt) || in_array('shop_customer', $cpt)) && !$addons->isUserAddonActive()) ||
                             ($export->options['export_type'] == 'advanced' && $export->options['wp_query_selector'] == 'wp_user_query' && !$addons->isUserAddonActive())
                         ) {
-                            die(\__('The User Export Add-On Pro is required to run this export. You can download the add-on here: <a href="http://www.wpallimport.com/portal/" target="_blank">http://www.wpallimport.com/portal/</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+                            die(\__('The User Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+                        }
+
+                        if (
+                            (in_array('shop_order', $cpt) && !$addons->isWooCommerceOrderAddonActive() && !$addons->isWooCommerceAddonActive()) ||
+                            ((in_array('shop_review', $cpt) || in_array('shop_coupon', $cpt)) && !$addons->isWooCommerceAddonActive()) ||
+                            ($export->options['export_type'] == 'advanced' && isset($export->options['exportquery']) && in_array($export->options['exportquery']->query['post_type'], array('shop_coupon')) && !$addons->isWooCommerceAddonActive()) ||
+                            ($export->options['export_type'] == 'advanced' && $export->options['exportquery'] && in_array($export->options['exportquery']->query['post_type'], array('shop_order')) && !$addons->isWooCommerceAddonActive() && !$addons->isWooCommerceOrderAddonActive()) ||
+                            (isset($export->options['exportquery']) && $export->options['exportquery'] && $export->options['exportquery']->query['post_type'] == array('product','product_variation') && \class_exists('WooCommerce') && !$addons->isWooCommerceAddonActive() && !$addons->isWooCommerceProductAddonActive())
+                        ) {
+                            die(\__('The WooCommerce Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+                        }
+
+                        if((in_array('product', $cpt) && \class_exists('WooCommerce') ) && !$addons->isWooCommerceAddonActive() && !$addons->isWooCommerceProductAddonActive() ) {
+                            die(\__('The WooCommerce Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+                        }
+
+                        if((in_array('acf', $export->options['cc_type']) || $export->options['xml_template_type'] == 'custom' && in_array('acf', $export->options['custom_xml_template_options']['cc_type'])) && !$addons->isAcfAddonActive()) {
+                            die(\__('The ACF Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN));
+                        }
+                    }
+
+                    if ($controller instanceof PMXE_Admin_Manage && ($action == 'update_action' || $action == 'template_action' || $action == 'options_action') && isset($_GET['id'])) {
+
+                        $exportId = intval($_GET['id']);
+
+                        $export = new \PMXE_Export_Record();
+                        $export->getById($exportId);
+
+                        $cpt = $export->options['cpt'];
+
+                        if(is_array($cpt)) {
+                            $cpt = $cpt[0];
+                        }
+
+                        if(strpos($cpt, 'custom_') === 0 && !class_exists('GF_Export_Add_On')) {
+
+                            die('The Gravity Forms Add-On Pro is required for this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">http://www.wpallimport.com/portal/</a>');
                         }
                     }
 
@@ -481,7 +571,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
                             die($e->getMessage());
                         }
                         do_action('wpallexport_action_after');
-                        die(); // stop processing since we want to output only what controller is randered, nothing in addition
+                        die(); // stop processing since we want to output only what controller has rendered, nothing in addition
                     } elseif (!$controller->isInline) {
                         @ob_start();
                         $controller->$action();
@@ -544,7 +634,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
                     do_action('wpallexport_action_after');
                     echo '</div>';
                 } else {
-                    throw new Exception('There is no previousely buffered content to display.');
+                    throw new Exception('There is no previously buffered content to display.');
                 }
             }
         }
@@ -586,10 +676,12 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
                     return TRUE;
                 }
                 if (!$is_prefix) {
-                    $pathAlt = self::ROOT_DIR . '/' . $subdir . '/' . $filePathAlt;
                     if (strpos($className, '_') !== false) {
-                        $pathAlt = $this->lreplace('_', DIRECTORY_SEPARATOR, $pathAlt);
+                        $filePathAlt = $this->lreplace('_', DIRECTORY_SEPARATOR, $filePathAlt);
                     }
+
+                    $pathAlt = self::ROOT_DIR . DIRECTORY_SEPARATOR . $subdir . DIRECTORY_SEPARATOR . $filePathAlt;
+
                     if (is_file($pathAlt)) {
                         require_once $pathAlt;
                         return TRUE;
@@ -781,7 +873,15 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
         {
 
             global $wpdb;
-            $installed_ver = get_option("wp_all_export_db_version");
+
+            $db_version_old = get_option('wp_all_export_db_version');
+            $installed_ver = get_option('wp_all_export_pro_db_version');
+
+            // We leave the old option so if it doesn't exist then this was installed after the export addons release.
+            // If it does exist we make sure it's not a free version since such an old Pro version would no longer work.
+            if(!$db_version_old || version_compare($db_version_old, '1.3.0') == -1) {
+                update_option("wp_all_export_pro_addons_not_included", true);
+            }
 
             if ($installed_ver == PMXE_VERSION) return true;
 
@@ -822,6 +922,8 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
             $parent_id = false;
             $export_post_type = false;
             $client_mode_enabled = false;
+            $created_at = false;
+            $created_at_gmt = false;
 
             // Check if field exists
             foreach ($tablefields as $tablefield) {
@@ -829,6 +931,9 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
                 if ('parent_id' == $tablefield->Field) $parent_id = true;
                 if ('export_post_type' == $tablefield->Field) $export_post_type = true;
                 if ('client_mode_enabled' == $tablefield->Field) $client_mode_enabled= true;
+                if ('created_at' == $tablefield->Field) $created_at = true;
+                if ('created_at_gmt' == $tablefield->Field) $created_at_gmt = true;
+
             }
 
             if (!$iteration) {
@@ -845,7 +950,16 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
                 $wpdb->query("ALTER TABLE {$table} ADD `client_mode_enabled` TINYINT NOT NULL DEFAULT '0';");
             }
 
-            update_option("wp_all_export_db_version", PMXE_VERSION);
+            if ( ! $created_at ){
+                $wpdb->query("ALTER TABLE {$table} ADD `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
+                $wpdb->query("UPDATE {$table} SET `created_at` = `registered_on` WHERE 1");
+            }
+
+            if ( ! $created_at_gmt ){
+                $wpdb->query("ALTER TABLE {$table} ADD `created_at_gmt` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';");
+            }
+
+            update_option("wp_all_export_pro_db_version", PMXE_VERSION);
         }
 
         /**
@@ -976,6 +1090,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
                 'custom_xml_cdata_logic' => 'auto',
                 'show_cdata_in_preview' => 0,
                 'taxonomy_to_export' => '',
+                'sub_post_type_to_export' => '',
                 'created_at_version' => '',
                 'export_variations' => XmlExportEngine::VARIABLE_PRODUCTS_EXPORT_PARENT_AND_VARIATION,
                 'export_variations_title' => XmlExportEngine::VARIATION_USE_PARENT_TITLE,
@@ -991,8 +1106,12 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
                 'scheduling_times' => array(),
                 'scheduling_timezone' => 'UTC',
 
-                'allow_client_mode' => 0
+                'allow_client_mode' => 0,
+                'enable_real_time_exports' => 0,
+                'enable_real_time_exports_running' => 0,
+                'do_not_generate_file_on_new_records' => 0,
 
+                'security_token' => ''
             );
         }
 
