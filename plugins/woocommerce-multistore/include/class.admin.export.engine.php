@@ -238,7 +238,7 @@ class WOO_MSTORE_EXPORT_ENGINE {
 				} else {
 					$value = 'no';
 				}
-			} elseif ( $field_name === 'bpost_of_dpd' ) {
+			} elseif ( $field_name === 'bpost' ) {
 				// GEWIJZIGD: Zoek op of er een trackingcode in het order zit
 				$value = 0;
 				if ( ! $order->has_shipping_method('local_pickup_plus') ) {
