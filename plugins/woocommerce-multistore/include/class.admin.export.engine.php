@@ -240,12 +240,13 @@ class WOO_MSTORE_EXPORT_ENGINE {
 				}
 			} elseif ( $field_name === 'bpost' ) {
 				// GEWIJZIGD: Zoek op of er een trackingcode in het order zit
-				$value = 0;
+				// Zet een string, anders krijgen we een lege cel in Excel
+				$value = '0';
 				if ( ! $order->has_shipping_method('local_pickup_plus') ) {
 					if ( false !== ( $tracking_info = get_tracking_info( $order ) ) ) {
 						foreach ( $tracking_info as $shipment ) {
 							if ( array_key_exists( 'carrier', $shipment ) ) {
-								$value = 1;
+								$value = '1';
 								break;
 							}
 						}
