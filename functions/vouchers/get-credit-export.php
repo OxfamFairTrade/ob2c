@@ -53,6 +53,7 @@
 			$distribution = array();
 			
 			if ( $credit_refs === false ) {
+				// Gelijkaardige array komt ook voor get-local-report.php, beter opslaan in optie?
 				$credit_refs = array(
 					'08899' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2023-01-01' ),
 					'08900' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2023-01-01' ),
