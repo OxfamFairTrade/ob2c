@@ -5705,7 +5705,7 @@
 
 	function get_oxfam_cheques_skus_array() {
 		// Geldig tot eind 2023 en 2024
-		return array( '19066', '19067', '19068', '19056', '19057', '19058' );
+		return array( '19056', '19057', '19058', '19041', '19042', '19043' );
 	}
 
 	function get_oxfam_cheques_ids_array() {
@@ -6345,7 +6345,8 @@
 
 	function oxfam_register_custom_pages() {
 		// Waarom blijft het 'WooCommerce'-menu niet opengeklapt als we deze pagina bekijken?
-		add_submenu_page( 'woocommerce', 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback' );
+		// add_submenu_page( 'woocommerce', 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback' );
+		add_menu_page( 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 'dashicons-tickets-alt', 54 );
 		
 		add_menu_page( 'Stel de voorraad van je lokale webshop in', 'Voorraadbeheer', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback', 'dashicons-admin-settings', 56 );
 		add_submenu_page( 'oxfam-products-list', 'Voorraadbeheer', 'Alle producten', 'manage_network_users', 'oxfam-products-list', 'oxfam_products_list_callback' );
