@@ -273,7 +273,7 @@
 		'post_type'	=> 'shop_coupon',
 		'post_status' => 'publish',
 		// Opgelet: dit kijkt naar de (onzichtbare) slug, die kan afwijken van de titel, bv. indien kortingscode achteraf gewijzigd!
-		'post_name__in' => array( '202301-taco', '202301-cashew' ),
+		'post_name__in' => array( '202302-kokosmelk', '202302-pinda' ),
 	);
 	$all_coupons = new WP_Query( $args );
 
@@ -393,7 +393,7 @@
 	}
 
 	// Een reeks artikels uit voorraad zetten
-	$outofstocks = array( 19041, 19042, 19043, 24317 );
+	$outofstocks = array( 21055, 22034 );
 	foreach ( $outofstocks as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
@@ -406,7 +406,7 @@
 	}
 	
 	// Voorraad van een reeks oude artikels overnemen naar de overeenkomstige nieuwe artikels
-	$replacements = array( 25010 => 25016 );
+	$replacements = array( 20058 => 20081 );
 	foreach ( $replacements as $old_sku => $new_sku ) {
 		$product_id = wc_get_product_id_by_sku( $new_sku );
 		if ( $product_id ) {
