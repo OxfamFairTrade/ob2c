@@ -30,11 +30,19 @@
 			}
 			
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// update_site_option( 'oxfam_shop_dashboard_notice_success', 'De <a href="https://copain.oww.be/nieuwsbericht/2023/01/09/Promos-online--winkel-februari-2023-update" target="_blank">promoties voor februari</a> werden geactiveerd in alle webshops. Verder werd de <a href="https://copain.oww.be/nieuwsbericht/2023/01/11/Update-prijskaartjes-wijn-groot-geschenkdoos-medium-Bio-extra-vierge-olijfolie" target="_blank">prijsstijging van 01/02/2023</a> op BIO Extra Vierge olijfolie (W18021) doorgevoerd.' );
+				// update_site_option( 'oxfam_shop_dashboard_notice_success', 'De <a href="https://copain.oww.be/nieuwsbericht/2023/01/09/Promos-online--winkel-februari-2023-update" target="_blank">promoties voor februari</a> werden geactiveerd in alle webshops. Verder werd de <a href="https://copain.oww.be/nieuwsbericht/2023/01/11/Update-prijskaartjes-wijn-groot-geschenkdoos-medium-Bio-extra-vierge-olijfolie" target="_blank">prijsstijging van 01/02/2023</a> op BIO Extra Vierge olijfolie (W18021) doorgevoerd. In lijn met ons privacybeleid werden alle ordergegevens uit 2020 gewist.' );
 				
 				if ( '' !== ( $success = get_site_option( 'oxfam_shop_dashboard_notice_success', '' ) ) ) {
 					echo '<div class="notice notice-success">';
 						echo '<p>'.$success.'</p>';
+					echo '</div>';
+				}
+				
+				update_site_option( 'oxfam_shop_dashboard_notice_warning', 'Een heleboel uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 17115 BIO Volle jasmijnrijst 5 kg (THT: 31/07/2022), 20248 Chenin Blanc BOX 3 l, 21000 Sinaasappelsap 1 l (THT: 31/12/2022), 21002 Worldshakesap 1 l (THT: 31/12/2022), 21003 Tropicalsap 1 l (THT: 31/10/2022), 21008 BIO Sinaas-mangosap 1 l (THT: 31/12/2022), 21011 Vers geperst Belgisch appelsap 1 l (in omschakeling naar BIO) (THT: 31/12/2022), 21103 Tropicalsap 20 cl (THT: 31/10/2022), 22013 African Blendkoffie (THT: 29/01/2023), 23403 Groene thee citroengras 1 g x 20 (THT: 21/11/2022), 23501 BIO Losse groene thee (THT: 21/11/2022), 24502 Hagelslag (THT: 28/01/2023), 26493 Maya Speculoospasta (THT: 23/11/2022), 27517 BIO Zwarte linzen (THT: 31/07/2022). Ook werden enkele producten van Fairtrade Original en Ethiquable die al lang niet meer door Oxfam Fair Trade verdeeld worden (witte noedels, ananasschijven, kruiden, ...) gewist, bij gebrek aan masterdata voor prijzen en ingrediënten. Indien gewenst kunnen webshops die deze producten via andere wegen aankopen ze opnieuw toevoegen als lokaal assortiment.' );
+				
+				if ( '' !== ( $warning = get_site_option( 'oxfam_shop_dashboard_notice_warning', '' ) ) ) {
+					echo '<div class="notice notice-warning">';
+						echo '<p>'.$warning.'</p>';
 					echo '</div>';
 				}
 				
@@ -132,12 +140,6 @@
 				
 				// echo '<div class="notice notice-info">';
 				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
-				// echo '</div>';
-				
-				// Sommige FTO-producten worden tegenwoordig rechtstreeks aangekocht door Brugge / Mariakerke / Dilbeek / Roeselare => toch wissen (onmogelijk te beheren)
-				// 27205 Noedels witte rijst, 27512 Ananasschijven, 27807 Woksaus zoet-zuur, 28318 BIO Currypoeder, 28319 BIO Kaneel, 28324 Pepermolen citroen/sinaas/knoflook, 28329 BIO Kurkuma
-				// echo '<div class="notice notice-warning">';
-				// 	echo '<p>Volgende uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 17115 BIO Volle jasmijnrijst 5 kg (THT: 31/07/2022), 20248 Chenin Blanc BOX 3 l, 21000 Sinaasappelsap 1 l (THT: 31/12/2022), 21002 Worldshakesap 1 l (THT: 31/12/2022), 21003 Tropicalsap 1 l (THT: 31/10/2022), 21008 BIO Sinaas-mangosap 1 l (THT: 31/12/2022), 21011 Vers geperst Belgisch appelsap 1 l (in omschakeling naar BIO) (THT: 31/12/2022), 21103 Tropicalsap 20 cl (THT: 31/10/2022), 22013 African Blendkoffie (THT: 29/01/2023), 23403 Groene thee citroengras 1 g x 20 (THT: 21/11/2022), 23501 BIO Losse groene thee (THT: 21/11/2022), 26493 Maya Speculoospasta (THT: 23/11/2022), 27517 BIO Zwarte linzen (THT: 31/07/2022). Ook enkele producten van Fairtrade Original die niet langer door Oxfam Fair Trade verdeeld worden (witte noedels, ananasschijven, kruiden, ...) werden gewist, bij gebrek aan masterdata. Je kunt deze producten uiteraard wel als lokaal assortiment toevoegen.</p>';
 				// echo '</div>';
 				
 				if ( does_home_delivery() ) {
