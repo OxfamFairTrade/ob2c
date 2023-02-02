@@ -1,5 +1,34 @@
 <?php
 
+	// Verwijder oude bestellingen
+	$logger = wc_get_logger();
+	$context = array( 'source' => 'Cleanup' );
+	$query_args = array(
+		// 'status' => 'wc-cancelled',
+		// Alle shop_order_refund's op het order worden automatisch mee verwijderd!
+		'type' => 'shop_order',
+		'date_created' => '<2020-01-01',
+		'limit' => 100,
+		// Begin met de oudste orders
+		'order' => 'ASC',
+		'orderby' => 'date',
+	);
+	$orders_to_delete = wc_get_orders( $query_args );
+	
+	foreach ( $orders_to_delete as $order ) {
+		$order_number = $order->get_order_number();
+		$option_key = 'number_of_'.$order->get_status().'_orders_deleted';
+		
+		// Doe een harde delete (dus niet via prullenmand)
+		if ( $order->delete(true) ) {
+			// Registreer hoeveel orders we wissen in de database
+			update_site_option( $option_key, get_site_option( $option_key, 0 ) + 1 );
+			$logger->info( $order_number . ' deleted', $context );
+		} else {
+			$logger->warning( $order_number . ' could not be deleted', $context );
+		}
+	}
+	
 	// Verwijder overtollige BTW-schalen
 	$tax_classes = array( 'gereduceerd-tarief', 'nultarief' );
 	foreach ( $tax_classes as $tax_class ) {
@@ -25,38 +54,6 @@
 				}
 			} else {
 				write_log("Blog-ID ".get_current_blog_id().": shipping class '".$term."' not found");
-			}
-		}
-	}
-
-	// Migreer productattributen naar metadata
-	$all_products = wc_get_products( array( 'limit' => -1 ) );
-	$to_migrate = array( 'shopplus' => '_shopplus_code', 'ean' => '_cu_ean', 'ompak' => '_multiple', 'eenheid' => '_stat_uom', 'fairtrade' => '_fairtrade_share', 'eprijs' => '_unit_price' );
-	foreach ( $all_products as $product ) {
-		if ( $product->get_meta('_in_bestelweb') !== 'ja' ) {
-			foreach ( $to_migrate as $attribute => $meta_key ) {
-				$product->update_meta_data( $meta_key, $product->get_attribute( $attribute ) );
-			}
-			$product->save();
-		}
-	}
-
-	// Verwijder deprecated metadata op producten
-	global $wpdb;
-	$to_delete = array( 'intrastat', 'pal_aantallagen', 'pal_aantalperlaag', 'steh_ean', '_herkomst_nl' );
-	foreach ( $to_delete as $meta_key ) {
-		$wpdb->delete( $wpdb->prefix.'postmeta', array( 'meta_key' => $meta_key ) );
-	}
-
-	// Verwijder deprecated productattributen
-	$to_delete = array( 'bio', 'ean', 'eenheid', 'eprijs', 'fairtrade', 'ompak', 'shopplus' );
-	foreach ( $to_delete as $slug ) {
-		$attribute_id = absint( wc_attribute_taxonomy_id_by_name( $slug ) );
-		if ( $attribute_id > 0 ) {
-			if ( wc_delete_attribute( $attribute_id ) ) {
-				write_log("Blog-ID ".get_current_blog_id().": deleted '".$slug."' attribute");
-			} else {
-				write_log("Blog-ID ".get_current_blog_id().": could not delete '".$slug."' attribute");
 			}
 		}
 	}
