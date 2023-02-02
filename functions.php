@@ -619,13 +619,6 @@
 				throw new Exception( __( 'Deze webshop heeft helaas geen shoppers op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
 			}
 		}
-		
-		if ( $coupon->get_code() === '202210-wvdft-sesam' and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
-			$sesamreep = wc_get_product( wc_get_product_id_by_sku('25317') );
-			if ( $sesamreep !== false and $sesamreep->get_stock_status() !== 'instock' ) {
-				throw new Exception( __( 'Deze webshop heeft helaas geen sesamrepen met chocolade op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
-			}
-		}
 	}
 
 	// Probeer wijnduo's enkel toe te passen op gelijke paren (dus niet 3+1, 5+1, 5+3, ...)
@@ -6367,6 +6360,19 @@
 	function oxfam_register_custom_network_pages() {
 		add_submenu_page(
 			'woonet-woocommerce',
+			'Dashboard Info',
+			'Dashboard Info',
+			'create_sites',
+			'woonet-woocommerce-dashboard-info',
+			'oxfam_set_dashboard_info_callback'
+		);
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_success' );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_warning' );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_new_products' );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_replaced_products' );
+		
+		add_submenu_page(
+			'woonet-woocommerce',
 			'Voucher Export',
 			'Voucher Export',
 			'create_sites',
@@ -6384,6 +6390,10 @@
 		);
 	}
 
+	function oxfam_set_dashboard_info_callback() {
+		include get_stylesheet_directory().'/functions/pages/set-dashboard-info.php';
+	}
+	
 	function oxfam_export_used_vouchers_callback() {
 		include get_stylesheet_directory().'/functions/vouchers/get-credit-export.php';
 	}
@@ -6393,7 +6403,7 @@
 	}
 	
 	function oxfam_options_callback() {
-		include get_stylesheet_directory().'/update-options.php';
+		include get_stylesheet_directory().'/functions/pages/set-shop-options.php';
 	}
 
 	function oxfam_products_photos_callback() {
@@ -6406,6 +6416,34 @@
 	
 	function oxfam_vouchers_list_callback() {
 		include get_stylesheet_directory().'/functions/vouchers/get-local-report.php';
+	}
+	
+	add_action( 'network_admin_edit_woonet-woocommerce-dashboard-info-update', 'update_network_settings_dashboard' );
+	
+	function update_network_settings_dashboard() {
+		check_admin_referer('woonet-woocommerce-dashboard-info');
+		
+		global $new_whitelist_options;
+		$options = $new_whitelist_options['woonet-woocommerce-dashboard-info'];
+		
+		foreach ( $options as $option ) {
+			if ( isset( $_POST[ $option ] ) ) {
+				update_site_option( $option, $_POST[ $option ] );
+			} else {
+				delete_site_option( $option );
+			}
+		}
+		
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page' => 'woonet-woocommerce-dashboard-info',
+					'updated' => 'true',
+				),
+				network_admin_url('admin.php')
+			)
+		);
+		exit;
 	}
 
 	// Vervang onnutige links in netwerkmenu door Oxfam-pagina's
