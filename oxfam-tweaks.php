@@ -30,7 +30,7 @@
 			}
 			
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				update_site_option( 'oxfam_shop_dashboard_notice_success', 'De <a href="https://copain.oww.be/nieuwsbericht/2023/01/09/Promos-online--winkel-februari-2023-update" target="_blank">promoties voor februari</a> werden geactiveerd in alle webshops. Verder werd de <a href="https://copain.oww.be/nieuwsbericht/2023/01/11/Update-prijskaartjes-wijn-groot-geschenkdoos-medium-Bio-extra-vierge-olijfolie" target="_blank">prijsstijging op BIO Extra Vierge olijfolie (W18021) van 01/02/2023</a> doorgevoerd.' );
+				// update_site_option( 'oxfam_shop_dashboard_notice_success', 'De <a href="https://copain.oww.be/nieuwsbericht/2023/01/09/Promos-online--winkel-februari-2023-update" target="_blank">promoties voor februari</a> werden geactiveerd in alle webshops. Verder werd de <a href="https://copain.oww.be/nieuwsbericht/2023/01/11/Update-prijskaartjes-wijn-groot-geschenkdoos-medium-Bio-extra-vierge-olijfolie" target="_blank">prijsstijging van 01/02/2023</a> op BIO Extra Vierge olijfolie (W18021) doorgevoerd.' );
 				
 				if ( '' !== ( $success = get_site_option( 'oxfam_shop_dashboard_notice_success', '' ) ) ) {
 					echo '<div class="notice notice-success">';
@@ -38,11 +38,11 @@
 					echo '</div>';
 				}
 				
-				update_site_option( 'oxfam_shop_dashboard_notice_new_products', array( 21055, 22034 ) );
+				// update_site_option( 'oxfam_shop_dashboard_notice_new_products', array( 21055, 22034 ) );
 				$new_skus = get_site_option( 'oxfam_shop_dashboard_notice_new_products', array() );
 				if ( count( $new_skus ) > 0 ) {
 					echo '<div class="notice notice-success">';
-						echo '<p>De kleine repen witte chocolade zijn terug van weg geweest:</p><ul style="margin-left: 2em; column-count: 2;">';
+						echo '<p>Volgende nieuwe producten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
 							foreach ( $new_skus as $sku ) {
 								$product_id = wc_get_product_id_by_sku( $sku );
 								if ( $product_id ) {
@@ -58,11 +58,11 @@
 					echo '</div>';
 				}
 				
-				update_site_option( 'oxfam_shop_dashboard_notice_replaced_products', array( 20058 => 20081 ) );
+				// update_site_option( 'oxfam_shop_dashboard_notice_replaced_products', array( 20058 => 20081 ) );
 				$replaced_skus = get_site_option( 'oxfam_shop_dashboard_notice_replaced_products', array() );
 				if ( count( $replaced_skus ) > 0 ) {	
 					echo '<div class="notice notice-success">';
-						echo '<p>Er is opnieuw een nieuwe referentie die een bestaand product vervangt, omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
+						echo '<p>Volgende referenties vervangen een bestaand product (met identieke verpakking), omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
 							foreach ( $replaced_skus as $old_sku => $sku ) {
 								$product_id = wc_get_product_id_by_sku( $sku );
 								if ( $product_id ) {

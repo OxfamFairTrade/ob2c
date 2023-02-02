@@ -5554,10 +5554,7 @@
 				foreach ( WC()->cart->cart_contents as $item_key => $item_value ) {
 					if ( $item_value['data']->get_shipping_class() === 'breekbaar' ) {
 						// Omwille van de icoontjes is niet alleen het leeggoed maar ook het product als breekbaar gemarkeerd!
-						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLFSG') ) {
-							$glass_cnt += intval( $item_value['quantity'] );
-						}
-						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS6') or $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29917') or $item_value['product_id'] === wc_get_product_id_by_sku('W29919') ) {
+						if ( $item_value['product_id'] === wc_get_product_id_by_sku('WLBS24') or $item_value['product_id'] === wc_get_product_id_by_sku('W29917') or $item_value['product_id'] === wc_get_product_id_by_sku('W29919') ) {
 							$plastic_cnt += intval( $item_value['quantity'] );
 						}
 						if ( in_array( get_option( 'wcgwp_category_id', 0 ), $item_value['data']->get_category_ids() ) ) {
@@ -5707,7 +5704,7 @@
 	}
 
 	function get_oxfam_cheques_skus_array() {
-		// Geldig tot eind 2022 en 2023
+		// Geldig tot eind 2023 en 2024
 		return array( '19066', '19067', '19068', '19056', '19057', '19058' );
 	}
 
@@ -5807,26 +5804,16 @@
 			}
 
 			switch ( $empties_sku ) {
-				case 'WLBS6':
-					$empties_array['quantity'] = floor( intval( $product_item['quantity'] ) / 6 );
-					break;
-
 				case 'WLBS24':
 				case 'W29917':
 					// Door round() voegen we automatisch een bak toe vanaf 13 flesjes
 					$empties_array['quantity'] = round( intval( $product_item['quantity'] ) / 24, 0, PHP_ROUND_HALF_DOWN );
 					break;
 
-				case 'WLFSG':
 				case 'WLFSK':
 				case 'W19916':
 					// Definieer de koppelingen tussen glas en plastic
 					switch ( $empties_sku ) {
-						case 'WLFSG':
-							$plastic_sku = 'WLBS6';
-							$plastic_step = 6;
-							break;
-
 						case 'WLFSK':
 							$plastic_sku = 'WLBS24';
 							// Op termijn te vervangen door nieuwe bak?
@@ -5903,26 +5890,16 @@
 			}
 
 			switch ( $empties_sku ) {
-				case 'WLBS6':
-					$quantity = floor( intval( $product_item['quantity'] ) / 6 );
-					break;
-
 				case 'WLBS24':
 				case 'W29917':
 					// Door round() voegen we automatisch een bak toe vanaf 13 flesjes
 					$quantity = round( intval( $product_item['quantity'] ) / 24, 0, PHP_ROUND_HALF_DOWN );
 					break;
 
-				case 'WLFSG':
 				case 'WLFSK':
 				case 'W19916':
 					// Definieer de koppelingen tussen glas en plastic
 					switch ( $empties_sku ) {
-						case 'WLFSG':
-							$plastic_sku = 'WLBS6';
-							$plastic_step = 6;
-							break;
-
 						case 'WLFSK':
 							$plastic_sku = 'WLBS24';
 							// Op termijn te vervangen door nieuwe bak?
@@ -5983,8 +5960,6 @@
 					case 'WLFSK':
 					case 'W19916':
 						return sprintf( _n( '%d flesje', '%d flesjes', $qty ), $qty );
-					case 'WLBS6':
-						return sprintf( _n( '%d krat', '%d kratten', $qty ), $qty ).' (per 6 flessen)';
 					case 'WLBS24':
 					case 'W29917':
 					case 'W29919':
