@@ -6492,7 +6492,7 @@
 		oxfam_shop_dashboard_notice_callback('success');
 	}
 	
-	function oxfam_shop_dashboard_notice_warning_callback() {
+	function oxfam_shop_dashboard_notice_info_callback() {
 		oxfam_shop_dashboard_notice_callback('info');
 	}
 	
