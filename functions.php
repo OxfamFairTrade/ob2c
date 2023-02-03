@@ -6370,7 +6370,7 @@
 		add_settings_section(
 			'products',
 			__( 'Productaankondigingen', 'oxfam-webshop' ),
-			NULL,
+			__( 'Alle links wijzen automatisch naar de lokale pagina\'s in de webshop waarvan je het dashboard raadpleegt.', 'oxfam-webshop' ),
 			'woonet-woocommerce-dashboard-info'
 		);
 		
