@@ -36,6 +36,13 @@
 					echo '</div>';
 				}
 				
+				// Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder <a href="admin.php?page=oxfam-options">Winkelgegevens</a> kan de geschenkmand ook thuisgeleverd worden.
+				if ( '' !== ( $info = get_site_option( 'oxfam_shop_dashboard_notice_info', '' ) ) ) {
+					echo '<div class="notice notice-info">';
+						echo '<p>' . stripslashes( $info ) . '</p>';
+					echo '</div>';
+				}
+				
 				if ( '' !== ( $warning = get_site_option( 'oxfam_shop_dashboard_notice_warning', '' ) ) ) {
 					echo '<div class="notice notice-warning">';
 						echo '<p>' . stripslashes( $warning ) . '</p>';
@@ -45,7 +52,7 @@
 				$new_skus = get_site_option( 'oxfam_shop_dashboard_notice_new_products', array() );
 				if ( count( $new_skus ) > 0 ) {
 					echo '<div class="notice notice-success">';
-						echo '<p>Volgende nieuwe producten werden toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						echo '<p>Deze nieuwigheden werden onlangs toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
 							foreach ( $new_skus as $sku ) {
 								$product_id = wc_get_product_id_by_sku( $sku );
 								if ( $product_id ) {
@@ -64,7 +71,7 @@
 				$replaced_skus = get_site_option( 'oxfam_shop_dashboard_notice_replaced_products', array() );
 				if ( count( $replaced_skus ) > 0 ) {	
 					echo '<div class="notice notice-success">';
-						echo '<p>Volgende referenties vervangen een bestaand product (met identieke verpakking), omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
+						echo '<p>Volgende referenties vervangen een bestaand product (met ongewijzigde verpakking):</p><ul style="margin-left: 2em; column-count: 2;">';
 							foreach ( $replaced_skus as $old_new ) {
 								$parts = explode( '-', $old_new );
 								if ( count( $parts ) !== 2 ) {
@@ -137,10 +144,6 @@
 				// 		}
 				// 	echo '</ul><p>Omdat sommige van deze producten al langer dan 3 maanden bestelbaar zijn, krijgen ze niet allemaal een blauwe achtergrond in de voorraadlijst!</p></li>';
 				// echo '</ul>';
-				
-				// echo '<div class="notice notice-info">';
-				// 	echo '<p>Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder \'<a href="admin.php?page=oxfam-options">Winkelgegevens</a>\' kan de geschenkmand ook thuisgeleverd worden.</p>';
-				// echo '</div>';
 				
 				if ( does_home_delivery() ) {
 					// Boodschappen voor winkels die thuislevering doen
