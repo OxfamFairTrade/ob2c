@@ -6366,10 +6366,72 @@
 			'woonet-woocommerce-dashboard-info',
 			'oxfam_set_dashboard_info_callback'
 		);
+		
+		add_settings_section(
+			'products',
+			__( 'Productaankondigingen', 'oxfam-webshop' ),
+			NULL,
+			'woonet-woocommerce-dashboard-info'
+		);
+		
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_new_products', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_replaced_products', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
+		
+		add_settings_field(
+			'oxfam_shop_dashboard_notice_new_products',
+			__( 'Nieuwe artikelnummers', 'oxfam-webshop' ),
+			'oxfam_shop_dashboard_notice_new_products_callback',
+			'woonet-woocommerce-dashboard-info',
+			'products',
+			array( 'label_for' => 'oxfam_shop_dashboard_notice_new_products' )
+		);
+		
+		add_settings_field(
+			'oxfam_shop_dashboard_notice_replaced_products',
+			__( 'Vervangen artikelnummers', 'oxfam-webshop' ),
+			'oxfam_shop_dashboard_notice_replaced_products_callback',
+			'woonet-woocommerce-dashboard-info',
+			'products',
+			array( 'label_for' => 'oxfam_shop_dashboard_notice_replaced_products' )
+		);
+		
+		add_settings_section(
+			'custom',
+			__( 'Extra aankondigingen', 'oxfam-webshop' ),
+			NULL,
+			'woonet-woocommerce-dashboard-info'
+		);
+		
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_success' );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_info' );
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_warning' );
-		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_new_products' );
-		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_replaced_products' );
+		
+		add_settings_field(
+			'oxfam_shop_dashboard_notice_success',
+			__( 'Succesboodschap', 'oxfam-webshop' ),
+			'oxfam_shop_dashboard_notice_success_callback',
+			'woonet-woocommerce-dashboard-info',
+			'custom',
+			array( 'label_for' => 'oxfam_shop_dashboard_notice_success' )
+		);
+		
+		add_settings_field(
+			'oxfam_shop_dashboard_notice_info',
+			__( 'Informatieboodschap', 'oxfam-webshop' ),
+			'oxfam_shop_dashboard_notice_info_callback',
+			'woonet-woocommerce-dashboard-info',
+			'custom',
+			array( 'label_for' => 'oxfam_shop_dashboard_notice_info' )
+		);
+		
+		add_settings_field(
+			'oxfam_shop_dashboard_notice_warning',
+			__( 'Waarschuwingsboodschap', 'oxfam-webshop' ),
+			'oxfam_shop_dashboard_notice_warning_callback',
+			'woonet-woocommerce-dashboard-info',
+			'custom',
+			array( 'label_for' => 'oxfam_shop_dashboard_notice_warning' )
+		);
 		
 		add_submenu_page(
 			'woonet-woocommerce',
@@ -6390,8 +6452,20 @@
 		);
 	}
 
+	function oxfam_options_callback() {
+		include get_stylesheet_directory().'/pages/set-shop-options.php';
+	}
+	
+	function oxfam_products_list_callback() {
+		include get_stylesheet_directory().'/pages/update-stock-list.php';
+	}
+	
+	function oxfam_vouchers_list_callback() {
+		include get_stylesheet_directory().'/functions/vouchers/get-local-report.php';
+	}
+	
 	function oxfam_set_dashboard_info_callback() {
-		include get_stylesheet_directory().'/functions/pages/set-dashboard-info.php';
+		include get_stylesheet_directory().'/pages/set-dashboard-info.php';
 	}
 	
 	function oxfam_export_used_vouchers_callback() {
@@ -6402,26 +6476,40 @@
 		include get_stylesheet_directory().'/functions/vouchers/get-global-analysis.php';
 	}
 	
-	function oxfam_options_callback() {
-		include get_stylesheet_directory().'/functions/pages/set-shop-options.php';
-	}
-
-	function oxfam_products_photos_callback() {
-		include get_stylesheet_directory().'/update-stock-photos.php';
-	}
-
-	function oxfam_products_list_callback() {
-		include get_stylesheet_directory().'/update-stock-list.php';
+	function oxfam_shop_dashboard_notice_new_products_callback() {
+		$key = 'oxfam_shop_dashboard_notice_new_products';
+		$value = get_site_option( $key, array() );
+		echo '<input type="text" name="' . $key . '" style="width: 100%; max-width: 800px;" value="' . implode( ', ', $value ) . '" /><br/><small>Scheid meerdere ompaknummers met een (punt)komma.</small>';
 	}
 	
-	function oxfam_vouchers_list_callback() {
-		include get_stylesheet_directory().'/functions/vouchers/get-local-report.php';
+	function oxfam_shop_dashboard_notice_replaced_products_callback() {
+		$key = 'oxfam_shop_dashboard_notice_replaced_products';
+		$value = get_site_option( $key, array() );
+		echo '<input type="text" name="' . $key . '" style="width: 100%; max-width: 800px;" value="' . implode( ', ', $value ) . '" /><br/><small>Plaats een liggend streepje tussen het oude ompaknummer (links) en het nieuwe ompaknummer (rechts).<br/>Scheid meerdere waarden met een (punt)komma. Voorbeeld: <i>20058-20081, 28802-28805</i>.</small>';
+	}
+	
+	function oxfam_shop_dashboard_notice_success_callback() {
+		oxfam_shop_dashboard_notice_callback('success');
+	}
+	
+	function oxfam_shop_dashboard_notice_warning_callback() {
+		oxfam_shop_dashboard_notice_callback('info');
+	}
+	
+	function oxfam_shop_dashboard_notice_warning_callback() {
+		oxfam_shop_dashboard_notice_callback('warning');
+	}
+	
+	function oxfam_shop_dashboard_notice_callback( $type ) {
+		$key = 'oxfam_shop_dashboard_notice_' . $type;
+		$value = get_site_option( $key, '' );
+		echo '<textarea name="' . $key . '" rows="5" style="width: 100%; max-width: 800px;">' . stripslashes( $value ) . '</textarea><br/><small>Mag HTML-code bevatten.<small>';
 	}
 	
 	add_action( 'network_admin_edit_woonet-woocommerce-dashboard-info-update', 'update_network_settings_dashboard' );
 	
 	function update_network_settings_dashboard() {
-		check_admin_referer('woonet-woocommerce-dashboard-info');
+		check_admin_referer('woonet-woocommerce-dashboard-info-options');
 		
 		global $new_whitelist_options;
 		$options = $new_whitelist_options['woonet-woocommerce-dashboard-info'];

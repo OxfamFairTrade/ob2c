@@ -30,23 +30,18 @@
 			}
 			
 			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				// update_site_option( 'oxfam_shop_dashboard_notice_success', 'De <a href="https://copain.oww.be/nieuwsbericht/2023/01/09/Promos-online--winkel-februari-2023-update" target="_blank">promoties voor februari</a> werden geactiveerd in alle webshops. Verder werd de <a href="https://copain.oww.be/nieuwsbericht/2023/01/11/Update-prijskaartjes-wijn-groot-geschenkdoos-medium-Bio-extra-vierge-olijfolie" target="_blank">prijsstijging van 01/02/2023</a> op BIO Extra Vierge olijfolie (W18021) doorgevoerd. In lijn met ons privacybeleid werden alle ordergegevens uit 2020 gewist.' );
-				
 				if ( '' !== ( $success = get_site_option( 'oxfam_shop_dashboard_notice_success', '' ) ) ) {
 					echo '<div class="notice notice-success">';
-						echo '<p>'.$success.'</p>';
+						echo '<p>' . stripslashes( $success ) . '</p>';
 					echo '</div>';
 				}
-				
-				update_site_option( 'oxfam_shop_dashboard_notice_warning', 'Een heleboel uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is: 17115 BIO Volle jasmijnrijst 5 kg (THT: 31/07/2022), 20248 Chenin Blanc BOX 3 l, 21000 Sinaasappelsap 1 l (THT: 31/12/2022), 21002 Worldshakesap 1 l (THT: 31/12/2022), 21003 Tropicalsap 1 l (THT: 31/10/2022), 21008 BIO Sinaas-mangosap 1 l (THT: 31/12/2022), 21011 Vers geperst Belgisch appelsap 1 l (in omschakeling naar BIO) (THT: 31/12/2022), 21103 Tropicalsap 20 cl (THT: 31/10/2022), 22013 African Blendkoffie (THT: 29/01/2023), 23403 Groene thee citroengras 1 g x 20 (THT: 21/11/2022), 23501 BIO Losse groene thee (THT: 21/11/2022), 24502 Hagelslag (THT: 28/01/2023), 26493 Maya Speculoospasta (THT: 23/11/2022), 27517 BIO Zwarte linzen (THT: 31/07/2022). Ook werden enkele producten van Fairtrade Original en Ethiquable die al lang niet meer door Oxfam Fair Trade verdeeld worden (witte noedels, ananasschijven, kruiden, ...) gewist, bij gebrek aan masterdata voor prijzen en ingrediënten. Indien gewenst kunnen webshops die deze producten via andere wegen aankopen ze opnieuw toevoegen als lokaal assortiment.' );
 				
 				if ( '' !== ( $warning = get_site_option( 'oxfam_shop_dashboard_notice_warning', '' ) ) ) {
 					echo '<div class="notice notice-warning">';
-						echo '<p>'.$warning.'</p>';
+						echo '<p>' . stripslashes( $warning ) . '</p>';
 					echo '</div>';
 				}
 				
-				// update_site_option( 'oxfam_shop_dashboard_notice_new_products', array( 21055, 22034 ) );
 				$new_skus = get_site_option( 'oxfam_shop_dashboard_notice_new_products', array() );
 				if ( count( $new_skus ) > 0 ) {
 					echo '<div class="notice notice-success">';
@@ -66,13 +61,18 @@
 					echo '</div>';
 				}
 				
-				// update_site_option( 'oxfam_shop_dashboard_notice_replaced_products', array( 20058 => 20081 ) );
 				$replaced_skus = get_site_option( 'oxfam_shop_dashboard_notice_replaced_products', array() );
 				if ( count( $replaced_skus ) > 0 ) {	
 					echo '<div class="notice notice-success">';
 						echo '<p>Volgende referenties vervangen een bestaand product (met identieke verpakking), omwille van een gewijzigde ompakhoeveelheid:</p><ul style="margin-left: 2em; column-count: 2;">';
-							foreach ( $replaced_skus as $old_sku => $sku ) {
-								$product_id = wc_get_product_id_by_sku( $sku );
+							foreach ( $replaced_skus as $old_new ) {
+								$parts = explode( '-', $old_new );
+								if ( count( $parts ) !== 2 ) {
+									continue;
+								}
+								$old_sku = $parts[0];
+								$new_sku = $parts[1];
+								$product_id = wc_get_product_id_by_sku( $new_sku );
 								if ( $product_id ) {
 									$product = wc_get_product( $product_id );
 									echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_sku().' '.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')';
