@@ -51,10 +51,13 @@
 				'date_expires' => $db_coupon->expires,
 				'discount_type' => 'fixed_cart',
 				'description' => sprintf( 'Cadeaubon %s t.w.v. %d euro', $db_coupon->issuer, $db_coupon->value ),
-				// Eventueel beperken tot OFT-producten?
-				// 'product_ids' => array(),
-				// Alle papieren geschenkencheques uitsluiten? WORDT PAS AUTOMATISCH TOEGEPAST WANNEER AAN DE VOORWAARDEN VOLDAAN WORDT ...
-				// 'excluded_product_ids' => get_oxfam_cheques_ids_array(),
+				// Gebruik van voucher niet toestaan indien papieren geschenkencheque in winkelmandje
+				'excluded_product_ids' => get_oxfam_cheques_ids_array(),
+				// WooCommerce Extended Coupon Features PRO zal de bon automatisch queuen indien er cheques in het winkelmandje zitten
+				// Op zich in orde MAAR onze custom WooCommerce-meldingen (zie 'woocommerce_coupon_error') worden in dat geval overschreven
+				// Helaas niet mogelijk om metavelden in te stellen op dynamische coupons, zie https://github.com/woocommerce/woocommerce/issues/29870
+				// Daarom default waarde op 'no' gezet via plugin overwrite ...
+				// '_wjecf_allow_enqueue' => 'no',
 				'usage_limit' => 1,
 			);
 			if ( ! empty( $db_coupon->order ) ) {
@@ -77,8 +80,16 @@
 			if ( $error_code == WC_COUPON::E_WC_COUPON_USAGE_LIMIT_REACHED ) {
 				return sprintf( __( 'De cadeaubon met code %s werd al ingeruild!', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
 			}
+			
+			if ( $error_code === WC_COUPON::E_WC_COUPON_EXCLUDED_PRODUCTS ) {
+				return sprintf( __( 'Je kunt een digitale cadeaubon niet gebruiken om papieren geschenkencheques aan te kopen. Verwijder alle cheques uit je winkelmandje om de voucher met code %s te kunnen activeren.', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
+			}
+			
+			if ( $error_code === WC_COUPON::E_WC_COUPON_INVALID_REMOVED ) {
+				return sprintf( __( 'Je kunt een digitale cadeaubon niet gebruiken om papieren geschenkencheques aan te kopen. Omdat je zo\'n cheque toevoegde aan je winkelmandje, is de digitale bon gedesactiveerd. Verwijder alle cheques uit je winkelmandje als je de voucher met code %s opnieuw wil toepassen.', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
+			}
 		}
-	
+		
 		if ( $error_code == WC_COUPON::E_WC_COUPON_NOT_EXIST ) {
 			if ( intval( get_site_transient( 'number_of_failed_attempts_ip_'.$_SERVER['REMOTE_ADDR'] ) ) > 10 ) {
 				return __( 'Je ondernam te veel onsuccesvolle pogingen na elkaar. Probeer het over een uur opnieuw.', 'oxfam-webshop' );
@@ -86,7 +97,7 @@
 				return sprintf( __( 'De code %s kennen we helaas niet! Opgelet: papieren geschenkencheques kunnen niet via de webshop ingeruild worden.', 'oxfam-webshop' ), strtoupper( $coupon->get_code() ) );
 			}
 		}
-	
+		
 		return $message;
 	}
 	

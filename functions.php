@@ -5702,15 +5702,19 @@
 	}
 
 	function get_oxfam_cheques_ids_array() {
-		$product_ids = array();
-
-		foreach ( get_oxfam_cheques_skus_array() as $sku ) {
-			$product_id = wc_get_product_id_by_sku( $sku );
-			if ( $product_id > 0 ) {
-				$product_ids[] = $product_id;
+		$product_ids = get_transient('oxfam_cheques_ids_array');
+		
+		if ( $product_ids === false ) {
+			$product_ids = array();
+			foreach ( get_oxfam_cheques_skus_array() as $sku ) {
+				$product_id = wc_get_product_id_by_sku( $sku );
+				if ( $product_id > 0 ) {
+					$product_ids[] = $product_id;
+				}
 			}
+			set_transient( 'oxfam_cheques_ids_array', $product_ids, WEEK_IN_SECONDS );
 		}
-
+		
 		return $product_ids;
 	}
 
