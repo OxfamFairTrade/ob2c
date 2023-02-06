@@ -1,5 +1,23 @@
 <?php
 
+	// Voeg nieuwe superadmins toe als beheerder aan alle blogs
+	// Dit is enkel nodig om de lijst blogs op https://shop.oxfamwereldwinkels.be/wp-admin/admin.php?page=threewp_broadcast_php_code compleet te maken
+	// Zo kunnen zij PHP-code uitvoeren in alle subsites
+	$super_admins = array( 'corneel', 'kristof' );
+	$sites = get_sites( array( 'public' => 1 ) );
+	foreach ( $sites as $site ) {
+		switch_to_blog( $site->blog_id );
+		foreach ( $super_admins as $login ) {
+			$user = get_user_by( 'login', $login );
+			if ( is_user_member_of_blog( $user->ID, $site->blog_id ) ) {
+				write_log( 'User '.$login.' is already on '.get_bloginfo('name') );
+			} elseif ( add_user_to_blog( $site->blog_id, $user->ID, 'administrator' ) ) {
+				write_log( 'User '.$login.' added to '.get_bloginfo('name') );
+			}
+		}
+		restore_current_blog();
+	}
+	
 	// Verwijder oude bestellingen
 	$logger = wc_get_logger();
 	$context = array( 'source' => 'Cleanup' );
