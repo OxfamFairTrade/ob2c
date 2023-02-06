@@ -7112,7 +7112,7 @@
 				// Fallback: knip alles weg na de afsluitende dubbele quote van het href-attribuut
 				$slugs = explode( '"', $slugs[0] );
 				
-				if ( strpos( 'oxfamfairtrade.be/nl/partners', $partner->description ) > 0 ) {
+				if ( strpos( $partner->description, 'oxfamfairtrade.be/nl/partners' ) > 0 ) {
 					$domain = 'www.oxfamfairtrade.be';
 				} else {
 					$domain = 'www.oxfamwereldwinkels.be';
