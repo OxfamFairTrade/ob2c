@@ -8239,11 +8239,13 @@
 				if ( count( $matching_partners ) === 1 ) {
 					$partner_data = $matching_partners[0];
 					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
-					$logger->info( 'Partner data saved in transient for '.$partner_slug, $context );
+					$logger->info( 'Partner data for '.$partner_slug.' cached in transient', $context );
 				} elseif ( count( $matching_partners ) > 1 ) {
 					$logger->warning( 'Multiple partners found for '.$partner_slug, $context );
 				} else {
-					$logger->notice( 'No partner found for '.$partner_slug, $context );
+					// Vermijd dat we de data telkens opnieuw blijven ophalen, ze bestaat wellicht gewoon niet!
+					set_site_transient( $partner_slug.'_partner_data', $partner_data, HOUR_IN_SECONDS );
+					$logger->info( 'No partner data found for '.$partner_slug.', but still cached in transient', $context );
 				}
 			} else {
 				$logger->error( 'Could not retrieve partner for '.$partner_slug, $context );
