@@ -7100,11 +7100,10 @@
 	// Retourneert zo veel mogelijk beschikbare info bij een partner (enkel naam en land steeds ingesteld!)
 	function get_info_by_partner( $partner ) {
 		$partner_info['name'] = $partner->name;
-		// Zit ook in de API, maar die bevat enkel A/B-partners
 		$partner_info['country'] = get_term_by( 'id', $partner->parent, 'product_partner' )->name;
 		$partner_info['archive'] = get_term_link( $partner->term_id );
 
-		if ( strlen( $partner->description ) > 20 ) {
+		if ( strlen( $partner->description ) > 0 ) {
 			// Check of er een link naar een partnerpagina aanwezig is
 			$parts = explode( '/partners/', $partner->description );
 			if ( count( $parts ) >= 2 ) {
@@ -7112,7 +7111,13 @@
 				$slugs = explode( '/', $parts[1] );
 				// Fallback: knip alles weg na de afsluitende dubbele quote van het href-attribuut
 				$slugs = explode( '"', $slugs[0] );
-				$partner_info = array_merge( $partner_info, get_external_partner( $slugs[0] ) );
+				
+				if ( strpos( 'oxfamfairtrade.be/nl/partners', $partner->description ) > 0 ) {
+					$domain = 'www.oxfamfairtrade.be';
+				} else {
+					$domain = 'www.oxfamwereldwinkels.be';
+				}
+				$partner_info = array_merge( $partner_info, get_external_partner( $slugs[0], $domain ) );
 			} else {
 				// Fallback: zet de naam van de partner om in een slug
 				$partner_info = array_merge( $partner_info, get_external_partner( $partner->name ) );
@@ -7413,7 +7418,7 @@
 
 	function after_xml_import( $import_id ) {
 		delete_site_option('oft_import_active');
-
+		
 		if ( $import_id == 7 ) {
 			// Vind alle producten die vandaag niet bijgewerkt werden door de ERP-import
 			// Als we dit in gebruik willen nemen, moeten we vooraf de craftsvoorraden bijwerken
@@ -7427,9 +7432,11 @@
 				'meta_compare'		=> '<',
 			);
 			$to_outofstock = new WP_Query( $args );
+			
 			if ( $to_outofstock->have_posts() ) {
 				write_log( $to_outofstock->found_posts." DEPRECATED PRODUCTS" );
-
+				$products_to_deprecate = array();
+				
 				while ( $to_outofstock->have_posts() ) {
 					$to_outofstock->the_post();
 					$product = wc_get_product( get_the_ID() );
@@ -7441,26 +7448,29 @@
 							// Metadata lijkt automatisch gesynchroniseerd te worden naar subsites terwijl voorraadstatus behouden wordt, perfect!
 							$product->save();
 							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
-						} else {
-							write_log( $product->get_sku()." SHOULD BE DISABLED ON MAIN SITE (".$product->get_meta('touched_by_import').")" );
+						} elseif ( 'is' === 'voeding' ) {
+							$products_to_deprecate[ $product->get_sku() ] = '<a href="'.admin_url('post.php?post='.$product->get_id().'&action=edit').'" target="_blank">'.$product->get_name().'</a> &mdash; Laatste geïmporteerd: '.$product->get_meta('touched_by_import');
 						}
 					}
 				}
-
+				
 				wp_reset_postdata();
 			}
-
+			
+			if ( count( $products_to_deprecate ) > 0 ) {
+				$headers = array();
+				$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
+				$headers[] = 'Content-Type: text/html';
+				$body = '<p>Je taak voor deze maand zit er bijna op. Gelieve wel de onderstaande producten wel nog op te kuisen: niet verwijderen, maar wel: voorraad op 0 zetten (indien nog niet automatisch gebeurd), nabestellingen blokkeren en BestelWeb-dropdown op \'nee\' zetten.</p><ol><li>'.implode( '</li><li>', $products_to_deprecate ).'</li></ol><p>&nbsp;</p><p><i>Dit is een automatisch bericht.</i></p>';
+				wp_mail( 'info@fullstackahead.be', 'Hoera, de productimport is afgelopen!', '<html>'.$body.'</html>', $headers );
+			}
+			
 			$old = WP_CONTENT_DIR."/erp-import.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
-
+			
 			// Pas toegevoegde foto's dienen niet meer via bulkimport geregistreerd te worden
 			update_option( 'laatste_registratie_timestamp', time() );
-
-			// Flush na afloop alle W3TC-caches?
-			// if ( function_exists('w3tc_flush_all') ) {
-			// 	w3tc_flush_all();
-			// }
 		}
 	}
 
@@ -8203,50 +8213,45 @@
 		return $all_stores;
 	}
 
-	function get_external_partner( $partner_name, $domain = 'www.oxfamwereldwinkels.be' ) {
+	function get_external_partner( $partner_name, $domain = 'www.oxfamfairtrade.be' ) {
 		$partner_data = array();
 		$partner_slug = sanitize_title( $partner_name );
-
+		
 		if ( false === ( $partner_data = get_site_transient( $partner_slug.'_partner_data' ) ) ) {
-			// Op dit moment is de API nog volledig publiek, dus dit is toekomstmuziek
-			// $args = array(
-			// 	'headers' => array(
-			// 		'Authorization' => 'Basic '.base64_encode( OWW_USER.':'.OWW_PASSWORD ),
-			// 	),
-			// );
-
-			// Zoekt default enkel naar objecten met status 'publish', levert in principe één element op
-			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/?slug='.$partner_slug );
-
+			// API zoekt standaard enkel naar objecten met status 'publish'
+			// API is volledig publiek, dus geen authorization header nodig
+			if ( $domain === 'www.oxfamfairtrade.be' ) {
+				// Géén meervoud
+				$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partner/?slug='.$partner_slug );
+			} else {
+				$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/?slug='.$partner_slug );
+			}
+			
 			// Log alles op de hoofdsite
 			switch_to_blog(1);
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'WordPress API' );
-
+			
 			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
 				// Zet het JSON-object om in een PHP-array
 				$matching_partners = json_decode( wp_remote_retrieve_body( $response ), true );
-
+				
 				if ( count( $matching_partners ) === 1 ) {
 					$partner_data = $matching_partners[0];
-					// Beperk de payload
-					unset( $partner_data['content'] );
-					unset( $partner_data['yoast_head'] );
-					unset( $partner_data['_links'] );
 					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
-					$logger->debug( 'Partner data saved in transient for '.$partner_slug, $context );
+					$logger->info( 'Partner data saved in transient for '.$partner_slug, $context );
 				} elseif ( count( $matching_partners ) > 1 ) {
-					$logger->notice( 'Multiple partners found for '.$partner_slug, $context );
+					$logger->warning( 'Multiple partners found for '.$partner_slug, $context );
 				} else {
 					$logger->notice( 'No partner found for '.$partner_slug, $context );
 				}
 			} else {
-				$logger->notice( 'Could not retrieve partner for '.$partner_slug, $context );
+				$logger->error( 'Could not retrieve partner for '.$partner_slug, $context );
 			}
-
+			
 			restore_current_blog();
 		}
-
+		
 		return $partner_data;
 	}
 

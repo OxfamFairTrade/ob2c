@@ -90,19 +90,28 @@ if ( count( $partner_terms ) > 0 ) {
     foreach ( $partner_terms as $term_id => $partner_name ) {
         $partners[] = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
     }
-
-    $a_partners = wp_list_filter( $partners, array( 'type' => 'A' ) );
-    $b_partners = wp_list_filter( $partners, array( 'type' => 'B' ) );
     
-    // Zoek een random A/B-partner om uit te lichten
-    if ( count( $a_partners ) > 0 ) {
-        $featured_partner = $a_partners[ array_rand( $a_partners ) ];
-    } elseif ( count( $b_partners ) > 0 ) {
-        $featured_partner = $b_partners[ array_rand( $b_partners ) ];
+    // Beschikbare (interessante) velden
+    // $partner['name'];
+    // $partner['country'];
+    // $partner['archive'];
+    // $partner['link'];
+    // $partner['featured_media'];
+    // $partner['content']['rendered'];
+    // $partner['excerpt']['rendered'];
+    // $partner['acf']['partner_bullet_points'];
+    // $partner['acf']['partner_region'];
+    // $partner['acf']['partner_website'];
+
+    $partners_with_page = wp_list_filter( $partners, array( 'type' => 'partner' ) );
+    if ( count( $partners_with_page ) > 0 ) {
+        $featured_partner = $partners_with_page[ array_rand( $partners_with_page ) ];
     }
 
-    // var_dump_pre( $partners );
-    // var_dump_pre( $featured_partner );
+    if ( current_user_can('update_core') ) {
+        var_dump_pre( $partners );
+        var_dump_pre( $featured_partner );
+    }
 }
 ?>
 
