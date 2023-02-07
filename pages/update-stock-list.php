@@ -8,7 +8,7 @@
 	<nav class="nav-tab-wrapper">
 		<?php
 			// Om het submenu de tabselectie netjes te laten volgen, kijken we beter naar het laatste deel van de parameter 'oxfam-product-list-...' i.p.v. de nieuwe parameter 'assortment' 
-			$tabs = array( 'general' => 'Alle producten', 'chocolade' => 'Chocolade', 'koffie' => 'Koffie', 'wijn' => 'Wijn', 'andere-dranken' => 'Andere dranken', 'ontbijt' => 'Ontbijt', 'snacks' => 'Snacks', 'wereldkeuken' => 'Wereldkeuken', 'crafts' => 'Alle craftsproducten', 'april' => 'Aprilmagazine 2021', 'januari' => 'Januarimagazine 2021', 'oktober' => 'Oktobermagazine 2020', 'local' => 'Lokaal assortiment' );
+			$tabs = array( 'general' => 'Alle producten', 'chocolade' => 'Chocolade', 'koffie' => 'Koffie', 'wijn' => 'Wijn', 'andere-dranken' => 'Andere dranken', 'ontbijt' => 'Ontbijt', 'snacks' => 'Snacks', 'wereldkeuken' => 'Wereldkeuken', 'crafts' => 'Alle craftsproducten', 'local' => 'Lokaal assortiment' );
 			
 			$parts = explode( 'oxfam-products-list-', $_REQUEST['page'] );
 			if ( count( $parts ) === 2 and array_key_exists( $parts[1], $tabs ) ) {
@@ -16,7 +16,7 @@
 			} else {
 				$assortment = 'general';
 			}
-
+			
 			foreach ( $tabs as $key => $title ) {
 				$active = '';
 				if ( $assortment === $key ) {
@@ -70,12 +70,12 @@
 					if ( $product === false or in_array( $product->get_sku(), $empties ) ) {
 						continue;
 					}
-
+					
 					// Logica eventueel reeds toepassen in WP_Query voor performantie?
 					if ( ! ob2c_product_matches_assortment( $product, $assortment ) ) {
 						continue;
 					}
-
+					
 					// Kleur de randen en tel de initiële waarde voor de tellers
 					if ( $product->is_on_backorder() ) {
 						$class = 'border color-orange';
@@ -88,9 +88,9 @@
 					if ( $product->is_featured() ) {
 						$featured_cnt++;
 					}
-
+					
 					$content .= '<div id="'.get_the_ID().'" class="compact';
-
+					
 					// Voeg klasse toe indien recent gepubliceerd
 					if ( get_the_date('U') > strtotime('-3 months') ) $content .= ' new';
 					
@@ -122,7 +122,7 @@
 				}
 				$content .= '</div>';
 				wp_reset_postdata();
-
+				
 				echo '<p style="text-align: right; width: 100%;"><br>Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> bestelbaar</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan op de homepage.</p>';
 				
 				echo $content;
@@ -166,21 +166,21 @@
 				ajaxCall( id, meta, value );
 			}
 		});
-
+		
 		// Reset teller
 		var tries = 0;
-
+		
 		// Verwerk de individuele AJAX-call
 		function ajaxCall(id, meta, value) {
 			jQuery("#"+id).find(".output").html("Aan het opslaan ...");
-
+			
 			var input = {
 				'action': 'oxfam_stock_action',
 				'id': id,
 				'meta': meta,
 				'value': value,
 			};
-
+			
 			jQuery.ajax({
 				type: 'POST',
 				url: ajaxurl,
@@ -198,7 +198,7 @@
 						} else if ( value == 'instock' ) {
 							jQuery("#"+id).find('.border').removeClass('color-red color-orange').addClass('color-green');
 						}
-
+						
 						// Werk de tellers bij
 						jQuery(".instock-cnt").html(jQuery("#oxfam-products").find(".border.color-green").length);
 						jQuery(".onbackorder-cnt").html(jQuery("#oxfam-products").find(".border-color-orange").length);
@@ -206,7 +206,7 @@
 					} else {
 						msg = 'Niets gedaan!';
 					}
-
+					
 					jQuery("#"+id).find(".output").html(msg).delay(5000).animate({
 						opacity: 0,
 					}, 1000, function(){
@@ -226,9 +226,8 @@
 						} else {
 							jQuery(this).prop("checked", !jQuery(this).is(":checked") );
 						}
-
+						
 						tries = 0;
-
 						jQuery("#"+id).find(".output").html("Wijzigingen mislukt!").delay(15000).animate({
 							opacity: 0,
 						}, 1000, function(){
@@ -238,18 +237,18 @@
 				},
 			});
 		}
-
+		
 		jQuery("#oxfam-products").find(".global-toggle").on( 'change', function() {
 			var go = confirm("Weet je zeker dat je dit wil doen?");
 			if ( go == true ) {
 				jQuery(this).parent().parent().find(".output").html("Bezig met verwerken, wacht op automatische refresh ...");
-
+				
 				var input = {
 					'action': 'oxfam_bulk_stock_action',
 					'status': jQuery(this).find(":selected").val(),
 					'assortment': '<?php echo $assortment; ?>',
 				};
-
+				
 				jQuery.ajax({
 					type: 'POST',
 					url: ajaxurl,
