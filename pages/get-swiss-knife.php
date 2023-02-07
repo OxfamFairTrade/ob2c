@@ -143,11 +143,15 @@
 		
 		foreach ( $skus_sold as $sku => $value ) {
 			echo '<p><strong>'.$sku.' '.$product_names[ $sku ].'</strong>: '.array_sum( $skus_sold[ $sku ] ).'x verkocht van '.$start_date.' tot en met '.$end_date.'</p>';
-			echo '<ul>';
-			foreach ( $value as $date => $sold ) {
-				echo '<li>'.$date.': '.$sold.'w</li>';
+			if ( array_sum( $skus_sold[ $sku ] ) > 0 ) {
+				echo '<ul>';
+				foreach ( $value as $date => $sold ) {
+					if ( $sold > 0 ) {
+						echo '<li>'.$date.': '.$sold.'x</li>';
+					}
+				}
+				echo '</ul>';
 			}
-			echo '</ul>';
 		}
 	}
 	
@@ -192,7 +196,7 @@
 			}
 			echo '</ul>';
 		} else {
-			echo '<p>Er zijn geen recente orders met kortingsbonnen.</p>'; 
+			echo '<p>Geen recente orders met kortingsbonnen.</p>'; 
 		}
 	}
 	
@@ -221,7 +225,7 @@
 		echo '</ul>';
 		
 		if ( count( $postcodes ) > 0 ) {
-			echo '<p class="warning">Opgelet: postcodes '.implode( ', ', array_keys( $postcodes ) ).' zijn nog niet gelinkt aan een webshop!</p>';
+			echo '<p class="error">Opgelet: postcodes '.implode( ', ', array_keys( $postcodes ) ).' zijn nog niet gelinkt aan een webshop!</p>';
 		}
 	}
 ?>

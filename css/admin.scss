@@ -149,12 +149,16 @@
 .oxfam-admin-styling {
 	ul {
 		list-style: initial;
-		margin-inline-start: 1.5em;
+		padding-left: 1.5em;
 		margin: 0;
 	}
 	
 	.warning {
 		color: orange;
+	}
+	
+	.error {
+		color: red;
 	}
 }
 
