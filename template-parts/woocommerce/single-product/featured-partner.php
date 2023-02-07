@@ -28,13 +28,13 @@
 <div class="featured-partner">
 	<div class="col-row">
 		<div class="col-md-7">
-			<?php if ( array_key_exists( 'partner_image', $featured_partner ) and $featured_partner['partner_image'] !== '' ) : ?>
+			<?php if ( array_key_exists( 'partner_image', $featured_partner ) and $featured_partner['partner_image'] ) : ?>
 				<img src="<?= esc_url( $featured_partner['partner_image'] ); ?>">
 			<?php elseif ( $featured_partner['quote']['image'] !== '' ) : ?>
 				<img src="<?= esc_url( $featured_partner['quote']['image'] ); ?>">
 			<?php endif; ?>
 			
-			<?php if ( array_key_exists( 'acf', $featured_partner ) and $featured_partner['acf']['partner_bullet_points'] !== '' ) : ?>
+			<?php if ( array_key_exists( 'acf', $featured_partner ) and count( $featured_partner['acf']['partner_bullet_points'] ) > 0 ) : ?>
 				<ul>
 					<?php foreach ( $featured_partner['acf']['partner_bullet_points'] as $bullet ) : ?>
 						<li><?= $bullet['partner_bullet_point']; ?></li>
@@ -47,8 +47,8 @@
 			<p><a href="<?= esc_url( $featured_partner['link'] ); ?>">Maak kennis met <?= $featured_partner['name']; ?></a></p>
 		</div>
 		<div class="col-md-5">
-			<?php if ( array_key_exists( 'partner_quote', $featured_partner ) and $featured_partner['partner_quote'] !== '' ) : ?>
-				<?= $featured_partner['partner_quote']; ?>
+			<?php if ( array_key_exists( 'partner_quote', $featured_partner ) and $featured_partner['partner_quote']['rendered'] ) : ?>
+				<?= $featured_partner['partner_quote']['rendered']; ?>
 			<?php elseif ( ! empty( $featured_partner['quote']['content'] ) ) : ?>
 				<blockquote>
 					&#8220;<?= $featured_partner['quote']['content']; ?>&#8221;
