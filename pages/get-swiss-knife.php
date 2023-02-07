@@ -168,7 +168,6 @@
 			$all_orders = wc_get_orders( $args );
 			
 			foreach ( $all_orders as $wc_order ) {
-				$output = '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a> op '.$wc_order->get_date_created()->date_i18n('d/m/Y').' à '.wc_price( $wc_order->get_total() );
 				$extras = array();
 				
 				foreach ( $wc_order->get_coupons() as $coupon ) {
@@ -180,9 +179,9 @@
 				}
 				
 				if ( count( $extras ) > 0 ) {
-					$output .= ': '.implode( ', ', $extras );
+					$output = '<a href="'.$wc_order->get_edit_order_url().'" target="_blank">'.$wc_order->get_order_number().'</a> op '.$wc_order->get_date_created()->date_i18n('d/m/Y').' à '.wc_price( $wc_order->get_total() ).': '.implode( ', ', $extras );
+					$orders[ $wc_order->get_order_number() ] = $output;
 				}
-				$orders[ $wc_order->get_order_number() ] = $output;
 			}
 			
 			restore_current_blog();
@@ -219,7 +218,7 @@
 		ksort( $list, SORT_NUMERIC );
 		echo '<ul>';
 		foreach ( $list as $postcode => $webshops ) {
-			echo '<li class="'.( count( $webshops ) > 1 ? 'warning' : 'normal' ).'">'.$postcode.' '.$postcodes[ $postcode ].': '.implode( ', ', $webshops ).'</li>';
+			echo '<li>'.$postcode.' '.$postcodes[ $postcode ].': <span class="'.( count( $webshops ) > 1 ? 'warning' : 'ok' ).'">'.implode( ', ', $webshops ).'</span></li>';
 			unset( $postcodes[ $postcode ] );
 		}
 		echo '</ul>';
