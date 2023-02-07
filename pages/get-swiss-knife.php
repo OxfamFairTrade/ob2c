@@ -2,7 +2,7 @@
 	if ( ! defined('ABSPATH') ) exit;
 ?>
 
-<div class="wrap">
+<div class="wrap oxfam-admin-styling">
 	<h1>Handige tooltjes</h1>
 	
 	<?php if ( isset( $_GET['updated'] ) ) : ?>
@@ -84,7 +84,7 @@
 			}
 			
 			if ( count( $in_stock ) === 0 ) {
-				echo '<span style="color: red;">geen enkel product op voorraad!</span>';
+				echo '<span class="warning">geen enkel product op voorraad!</span>';
 			} else {
 				echo implode( ' / ', $in_stock );
 			}
@@ -142,10 +142,10 @@
 		}
 		
 		foreach ( $skus_sold as $sku => $value ) {
-			echo '<p><strong>'.$sku.' '.$product_names[ $sku ].'</strong>: '.array_sum( $skus_sold[ $sku ] ).' verkocht van '.$start_date.' tot '.$end_date.'</p>';
+			echo '<p><strong>'.$sku.' '.$product_names[ $sku ].'</strong>: '.array_sum( $skus_sold[ $sku ] ).'x verkocht van '.$start_date.' tot en met '.$end_date.'</p>';
 			echo '<ul>';
 			foreach ( $value as $date => $sold ) {
-				echo '<li>'.$date.';'.$sold.'</li>';
+				echo '<li>'.$date.': '.$sold.'w</li>';
 			}
 			echo '</ul>';
 		}
@@ -215,13 +215,13 @@
 		ksort( $list, SORT_NUMERIC );
 		echo '<ul>';
 		foreach ( $list as $postcode => $webshops ) {
-			echo '<li>'.$postcode.' '.$postcodes[ $postcode ].': '.'<span style="color: '.( count( $webshops ) > 1 ? 'orange' : '' ).'">'.implode( ', ', $webshops ).'</span></li>';
+			echo '<li class="'.( count( $webshops ) > 1 ? 'warning' : 'normal' ).'">'.$postcode.' '.$postcodes[ $postcode ].': '.implode( ', ', $webshops ).'</li>';
 			unset( $postcodes[ $postcode ] );
 		}
 		echo '</ul>';
 		
 		if ( count( $postcodes ) > 0 ) {
-			echo '<p style="color: red;">Opgelet: postcodes '.implode( ', ', array_keys( $postcodes ) ).' zijn nog niet gelinkt aan een webshop!</p>';
+			echo '<p class="warning">Opgelet: postcodes '.implode( ', ', array_keys( $postcodes ) ).' zijn nog niet gelinkt aan een webshop!</p>';
 		}
 	}
 ?>

@@ -3,7 +3,7 @@
 	if ( ! defined('ABSPATH') ) exit;
 ?>
 
-<div class="wrap">
+<div class="wrap oxfam-admin-styling">
 	<h1>Ingeruilde digicheques</h1>
 
 	<p>Hieronder vind je een overzicht van alle vouchers (uitgegeven door Gezinsbond, Cera, CM, ...) die de voorbije 4 maanden ingeruild werden in deze webshop.<br/>

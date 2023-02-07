@@ -1418,7 +1418,7 @@
 	add_action( 'admin_enqueue_scripts', 'load_admin_css' );
 
 	function load_admin_css() {
-		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.4' );
+		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.5' );
 	}
 
 	// Fixes i.v.m. cURL NIET MEER NODIG?
@@ -6364,15 +6364,6 @@
 	function oxfam_register_custom_network_pages() {
 		add_submenu_page(
 			'woonet-woocommerce',
-			'Swiss Knife',
-			'Swiss Knife',
-			'create_sites',
-			'woonet-woocommerce-swiss-knife',
-			'oxfam_swiss_knife_callback'
-		);
-		
-		add_submenu_page(
-			'woonet-woocommerce',
 			'Dashboard Info',
 			'Dashboard Info',
 			'create_sites',
@@ -6457,6 +6448,15 @@
 		
 		add_submenu_page(
 			'woonet-woocommerce',
+			'Swiss Knife',
+			'Swiss Knife',
+			'create_sites',
+			'woonet-woocommerce-swiss-knife',
+			'oxfam_swiss_knife_callback'
+		);
+		
+		add_submenu_page(
+			'woonet-woocommerce',
 			'Voucher Analysis',
 			'Voucher Analysis',
 			'create_sites',
@@ -6477,16 +6477,16 @@
 		include get_stylesheet_directory().'/functions/vouchers/get-local-report.php';
 	}
 	
-	function oxfam_swiss_knife_callback() {
-		include get_stylesheet_directory().'/pages/get-swiss-knife.php';
-	}
-	
 	function oxfam_set_dashboard_info_callback() {
 		include get_stylesheet_directory().'/pages/set-dashboard-info.php';
 	}
 	
 	function oxfam_export_used_vouchers_callback() {
 		include get_stylesheet_directory().'/functions/vouchers/get-credit-export.php';
+	}
+	
+	function oxfam_swiss_knife_callback() {
+		include get_stylesheet_directory().'/pages/get-swiss-knife.php';
 	}
 	
 	function oxfam_export_voucher_analysis_callback() {
