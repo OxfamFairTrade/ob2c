@@ -8237,8 +8237,8 @@
 					// Sla de URL van de featured image mee op
 					$image_response = wp_remote_get( $partner_data['_links']['wp:featuredmedia'] );
 					if ( wp_remote_retrieve_response_code( $image_response ) === 200 ) {
-						$image = wp_remote_retrieve_body( $image_response );
-						$partner_data['image'] = $image->media_details->sizes->large->file;
+						$image = json_decode( wp_remote_retrieve_body( $image_response ), true );
+						$partner_data['image'] = $image['media_details']['sizes']['large']['source_url'];
 					}
 					
 					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
