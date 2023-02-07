@@ -6,10 +6,18 @@
 <div class="featured-partner">
 	<div class="col-row">
 		<div class="col-md-7">
-			<?php if ( $featured_partner['quote']['image'] !== '' ) : ?>
+			<?php if ( array_key_exists( 'image', $featured_partner ) and $featured_partner['image'] !== '' ) : ?>
+				<img src="<?php echo esc_url( $featured_partner['image'] ); ?>">
+			<?php elseif ( $featured_partner['quote']['image'] !== '' ) : ?>
 				<img src="<?php echo esc_url( $featured_partner['quote']['image'] ); ?>">
 			<?php endif; ?>
-			<?php echo $featured_partner['bullet_points']; ?>
+			
+			<?php if ( array_key_exists( 'acf', $featured_partner ) and $featured_partner['acf']['partner_bullet_points'] !== '' ) : ?>
+				<?php echo $featured_partner['acf']['partner_bullet_points']; ?>
+			<?php else : ?>
+				<?php echo $featured_partner['bullet_points']; ?>
+			<?php endif; ?>
+			
 			<p><a href="<?php echo esc_url( $featured_partner['link'] ); ?>">Maak kennis met <?php echo $featured_partner['name']; ?></a></p>
 		</div>
 		<div class="col-md-5">

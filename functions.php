@@ -8212,7 +8212,7 @@
 
 		return $all_stores;
 	}
-
+	
 	function get_external_partner( $partner_name, $domain = 'www.oxfamfairtrade.be' ) {
 		$partner_data = array();
 		$partner_slug = sanitize_title( $partner_name );
@@ -8220,12 +8220,7 @@
 		if ( false === ( $partner_data = get_site_transient( $partner_slug.'_partner_data' ) ) ) {
 			// API zoekt standaard enkel naar objecten met status 'publish'
 			// API is volledig publiek, dus geen authorization header nodig
-			if ( $domain === 'www.oxfamfairtrade.be' ) {
-				// Géén meervoud
-				$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partner/?slug='.$partner_slug );
-			} else {
-				$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/?slug='.$partner_slug );
-			}
+			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/?slug='.$partner_slug );
 			
 			// Log alles op de hoofdsite
 			switch_to_blog(1);
@@ -8238,6 +8233,13 @@
 				
 				if ( count( $matching_partners ) === 1 ) {
 					$partner_data = $matching_partners[0];
+					
+					// Sla de URL van de featured image mee op
+					$image_response = wp_remote_get( $partner_data['_links']['wp:featuredmedia'] );
+					if ( wp_remote_retrieve_response_code( $image_response ) === 200 ) {
+						$partner_data['image'] = $image_response->media_details->sizes->large->file;
+					}
+					
 					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
 					$logger->info( 'Partner data for '.$partner_slug.' cached in transient', $context );
 				} elseif ( count( $matching_partners ) > 1 ) {
@@ -8256,7 +8258,7 @@
 		
 		return $partner_data;
 	}
-
+	
 	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen
 	function get_oxfam_shop_data( $key, $node = 0, $raw = false, $shop_post_id = 0 ) {
 		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
