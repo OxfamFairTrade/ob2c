@@ -8234,13 +8234,13 @@
 				if ( count( $matching_partners ) === 1 ) {
 					$partner_data = $matching_partners[0];
 					
-					// Sla de URL van de featured image mee op
-					$images = $partner_data['_links']['wp:featuredmedia'];
-					$image_response = wp_remote_get( $images[0]['href'] );
-					if ( wp_remote_retrieve_response_code( $image_response ) === 200 ) {
-						$image = json_decode( wp_remote_retrieve_body( $image_response ), true );
-						$partner_data['image'] = $image['media_details']['sizes']['large']['source_url'];
-					}
+					// Sla de URL van de featured image mee op VERVANGEN DOOR CUSTOM API VELD IN OFT-SITE
+					// $images = $partner_data['_links']['wp:featuredmedia'];
+					// $image_response = wp_remote_get( $images[0]['href'] );
+					// if ( wp_remote_retrieve_response_code( $image_response ) === 200 ) {
+					// 	$image = json_decode( wp_remote_retrieve_body( $image_response ), true );
+					// 	$partner_data['image'] = $image['media_details']['sizes']['large']['source_url'];
+					// }
 					
 					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
 					$logger->info( 'Partner data for '.$partner_slug.' cached in transient', $context );

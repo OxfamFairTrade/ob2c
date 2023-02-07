@@ -11,38 +11,25 @@
 	// $featured_partner['excerpt']['rendered'];
 	
 	// Interessante velden (OWW-site)
+	// $featured_partner['quote']['image'];
 	// $featured_partner['bullet_points'];
 	// $featured_partner['quote']['content'];
 	// $featured_partner['quote']['by'];
-	// $featured_partner['quote']['image'];
 	
 	// Interessante velden (OFT-site)
-	// $featured_partner['image'];
+	// $featured_partner['partner_image'];
+	// $featured_partner['partner_quote'];
 	// $featured_partner['acf']['partner_bullet_points'];
 	// $featured_partner['acf']['partner_region'];
 	// $featured_partner['acf']['partner_website'];
-	
-	$blocks = parse_blocks( $featured_partner['content']['rendered'] );
-	if ( count( $blocks ) === 1 and $blocks[0]['blockName'] === NULL ) {
-		// Klassieke pagina
-		return '';
-	} else {
-		foreach ( $blocks as $block ) {
-			if ( $block['blockName'] === 'core/pullquote' ) {
-				var_dump_pre( $block );
-				$featured_partner['quote']['content'] = wp_strip_all_tags( $block['innerHTML'] );
-				$featured_partner['quote']['by'] = '';
-			}
-		}
-	}
 ?>
 
 <h3>Producent in de kijker: <span style="font-weight: normal;"><?php echo $featured_partner['name']; ?></span></h3>
 <div class="featured-partner">
 	<div class="col-row">
 		<div class="col-md-7">
-			<?php if ( array_key_exists( 'image', $featured_partner ) and $featured_partner['image'] !== '' ) : ?>
-				<img src="<?= esc_url( $featured_partner['image'] ); ?>">
+			<?php if ( array_key_exists( 'partner_image', $featured_partner ) and $featured_partner['partner_image'] !== '' ) : ?>
+				<img src="<?= esc_url( $featured_partner['partner_image'] ); ?>">
 			<?php elseif ( $featured_partner['quote']['image'] !== '' ) : ?>
 				<img src="<?= esc_url( $featured_partner['quote']['image'] ); ?>">
 			<?php endif; ?>
@@ -60,11 +47,13 @@
 			<p><a href="<?= esc_url( $featured_partner['link'] ); ?>">Maak kennis met <?= $featured_partner['name']; ?></a></p>
 		</div>
 		<div class="col-md-5">
-			<?php if ( ! empty( $featured_partner['quote']['content'] ) ) : ?>
+			<?php if ( array_key_exists( 'partner_quote', $featured_partner ) and $featured_partner['partner_quote'] !== '' ) : ?>
+				<?= $featured_partner['partner_quote']; ?>
+			<?php elseif ( ! empty( $featured_partner['quote']['content'] ) ) : ?>
 				<blockquote>
 					&#8220;<?= $featured_partner['quote']['content']; ?>&#8221;
 					<?php if ( ! empty( $featured_partner['quote']['by'] ) ) : ?>
-						<footer><?= $featured_partner['quote']['by']; ?></footer>
+						<cite><?= $featured_partner['quote']['by']; ?></cite>
 					<?php endif; ?>
 				</blockquote>
 			<?php endif; ?>
