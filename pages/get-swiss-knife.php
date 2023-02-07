@@ -11,7 +11,7 @@
 		</div>
 	<?php endif; ?>
 	
-	<p>Hieronder vind je wat interessante tooltjes die Frederik gebruikte om de webshops in de gaten te houden. De MultiSite-setup betekent immers dat je je zeer vaak naar scriptjes moet teruggrijpen die door alle subsites loopen om bv. snel te zien of de nieuwe producten al goed geadopteerd zijn door de webshopbeheerders.<br/>In de code kunnen de parameters eventueel aangepast worden (zie <i>/pages/get-swiss-knife.php</i>).</p>
+	<p>Hieronder vind je wat interessante tooltjes die Frederik gebruikte om de webshops in de gaten te houden. De MultiSite-setup betekent immers dat je je zeer vaak naar scriptjes moet teruggrijpen die door alle subsites loopen om bv. snel te zien of de nieuwe producten al goed geadopteerd zijn door de webshopbeheerders. In de code kunnen de parameters eventueel aangepast worden (zie <i>/pages/get-swiss-knife.php</i>).</p>
 	
 	<h2>Voorradigheid nieuwe producten</h2>
 	<?php
@@ -28,6 +28,7 @@
 	<?php check_coupons_on_recent_orders( $start_date, $sites ); ?>
 	
 	<h2>Postcodeverdeling</h2>
+	<p>Postcodes waarbij twee of meerdere webshops in overlap werken met elkaar worden in het oranje aangeduid.</p>
 	<?php list_shops_per_postcode( $sites ); ?>
 	
 	<form action="edit.php?action=woonet-woocommerce-swiss-knife-update" method="POST">
@@ -97,6 +98,8 @@
 		}
 		
 		$skus_sold = array();
+		$product_names = array();
+		
 		foreach ( $skus_to_check as $sku_to_check ) {
 			$skus_sold[ $sku_to_check ] = array();
 			$date = $start_date;
@@ -125,7 +128,8 @@
 				foreach ( $line_items as $order_item_product ) {
 					$local_product = $order_item_product->get_product();
 					if ( $local_product !== false and in_array( $local_product->get_sku(), $skus_to_check ) ) {
-						// Houdt geen rekening met eventuele terugbetalingen
+						$product_names[ $local_product->get_sku() ] = $local_product->get_name();
+						// Houdt geen rekening met eventuele terugbetalingen!
 						$skus_sold[ $local_product->get_sku() ][ $order_date ] += $order_item_product->get_quantity();
 					}
 					unset( $local_product );
@@ -134,15 +138,16 @@
 			
 			$after = $skus_sold[ $skus_to_check[0] ][ $start_date ];
 			// Print ter info de verkopen op de eerste dag van het eerste product in de lijst
-			echo '<strong>'.get_bloginfo('name').':</strong> '.( $after - $before ).'x '.$skus_to_check[0].' op '.$start_date.'<br/>';
+			// echo '<strong>'.get_bloginfo('name').':</strong> '.( $after - $before ).'x '.$skus_to_check[0].' op '.$start_date.'<br/>';
 		}
 		
 		foreach ( $skus_sold as $sku => $value ) {
-			echo $sku.': '.array_sum( $skus_sold[ $sku ] ).' in totaal<br/>';
+			echo '<p><strong>'.$sku.' '.$product_names[ $sku ].'</strong>: '.array_sum( $skus_sold[ $sku ] ).' verkocht van '.$start_date.' tot '.$end_date.'</p>';
+			echo '<ul>';
 			foreach ( $value as $date => $sold ) {
-				echo $date.';'.$sold.'<br/>';
+				echo '<li>'.$date.';'.$sold.'</li>';
 			}
-			echo '<br/>';
+			echo '</ul>';
 		}
 	}
 	
@@ -179,12 +184,16 @@
 			restore_current_blog();
 		}
 		
-		echo '<ul>';
-		ksort( $orders );
-		foreach ( $orders as $string ) {
-			echo '<li>'.$string.'</li>';
+		if ( count( $orders ) > 0 ) {
+			ksort( $orders );
+			echo '<ul>';
+			foreach ( $orders as $string ) {
+				echo '<li>'.$string.'</li>';
+			}
+			echo '</ul>';
+		} else {
+			echo '<p>Er zijn geen recente orders met kortingsbonnen.</p>'; 
 		}
-		echo '</ul>';
 	}
 	
 	function list_shops_per_postcode( $sites ) {
@@ -202,11 +211,14 @@
 			}
 			restore_current_blog();
 		}
+		
 		ksort( $list, SORT_NUMERIC );
+		echo '<ul>';
 		foreach ( $list as $postcode => $webshops ) {
-			echo $postcode.' '.$postcodes[ $postcode ].': '.'<span style="color: '.( count( $webshops ) > 1 ? 'orange' : '' ).'">'.implode( ', ', $webshops ).'</span><br/>';
+			echo '<li>'.$postcode.' '.$postcodes[ $postcode ].': '.'<span style="color: '.( count( $webshops ) > 1 ? 'orange' : '' ).'">'.implode( ', ', $webshops ).'</span></li>';
 			unset( $postcodes[ $postcode ] );
 		}
+		echo '</ul>';
 		
 		if ( count( $postcodes ) > 0 ) {
 			echo '<p style="color: red;">Opgelet: postcodes '.implode( ', ', array_keys( $postcodes ) ).' zijn nog niet gelinkt aan een webshop!</p>';
