@@ -13,6 +13,8 @@
 	
 	<p>Hieronder vind je wat interessante tooltjes die Frederik gebruikte om de webshops in de gaten te houden. De MultiSite-setup betekent immers dat je je zeer vaak naar scriptjes moet teruggrijpen die door alle subsites loopen om bv. snel te zien of de nieuwe producten al goed geadopteerd zijn door de webshopbeheerders. In de code kunnen de parameters eventueel aangepast worden (zie <i>/pages/get-swiss-knife.php</i>).</p>
 	
+	<p>&nbsp;</p>
+	
 	<h2>Voorradigheid nieuwe producten</h2>
 	<?php
 		$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites') ) );
@@ -21,11 +23,17 @@
 		check_local_stocks( array( 21055, 22034 ), $sites );
 	?>
 	
+	<p>&nbsp;</p>
+	
 	<h2>Recente verkopen van nieuwe producten</h2>
 	<?php report_sales_by_product( array( 21055, 22034 ), $sites, $start_date, $end_date ); ?>
 	
+	<p>&nbsp;</p>
+	
 	<h2>Recente inruilingen van kortingsbonnen</h2>
 	<?php check_coupons_on_recent_orders( $start_date, $sites ); ?>
+	
+	<p>&nbsp;</p>
 	
 	<h2>Postcodeverdeling</h2>
 	<p>Postcodes waarbij twee of meerdere webshops in overlap werken met elkaar worden in het oranje aangeduid.</p>
@@ -38,6 +46,8 @@
 			?>
 		</table>
 	</form>
+	
+	<p>&nbsp;</p>
 	
 	<h2>Activiteitenlogs</h2>
 	<?php
