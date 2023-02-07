@@ -44,7 +44,17 @@
 		$file_path = dirname( ABSPATH, 1 ) . '/activity.log';
 		
 		if ( ( $handle = fopen( $file_path, 'r' ) ) !== false ) {
-			echo parse_csv_to_table( $handle );
+			echo '<table style="width: 100%;">';
+			while ( $line = fgetcsv( $handle, 0, "\t" ) ) {
+				// Reset variabele
+				$row = '';
+				foreach ( $line as $column ) {
+					$row .= '<td>'.$column.'</td>';
+				}
+				echo '<tr>'.$row.'</tr>';
+			}
+			fclose( $handle );
+			echo '</table>';
 		} else {
 			echo '<p>Nog geen logs beschikbaar.</p>';
 		}
@@ -180,6 +190,7 @@
 	function list_shops_per_postcode( $sites ) {
 		$postcodes = get_site_option('oxfam_flemish_zip_codes');
 		$list = array();
+		
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			foreach ( get_oxfam_covered_zips() as $zip ) {
@@ -197,9 +208,8 @@
 			unset( $postcodes[ $postcode ] );
 		}
 		
-		if ( count( $postcodes) ) {
-			echo '<br/>Opgelet, sommige postcodes zijn niet gelinkt aan een webshop!';
-			var_dump_pre( $postcodes );
+		if ( count( $postcodes ) > 0 ) {
+			echo '<p style="color: red;">Opgelet: postcodes '.implode( ', ', array_keys( $postcodes ) ).' zijn nog niet gelinkt aan een webshop!</p>';
 		}
 	}
 ?>
