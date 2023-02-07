@@ -23,9 +23,15 @@
 	// $featured_partner['acf']['partner_bullet_points'];
 	// $featured_partner['acf']['partner_region'];
 	// $featured_partner['acf']['partner_website'];
+	
+	if ( ! empty( $featured_partner['acf']['partner_region'] ) ) {
+		$region = $featured_partner['acf']['partner_region'];
+	} else {
+		$region = $featured_partner['country'];
+	}
 ?>
 
-<h3>Producent in de kijker: <span style="font-weight: normal;"><?php echo $featured_partner['name']; ?></span></h3>
+<h3>Producent in de kijker: <span style="font-weight: normal;"><?= $featured_partner['name']; ?> uit <?= $region; ?></span></h3>
 <div class="featured-partner">
 	<div class="col-row">
 		<div class="col-md-7">

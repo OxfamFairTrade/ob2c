@@ -1,14 +1,6 @@
 <?php 
 	global $product;
-	
 	$partners = $args['partners'];
-	$partners_with_quote = array_filter( $partners, function( $partner ) {
-		return ! empty( $partner['partner_quote']['rendered'] );
-	} );
-	
-	if ( current_user_can('update_core') ) {
-		var_dump_pre( $partners_with_quote );
-	}
 ?>
 
 <div class="product-origin">

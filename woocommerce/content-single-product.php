@@ -92,12 +92,18 @@ if ( count( $partner_terms ) > 0 ) {
     }
     
     $partners_with_page = wp_list_filter( $partners, array( 'type' => 'partner' ) );
+    $partners_with_quote = array_filter( $partners, function( $partner ) {
+        return ! empty( $partner['partner_quote']['rendered'] );
+    } );
+    
     if ( count( $partners_with_page ) > 0 ) {
+        // Licht random een partner uit waarvan er een partnerpagina bestaat (en dus wellicht ook een quote)
         $featured_partner = $partners_with_page[ array_rand( $partners_with_page ) ];
     }
-
+    
     if ( current_user_can('update_core') ) {
-        // var_dump_pre( $partners );
+        // var_dump_pre( $partners_with_page );
+        // var_dump_pre( $partners_with_quote );
         // var_dump_pre( $featured_partner );
     }
 }
