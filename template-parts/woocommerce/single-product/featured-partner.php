@@ -13,7 +13,7 @@
 			<?php endif; ?>
 			
 			<?php if ( array_key_exists( 'acf', $featured_partner ) and $featured_partner['acf']['partner_bullet_points'] !== '' ) : ?>
-				<?php echo $featured_partner['acf']['partner_bullet_points']; ?>
+				<ul><li><?php implode( '</li><li>', $featured_partner['acf']['partner_bullet_points'] ); ?></li></ul>
 			<?php else : ?>
 				<?php echo $featured_partner['bullet_points']; ?>
 			<?php endif; ?>
