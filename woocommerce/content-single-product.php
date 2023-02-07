@@ -91,6 +91,11 @@ if ( count( $partner_terms ) > 0 ) {
         $partners[] = get_info_by_partner( get_term_by( 'id', $term_id, 'product_partner' ) );
     }
     
+    // Fallback voor OWW-partnerpagina's waar 'type' nog de partnercategorie bevat
+    if ( in_array( $partner['type'], array( 'A', 'B' ) ) ) {
+        $partner['type'] = 'partner';
+    }
+    
     $partners_with_page = wp_list_filter( $partners, array( 'type' => 'partner' ) );
     $partners_with_quote = array_filter( $partners, function( $partner ) {
         return ! empty( $partner['partner_quote']['rendered'] );
