@@ -97,20 +97,8 @@ if ( count( $partner_terms ) > 0 ) {
     }
 
     if ( current_user_can('update_core') ) {
-        // Beschikbare interessante velden
-        // $partner['name'];
-        // $partner['country'];
-        // $partner['archive'];
-        // $partner['link'];
-        // $partner['image'];
-        // $partner['content']['rendered'];
-        // $partner['excerpt']['rendered'];
-        // $partner['acf']['partner_bullet_points'];
-        // $partner['acf']['partner_region'];
-        // $partner['acf']['partner_website'];
-        
         // var_dump_pre( $partners );
-        var_dump_pre( $featured_partner );
+        // var_dump_pre( $featured_partner );
     }
 }
 ?>
