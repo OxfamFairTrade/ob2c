@@ -8235,7 +8235,7 @@
 					$partner_data = $matching_partners[0];
 					
 					// Sla de URL van de featured image mee op
-					$image_response = wp_remote_get( $partner_data['_links']['wp:featuredmedia'] );
+					$image_response = wp_remote_get( $partner_data['_links']['wp:featuredmedia']['href'] );
 					if ( wp_remote_retrieve_response_code( $image_response ) === 200 ) {
 						$image = json_decode( wp_remote_retrieve_body( $image_response ), true );
 						$partner_data['image'] = $image['media_details']['sizes']['large']['source_url'];
