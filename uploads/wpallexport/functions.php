@@ -107,4 +107,43 @@
 	function get_product_image( $sku ) {
 		return ':'.$sku.'.jpg';
 	}
+
+	function get_custom_label_0( $tags ) {
+		$tags = explode( ',', $tags );
+		if ( in_array( 'promotie', $tags ) ) {
+			return 'promotie';
+		} else {
+			return '';
+		}
+	}
+
+	function get_custom_label_1( $tags ) {
+		$tags = explode( ',', $tags );
+		if ( in_array( 'bite to fight', $tags ) ) {
+			return 'bite to fight';
+		} else {
+			return '';
+		}
+	}
+
+	function get_custom_label_2( $tags ) {
+		$tags = explode( ',', $tags );
+		if ( in_array( 'sinterklaas', $tags ) ) {
+			return 'sinterklaas';
+		} elseif ( in_array( 'pasen', $tags ) ) {
+			return 'pasen';
+		} else {
+			return '';
+		}
+	}
+
+	function get_medium_sized_image( $image_id ) {
+		$image_data = wp_get_attachment_image_src( $image_id, 'medium' );
+		if ( $image_data ) {
+			// URL staat als 1ste element in de array
+			return $image_data[0].'?modified='.get_the_date( 'Y-m-d', $image_id );
+		} else {
+			return '';
+		}
+	}
 ?>

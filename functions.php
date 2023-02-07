@@ -7113,7 +7113,7 @@
 				$slugs = explode( '"', $slugs[0] );
 				
 				if ( strpos( $partner->description, 'oxfamfairtrade.be/nl/partners' ) > 0 ) {
-					$domain = 'www.oxfamfairtrade.be';
+					$domain = 'www.oxfamfairtrade.be/nl';
 				} else {
 					$domain = 'www.oxfamwereldwinkels.be';
 				}
@@ -8213,7 +8213,7 @@
 		return $all_stores;
 	}
 	
-	function get_external_partner( $partner_name, $domain = 'www.oxfamfairtrade.be' ) {
+	function get_external_partner( $partner_name, $domain = 'www.oxfamfairtrade.be/nl' ) {
 		$partner_data = array();
 		$partner_slug = sanitize_title( $partner_name );
 		
@@ -8237,7 +8237,8 @@
 					// Sla de URL van de featured image mee op
 					$image_response = wp_remote_get( $partner_data['_links']['wp:featuredmedia'] );
 					if ( wp_remote_retrieve_response_code( $image_response ) === 200 ) {
-						$partner_data['image'] = $image_response->media_details->sizes->large->file;
+						$image = wp_remote_retrieve_body( $image_response );
+						$partner_data['image'] = $image->media_details->sizes->large->file;
 					}
 					
 					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
