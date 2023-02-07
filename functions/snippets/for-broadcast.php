@@ -148,7 +148,7 @@
 	// Verwijder partners
 	$taxonomy = 'product_partner';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'sakaran' );
+		$terms = array( 'upromabio', 'oromia', 'pinora', 'konafcoop', 'eksteenkuil', 'groot-eiland-farm', 'progressive-farmers', 'suikerpartners-uit-india', 'canaan', 'poo-pluk-saparot', 'samroiyod', 'tofta', 'fundopo', 'capim', 'educe', 'miel-del-sul', 'tzeltal-tzotzil', 'cecocafen', 'del-campo', 'ucasa', 'caic', 'lipimavida', 'fapecafes', 'cac-divisoria-ltda', 'naranjillo' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {

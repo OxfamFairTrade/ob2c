@@ -6,15 +6,16 @@
 	// $featured_partner['country'];
 	// $featured_partner['archive'];
 	// $featured_partner['link'];
+	// $featured_partner['type'];
 	// $featured_partner['title']['rendered'];
 	// $featured_partner['content']['rendered'];
 	// $featured_partner['excerpt']['rendered'];
 	
 	// Interessante velden (OWW-site)
 	// $featured_partner['quote']['image'];
-	// $featured_partner['bullet_points'];
 	// $featured_partner['quote']['content'];
 	// $featured_partner['quote']['by'];
+	// $featured_partner['bullet_points'];
 	
 	// Interessante velden (OFT-site)
 	// $featured_partner['partner_image'];
@@ -31,6 +32,7 @@
 			<?php if ( array_key_exists( 'partner_image', $featured_partner ) and $featured_partner['partner_image'] ) : ?>
 				<img src="<?= esc_url( $featured_partner['partner_image'] ); ?>">
 			<?php elseif ( $featured_partner['quote']['image'] !== '' ) : ?>
+				<!-- Tijdelijke fallback voor OWW-pagina's -->
 				<img src="<?= esc_url( $featured_partner['quote']['image'] ); ?>">
 			<?php endif; ?>
 			
@@ -41,6 +43,7 @@
 					<?php endforeach; ?>
 				</ul>
 			<?php else : ?>
+				<!-- Tijdelijke fallback voor OWW-pagina's -->
 				<?= $featured_partner['bullet_points']; ?>
 			<?php endif; ?>
 			
@@ -50,6 +53,7 @@
 			<?php if ( array_key_exists( 'partner_quote', $featured_partner ) and $featured_partner['partner_quote']['rendered'] ) : ?>
 				<?= $featured_partner['partner_quote']['rendered']; ?>
 			<?php elseif ( ! empty( $featured_partner['quote']['content'] ) ) : ?>
+				<!-- Tijdelijke fallback voor OWW-pagina's -->
 				<blockquote>
 					&#8220;<?= $featured_partner['quote']['content']; ?>&#8221;
 					<?php if ( ! empty( $featured_partner['quote']['by'] ) ) : ?>

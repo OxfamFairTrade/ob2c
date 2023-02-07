@@ -7071,29 +7071,29 @@
 
 		return $countries;
 	}
-
+	
 	// Retourneert een array term_id => name van de partners die bijdragen aan het product
 	function get_partner_terms_by_product( $product ) {
 		// Vraag alle partnertermen op die gelinkt zijn aan dit product (helaas geen filterargumenten beschikbaar)
 		// Producten worden door de import enkel aan de laagste hiërarchische term gelinkt, dus dit zijn per definitie landen of partners!
 		$terms = get_the_terms( $product->get_id(), 'product_partner' );
-
+		
 		// Vraag de term-ID's van de continenten in deze site op
 		$args = array( 'taxonomy' => 'product_partner', 'parent' => 0, 'hide_empty' => false, 'fields' => 'ids' );
 		$continents = get_terms( $args );
 		$partners = array();
-
-		if ( is_array($terms) and count($terms) > 0 ) {
+		
+		if ( is_array( $terms ) and count( $terms ) > 0 ) {
 			foreach ( $terms as $term ) {
 				if ( ! in_array( $term->parent, $continents, true ) ) {
 					// De bovenliggende term is geen continent, dus het is een partner!
-					$partners[$term->term_id] = $term->name;
+					$partners[ $term->term_id ] = $term->name;
 				}
 			}
 		}
-
+		
 		// Sorteer alfabetisch op value (= partnernaam) maar bewaar de index (= term-ID)
-		asort($partners);
+		asort( $partners );
 		return $partners;
 	}
 
@@ -7102,9 +7102,10 @@
 		$partner_info['name'] = $partner->name;
 		$partner_info['country'] = get_term_by( 'id', $partner->parent, 'product_partner' )->name;
 		$partner_info['archive'] = get_term_link( $partner->term_id );
+		$partner_info['type'] = 'term';
 
 		if ( strlen( $partner->description ) > 0 ) {
-			// Check of er een link naar een partnerpagina aanwezig is
+			// Check of er een link naar een partnerpagina in de beschrijving staat
 			$parts = explode( '/partners/', $partner->description );
 			if ( count( $parts ) >= 2 ) {
 				// Knip alles weg na de eindslash van de URL
@@ -7117,6 +7118,7 @@
 				} else {
 					$domain = 'www.oxfamwereldwinkels.be';
 				}
+				// Dit zal $partner_info['type'] overschrijven met 'partner' of 'not-found' 
 				$partner_info = array_merge( $partner_info, get_external_partner( $slugs[0], $domain ) );
 			} else {
 				// Fallback: zet de naam van de partner om in een slug
@@ -8231,25 +8233,18 @@
 				// Zet het JSON-object om in een PHP-array
 				$matching_partners = json_decode( wp_remote_retrieve_body( $response ), true );
 				
-				if ( count( $matching_partners ) === 1 ) {
-					$partner_data = $matching_partners[0];
-					
-					// Sla de URL van de featured image mee op VERVANGEN DOOR CUSTOM API VELD IN OFT-SITE
-					// $images = $partner_data['_links']['wp:featuredmedia'];
-					// $image_response = wp_remote_get( $images[0]['href'] );
-					// if ( wp_remote_retrieve_response_code( $image_response ) === 200 ) {
-					// 	$image = json_decode( wp_remote_retrieve_body( $image_response ), true );
-					// 	$partner_data['image'] = $image['media_details']['sizes']['large']['source_url'];
-					// }
-					
-					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
-					$logger->info( 'Partner data for '.$partner_slug.' cached in transient', $context );
-				} elseif ( count( $matching_partners ) > 1 ) {
+				if ( count( $matching_partners ) > 1 ) {
 					$logger->warning( 'Multiple partners found for '.$partner_slug, $context );
 				} else {
-					// Vermijd dat we de data telkens opnieuw blijven ophalen, ze bestaat wellicht gewoon niet!
-					set_site_transient( $partner_slug.'_partner_data', $partner_data, HOUR_IN_SECONDS );
-					$logger->info( 'No partner data found for '.$partner_slug.', but still cached in transient', $context );
+					if ( count( $matching_partners ) === 1 ) {
+						$partner_data = $matching_partners[0];
+						$logger->info( 'Partner data for '.$partner_slug.' cached in transient', $context );
+					} else {
+						$partner_data = array( 'type' => 'not-found' );
+						// Vermijd dat we de data telkens opnieuw blijven ophalen, ze bestaat wellicht gewoon niet
+						$logger->notice( 'No partner data found for '.$partner_slug.', but still cached in transient', $context );
+					}
+					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
 				}
 			} else {
 				$logger->error( 'Could not retrieve partner for '.$partner_slug, $context );

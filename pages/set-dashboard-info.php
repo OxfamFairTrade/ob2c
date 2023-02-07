@@ -11,7 +11,7 @@
 		</div>
 	<?php endif; ?>
 	
-	<p>Met behulp van deze instellingen kun je berichten op het dashboard van elke subsite plaatsen. Indien je een veld volledig leeg maakt, verdwijnt de banner in kwestie automatisch. Via de code kunnen eventueel nog geavanceerdere berichten toegevoegd worden (bv. enkel zichtbaar voor bepaalde webshops of met een ingebouwde vervaldatum).</p>
+	<p>Met behulp van deze instellingen kun je berichten op het dashboard van elke subsite plaatsen. Indien je een veld volledig leeg maakt, verdwijnt de banner in kwestie automatisch.<br/>Via de code kunnen eventueel geavanceerdere berichten toegevoegd worden, bv. enkel zichtbaar voor bepaalde webshops of met een ingebouwde vervaldatum (zie <i>/oxfam-tweaks.php</i>).</p>
 	
 	<form action="edit.php?action=woonet-woocommerce-dashboard-info-update" method="POST">
 		<table class="form-table">
