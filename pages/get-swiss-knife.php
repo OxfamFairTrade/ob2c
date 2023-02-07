@@ -30,7 +30,7 @@
 	
 	<p>&nbsp;</p>
 	
-	<h2>Recente inruilingen van kortingsbonnen</h2>
+	<h2>Recente verkopen met kortingsbonnen</h2>
 	<?php check_coupons_on_recent_orders( $start_date, $sites ); ?>
 	
 	<p>&nbsp;</p>
@@ -111,6 +111,11 @@
 		$product_names = array();
 		
 		foreach ( $skus_to_check as $sku_to_check ) {
+			$product = wc_get_product( wc_get_product_id_by_sku( $sku_to_check ) );
+			if ( $product !== false ) {
+				$product_names[ $product->get_sku() ] = $product->get_name();
+			}
+			
 			$skus_sold[ $sku_to_check ] = array();
 			$date = $start_date;
 			while ( $date <= $end_date ) {
@@ -138,7 +143,6 @@
 				foreach ( $line_items as $order_item_product ) {
 					$local_product = $order_item_product->get_product();
 					if ( $local_product !== false and in_array( $local_product->get_sku(), $skus_to_check ) ) {
-						$product_names[ $local_product->get_sku() ] = $local_product->get_name();
 						// Houdt geen rekening met eventuele terugbetalingen!
 						$skus_sold[ $local_product->get_sku() ][ $order_date ] += $order_item_product->get_quantity();
 					}
@@ -181,11 +185,11 @@
 				$extras = array();
 				
 				foreach ( $wc_order->get_coupons() as $coupon ) {
-					$extras[] = $coupon->get_code().' toegepast';
+					$extras[] = 'kortingsregel <i>'.$coupon->get_code().'</i> toegepast';
 				}
 				
 				if ( ( $amount = ob2c_get_total_voucher_amount( $wc_order ) ) > 0 ) {
-					$extras[] = 'bevat digicheque t.w.v. '.wc_price( $amount );
+					$extras[] = 'digicheque(s) t.w.v. '.wc_price( $amount );
 				}
 				
 				if ( count( $extras ) > 0 ) {
