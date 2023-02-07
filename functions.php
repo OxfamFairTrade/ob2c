@@ -6364,6 +6364,15 @@
 	function oxfam_register_custom_network_pages() {
 		add_submenu_page(
 			'woonet-woocommerce',
+			'Swiss Knife',
+			'Swiss Knife',
+			'create_sites',
+			'woonet-woocommerce-swiss-knife',
+			'oxfam_swiss_knife_callback'
+		);
+		
+		add_submenu_page(
+			'woonet-woocommerce',
 			'Dashboard Info',
 			'Dashboard Info',
 			'create_sites',
@@ -6466,6 +6475,10 @@
 	
 	function oxfam_vouchers_list_callback() {
 		include get_stylesheet_directory().'/functions/vouchers/get-local-report.php';
+	}
+	
+	function oxfam_swiss_knife_callback() {
+		include get_stylesheet_directory().'/pages/get-swiss-knife.php';
 	}
 	
 	function oxfam_set_dashboard_info_callback() {
@@ -7690,7 +7703,7 @@
 		return $params;
 	}
 
-	function get_number_of_times_coupon_was_used( $coupon_code, $start_date = '2021-10-01', $end_date = '2021-10-31', $return_orders = false ) {
+	function get_number_of_times_coupon_was_used( $coupon_code, $start_date = '2022-10-01', $end_date = '2022-10-31', $return_orders = false ) {
 		global $wpdb;
 		$total_count = 0;
 		$orders = array();

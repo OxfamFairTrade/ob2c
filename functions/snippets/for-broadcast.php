@@ -38,22 +38,31 @@
 	}
 	
 	// Alle nieuwe artikels lokaal uit voorraad zetten
-	$outofstocks = array( 21055, 22034 );
-	foreach ( $outofstocks as $sku ) {
+	$new_skus = get_site_option( 'oxfam_shop_dashboard_notice_new_products', array() );
+	foreach ( $new_skus as $sku ) {
 		$product_id = wc_get_product_id_by_sku( $sku );
 		if ( $product_id ) {
 			$product = wc_get_product( $product_id );
-			// On first publish wordt voorraadbeheer van nationaal ook lokaal geactiveerd!
+			// On first publish wordt nationale voorraadbeheer automatisch ook lokaal geactiveerd
+			// Dit moet sowieso op 'no' gezet worden, anders zal het lokale voorraadbeheer niet functioneren!
 			$product->set_manage_stock('no');
 			$product->set_stock_status('outofstock');
 			$product->save();
+			write_log( get_bloginfo('name').": stock status of SKU ".$sku." reset to 'outofstock'" );
 		}
 	}
 	
 	// Voorraad overzetten van oud naar nieuw ompaknummer (enkel indien consumenteneenheid identiek gebleven is!)
 	// Na afloop plaats je het oude ompaknummer in concept (voor latere definitieve verwijdering)
-	$replacements = array( 20058 => 20081 );
-	foreach ( $replacements as $old_sku => $new_sku ) {
+	$replaced_skus = get_site_option( 'oxfam_shop_dashboard_notice_replaced_products', array() );
+	foreach ( $replaced_skus as $old_new ) {
+		$parts = explode( '-', $old_new );
+		if ( count( $parts ) !== 2 ) {
+			continue;
+		}
+		$old_sku = $parts[0];
+		$new_sku = $parts[1];
+		
 		$product_id = wc_get_product_id_by_sku( $new_sku );
 		if ( $product_id ) {
 			$product = wc_get_product( $product_id );
@@ -63,12 +72,8 @@
 				$product->set_manage_stock('no');
 				$product->set_stock_status( $old_product->get_stock_status() );
 				$product->save();
-				write_log("STOCK OF NEW SKU ".$new_sku." COPIED FROM OLD SKU ".$old_sku." (".$old_product->get_stock_status().")");
-			} else {
-				write_log("OLD PRODUCT SKU ".$old_sku." NOT FOUND");
+				write_log( get_bloginfo('name').": stock status '".$old_product->get_stock_status()."' of old SKU ".$old_sku." copied to new SKU ".$new_sku );
 			}
-		} else {
-			write_log("NEW PRODUCT SKU ".$new_sku." NOT FOUND");
 		}
 	}
 	
@@ -139,7 +144,56 @@
 		}
 	}
 	write_log( get_bloginfo('name').": ".$cnt." orders ".$query_args['date_created']." deleted" );
+	
+	// Verwijder ongebruikte gebruikersaccounts
+	$args = array(
+		'role' => 'customer',
+		'meta_query' => array(
+		   'relation' => 'OR',
+			array(
+				'key' => 'wc_last_active',
+				'compare' => 'NOT EXISTS',
+			),
+			array(
+				// Pas bijgehouden na upgrade van WooCommerce op 07/10/2020
+				// Alle bestaande klanten kregen timestamp '1602028800' tijdens migratie
+				'key' => 'wc_last_active',
+				// Pas bijgehouden na installatie van WordFence op 21/12/2020
+				// Alle bestaande klanten kregen timestamp '1608508800' tijdens migratie
+				// 'key' => 'wfls-last-login',
+				'value' => strtotime('2021-01-01'),
+				'compare' => '<=',
+			),
+		),
+		'number' => -1,
+		'order' => 'ASC',
+		'orderby' => 'ID',
+	);
+	$stale_users = new WP_User_Query( $args );
+	
+	if ( ! function_exists( 'wpmu_delete_user' ) ) {
+		require_once ABSPATH . '/wp-admin/includes/ms.php';
+	}
+	
+	foreach ( $stale_users->get_results() as $user ) {
+		write_log( "User-ID ".$user->ID." (".$user->user_login."): last active on ".date_i18n( 'd/m/Y', get_user_meta( $user->ID, 'wc_last_active', true ) ) );
 		
+		$customer_orders = wc_get_orders( array( 'customer_id' => $user->ID, 'limit' => -1 ) );
+		if ( count( $customer_orders ) > 0 ) {
+			// Er zijn nog orders gelinkt aan de user, account niet wissen
+			continue;
+		}
+		
+		$member_sites = get_blogs_of_user( $user->ID );
+		if ( count( $member_sites ) === 1 and get_current_blog_id() === reset( $member_sites )->userblog_id ) {
+			// User is enkel en alleen lid van deze site
+			write_log( "Account tied to ".$user->user_email." is only a member of this site and has no orders left, schedule delete ..." );
+			if ( wpmu_delete_user( $user->ID ) ) {
+				write_log( "User deleted from the entire network!" );
+			}
+		}
+	}
+	
 	// Verwijder overtollige BTW-schalen (duiken soms spontaan weer op!)
 	$tax_classes = array( 'gereduceerd-tarief', 'nultarief' );
 	foreach ( $tax_classes as $tax_class ) {
