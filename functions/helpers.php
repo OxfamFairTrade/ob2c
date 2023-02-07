@@ -217,6 +217,191 @@
 		return $random_string;
 	}
 	
+	function ends_with( $haystack, $needle ) {
+		return $needle === '' or ( ( $temp = strlen( $haystack ) - strlen( $needle ) ) >= 0 and strpos( $haystack, $needle, $temp ) !== false );
+	}
+	
+	function sort_by_time( $a, $b ) {
+		return $b['timestamp'] - $a['timestamp'];
+	}
+	
+	function trim_and_uppercase( $value ) {
+		return str_replace( 'Oww ', 'OWW ', implode( '.', array_map( 'ucwords', explode( '.', implode( '(', array_map( 'ucwords', explode( '(', implode( '-', array_map( 'ucwords', explode( '-', mb_strtolower( trim($value) ) ) ) ) ) ) ) ) ) ) );
+	}
+	
+	function format_tax( $value ) {
+		$value = str_replace( 'BE', '', $value );
+		$value = preg_replace( '/[\s\-\.\/]/', '', $value );
+		if ( mb_strlen($value) === 9 ) {
+			$value = '0'.$value;
+		}
+		
+		if ( mb_strlen($value) === 10 ) {
+			$digit_8 = intval( substr( $value, 0, 8 ) );
+			$checksum = 97 - ( $digit_8 - intval( $digit_8 / 97 ) * 97 );
+			if ( $checksum === intval( substr( $value, 8, 2 ) ) ) {
+				return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
+			} else {
+				return 'INVALID CHECKSUM';
+			}
+		} elseif ( mb_strlen($value) >= 1 ) {
+			return 'INVALID LENGTH';
+		} else {
+			return '';
+		}
+	}
+	
+	function format_account( $iban ) {
+		$countries = array( 'BE' => 16, 'NL' => 18 );
+		$translate_chars = array(
+			'A' => 10,
+			'B' => 11,
+			'C' => 12,
+			'D' => 13,
+			'E' => 14,
+			'F' => 15,
+			'G' => 16,
+			'H' => 17,
+			'I' => 18,
+			'J' => 19,
+			'K' => 20,
+			'L' => 21,
+			'M' => 22,
+			'N' => 23,
+			'O' => 24,
+			'P' => 25,
+			'Q' => 26,
+			'R' => 27,
+			'S' => 28,
+			'T' => 29,
+			'U' => 30,
+			'V' => 31,
+			'W' => 32,
+			'X' => 33,
+			'Y' => 34,
+			'Z' => 35,
+		);
+		
+		$iban = str_replace( 'IBAN', '', mb_strtoupper($iban) );
+		$iban = preg_replace( '/[\s\-\.\/]/', '', $iban );
+		
+		if ( array_key_exists( substr( $iban, 0, 2 ), $countries ) and strlen($iban) === $countries[substr( $iban, 0, 2 )] ) {
+			$moved_char = substr( $iban, 4 ).substr( $iban, 0, 4 );
+			$moved_char_array = str_split($moved_char);
+			$controll_string = '';
+			
+			foreach ( $moved_char_array as $key => $value ) {
+				if ( ! is_numeric($moved_char_array[$key]) ) {
+					$moved_char_array[$key] = $translate_chars[$moved_char_array[$key]];
+				}
+				$controll_string .= $moved_char_array[$key];
+			}
+			
+			if ( intval($controll_string) % 97 === 1 ) {
+				return substr( $iban, 0, 4 )." ".substr( $iban, 4, 4 )." ".substr( $iban, 8, 4 )." ".substr( $iban, 12, 4 );
+			} else {
+				return 'INVALID CHECKSUM';
+			}
+		} else {
+			return 'INVALID LENGTH';
+		}
+	}
+	
+	function format_place( $value ) {
+		return trim_and_uppercase( $value );
+	}
+	
+	function format_zipcode( $value ) {
+		// Opgelet: niet-numerieke tekens bewust niet verwijderen, anders problemen met NL-postcodes!
+		// Gebruik eventueel WC_Validation::is_postcode( $postcode, $country )
+		return trim( $value );
+	}
+	
+	function format_city( $value ) {
+		return trim_and_uppercase( $value );
+	}
+	
+	function format_mail( $value ) {
+		return mb_strtolower( trim($value) );
+	}
+	
+	function format_headquarter( $value ) {
+		return trim_and_uppercase( $value );
+	}
+	
+	// Sta een optionele parameter toe om puntjes te zetten in plaats van spaties (maar: wordt omgezet in streepjes door wc_format_phone() dus niet gebruiken in verkoop!)
+	function format_phone_number( $value, $delim = ' ' ) {
+		if ( $delim === '.' ) {
+			$slash = '/';
+		} else {
+			$slash = $delim;
+		}
+		
+		// Verwijder alle non-digits
+		$value = preg_replace('/[^0-9]/', '', str_replace( '+32', '0032', $value ) );
+		
+		// Wis Belgische landcodes
+		// @toDo: Andere landcodes checken en ook formatteren?
+		if ( substr( $value, 0, 4 ) === '0032' ) {
+			$value = substr( $value, 4 );
+		}
+		
+		// Voeg indien nodig leading zero toe
+		if ( substr( $value, 0, 1 ) !== '0' ) {
+			$value = '0' . $value;
+		}
+		
+		if ( strlen( $value ) == 9 ) {
+			// Vaste telefoonnummers
+			if ( intval( $value[1] ) == 2 or intval( $value[1] ) == 3 or intval( $value[1] ) == 4 or intval( $value[1] ) == 9 ) {
+				// Zonenummer van twee cijfers
+				$phone = substr( $value, 0, 2 ) . $slash . substr( $value, 2, 3 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
+			} else {
+				// Zonenummer van drie cijfers
+				$phone = substr( $value, 0, 3 ) . $slash . substr( $value, 3, 2 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
+			}
+		} elseif ( strlen( $value ) == 10 ) {
+			// Mobiele telefoonnummers
+			$phone = substr( $value, 0, 4 ) . $slash . substr( $value, 4, 2 ) . $delim . substr( $value, 6, 2 ) . $delim . substr( $value, 8, 2 );
+		} else {
+			// Wis ongeldige nummers
+			if ( is_checkout() ) {
+				// Behalve op checkout, want dan triggeren we een obscure 'Gelieve de verplichte velden in te vullen'-foutmelding!
+				$phone = $value;
+			} else {
+				$phone = '';
+			}
+		}
+		
+		return $phone;
+	}
+	
+	function format_hour( $value ) {
+		if ( strlen($value) === 5 ) {
+			// Wordpress: geen wijzigingen meer nodig!
+			return $value;
+		} elseif ( strlen($value) === 4 ) {
+			// Drupal: voeg dubbele punt toe in het midden
+			return substr( $value, 0, 2 ) . ':' . substr( $value, 2, 2 );
+		} else {
+			// Drupal: voeg nul toe vooraan bij ochtenduren
+			return '0'.substr( $value, 0, 1 ) . ':' . substr( $value, 1, 2 );
+		}
+	}
+	
+	function format_date( $value ) {
+		$new_value = preg_replace( '/[\s\-\.\/]/', '', $value );
+		if ( strlen($new_value) === 8 ) {
+			return substr( $new_value, 0, 2 ) . '/' . substr( $new_value, 2, 2 ) . '/' . substr( $new_value, 4, 4 );
+		} elseif ( strlen($new_value) === 0 ) {
+			// Ontbrekende datum
+			return '';
+		} else {
+			// Ongeldige datum (dit laat ons toe om het onderscheid te maken!)
+			return '31/12/2100';
+		}
+	}
+	
 	
 	
 	#############

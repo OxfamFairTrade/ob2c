@@ -363,13 +363,5 @@
 			</script>
 			<?php
 		}
-		
-		function ends_with( $haystack, $needle ) {
-			return $needle === '' or ( ( $temp = strlen( $haystack ) - strlen( $needle ) ) >= 0 and strpos( $haystack, $needle, $temp ) !== false );
-		}
-		
-		function sort_by_time( $a, $b ) {
-			return $b['timestamp'] - $a['timestamp'];
-		}
 	?>
 </div>

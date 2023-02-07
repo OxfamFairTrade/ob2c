@@ -221,8 +221,43 @@
 		if ( $voucher_total > 0 ) {
 			$total_rows['vouchers'] = array( 'label' => __( 'waarvan betaald via digitale cadeaubon:', 'oxfam-webshop' ), 'value' => wc_price( $voucher_total ) );
 		}
-	
+		
 		return $total_rows;
+	}
+	
+	// Wordt bij elke stap doorlopen, pas op met zware logica
+	// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
+	add_filter( 'woocommerce_shipping_free_shipping_is_available', 'ignore_digital_vouchers_for_free_shipping', 10, 3 );
+	
+	function ignore_digital_vouchers_for_free_shipping( $is_available, $package, $shipping_method ) {
+		$total = WC()->cart->get_displayed_subtotal() - WC()->cart->get_discount_total() - WC()->cart->get_discount_tax() + ob2c_get_total_voucher_amount();
+		if ( $total >= $shipping_method->min_amount ) {
+			return true;
+		}
+		
+		return $is_available;
+	}
+	
+	function ob2c_get_total_voucher_amount( $order = false ) {
+		$voucher_total = 0.0;
+		
+		if ( $order instanceof WC_Order ) {
+			foreach ( $order->get_fees() as $fee_item ) {
+				if ( $fee_item->get_meta('voucher_amount') !== '' ) {
+					$voucher_total += floatval( $fee_item->get_meta('voucher_amount') );
+				}
+			}
+		} else {
+			foreach ( WC()->cart->get_coupons() as $coupon ) {
+				// We gaan ervan uit dat virtuele kortingsbonnen steeds vouchers zijn!
+				if ( $coupon->get_virtual() ) {
+					// Géén get_discount_amount( $discouting_amount ) gebruiken, doet complexe berekening
+					$voucher_total += $coupon->get_amount();
+				}
+			}
+		}
+		
+		return $voucher_total;
 	}
 	
 	// Verwijder vouchers uit onafgewerkte bestellingen die uiteindelijk geannuleerd worden (oogt netter) NOG NIET GETEST
@@ -242,7 +277,7 @@
 	function ob2c_bulk_create_digital_vouchers( $issuer = 'Cera', $expires = '2024-03-01', $value = 30, $number = 1000 ) {
 		global $wpdb;
 		$created_codes = array();
-	
+		
 		if ( current_user_can('update_core') ) {
 			for ( $i = 0; $i < $number; $i++ ) {
 				$data = array(
@@ -251,7 +286,7 @@
 					'expires' => $expires,
 					'value' => $value,
 				);
-	
+				
 				if ( $wpdb->insert( $wpdb->base_prefix.'universal_coupons', $data ) === 1 ) {
 					$created_codes[] = $data['code'];
 					file_put_contents( ABSPATH . '/../oxfam-digital-vouchers-'.$value.'-EUR-valid-'.$expires.'.csv', $data['code']."\n", FILE_APPEND );
@@ -262,7 +297,7 @@
 		} else {
 			echo 'No permission to create vouchers, please log in<br/>';
 		}
-	
+		
 		echo implode( '<br/>', $created_codes );
 	}
 	
@@ -284,4 +319,60 @@
 		} else {
 			return $random_string;
 		}
+	}
+	
+	// Registreer de AJAX-functie waarmee de crediteringen afgesloten worden
+	add_action( 'wp_ajax_oxfam_close_voucher_export_action', 'oxfam_close_voucher_export_action_callback' );
+	
+	function oxfam_close_voucher_export_action_callback() {
+		global $wpdb;
+		$path = $_POST['path'];
+		$voucher_ids = explode( ',', $_POST['voucher_ids'] );
+		
+		if ( strpos( $path, 'latest' ) !== false ) {
+			$new_path = str_replace( 'latest', $_POST['start_date'].'-'.$_POST['end_date'].'-credit-list', $path );
+		}
+		
+		// Markeer geëxporteerde vouchers als gecrediteerd in de database
+		$credit_date_timestamp = strtotime( '+1 weekday', strtotime('last day of this month') );
+		foreach ( $voucher_ids as $voucher_id ) {
+			$rows_updated = $wpdb->update(
+				$wpdb->base_prefix.'universal_coupons',
+				array( 'credited' => date_i18n( 'Y-m-d', $credit_date_timestamp ) ),
+				array( 'id' => $voucher_id )
+			);
+			
+			if ( $rows_updated === 1 ) {
+				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE id = '".$voucher_id."';";
+				$results = $wpdb->get_results( $query );
+				foreach ( $results as $row ) {
+					switch_to_blog( $row->blog_id );
+					
+					$args = array(
+						'type' => 'shop_order',
+						'order_number' => $row->order,
+						'limit' => -1,
+					);
+					$orders = wc_get_orders( $args );
+					
+					if ( count( $orders ) === 1 ) {
+						$order = reset( $orders );
+						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', $credit_date_timestamp ).' gecrediteerd worden door het NS.', 0, false );
+						write_log( "Crediteringsnota toegevoegd aan ".$order->get_order_number() );
+					}
+					
+					restore_current_blog();
+				}
+			} else {
+				send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' kon niet als gecrediteerd gemarkeerd worden in de database', '<p>Vraag Frederik om uit te pluizen wat hier aan de hand is en eventuele dubbele creditering te vermijden!</p>' );
+			}
+		}
+		
+		if ( isset( $new_path ) and rename( $path, $new_path ) ) {
+			// Enkel verder gaan als het hernoemen van de Excel lukte
+			$parts = explode( '/wp-content', $new_path );
+			echo content_url( $parts[1] );
+		}
+		
+		wp_die();
 	}

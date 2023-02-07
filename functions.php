@@ -8,6 +8,7 @@
 	require get_stylesheet_directory() . '/oxfam-tweaks.php';
 	require get_stylesheet_directory() . '/functions/helpers.php';
 	require get_stylesheet_directory() . '/functions/relevanssi.php';
+	require get_stylesheet_directory() . '/functions/coupons.php';
 	require get_stylesheet_directory() . '/functions/mailchimp/functions.php';
 	require get_stylesheet_directory() . '/functions/vouchers/functions.php';
 	require get_stylesheet_directory() . '/functions/subsites/brugge.php';
@@ -66,80 +67,6 @@
 		return $html;
 	}
 
-	function get_wvdft2022_disclaimer() {
-		return '1 gratis exemplaar van de afgebeelde shopper bij aankoop van 4 pakjes koffie uit het assortiment van Oxfam Fair Trade (keuze uit alle koffiereferenties: 250 g gemalen of bonen, pads, cups, oploskoffie) of bij aankoop van 1 verpakking van 1 kg (gemalen of bonen), verschillende soorten koffie combineren is toegestaan. Actie geldig t.e.m. 15/10/2022. Zolang de voorraad strekt. Niet cumuleerbaar met andere acties en/of klantenkortingen.';
-	}
-
-	// Registreer aantal gratis capsules over alle webshops heen
-	// add_filter( 'woocommerce_coupon_get_usage_count', 'get_sitewide_coupon_usage', 10, 2 );
-	// add_action( 'woocommerce_increase_coupon_usage_count', 'increase_coupon_usage_count_sitewide', 10, 3 );
-	// add_action( 'woocommerce_decrease_coupon_usage_count', 'decrease_coupon_usage_count_sitewide', 10, 3 );
-
-	function get_sitewide_coupon_usage( $usage_count, $coupon ) {
-		if ( $coupon->get_code() === 'faircaps21' ) {
-			return get_site_option( 'free_capsules_given_2021', 0 );
-		} else {
-			return $usage_count;
-		}
-	}
-
-	function increase_coupon_usage_count_sitewide( $coupon, $new_count, $used_by ) {
-		if ( $coupon->get_code() === 'faircaps21' ) {
-			// Gebruik bewust niét $new_count want dat bevat enkel het gebruik in deze site!
-			update_site_option( 'free_capsules_given_2021', get_site_option( 'free_capsules_given_2021', 0 ) + 1 );
-			write_log( "Aantal keer '".$coupon->get_code()."' gebruikt (na toename): ".get_site_option( 'free_capsules_given_2021', 0 ) );
-		}
-	}
-
-	function decrease_coupon_usage_count_sitewide( $coupon, $new_count, $used_by ) {
-		if ( $coupon->get_code() === 'faircaps21' ) {
-			// Wordt correct doorlopen bij het annuleren / volledig terugbetalen van een order
-			// Gebruik bewust niét $new_count want dat bevat enkel het gebruik in deze site!
-			update_site_option( 'free_capsules_given_2021', get_site_option( 'free_capsules_given_2021', 0 ) - 1 );
-			write_log( "Aantal keer '".$coupon->get_code()."' gebruikt (na afname): ".get_site_option( 'free_capsules_given_2021', 0 ) );
-		}
-	}
-
-	// Vreemd genoeg blijft .wjecf-fragment-checkout-select-free-product op de afrekenpagina leeg, dus redirect naar het winkelmandje indien de code daar toegevoegd werd
-	// add_action( 'woocommerce_applied_coupon', 'redirect_to_cart_to_choose_version', 10, 1 );
-
-	function redirect_to_cart_to_choose_version( $code ) {
-		if ( $code === 'koffiechoc22' ) {
-			if ( ! is_cart() ) {
-				// wp_safe_redirect() lokt enkel een redirect in de pop-up uit, gebruik JavaScript om de volledige pagina te refreshen!
-				?>
-				<script type="text/javascript">
-					window.location.href = '<?php echo wc_get_cart_url() ?>#wjecf-select-free-products';
-				</script>
-				<?php
-			}
-		}
-	}
-
-	// Verwijder originelen uit srcset (wordt opgepikt door zoekmachines!)
-	add_filter( 'wp_calculate_image_srcset_meta', 'ob2c_remove_large_images_from_srcset' );
-
-	function ob2c_remove_large_images_from_srcset( $image_meta ) {
-		if ( ! is_array( $image_meta ) ) {
-			return $image_meta;
-		}
-
-		// write_log( print_r( $image_meta['sizes'], true ) );
-		if ( ! empty($image_meta['sizes'] ) ) {
-			if ( ! empty( $image_meta['sizes']['wc_order_status_icon'] ) ) {
-				unset( $image_meta['sizes']['wc_order_status_icon'] );
-			}
-			if ( ! empty( $image_meta['sizes']['nm_quick_view'] ) ) {
-				unset( $image_meta['sizes']['nm_quick_view'] );
-			}
-			if ( ! empty( $image_meta['sizes']['large'] ) ) {
-				unset( $image_meta['sizes']['large'] );
-			}
-		}
-
-		return $image_meta;
-	}
-
 	// Alle subsites opnieuw indexeren m.b.v. WP-CLI: wp site list --field=url | xargs -n1 -I % wp --url=% relevanssi index
 	// DB-upgrade voor WooCommerce op alle subsites laten lopen: wp site list --field=url | xargs -n1 -I % wp --url=% wc update
 
@@ -159,8 +86,7 @@
 			$array['city'] = do_shortcode( $address->get_city() );
 			$address->set_address( $array );
 		}
-
-		// write_log( print_r( $address, true ) );
+		
 		return $address;
 	}
 
@@ -208,7 +134,7 @@
 		}
 	}
 
-	// Gebruik deze actie om de hoofddata te tweaken (na de switch_to_blog(), net voor het effectief opslaan in de subsite) VOORLOPIG NOG UITSCHAKELEN
+	// Gebruik deze actie om de hoofddata te tweaken (na de switch_to_blog(), net voor het effectief opslaan in de subsite) GEEFT ALLERLEI PROBLEMEN
 	// add_action( 'threewp_broadcast_broadcasting_before_restore_current_blog', 'localize_broadcasted_custom_fields' );
 
 	function localize_broadcasted_custom_fields( $action ) {
@@ -472,25 +398,9 @@
 		return $stock_html;
 	}, 10, 1 );
 
-	// Limiteer de grootte van het ingezoomde packshot in de WooCommerce galerij
-	add_filter( 'woocommerce_gallery_full_size', function( $size ) {
-		return 'large';
-	} );
-
 	// Limiteer de grootte van packshots in de loop
 	add_filter( 'woocommerce_product_thumbnails_large_size', function( $size ) {
 		return 'medium';
-	} );
-
-	// Neem supergrote afbeeldingen nooit mee in de srcset's (kan geïndexeerd geraken door zoekmachines!)
-	add_filter( 'wp_calculate_image_srcset', function( $sources ) {
-		foreach ( $sources as $key => $value ) {
-			if ( $key > 2000 ) {
-				unset( $sources[ $key ] );
-			}
-		}
-		// write_log( print_r( $sources, true ) );
-		return $sources;
 	} );
 
 	// Parameter om winkelmandje te legen (zonder nonce, dus enkel tijdens debuggen)
@@ -574,99 +484,6 @@
 			}
 		}
 		return $html;
-	}
-
-	// Pas winkelmandkorting n.a.v. Week van de Fair Trade 2021 toe op het uiteindelijk te betalen bedrag i.p.v. het subtotaal
-	// Deze filter wordt enkel doorlopen bij autocoupons!
-	// add_filter( 'wjecf_coupon_can_be_applied', 'apply_coupon_on_total_not_subtotal', 1000, 2 );
-
-	function apply_coupon_on_total_not_subtotal( $can_be_applied, $coupon ) {
-		if ( $coupon->get_code() === '202110-wvdft' and date('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
-			$melkchocolade = wc_get_product( wc_get_product_id_by_sku('24300') );
-			if ( $melkchocolade !== false and $melkchocolade->get_stock_status() !== 'instock' ) {
-				// Pas de korting niet toe als het gratis product niet op voorraad is
-				return false;
-			}
-
-			// Vergelijk met het subtotaal NA kortingen m.u.v. digitale vouchers (inclusief BTW, exclusief verzendkosten)
-			// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
-			$totals = WC()->cart->get_totals();
-			if ( current_user_can('update_core') ) {
-				write_log( "Basisbedrag voor toekennen gratis tablet chocolade: ". ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() ) );
-			}
-			// Eventueel $coupon->get_meta('_wjecf_min_matching_product_subtotal') gebruiken indien beperkt tot bepaalde producten
-			if ( ( $totals['cart_contents_total'] + $totals['cart_contents_tax'] + ob2c_get_total_voucher_amount() - ob2c_get_total_empties_amount() ) >= floatval( $coupon->get_minimum_amount() ) ) {
-				// Pas op met expliciet op true zetten: dit zal iedere keer een foutmelding genereren boven het winkelmandje als de coupon om een andere reden (bv. usage count) ongeldig is!
-				// Deze logica was duidelijk niet sluitend voor Cera-bestellingen > 30 euro ...
-				if ( $can_be_applied ) {
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		return $can_be_applied;
-	}
-
-	// Schakel kortingsbon met een gratis product uit als de webshop geen voorraad heeft
-	add_action( 'wjecf_assert_coupon_is_valid', 'check_if_free_products_are_on_stock', 1000, 2 );
-
-	function check_if_free_products_are_on_stock( $coupon, $wc_discounts  ) {
-		if ( in_array( $coupon->get_code(), array( '202210-koffie-250g', '202210-koffie-1kg' ) ) and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
-			$shopper = wc_get_product( wc_get_product_id_by_sku('19039') );
-			if ( $shopper !== false and $shopper->get_stock_status() !== 'instock' ) {
-				throw new Exception( __( 'Deze webshop heeft helaas geen shoppers op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
-			}
-		}
-	}
-
-	// Probeer wijnduo's enkel toe te passen op gelijke paren (dus niet 3+1, 5+1, 5+3, ...)
-	add_filter( 'woocommerce_coupon_get_apply_quantity', 'limit_coupon_to_equal_pairs', 100, 4 );
-
-	function limit_coupon_to_equal_pairs( $apply_quantity, $item, $coupon, $wc_discounts ) {
-		if ( is_admin() ) {
-			return $apply_quantity;
-		}
-
-		// Schuimwijnen hebben dezelfde prijs, dus zij mogen wel gemixt worden
-		if ( stristr( $coupon->get_code(), 'wijnduo' ) !== false and stristr( $coupon->get_code(), 'schuimwijn' ) === false ) {
-			$this_quantity = 0;
-			$other_quantity = 0;
-			$old_apply_quantity = $apply_quantity;
-
-			// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
-			foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
-				$product_in_cart = $values['data'];
-
-				// Cart item maakt deel uit van de promotie
-				if ( in_array( $product_in_cart->get_id(), $coupon->get_product_ids() ) ) {
-					if ( $product_in_cart->get_id() === $item->product->get_id() ) {
-						$this_quantity = intval( $values['quantity'] );
-						$this_sku = intval( $product_in_cart->get_sku() );
-					} else {
-						$other_quantity = intval( $values['quantity'] );
-						$other_sku = intval( $product_in_cart->get_sku() );
-					}
-
-					if ( $other_quantity !== 0 and $this_quantity !== 0 ) {
-						// We passen de korting VOLLEDIG toe op het kleinste artikelnummer van het duo
-						if ( $this_sku < $other_sku ) {
-							// Niet meer delen door twee!
-							$apply_quantity = min( $this_quantity, $other_quantity );
-						} else {
-							$apply_quantity = 0;
-						}
-
-						// We hebben beide producten gevonden en kunnen afsluiten
-						// write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
-						break;
-					}
-				}
-			}
-		}
-
-		return $apply_quantity;
 	}
 
 	add_filter( 'woocommerce_products_admin_list_table_filters', 'ob2c_sort_categories_by_menu_order', 1000, 1 );
@@ -1419,16 +1236,6 @@
 
 	function load_admin_css() {
 		wp_enqueue_style( 'oxfam-admin', get_stylesheet_directory_uri().'/css/admin.css', array(), '1.3.5' );
-	}
-
-	// Fixes i.v.m. cURL NIET MEER NODIG?
-	// add_action( 'http_api_curl', 'custom_curl_timeout', 10, 3 );
-
-	function custom_curl_timeout( $handle, $r, $url ) {
-		// Fix error 28 - Operation timed out after 10000 milliseconds with 0 bytes received (bij het connecteren van Jetpack met Wordpress.com)
-		curl_setopt( $handle, CURLOPT_TIMEOUT, 180 );
-		// Fix error 60 - SSL certificate problem: unable to get local issuer certificate (bij het downloaden van een CSV in WP All Import)
-		curl_setopt( $handle, CURLOPT_SSL_VERIFYPEER, false );
 	}
 
 
@@ -3592,183 +3399,6 @@
 	add_filter( 'woocommerce_process_checkout_field_shipping_city', 'format_city', 10, 1 );
 	add_filter( 'woocommerce_process_myaccount_field_shipping_city', 'format_city', 10, 1 );
 
-	function trim_and_uppercase( $value ) {
-		return str_replace( 'Oww ', 'OWW ', implode( '.', array_map( 'ucwords', explode( '.', implode( '(', array_map( 'ucwords', explode( '(', implode( '-', array_map( 'ucwords', explode( '-', mb_strtolower( trim($value) ) ) ) ) ) ) ) ) ) ) );
-	}
-
-	function format_tax( $value ) {
-		$value = str_replace( 'BE', '', $value );
-		$value = preg_replace( '/[\s\-\.\/]/', '', $value );
-		if ( mb_strlen($value) === 9 ) {
-			$value = '0'.$value;
-		}
-
-		if ( mb_strlen($value) === 10 ) {
-			$digit_8 = intval( substr( $value, 0, 8 ) );
-			$checksum = 97 - ( $digit_8 - intval( $digit_8 / 97 ) * 97 );
-			if ( $checksum === intval( substr( $value, 8, 2 ) ) ) {
-				return 'BE '.substr( $value, 0, 4 ).".".substr( $value, 4, 3 ).".".substr( $value, 7, 3 );
-			} else {
-				return 'INVALID CHECKSUM';
-			}
-		} elseif ( mb_strlen($value) >= 1 ) {
-			return 'INVALID LENGTH';
-		} else {
-			return '';
-		}
-	}
-
-	function format_account( $iban ) {
-		$countries = array( 'BE' => 16, 'NL' => 18 );
-		$translate_chars = array(
-			'A' => 10,
-			'B' => 11,
-			'C' => 12,
-			'D' => 13,
-			'E' => 14,
-			'F' => 15,
-			'G' => 16,
-			'H' => 17,
-			'I' => 18,
-			'J' => 19,
-			'K' => 20,
-			'L' => 21,
-			'M' => 22,
-			'N' => 23,
-			'O' => 24,
-			'P' => 25,
-			'Q' => 26,
-			'R' => 27,
-			'S' => 28,
-			'T' => 29,
-			'U' => 30,
-			'V' => 31,
-			'W' => 32,
-			'X' => 33,
-			'Y' => 34,
-			'Z' => 35,
-		);
-
-		$iban = str_replace( 'IBAN', '', mb_strtoupper($iban) );
-		$iban = preg_replace( '/[\s\-\.\/]/', '', $iban );
-
-		if ( array_key_exists( substr( $iban, 0, 2 ), $countries ) and strlen($iban) === $countries[substr( $iban, 0, 2 )] ) {
-			$moved_char = substr( $iban, 4 ).substr( $iban, 0, 4 );
-			$moved_char_array = str_split($moved_char);
-			$controll_string = '';
-
-			foreach ( $moved_char_array as $key => $value ) {
-				if ( ! is_numeric($moved_char_array[$key]) ) {
-					$moved_char_array[$key] = $translate_chars[$moved_char_array[$key]];
-				}
-				$controll_string .= $moved_char_array[$key];
-			}
-
-			if ( intval($controll_string) % 97 === 1 ) {
-				return substr( $iban, 0, 4 )." ".substr( $iban, 4, 4 )." ".substr( $iban, 8, 4 )." ".substr( $iban, 12, 4 );
-			} else {
-				return 'INVALID CHECKSUM';
-			}
-		} else {
-			return 'INVALID LENGTH';
-		}
-	}
-
-	function format_place( $value ) {
-		return trim_and_uppercase( $value );
-	}
-
-	function format_zipcode( $value ) {
-		// Opgelet: niet-numerieke tekens bewust niet verwijderen, anders problemen met NL-postcodes!
-		// Gebruik eventueel WC_Validation::is_postcode( $postcode, $country )
-		return trim( $value );
-	}
-
-	function format_city( $value ) {
-		return trim_and_uppercase( $value );
-	}
-
-	function format_mail( $value ) {
-		return mb_strtolower( trim($value) );
-	}
-
-	function format_headquarter( $value ) {
-		return trim_and_uppercase( $value );
-	}
-
-	// Sta een optionele parameter toe om puntjes te zetten in plaats van spaties (maar: wordt omgezet in streepjes door wc_format_phone() dus niet gebruiken in verkoop!)
-	function format_phone_number( $value, $delim = ' ' ) {
-		if ( $delim === '.' ) {
-			$slash = '/';
-		} else {
-			$slash = $delim;
-		}
-
-		// Verwijder alle non-digits
-		$value = preg_replace('/[^0-9]/', '', str_replace( '+32', '0032', $value ) );
-
-		// Wis Belgische landcodes
-		// @toDo: Andere landcodes checken en ook formatteren?
-		if ( substr( $value, 0, 4 ) === '0032' ) {
-			$value = substr( $value, 4 );
-		}
-
-		// Voeg indien nodig leading zero toe
-		if ( substr( $value, 0, 1 ) !== '0' ) {
-			$value = '0' . $value;
-		}
-
-		if ( strlen( $value ) == 9 ) {
-			// Vaste telefoonnummers
-			if ( intval( $value[1] ) == 2 or intval( $value[1] ) == 3 or intval( $value[1] ) == 4 or intval( $value[1] ) == 9 ) {
-				// Zonenummer van twee cijfers
-				$phone = substr( $value, 0, 2 ) . $slash . substr( $value, 2, 3 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
-			} else {
-				// Zonenummer van drie cijfers
-				$phone = substr( $value, 0, 3 ) . $slash . substr( $value, 3, 2 ) . $delim . substr( $value, 5, 2 ) . $delim . substr( $value, 7, 2 );
-			}
-		} elseif ( strlen( $value ) == 10 ) {
-			// Mobiele telefoonnummers
-			$phone = substr( $value, 0, 4 ) . $slash . substr( $value, 4, 2 ) . $delim . substr( $value, 6, 2 ) . $delim . substr( $value, 8, 2 );
-		} else {
-			// Wis ongeldige nummers
-			if ( is_checkout() ) {
-				// Behalve op checkout, want dan triggeren we een obscure 'Gelieve de verplichte velden in te vullen'-foutmelding!
-				$phone = $value;
-			} else {
-				$phone = '';
-			}
-		}
-
-		return $phone;
-	}
-
-	function format_hour( $value ) {
-		if ( strlen($value) === 5 ) {
-			// Wordpress: geen wijzigingen meer nodig!
-			return $value;
-		} elseif ( strlen($value) === 4 ) {
-			// Drupal: voeg dubbele punt toe in het midden
-			return substr( $value, 0, 2 ) . ':' . substr( $value, 2, 2 );
-		} else {
-			// Drupal: voeg nul toe vooraan bij ochtenduren
-			return '0'.substr( $value, 0, 1 ) . ':' . substr( $value, 1, 2 );
-		}
-	}
-
-	function format_date( $value ) {
-		$new_value = preg_replace( '/[\s\-\.\/]/', '', $value );
-		if ( strlen($new_value) === 8 ) {
-			return substr( $new_value, 0, 2 ) . '/' . substr( $new_value, 2, 2 ) . '/' . substr( $new_value, 4, 4 );
-		} elseif ( strlen($new_value) === 0 ) {
-			// Ontbrekende datum
-			return '';
-		} else {
-			// Ongeldige datum (dit laat ons toe om het onderscheid te maken!)
-			return '31/12/2100';
-		}
-	}
-
 	// Voeg de bestel-Excel toe aan de adminmail 'nieuwe bestelling'
 	add_filter( 'woocommerce_email_attachments', 'attach_picklist_to_email', 10, 3 );
 
@@ -5326,45 +4956,6 @@
 		}
 	}
 
-	// Wordt bij elke stap doorlopen, pas op met zware logica
-	// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
-	add_filter( 'woocommerce_shipping_free_shipping_is_available', 'ignore_digital_vouchers_for_free_shipping', 10, 3 );
-
-	function ignore_digital_vouchers_for_free_shipping( $is_available, $package, $shipping_method ) {
-		if ( cart_contains_breakfast() ) {
-			return true;
-		}
-
-		$total = WC()->cart->get_displayed_subtotal() - WC()->cart->get_discount_total() - WC()->cart->get_discount_tax() + ob2c_get_total_voucher_amount();
-		if ( $total >= $shipping_method->min_amount ) {
-			return true;
-		}
-
-		return $is_available;
-	}
-
-	function ob2c_get_total_voucher_amount( $order = false ) {
-		$voucher_total = 0.0;
-
-		if ( $order instanceof WC_Order ) {
-			foreach ( $order->get_fees() as $fee_item ) {
-				if ( $fee_item->get_meta('voucher_amount') !== '' ) {
-					$voucher_total += floatval( $fee_item->get_meta('voucher_amount') );
-				}
-			}
-		} else {
-			foreach ( WC()->cart->get_coupons() as $coupon ) {
-				// We gaan ervan uit dat virtuele kortingsbonnen steeds vouchers zijn!
-				if ( $coupon->get_virtual() ) {
-					// Géén get_discount_amount( $discouting_amount ) gebruiken, doet complexe berekening
-					$voucher_total += $coupon->get_amount();
-				}
-			}
-		}
-
-		return $voucher_total;
-	}
-
 	function ob2c_get_total_empties_amount( $order = false ) {
 		$empties_total = 0.0;
 		$empties = get_oxfam_empties_skus_array();
@@ -5466,9 +5057,6 @@
 			}
 		}
 	}
-
-	// Handig filtertje om het JavaScript-conflict op de checkout te debuggen
-	// add_filter( 'woocommerce_ship_to_different_address_checked', '__return_true' );
 
 	// Fix voor verborgen verzendadressen die aanpassen leverpostcode verhinderen
 	// add_filter( 'woocommerce_package_rates', 'fix_shipping_postcode', 100, 2 );
@@ -5693,7 +5281,7 @@
 	}
 
 	function get_oxfam_empties_skus_array() {
-		return array( 'WLFSK', 'WLFSG', 'W19916', 'WLBS6', 'WLBS24', 'W29917', 'W29919' );
+		return array( 'WLFSK', 'W19916', 'WLBS24', 'W29917', 'W29919' );
 	}
 
 	function get_oxfam_cheques_skus_array() {
@@ -6609,7 +6197,6 @@
 	add_action( 'wp_ajax_oxfam_bulk_stock_action', 'oxfam_bulk_stock_action_callback' );
 	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
 	add_action( 'wp_ajax_oxfam_invitation_action', 'oxfam_invitation_action_callback' );
-	add_action( 'wp_ajax_oxfam_close_voucher_export_action', 'oxfam_close_voucher_export_action_callback' );
 
 	function oxfam_stock_action_callback() {
 		echo ob2c_save_local_product_details( $_POST['id'], $_POST['meta'], $_POST['value'] );
@@ -6948,59 +6535,6 @@
 		return true;
 	}
 
-	function oxfam_close_voucher_export_action_callback() {
-		global $wpdb;
-		$path = $_POST['path'];
-		$voucher_ids = explode( ',', $_POST['voucher_ids'] );
-
-		if ( strpos( $path, 'latest' ) !== false ) {
-			$new_path = str_replace( 'latest', $_POST['start_date'].'-'.$_POST['end_date'].'-credit-list', $path );
-		}
-
-		// Markeer geëxporteerde vouchers als gecrediteerd in de database
-		$credit_date_timestamp = strtotime( '+1 weekday', strtotime('last day of this month') );
-		foreach ( $voucher_ids as $voucher_id ) {
-			$rows_updated = $wpdb->update(
-				$wpdb->base_prefix.'universal_coupons',
-				array( 'credited' => date_i18n( 'Y-m-d', $credit_date_timestamp ) ),
-				array( 'id' => $voucher_id )
-			);
-
-			if ( $rows_updated === 1 ) {
-				$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE id = '".$voucher_id."';";
-				$results = $wpdb->get_results( $query );
-				foreach ( $results as $row ) {
-					switch_to_blog( $row->blog_id );
-
-					$args = array(
-						'type' => 'shop_order',
-						'order_number' => $row->order,
-						'limit' => -1,
-					);
-					$orders = wc_get_orders( $args );
-
-					if ( count( $orders ) === 1 ) {
-						$order = reset( $orders );
-						$order->add_order_note( 'Digitale cadeaubon '.$row->code.' zal op '.date_i18n( 'j F Y', $credit_date_timestamp ).' gecrediteerd worden door het NS.', 0, false );
-						write_log( "Crediteringsnota toegevoegd aan ".$order->get_order_number() );
-					}
-
-					restore_current_blog();
-				}
-			} else {
-				send_automated_mail_to_helpdesk( 'Cadeaubon '.$code.' kon niet als gecrediteerd gemarkeerd worden in de database', '<p>Vraag Frederik om uit te pluizen wat hier aan de hand is en eventuele dubbele creditering te vermijden!</p>' );
-			}
-		}
-
-		if ( isset( $new_path ) and rename( $path, $new_path ) ) {
-			// Enkel verder gaan als het hernoemen van de Excel lukte
-			$parts = explode( '/wp-content', $new_path );
-			echo content_url( $parts[1] );
-		}
-
-		wp_die();
-	}
-
 	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan
 	add_action( 'init', 'register_partner_taxonomy', 0 );
 
@@ -7200,83 +6734,11 @@
 			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
 			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
 				$promo_text = $product->get_meta('promo_text');
-				
-// 				switch ( $product->get_sku() ) {
-// 					case '20070':
-// 						$linked_sku = '20073';
-// 						$search_text = 'Campesino Cabernet Sauvignon Reserva';
-// 						break;
-// 
-// 					case '20073':
-// 						$linked_sku = '20070';
-// 						$search_text = 'VIDSECA País-Carignan-Cabernet';
-// 						break;
-// 
-// 					case '20074':
-// 						$linked_sku = '20262';
-// 						$search_text = 'BIO RAZA Selection Chardonnay';
-// 						break;
-// 
-// 					case '20262':
-// 						$linked_sku = '20074';
-// 						$search_text = 'BIO RAZA Selection Malbec / Shiraz';
-// 						break;
-// 
-// 					case '20212':
-// 						$linked_sku = '20225';
-// 						$search_text = 'Koopmanskloof Chenin Blanc';
-// 						break;
-// 
-// 					case '20225':
-// 						$linked_sku = '20212';
-// 						$search_text = 'Lautaro Sauvignon Blanc';
-// 						break;
-// 
-// 					case '20413':
-// 						$linked_sku = '20415';
-// 						$search_text = 'Sensus Extra Brut';
-// 						break;
-// 
-// 					case '20415':
-// 						$linked_sku = '20413';
-// 						$search_text = 'Sensus Brut Rosé';
-// 						break;
-// 				}
-// 
-// 				if ( isset( $linked_sku ) ) {
-// 					$linked_product = wc_get_product( wc_get_product_id_by_sku( $linked_sku ) );
-// 					if ( $linked_product !== false ) {
-// 						$promo_text = str_replace( $search_text, '<a href="'.$linked_product->get_permalink().'">'.$linked_product->get_name().'</a>', $promo_text );
-// 					}
-// 				}
-
 				echo '<p class="promotie">';
 					echo $promo_text.' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').' in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
 				echo '</p>';
 			}
 		}
-	}
-
-	// Formatteer de gewichten in de attributen DEPRECATED
-	// add_filter( 'woocommerce_attribute', 'add_suffixes', 10, 3 );
-
-	function add_suffixes( $wpautop, $attribute, $values ) {
-		global $product;
-		$eh = $product->get_meta('_stat_uom');
-		if ( $eh === 'L' ) {
-			$suffix = 'liter';
-		} elseif ( $eh === 'KG' ) {
-			$suffix = 'kilogram';
-		}
-
-		$percenty_attributes = array('pa_fairtrade');
-
-		if ( in_array( $attribute['name'], $percenty_attributes ) ) {
-			$values[0] = number_format( str_replace( ',', '.', $values[0] ), 1, ',', '.' ).' %';
-		}
-
-		$wpautop = wpautop( wptexturize( implode( ', ', $values ) ) );
-		return $wpautop;
 	}
 
 
@@ -7701,33 +7163,6 @@
 		// Gewicht sowieso reeds in kilogram (maar check instellingen?)
 
 		return $params;
-	}
-
-	function get_number_of_times_coupon_was_used( $coupon_code, $start_date = '2022-10-01', $end_date = '2022-10-31', $return_orders = false ) {
-		global $wpdb;
-		$total_count = 0;
-		$orders = array();
-
-		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-processing', 'wc-claimed', 'wc-completed' ) ) . "') AND woi.order_item_type = 'coupon' AND woi.order_item_name = '" . $coupon_code . "' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
-		$rows = $wpdb->get_results( $query );
-
-		foreach ( $rows as $key => $row ) {
-			$order = wc_get_order( $row->order_id );
-			if ( $order !== false ) {
-				$orders[] = $order;
-				foreach ( $order->get_coupons() as $coupon ) {
-					if ( $coupon->get_code() == $coupon_code ) {
-						$total_count += $coupon->get_quantity();
-					}
-				}
-			}
-		}
-
-		if ( $return_orders ) {
-			return $orders;
-		} else {
-			return $total_count;
-		}
 	}
 
 	// Verberg berichten van plugins bovenaan adminpagina's
