@@ -7118,7 +7118,7 @@
 				} else {
 					$domain = 'www.oxfamwereldwinkels.be';
 				}
-				// Dit zal $partner_info['type'] overschrijven met 'partner' of 'not-found' 
+				// Dit zal $partner_info['type'] overschrijven met 'partner' of 'not-found'
 				$partner_info = array_merge( $partner_info, get_external_partner( $slugs[0], $domain ) );
 			} else {
 				// Fallback: zet de naam van de partner om in een slug
@@ -8238,6 +8238,12 @@
 				} else {
 					if ( count( $matching_partners ) === 1 ) {
 						$partner_data = $matching_partners[0];
+						
+						// Fallback voor OWW-partnerpagina's waar 'type' nog de partnercategorie bevat
+						if ( in_array( $partner_data['type'], array( 'A', 'B' ) ) ) {
+							$partner_data['type'] = 'partner';
+						}
+						
 						$logger->info( 'Partner data for '.$partner_slug.' cached in transient', $context );
 					} else {
 						$partner_data = array( 'type' => 'not-found' );
