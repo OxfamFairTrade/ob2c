@@ -4541,8 +4541,8 @@
 	}
 
 	function cart_contains_breakfast() {
-		// Voorlopig enkel checken in Regio Antwerpen
-		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' or get_current_blog_id() === 24 ) {
+		// Enkel checken in Regio Antwerpen
+		if ( get_current_blog_id() === 24 ) {
 			if ( WC()->session->has_session() ) {
 				foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
 					$product_in_cart = $values['data'];

@@ -17,8 +17,8 @@
 	
 	<h2>Voorradigheid nieuwe producten</h2>
 	<?php
-		$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites') ) );
-		$start_date = date_i18n( 'Y-m-d', strtotime('-30 days') );
+		$sites = get_sites( array( 'path__not_in' => array('/'), 'public' => 1, 'site__not_in' => get_site_option('oxfam_blocked_sites') ) );
+		$start_date = date_i18n( 'Y-m-d', strtotime('-14 days') );
 		$end_date = date_i18n('Y-m-d');
 		check_local_stocks( array( 21055, 22034 ), $sites );
 	?>

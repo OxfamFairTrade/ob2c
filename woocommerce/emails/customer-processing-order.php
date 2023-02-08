@@ -22,13 +22,7 @@ $context = array( 'source' => 'Oxfam Emails' );
 // Is altijd ingevuld, dus geen check doen
 echo '<p>Dag '.$order->get_billing_first_name().'</p>';
 
-if ( order_contains_breakfast( $order ) ) {
-	
-	// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD
-	$delivery = get_post_meta( $order->get_id(), 'estimated_delivery', true );
-	echo '<p>'.sprintf( 'Je bestelde een ontbijtpakket ter ere van 40 jaar Oxfam-Wereldwinkel Merksem. We komen het pakket bij je thuis afleveren op %1$s vanaf %2$s.', date_i18n( 'l d/m/Y', $delivery ), date_i18n( 'G\ui', $delivery ) ).'</p>';
-
-} elseif ( $order->has_shipping_method('local_pickup_plus') ) {
+if ( $order->has_shipping_method('local_pickup_plus') ) {
 
 	$shipping_methods = $order->get_shipping_methods();
 	$shipping_method = reset( $shipping_methods );
