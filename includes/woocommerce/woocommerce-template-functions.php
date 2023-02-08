@@ -360,7 +360,7 @@ if ( ! function_exists( 'woocommerce_get_product_thumbnail' ) ) {
             if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
                 $main_image_id = $product->get_meta('_main_thumbnail_id');
                 $global_image_html = nm_product_get_thumbnail( $main_image_id, $image_size, '', $nm_globals['product_placeholder_image'], true );
-                $current_blog = get_blog_details();
+                $current_blog = get_site();
                 $global_image_html = str_replace( $current_blog->path.'wp-content/uploads/', '/wp-content/uploads/', $global_image_html );
                 // do_action( 'qm/debug', $global_image_html );
             }

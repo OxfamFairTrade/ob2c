@@ -446,7 +446,7 @@
 			}
 
 			if ( $main_image_id ) {
-				$current_blog = get_blog_details();
+				$current_blog = get_site();
 				switch_to_blog(1);
 				// Checkt of de file nog bestaat én een afbeelding is
 				if ( wp_attachment_is_image( $main_image_id ) ) {
@@ -471,7 +471,7 @@
 			// Check of er een globaal beeld ingesteld is
 			global $product;
 			if ( ! empty ( $product->get_meta('_main_thumbnail_id') ) ) {
-				$current_blog = get_blog_details();
+				$current_blog = get_site();
 				$main_image_id = $product->get_meta('_main_thumbnail_id');
 				switch_to_blog(1);
 				// Check of de file nog bestaat
@@ -640,7 +640,7 @@
 			// Instellen van 'latest_blog_id' gebeurt enkel bij expliciet kiezen in store selector!
 			// Check of de huidige cookie overeenkomt met de huidige blog-ID
 			if ( isset( $_COOKIE['latest_blog_id'] ) and $_COOKIE['latest_blog_id'] == get_current_blog_id() ) {
-				$current_blog = get_blog_details();
+				$current_blog = get_site();
 				setcookie( 'latest_blog_path', str_replace( '/', '', $current_blog->path ), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
 				if ( is_object( WC()->cart ) ) {
 					setcookie( 'blog_'.get_current_blog_id().'_items_in_cart', WC()->cart->get_cart_contents_count(), time() + MONTH_IN_SECONDS, '/', OXFAM_COOKIE_DOMAIN );
@@ -1007,18 +1007,23 @@
 		exit();
 	}
 
-	// Vervang canonical tag door hoofdproduct bij nationale producten (duplicate content vermijden!)
+	// Stel canonical tag in op lokale exemplaren van nationale pagina's (duplicate content vermijden!)
 	add_filter( 'get_canonical_url', 'ob2c_tweak_canonical_url', 10, 2 );
 
 	function ob2c_tweak_canonical_url( $url, $post ) {
 		if ( ! is_main_site() ) {
 			if ( get_post_type( $post ) === 'product' ) {
 				if ( is_national_product( $post->ID ) ) {
+					// Haal link van hoofdproduct op
 					$national_post_id = get_post_meta( $post->ID, '_woonet_network_is_child_product_id', true );
 					switch_to_blog(1);
 					$url = get_permalink( $national_post_id );
 					restore_current_blog();
 				}
+			} elseif ( is_product_tag() or is_product_category() ) {
+				// Verwijder het site path (bv. /gemeente/) uit de URL
+				// Pattern komt in principe nergens anders voor, dus veilig
+				$url = str_replace( get_site()->path, '/', $url );
 			}
 		}
 		return $url;

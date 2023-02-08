@@ -100,7 +100,7 @@
 						if ( is_regional_webshop() ) {
 							$blog_path = $order->get_meta('claimed_by');
 						} else {
-							$current_blog = get_blog_details();
+							$current_blog = get_site();
 							// Wis de bewoording 'regio' bij pseudo-regiowebshops, om verwarring bij het ingeven in Access te vermijden
 							$blog_path = str_replace( array( '/regio', '/' ), '', $current_blog->path );
 						}
@@ -145,7 +145,7 @@
 					} elseif ( count( $orders ) > 1 ) {
 						$warnings[ $row->order ] = 'Meerdere bestellingen gevonden voor '.$row->order.', voucher '.$row->code.' niet opgenomen in export';
 					} else {
-						$current_blog = get_blog_details();
+						$current_blog = get_site();
 						
 						// Soms worden codes per ongeluk toch fysiek geaccepteerd in een winkel
 						// In dat geval maken we de code handmatig ongeldig in de MySQL-tabel en gebruiken we 'OFFLINE' als ordernummer
