@@ -174,15 +174,22 @@
 	# UTILITIES #
 	#############
 	
+	function get_current_url() {
+		$url = ( isset( $_SERVER['HTTPS'] ) and 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http';
+		$url .= '://' . $_SERVER['SERVER_NAME'];
+		$url .= in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ) ) ? '' : ':' . $_SERVER['SERVER_PORT'];
+		$url .= $_SERVER['REQUEST_URI'];
+		return $url;
+	}
+	
 	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
 	function send_automated_mail_to_helpdesk( $subject, $body ) {
 		if ( wp_get_environment_type() !== 'production' ) {
 			$subject = 'TEST - '.$subject.' - NO ACTION REQUIRED';
-	
 			// Mails eventueel volledig uitschakelen
 			// return;
 		}
-	
+		
 		$headers = array();
 		$headers[] = 'From: '.get_webshop_name().' <'.get_option('admin_email').'>';
 		$headers[] = 'Content-Type: text/html';

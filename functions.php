@@ -6,9 +6,10 @@
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 	
 	require get_stylesheet_directory() . '/oxfam-tweaks.php';
+	require get_stylesheet_directory() . '/functions/coupons.php';
 	require get_stylesheet_directory() . '/functions/helpers.php';
 	require get_stylesheet_directory() . '/functions/relevanssi.php';
-	require get_stylesheet_directory() . '/functions/coupons.php';
+	require get_stylesheet_directory() . '/functions/seo.php';
 	require get_stylesheet_directory() . '/functions/mailchimp/functions.php';
 	require get_stylesheet_directory() . '/functions/vouchers/functions.php';
 	require get_stylesheet_directory() . '/functions/subsites/brugge.php';
@@ -655,22 +656,6 @@
 	// Laad géén extra NM-stijlen rechtstreeks in de pagina!
 	add_filter( 'nm_include_custom_styles', '__return_false' );
 
-	add_filter( 'woocommerce_get_breadcrumb', 'modify_woocommerce_breadcrumbs' );
-	function modify_woocommerce_breadcrumbs( $crumbs ) {
-		$new_crumbs = array();
-		// Key 0 = Titel, Key 1 = URL
-		foreach ( $crumbs as $page ) {
-			if ( $page[0] === 'Home' ) {
-				$page[1] = 'https://'.OXFAM_MAIN_SITE_DOMAIN.'/';
-			} elseif ( $page[0] === 'Producten' and ! is_main_site() ) {
-				// Prepend de lokale homepage van de huidige webshop
-				$new_crumbs[] = array( 0 => 'Webshop '.get_webshop_name(true), 1 => get_site_url() );
-			}
-			$new_crumbs[] = $page;
-		}
-		return $new_crumbs;
-	}
-
 	// Geautomatiseerde manier om diverse instellingen te kopiëren naar subsites
 	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_placeholder_image', 'sync_settings_to_subsites', 10, 3 );
@@ -902,14 +887,6 @@
 		}
 	}
 
-	function get_current_url() {
-		$url = ( isset( $_SERVER['HTTPS'] ) and 'on' === $_SERVER['HTTPS'] ) ? 'https' : 'http';
-		$url .= '://' . $_SERVER['SERVER_NAME'];
-		$url .= in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ) ) ? '' : ':' . $_SERVER['SERVER_PORT'];
-		$url .= $_SERVER['REQUEST_URI'];
-		return $url;
-	}
-
 	function add_product_to_cart_by_get_parameter() {
 		if ( is_admin() ) {
 			return;
@@ -1005,41 +982,6 @@
 		// Redirect naar het winkelmandje, zodat eventuele foutmeldingen en kortingsbonnen zeker verschijnen
 		wp_safe_redirect( wc_get_cart_url() );
 		exit();
-	}
-
-	// Stel canonical tag in op lokale exemplaren van nationale pagina's (duplicate content vermijden!)
-	add_filter( 'get_canonical_url', 'ob2c_tweak_canonical_url', 10, 2 );
-
-	function ob2c_tweak_canonical_url( $url, $post ) {
-		if ( ! is_main_site() ) {
-			if ( get_post_type( $post ) === 'product' ) {
-				if ( is_national_product( $post->ID ) ) {
-					// Haal link van hoofdproduct op
-					$national_post_id = get_post_meta( $post->ID, '_woonet_network_is_child_product_id', true );
-					switch_to_blog(1);
-					$url = get_permalink( $national_post_id );
-					restore_current_blog();
-				}
-			} elseif ( is_product_tag() or is_product_category() ) {
-				// Verwijder het site path (bv. /gemeente/) uit de URL
-				// Pattern komt in principe nergens anders voor, dus veilig
-				$url = str_replace( get_site()->path, '/', $url );
-			}
-		}
-		return $url;
-	}
-
-	// Verbeter de gestructureerde productdata voor Google
-	add_filter( 'woocommerce_structured_data_product', 'ob2c_tweak_structured_data', 10, 2 );
-
-	function ob2c_tweak_structured_data( $markup, $product ) {
-		if ( is_main_site() ) {
-			$markup['sku'] = $product->get_meta('_shopplus_code');
-			$markup['gtin'] = $product->get_meta('_cu_ean');
-			$markup['brand'] = array( '@type' =>  'Organization', 'name' => $product->get_attribute('merk') );
-			$markup['image'] =  wp_get_attachment_image_url( $product->get_image_id(), 'shop_single' );
-		}
-		return $markup;
 	}
 
 	// Activeer Facebook Pixel
