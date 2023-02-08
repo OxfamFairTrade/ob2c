@@ -10,7 +10,7 @@
 			<div class="col-md-3 md-align-self-center">
 				<div class="logo">
 					<a href="<?= home_url('/'); ?>">
-						<img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
+						<img src="<?= get_stylesheet_directory_uri(); ?>/images/logo-green.svg" width="250" alt="Logo Oxfam-Wereldwinkels">
 					</a>
 				</div>
 			</div>
@@ -41,8 +41,8 @@
 						<?php endif; ?>
 					</div>-->
 					<div class="top-search">
-						<form id="globalSearch" action="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/" method="get">
-							<input type="text" name="s" placeholder="Zoeken">
+						<form id="globalSearch" action="https://oxfambelgie.be/search" method="get">
+							<input type="text" name="query" placeholder="Zoeken">
 							<input type="submit" value="">
 						</form>
 					</div>
@@ -57,14 +57,14 @@
 				<div id="nav" class="nav">
 					<ul id="menu-main-menu" class="menu">
 						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/wij-zijn-oxfam" target="_blank">Over Oxfam</a></li>
-						<li class="menu-item menu-item-type-post_type menu-item-object-page<?php echo is_shop() ? ' current-menu-item' : ''; ?>"><a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
-						<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/recepten/">Recepten</a></li>
+						<li class="menu-item menu-item-type-post_type menu-item-object-page<?php echo is_shop() ? ' current-menu-item' : ''; ?>"><a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
+						<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/recepten/">Recepten</a></li>
 						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee" target="_blank">Doe mee</a></li>
 						<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/shop-finder" target="_blank">Vind winkel</a></li>
 						<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/doe-mee/word-vrijwilliger" target="_blank">Word vrijwilliger</a></li>
 					</ul>
                     <?php if ( ! is_main_site() ) : ?>
-                        <a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>" class="mini-acc-btn">
+                        <a href="<?= get_permalink( wc_get_page_id('myaccount') ); ?>" class="mini-acc-btn">
                             <?php
                             if ( is_user_logged_in() ) {
                                 $user = wp_get_current_user();
@@ -104,7 +104,7 @@
 		<div class="col-row">
 			<div class="col-xs-6 align-self-center">
 				<div class="logo">
-					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/logo-green-50-jaar.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
+					<a href="<?= home_url('/'); ?>"><img src="<?= get_stylesheet_directory_uri(); ?>/images/logo-green-50-jaar.svg" width="250" alt="Logo Oxfam-Wereldwinkels"></a>
 				</div>
 			</div> 
 			<div class="col-xs-6 align-self-center">
@@ -113,14 +113,14 @@
 						<a href="https://oxfambelgie.be/shop-finder">Winkels</a>
 					</div>
 					<div class="header__item header__item_shop">
-						<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a>
+						<a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Producten</a>
 					</div>
 					<div class="header__item header__item_search">
 						<span>Zoek</span>
 					</div>
                     <?php if ( ! is_main_site() ) : ?>
                         <div class="header__item header__item_account">
-                            <a href="<?php echo get_permalink( wc_get_page_id('myaccount') ); ?>">
+                            <a href="<?= get_permalink( wc_get_page_id('myaccount') ); ?>">
                                 <?php
                                 if ( is_user_logged_in() ) {
                                     $user = wp_get_current_user();
@@ -149,11 +149,11 @@
 				</div>
 			</div>
 		</div>
-		<div id="menu-btn"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/menu-btn-black.png"></div>
+		<div id="menu-btn"><img src="<?= get_stylesheet_directory_uri(); ?>/images/menu-btn-black.png"></div>
 	</div>
 	<div class="top-search top-search_mobile hidden">
-		<form action="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/" method="get">
-			<input type="text" name="s" placeholder="Zoeken">
+		<form action="https://oxfambelgie.be/search" method="get">
+			<input type="text" name="query" placeholder="Zoeken">
 			<input type="submit" value="">
 		</form>
 	</div>
@@ -162,16 +162,16 @@
 	<!-- Als we het mobiele menu fixed maken, kan deze zoekbalk verdwijnen -->
     <div id="menu-btn-close"></div>
     <div class="top-search">
-		<form action="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/" method="get">
-			<input type="text" name="s" placeholder="Zoeken">
+		<form action="https://oxfambelgie.be/search" method="get">
+			<input type="text" name="query" placeholder="Zoeken">
 			<input type="submit" value="">
 		</form>
 	</div>
 	<div class="nav items">
 		<ul id="menu-main-menu-1" class="menu">
 			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/wij-zijn-oxfam" target="_blank">Over Oxfam</a></li>
-			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
-			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/recepten/">Recepten</a></li>
+			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
+			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/recepten/">Recepten</a></li>
 			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee" target="_blank">Doe mee</a></li>
 			<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/shop-finder" target="_blank">Vind winkel</a></li>
 			<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/doe-mee/word-vrijwilliger" target="_blank">Word vrijwilliger</a></li>

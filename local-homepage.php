@@ -16,11 +16,11 @@
 		<div id="content">
 			<div class="container">
 				<div class="breadcrumb">
-					<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">Home</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Webshop <?php echo get_webshop_name(true); ?></span>
+					<a href="/">Home</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Webshop <?= get_webshop_name(true); ?></span>
 				</div>
 				<div class="col-row lh-intro">
 					<div class="col-xs-12 col-md-6">
-						<h2><?php echo ( ! is_main_site() ) ? 'Oxfam ' : ''; ?>Webshop <?php echo get_webshop_name(true); ?></h2>
+						<h2><?php echo ( ! is_main_site() ) ? 'Oxfam ' : ''; ?>Webshop <?= get_webshop_name(true); ?></h2>
 						<?php the_content(); ?>
 					</div>
 					<div class="col-xs-12 col-md-6">
@@ -33,12 +33,12 @@
 						<h2>Shoppen per categorie</h2>
 					</div>
 					<div class="col-xs-12 col-sm-6">
-						<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
+						<a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
 					</div>
 				</div>
 				<div class="col-row lh-category">
 					<div class="col-xs-12">
-						<?php echo do_shortcode('[nm_product_categories orderby="menu_order" title_tag="h3" parent="0"]'); ?>
+						<?= do_shortcode('[nm_product_categories orderby="menu_order" title_tag="h3" parent="0"]'); ?>
 					</div>
 				</div>
 				<?php
@@ -57,12 +57,12 @@
 									<h2>Producten in de kijker</h2>
 								</div>
 								<div class="col-xs-12 col-sm-6">
-									<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
+									<a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
 								</div>
 							</div>
 							<div class="col-row lh-featured">
 								<div class="col-xs-12">
-									<?php echo do_shortcode('[nm_product_slider shortcode="featured_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
+									<?= do_shortcode('[nm_product_slider shortcode="featured_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
 								</div>
 							</div>
 							<?php
@@ -106,7 +106,7 @@
 									<h2>Promoties</h2>
 								</div>
 								<div class="col-xs-12 col-sm-6">
-									<a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
+									<a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
 								</div>
 							</div>
 							<div class="col-row lh-promo">

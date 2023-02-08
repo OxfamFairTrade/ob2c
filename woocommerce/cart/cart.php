@@ -23,12 +23,12 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 <!-- GEWIJZIGD: Extra opening wrappers en breadcrumb -->
 <div class="container">
 	<div class="breadcrumb">
-		<a href="https://<?php echo OXFAM_MAIN_SITE_DOMAIN; ?>/">Home</a> <span class="sep"></span> <a href="<?php echo get_site_url(); ?>">Webshop <?php echo get_webshop_name(true); ?></a> <span class="sep"></span> <a href="<?php echo get_permalink( wc_get_page_id('shop') ); ?>">Producten</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Winkelmandje</span>
+		<a href="/">Home</a> <span class="sep"></span> <a href="<?= get_site_url(); ?>">Webshop <?= get_webshop_name(true); ?></a> <span class="sep"></span> <a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Producten</a> <span class="sep"></span> <span class="breadcrumb_last" aria-current="page">Winkelmandje</span>
 	</div>
 	<div class="col-row">
 		<div class="col-md-8">
 
-			<form class="woocommerce-cart-form" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post">
+			<form class="woocommerce-cart-form" action="<?= esc_url( wc_get_cart_url() ); ?>" method="post">
 
 				<h3><?php esc_html_e( 'Shopping Cart', 'nm-framework' ); ?></h3>
 				
@@ -51,7 +51,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 							if ( $_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters( 'woocommerce_cart_item_visible', true, $cart_item, $cart_item_key ) ) {
 								$product_permalink = apply_filters( 'woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink( $cart_item ) : '', $cart_item, $cart_item_key );
 								?>
-								<tr class="woocommerce-cart-form__cart-item <?php echo esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
+								<tr class="woocommerce-cart-form__cart-item <?= esc_attr( apply_filters( 'woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key ) ); ?>">
 
 									<td class="product-thumbnail"><?php
 										$thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
@@ -111,7 +111,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 		                            </td>
 		                            
 		                            <td class="nm-product-subtotal" data-title="<?php esc_attr_e( 'Subtotal', 'woocommerce' ); ?>">
-		                                <?php echo apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key ); ?>
+		                                <?= apply_filters( 'woocommerce_cart_item_subtotal', WC()->cart->get_product_subtotal( $_product, $cart_item['quantity'] ), $cart_item, $cart_item_key ); ?>
 		                            </td>
 
 									<!-- GEWIJZIGD: Verwijderknop niet tonen -->
@@ -153,7 +153,7 @@ add_action( 'woocommerce_after_cart', 'woocommerce_cross_sell_display' );
 				    ?>
 
 				    <div class="wc-proceed-to-checkout">
-						<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
+						<a href="<?= esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" id="nm-cart-continue-button" class="button border"><?php esc_attr_e( 'Continue shopping', 'woocommerce' ); ?></a>
 						<?php do_action( 'woocommerce_proceed_to_checkout' ); ?>
 					</div>
 				</div>
