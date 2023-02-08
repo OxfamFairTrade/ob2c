@@ -19,7 +19,7 @@
 					<div class="top-menu">
 						<ul id="menu-top-menu" class="menu"><li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://oxfambelgie.be/pers" target="_blank">Voor pers</a></li>
 							<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee/oxfam-op-jouw-school" target="_blank">Voor scholen</a></li>
-							<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/" target="_blank">Voor bedrijven</a></li>
+							<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/bedrijven/" target="_blank">Voor bedrijven</a></li>
 						</ul>
 					</div>
 					<!--<div class="top-social logged-in-user">
@@ -58,7 +58,7 @@
 					<ul id="menu-main-menu" class="menu">
 						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/wij-zijn-oxfam" target="_blank">Over Oxfam</a></li>
 						<li class="menu-item menu-item-type-post_type menu-item-object-page<?php echo is_shop() ? ' current-menu-item' : ''; ?>"><a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
-						<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/recepten/">Recepten</a></li>
+						<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/recepten/" target="_blank">Recepten</a></li>
 						<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee" target="_blank">Doe mee</a></li>
 						<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/shop-finder" target="_blank">Vind winkel</a></li>
 						<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/doe-mee/word-vrijwilliger" target="_blank">Word vrijwilliger</a></li>
@@ -171,7 +171,7 @@
 		<ul id="menu-main-menu-1" class="menu">
 			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/wij-zijn-oxfam" target="_blank">Over Oxfam</a></li>
 			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Producten</a></li>
-			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/recepten/">Recepten</a></li>
+			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/recepten/" target="_blank">Recepten</a></li>
 			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee" target="_blank">Doe mee</a></li>
 			<li class="orange-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/shop-finder" target="_blank">Vind winkel</a></li>
 			<li class="green-btn menu-item menu-item-type-custom menu-item-object-custom"><a href="https://oxfambelgie.be/doe-mee/word-vrijwilliger" target="_blank">Word vrijwilliger</a></li>
@@ -181,7 +181,7 @@
 		<ul id="menu-top-menu-1" class="menu">
 			<li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://oxfambelgie.be/pers" target="_blank">Voor pers</a></li>
 			<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee/oxfam-op-jouw-school" target="_blank">Voor scholen</a></li>
-			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/" target="_blank">Voor bedrijven</a></li>
+			<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/bedrijven/" target="_blank">Voor bedrijven</a></li>
 		</ul>
 	</div>
 	<div class="nav btns">

@@ -131,7 +131,7 @@
 								<ul id="menu-footer-menu-1" class="menu">
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/wij-zijn-oxfam" target="_blank">Missie en aanpak</a></li>
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee/doe-een-gift" target="_blank">Steun ons</a></li>
-									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/bescherming-tegen-misbruik-en-uitbuiting">Meld wangedrag</a></li>
+									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/bescherming-tegen-misbruik-en-uitbuiting" target="_blank">Meld wangedrag</a></li>
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/vacatures" target="_blank">Vacatures</a></li>
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/netwerken-en-allianties-van-oxfam-belgie" target="_blank">Bevriende organisaties</a></li>
 								</ul>
@@ -142,9 +142,9 @@
 								<h3>Meer over fair trade</h3>
 								<ul id="menu-footer-menu-2" class="menu">
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/eerlijke-handel" target="_blank">Expertise</a></li>
-									<li class="menu-item menu-item-type-post_type_archive menu-item-object-partner"><a href="https://www.oxfamfairtrade.be/nl/partners/">Producenten</a></li>
+									<li class="menu-item menu-item-type-post_type_archive menu-item-object-partner"><a href="https://www.oxfamfairtrade.be/nl/partners/" target="_blank">Producenten</a></li>
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/nieuws" target="_blank">Nieuws</a></li>
-									<li class="menu-item menu-item-type-post_type_archive menu-item-object-recipe"><a href="https://www.oxfamfairtrade.be/nl/recepten/">Recepten</a></li>
+									<li class="menu-item menu-item-type-post_type_archive menu-item-object-recipe"><a href="https://www.oxfamfairtrade.be/nl/recepten/" target="_blank">Recepten</a></li>
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/oxfam-magazine" target="_blank">Magazine FAIR</a></li>
 								</ul>
 							</div>
@@ -156,7 +156,7 @@
 									<li class="menu-item menu-item-type-taxonomy menu-item-object-category"><a href="https://oxfambelgie.be/pers" target="_blank">Pers</a></li>
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/doe-mee/oxfam-op-jouw-school" target="_blank">School</a></li>
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/eerlijke-handel" target="_blank">Beleidsmedewerker</a></li>
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/" target="_blank">Bedrijf</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.oxfamfairtrade.be/nl/bedrijven/" target="_blank">Bedrijf</a></li>
 									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://copain.oww.be" target="_blank">Vrijwilliger</a></li>
 								</ul>
 							</div>
