@@ -53,7 +53,7 @@
 		
 		if ( $args['site_id'] < 86 ) {
 			$args['site_id'] += 1;
-			if ( as_schedule_single_action( strtotime(), 'clean_old_product_terms', $args, 'Cleanup' ) > 0 ) {
+			if ( as_schedule_single_action( strtotime(), 'clean_old_product_terms', array( 'args' => $args ), 'Cleanup' ) > 0 ) {
 				write_log("Cleanup for site-ID ".$args['site_id']." scheduled");
 			}
 		} else {
