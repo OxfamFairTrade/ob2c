@@ -6103,6 +6103,7 @@
 					$wp_admin_bar->add_node( $new_node );
 					
 					$new_node_bis = $node_d;
+					$new_node_bis->id = 'blog-'.$site->blog_id.'-f';
 					$new_node_bis->title = 'Digicheques';
 					$new_node_bis->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-vouchers-list' );
 					$wp_admin_bar->add_node( $new_node_bis );
