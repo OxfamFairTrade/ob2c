@@ -216,7 +216,7 @@
 						</tr>
 						<!-- tr valign="top">
 							<th class="left">
-								<label for="oxfam_disable_local_pickup">Schakel afhalingen in de winkel tijdelijk uit:<br/><small>Opgelet: klanten zullen enkel nog kunnen afrekenen als ze een postcode ingeven die in jullie levergebied ligt! Als je afhaling op afspraak wil behouden tijdens een lockdown/vakantie is het beter om dit niet aan te vinken en gewoon uitzondelijke sluitingsdagen toe te voegen aan je winkelpagina op oxfamwereldwinkels.be. Indien de winkel de komende 7 dagen niet geopend is, verschijnt bij het afrekenen en in de mails automatisch een tekst dat jullie de klant zullen contacteren om een afspraak te maken.</small></label>
+								<label for="oxfam_disable_local_pickup">Schakel afhalingen in de winkel tijdelijk uit:<br/><small>Opgelet: klanten zullen enkel nog kunnen afrekenen als ze een postcode ingeven die in jullie levergebied ligt! Als je afhaling op afspraak wil behouden tijdens een lockdown/vakantie is het beter om dit niet aan te vinken en gewoon uitzondelijke sluitingsdagen toe te voegen aan je winkelpagina op oxfambelgie.be. Indien de winkel de komende 7 dagen niet geopend is, verschijnt bij het afrekenen en in de mails automatisch een tekst dat jullie de klant zullen contacteren om een afspraak te maken.</small></label>
 							</th>
 							<td class="right">
 								<input type="checkbox" name="oxfam_disable_local_pickup" value="yes" <?php // checked( get_option('oxfam_disable_local_pickup'), 'yes' ); ?> <?php // if ( current_user_can('create_sites') ) echo ' disabled'; ?>>
