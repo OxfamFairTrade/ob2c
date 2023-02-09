@@ -2,54 +2,58 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 	
+	// $args = array( 'site_id' => 80 );
+	// clean_old_product_terms_callback( $args );
 	add_action( 'clean_old_product_terms', 'clean_old_product_terms_callback', 10, 1 );
 	
 	function clean_old_product_terms_callback( $args ) {
-		switch_to_blog( $args['site_id'] );
+		if ( get_site( $args['site_id'] ) !== NULL ) {
+			switch_to_blog( $args['site_id'] );
 		
-		$cnt = 0;
-		$start = microtime(true);
-		$to_delete = array(
-			'pa_bio',
-			'pa_choavl',
-			'pa_ean',
-			'pa_eenheid',
-			'pa_ener',
-			'pa_eprijs',
-			'pa_fairtrade',
-			'pa_famscis',
-			'pa_fapucis',
-			'pa_fasat',
-			'pa_fat',
-			'pa_fibtg',
-			'pa_ompak',
-			'pa_polyl',
-			'pa_pro',
-			'pa_salteq',
-			'pa_shopplus',
-			'pa_starch',
-			'pa_sugar',
-			'product_allergen',
-			'product_grape',
-			'product_recipe',
-			'product_taste',
-		);
-		
-		foreach ( $to_delete as $taxonomy ) {
-			// Anders vinden we niks, ook al zwerven ze nog rond in de database!
-			register_taxonomy( $taxonomy, 'product' );
+			$cnt = 0;
+			$start = microtime(true);
+			$to_delete = array(
+				'pa_bio',
+				'pa_choavl',
+				'pa_ean',
+				'pa_eenheid',
+				'pa_ener',
+				'pa_eprijs',
+				'pa_fairtrade',
+				'pa_famscis',
+				'pa_fapucis',
+				'pa_fasat',
+				'pa_fat',
+				'pa_fibtg',
+				'pa_ompak',
+				'pa_polyl',
+				'pa_pro',
+				'pa_salteq',
+				'pa_shopplus',
+				'pa_starch',
+				'pa_sugar',
+				'product_allergen',
+				'product_grape',
+				'product_recipe',
+				'product_taste',
+			);
 			
-			$terms = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false ) );
-			foreach ( $terms as $term ) {
-				$name = $term->name;
-				if ( wp_delete_term( $term->term_id, $taxonomy ) ) {
-					$cnt++;
+			foreach ( $to_delete as $taxonomy ) {
+				// Anders vinden we niks, ook al zwerven ze nog rond in de database!
+				register_taxonomy( $taxonomy, 'product' );
+				
+				$terms = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false ) );
+				foreach ( $terms as $term ) {
+					$name = $term->name;
+					if ( wp_delete_term( $term->term_id, $taxonomy ) ) {
+						$cnt++;
+					}
 				}
 			}
+			write_log( get_bloginfo('name').": deleted ".$cnt." terms in ".number_format( microtime(true)-$start, 2, ',', '.' )." seconds" );
+			
+			restore_current_blog();
 		}
-		write_log( get_bloginfo('name').": deleted ".$cnt." terms in ".number_format( microtime(true)-$start, 2, ',', '.' )." seconds" );
-		
-		restore_current_blog();
 		
 		if ( $args['site_id'] < 86 ) {
 			$args['site_id'] += 1;
@@ -81,24 +85,24 @@
 	function get_oxfam_covered_zips() {
 		global $wpdb;
 		$zips = array();
-	
+		
 		// Hou enkel rekening met ingeschakelde zones
 		$locations = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."woocommerce_shipping_zone_locations LEFT JOIN ".$wpdb->prefix."woocommerce_shipping_zone_methods ON ".$wpdb->prefix."woocommerce_shipping_zone_methods.zone_id = ".$wpdb->prefix."woocommerce_shipping_zone_locations.zone_id WHERE ".$wpdb->prefix."woocommerce_shipping_zone_locations.location_type = 'postcode' AND ".$wpdb->prefix."woocommerce_shipping_zone_methods.is_enabled = 1" );
-	
+		
 		if ( count( $locations ) > 0 ) {
 			foreach ( $locations as $row ) {
 				$zips[] = $row->location_code;
 			}
 			$zips = array_unique( $zips );
-	
+			
 			// Verwijder de default '9999'-waarde uit ongebruikte verzendmethodes
 			if ( ( $key = array_search( '9999', $zips ) ) !== false ) {
 				unset( $zips[ $key ] );
 			}
-	
+			
 			sort( $zips, SORT_NUMERIC );
 		}
-	
+		
 		return $zips;
 	}
 	

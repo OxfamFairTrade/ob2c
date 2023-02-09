@@ -35,7 +35,8 @@
 		global $wpdb;
 		$wpdb->query( "DELETE FROM `$wpdb->sitemeta` WHERE `meta_key` LIKE ('%_store_data')" );
 
-		// Sluit afgeschermde en gearchiveerde webshops uit
+		// Sluit afgeschermde en niet-openbare webshops uit
+		// Dit is de eerste stap in het uitfaseren van een webshop, archiveren gebeurt later
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
 		$site_ids_vs_blog_ids = array();
 

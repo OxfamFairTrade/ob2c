@@ -101,7 +101,7 @@
 	<form method="post" action="options.php">
 		<table class="form-table" id="oxfam-options">
 			<tr valign="top">
-				<th class='left'><a href='https://outlook.office.com/oxfamwereldwinkels.be?login_hint=<?php echo get_webshop_email(); ?>' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>
+				<th class='left'><a href='https://outlook.office.com/oxfamwereldwinkels.be?login_hint=<?= get_webshop_email(); ?>' target='_blank'>Log in op je Office 365-mailaccount &raquo;</a></th>
 				<td class='right'>Merk op dat het wachtwoord van deze mailbox volledig los staat van de webshop.</td>
 			</tr>
 			
@@ -130,23 +130,23 @@
 					<label for="blog_id">Blog-ID:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="blog_id" class="text-input" value="<?php echo get_current_blog_id(); ?>" readonly>
+					<input type="text" name="blog_id" class="text-input" value="<?= get_current_blog_id(); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_shop_post_id" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Post-ID OWW-site:</label>
+					<label for="oxfam_shop_post_id" title="Aan de hand van deze ID halen we adressen en openingsuren momenteel nog op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Post-ID OWW-site:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?php echo get_option('oxfam_shop_post_id'); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
+					<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?= get_option('oxfam_shop_post_id'); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
 				</td>
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam België.">Node OBE-site:</label>
+					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren binnenkort op uit de database achter de publieke site van Oxfam België.">Node OBE-site:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_shop_node" class="text-input" value="<?php echo get_option('oxfam_shop_node'); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
+					<input type="text" name="oxfam_shop_node" class="text-input" value="<?= get_option('oxfam_shop_node'); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -154,7 +154,7 @@
 					<label for="oxfam_mollie_partner_id" title="Je betaalaccount valt onder het contract dat Oxfam Fair Trade sloot met Mollie. Aan de hand van deze ID kunnen we de nodige API-keys invullen en in geval van nood inloggen op jullie lokale account.">Partner-ID Mollie:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_mollie_partner_id" class="text-input" value="<?php echo esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
+					<input type="text" name="oxfam_mollie_partner_id" class="text-input" value="<?= esc_attr( get_option('oxfam_mollie_partner_id') ); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
 				</td>
 			</tr>
 			<?php
@@ -174,16 +174,17 @@
 			<tr valign="top">
 				<th class="left">
 					<?php
-						if ( does_home_delivery() and count( get_oxfam_covered_zips() ) > 0 ) {
-							$extra_info = 'Wat wel van belang blijft, is de lijst van '.count( get_oxfam_covered_zips() ).' postcodes waar deze webshop <u>kan</u> thuisleveren: '.implode( ', ', get_oxfam_covered_zips() ).'. ';
+						$zips = get_oxfam_covered_zips();
+						if ( does_home_delivery() and count( $zips ) > 0 ) {
+							$delivery_info = 'Het is mogelijk dat sommige postcodes in overlap met andere webshops bediend worden.';
 						} else {
-							$extra_info = '';
+							$delivery_info = 'Jullie organiseren geen thuislevering.';
 						}
 					?>
-					<label for="oxfam_zip_codes" title="">Postcodes waarvoor deze webshop hoofdverantwoordelijke is (<?php echo count( get_option( 'oxfam_zip_codes', array() ) ); ?>):<br/><small>Sinds het vervangen van de portaalpagina door een algemene winkelkiezer (oktober 2020) heeft het begrip 'hoofdverantwoordelijke' geen echte betekenis meer. Er gebeurt immers niet langer een volledig automatische doorsturing na het invullen van een postcode. <?php echo $extra_info; ?>Dit kan enkel vanuit het NS gewijzigd worden.</small></label>
+					<label for="oxfam_covered_zips">Postcodes waar deze webshop aan huis levert (<?= count( $zips ); ?>):<br/><small><?= $delivery_info; ?> Deze lijst kan enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
 				<td class="right">
-					<textarea name="oxfam_zip_codes" rows="3" class="text-input" placeholder="<?php echo implode( ', ', get_oxfam_covered_zips() ); ?>" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( implode( ', ', get_option( 'oxfam_zip_codes', array() ) ) ); ?></textarea>
+					<textarea name="oxfam_covered_zips" rows="3" class="text-input" placeholder="<?= implode( ', ', $zips ); ?>" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>><?= esc_textarea( implode( ', ', $zips ) ); ?></textarea>
 				</td>
 			</tr>
 			<?php
@@ -194,7 +195,7 @@
 								<label for="oxfam_minimum_free_delivery">Minimumbedrag voor gratis thuislevering:<br/><small>Dit bedrag verschijnt ook in de balk bovenaan je webshop, tenzij je een afwijkende boodschap liet plaatsen. Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau (50 euro).</small></label>
 							</th>
 							<td class="right">
-								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?php echo get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?>" step="5" min="0" max="<?php echo get_site_option('oxfam_minimum_free_delivery'); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
+								<input type="number" name="oxfam_minimum_free_delivery" class="text-input" value="<?= get_option( 'oxfam_minimum_free_delivery', get_site_option('oxfam_minimum_free_delivery') ); ?>" step="5" min="0" max="<?= get_site_option('oxfam_minimum_free_delivery'); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
 							</td>
 						</tr>
 						<tr valign="top">
@@ -202,7 +203,7 @@
 								<label for="oxfam_b2c_delivery_cost">Leverkost voor betalende thuislevering:<br/><small>Je kunt geen bedrag instellen dat hoger ligt dan het afgesproken nationale serviceniveau (6,95 euro). Opgelet: indien je thuislevering volledig gratis wil maken, dien je het minimumbedrag hierboven op 0 te zetten (en niet dit bedrag). Vergeet de prijs van de artikels WEB6 en WEB21 niet aan te passen in ShopPlus!</small></label>
 							</th>
 							<td class="right">
-								<input type="number" name="oxfam_b2c_delivery_cost" class="text-input" value="<?php echo get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') ); ?>" step="0.05" min="0.95" max="6.95" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
+								<input type="number" name="oxfam_b2c_delivery_cost" class="text-input" value="<?= get_option( 'oxfam_b2c_delivery_cost', get_site_option('oxfam_b2c_delivery_cost') ); ?>" step="0.05" min="0.95" max="6.95" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
 							</td>
 						</tr>
 						<tr valign="top">
@@ -226,20 +227,20 @@
 			?>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Ongeldige Belgische telefoonnummers (= geen 9 of 10 cijfers) zullen niet opgeslagen worden. Wis het telefoonnummer om het algemene telefoonnummer dat vermeld staat op <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a> opnieuw automatisch over te nemen.</small></label>
+					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Ongeldige Belgische telefoonnummers (= geen 9 of 10 cijfers) zullen niet opgeslagen worden. Wis het telefoonnummer om het algemene telefoonnummer dat vermeld staat op <a href="<?= $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a> opnieuw automatisch over te nemen.</small></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_custom_webshop_telephone" class="text-input" value="<?php echo esc_attr( get_option( 'oxfam_custom_webshop_telephone', '' ) ); ?>" placeholder="<?php echo get_oxfam_shop_data( 'telephone', 0, true ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
+					<input type="text" name="oxfam_custom_webshop_telephone" class="text-input" value="<?= esc_attr( get_option( 'oxfam_custom_webshop_telephone', '' ) ); ?>" placeholder="<?= get_oxfam_shop_data( 'telephone', 0, true ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
 				</td>
 			</tr>
 			<!-- Deze instelling maakt geen deel meer uit van de geregistreerde opties en worden dus niet automatisch bijgewerkt! -->
 			<!-- Ook sluitingsdagen van alle secundaire afhaalpunten tonen ter info? Maar wat met externe leverpunten? -->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden overgenomen uit <a href="<?php echo $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor alle levermethodes. Indien er extra afhaalpunten zijn, wordt bij afhaling rekening gehouden met de sluitingsdagen van de gekozen winkel.</small></label>
+					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden overgenomen uit <a href="<?= $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor alle levermethodes. Indien er extra afhaalpunten zijn, wordt bij afhaling rekening gehouden met de sluitingsdagen van de gekozen winkel.</small></label>
 				</th>
 				<td class="right">
-					<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?php echo esc_textarea( implode( ', ', get_site_option( 'oxfam_holidays_'.get_option('oxfam_shop_post_id'), get_site_option('oxfam_holidays') ) ) ); ?></textarea>
+					<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?= esc_textarea( implode( ', ', get_site_option( 'oxfam_holidays_'.get_option('oxfam_shop_post_id'), get_site_option('oxfam_holidays') ) ) ); ?></textarea>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -247,7 +248,7 @@
 					<label for="oxfam_sitewide_banner_top">Afwijkende bannertekst:<br/><small>Deze tekst verschijnt in de blauwe balk bovenaan elke pagina van de webshop en vervangt de standaardtekst. Hou het bondig en spelfoutenvrij! HTML-tags zijn niet toegestaan en zullen verwijderd worden. Wis alle tekst om opnieuw de standaardbanner te tonen.</small></label>
 				</th>
 				<td class="right">
-					<textarea name="oxfam_sitewide_banner_top" rows="2" maxlength="200" class="text-input" placeholder="<?php echo get_default_local_store_notice(); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_sitewide_banner_top') ); ?></textarea>
+					<textarea name="oxfam_sitewide_banner_top" rows="2" maxlength="200" class="text-input" placeholder="<?= get_default_local_store_notice(); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?= esc_textarea( get_option('oxfam_sitewide_banner_top') ); ?></textarea>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -263,7 +264,7 @@
 					<label for="oxfam_b2b_delivery_cost" title="">Kostprijs voor B2B-levering:<br/><small>Indien ingeschakeld verschijnt de levering op locatie voor alle B2B-klanten als gratis, maar op termijn kun je hier een uniform tarief instellen (indien gewenst).</small></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_b2b_delivery_cost" class="text-input" value="<?php echo strip_tags( wc_price( $b2b_shipping_options['cost'] ) ).' excl. BTW'; ?>" readonly>
+					<input type="text" name="oxfam_b2b_delivery_cost" class="text-input" value="<?= strip_tags( wc_price( $b2b_shipping_options['cost'] ) ).' excl. BTW'; ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -271,7 +272,7 @@
 					<label for="oxfam_b2b_invitation_text">Afwijkende tekst onderaan uitnodigingsmail naar B2B-klanten:<br/><small>HTML-tags zijn niet toegestaan en zullen verwijderd worden. Wis alle tekst om opnieuw de standaardzin te gebruiken.</small></label>
 				</th>
 				<td class="right">
-					<textarea name="oxfam_b2b_invitation_text" rows="2" class="text-input" placeholder="<?php _e( 'Zesde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?php echo esc_textarea( get_option('oxfam_b2b_invitation_text') ); ?></textarea>
+					<textarea name="oxfam_b2b_invitation_text" rows="2" class="text-input" placeholder="<?php _e( 'Zesde alinea in de uitnodingsmail aan B2B-gebruikers.', 'oxfam-webshop' ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>><?= esc_textarea( get_option('oxfam_b2b_invitation_text') ); ?></textarea>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -291,10 +292,10 @@
 			<!-- Deze 'instellingen' maken geen deel uit van de geregistreerde opties en worden dus niet automatisch opgeslagen in database! -->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: <?php if ( isset($tax_warning) ) echo $tax_warning; ?><br/><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?php echo str_replace( 'BE ', '', get_oxfam_shop_data('tax') ); ?>&actionlu=zoek" target="_blank">Kloppen jullie gegevens in de KBO-databank nog?</a></small></label>
+					<label for="oxfam_tax" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">BTW-nummer: <?php if ( isset($tax_warning) ) echo $tax_warning; ?><br/><small><a href="https://kbopub.economie.fgov.be/kbopub/zoeknummerform.html?nummer=<?= str_replace( 'BE ', '', get_oxfam_shop_data('tax') ); ?>&actionlu=zoek" target="_blank">Kloppen jullie gegevens in de KBO-databank nog?</a></small></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_tax" class="text-input" value="<?php echo get_oxfam_shop_data('tax'); ?>" readonly>
+					<input type="text" name="oxfam_tax" class="text-input" value="<?= get_oxfam_shop_data('tax'); ?>" readonly>
 				</td>
 			</tr>
 			<!-- Rekeningnummer zit niet langer in winkelpagina's, dus verbergen -->
@@ -303,7 +304,7 @@
 					<label for="oxfam_account" title="Komt voorlopig nog uit de OWW-site, maar kan beter uit Mollie getrokken worden want dat is de winkelinfo die de klant te zien krijgt indien hij een betaling betwist.">IBAN-rekeningnummer: <?php if ( isset($account_warning) ) echo $account_warning; ?></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_account" class="text-input" value="<?php echo get_oxfam_shop_data('account'); ?>" readonly>
+					<input type="text" name="oxfam_account" class="text-input" value="<?= get_oxfam_shop_data('account'); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -311,7 +312,7 @@
 					<label for="oxfam_company" title="Dit is ook de titel van deze subsite en kan enkel door Frederik gewijzigd worden.">Bedrijfsnaam: <?php if ( isset($name_warning) ) echo $name_warning; ?></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_company" class="text-input" value="<?php echo get_webshop_name(); ?>" readonly>
+					<input type="text" name="oxfam_company" class="text-input" value="<?= get_webshop_name(); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -319,7 +320,7 @@
 					<label for="oxfam_place" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels.">Straat en huisnummer:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_place" class="text-input" value="<?php echo get_oxfam_shop_data('place'); ?>" readonly>
+					<input type="text" name="oxfam_place" class="text-input" value="<?= get_oxfam_shop_data('place'); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -327,7 +328,7 @@
 					<label for="oxfam_zipcode" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels.">Postcode:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_zipcode" class="text-input" value="<?php echo get_oxfam_shop_data('zipcode'); ?>" readonly>
+					<input type="text" name="oxfam_zipcode" class="text-input" value="<?= get_oxfam_shop_data('zipcode'); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -335,7 +336,7 @@
 					<label for="oxfam_city" title="Zie je een fout staan? Werk je adres bij op de publieke site van Oxfam-Wereldwinkels.">Gemeente:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_city" class="text-input" value="<?php echo get_oxfam_shop_data('city'); ?>" readonly>
+					<input type="text" name="oxfam_city" class="text-input" value="<?= get_oxfam_shop_data('city'); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -343,7 +344,7 @@
 					<label for="oxfam_email" title="Deze Office 365-mailbox wordt ingesteld als het algemene contactadres van deze subsite en is initieel ook ekoppeld aan de lokale beheeraccount. Opgelet: via de profielpagina kun je deze hoofdgebruiker aan een andere mailbox linken (of schakelen we dat uit? niet handig indien we voor meerdere lokale beheerders opteren!) maar het contactadres naar klanten blijft altijd dit e-mailadres!">E-mailadres: <?php if ( isset($mail_warning) ) echo $mail_warning; ?></label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_email" class="text-input" value="<?php echo get_webshop_email(); ?>" readonly>
+					<input type="text" name="oxfam_email" class="text-input" value="<?= get_webshop_email(); ?>" readonly>
 				</td>
 			</tr>
 		</table>

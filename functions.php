@@ -4852,11 +4852,12 @@
 					// Toon de foutmelding slechts één keer
 					if ( WC()->session->get( 'no_zip_delivery_in_'.get_current_blog_id().'_for_'.$zip ) !== 'SHOWN' ) {
 						$global_zips = get_webshops_by_postcode();
-						if ( isset( $global_zips[$zip] ) ) {
-							$url = $global_zips[$zip];
-							// @toDo: Commando toevoegen om winkelmandje over te zetten
+						if ( array_key_exists( $zip, $global_zips ) ) {
+							$url = $global_zips[ $zip ];
+							
+							// Voeg GET-parameter toe waarmee geprobeerd wordt om het winkelmandje over te zetten naar de andere webshop
 							$skus = array();
-							if ( WC()->session->has_session() and current_user_can('update_core') ) {
+							if ( WC()->session->has_session() ) {
 								foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
 									$product_in_cart = $values['data'];
 									$skus[] = $product_in_cart->get_sku();
@@ -4865,6 +4866,7 @@
 							if ( count( $skus ) > 0 ) {
 								$url .= '?addSkus='.implode( ',', $skus );
 							}
+							
 							// Check eventueel of de boodschap al niet in de pijplijn zit door alle values van de array die wc_get_notices('error') retourneert te checken
 							wc_add_notice( sprintf( __('Foutmelding na het ingeven van postcode %1$s waar deze webshop geen thuislevering voor organiseert, inclusief URL %2$s van webshop die dat wel doet.', 'oxfam-webshop' ), $zip, $url ), 'error' );
 							WC()->session->set( 'no_zip_delivery_in_'.get_current_blog_id().'_for_'.$zip, 'SHOWN' );
@@ -7729,43 +7731,53 @@
 		}
 	}
 
-	function get_webshops_by_postcode( $return_store_id = false ) {
+	function get_webshops_by_postcode( $return_store_id = false, $v2 = false ) {
 		$global_zips = array();
-		// Negeer afgeschermde en gearchiveerde sites
+		// Sluit afgeschermde en niet-openbare webshops uit
 		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
+		
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
-			// @toDo: Vervangen door get_oxfam_covered_zips(), maar dan kunnen er meerdere webshop per postcode zijn?
-			$local_zips = get_option('oxfam_zip_codes');
-			if ( $local_zips !== false ) {
-				foreach ( $local_zips as $zip ) {
-					// In principe is dit reeds het geval, maar belangrijk voor consequente response array
-					$zip = intval( $zip );
-					if ( $return_store_id ) {
-						// Zoek de WPSL-post op die deze blog-ID bevat
-						switch_to_blog(1);
-						$store_args = array(
-							'post_type'	=> 'wpsl_stores',
-							'post_status' => 'publish',
-							'posts_per_page' => -1,
-							'meta_key' => 'wpsl_webshop_blog_id',
-							'meta_value' => $site->blog_id,
-							'fields' => 'ids',
-						);
-						$stores = new WP_Query( $store_args );
-						$matching_store_ids = $stores->posts;
-						if ( count( $matching_store_ids ) > 0 ) {
-							// @toDo: Er kunnen meerdere winkels zijn met dezelfde blog-ID, hoe selecteren we de hoofdwinkel?
-							$global_zips[ $zip ] = reset( $matching_store_ids );
-						}
-						restore_current_blog();
-					} else {
-						$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;
+			
+			if ( $v2 ) {
+				// Er kunnen meerdere webshops dezelfde postcode bedienen!
+				// In dat geval zal de site met de hoogste ID als 'winnaar' uit de bus komen
+				$local_zips = get_oxfam_covered_zips();
+			} else {
+				$local_zips = get_option( 'oxfam_zip_codes', array() );	
+			}
+			
+			foreach ( $local_zips as $zip ) {
+				$zip = intval( $zip );
+				if ( $return_store_id ) {
+					// Zoek de WPSL-post op die deze blog-ID bevat
+					switch_to_blog(1);
+					
+					$store_args = array(
+						'post_type'	=> 'wpsl_stores',
+						'post_status' => 'publish',
+						'posts_per_page' => -1,
+						'meta_key' => 'wpsl_webshop_blog_id',
+						'meta_value' => $site->blog_id,
+						'fields' => 'ids',
+					);
+					$stores = new WP_Query( $store_args );
+					
+					if ( count( $stores->posts ) > 0 ) {
+						// Er kunnen meerdere winkels zijn met dezelfde blog-ID, hoe selecteren we de hoofdwinkel?
+						// Voorlopig nemen we gewoon de eerste uit de lijst resultaten
+						$global_zips[ $zip ] = reset( $stores->posts );
 					}
+					
+					restore_current_blog();
+				} else {
+					$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;
 				}
 			}
+			
 			restore_current_blog();
 		}
+		
 		ksort( $global_zips );
 		return $global_zips;
 	}
