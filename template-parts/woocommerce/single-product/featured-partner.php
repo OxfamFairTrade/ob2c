@@ -53,7 +53,7 @@
 				<?= $featured_partner['bullet_points']; ?>
 			<?php endif; ?>
 			
-			<p><a href="<?= esc_url( $featured_partner['link'] ); ?>">Maak kennis met <?= $featured_partner['name']; ?></a></p>
+			<p><a href="<?= esc_url( $featured_partner['link'] ); ?>" target="_blank">Maak kennis met <?= $featured_partner['name']; ?></a></p>
 		</div>
 		<div class="col-md-5">
 			<?php if ( array_key_exists( 'partner_quote', $featured_partner ) and $featured_partner['partner_quote']['rendered'] ) : ?>

@@ -9,9 +9,14 @@
 			<?php
 				$terms = array();
 				foreach ( $partners as $partner ) {
+					// Eventueel kunnen we gewoon linken naar de interne partnerterm à la https://shop.oxfamwereldwinkels.be/oostende/partner/apropal/
+					// if ( false !== ( $term = get_term_by( 'slug', $partner['slug'], 'product_partner' ) ) ) {
+					// 	$output = '<a href="'.get_term_link( $term ).'">' . $partner['name'] . '</a>';
+					// }
+					
 					// Niet alle partners bevatten de eigenschap 'link' naar de externe partnerpagina (o.a. alle C-partners)
 					if ( ! empty( $partner['link'] ) ) {
-						$output = '<a href="'.esc_url( $partner['link'] ).'">' . $partner['name'] . '</a>';
+						$output = '<a href="'.esc_url( $partner['link'] ).'" target="_blank">' . $partner['name'] . '</a>';
 					} else {
 						$output = $partner['name'];
 					}
