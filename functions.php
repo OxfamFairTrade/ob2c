@@ -6092,7 +6092,7 @@
 	function oxfam_admin_bar_render() {
 		global $wp_admin_bar;
 		if ( current_user_can('create_sites') ) {
-			$sites = get_sites( array( 'public' => 1 ) );
+			$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
 			foreach ( $sites as $site ) {
 				$node_d = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-d');
 				if ( $node_d ) {
@@ -6101,7 +6101,12 @@
 					$new_node->title = 'Bestellingen';
 					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/edit.php?post_type=shop_order' );
 					$wp_admin_bar->add_node( $new_node );
+					
+					$new_node->title = 'Digicheques';
+					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-vouchers-list' );
+					$wp_admin_bar->add_node( $new_node );
 				}
+				
 				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
 				if ( $node_n ) {
 					$new_node = $node_n;
@@ -6110,6 +6115,7 @@
 					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-options' );
 					$wp_admin_bar->add_node( $new_node );
 				}
+				
 				$node_v = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-v');
 				if ( $node_v ) {
 					$new_node = $node_v;
@@ -6126,16 +6132,13 @@
 	add_filter( 'manage_sites_action_links', 'oxfam_sites_list_render', 10, 3 );
 
 	function oxfam_sites_list_render( $actions, $blog_id, $blogname ) {
-		unset( $actions['edit'] );
 		unset( $actions['spam'] );
 		unset( $actions['visit'] );
 		unset( $actions['clone'] );
-
+		
 		$actions['orders'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/edit.php?post_type=shop_order' ).'">Bestellingen</a>';
-		$actions['digicheques'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-vouchers-list' ).'">Digicheques</a>';
 		$actions['settings'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-options' ).'">Winkelgegevens</a>';
-		$actions['stock'] = '<a href="'.get_site_url( $blog_id, '/wp-admin/admin.php?page=oxfam-products-list' ).'">Voorraadbeheer</a>';
-
+		
 		return $actions;
 	}
 
