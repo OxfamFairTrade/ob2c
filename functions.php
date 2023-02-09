@@ -6101,30 +6101,36 @@
 					$new_node->title = 'Bestellingen';
 					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/edit.php?post_type=shop_order' );
 					$wp_admin_bar->add_node( $new_node );
-					
-					$new_node_bis = $node_d;
-					$new_node_bis->id = 'blog-'.$site->blog_id.'-f';
-					$new_node_bis->title = 'Digicheques';
-					$new_node_bis->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-vouchers-list' );
-					$wp_admin_bar->add_node( $new_node_bis );
 				}
 				
 				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
 				if ( $node_n ) {
 					$new_node = $node_n;
-					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-n');
-					$new_node->title = 'Winkelgegevens';
-					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-options' );
+					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-v');
+					$new_node->title = 'Voorraadbeheer';
+					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-products-list' );
 					$wp_admin_bar->add_node( $new_node );
+					
+					$new_node_bis = $node_n;
+					$new_node_bis->id = 'blog-'.$site->blog_id.'-digicheques';
+					$new_node_bis->title = 'Digicheques';
+					$new_node_bis->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-vouchers-list' );
+					$wp_admin_bar->add_node( $new_node_bis );
 				}
 				
 				$node_v = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-v');
 				if ( $node_v ) {
 					$new_node = $node_v;
-					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-v');
-					$new_node->title = 'Voorraadbeheer';
-					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-products-list' );
+					$wp_admin_bar->remove_node('blog-'.$site->blog_id.'-n');
+					$new_node->title = 'Winkelgegevens';
+					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-options' );
 					$wp_admin_bar->add_node( $new_node );
+					
+					$new_node_bis = $node_v;
+					$new_node_bis->id = 'blog-'.$site->blog_id.'-logs';
+					$new_node_bis->title = 'Logs';
+					$new_node_bis->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=wc-status&tab=logs' );
+					$wp_admin_bar->add_node( $new_node_bis );
 				}
 			}
 		}
