@@ -7767,7 +7767,7 @@
 						// Er kunnen meerdere winkels zijn met dezelfde blog-ID, hoe selecteren we de hoofdwinkel?
 						// Voorlopig nemen we gewoon de eerste uit de lijst resultaten
 						if ( $v2 ) {
-							if ( ! array_key_exists( $zip, $global_zips ) {
+							if ( ! array_key_exists( $zip, $global_zips ) ) {
 								$global_zips[ $zip ] = array();
 							}
 							$global_zips[ $zip ][] = reset( $stores->posts );
@@ -7779,7 +7779,7 @@
 					restore_current_blog();
 				} else {
 					if ( $v2 ) {
-						if ( ! array_key_exists( $zip, $global_zips ) {
+						if ( ! array_key_exists( $zip, $global_zips ) ) {
 							$global_zips[ $zip ] = array();
 						}
 						$global_zips[ $zip ][] = 'https://' . $site->domain . $site->path;
