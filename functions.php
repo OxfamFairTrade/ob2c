@@ -5239,9 +5239,7 @@
 	}
 
 	function get_oxfam_cheques_ids_array() {
-		$product_ids = get_transient('oxfam_cheques_ids_array');
-		
-		if ( $product_ids === false ) {
+		if ( false === ( $product_ids = get_transient('oxfam_cheques_ids_array') ) ) {
 			$product_ids = array();
 			foreach ( get_oxfam_cheques_skus_array() as $sku ) {
 				$product_id = wc_get_product_id_by_sku( $sku );
@@ -7731,17 +7729,17 @@
 		}
 	}
 
-	function get_webshops_by_postcode( $return_store_id = false, $v2 = false ) {
+	function get_webshops_by_postcode( $return_store_id = false, $v2 = false, $return_all_shops = false ) {
 		$global_zips = array();
-		// Sluit afgeschermde en niet-openbare webshops uit
-		$sites = get_sites( array( 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
+		// Sluit hoofdniveau + afgeschermde en niet-openbare webshops uit
+		$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
 		
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			
 			if ( $v2 ) {
 				// Er kunnen meerdere webshops dezelfde postcode bedienen!
-				// In dat geval zal de site met de hoogste ID als 'winnaar' uit de bus komen
+				// In dat geval zal de site met de hoogste ID als 'winnaar' uit de bus komen (= default order get_sites())
 				$local_zips = get_oxfam_covered_zips();
 			} else {
 				$local_zips = get_option( 'oxfam_zip_codes', array() );	
@@ -7766,7 +7764,7 @@
 					if ( count( $stores->posts ) > 0 ) {
 						// Er kunnen meerdere winkels zijn met dezelfde blog-ID, hoe selecteren we de hoofdwinkel?
 						// Voorlopig nemen we gewoon de eerste uit de lijst resultaten
-						if ( $v2 ) {
+						if ( $return_all_shops ) {
 							if ( ! array_key_exists( $zip, $global_zips ) ) {
 								$global_zips[ $zip ] = array();
 							}
@@ -7778,7 +7776,7 @@
 					
 					restore_current_blog();
 				} else {
-					if ( $v2 ) {
+					if ( $return_all_shops ) {
 						if ( ! array_key_exists( $zip, $global_zips ) ) {
 							$global_zips[ $zip ] = array();
 						}

@@ -83,24 +83,28 @@
 	}
 	
 	function get_oxfam_covered_zips() {
-		global $wpdb;
-		$zips = array();
-		
-		// Hou enkel rekening met ingeschakelde zones
-		$locations = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."woocommerce_shipping_zone_locations LEFT JOIN ".$wpdb->prefix."woocommerce_shipping_zone_methods ON ".$wpdb->prefix."woocommerce_shipping_zone_methods.zone_id = ".$wpdb->prefix."woocommerce_shipping_zone_locations.zone_id WHERE ".$wpdb->prefix."woocommerce_shipping_zone_locations.location_type = 'postcode' AND ".$wpdb->prefix."woocommerce_shipping_zone_methods.is_enabled = 1" );
-		
-		if ( count( $locations ) > 0 ) {
-			foreach ( $locations as $row ) {
-				$zips[] = $row->location_code;
-			}
-			$zips = array_unique( $zips );
+		if ( false === ( $zips = get_transient('oxfam_covered_zips') ) ) {
+			global $wpdb;
+			$zips = array();
 			
-			// Verwijder de default '9999'-waarde uit ongebruikte verzendmethodes
-			if ( ( $key = array_search( '9999', $zips ) ) !== false ) {
-				unset( $zips[ $key ] );
+			// Hou enkel rekening met ingeschakelde zones
+			$locations = $wpdb->get_results( "SELECT * FROM ".$wpdb->prefix."woocommerce_shipping_zone_locations LEFT JOIN ".$wpdb->prefix."woocommerce_shipping_zone_methods ON ".$wpdb->prefix."woocommerce_shipping_zone_methods.zone_id = ".$wpdb->prefix."woocommerce_shipping_zone_locations.zone_id WHERE ".$wpdb->prefix."woocommerce_shipping_zone_locations.location_type = 'postcode' AND ".$wpdb->prefix."woocommerce_shipping_zone_methods.is_enabled = 1" );
+			
+			if ( count( $locations ) > 0 ) {
+				foreach ( $locations as $row ) {
+					$zips[] = $row->location_code;
+				}
+				$zips = array_unique( $zips );
+				
+				// Verwijder de default '9999'-waarde uit ongebruikte verzendmethodes
+				if ( ( $key = array_search( '9999', $zips ) ) !== false ) {
+					unset( $zips[ $key ] );
+				}
+				
+				sort( $zips, SORT_NUMERIC );
 			}
 			
-			sort( $zips, SORT_NUMERIC );
+			set_transient( 'oxfam_covered_zips', $zips, HOUR_IN_SECONDS );
 		}
 		
 		return $zips;
@@ -173,13 +177,13 @@
 		return ( get_option('oxfam_does_risky_delivery') === 'yes' );
 	}
 	
-	function does_home_delivery( $zipcode = 0 ) {
-		if ( intval( $zipcode ) === 0 ) {
+	function does_home_delivery( $zip = false ) {
+		if ( ! $zip ) {
+			// Check of de array met postcodes leeg is
 			return boolval( get_oxfam_covered_zips() );
 		} else {
-			// Check of de webshop thuislevering doet voor deze specifieke postcode
-			$response = in_array( $zipcode, get_oxfam_covered_zips() );
-			return $response;
+			// Check of de specifieke postcode voorkomt in het gebied waar de webshop thuislevert
+			return in_array( $zip, get_oxfam_covered_zips() );
 		}
 	}
 	
