@@ -7766,12 +7766,26 @@
 					if ( count( $stores->posts ) > 0 ) {
 						// Er kunnen meerdere winkels zijn met dezelfde blog-ID, hoe selecteren we de hoofdwinkel?
 						// Voorlopig nemen we gewoon de eerste uit de lijst resultaten
-						$global_zips[ $zip ] = reset( $stores->posts );
+						if ( $v2 ) {
+							if ( ! array_key_exists( $zip, $global_zips ) {
+								$global_zips[ $zip ] = array();
+							}
+							$global_zips[ $zip ][] = reset( $stores->posts );
+						} else {
+							$global_zips[ $zip ] = reset( $stores->posts );
+						}
 					}
 					
 					restore_current_blog();
 				} else {
-					$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;
+					if ( $v2 ) {
+						if ( ! array_key_exists( $zip, $global_zips ) {
+							$global_zips[ $zip ] = array();
+						}
+						$global_zips[ $zip ][] = 'https://' . $site->domain . $site->path;
+					} else {
+						$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;	
+					}
 				}
 			}
 			
