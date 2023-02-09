@@ -6102,9 +6102,10 @@
 					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/edit.php?post_type=shop_order' );
 					$wp_admin_bar->add_node( $new_node );
 					
-					$new_node->title = 'Digicheques';
-					$new_node->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-vouchers-list' );
-					$wp_admin_bar->add_node( $new_node );
+					$new_node_bis = $node_d;
+					$new_node_bis->title = 'Digicheques';
+					$new_node_bis->href = get_site_url( $site->blog_id, '/wp-admin/admin.php?page=oxfam-vouchers-list' );
+					$wp_admin_bar->add_node( $new_node_bis );
 				}
 				
 				$node_n = $wp_admin_bar->get_node('blog-'.$site->blog_id.'-n');
@@ -6132,6 +6133,7 @@
 	add_filter( 'manage_sites_action_links', 'oxfam_sites_list_render', 10, 3 );
 
 	function oxfam_sites_list_render( $actions, $blog_id, $blogname ) {
+		unset( $actions['deactivate'] );
 		unset( $actions['spam'] );
 		unset( $actions['visit'] );
 		unset( $actions['clone'] );
