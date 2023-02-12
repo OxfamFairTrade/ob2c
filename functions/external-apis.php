@@ -127,14 +127,26 @@
 			return false;
 		}
 		
+		$api_url = $base.'/products?consumer_key='.$key.'&consumer_secret='.$secret.'&sku='.$product->get_sku().'&lang=nl';
+		$oft_quality_data = parse_external_product_api_response( wp_remote_get( $api_url ), $product, $api_url );
+		
+		if ( $oft_quality_data !== false ) {
+			set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
+		}
+		
+		return $oft_quality_data;
+	}
+	
+	function parse_external_product_api_response( $response, $product, $api_url ) {
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'WooCommerce API' );
 		$oft_quality_data = 'not-found';
-		$response = wp_remote_get( $base.'/products?consumer_key='.$key.'&consumer_secret='.$secret.'&sku='.$product->get_sku().'&lang=nl' );
 		
 		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
 			$found_products = json_decode( wp_remote_retrieve_body( $response ) );
 			if ( count( $found_products ) > 0 ) {
 				if ( count( $found_products ) > 1 ) {
-					$logger->warning( 'Multiple products found for SKU '.$product->get_sku(), $context );
+					$logger->error( 'Multiple products found for SKU '.$product->get_sku(), $context );
 					return false;
 				}
 				
@@ -154,9 +166,18 @@
 				foreach ( $oft_product->product_allergen as $product_allergen ) {
 					$oft_quality_data['allergen'][ $product_allergen->slug ] = $product_allergen->name;
 				}
+			} elseif ( strpos( $api_url, 'status=trash' ) === false ) {
+				// REST API met search naar SKU vindt enkel gepubliceerde producten!
+				// Zie https://github.com/kloon/WooCommerce-REST-API-Client-Library/issues/7
+				// Indien het product inmiddels verwijderd is, moeten we expliciet zoeken naar de status 'trash'
+				// Om loop te vermijden moeten we checken of de parameter al niet toegevoegd werd
+				$api_url .= '&status=trash';
+				$oft_quality_data = parse_external_product_api_response( wp_remote_get( $api_url ), $product, $api_url );
 			}
+		} else {
+			$logger->error( 'Response received for SKU '.$product->get_sku().': '.wp_remote_retrieve_response_message( $response ), $context );
+			return false;
 		}
 		
-		set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
 		return $oft_quality_data;
 	}
