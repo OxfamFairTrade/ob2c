@@ -42,7 +42,8 @@
 				<img src="<?= esc_url( $featured_partner['quote']['image'] ); ?>">
 			<?php endif; ?>
 			
-			<?php if ( array_key_exists( 'acf', $featured_partner ) and count( $featured_partner['acf']['partner_bullet_points'] ) > 0 ) : ?>
+			<!-- Key 'acf' bestaat altijd, ook bij OWW-partners -->
+			<?php if ( array_key_exists( 'partner_bullet_points', $featured_partner['acf'] ) and count( $featured_partner['acf']['partner_bullet_points'] ) > 0 ) : ?>
 				<ul>
 					<?php foreach ( $featured_partner['acf']['partner_bullet_points'] as $bullet ) : ?>
 						<li><?= $bullet['partner_bullet_point']; ?></li>
