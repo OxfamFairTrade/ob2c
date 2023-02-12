@@ -166,7 +166,7 @@
 				foreach ( $oft_product->product_allergen as $product_allergen ) {
 					$oft_quality_data['allergen'][ $product_allergen->slug ] = $product_allergen->name;
 				}
-			} elseif ( strpos( $api_url, 'status=trash' ) === false ) {
+			} elseif ( strpos( $api_url, '&status=trash' ) === false ) {
 				// REST API met search naar SKU vindt enkel gepubliceerde producten!
 				// Zie https://github.com/kloon/WooCommerce-REST-API-Client-Library/issues/7
 				// Indien het product inmiddels verwijderd is, moeten we expliciet zoeken naar de status 'trash'
