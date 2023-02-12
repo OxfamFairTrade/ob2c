@@ -1,14 +1,15 @@
 <?php 
-	global $product, $food_api_labels, $oft_quality_data;
+	global $product;
+	$args = wp_parse_args( $args, array( 'title_tag' => 'h4', 'oft_quality_data' => false ) );
 
 	$food_required_keys = array( '_fat', '_fasat', '_choavl', '_sugar', '_pro', '_salteq' );
 	$food_secondary_keys = array( '_fasat', '_famscis', '_fapucis', '_sugar', '_polyl', '_starch' );
-	$args = wp_parse_args( $args, array( 'title_tag' => 'h4' ) );
 
 	// Check of het überhaupt zin heeft om eraan te beginnen
-	if ( $oft_quality_data and array_key_exists( 'food', $oft_quality_data ) and floatval( $oft_quality_data['food']['_energy'] ) > 0 ) {
+	if ( is_array( $args['oft_quality_data'] ) and array_key_exists( 'food', $args['oft_quality_data'] ) and floatval( $args['oft_quality_data']['food']['_energy'] ) > 0 ) {
 		
 		$food = array();
+		$food_api_labels = get_food_api_labels();
 		foreach ( $food_api_labels as $food_key => $food_label ) {
 			
 			// Vermijd dat de ingrediënten ook nog eens in de tabel opduiken
@@ -17,11 +18,11 @@
 			}
 
 			// Toon voedingswaarde als het een verplicht veld is, en in 2de instantie als er expliciet een (nul)waarde ingesteld is
-			if ( in_array( $food_key, $food_required_keys ) or array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
+			if ( in_array( $food_key, $food_required_keys ) or array_key_exists( $food_key, $args['oft_quality_data']['food'] ) ) {
 
 				$food_value = '';
-				if ( array_key_exists( $food_key, $oft_quality_data['food'] ) ) {
-					$food_value = $oft_quality_data['food'][ $food_key ];
+				if ( array_key_exists( $food_key, $args['oft_quality_data']['food'] ) ) {
+					$food_value = $args['oft_quality_data']['food'][ $food_key ];
 				}
 
 				if ( floatval( $food_value ) > 0 ) {
@@ -42,7 +43,7 @@
 				}
 
 				$food[] = array(
-					array( 'c' => $food_api_labels[$food_key] ),
+					array( 'c' => $food_api_labels[ $food_key ] ),
 					array( 'c' => $food_value ),
 				);
 			}
@@ -74,5 +75,3 @@
 		</div>
 		<?php
 	}
-
-/* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */

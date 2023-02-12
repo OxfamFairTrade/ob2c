@@ -1,11 +1,11 @@
 <?php 
-	global $product, $oft_quality_data;
-	$args = wp_parse_args( $args, array( 'title_tag' => 'h4' ) );
+	global $product;
+	$args = wp_parse_args( $args, array( 'title_tag' => 'h4', 'oft_quality_data' => false ) );
 
 	// Check of het überhaupt zin heeft om eraan te beginnen
-	if ( $oft_quality_data and array_key_exists( 'food', $oft_quality_data ) and array_key_exists( '_ingredients', $oft_quality_data['food'] ) ) {
+	if ( is_array( $args['oft_quality_data'] ) and array_key_exists( 'food', $args['oft_quality_data'] ) and array_key_exists( '_ingredients', $args['oft_quality_data']['food'] ) ) {
 		
-		$ingredients = $oft_quality_data['food']['_ingredients'];
+		$ingredients = $args['oft_quality_data']['food']['_ingredients'];
 		
 		if ( strlen( trim( $ingredients ) ) > 0 ) {
 			?>
@@ -38,5 +38,3 @@
 			<?php
 		}	
 	}
-
-/* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */

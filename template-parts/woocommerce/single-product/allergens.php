@@ -1,14 +1,15 @@
 <?php 
-	global $product, $oft_quality_data;
-
+	global $product;
+	$args = wp_parse_args( $args, array( 'oft_quality_data' => false ) );
+	
 	// Check of het überhaupt zin heeft om eraan te beginnen
-	if ( $oft_quality_data and array_key_exists( 'allergen', $oft_quality_data ) ) {
+	if ( is_array( $args['oft_quality_data'] ) and array_key_exists( 'allergen', $args['oft_quality_data'] ) ) {
 		
 		$contains = array();
 		$traces = array();
 		$no_allergens = false;
 		
-		foreach ( $oft_quality_data['allergen'] as $slug => $name ) {
+		foreach ( $args['oft_quality_data']['allergen'] as $slug => $name ) {
 			$parts = explode( '-', $slug );
 			if ( $parts[0] === 'c' ) {
 				$contains[] = $name;
@@ -42,5 +43,3 @@
 		</div>
 		<?php
 	}
-
-/* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */

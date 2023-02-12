@@ -1,52 +1,12 @@
 <?php 
 	global $product, $featured_partner;
 	
-	// @toDo: Globals vervangen door template parameters (WP 5.5+)
-	global $food_api_labels, $oft_quality_data;
-
-	// Definitie van labels en verplichte voedingswaarden BEETJE AMBETANT DAT WE DIT HIER OOK AL NODIG HEBBEN ...
-	$food_api_labels = array(
-		'_ingredients' => 'Ingrediënten',
-		'_energy' => 'Energie',
-		'_fat' => 'Vetten',
-		'_fasat' => 'waarvan verzadigde vetzuren',
-		'_famscis' => 'waarvan enkelvoudig onverzadigde vetzuren',
-		'_fapucis' => 'waarvan meervoudig onverzadigde vetzuren',
-		'_choavl' => 'Koolhydraten',
-		'_sugar' => 'waarvan suikers',
-		'_polyl' => 'waarvan polyolen',
-		'_starch' => 'waarvan zetmeel',
-		'_fibtg' => 'Vezels',
-		'_pro' => 'Eiwitten',
-		'_salteq' => 'Zout',
-	);
-
-	// Check of het product nog niet gecached werd
-	if ( false === ( $oft_quality_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
-		// Haal de kwaliteitsdata op indien een OFT product-ID beschikbaar is (+ uitsluiten non-food?)
-		if ( intval( $product->get_meta('oft_product_id') ) > 0 ) {
-			$base = 'https://www.oxfamfairtrade.be/wp-json/wc/v3';
-			$response = wp_remote_get( $base.'/products/'.$product->get_meta('oft_product_id').'?consumer_key='.OFT_WC_KEY.'&consumer_secret='.OFT_WC_SECRET );
-			
-			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
-				$oft_product = json_decode( wp_remote_retrieve_body( $response ) );
-				
-				// Stop voedingswaarden én ingrediënten in een array met als keys de namen van de eigenschappen
-				foreach ( $oft_product->meta_data as $meta_data ) {
-					// Functie array_key_exists() werkt ook op objecten
-					if ( array_key_exists( $meta_data->key, $food_api_labels ) ) {
-						$oft_quality_data['food'][ $meta_data->key ] = $meta_data->value;
-					}
-				}
-
-				// Stop allergenen in een array met als keys de slugs van de allergenen
-				foreach ( $oft_product->product_allergen as $product_allergen ) {
-					$oft_quality_data['allergen'][ $product_allergen->slug ] = $product_allergen->name;
-				}
-
-				set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
-			}
-		}
+	// Haal de kwaliteitsdata op indien product-ID uit OFT-site beschikbaar is
+	// Eventueel te vervangen door: is_national_product( $product ) and ! is_crafts_product( $product )
+	if ( intval( $product->get_meta('oft_product_id') ) > 0 ) {
+		$oft_quality_data = get_external_product( $product );
+	} else {
+		$oft_quality_data = false;
 	}
 ?>
 
@@ -58,7 +18,7 @@
 					if ( $featured_partner !== false ) {
 						get_template_part( 'template-parts/woocommerce/single-product/featured-partner' );
 					} else {
-						if ( ! is_national_product( $product ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 or $product->get_sku() === '19565' ) {
+						if ( ! is_national_product( $product ) or is_crafts_product( $product ) ) {
 							// Toon de lange beschrijving bij lokale producten en artisanaat altijd (indien beschikbaar)
 							?>
 							<div class="col-row">
@@ -93,13 +53,21 @@
 							<div class="col-row">
 								<div class="col-md-6">
 									<?php
-										get_template_part( 'template-parts/woocommerce/single-product/ingredients', NULL, array( 'title_tag' => 'h3' ) );
-										get_template_part( 'template-parts/woocommerce/single-product/allergens' );
+										get_template_part( 'template-parts/woocommerce/single-product/ingredients', NULL, array(
+											'title_tag' => 'h3',
+											'oft_quality_data' => $oft_quality_data,
+										) );
+										get_template_part( 'template-parts/woocommerce/single-product/allergens', NULL, array(
+											'oft_quality_data' => $oft_quality_data,
+										) );
 									?>
 								</div>
 								<div class="col-md-6">
 									<?php
-										get_template_part( 'template-parts/woocommerce/single-product/quality-info', NULL, array( 'title_tag' => 'h3' ) );
+										get_template_part( 'template-parts/woocommerce/single-product/quality-info', NULL, array(
+											'title_tag' => 'h3',
+											'oft_quality_data' => $oft_quality_data,
+										) );
 									?>
 								</div>
 							</div>
@@ -113,7 +81,7 @@
 				<h3>Extra informatie</h3>
 				<?php get_template_part( 'template-parts/woocommerce/product-icons' ); ?>
 
-				<?php if ( $product->has_dimensions() and ( ! is_national_product( $product ) or strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) ) : ?>
+				<?php if ( $product->has_dimensions() and ( ! is_national_product( $product ) or is_crafts_product( $product ) ) ) : ?>
 					<div id="product-dimensions" class="product-info-panel dimensions">
 						<h4>Afmetingen</h4>
 						<p><?php echo wc_format_dimensions( $product->get_dimensions( false ) ); ?></p>
@@ -143,9 +111,15 @@
 
 				<?php
 					if ( $featured_partner ) {
-						get_template_part( 'template-parts/woocommerce/single-product/ingredients' );
-						get_template_part( 'template-parts/woocommerce/single-product/allergens' );
-						get_template_part( 'template-parts/woocommerce/single-product/quality-info' );
+						get_template_part( 'template-parts/woocommerce/single-product/ingredients', NULL, array(
+							'oft_quality_data' => $oft_quality_data,
+						) );
+						get_template_part( 'template-parts/woocommerce/single-product/allergens', NULL, array(
+							'oft_quality_data' => $oft_quality_data,
+						) );
+						get_template_part( 'template-parts/woocommerce/single-product/quality-info', NULL, array(
+							'oft_quality_data' => $oft_quality_data,
+						) );
 					}
 				?>
 			</div>

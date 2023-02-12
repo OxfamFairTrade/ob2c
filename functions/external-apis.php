@@ -1,0 +1,162 @@
+<?php
+	
+	if ( ! defined('ABSPATH') ) exit;
+	
+	function get_external_wpsl_store( $shop_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
+		$store_data = false;
+		$shop_post_id = intval( $shop_post_id );
+		
+		if ( $shop_post_id > 0 ) {
+			if ( false === ( $store_data = get_site_transient( $shop_post_id.'_store_data' ) ) ) {
+				$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id );
+				
+				if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
+					// Zet het JSON-object om in een PHP-array
+					$store_data = json_decode( wp_remote_retrieve_body( $response ), true );
+					set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
+				} else {
+					$logger = wc_get_logger();
+					$context = array( 'source' => 'WordPress API' );
+					$logger->notice( 'Could not retrieve shop data for ID '.$shop_post_id, $context );
+				}
+			}
+		}
+		
+		return $store_data;
+	}
+	
+	function get_external_wpsl_stores( $domain = 'www.oxfamwereldwinkels.be', $page = 1 ) {
+		$all_stores = array();
+		
+		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!
+		// In API is -1 geen geldige waarde voor 'per_page'
+		$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores?per_page=100&page='.$page );
+		
+		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
+			// Zet het JSON-object om in een PHP-array
+			$all_stores = json_decode( wp_remote_retrieve_body( $response ), true );
+			
+			if ( $page === 1 ) {
+				// Deze header geeft aan hoeveel resultatenpagina's er in totaal zijn
+				$total_pages = intval( wp_remote_retrieve_header( $response, 'X-WP-TotalPages' ) );
+				
+				// Vul indien nodig recursief aan vanaf 2de pagina
+				for ( $i = 2; $i <= $total_pages; $i++ ) {
+					$all_stores = array_merge( $all_stores,  get_external_wpsl_stores( $domain, $i ) );
+				}
+			}
+		} else {
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'WordPress API' );
+			$logger->critical( 'Could not retrieve shops on page '.$page, $context );
+		}
+		
+		return $all_stores;
+	}
+	
+	function get_external_partner( $partner_name, $domain = 'www.oxfamfairtrade.be/nl' ) {
+		$partner_data = array();
+		$partner_slug = sanitize_title( $partner_name );
+		
+		if ( false === ( $partner_data = get_site_transient( $partner_slug.'_partner_data' ) ) ) {
+			// API zoekt standaard enkel naar objecten met status 'publish'
+			// API is volledig publiek, dus geen authorization header nodig
+			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/?slug='.$partner_slug );
+			
+			// Log alles op de hoofdsite
+			switch_to_blog(1);
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'WordPress API' );
+			
+			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
+				// Zet het JSON-object om in een PHP-array
+				$matching_partners = json_decode( wp_remote_retrieve_body( $response ), true );
+				
+				if ( count( $matching_partners ) > 1 ) {
+					$logger->warning( 'Multiple partners found for '.$partner_slug, $context );
+				} else {
+					if ( count( $matching_partners ) === 1 ) {
+						$partner_data = $matching_partners[0];
+						
+						// Fallback voor OWW-partnerpagina's waar 'type' nog de partnercategorie bevat
+						if ( in_array( $partner_data['type'], array( 'A', 'B' ) ) ) {
+							$partner_data['type'] = 'partner';
+						}
+						
+						$logger->info( 'Partner data for '.$partner_slug.' cached in transient', $context );
+					} else {
+						$partner_data = array( 'type' => 'not-found' );
+						// Vermijd dat we de data telkens opnieuw blijven ophalen, ze bestaat wellicht gewoon niet
+						$logger->notice( 'No partner data found for '.$partner_slug.', but still cached in transient', $context );
+					}
+					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
+				}
+			} else {
+				$logger->error( 'Could not retrieve partner for '.$partner_slug, $context );
+			}
+			
+			restore_current_blog();
+		}
+		
+		return $partner_data;
+	}
+	
+	// Antwoordt met een array indien gevonden
+	// Antwoordt met 'not-found' indien mislukt (en wellicht normaal, dus in cache plaatsen)
+	// Antwoordt met false indien mislukt (en wellicht abnormaal, dus geen caching)
+	function get_external_product( $product, $domain = 'oxfamfairtrade.be' ) {
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'WooCommerce API' );
+		
+		if ( ! $product instanceof WC_Product ) {
+			$logger->warning( 'No valid product object provided', $context );
+			return false;
+		}
+		
+		// Check of het product nog niet gecached werd
+		if ( false !== ( $oft_quality_data = get_site_transient( $product->get_sku().'_quality_data' ) ) ) {
+			return $oft_quality_data;
+		}
+		
+		if ( $domain = 'oxfamfairtrade.be' ) {
+			$base = 'https://www.'.$domain.'/wp-json/wc/v3';
+			$key = OFT_WC_KEY;
+			$secret = OFT_WC_SECRET;
+		} else {
+			$logger->warning( 'No valid domain set', $context );
+			return false;
+		}
+		
+		$oft_quality_data = 'not-found';
+		$response = wp_remote_get( $base.'/products?consumer_key='.$key.'&consumer_secret='.$secret.'&sku='.$product->get_sku().'&lang=nl' );
+		
+		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
+			$found_products = json_decode( wp_remote_retrieve_body( $response ) );
+			if ( count( $found_products ) > 0 ) {
+				if ( count( $found_products ) > 1 ) {
+					$logger->warning( 'Multiple products found for SKU '.$product->get_sku(), $context );
+					return false;
+				}
+				
+				$oft_quality_data = array();
+				$oft_product = reset( $found_products );
+				
+				// Stop voedingswaarden én ingrediënten in een array met als keys de namen van de eigenschappen
+				$food_api_labels = get_food_api_labels();
+				foreach ( $oft_product->meta_data as $meta_data ) {
+					// Functie array_key_exists() werkt ook op objecten
+					if ( array_key_exists( $meta_data->key, $food_api_labels ) ) {
+						$oft_quality_data['food'][ $meta_data->key ] = $meta_data->value;
+					}
+				}
+				
+				// Stop allergenen in een array met als keys de slugs van de allergenen
+				foreach ( $oft_product->product_allergen as $product_allergen ) {
+					$oft_quality_data['allergen'][ $product_allergen->slug ] = $product_allergen->name;
+				}
+			}
+		}
+		
+		set_site_transient( $product->get_sku().'_quality_data', $oft_quality_data, DAY_IN_SECONDS );
+		return $oft_quality_data;
+	}

@@ -7,6 +7,7 @@
 	
 	require get_stylesheet_directory() . '/oxfam-tweaks.php';
 	require get_stylesheet_directory() . '/functions/coupons.php';
+	require get_stylesheet_directory() . '/functions/external-apis.php';
 	require get_stylesheet_directory() . '/functions/helpers.php';
 	require get_stylesheet_directory() . '/functions/relevanssi.php';
 	require get_stylesheet_directory() . '/functions/seo.php';
@@ -6277,7 +6278,7 @@
 				break;
 
 			case 'crafts':
-				if ( strpos( $product->get_meta('_shopplus_code'), 'M' ) === 0 ) {
+				if ( is_crafts_product( $product ) ) {
 					return true;
 				}
 				break;
@@ -7569,105 +7570,6 @@
 	###########
 	# HELPERS #
 	###########
-
-	function get_external_wpsl_store( $shop_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
-		$store_data = false;
-		$shop_post_id = intval( $shop_post_id );
-
-		if ( $shop_post_id > 0 ) {
-			if ( false === ( $store_data = get_site_transient( $shop_post_id.'_store_data' ) ) ) {
-				$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id );
-
-				if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
-					// Zet het JSON-object om in een PHP-array
-					$store_data = json_decode( wp_remote_retrieve_body( $response ), true );
-					set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
-				} else {
-					$logger = wc_get_logger();
-					$context = array( 'source' => 'WordPress API' );
-					$logger->notice( 'Could not retrieve shop data for ID '.$shop_post_id, $context );
-				}
-			}
-		}
-
-		return $store_data;
-	}
-
-	function get_external_wpsl_stores( $domain = 'www.oxfamwereldwinkels.be', $page = 1 ) {
-		$all_stores = array();
-
-		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!
-		// In API is -1 geen geldige waarde voor 'per_page'
-		$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores?per_page=100&page='.$page );
-
-		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
-			// Zet het JSON-object om in een PHP-array
-			$all_stores = json_decode( wp_remote_retrieve_body( $response ), true );
-
-			if ( $page === 1 ) {
-				// Deze header geeft aan hoeveel resultatenpagina's er in totaal zijn
-				$total_pages = intval( wp_remote_retrieve_header( $response, 'X-WP-TotalPages' ) );
-
-				// Vul indien nodig recursief aan vanaf 2de pagina
-				for ( $i = 2; $i <= $total_pages; $i++ ) {
-					$all_stores = array_merge( $all_stores,  get_external_wpsl_stores( $domain, $i ) );
-				}
-			}
-		} else {
-			$logger = wc_get_logger();
-			$context = array( 'source' => 'WordPress API' );
-			$logger->critical( 'Could not retrieve shops on page '.$page, $context );
-		}
-
-		return $all_stores;
-	}
-	
-	function get_external_partner( $partner_name, $domain = 'www.oxfamfairtrade.be/nl' ) {
-		$partner_data = array();
-		$partner_slug = sanitize_title( $partner_name );
-		
-		if ( false === ( $partner_data = get_site_transient( $partner_slug.'_partner_data' ) ) ) {
-			// API zoekt standaard enkel naar objecten met status 'publish'
-			// API is volledig publiek, dus geen authorization header nodig
-			$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/partners/?slug='.$partner_slug );
-			
-			// Log alles op de hoofdsite
-			switch_to_blog(1);
-			$logger = wc_get_logger();
-			$context = array( 'source' => 'WordPress API' );
-			
-			if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
-				// Zet het JSON-object om in een PHP-array
-				$matching_partners = json_decode( wp_remote_retrieve_body( $response ), true );
-				
-				if ( count( $matching_partners ) > 1 ) {
-					$logger->warning( 'Multiple partners found for '.$partner_slug, $context );
-				} else {
-					if ( count( $matching_partners ) === 1 ) {
-						$partner_data = $matching_partners[0];
-						
-						// Fallback voor OWW-partnerpagina's waar 'type' nog de partnercategorie bevat
-						if ( in_array( $partner_data['type'], array( 'A', 'B' ) ) ) {
-							$partner_data['type'] = 'partner';
-						}
-						
-						$logger->info( 'Partner data for '.$partner_slug.' cached in transient', $context );
-					} else {
-						$partner_data = array( 'type' => 'not-found' );
-						// Vermijd dat we de data telkens opnieuw blijven ophalen, ze bestaat wellicht gewoon niet
-						$logger->notice( 'No partner data found for '.$partner_slug.', but still cached in transient', $context );
-					}
-					set_site_transient( $partner_slug.'_partner_data', $partner_data, DAY_IN_SECONDS );
-				}
-			} else {
-				$logger->error( 'Could not retrieve partner for '.$partner_slug, $context );
-			}
-			
-			restore_current_blog();
-		}
-		
-		return $partner_data;
-	}
 	
 	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen
 	function get_oxfam_shop_data( $key, $node = 0, $raw = false, $shop_post_id = 0 ) {

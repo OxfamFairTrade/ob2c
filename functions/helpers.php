@@ -223,18 +223,35 @@
 		return in_array( get_current_blog_id(), $regions );
 	}
 	
+	
+	
+	######################
+	# PRODUCT PROPERTIES #
+	######################
+	
 	// Kan zowel productobject als post-ID ontvangen
 	function is_national_product( $object ) {
 		if ( is_main_site() ) {
 			// Producten op het hoofdniveau zijn per definitie nationaal!
 			return true;
 		}
-	
+		
 		if ( $object instanceof WC_Product ) {
 			return ( intval( $object->get_meta('_woonet_network_is_child_site_id') ) === 1 );
 		} else {
 			return ( intval( get_post_meta( $object, '_woonet_network_is_child_site_id', true ) ) === 1 );
 		}
+	}
+	
+	// Kan zowel productobject als post-ID ontvangen
+	function is_crafts_product( $object ) {
+		if ( $object instanceof WC_Product ) {
+			$shopplus = $object->get_meta('_shopplus_code');
+		} else {
+			$shopplus = get_post_meta( $object, '_shopplus_code', true );
+		}
+		// Als het ShopPlus-nummer met een M begint, komt het van MDM
+		return ( strpos( $shopplus, 'M' ) === 0 );
 	}
 	
 	
@@ -249,21 +266,6 @@
 		$url .= in_array( $_SERVER['SERVER_PORT'], array( '80', '443' ) ) ? '' : ':' . $_SERVER['SERVER_PORT'];
 		$url .= $_SERVER['REQUEST_URI'];
 		return $url;
-	}
-	
-	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
-	function send_automated_mail_to_helpdesk( $subject, $body ) {
-		if ( wp_get_environment_type() !== 'production' ) {
-			$subject = 'TEST - '.$subject.' - NO ACTION REQUIRED';
-			// Mails eventueel volledig uitschakelen
-			// return;
-		}
-		
-		$headers = array();
-		$headers[] = 'From: '.get_webshop_name().' <'.get_option('admin_email').'>';
-		$headers[] = 'Content-Type: text/html';
-		// $body moét effectief HTML-code bevatten, anders werpt WP Mail Log soms een error op!
-		wp_mail( get_staged_recipients('webshop@oft.be'), $subject, $body, $headers );
 	}
 	
 	// Verwissel twee associatieve keys in een array
@@ -300,6 +302,46 @@
 	function sort_by_time( $a, $b ) {
 		return $b['timestamp'] - $a['timestamp'];
 	}
+	
+	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
+	function send_automated_mail_to_helpdesk( $subject, $body ) {
+		if ( wp_get_environment_type() !== 'production' ) {
+			$subject = 'TEST - '.$subject.' - NO ACTION REQUIRED';
+			// Mails eventueel volledig uitschakelen
+			// return;
+		}
+		
+		$headers = array();
+		$headers[] = 'From: '.get_webshop_name().' <'.get_option('admin_email').'>';
+		$headers[] = 'Content-Type: text/html';
+		// $body moét effectief HTML-code bevatten, anders werpt WP Mail Log soms een error op!
+		wp_mail( get_staged_recipients('webshop@oft.be'), $subject, $body, $headers );
+	}
+	
+	// Definitie van labels en verplichte voedingswaarden
+	function get_food_api_labels() {
+		return array(
+			'_ingredients' => 'Ingrediënten',
+			'_energy' => 'Energie',
+			'_fat' => 'Vetten',
+			'_fasat' => 'waarvan verzadigde vetzuren',
+			'_famscis' => 'waarvan enkelvoudig onverzadigde vetzuren',
+			'_fapucis' => 'waarvan meervoudig onverzadigde vetzuren',
+			'_choavl' => 'Koolhydraten',
+			'_sugar' => 'waarvan suikers',
+			'_polyl' => 'waarvan polyolen',
+			'_starch' => 'waarvan zetmeel',
+			'_fibtg' => 'Vezels',
+			'_pro' => 'Eiwitten',
+			'_salteq' => 'Zout',
+		);
+	}
+	
+	
+	
+	##############
+	# FORMATTING #
+	##############
 	
 	function trim_and_uppercase( $value ) {
 		return str_replace( 'Oww ', 'OWW ', implode( '.', array_map( 'ucwords', explode( '.', implode( '(', array_map( 'ucwords', explode( '(', implode( '-', array_map( 'ucwords', explode( '-', mb_strtolower( trim($value) ) ) ) ) ) ) ) ) ) ) );
