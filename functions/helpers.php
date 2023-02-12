@@ -321,19 +321,19 @@
 	// Definitie van labels en verplichte voedingswaarden
 	function get_food_api_labels() {
 		return array(
-			'_ingredients' => 'Ingrediënten',
-			'_energy' => 'Energie',
-			'_fat' => 'Vetten',
-			'_fasat' => 'waarvan verzadigde vetzuren',
-			'_famscis' => 'waarvan enkelvoudig onverzadigde vetzuren',
-			'_fapucis' => 'waarvan meervoudig onverzadigde vetzuren',
-			'_choavl' => 'Koolhydraten',
-			'_sugar' => 'waarvan suikers',
-			'_polyl' => 'waarvan polyolen',
-			'_starch' => 'waarvan zetmeel',
-			'_fibtg' => 'Vezels',
-			'_pro' => 'Eiwitten',
-			'_salteq' => 'Zout',
+			'_ingredients' => __( 'Ingrediënten', 'oxfam-webshop' ),
+			'_energy' => __( 'Energie', 'oxfam-webshop' ),
+			'_fat' => __( 'Vetten', 'oxfam-webshop' ),
+			'_fasat' => __( 'waarvan verzadigde vetzuren', 'oxfam-webshop' ),
+			'_famscis' => __( 'waarvan enkelvoudig onverzadigde vetzuren', 'oxfam-webshop' ),
+			'_fapucis' => __( 'waarvan meervoudig onverzadigde vetzuren', 'oxfam-webshop' ),
+			'_choavl' => __( 'Koolhydraten', 'oxfam-webshop' ),
+			'_sugar' => __( 'waarvan suikers', 'oxfam-webshop' ),
+			'_polyl' => __( 'waarvan polyolen', 'oxfam-webshop' ),
+			'_starch' => __( 'waarvan zetmeel', 'oxfam-webshop' ),
+			'_fibtg' => __( 'Vezels', 'oxfam-webshop' ),
+			'_pro' => __( 'Eiwitten', 'oxfam-webshop' ),
+			'_salteq' => __( 'Zout', 'oxfam-webshop' ),
 		);
 	}
 	

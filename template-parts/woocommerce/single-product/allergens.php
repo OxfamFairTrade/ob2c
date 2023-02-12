@@ -22,20 +22,20 @@
 
 		?>
 		<div id="product-allergens" class="product-info-panel allergens">
-			<h4>Allergeneninfo</h4>
+			<h4><?= __( 'Allergeneninfo', 'oxfam-webshop' ); ?></h4>
 			<p>
 				<?php
 					if ( $no_allergens === true or ( count( $traces ) === 0 and count( $contains ) === 0 ) ) {
-						echo 'Dit product bevat geen meldingsplichtige allergenen.';
+						echo __( 'Dit product bevat geen meldingsplichtige allergenen.', 'oxfam-webshop' );
 					} else {
 						if ( count( $contains ) > 0 ) {
-							echo 'Bevat '.implode( ', ', $contains ).'.';
+							echo sprintf( __( 'Bevat %s.', 'oxfam-webshop' ), implode( ', ', $contains ) );
 							if ( count( $traces ) > 0 ) {
 								echo '<br/>';
 							}
 						}
 						if ( count( $traces ) > 0 ) {
-							echo 'Kan sporen bevatten van '.implode( ', ', $traces ).'.';
+							echo sprintf( __( 'Kan sporen bevatten van %s.', 'oxfam-webshop' ), implode( ', ', $traces ) );
 						}
 					}
 				?>

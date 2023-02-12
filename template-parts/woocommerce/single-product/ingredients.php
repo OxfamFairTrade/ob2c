@@ -10,7 +10,7 @@
 		if ( strlen( trim( $ingredients ) ) > 0 ) {
 			?>
 			<div id="product-ingredients" class="product-info-panel ingredients">
-				<<?php echo $args['title_tag']; ?>>Ingrediënten</<?php echo $args['title_tag']; ?>>
+				<<?= $args['title_tag']; ?>><?= __( 'Ingrediënten', 'oxfam-webshop' ); ?></<?= $args['title_tag']; ?>>
 				<ul class="ingredients">
 					<li>
 						<?php
@@ -31,10 +31,10 @@
 				</ul>
 				<?php if ( get_ingredients_legend( $ingredients ) ) : ?>
 					<small class="legend">
-						<?php echo implode( '<br/>', get_ingredients_legend( $ingredients ) ); ?>
+						<?= implode( '<br/>', get_ingredients_legend( $ingredients ) ); ?>
 					</small>
 				<?php endif; ?>
 			</div>
 			<?php
-		}	
+		}
 	}
