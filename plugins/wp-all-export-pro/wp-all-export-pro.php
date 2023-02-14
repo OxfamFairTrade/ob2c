@@ -3,7 +3,7 @@
 Plugin Name: WP All Export Pro
 Plugin URI: http://www.wpallimport.com/export/
 Description: Export any post type to a CSV or XML file. Edit the exported data, and then re-import it later using WP All Import.
-Version: 1.8.1
+Version: 1.8.3
 Author: Soflyy
 */
 
@@ -46,7 +46,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
      */
     define('PMXE_PREFIX', 'pmxe_');
 
-    define('PMXE_VERSION', '1.8.1');
+    define('PMXE_VERSION', '1.8.3');
 
     define('PMXE_EDITION', 'paid');
 
@@ -924,6 +924,7 @@ Some of the features you used in WP All Export Pro now require paid add-ons. If 
             $client_mode_enabled = false;
             $created_at = false;
             $created_at_gmt = false;
+            $rte_last_row = false;
 
             // Check if field exists
             foreach ($tablefields as $tablefield) {
@@ -933,6 +934,7 @@ Some of the features you used in WP All Export Pro now require paid add-ons. If 
                 if ('client_mode_enabled' == $tablefield->Field) $client_mode_enabled= true;
                 if ('created_at' == $tablefield->Field) $created_at = true;
                 if ('created_at_gmt' == $tablefield->Field) $created_at_gmt = true;
+                if ('rte_last_row' == $tablefield->Field) $rte_last_row = true;
 
             }
 
@@ -957,6 +959,10 @@ Some of the features you used in WP All Export Pro now require paid add-ons. If 
 
             if ( ! $created_at_gmt ){
                 $wpdb->query("ALTER TABLE {$table} ADD `created_at_gmt` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';");
+            }
+
+            if ( ! $rte_last_row ){
+                $wpdb->query("ALTER TABLE {$table} ADD `rte_last_row` MEDIUMTEXT NOT NULL DEFAULT '';");
             }
 
             update_option("wp_all_export_pro_db_version", PMXE_VERSION);
@@ -1155,6 +1161,25 @@ Some of the features you used in WP All Export Pro now require paid add-ons. If 
                 'author' => 'Soflyy'  // author of this plugin
             )
         );
+
+		// Provide updater for version 1.0.0 of the Gravity Forms Export Add-On.
+		if(class_exists('GF_Export_Add_On') && in_array(GF_Export_Add_On::VERSION, ['1.0.0','1.0.1'])){
+			// Plugin path.
+			$wpae_gf_path = plugin_dir_path( __DIR__ ) . 'wpae-gravity-forms-export-addon/wpae-gf-addon.php';
+
+			// Make sure the plugin file actually exists.
+			if(file_exists($wpae_gf_path)) {
+
+				// Provide supplemental updater for early GF Export Add-On version.
+				$wpae_gf_updater = new PMXE_Updater( $wp_all_export_options['info_api_url'], $wpae_gf_path, array(
+					'version'   => GF_Export_Add_On::VERSION,        // current version number
+					'license'   => false,
+					'item_name' => 'Gravity Forms Export Add-On Pro',    // name of this plugin
+					'author'    => 'Soflyy'  // author of this plugin
+				) );
+			}
+
+	    }
     }
 
     add_action('admin_init', 'wp_all_export_pro_updater', 0);
