@@ -661,12 +661,12 @@
 	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_placeholder_image', 'sync_settings_to_subsites', 10, 3 );
 	// add_action( 'update_option_woocommerce_google_analytics_settings', 'sync_settings_to_subsites', 10, 3 );
+	// add_action( 'update_option_cookie_notice_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_gtm4wp-options', 'sync_settings_to_subsites', 10, 3 );
 	// add_action( 'update_option_woocommerce_local_pickup_plus_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wp_mail_smtp', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_nm_theme_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wpsl_settings', 'sync_settings_to_subsites', 10, 3 );
-	add_action( 'update_option_cookie_notice_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wjecf_licence', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wcgwp_category_id', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wcgwp_details', 'sync_settings_to_subsites', 10, 3 );
@@ -688,7 +688,6 @@
 	add_action( 'update_option_mollie_wc_gateway_applepay_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_ideal_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_gateway_order', 'sync_settings_to_subsites', 10, 3 );
-	add_action( 'update_option_gtm4wp-options', 'sync_settings_to_subsites', 10, 3 );
 	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
@@ -696,7 +695,7 @@
 			$logger = wc_get_logger();
 			$context = array( 'source' => 'Oxfam' );
 			$updates_sites = array();
-			$sites = get_sites( array( 'site__not_in' => array(1) ) );
+			$sites = get_sites( array( 'path__not_in' => array('/'), 'orderby' => 'path' ) );
 			
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
@@ -988,71 +987,77 @@
 		exit();
 	}
 
-	// Activeer Facebook Pixel
-	add_action( 'wp_head', 'add_facebook_pixel', 200 );
-	add_action( 'woocommerce_thankyou', 'add_fb_purchase_event', 10, 1 );
-
+	// Activeer Facebook Pixel UITGESCHAKELD, CONFIGURATIE WORDT NU VOLLEDIG VANUIT GTM GEREGELD
+	// Opgelet: nu we de Oxfam-cookiebanner gebruiken, bestaat cn_cookies_accepted() niet meer!
+	// add_action( 'wp_head', 'add_facebook_pixel', 200 );
+	
 	function add_facebook_pixel() {
-		if ( wp_get_environment_type() === 'production' and get_option('mollie-payments-for-woocommerce_test_mode_enabled') !== 'yes' ) {
-			if ( cn_cookies_accepted() ) {
+		if ( wp_get_environment_type() !== 'production' or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
+			return;
+		}
+		
+		if ( cn_cookies_accepted() ) {
+			?>
+			<script>!function(f,b,e,v,n,t,s)
+			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+			n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+			if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+			n.queue=[];t=b.createElement(e);t.async=!0;
+			t.src=v;s=b.getElementsByTagName(e)[0];
+			s.parentNode.insertBefore(t,s)}(window, document,'script',
+			'https://connect.facebook.net/en_US/fbevents.js');
+			fbq('init', '1964131620531187');
+			</script>
+			<noscript><img height="1" width="1" style="display:none"
+			src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
+			/></noscript>
+			<?php
+			
+			if ( is_product() ) {
+				global $post;
 				?>
-				<script>!function(f,b,e,v,n,t,s)
-				{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-				n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-				if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-				n.queue=[];t=b.createElement(e);t.async=!0;
-				t.src=v;s=b.getElementsByTagName(e)[0];
-				s.parentNode.insertBefore(t,s)}(window, document,'script',
-				'https://connect.facebook.net/en_US/fbevents.js');
-				fbq('init', '1964131620531187');
+				<script>
+					fbq('track', 'ViewContent', {
+						content_ids: '<?php echo get_post_meta( $post->ID, '_sku', true ); ?>',
+						content_type: 'product'
+					});
 				</script>
-				<noscript><img height="1" width="1" style="display:none"
-				src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
-				/></noscript>
 				<?php
-
-				if ( is_product() ) {
-					global $post;
-					?>
-					<script>
-						fbq('track', 'ViewContent', {
-							content_ids: '<?php echo get_post_meta( $post->ID, '_sku', true ); ?>',
-							content_type: 'product'
-						});
-					</script>
-					<?php
-				}
 			}
 		}
 	}
-
+	
+	// Als Facebook Pixel niet ingeladen is via GTM, zal dit zacht falen (geen speciale check nodig)
+	add_action( 'woocommerce_thankyou', 'add_fb_purchase_event', 10, 1 );
+	
 	function add_fb_purchase_event( $order_id ) {
+		if ( wp_get_environment_type() !== 'production' or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
+			return;
+		}
+		
 		$order = wc_get_order( $order_id );
-
 		if ( ! $order ) {
 			return;
 		}
-
+		
 		// Track geen onbetaalde bestellingen
 		if ( ! $order->is_paid() ) {
 			return;
 		}
-
+		
 		$contents = array();
 		$content_ids = array();
-
+		
 		foreach ( $order->get_items() as $item ) {
 			if ( $product = isset( $item['product_id'] ) ? wc_get_product( $item['product_id'] ) : NULL ) {
 				$content_ids[] = $product->get_sku();
-
 				$content = new \stdClass();
 				$content->id = $product->get_sku();
 				$content->quantity = $item->get_quantity();
 				$contents[] = $content;
 			}
 		}
-
-		// Als Facebook Pixel niet ingeladen is, zal dit gewoon zacht falen (geen extra check nodig)
+		
 		// Door een event-ID mee te geven worden dubbel verstuurde events (bv. door heen en weer navigeren) weggefilterd
 		?>
 		<script>
@@ -1067,12 +1072,15 @@
 		<?php
 	}
 
-	// Activeer Facebook Messenger
-	add_action( 'wp_footer', 'add_facebook_messenger', 300 );
+	// Activeer Facebook Messenger UITGESCHAKELD
+	// add_action( 'wp_footer', 'add_facebook_messenger', 300 );
 
 	function add_facebook_messenger() {
+		if ( wp_get_environment_type() !== 'production' ) {
+			return;
+		}
+		
 		$show_chatbot = false;
-
 		if ( get_current_blog_id() === 21 ) {
 			// Lokale pagina-ID voor Moerbeke-Waas
 			$fb_page_id = 101500678739676;
@@ -1085,41 +1093,39 @@
 				$show_chatbot = true;
 			}
 		}
-
-		if ( wp_get_environment_type() === 'production' ) {
-			if ( cn_cookies_accepted() and $show_chatbot ) {
-				?>
-				<div id='fb-root'></div>
-				<script>
-					window.fbAsyncInit = function() {
-						FB.init({
-							xfbml : true,
-							version : 'v10.0'
-						});
-					};
-
-					(function(d, s, id) {
-						var js, fjs = d.getElementsByTagName(s)[0];
-						if (d.getElementById(id)) return;
-						js = d.createElement(s); js.id = id;
-						js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js';
-						fjs.parentNode.insertBefore(js, fjs);
-					}(document, 'script', 'facebook-jssdk'));
-				</script>
-				<div class='fb-customerchat' attribution="wordpress" page_id='<?php echo $fb_page_id; ?>' theme_color='#44841a' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!' logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
-				<?php
-			}
+		
+		if ( $show_chatbot ) {
+			?>
+			<div id='fb-root'></div>
+			<script>
+				window.fbAsyncInit = function() {
+					FB.init({
+						xfbml : true,
+						version : 'v10.0'
+					});
+				};
+				
+				(function(d, s, id) {
+					var js, fjs = d.getElementsByTagName(s)[0];
+					if (d.getElementById(id)) return;
+					js = d.createElement(s); js.id = id;
+					js.src = 'https://connect.facebook.net/nl_NL/sdk/xfbml.customerchat.js';
+					fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));
+			</script>
+			<div class='fb-customerchat' attribution="wordpress" page_id='<?php echo $fb_page_id; ?>' theme_color='#44841a' logged_in_greeting='Is er nog iets onduidelijk? Vraag het ons!' logged_out_greeting='Is er nog iets onduidelijk? Log in via Facebook en vraag het ons!'></div>
+			<?php
 		}
 	}
-
+	
 	// Sta HTML-attribuut 'target' toe in beschrijvingen van taxonomieën
 	add_action( 'init', 'allow_target_tag', 20 );
-
+	
 	function allow_target_tag() {
 		global $allowedtags;
 		$allowedtags['a']['target'] = 1;
 	}
-
+	
 	// Voeg extra CSS-klasses toe aan body (front-end)
 	add_filter( 'body_class', 'add_main_site_class' );
 
