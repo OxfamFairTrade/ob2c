@@ -688,7 +688,8 @@
 	add_action( 'update_option_mollie_wc_gateway_applepay_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_ideal_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_gateway_order', 'sync_settings_to_subsites', 10, 3 );
-
+	add_action( 'update_option_gtm4wp-options', 'sync_settings_to_subsites', 10, 3 );
+	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
 		// Actie wordt enkel doorlopen indien oude en nieuwe waarde verschillen, dus geen extra check nodig
 		if ( get_current_blog_id() === 1 and current_user_can('update_core') ) {
@@ -696,39 +697,41 @@
 			$context = array( 'source' => 'Oxfam' );
 			$updates_sites = array();
 			$sites = get_sites( array( 'site__not_in' => array(1) ) );
-			// write_log( print_r( $new_value, true ) );
-
+			
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site->blog_id );
-
+				
 				$success = false;
 				if ( $option === 'wp_mail_smtp' and is_array( $new_value ) ) {
 					// Instellingen van WP Mail SMTP lokaal maken
 					$new_value['mail']['from_email'] = get_option('admin_email');
 					$new_value['mail']['from_name'] = get_bloginfo('name');
 				}
-
+				
 				if ( $option === 'wcgwp_category_id' ) {
 					$gift_category = get_term_by( 'slug', 'geschenkverpakkingen', 'product_cat' );
 					if ( $gift_category !== false ) {
 						$new_value = $gift_category->term_id;
 					}
 				}
-
-				if ( $option === 'cookie_notice_options' ) {
+				
+				if ( in_array( $option, array( 'cookie_notice_options', 'gtm4wp-options' ) ) ) {
 					// Boolean waardes worden niet goed overgenomen m.b.v. update_option() ...
 					// Manipuleer de database rechtstreeks, blog-ID zit reeds vervat in prefix!
 					global $wpdb;
 					$success = $wpdb->update( $wpdb->prefix.'options', array( 'option_value' => serialize( $new_value ) ), array( 'option_name' => $option ) );
+					if ( $success !== false ) {
+						$updated_sites[] = $site->path;
+					}
 				} else {
 					if ( update_option( $option, $new_value ) ) {
 						$updated_sites[] = $site->path;
 					}
 				}
-
+				
 				restore_current_blog();
 			}
-
+			
 			if ( count( $updated_sites ) > 0 ) {
 				$logger->info( "Setting '".$option."' synced to subsites ".implode( ', ', $updated_sites ), $context );
 			} else {
@@ -736,7 +739,7 @@
 			}
 		}
 	}
-
+	
 	function get_ingredients_legend( $ingredients ) {
 		$legend = array();
 		if ( ! empty( $ingredients ) ) {
