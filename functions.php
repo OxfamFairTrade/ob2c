@@ -992,10 +992,6 @@
 	// add_action( 'wp_head', 'add_facebook_pixel', 200 );
 	
 	function add_facebook_pixel() {
-		if ( wp_get_environment_type() !== 'production' or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
-			return;
-		}
-		
 		if ( cn_cookies_accepted() ) {
 			?>
 			<script>!function(f,b,e,v,n,t,s)
@@ -1012,23 +1008,32 @@
 			src="https://www.facebook.com/tr?id=1964131620531187&ev=PageView&noscript=1"
 			/></noscript>
 			<?php
-			
-			if ( is_product() ) {
-				global $post;
-				?>
-				<script>
-					fbq('track', 'ViewContent', {
-						content_ids: '<?php echo get_post_meta( $post->ID, '_sku', true ); ?>',
-						content_type: 'product'
-					});
-				</script>
-				<?php
-			}
 		}
 	}
 	
 	// Als Facebook Pixel niet ingeladen is via GTM, zal dit zacht falen (geen speciale check nodig)
+	add_action( 'wp_footer', 'add_fb_view_content_event', 200 );
 	add_action( 'woocommerce_thankyou', 'add_fb_purchase_event', 10, 1 );
+	// UITGESCHAKELD
+	// add_action( 'wp_footer', 'add_fb_messenger', 200 );
+	
+	function add_fb_view_content_event() {
+		if ( wp_get_environment_type() !== 'production' or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
+			return;
+		}
+		
+		if ( is_product() ) {
+			global $post;
+			?>
+			<script>
+				fbq('track', 'ViewContent', {
+					content_ids: '<?php echo get_post_meta( $post->ID, '_sku', true ); ?>',
+					content_type: 'product'
+				});
+			</script>
+			<?php
+		}
+	}
 	
 	function add_fb_purchase_event( $order_id ) {
 		if ( wp_get_environment_type() !== 'production' or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
@@ -1072,14 +1077,7 @@
 		<?php
 	}
 
-	// Activeer Facebook Messenger UITGESCHAKELD
-	// add_action( 'wp_footer', 'add_facebook_messenger', 300 );
-
-	function add_facebook_messenger() {
-		if ( wp_get_environment_type() !== 'production' ) {
-			return;
-		}
-		
+	function add_fb_messenger() {
 		$show_chatbot = false;
 		if ( get_current_blog_id() === 21 ) {
 			// Lokale pagina-ID voor Moerbeke-Waas
