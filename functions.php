@@ -987,11 +987,14 @@
 		exit();
 	}
 
-	// Activeer Facebook Pixel UITGESCHAKELD, CONFIGURATIE WORDT NU VOLLEDIG VANUIT GTM GEREGELD
-	// Opgelet: nu we de Oxfam-cookiebanner gebruiken, bestaat cn_cookies_accepted() niet meer!
+	// Activeer Facebook Pixel UITGESCHAKELD, WORDT NU VOLLEDIG VANUIT GTM GEREGELD
 	// add_action( 'wp_head', 'add_facebook_pixel', 200 );
+	// add_action( 'wp_footer', 'add_fb_view_content_event', 200 );
+	// add_action( 'woocommerce_thankyou', 'add_fb_purchase_event', 10, 1 );
+	// add_action( 'wp_footer', 'add_fb_messenger', 200 );
 	
 	function add_facebook_pixel() {
+		// Opgelet: nu we de Oxfam-cookiebanner gebruiken, bestaat cn_cookies_accepted() niet meer!
 		if ( cn_cookies_accepted() ) {
 			?>
 			<script>!function(f,b,e,v,n,t,s)
@@ -1011,12 +1014,6 @@
 		}
 	}
 	
-	// Als Facebook Pixel niet ingeladen is via GTM, zal dit zacht falen (geen speciale check nodig)
-	add_action( 'wp_footer', 'add_fb_view_content_event', 200 );
-	add_action( 'woocommerce_thankyou', 'add_fb_purchase_event', 10, 1 );
-	// UITGESCHAKELD
-	// add_action( 'wp_footer', 'add_fb_messenger', 200 );
-	
 	function add_fb_view_content_event() {
 		if ( wp_get_environment_type() !== 'production' or get_option('mollie-payments-for-woocommerce_test_mode_enabled') === 'yes' ) {
 			return;
@@ -1024,6 +1021,8 @@
 		
 		if ( is_product() ) {
 			global $post;
+			
+			// Als Facebook Pixel niet ingeladen is via GTM, zal dit zacht falen (geen speciale check nodig)
 			?>
 			<script>
 				fbq('track', 'ViewContent', {
@@ -1063,6 +1062,7 @@
 			}
 		}
 		
+		// Als Facebook Pixel niet ingeladen is via GTM, zal dit zacht falen (geen speciale check nodig)
 		// Door een event-ID mee te geven worden dubbel verstuurde events (bv. door heen en weer navigeren) weggefilterd
 		?>
 		<script>
