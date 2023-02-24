@@ -6063,7 +6063,7 @@
 	function oxfam_shop_dashboard_notice_callback( $type ) {
 		$key = 'oxfam_shop_dashboard_notice_' . $type;
 		$value = get_site_option( $key, '' );
-		echo '<textarea name="' . $key . '" rows="5" style="width: 100%; max-width: 800px;">' . stripslashes( $value ) . '</textarea><br/><small>Mag HTML-code bevatten.<small>';
+		echo '<textarea name="' . $key . '" rows="5" style="width: 100%; max-width: 800px;">' . stripslashes( $value ) . '</textarea><br/><small>Mag HTML-code bevatten.</small>';
 	}
 	
 	add_action( 'network_admin_edit_woonet-woocommerce-dashboard-info-update', 'update_network_settings_dashboard' );
