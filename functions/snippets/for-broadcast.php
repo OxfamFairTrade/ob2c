@@ -10,7 +10,7 @@
 		'post_type'	=> 'shop_coupon',
 		'post_status' => 'publish',
 		// Opgelet: dit kijkt naar de (onzichtbare) slug, die kan afwijken van de titel, bv. indien kortingscode achteraf gewijzigd!
-		'post_name__in' => array( '202302-kokosmelk', '202302-pinda' ),
+		'post_name__in' => array( '202303-snoepbeertjes', '202303-capsules', '202303-amandelnoten', '202303-cashew' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	
@@ -86,8 +86,8 @@
 	// Voeg nieuwe superadmins toe als beheerder aan alle blogs
 	// Dit is enkel nodig opdat de lijst blogs op https://shop.oxfamwereldwinkels.be/wp-admin/admin.php?page=threewp_broadcast_php_code zou verschijnen
 	// Zo kunnen zij deze PHP-snippets makkelijk uitvoeren in alle subsites!
-	$super_admins = array( 'corneel', 'kristof' );
-	$sites = get_sites( array( 'public' => 1 ) );
+	$super_admins = get_super_admins();
+	$sites = get_sites();
 	foreach ( $sites as $site ) {
 		switch_to_blog( $site->blog_id );
 		foreach ( $super_admins as $login ) {

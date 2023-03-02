@@ -14,12 +14,12 @@
 			$labels['promotion'] = '-15% per 2 flessen';
 		}
 		
-		$fifty_percent_off_second_products = array( 25452, 25726, 25727, 25724, 27506 );
+		$fifty_percent_off_second_products = array( 25210, 25725, 25730 );
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}
 
-		$one_plus_one_products = array();
+		$one_plus_one_products = array( 22724, 22725 );
 		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
