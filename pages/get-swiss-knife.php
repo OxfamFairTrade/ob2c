@@ -17,16 +17,16 @@
 	
 	<h2>Voorradigheid nieuwe producten</h2>
 	<?php
-		$sites = get_sites( array( 'path__not_in' => array('/'), 'public' => 1, 'site__not_in' => get_site_option('oxfam_blocked_sites') ) );
+		$sites = get_sites( array( 'path__not_in' => array('/'), 'public' => 1, 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'orderby' => 'path' ) );
 		$start_date = date_i18n( 'Y-m-d', strtotime('-14 days') );
 		$end_date = date_i18n('Y-m-d');
-		check_local_stocks( array( 21055, 22034 ), $sites );
+		check_local_stocks( get_site_option( 'oxfam_shop_dashboard_notice_new_products', array( 21055, 22034 ) ), $sites );
 	?>
 	
 	<p>&nbsp;</p>
 	
 	<h2>Recente verkopen van nieuwe producten</h2>
-	<?php report_sales_by_product( array( 21055, 22034 ), $sites, $start_date, $end_date ); ?>
+	<?php report_sales_by_product( get_site_option( 'oxfam_shop_dashboard_notice_new_products', array( 21055, 22034 ) ), $sites, $start_date, $end_date ); ?>
 	
 	<p>&nbsp;</p>
 	
