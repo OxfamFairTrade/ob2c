@@ -5,16 +5,16 @@
 	use Automattic\WooCommerce\Client;
 	use Automattic\WooCommerce\HttpClient\HttpClientException;
 	
-	require get_stylesheet_directory() . '/oxfam-tweaks.php';
-	require get_stylesheet_directory() . '/functions/coupons.php';
-	require get_stylesheet_directory() . '/functions/external-apis.php';
-	require get_stylesheet_directory() . '/functions/helpers.php';
-	require get_stylesheet_directory() . '/functions/relevanssi.php';
-	require get_stylesheet_directory() . '/functions/seo.php';
-	require get_stylesheet_directory() . '/functions/mailchimp/functions.php';
-	require get_stylesheet_directory() . '/functions/vouchers/functions.php';
-	require get_stylesheet_directory() . '/functions/subsites/brugge.php';
-	require get_stylesheet_directory() . '/functions/subsites/houthalen.php';
+	require_once get_stylesheet_directory() . '/oxfam-tweaks.php';
+	require_once get_stylesheet_directory() . '/functions/coupons.php';
+	require_once get_stylesheet_directory() . '/functions/external-apis.php';
+	require_once get_stylesheet_directory() . '/functions/helpers.php';
+	require_once get_stylesheet_directory() . '/functions/relevanssi.php';
+	require_once get_stylesheet_directory() . '/functions/seo.php';
+	require_once get_stylesheet_directory() . '/functions/mailchimp/functions.php';
+	require_once get_stylesheet_directory() . '/functions/vouchers/functions.php';
+	require_once get_stylesheet_directory() . '/functions/subsites/brugge.php';
+	require_once get_stylesheet_directory() . '/functions/subsites/houthalen.php';
 	
 	
 	
