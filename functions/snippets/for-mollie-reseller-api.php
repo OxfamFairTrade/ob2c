@@ -23,7 +23,7 @@
 	$blog_id_not_wp = 77;
 	$login = '';
 	$email = '';
-	$shop_id = 0;
+	$shop_node = 0;
 	$fname = '';
 	$lname = '';
 
@@ -59,8 +59,8 @@
 		if ( update_option( 'admin_email', $email ) ) {
 			echo "Adminadres gewijzigd naar ".$email."!<br/>";
 		}
-		if ( update_option( 'oxfam_shop_post_id', $shop_id ) ) {
-			echo "Winkel-ID gewijzigd naar ".$shop_id."!<br/>";
+		if ( update_option( 'oxfam_shop_node', $shop_node ) ) {
+			echo "Winkelnode gewijzigd naar ".$shop_node."!<br/>";
 		}
 		if ( update_option( 'woocommerce_email_from_name', $company ) ) {
 			echo "Afzendnaam gewijzigd naar ".$company."!<br/>";

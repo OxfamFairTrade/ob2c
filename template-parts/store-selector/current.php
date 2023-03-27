@@ -21,15 +21,15 @@
 
 		// Haal de huidige gekozen winkel op
 		$current_store = false;
-		if ( ! empty( $_COOKIE['latest_shop_id'] ) ) {
-			$current_store = intval( $_COOKIE['latest_shop_id'] );
+		if ( ! empty( $_COOKIE['latest_shop_node'] ) ) {
+			$current_store = intval( $_COOKIE['latest_shop_node'] );
 		}
 
 		$shops = ob2c_get_pickup_locations();
 		if ( $current_store === false or ! array_key_exists( $current_store, $shops ) ) {
 			// De cookie slaat op een winkel uit een andere subsite (bv. door rechtstreeks switchen)
 			// Stel de hoofdwinkel van de huidige subsite in als fallback
-			$current_store = get_option('oxfam_shop_post_id');
+			$current_store = get_option('oxfam_shop_node');
 		}
 	}
 ?>
@@ -44,10 +44,10 @@
 		<div class="pointer">Jouw Oxfam-winkel</div>
 		<!-- Niet alle ID's zitten in elke shop, beter ophalen op hoofdniveau? -->
         <div class="shop-name">
-            <strong><?php echo get_shop_name( array( 'id' => $current_store ) );  ?></strong>
+            <strong><?php echo get_shop_name( array( 'node' => $current_store ) );  ?></strong>
         </div>
         <div class="shop-address">
-		    <p><?php echo get_shop_address( array( 'id' => $current_store ) ); ?></p>
+		    <p><?php echo get_shop_address( array( 'node' => $current_store ) ); ?></p>
         </div>
 		<ul class="delivery-options">
 			<li class="pickup <?php echo $local_pickup; ?>">Afhalen in de winkel</li>
@@ -64,7 +64,7 @@
 				$post_args = array(
 					'post_type'	=> 'wpsl_stores',
 					'post_status' => 'publish',
-					'meta_key' => 'wpsl_oxfam_shop_post_id',
+					'meta_key' => 'wpsl_oxfam_shop_node',
 					'meta_value' => $current_store,
 				);
 				$wpsl_stores = new WP_Query( $post_args );

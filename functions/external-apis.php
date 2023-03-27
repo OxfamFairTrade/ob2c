@@ -2,22 +2,30 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 	
-	function get_external_wpsl_store( $shop_post_id, $domain = 'www.oxfamwereldwinkels.be' ) {
+	function get_external_wpsl_store( $shop_node, $shop_post_id = false ) {
 		$store_data = false;
-		$shop_post_id = intval( $shop_post_id );
 		
-		if ( $shop_post_id > 0 ) {
-			if ( false === ( $store_data = get_site_transient( $shop_post_id.'_store_data' ) ) ) {
-				$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores/'.$shop_post_id );
+		if ( $shop_post_id ) {
+			$uri = 'www.oxfamwereldwinkels.be/wp-json/wp/v2/wpsl_stores';
+			$shop_id = intval( $shop_post_id );
+			$context = array( 'source' => 'WordPress API' );
+		} else {
+			$uri = 'oxfambelgie.be/api/v1/stores';
+			$shop_id = intval( $shop_node );
+			$context = array( 'source' => 'Drupal API' );
+		}
+		
+		if ( $shop_id > 0 ) {
+			if ( false === ( $store_data = get_site_transient( $shop_id.'_store_data' ) ) ) {
+				$response = wp_remote_get( 'https://'.$uri.'/'.$shop_id );
 				
 				if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
 					// Zet het JSON-object om in een PHP-array
 					$store_data = json_decode( wp_remote_retrieve_body( $response ), true );
-					set_site_transient( $shop_post_id.'_store_data', $store_data, DAY_IN_SECONDS );
+					set_site_transient( $shop_id.'_store_data', $store_data, DAY_IN_SECONDS );
 				} else {
 					$logger = wc_get_logger();
-					$context = array( 'source' => 'WordPress API' );
-					$logger->notice( 'Could not retrieve shop data for ID '.$shop_post_id, $context );
+					$logger->notice( 'Could not retrieve shop data for ID '.$shop_id, $context );
 				}
 			}
 		}
@@ -25,29 +33,48 @@
 		return $store_data;
 	}
 	
-	function get_external_wpsl_stores( $domain = 'www.oxfamwereldwinkels.be', $page = 1 ) {
+	function get_external_wpsl_stores( $domain = 'oxfambelgie.be', $page = 1 ) {
 		$all_stores = array();
 		
+		if ( $domain === 'oxfamwereldwinkels.be' ) {
+			$uri = 'www.oxfamwereldwinkels.be/wp-json/wp/v2/wpsl_stores';
+			$context = array( 'source' => 'WordPress API' );
+		} else {
+			$uri = 'oxfambelgie.be/api/v1/stores';
+			$context = array( 'source' => 'Drupal API' );	
+		}
+		
 		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!
-		// In API is -1 geen geldige waarde voor 'per_page'
-		$response = wp_remote_get( 'https://'.$domain.'/wp-json/wp/v2/wpsl_stores?per_page=100&page='.$page );
+		// Parameter 'per_page' doet niks in OBE API (altijd per 10)
+		$response = wp_remote_get( 'https://'.$uri.'?per_page=10&page='.$page );
 		
 		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
 			// Zet het JSON-object om in een PHP-array
-			$all_stores = json_decode( wp_remote_retrieve_body( $response ), true );
+			$stores = json_decode( wp_remote_retrieve_body( $response ), true );
 			
 			if ( $page === 1 ) {
-				// Deze header geeft aan hoeveel resultatenpagina's er in totaal zijn
-				$total_pages = intval( wp_remote_retrieve_header( $response, 'X-WP-TotalPages' ) );
+				$all_stores = array_merge( $all_stores, $stores );
 				
-				// Vul indien nodig recursief aan vanaf 2de pagina
-				for ( $i = 2; $i <= $total_pages; $i++ ) {
-					$all_stores = array_merge( $all_stores,  get_external_wpsl_stores( $domain, $i ) );
+				if ( $domain === 'oxfamwereldwinkels.be' ) {
+					// Systeem voor OWW API, met header die aangeeft hoeveel resultatenpagina's er in totaal zijn
+					$total_pages = intval( wp_remote_retrieve_header( $response, 'X-WP-TotalPages' ) );
+					for ( $i = 2; $i <= $total_pages; $i++ ) {
+						$all_stores = array_merge( $all_stores, get_external_wpsl_stores( $domain, $i ) );
+					}
+				} else {
+					// Systeem voor OBE API, waar geen header met totaal aantal pagina's bestaat
+					$i = 2;
+					while ( count( $stores ) === 10 ) {
+						$stores = get_external_wpsl_stores( $domain, $i );
+						$all_stores = array_merge( $all_stores, $stores );
+						$i++;
+					}
 				}
+			} else {
+				$all_stores = $stores;
 			}
 		} else {
 			$logger = wc_get_logger();
-			$context = array( 'source' => 'WordPress API' );
 			$logger->critical( 'Could not retrieve shops on page '.$page, $context );
 		}
 		

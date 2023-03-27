@@ -82,7 +82,7 @@
 		jQuery('.store-selector-erase').on( 'click', function(event) {
 			event.preventDefault();
 			console.log("Reset cookies en doe redirect naar overeenkomstige URL op hoofdniveau");
-			eraseCookie('latest_shop_id');
+			eraseCookie('latest_shop_node');
 			eraseCookie('latest_blog_id');
 			eraseCookie('latest_blog_path');
 			window.location.replace( window.location.href.replace( '<?php echo home_url('/'); ?>', '<?php echo network_site_url(); ?>' ) );
@@ -101,8 +101,8 @@
 
 		/* Gebruik event delegation, deze nodes zijn nog niet aanwezig bij DOM load! */
 		jQuery('#wpsl-wrap').on( 'click', '#wpsl-stores > ul > li.available', function() {
-			console.log( "Registreer shop-ID "+jQuery(this).data('oxfam-shop-post-id')+" in cookie en doe redirect naar "+jQuery(this).data('webshop-url') );
-			setCookie( 'latest_shop_id', jQuery(this).data('oxfam-shop-post-id') );
+			console.log( "Registreer shop node "+jQuery(this).data('oxfam-shop-node')+" in cookie en doe redirect naar "+jQuery(this).data('webshop-url') );
+			setCookie( 'latest_shop_node', jQuery(this).data('oxfam-shop-node') );
 			setCookie( 'latest_blog_id', jQuery(this).data('webshop-blog-id') );
 			var current_zip = jQuery('#wpsl-search-input').val();
 			/* Voorkom dat er een pile-up ontstaat van GET-parameters */

@@ -1219,7 +1219,7 @@
 		$listing_template = '<% if ( available == "yes" ) { %>' . "\r\n";
 
 		// WINKEL MET WEBSHOP
-		$listing_template .= "\t" . '<li data-store-id="<%= id %>" data-oxfam-shop-post-id="<%= oxfamShopPostId %>" data-webshop-url="<%= webshopUrl %>" data-webshop-blog-id="<%= webshopBlogId %>" class="available" style="cursor: pointer;">' . "\r\n";
+		$listing_template .= "\t" . '<li data-store-id="<%= id %>" data-oxfam-shop-node="<%= oxfamShopNode %>" data-webshop-url="<%= webshopUrl %>" data-webshop-blog-id="<%= webshopBlogId %>" class="available" style="cursor: pointer;">' . "\r\n";
 		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
 		$listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
@@ -1251,7 +1251,7 @@
 		$listing_template .= '<% } else { %>' . "\r\n";
 
 		// WINKEL ZONDER WEBSHOP
-		$listing_template .= "\t" . '<li data-store-id="<%= id %>" data-oxfam-shop-post-id="<%= oxfamShopPostId %>" class="not-available" style="cursor: not-allowed;">' . "\r\n";
+		$listing_template .= "\t" . '<li data-store-id="<%= id %>" data-oxfam-shop-node="<%= oxfamShopNode %>" class="not-available" style="cursor: not-allowed;">' . "\r\n";
 		$listing_template .= "\t\t" . '<div class="wpsl-store-location">' . "\r\n";
 		$listing_template .= "\t\t\t" . '<div class="wpsl-store-wrap">' . "\r\n";
 		$listing_template .= "\t\t\t\t" . '<div class="wpsl-description-wrap">' . "\r\n";
@@ -1399,10 +1399,10 @@
 			'email' => array( 'label' => 'E-mail' ),
 			'url' => array( 'label' => 'Winkelpagina' ),
 			'oxfam_shop_post_id' => array( 'label' => 'Post-ID in OWW-site' ),
+			'oxfam_shop_node' => array( 'label' => 'Node in OBE-site' ),
 			'webshop' => array( 'label' => 'URL van de webshop' ),
 			'webshop_blog_id' => array( 'label' => 'Blog-ID van de webshop' ),
 			'holidays' => array( 'label' => 'Uitzonderlijk gesloten' ),
-			'mailchimp' => array( 'label' => 'Lokale nieuwsbrief' ),
 		);
 
 		return $meta_fields;
@@ -1413,10 +1413,10 @@
 
 	function wpsl_add_frontend_meta_fields( $store_fields ) {
 		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
+		$store_fields['wpsl_oxfam_shop_node'] = array( 'name' => 'oxfamShopNode' );
 		$store_fields['wpsl_webshop'] = array( 'name' => 'webshopUrl' );
 		$store_fields['wpsl_webshop_blog_id'] = array( 'name' => 'webshopBlogId' );
 		$store_fields['wpsl_holidays'] = array( 'name' => 'closingDays' );
-		$store_fields['wpsl_mailchimp'] = array( 'name' => 'mailchimpUrl' );
 		return $store_fields;
 	}
 
@@ -1774,9 +1774,9 @@
 
 	function ob2c_shuffle_google_maps_address( $address ) {
 		$address['city'] = $address['postcode'].' '.$address['city'];
-		unset($address['address_2']);
-		unset($address['state']);
-		unset($address['postcode']);
+		unset( $address['address_2'] );
+		unset( $address['state'] );
+		unset( $address['postcode'] );
 		return $address;
 	}
 
@@ -1785,19 +1785,19 @@
 		$shop_address = get_shop_address();
 
 		if ( $order->get_meta('claimed_by') !== '' ) {
-			foreach ( ob2c_get_pickup_locations() as $shop_post_id => $shop_name ) {
+			foreach ( ob2c_get_pickup_locations() as $shop_node => $shop_name ) {
 				if ( stristr( $shop_name, $order->get_meta('claimed_by') ) ) {
 					// Toon route vanaf de winkel die de thuislevering zal uitvoeren a.d.h.v. de post-ID in de straatnaam
-					$shop_address = get_shop_address( array( 'id' => $shop_post_id ) );
+					$shop_address = get_shop_address( array( 'node' => $shop_node ) );
 					break;
 				}
 			}
 		}
-
+		
 		// Zet locatielink om in routelink, voeg landencode en eindslash toe en vervang fixed zoomniveau door fietsnavigatie
 		// Tip: meerdere stops zijn mogelijk, blijf adressen gewoon chainen met slashes!
 		return str_replace( 'https://maps.google.com/maps?&q=', 'https://www.google.com/maps/dir/' . rawurlencode( str_replace( '<br/>', ', ', $shop_address ) ) . ',+BE/', str_replace( '&z=16', '/data=!4m2!4m1!3e1', $url ) );
-
+		
 		// Overige dataparameters
 		// Car 			/data=!4m2!4m1!3e0
 		// Bicycling 	/data=!4m2!4m1!3e1
@@ -4424,65 +4424,80 @@
 	}
 
 	// Haal de openingsuren van de node voor een bepaalde dag op (werkt met dagindexes van 0 tot 6)
-	function get_office_hours_for_day( $day, $node = 0, $shop_post_id = 0 ) {
-		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
-
-		$oww_store_data = get_external_wpsl_store( $shop_post_id );
+	function get_office_hours_for_day( $day, $shop_node = 0, $shop_post_id = 0 ) {
+		if ( $shop_post_id === 0 ) {
+			$shop_post_id = get_option('oxfam_shop_post_id');
+		}
+		if ( $shop_node === 0 ) {
+			$shop_node = get_option('oxfam_shop_node');
+		}
+		
+		$oww_store_data = get_external_wpsl_store( $shop_node );
 		if ( $oww_store_data !== false ) {
 			// Bestaat in principe altijd
 			$opening_hours = $oww_store_data['opening_hours'];
-
+			
 			$i = 0;
 			$hours = array();
 			$weekdays = array( 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' );
-
-			foreach ( $opening_hours[ $weekdays[$day] ] as $block ) {
+			
+			foreach ( $opening_hours[ $weekdays[ $day ] ] as $block ) {
 				$parts = explode( ',', $block );
-				if ( count($parts) === 2 ) {
-					$hours[$i]['start'] = format_hour( $parts[0] );
-					$hours[$i]['end'] = format_hour( $parts[1] );
+				if ( count( $parts ) === 2 ) {
+					$hours[ $i ]['start'] = format_hour( $parts[0] );
+					$hours[ $i ]['end'] = format_hour( $parts[1] );
 				}
 				$i++;
 			}
 			return $hours;
 		}
-
+		
 		return false;
 	}
 
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7)
-	function get_office_hours( $node = 0, $shop_post_id = 0 ) {
-		if ( intval( $node ) > 0 ) {
-			write_log("get_office_hours() was invoked with deprecated node parameter! (value: ".$node.")");
+	function get_office_hours( $shop_node = 0, $shop_post_id = 0 ) {
+		if ( intval( $shop_post_id ) > 0 ) {
+			write_log("get_office_hours() was invoked with deprecated post-ID parameter! (value: ".$shop_post_id.")");
 		}
-
+		
 		if ( $shop_post_id === 0 ) {
 			$shop_post_id = get_option('oxfam_shop_post_id');
 		}
-
+		if ( $shop_node === 0 ) {
+			$shop_node = get_option('oxfam_shop_node');
+		}
+		
 		if ( ! is_numeric( $shop_post_id ) ) {
 			$hours = get_site_option( 'oxfam_opening_hours_'.$shop_post_id );
 		} else {
 			for ( $day = 0; $day <= 6; $day++ ) {
 				// Forceer 'natuurlijke' nummering
-				$hours[ $day+1 ] = get_office_hours_for_day( $day, $node, $shop_post_id );
+				$hours[ $day+1 ] = get_office_hours_for_day( $day, $shop_node );
 			}
 		}
-
+		
 		return $hours;
 	}
 
 	// Stop de uitzonderlijke sluitingsdagen in een array
-	function get_closing_days( $shop_post_id = 0 ) {
+	function get_closing_days( $shop_node = 0, $shop_post_id = 0 ) {
+		if ( intval( $shop_post_id ) > 0 ) {
+			write_log("get_closing_days() was invoked with deprecated post-ID parameter! (value: ".$shop_post_id.")");
+		}
+		
 		if ( $shop_post_id === 0 ) {
 			$shop_post_id = get_option('oxfam_shop_post_id');
+		}
+		if ( $shop_node === 0 ) {
+			$shop_node = get_option('oxfam_shop_node');
 		}
 
 		if ( ! is_numeric( $shop_post_id ) ) {
 			// Retourneert ook false indien onbestaande
 			return get_site_option( 'oxfam_closing_days_'.$shop_post_id );
-		} elseif ( intval( $shop_post_id ) > 0 ) {
-			$oww_store_data = get_external_wpsl_store( $shop_post_id );
+		} elseif ( intval( $shop_node ) > 0 ) {
+			$oww_store_data = get_external_wpsl_store( $shop_node );
 			if ( $oww_store_data !== false ) {
 				// Bevat datums in 'Y-m-d'-formaat
 				$closing_days = $oww_store_data['closing_days'];
@@ -4542,21 +4557,21 @@
 			$from = strtotime( get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', strtotime( $order->get_date_created() ) ) ) );
 			$contains_breakfast = order_contains_breakfast( $order );
 		}
-
+		
 		if ( $contains_breakfast !== false ) {
 			// Retourneer de leverdatum van het product en stop alle verdere logica
 			return strtotime( $contains_breakfast );
 		}
-
+		
 		$timestamp = $from;
-
+		
 		// Standaard: bereken a.d.h.v. de hoofdwinkel
-		$chosen_shop_post_id = get_option('oxfam_shop_post_id');
-
+		$chosen_shop_node = get_option('oxfam_shop_node');
+		
 		switch ( $shipping_id ) {
 			// Alle instances van winkelafhalingen
 			case stristr( $shipping_id, 'local_pickup' ):
-
+				
 				$locations = ob2c_get_pickup_locations( true, true );
 				if ( count( $locations ) > 0 ) {
 					if ( $order_id === false ) {
@@ -4574,19 +4589,19 @@
 						$chosen_pickup_location = $method->get_meta('pickup_location');
 						$chosen_pickup_id = $chosen_pickup_location['id'];
 					}
-
-					foreach ( $locations as $shop_post_id => $pickup_id ) {
+					
+					foreach ( $locations as $shop_node => $pickup_id ) {
 						if ( $pickup_id == $chosen_pickup_id ) {
-							$chosen_shop_post_id = $shop_post_id;
+							$chosen_shop_node = $shop_node;
 							break;
 						}
 					}
-
+					
 					do_action( 'qm/info', 'Chosen pickup location ID: {id}', array( 'id' => $chosen_pickup_id ) );
-					do_action( 'qm/info', 'Chosen shop post ID: {id}', array( 'id' => $chosen_shop_post_id ) );
+					do_action( 'qm/info', 'Chosen shop post ID: {id}', array( 'id' => $chosen_shop_node ) );
 				}
-
-				if ( $chosen_shop_post_id === 'tuincentrum' ) {
+				
+				if ( $chosen_shop_node === 'tuincentrum' ) {
 					if ( date_i18n( 'N', $from ) > 4 or ( date_i18n( 'N', $from ) == 4 and date_i18n( 'G', $from ) >= 12 ) ) {
 						// Na de deadline van donderdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
@@ -4594,7 +4609,7 @@
 					
 					// Zoek de eerste vrijdag na de volgende middagdeadline
 					$timestamp = strtotime( 'next Friday', $from );
-				} elseif ( $chosen_shop_post_id === 'vorselaar' ) {
+				} elseif ( $chosen_shop_node === 'vorselaar' ) {
 					if ( date_i18n( 'N', $from ) > 4 ) {
 						// Na de deadline van donderdag 23u59: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
@@ -4604,8 +4619,8 @@
 					$timestamp = strtotime( 'next Friday', $from );
 					
 					// Skip check op uitzonderlijke sluitingsdagen
-					return find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
-				} elseif ( $chosen_shop_post_id === 'stoasje' ) {
+					return find_first_opening_hour( get_office_hours( $chosen_shop_node ), $timestamp );
+				} elseif ( $chosen_shop_node === 'stoasje' ) {
 					if ( date_i18n( 'N', $from ) > 3 or ( date_i18n( 'N', $from ) == 3 and date_i18n( 'G', $from ) >= 12 ) ) {
 						// Na de deadline van woensdag 12u00: begin pas bij volgende werkdag, kwestie van zeker op volgende week uit te komen
 						$from = strtotime( '+1 weekday', $from );
@@ -4619,8 +4634,8 @@
 					do_action( 'qm/info', 'Next Thursday: '.date( 'c', $timestamp ) );
 					
 					// Skip check op uitzonderlijke sluitingsdagen
-					return find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
-				} elseif ( $chosen_shop_post_id == 3478 ) {
+					return find_first_opening_hour( get_office_hours( $chosen_shop_node ), $timestamp );
+				} elseif ( $chosen_shop_node == 291 ) {
 					// Meer marge voor Hoogstraten
 					if ( date_i18n( 'N', $from ) < 4 or ( date_i18n( 'N', $from ) == 7 and date_i18n( 'G', $from ) >= 22 ) ) {
 						// Na de deadline van zondag 22u00: begin pas bij 4de werkdag, kwestie van zeker op volgende week uit te komen
@@ -4633,23 +4648,23 @@
 					$timestamp = get_first_working_day( $from );
 
 					// Geef nog twee extra werkdagen voor afhaling in niet-OWW-punten
-					if ( ! is_numeric( $chosen_shop_post_id ) ) {
+					if ( ! is_numeric( $chosen_shop_node ) ) {
 						$timestamp = strtotime( '+2 weekdays', $timestamp );
 					}
 				}
 
 				// Check of de winkel op deze dag effectief nog geopend is na 12u (tel er indien nodig dagen bij)
-				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
+				$timestamp = find_first_opening_hour( get_office_hours( $chosen_shop_node ), $timestamp );
 
 				do_action( 'qm/info', 'Estimate delivery (step 1): {date}', array( 'date' => date_i18n( 'Y-m-d H:i', $timestamp ) ) );
 
 				// Tel alle sluitingsdagen die in de verwerkingsperiode vallen (inclusief de eerstkomende openingsdag!) erbij
-				$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_post_id, true );
+				$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_node, true );
 
 				do_action( 'qm/info', 'Estimate delivery (step 2): {date}', array( 'date' => date_i18n( 'Y-m-d H:i', $timestamp ) ) );
 
 				// Check of de winkel ook op de nieuwe dag effectief nog geopend is na 12u
-				$timestamp = find_first_opening_hour( get_office_hours( NULL, $chosen_shop_post_id ), $timestamp );
+				$timestamp = find_first_opening_hour( get_office_hours( $chosen_shop_node ), $timestamp );
 
 				do_action( 'qm/info', 'Estimate delivery (step 3): {date}', array( 'date' => date_i18n( 'Y-m-d H:i', $timestamp ) ) );
 
@@ -4657,7 +4672,7 @@
 
 			// Alle (gratis/betalende) instances van postpuntlevering en thuislevering
 			default:
-				if ( intval( $chosen_shop_post_id ) === 3338 ) {
+				if ( $chosen_shop_node == 242 ) {
 					// Voorlopig enkel thuislevering op woensdag bij Brussel
 					if ( ( date_i18n( 'N', $from ) == 5 and date_i18n( 'G', $from ) >= 15 ) or date_i18n( 'N', $from ) > 5 ) {
 						// Na de deadline van vrijdag 15u00: begin pas bij 4de werkdag, kwestie van zeker op volgende week uit te komen
@@ -4677,7 +4692,7 @@
 					$timestamp = strtotime( '+2 weekdays', $timestamp );
 
 					// Tel feestdagen die in de verwerkingsperiode vallen erbij
-					$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_post_id );
+					$timestamp = move_date_on_holidays( $from, $timestamp, $chosen_shop_node );
 				}
 
 				break;
@@ -4703,7 +4718,7 @@
 
 	// Check of er feestdagen in een bepaalde periode liggen, en zo ja: tel die dagen bij de einddag
 	// Neemt een begin- en eindpunt en retourneert het nieuwe eindpunt (allemaal in timestamps)
-	function move_date_on_holidays( $from, $till, $shop_post_id, $is_local_pickup = false ) {
+	function move_date_on_holidays( $from, $till, $shop_node, $is_local_pickup = false ) {
 		// Check of de startdag ook nog in beschouwing genomen moet worden
 		if ( date_i18n( 'N', $from ) < 6 and date_i18n( 'G', $from ) >= 12 ) {
 			$first = date_i18n( 'Y-m-d', strtotime( '+1 weekday', $from ) );
@@ -4714,9 +4729,9 @@
 		// Géén halve dag bijtellen, kan de dag over middernacht doen schuiven indien het openingsuur voor afhaling na de middag valt
 		$last = date_i18n( 'Y-m-d', $till );
 
-		$hours = get_office_hours( NULL, $shop_post_id );
+		$hours = get_office_hours( $shop_node );
 		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met fallback naar algemene feestdagen
-		$holidays = get_site_option( 'oxfam_holidays_'.$shop_post_id, get_site_option('oxfam_holidays') );
+		$holidays = get_site_option( 'oxfam_holidays_'.$shop_node, get_site_option('oxfam_holidays') );
 		foreach ( $holidays as $holiday ) {
 			// Argument 'N' want get_office_hours() werkt van 1 tot 7!
 			$weekday_number = date_i18n( 'N', strtotime( $holiday ) );
@@ -7256,17 +7271,17 @@
 
 	function print_office_hours( $atts = [] ) {
 		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'start' => 'today' ), $atts );
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'node' => get_option('oxfam_shop_node'), 'start' => 'today' ), $atts );
 		$output = '';
 
-		$hours = get_office_hours( NULL, $atts['id'] );
+		$hours = get_office_hours( $atts['node'], $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array();
-		if ( in_array( $atts['id'], $exceptions ) ) {
+		if ( in_array( $atts['node'], $exceptions ) ) {
 			$holidays = array( '2022-12-25', '2023-01-01' );
 		} else {
 			// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met fallback naar algemene feestdagen
-			$holidays = get_site_option( 'oxfam_holidays_'.$atts['id'], get_site_option('oxfam_holidays') );
+			$holidays = get_site_option( 'oxfam_holidays_'.$atts['node'], get_site_option('oxfam_holidays') );
 		}
 
 		if ( $atts['start'] === 'today' ) {
@@ -7308,7 +7323,7 @@
 			// $text = 'Om de verspreiding van het coronavirus tegen te gaan, is onze winkel momenteel gesloten. Afhalen kan enkel nog <u>op afspraak</u>. Na het plaatsen van je bestelling contacteren we je om een tijdstip af te spreken.';
 			// $output = '<p class="corona-notice">'.$text.'</p>';
 		} else {
-			// if ( $atts['id'] === 'brugge' ) {
+			// if ( $atts['node'] === 'brugge' ) {
 			// 	// Extra tekst in de mail
 			// 	if ( ! is_checkout() ) {
 			// 		$text .= '<br/>Opgelet: de poort is gesloten, bel aan bij de deur links. We nemen steeds de nodige hygiënische maatregelen. Alvast bedankt voor je begrip!';
@@ -7324,20 +7339,19 @@
 
 	function print_all_shops() {
 		$output = '[vc_tta_tour spacing="5" autoplay="10" active_section="1"]';
-		foreach ( ob2c_get_pickup_locations() as $shop_post_id => $shop_name ) {
-			$shop_address = get_shop_address( array( 'id' => $shop_post_id ) );
-			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_post_id.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address id="'.$shop_post_id.'"][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" id="'.$shop_post_id.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
+		foreach ( ob2c_get_pickup_locations() as $shop_node => $shop_name ) {
+			$shop_address = get_shop_address( array( 'node' => $shop_node ) );
+			$output .= '[vc_tta_section title="'.$shop_name.'" tab_id="'.$shop_node.'"][vc_row_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-home" layout="centered" title="Contactgegevens" icon_color="#282828"][contact_address node="'.$shop_node.'"][/nm_feature][/vc_column_inner][vc_column_inner width="1/2"][nm_feature icon="pe-7s-alarm" layout="centered" title="Openingsuren" icon_color="#282828"][openingsuren start="monday" node="'.$shop_node.'"][/nm_feature][/vc_column_inner][/vc_row_inner][/vc_tta_section]';
 		}
 		$output .= '[/vc_tta_tour]';
 
 		return do_shortcode( $output );
 	}
-
+	
 	function ob2c_get_pickup_locations( $include_external_locations = false, $return_internal_id = false ) {
 		$shops = array();
-
+		
 		if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
-
 			// Nieuwe versie
 			if ( wc_local_pickup_plus()->get_pickup_locations_instance()->get_pickup_locations_count() > 0 ) {
 				// Zet de oudste winkels bovenaan
@@ -7345,76 +7359,72 @@
 				foreach ( $locations as $location ) {
 					// We kunnen ook $location->get_address() gebruiken (zoals vroeger) maar dat is een object, geen string
 					// Fix voor Vorselaar ook hier toepassen?
-					$parts = explode( ' id=', $location->get_description() );
+					$parts = explode( ' node=', $location->get_description() );
 					if ( isset( $parts[1] ) ) {
-						$temporary_shop_post_id = str_replace( ']', '', $parts[1] );
+						$temporary_shop_id = str_replace( ']', '', $parts[1] );
 						// Het heeft geen zin om het adres van niet-numerieke ID's op te vragen (= uitzonderingen)
-						if ( is_numeric( $temporary_shop_post_id ) ) {
-							$shop_post_id = intval( $temporary_shop_post_id );
+						if ( is_numeric( $temporary_shop_id ) ) {
+							$shop_id = intval( $temporary_shop_id );
 						} elseif ( $include_external_locations ) {
 							// Externe locatie toch opnemen
-							$shop_post_id = $temporary_shop_post_id;
+							$shop_id = $temporary_shop_id;
 						} else {
 							// Sla locatie definitief over
 							continue;
 						}
 					} else {
 						// Geen argument, dus het is de hoofdwinkel, altijd opnemen!
-						$shop_post_id = get_option('oxfam_shop_post_id');
+						$shop_id = get_option('oxfam_shop_node');
 					}
-
+					
 					if ( $return_internal_id ) {
-						$shops[ $shop_post_id ] = $location->get_id();
+						$shops[ $shop_id ] = $location->get_id();
 					} else {
 						// Eventueel str_replace( 'Oxfam-Wereldwinkel ', '', $location->get_name() ) doen?
-						$shops[ $shop_post_id ] = $location->get_name();
+						$shops[ $shop_id ] = $location->get_name();
 					}
 				}
 			}
-
 		} else {
-
 			// Oude versie
 			if ( $locations = get_option('woocommerce_pickup_locations') ) {
 				foreach ( $locations as $location ) {
 					// Let op met externe afhaalpunten met een expliciet ingevuld adres => enkel in de openingsuren staat een (niet-numerieke) ID!
 					if ( get_current_blog_id() === 19 ) {
 						// Uitzondering voor Vorselaar onder KLT: geen ID in openingsuren (want ontbreken in OWW-site), wel in adres
-						$parts = explode( ' id=', $location['address_1'] );
+						$parts = explode( ' node=', $location['address_1'] );
 					} else {
-						$parts = explode( ' id=', $location['note'] );
+						$parts = explode( ' node=', $location['note'] );
 					}
 					if ( isset( $parts[1] ) ) {
-						$temporary_shop_post_id = str_replace( ']', '', $parts[1] );
-						if ( is_numeric( $temporary_shop_post_id ) ) {
-							$shop_post_id = intval( $temporary_shop_post_id );
+						$temporary_shop_id = str_replace( ']', '', $parts[1] );
+						if ( is_numeric( $temporary_shop_id ) ) {
+							$shop_id = intval( $temporary_shop_id );
 						} elseif ( $include_external_locations ) {
 							// Externe locatie toch opnemen
-							$shop_post_id = $temporary_shop_post_id;
+							$shop_id = $temporary_shop_id;
 						} else {
 							// Sla locatie definitief over
 							continue;
 						}
 					} else {
 						// Geen argument, dus het is de hoofdwinkel, altijd opnemen!
-						$shop_post_id = get_option('oxfam_shop_post_id');
+						$shop_id = get_option('oxfam_shop_node');
 					}
-
+					
 					if ( $return_internal_id ) {
-						$shops[ $shop_post_id ] = $location['id'];
+						$shops[ $shop_id ] = $location['id'];
 					} else {
-						$shops[ $shop_post_id ] = $location['shipping_company'];
+						$shops[ $shop_id ] = $location['shipping_company'];
 					}
 				}
 			}
-
 		}
-
+		
 		// do_action( 'qm/debug', $shops );
-
 		return $shops;
 	}
-
+	
 	function ob2c_get_pickup_location_name( $shipping_method, $shortened = true ) {
 		if ( class_exists('WC_Local_Pickup_Plus_Loader') ) {
 
@@ -7449,8 +7459,8 @@
 
 	function print_oxfam_shop_data( $key, $atts ) {
 		// Overschrijf defaults door opgegeven attributen
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id') ), $atts );
-		return get_oxfam_shop_data( $key, 0, false, $atts['id'] );
+		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'node' => get_option('oxfam_shop_node') ), $atts );
+		return get_oxfam_shop_data( $key, $atts['node'], false, $atts['id'] );
 	}
 
 	function print_mail( $atts = [] ) {
@@ -7579,39 +7589,40 @@
 	###########
 	
 	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen
-	function get_oxfam_shop_data( $key, $node = 0, $raw = false, $shop_post_id = 0 ) {
-		if ( $shop_post_id === 0 ) $shop_post_id = get_option('oxfam_shop_post_id');
-
+	function get_oxfam_shop_data( $key, $shop_node = 0, $raw = false, $shop_post_id = 0 ) {
+		if ( $shop_post_id === 0 ) {
+			$shop_post_id = get_option('oxfam_shop_post_id');
+		}
+		if ( $shop_node === 0 ) {
+			$shop_node = get_option('oxfam_shop_node');
+		}
+		
 		if ( ! is_main_site() ) {
-
-			$oww_store_data = get_external_wpsl_store( $shop_post_id );
+			$oww_store_data = get_external_wpsl_store( $shop_node );
 			if ( $oww_store_data !== false ) {
 				// Bestaat in principe altijd
 				$location_data = $oww_store_data['location'];
-
+				
 				if ( ! $raw ) {
-					switch ( intval( $shop_post_id ) ) {
-						case 3598:
+					switch ( intval( $shop_node ) ) {
+						case 312:
 							// Uitzonderingen voor Regio Leuven vzw
 							$location_data['tax'] = 'BE 0479.961.641';
 							$location_data['account'] = 'BE86 0014 0233 4050';
 							$location_data['headquarter'] = 'Parijsstraat 56, 3000 Leuven';
 							break;
-
-						case 3226:
+						case 212:
 							// Uitzonderingen voor Regio Antwerpen vzw
 							$location_data['account'] = 'BE56 0018 1366 6388';
 							break;
 					}
-
 					if ( get_option( 'oxfam_custom_webshop_telephone', '' ) !== '' ) {
 						// Overschrijf de default waarde met de custom webshopwaarde
 						$location_data['telephone'] = get_option('oxfam_custom_webshop_telephone');
 					}
 				}
-
+				
 				if ( array_key_exists( $key, $location_data ) and $location_data[ $key ] !== '' ) {
-
 					switch ( $key ) {
 						case 'telephone':
 							// Geef alternatieve formatteringsfunctie en delimiter mee
@@ -7622,16 +7633,12 @@
 							// Er bestaat geen formatteerfunctie voor coördinaten
 							return $location_data[ $key ];
 					}
-
 					return call_user_func( 'format_'.$key, $location_data[ $key ] );
-
 				} else {
 					return '';
 				}
 			}
-
 		} else {
-
 			switch ( $key ) {
 				case 'place':
 					return 'Ververijstraat 17';
@@ -7646,7 +7653,6 @@
 				default:
 					return 'niet gevonden';
 			}
-
 		}
 	}
 

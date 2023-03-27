@@ -2,66 +2,44 @@
 	if ( ! is_main_site() ) {
 		// Haal de huidige gekozen winkel op
 		$current_store = false;
-		if ( ! empty( $_COOKIE['latest_shop_id'] ) ) {
-			$current_store = intval( $_COOKIE['latest_shop_id'] );
+		if ( ! empty( $_COOKIE['latest_shop_node'] ) ) {
+			$current_store = intval( $_COOKIE['latest_shop_node'] );
 		}
 
 		$shops = ob2c_get_pickup_locations();
 		if ( $current_store === false or ! array_key_exists( $current_store, $shops ) ) {
 			// De cookie slaat op een winkel uit een andere subsite (bv. door rechtstreeks switchen)
 			// Stel de hoofdwinkel van de huidige subsite in als fallback
-			$current_store = get_option('oxfam_shop_post_id');
+			$current_store = get_option('oxfam_shop_node');
 		}
 
-		$atts = array( 'id' => $current_store );
+		$atts = array( 'node' => $current_store );
 		// Check of de huidige geselecteerde winkel een lokale nieuwsbrief heeft
-		$oww_store_data = get_external_wpsl_store( $atts['id'] );
-		if ( $oww_store_data !== false ) {
-			$mailchimp_url = $oww_store_data['mailchimp_url'];
-		}
+		$oww_store_data = get_external_wpsl_store( $atts['node'] );
 	}
 ?>
 
-<?php if ( ! empty( $mailchimp_url ) ) : ?>
-	<div id="newsletter">
-		<div class="container">
-			<div class="col-row md-display-flex">
-				<div class="col-md-5 md-align-self-center">
-					<h2>Abonneer je hier op de<br/> nieuwsbrief van <?= $oww_store_data['title']['rendered']; ?></h2>
-				</div>
-				<div class="col-md-7 md-align-self-center">
-					<form id="local-newsletter" action="<?= $mailchimp_url; ?>" method="post" target="_blank">
+<div id="newsletter">
+	<div class="container">
+		<div class="col-row md-display-flex">
+			<div class="col-md-5 md-align-self-center">
+				<h2>Abonneer je hier<br/> op onze nieuwsbrief</h2>
+			</div>
+			<div class="col-md-7 md-align-self-center">
+				<form id="regular-newsletter" class="mc4wp-form ajaxified-subscription" method="post" data-description="onze nieuwsbrief">
+					<div class="mc4wp-form-fields">
 						<input type="text" name="FNAME" placeholder="Voornaam" required>
 						<input type="email" name="EMAIL" placeholder="E-mailadres" required>
+						<input type="hidden" name="LIST_ID" value="5cce3040aa">
+						<label style="display: none !important;">Laat dit veld leeg als je een mens bent: <input type="text" name="lekkere-honing" value="" tabindex="-1" autocomplete="off"></label>
 						<input type="submit" value="Inschrijven">
-					</form>
-				</div>
+					</div>
+					<div class="mc4wp-response"></div>
+				</form>
 			</div>
 		</div>
 	</div>
-<?php else : ?>
-	<div id="newsletter">
-		<div class="container">
-			<div class="col-row md-display-flex">
-				<div class="col-md-5 md-align-self-center">
-					<h2>Abonneer je hier<br/> op onze nieuwsbrief</h2>
-				</div>
-				<div class="col-md-7 md-align-self-center">
-					<form id="regular-newsletter" class="mc4wp-form ajaxified-subscription" method="post" data-description="onze nieuwsbrief">
-						<div class="mc4wp-form-fields">
-							<input type="text" name="FNAME" placeholder="Voornaam" required>
-							<input type="email" name="EMAIL" placeholder="E-mailadres" required>
-							<input type="hidden" name="LIST_ID" value="5cce3040aa">
-							<label style="display: none !important;">Laat dit veld leeg als je een mens bent: <input type="text" name="lekkere-honing" value="" tabindex="-1" autocomplete="off"></label>
-							<input type="submit" value="Inschrijven">
-						</div>
-						<div class="mc4wp-response"></div>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
-<?php endif; ?>
+</div>
 
 <script type="text/javascript">
 	jQuery(document).ready( function() {
@@ -116,17 +94,6 @@
 					<div class="col-row">
 						<div class="col-md-3 col-sm-6">
 							<div class="footer-menu">
-								<?php
-									// Dynamisch maken m.b.v. wp_remote_get() naar https://www.oxfamwereldwinkels.be/wp-json/menus/v1/menus/footer-menu-1
-									// Activeer hiervoor eerst https://nl.wordpress.org/plugins/wp-rest-api-v2-menus/
-									// <h3> => menu_title
-									// <ul> => foreach items as item
-									// <li> => item['title']
-									// href => item['url']
-									// target => item['target']
-									// title => item['attr_title']
-									// class => enkel de custom extra klasses kunnen overgenomen worden, plus 'menu-item-type-'.$item['type'] en 'menu-item-object-'.$item['object']
-								?>
 								<h3>Oxfam-Wereldwinkels</h3>
 								<ul id="menu-footer-menu-1" class="menu">
 									<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="https://oxfambelgie.be/wij-zijn-oxfam" target="_blank">Missie en aanpak</a></li>

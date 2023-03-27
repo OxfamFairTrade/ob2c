@@ -23,7 +23,7 @@ if ( ! is_main_site() ) {
 		if ( class_exists('WPSL_Frontend') ) {
 
 			if ( false === ( $neighbouring_webshops = get_transient('oxfam_neighbouring_webshops') ) ) {
-				$current_shop_id = get_option('oxfam_shop_post_id');
+				$current_shop_id = get_option('oxfam_shop_node');
 				
 				// Zoek de coördinaten op van de (hoofd)winkel die overeenkomt met deze webshop
 				switch_to_blog(1);
@@ -31,7 +31,7 @@ if ( ! is_main_site() ) {
 					'post_type'	=> 'wpsl_stores',
 					'post_status' => 'publish',
 					'posts_per_page' => 1,
-					'meta_key' => 'wpsl_oxfam_shop_post_id',
+					'meta_key' => 'wpsl_oxfam_shop_node',
 					'meta_value' => $current_shop_id,
 				);
 				$wpsl_stores = new WP_Query( $store_args );
