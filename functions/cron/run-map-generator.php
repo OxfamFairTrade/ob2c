@@ -7,10 +7,10 @@
 	
 	if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'RUN_FROM_CRON' ) ) {
 		// Vraag alle huidige winkels in de OWW-site op
-		$oww_stores = get_external_wpsl_stores();
+		$obe_stores = get_external_wpsl_stores();
 		
 		// Ga enkel verder als we effectief resultaten doorkregen
-		if ( count( $oww_stores ) < 1 ) {
+		if ( count( $obe_stores ) < 1 ) {
 			die("No stores retrieved!");
 		}
 		
@@ -83,6 +83,16 @@
 		}
 		
 		var_dump_pre( $site_ids_vs_blog_ids );
+		
+		$oww_stores = array();
+		foreach ( $obe_stores as $obe_store ) {
+			// Wreed ambetant dat zelfs de titel van de pagina niet in de response zit
+			// Voorlopig behelpen met de aanwezigheid van '2h' in de slug, maar dat geldt enkel voor steden waar beide types opduiken ...
+			// Betere oplossing is wellicht om de assortimenten te laten toevoegen aan de API?
+			if ( ! stristr( $obe_store['slug'], '-2h' ) ) {
+				$oww_stores[] = $obe_store;
+			}
+		}
 		
 		foreach ( $oww_stores as $oww_store_data ) {
 			// Zoek op de hoofdsite de zonet verwijderde WP Store op die past bij de post-ID
