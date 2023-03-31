@@ -6177,7 +6177,6 @@
 	// Registreer de AJAX-acties
 	add_action( 'wp_ajax_oxfam_stock_action', 'oxfam_stock_action_callback' );
 	add_action( 'wp_ajax_oxfam_bulk_stock_action', 'oxfam_bulk_stock_action_callback' );
-	add_action( 'wp_ajax_oxfam_photo_action', 'oxfam_photo_action_callback' );
 	add_action( 'wp_ajax_oxfam_invitation_action', 'oxfam_invitation_action_callback' );
 
 	function oxfam_stock_action_callback() {
@@ -6345,13 +6344,8 @@
 
 		return false;
 	}
-
-	function oxfam_photo_action_callback() {
-		// Wordt standaard op ID geordend, dus creatie op hoofdsite gebeurt als eerste (= noodzakelijk!)
-		echo register_photo( $_POST['name'], $_POST['timestamp'], $_POST['path'] );
-		wp_die();
-	}
-
+	
+	
 	function oxfam_invitation_action_callback() {
 		$new_account_path = get_stylesheet_directory() . '/woocommerce/emails/customer-new-account.php';
 		$reset_password_path = get_stylesheet_directory() . '/woocommerce/emails/customer-reset-password.php';
@@ -6379,12 +6373,12 @@
 		
 		wp_die();
 	}
-
+	
 	// Laat de wachtwoordlinks in de resetmails langer leven dan 1 dag (= standaard)
 	add_filter( 'password_reset_expiration', function( $expiration ) {
 		return 2 * WEEK_IN_SECONDS;
 	});
-
+	
 	function oxfam_get_attachment_ids_by_file_name( $file_name ) {
 		$args = array(
 			// Beperkte ondersteuning voor meerdere foto's (er kan al eens een foto dubbel geüpload zijn met index of 'scaled' achteraan)
@@ -6399,124 +6393,22 @@
 			'meta_compare' => 'LIKE',
 			'fields' => 'ids',
 		);
-
+		
 		$attachments = new WP_Query( $args );
 		return $attachments->posts;
 	}
-
-	function register_photo( $filename, $filestamp, $main_filepath ) {
-		// Parse de fototitel
-		$filetitle = explode( '.jpg', $filename );
-		$filetitle = $filetitle[0];
-		$product_id = 0;
-
-		// Check of er al een vorige versie bestaat
-		$updated = false;
-		$deleted = false;
-		$old_photo_ids = oxfam_get_attachment_ids_by_file_name( $filetitle );
-		if ( count( $old_photo_ids ) > 0 ) {
-			$old_photo_id = reset( $old_photo_ids );
-			// Bewaar de post_parent van het originele attachment
-			$product_id = wp_get_post_parent_id( $old_photo_id );
-			// Check of de uploadlocatie op dit punt al ingegeven is!
-			if ( $product_id ) {
-				$product = wc_get_product( $product_id );
-			}
-
-			// Stel het originele high-res bestand veilig
-			rename( $main_filepath, WP_CONTENT_DIR.'/uploads/temporary.jpg' );
-			// Verwijder de geregistreerde foto (en alle aangemaakte thumbnails!)
-			if ( wp_delete_attachment( $old_photo_id, true ) ) {
-				// Extra check op het succesvol verwijderen
-				$deleted = true;
-			}
-			$updated = true;
-			// Hernoem opnieuw zodat de links weer naar de juiste file wijzen
-			rename( WP_CONTENT_DIR.'/uploads/temporary.jpg', $main_filepath );
-		}
-
-		// Creëer de parameters voor de foto
-		$wp_filetype = wp_check_filetype( $filename, NULL );
-		$attachment = array(
-			'post_mime_type' => $wp_filetype['type'],
-			'post_title' => $filetitle,
-			'post_content' => '',
-			'post_author' => get_current_user_id(),
-			'post_status' => 'inherit',
-		);
-
-		// Probeer de foto in de mediabibliotheek te stoppen
-		// Laatste argument: stel de uploadlocatie van de nieuwe afbeelding in op het product van het origineel (of 0 = geen)
-		$attachment_id = wp_insert_attachment( $attachment, $main_filepath, $product_id );
-
-		if ( ! is_wp_error( $attachment_id ) ) {
-			// Check of de uploadlocatie ingegeven was!
-			if ( ! isset($product_id) ) {
-				// Indien het product nog niet bestaat zal de search naar een 0 opleveren
-				$product_id = wc_get_product_id_by_sku( $filetitle );
-			}
-
-			if ( $product_id > 0 ) {
-				// Voeg de nieuwe attachment-ID weer toe aan het oorspronkelijke product
-				$product->set_image_id( $attachment_id );
-				$product->save();
-
-				// Stel de uploadlocatie van de nieuwe afbeelding in
-				wp_update_post(
-					array(
-						'ID' => $attachment_id,
-						'post_parent' => $product_id,
-					)
-				);
-
-				// UPDATE EVENTUEEL OOK NOG DE _WOONET_IMAGES_MAPPING VAN HET PRODUCT MET DEZE SKU M.B.V. DE BROADCAST SNIPPET
-				// WANT ANDERS WORDT _THUMBNAIL_ID BIJ DE EERSTVOLGENDE ERP-IMPORT WEER OVERSCHREVEN MET DE OUDE FOTO-ID
-			}
-
-			// Registreer ook de metadata
-			$attachment_data = wp_generate_attachment_metadata( $attachment_id, $main_filepath );
-			wp_update_attachment_metadata( $attachment_id,  $attachment_data );
-			// Toon een succesboodschap
-			if ( $updated ) {
-				$deleted = $deleted ? "verwijderd en opnieuw aangemaakt" : "bijgewerkt";
-				$msg = "<i>".$filename."</i> ".$deleted." in mediabibliotheek van site-ID ".get_current_blog_id()." om ".date_i18n('H:i:s')." ...<br/>";
-			} else {
-				$msg = "<i>".$filename."</i> aangemaakt in mediabibliotheek van site-ID ".get_current_blog_id()." om ".date_i18n('H:i:s')." ...<br/>";
-			}
-			// Sla het uploadtijdstip van de laatste succesvolle registratie op (indien recenter dan huidige optiewaarde)
-			if ( $filestamp > get_option( 'laatste_registratie_timestamp' ) ) {
-				update_option( 'laatste_registratie_timestamp', $filestamp );
-			}
-			$registered = true;
-		} else {
-			// Geef een waarschuwing als de aanmaak mislukte
-			$msg = "Opgelet, er liep iets mis met <i>".$filename."</i>!<br/>";
-		}
-
-		return $msg;
-	}
-
-	function get_scaled_image_path( $attachment_id, $size = 'full' ) {
-		$file = get_attached_file( $attachment_id, true );
-		if ( $size === 'full' ) return realpath($file);
-
-		$info = image_get_intermediate_size( $attachment_id, $size );
-		if ( ! is_array($info) or ! isset($info['file']) ) return false;
-
-		return realpath( str_replace( wp_basename($file), $info['file'], $file ) );
-	}
-
+	
 	function retrieve_password_for_customer( $user ) {
 		// Creëer een key en sla ze op in de 'users'-tabel
 		$key = get_password_reset_key($user);
-
+		
 		// Verstuur de e-mail met de speciale link
 		WC()->mailer();
 		do_action( 'woocommerce_reset_password_notification', $user->user_login, $key );
-
+		
 		return true;
 	}
-
+	
 	// Creëer een custom hiërarchische taxonomie op producten om partner/landinfo in op te slaan
 	add_action( 'init', 'register_partner_taxonomy', 0 );
 
@@ -6901,14 +6793,19 @@
 					$product = wc_get_product( get_the_ID() );
 					if ( $product->get_meta('_in_bestelweb') === 'ja' ) {
 						$product->set_stock_quantity(0);
+						$product->set_backorders('no');
 						$product->update_meta_data( '_in_bestelweb', 'nee' );
 						
 						if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 							// Metadata lijkt automatisch gesynchroniseerd te worden naar subsites terwijl voorraadstatus behouden wordt, perfect!
 							$product->save();
 							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
-						} elseif ( 'is' === 'voeding' ) {
-							$products_to_deprecate[ $product->get_sku() ] = '<a href="'.admin_url('post.php?post='.$product->get_id().'&action=edit').'" target="_blank">'.$product->get_name().'</a> &mdash; Laatste geïmporteerd: '.$product->get_meta('touched_by_import');
+						} elseif ( ! is_crafts_product( $product ) ) {
+							$instructions = '<a href="'.admin_url('post.php?post='.$product->get_id().'&action=edit').'" target="_blank">'.$product->get_name().'</a> &mdash; laatst geïmporteerd: '.$product->get_meta('touched_by_import');
+							if ( $product->is_in_stock() ) {
+								$instructions .= ' &mdash; nog uit voorraad te halen!';
+							}
+							$products_to_deprecate[ $product->get_sku() ] = $instructions;
 						}
 					}
 				}
@@ -6916,20 +6813,18 @@
 				wp_reset_postdata();
 			}
 			
+			ksort( $products_to_deprecate, SORT_NUMERIC );
 			if ( count( $products_to_deprecate ) > 0 ) {
 				$headers = array();
 				$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
 				$headers[] = 'Content-Type: text/html';
-				$body = '<p>Je taak voor deze maand zit er bijna op. Gelieve wel de onderstaande producten wel nog op te kuisen: niet verwijderen, maar wel: voorraad op 0 zetten (indien nog niet automatisch gebeurd), nabestellingen blokkeren en BestelWeb-dropdown op \'nee\' zetten.</p><ol><li>'.implode( '</li><li>', $products_to_deprecate ).'</li></ol><p>&nbsp;</p><p><i>Dit is een automatisch bericht.</i></p>';
-				wp_mail( 'info@fullstackahead.be', 'Hoera, de productimport is afgelopen!', '<html>'.$body.'</html>', $headers );
+				$body = '<p>Je taak voor deze maand zit er bijna op. Gelieve wel nog onderstaande producten uit te faseren: niet verwijderen (dat doen we pas als alle lokale voorraden uitgeput zijn en/of de laatst uitgeleverde THT-datum gepaseerd is!) maar wel de voorraad op 0 zetten en nabestellingen blokkeren (indien dit nog niet automatisch gebeurde) én de BestelWeb-dropdown op \'nee\' zetten.</p><ol><li>'.implode( '</li><li>', $products_to_deprecate ).'</li></ol><p>&nbsp;</p><p><i>Dit is een automatisch bericht.</i></p>';
+				wp_mail( array( 'kristof.beausaert@oft.be', 'info@fullstackahead.be' ), 'Hoera, de productimport is afgelopen!', '<html>'.$body.'</html>', $headers );
 			}
 			
 			$old = WP_CONTENT_DIR."/erp-import.csv";
 			$new = WP_CONTENT_DIR."/erp-import-".date_i18n('Y-m-d').".csv";
 			rename( $old, $new );
-			
-			// Pas toegevoegde foto's dienen niet meer via bulkimport geregistreerd te worden
-			update_option( 'laatste_registratie_timestamp', time() );
 		}
 	}
 
