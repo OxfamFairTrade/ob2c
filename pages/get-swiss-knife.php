@@ -35,20 +35,6 @@
 	
 	<p>&nbsp;</p>
 	
-	<h2>Postcodeverdeling</h2>
-	<p>Postcodes waarbij twee of meerdere webshops in overlap werken met elkaar worden in het oranje aangeduid.</p>
-	<?php list_shops_per_postcode( $sites ); ?>
-	
-	<form action="edit.php?action=woonet-woocommerce-swiss-knife-update" method="POST">
-		<table class="form-table">
-			<?php
-				// submit_button();
-			?>
-		</table>
-	</form>
-	
-	<p>&nbsp;</p>
-	
 	<h2>Activiteitenlogs</h2>
 	<?php
 		// Let op dat de logs niet te snel groeien en de pagina vertragen!
@@ -67,7 +53,7 @@
 			fclose( $handle );
 			echo '</table>';
 		} else {
-			echo '<p>Nog geen logs beschikbaar.</p>';
+			echo '<p><i>Nog geen logs beschikbaar.</i></p>';
 		}
 	?>
 </div>
@@ -75,7 +61,7 @@
 <?php
 	function check_local_stocks( $skus, $sites ) {
 		if ( count( $skus ) < 1 ) {
-			echo '<i>Geen nieuwe producten vermeld op dashboard!</i>';
+			echo '<p><i>Geen nieuwe producten vermeld op dashboard.</i></p>';
 			return;
 		}
 		
@@ -109,7 +95,7 @@
 	
 	function report_sales_by_product( $skus_to_check, $sites, $start_date, $end_date = false ) {
 		if ( count( $skus_to_check ) < 1 ) {
-			echo '<i>Geen nieuwe producten vermeld op dashboard!</i>';
+			echo '<p><i>Geen nieuwe producten vermeld op dashboard.</i></p>';
 			return;
 		}
 		
@@ -219,36 +205,7 @@
 			}
 			echo '</ul>';
 		} else {
-			echo '<p>Geen recente orders met kortingsbonnen.</p>'; 
-		}
-	}
-	
-	function list_shops_per_postcode( $sites ) {
-		$postcodes = get_site_option('oxfam_flemish_zip_codes');
-		$list = array();
-		
-		foreach ( $sites as $site ) {
-			switch_to_blog( $site->blog_id );
-			foreach ( get_oxfam_covered_zips() as $zip ) {
-				if ( array_key_exists( $zip, $list ) ) {
-					$list[ $zip ][] = get_webshop_name(true);
-				} else {
-					$list[ $zip ] = array( get_webshop_name(true) );
-				}
-			}
-			restore_current_blog();
-		}
-		
-		ksort( $list, SORT_NUMERIC );
-		echo '<ul>';
-		foreach ( $list as $postcode => $webshops ) {
-			echo '<li>'.$postcode.' '.$postcodes[ $postcode ].': <span class="'.( count( $webshops ) > 1 ? 'warning' : 'ok' ).'">'.implode( ', ', $webshops ).'</span></li>';
-			unset( $postcodes[ $postcode ] );
-		}
-		echo '</ul>';
-		
-		if ( count( $postcodes ) > 0 ) {
-			echo '<p class="error">Opgelet: postcodes '.implode( ', ', array_keys( $postcodes ) ).' zijn nog niet gelinkt aan een webshop!</p>';
+			echo '<p><i>Geen recente orders met kortingsbonnen.</i></p>'; 
 		}
 	}
 ?>

@@ -6015,6 +6015,15 @@
 		
 		add_submenu_page(
 			'woonet-woocommerce',
+			'Postcodeverdeling',
+			'Postcodeverdeling',
+			'create_sites',
+			'woonet-woocommerce-postcode-repartition',
+			'oxfam_postcode_repartition_callback'
+		);
+		
+		add_submenu_page(
+			'woonet-woocommerce',
 			'Voucher Analysis',
 			'Voucher Analysis',
 			'create_sites',
@@ -6045,6 +6054,10 @@
 	
 	function oxfam_swiss_knife_callback() {
 		include get_stylesheet_directory().'/pages/get-swiss-knife.php';
+	}
+	
+	function oxfam_postcode_repartition_callback() {
+		include get_stylesheet_directory().'/pages/get-postcode-repartition.php';
 	}
 	
 	function oxfam_export_voucher_analysis_callback() {
