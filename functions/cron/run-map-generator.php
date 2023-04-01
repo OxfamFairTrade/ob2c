@@ -116,6 +116,7 @@
 			
 			// Latitude/Longitude
 			$ll = explode( ',', $oww_store_data['location']['ll'] );
+			sort( $oww_store_data['closing_days'] );
 			
 			if ( array_key_exists( $oww_store_data['id'], $site_ids_vs_blog_ids ) ) {
 				// Dit moét uit de lijst met sites komen (data in OWW-site kan vervuild zijn met andere webshops!)
@@ -156,12 +157,7 @@
 			);
 			
 			if ( $webshop_blog_id !== '' ) {
-				// Oude manier: sluitingsdagen opslaan als universele subsite optie
-				switch_to_blog( $webshop_blog_id );
-				delete_option('oxfam_holidays');
-				restore_current_blog();
-				
-				// Nieuwe manier: sluitingsdagen opslaan als winkelspecifieke site optie
+				// Sluitingsdagen opslaan als winkelspecifieke site optie
 				if ( count( $oww_store_data['closing_days'] ) > 0 ) {
 					update_site_option( 'oxfam_holidays_'.$oww_store_data['id'], $oww_store_data['closing_days'] );
 				} else {
