@@ -7,11 +7,12 @@
 	
 	<p>Hieronder zie je alle geldige postcodes uit het Vlaamse en Brusselse Gewest, en welke webshop er thuislevering organiseert. Dit overzicht is vooral handig als er webshops bijkomen/verdwijnen. Voor elke postcode moet er te allen tijde minstens één webshop verantwoordelijk zijn. (Postcodes 1804, 1818 en 1934 zijn interne postcodes voor respectievelijk Cargovil, VTM en Zaventem, het is normaal dat die niet verdeeld zijn.) Postcodes waarbij twee of meer webshops in overlap werken met elkaar worden in het oranje aangeduid.</p>
 	
-	<?php list_shops_per_postcode( $sites ); ?>
+	<?php list_shops_per_postcode(); ?>
 </div>
 
 <?php
-	function list_shops_per_postcode( $sites ) {
+	function list_shops_per_postcode() {
+		$sites = get_sites( array( 'path__not_in' => array('/'), 'public' => 1, 'site__not_in' => get_site_option('oxfam_blocked_sites') ) );
 		$postcodes = get_site_option('oxfam_flemish_zip_codes');
 		$list = array();
 		
