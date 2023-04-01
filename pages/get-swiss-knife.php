@@ -20,13 +20,13 @@
 		$sites = get_sites( array( 'path__not_in' => array('/'), 'public' => 1, 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'orderby' => 'path' ) );
 		$start_date = date_i18n( 'Y-m-d', strtotime('-14 days') );
 		$end_date = date_i18n('Y-m-d');
-		check_local_stocks( get_site_option( 'oxfam_shop_dashboard_notice_new_products', array( 21055, 22034 ) ), $sites );
+		check_local_stocks( get_site_option( 'oxfam_shop_dashboard_notice_new_products' ), $sites );
 	?>
 	
 	<p>&nbsp;</p>
 	
 	<h2>Recente verkopen van nieuwe producten</h2>
-	<?php report_sales_by_product( get_site_option( 'oxfam_shop_dashboard_notice_new_products', array( 21055, 22034 ) ), $sites, $start_date, $end_date ); ?>
+	<?php report_sales_by_product( get_site_option( 'oxfam_shop_dashboard_notice_new_products' ), $sites, $start_date, $end_date ); ?>
 	
 	<p>&nbsp;</p>
 	
@@ -74,6 +74,11 @@
 
 <?php
 	function check_local_stocks( $skus, $sites ) {
+		if ( count( $skus ) < 1 ) {
+			echo '<i>Geen nieuwe producten vermeld op dashboard!</i>';
+			return;
+		}
+		
 		$partner_slugs = array();
 		$orders_in_delete_list = array();
 		$orders_deleted = 0;
@@ -103,6 +108,11 @@
 	}
 	
 	function report_sales_by_product( $skus_to_check, $sites, $start_date, $end_date = false ) {
+		if ( count( $skus_to_check ) < 1 ) {
+			echo '<i>Geen nieuwe producten vermeld op dashboard!</i>';
+			return;
+		}
+		
 		if ( $end_date === false ) {
 			$end_date = $start_date;
 		}
