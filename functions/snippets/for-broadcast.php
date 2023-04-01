@@ -10,7 +10,7 @@
 		'post_type'	=> 'shop_coupon',
 		'post_status' => 'publish',
 		// Opgelet: dit kijkt naar de (onzichtbare) slug, die kan afwijken van de titel, bv. indien kortingscode achteraf gewijzigd!
-		'post_name__in' => array( '202303-snoepbeertjes', '202303-capsules', '202303-amandelnoten', '202303-cashew' ),
+		'post_name__in' => array( '202304-rice-crackers', '202304-amazonenoten', '202304-couscous', '202304-pesto-met-basilicum' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	
