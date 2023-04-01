@@ -46,10 +46,10 @@
 				
 				// Tellers op 0 zetten
 				$credit_refs = array(
-					'08917' => array( 'issuer' => 'Cera', 'value' => 30, 'count' => 0 ),
 					'08924' => array( 'issuer' => 'CM', 'value' => 10, 'count' => 0 ),
 					'08935' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'count' => 0 ),
 					'08936' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'count' => 0 ),
+					'08937' => array( 'issuer' => 'Cera', 'value' => 30, 'count' => 0 ),
 				);
 				
 				if ( $credit_date === '0000-00-00' ) {
