@@ -114,6 +114,7 @@
 				$wpsl_store_id = 0;
 			}
 			
+			// Latitude/Longitude
 			$ll = explode( ',', $oww_store_data['location']['ll'] );
 			
 			if ( array_key_exists( $oww_store_data['id'], $site_ids_vs_blog_ids ) ) {
@@ -140,8 +141,8 @@
 					'wpsl_city' => $oww_store_data['location']['city'],
 					'wpsl_zip' => $oww_store_data['location']['zipcode'],
 					'wpsl_country' => 'België',
-					'wpsl_lat' => $ll[1],
-					'wpsl_lng' => $ll[0],
+					'wpsl_lat' => $ll[0],
+					'wpsl_lng' => $ll[1],
 					'wpsl_phone' => $oww_store_data['location']['telephone'],
 					'wpsl_url' => 'https://oxfambelgie.be/winkels'.$oww_store_data['slug'],
 					'wpsl_webshop' => $webshop_url,
