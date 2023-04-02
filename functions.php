@@ -1398,7 +1398,6 @@
 			'phone' => array( 'label' => 'Telefoon' ),
 			'email' => array( 'label' => 'E-mail' ),
 			'url' => array( 'label' => 'Winkelpagina' ),
-			'oxfam_shop_post_id' => array( 'label' => 'Post-ID in OWW-site' ),
 			'oxfam_shop_node' => array( 'label' => 'Node in OBE-site' ),
 			'webshop' => array( 'label' => 'URL van de webshop' ),
 			'webshop_blog_id' => array( 'label' => 'Blog-ID van de webshop' ),
@@ -1412,7 +1411,6 @@
 	add_filter( 'wpsl_frontend_meta_fields', 'wpsl_add_frontend_meta_fields' );
 
 	function wpsl_add_frontend_meta_fields( $store_fields ) {
-		$store_fields['wpsl_oxfam_shop_post_id'] = array( 'name' => 'oxfamShopPostId' );
 		$store_fields['wpsl_oxfam_shop_node'] = array( 'name' => 'oxfamShopNode' );
 		$store_fields['wpsl_webshop'] = array( 'name' => 'webshopUrl' );
 		$store_fields['wpsl_webshop_blog_id'] = array( 'name' => 'webshopBlogId' );

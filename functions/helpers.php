@@ -381,11 +381,12 @@
 	// Of rechtstreeks ophalen uit WPSL op hoofdniveau?
 	function get_shop_name( $atts = [] ) {
 		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'node' => get_option('oxfam_shop_node') ), $atts );
+		write_log( serialize( $atts ) );
 		// Te integreren in get_oxfam_shop_data()
 		$oww_store_data = get_external_wpsl_store( $atts['node'], $atts['id'] );
 		if ( $oww_store_data !== false ) {
-			// Titel is niét beschikbaar in de OBE API ... Val terug op de slug!
-			return 'Oxfam-Wereldwinkel '.trim_and_uppercase( str_replace( '/', '', $oww_store_data['slug'] ) );
+			// Titel is nog niet beschikbaar in OBE API ... Val voorlopig terug op de slug!
+			return 'Oxfam-Wereldwinkel '.trim_and_uppercase( str_replace( '-', ' ', str_replace( '/', '', $oww_store_data['slug'] ) ) );
 		} else {
 			return false;
 		}

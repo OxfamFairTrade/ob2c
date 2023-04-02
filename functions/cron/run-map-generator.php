@@ -132,8 +132,8 @@
 			
 			$store_args = array(
 				'ID' =>	$wpsl_store_id,
-				// Titel is niét beschikbaar in de OBE API ... Val terug op de slug!
-				'post_title' => trim_and_uppercase( str_replace( '/', '', $oww_store_data['slug'] ) ),
+				// Titel is nog niet beschikbaar in OBE API ... Val voorlopig terug op de slug!
+				'post_title' => trim_and_uppercase( str_replace( '-', ' ', str_replace( '/', '', $oww_store_data['slug'] ) ) ),
 				'post_status' => 'publish',
 				'post_author' => 1,
 				'post_type' => 'wpsl_stores',

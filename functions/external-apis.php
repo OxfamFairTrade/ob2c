@@ -64,7 +64,6 @@
 					$extra_stores = $stores;
 					$i = 2;
 					while ( count( $extra_stores ) === $per_page ) {
-						write_log( 'Getting batch '.$i.' of OBE stores ...' );
 						$extra_stores = get_external_wpsl_stores( $domain, $i );
 						$stores = array_merge( $stores, $extra_stores );
 						$i++;
