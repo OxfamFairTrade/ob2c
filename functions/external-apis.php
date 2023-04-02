@@ -37,14 +37,16 @@
 		if ( $domain === 'oxfamwereldwinkels.be' ) {
 			$uri = 'www.oxfamwereldwinkels.be/wp-json/wp/v2/wpsl_stores';
 			$context = array( 'source' => 'WordPress API' );
+			$per_page = 100;
 		} else {
 			$uri = 'oxfambelgie.be/api/v1/stores';
-			$context = array( 'source' => 'Drupal API' );	
+			$context = array( 'source' => 'Drupal API' );
+			// Doet niks (altijd per 10)
+			$per_page = 10;
 		}
 		
 		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!
-		// Parameter 'per_page' doet niks in OBE API (altijd per 10)
-		$response = wp_remote_get( 'https://'.$uri.'?per_page=10&page='.$page );
+		$response = wp_remote_get( 'https://'.$uri.'?per_page='.$per_page.'&page='.$page );
 		
 		if ( wp_remote_retrieve_response_code( $response ) === 200 ) {
 			// Zet het JSON-object om in een PHP-array
@@ -60,9 +62,9 @@
 				} else {
 					// Systeem voor OBE API, waar geen header met totaal aantal pagina's bestaat
 					$i = 2;
-					while ( count( $stores ) === 10 ) {
-						$extra_stores = get_external_wpsl_stores( $domain, $i );
-						$stores = array_merge( $stores, $extra_stores );
+					while ( count( $stores ) === $per_page ) {
+						write_log( 'Getting batch '.$i.' of OBE stores ...' );
+						$stores = array_merge( $stores, get_external_wpsl_stores( $domain, $i ) );
 						$i++;
 					}
 				}
