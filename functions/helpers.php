@@ -380,8 +380,7 @@
 	
 	// Of rechtstreeks ophalen uit WPSL op hoofdniveau?
 	function get_shop_name( $atts = [] ) {
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'node' => get_option('oxfam_shop_node') ), $atts );
-		write_log( serialize( $atts ) );
+		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
 		// Te integreren in get_oxfam_shop_data()
 		$oww_store_data = get_external_wpsl_store( $atts['node'], $atts['id'] );
 		if ( $oww_store_data !== false ) {
@@ -394,7 +393,7 @@
 	
 	// Of rechtstreeks ophalen uit WPSL op hoofdniveau?
 	function get_shop_email( $atts = [] ) {
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'node' => get_option('oxfam_shop_node') ), $atts );
+		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
 		// Te integreren in get_oxfam_shop_data()
 		$oww_store_data = get_external_wpsl_store( $atts['node'], $atts['id'] );
 		if ( $oww_store_data !== false ) {
@@ -405,12 +404,12 @@
 	}
 	
 	function get_shop_contact( $atts = [] ) {
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'node' => get_option('oxfam_shop_node') ), $atts );
+		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
 		return get_shop_address( $atts )."<br/>".get_oxfam_shop_data( 'telephone', $atts['node'], false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'tax', $atts['node'], false, $atts['id'] );
 	}
 	
 	function get_shop_address( $atts = [] ) {
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'node' => get_option('oxfam_shop_node') ), $atts );
+		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
 		return get_oxfam_shop_data( 'place', $atts['node'], false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'zipcode', $atts['node'], false, $atts['id'] )." ".get_oxfam_shop_data( 'city', $atts['node'], false, $atts['id'] );
 	}
 	

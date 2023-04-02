@@ -7181,14 +7181,14 @@
 
 	function print_office_hours( $atts = [] ) {
 		// Overschrijf defaults met expliciete data van de gebruiker
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'node' => get_option('oxfam_shop_node'), 'start' => 'today' ), $atts );
+		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'start' => 'today' ), $atts );
 		$output = '';
 
 		$hours = get_office_hours( $atts['node'], $atts['id'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array();
 		if ( in_array( $atts['node'], $exceptions ) ) {
-			$holidays = array( '2022-12-25', '2023-01-01' );
+			$holidays = array( '2023-04-09', '2023-04-10', '2023-05-01', '2023-05-18', '2023-05-28', '2023-05-29', '2023-07-21', '2023-08-15', '2023-11-01', '2023-11-11', '2023-12-25', '2024-01-01' );
 		} else {
 			// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met fallback naar algemene feestdagen
 			$holidays = get_site_option( 'oxfam_holidays_'.$atts['node'] );
@@ -7369,7 +7369,7 @@
 
 	function print_oxfam_shop_data( $key, $atts ) {
 		// Overschrijf defaults door opgegeven attributen
-		$atts = shortcode_atts( array( 'id' => get_option('oxfam_shop_post_id'), 'node' => get_option('oxfam_shop_node') ), $atts );
+		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
 		return get_oxfam_shop_data( $key, $atts['node'], false, $atts['id'] );
 	}
 
