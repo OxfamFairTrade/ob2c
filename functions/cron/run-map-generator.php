@@ -89,7 +89,8 @@
 			// Wreed ambetant dat zelfs de titel van de pagina niet in de response zit
 			// Voorlopig behelpen met de aanwezigheid van '2h' in de slug, maar dat geldt enkel voor steden waar beide types opduiken ...
 			// Betere oplossing is wellicht om de assortimenten te laten toevoegen aan de API?
-			if ( ! stristr( $obe_store['slug'], '-2h' ) ) {
+			$forbidden_nodes = array( 413, 420, 436, 1513, 1598 );
+			if ( ! stristr( $obe_store['slug'], '-2h' ) and ! stristr( $obe_store['slug'], '-2m' ) and ! in_array( $obe_store['id'], $forbidden_nodes ) ) {
 				$oww_stores[] = $obe_store;
 			}
 		}
