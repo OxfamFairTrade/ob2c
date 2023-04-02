@@ -61,6 +61,7 @@
 					}
 				} else {
 					// Systeem voor OBE API, waar geen header met totaal aantal pagina's bestaat
+					$extra_stores = $stores;
 					$i = 2;
 					while ( count( $extra_stores ) === $per_page ) {
 						write_log( 'Getting batch '.$i.' of OBE stores ...' );
