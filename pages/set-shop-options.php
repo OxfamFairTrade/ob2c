@@ -138,7 +138,7 @@
 					<label for="oxfam_shop_post_id" title="Aan de hand van deze ID halen we adressen en openingsuren momenteel nog op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Post-ID OWW-site:</label>
 				</th>
 				<td class="right">
-					<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?= get_option('oxfam_shop_post_id'); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>
+					<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?= get_option('oxfam_shop_post_id'); ?>" readonly>
 				</td>
 			</tr>
 			<tr valign="top">
@@ -184,7 +184,7 @@
 					<label for="oxfam_covered_zips">Postcodes waar deze webshop aan huis levert (<?= count( $zips ); ?>):<br/><small><?= $delivery_info; ?> Deze lijst kan enkel vanuit het NS gewijzigd worden.</small></label>
 				</th>
 				<td class="right">
-					<textarea name="oxfam_covered_zips" rows="3" class="text-input" placeholder="<?= implode( ', ', $zips ); ?>" <?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>><?= esc_textarea( implode( ', ', $zips ) ); ?></textarea>
+					<textarea name="oxfam_covered_zips" rows="3" class="text-input" placeholder="<?= implode( ', ', $zips ); ?>" readonly><?= esc_textarea( implode( ', ', $zips ) ); ?></textarea>
 				</td>
 			</tr>
 			<?php
@@ -227,7 +227,7 @@
 			?>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Ongeldige Belgische telefoonnummers (= geen 9 of 10 cijfers) zullen niet opgeslagen worden. Wis het telefoonnummer om het algemene telefoonnummer dat vermeld staat op <a href="<?= $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a> opnieuw automatisch over te nemen.</small></label>
+					<label for="oxfam_custom_webshop_telephone">Webshoptelefoonnummer:<br/><small>Ongeldige Belgische telefoonnummers (= geen 9 of 10 cijfers) zullen niet opgeslagen worden. Wis het telefoonnummer om het algemene telefoonnummer dat vermeld staat op <a href="https://oxfambelgie.be/winkels<?= $oww_store_data['slug']; ?>" target="_blank">jullie winkelpagina op oxfambelgie.be</a> opnieuw automatisch over te nemen.</small></label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_custom_webshop_telephone" class="text-input" value="<?= esc_attr( get_option( 'oxfam_custom_webshop_telephone', '' ) ); ?>" placeholder="<?= get_oxfam_shop_data( 'telephone', 0, true ); ?>" <?php if ( current_user_can('create_sites') ) echo ' readonly'; ?>>
@@ -237,7 +237,7 @@
 			<!-- Ook sluitingsdagen van alle secundaire afhaalpunten tonen ter info? Maar wat met externe leverpunten? -->
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden overgenomen uit <a href="<?= $oww_store_data['link']; ?>" target="_blank">jullie winkelpagina op oxfamwereldwinkels.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor alle levermethodes. Indien er extra afhaalpunten zijn, wordt bij afhaling rekening gehouden met de sluitingsdagen van de gekozen winkel.</small></label>
+					<label for="oxfam_holidays" title="Deze dagen tellen niet mee in de berekening van de levertermijn. Bovendien zal op deze dagen onderaan de webshop een banner verschijnen zodat het voor de klanten duidelijk is dat jullie winkel gesloten is.">Uitzonderlijke sluitingsdagen:<br/><small>Deze datums worden overgenomen uit <a href="https://oxfambelgie.be/winkels<?= $oww_store_data['slug']; ?>" target="_blank">jullie winkelpagina op oxfambelgie.be</a>. Het algoritme voor de uiterste leverdatum houdt rekening met deze dagen voor alle levermethodes. Indien er extra afhaalpunten zijn, wordt bij afhaling rekening gehouden met de sluitingsdagen van de gekozen winkel.</small></label>
 				</th>
 				<td class="right">
 					<textarea name="oxfam_holidays" rows="3" class="text-input" readonly><?= esc_textarea( implode( ', ', get_site_option( 'oxfam_holidays_'.get_option('oxfam_shop_node') ) ) ); ?></textarea>

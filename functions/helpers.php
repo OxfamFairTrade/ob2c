@@ -275,7 +275,7 @@
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			
-			echo get_option('oxfam_mollie_partner_id').' - '.get_webshop_name().': '.implode( ', ', get_option('oxfam_zip_codes') ).'<br/>';
+			echo get_option('oxfam_mollie_partner_id').' - '.get_webshop_name().'<br/>';
 			$shop_post_id = get_option('oxfam_shop_post_id');
 			echo 'Shop post-ID: '.$shop_post_id.'<br/>';
 			echo 'Shop node: '.get_option('oxfam_shop_node').'<br/>';
@@ -294,12 +294,18 @@
 						$parts = explode( ' id=', $location['note'] );
 						
 						if ( isset( $parts[1] ) ) {
-							$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
-							
-							if ( array_key_exists( $shop_post_id, $shop_post_ids_to_nodes ) ) {
+							if ( ! is_numeric( $shop_post_id ) ) {
+								// Bij externe afhaalpunten vervangen we 'id' gewoon door 'node'
 								foreach ( $keys_to_modify as $key_to_modify ) {
-									$locations[ $location_key ][ $key_to_modify ] = str_replace( ' id='.$shop_post_id, ' node='.$shop_post_ids_to_nodes[ $shop_post_id ], $locations[ $location_key ][ $key_to_modify ] );
+									$locations[ $location_key ][ $key_to_modify ] = str_replace( ' id=', ' node=', $locations[ $location_key ][ $key_to_modify ] );
 								}
+							} else {
+								$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
+								if ( array_key_exists( $shop_post_id, $shop_post_ids_to_nodes ) ) {
+									foreach ( $keys_to_modify as $key_to_modify ) {
+										$locations[ $location_key ][ $key_to_modify ] = str_replace( ' id='.$shop_post_id, ' node='.$shop_post_ids_to_nodes[ $shop_post_id ], $locations[ $location_key ][ $key_to_modify ] );
+									}
+								}	
 							}
 						}
 					}
@@ -311,6 +317,9 @@
 				}
 			}
 			
+			// If all goes well ...
+			// delete_option('oxfam_zip_codes');
+			// delete_option('oxfam_shop_post_id');
 			echo '<br/>';
 		}
 	}
@@ -382,7 +391,7 @@
 	function get_shop_name( $atts = [] ) {
 		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
 		// Te integreren in get_oxfam_shop_data()
-		$oww_store_data = get_external_wpsl_store( $atts['node'], $atts['id'] );
+		$oww_store_data = get_external_wpsl_store( $atts['node'] );
 		if ( $oww_store_data !== false ) {
 			// Titel is nog niet beschikbaar in OBE API ... Val voorlopig terug op de slug!
 			return 'Oxfam-Wereldwinkel '.trim_and_uppercase( str_replace( '-', ' ', str_replace( '/', '', $oww_store_data['slug'] ) ) );
@@ -395,7 +404,7 @@
 	function get_shop_email( $atts = [] ) {
 		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
 		// Te integreren in get_oxfam_shop_data()
-		$oww_store_data = get_external_wpsl_store( $atts['node'], $atts['id'] );
+		$oww_store_data = get_external_wpsl_store( $atts['node'] );
 		if ( $oww_store_data !== false ) {
 			return $oww_store_data['location']['mail'];
 		} else {
@@ -405,12 +414,12 @@
 	
 	function get_shop_contact( $atts = [] ) {
 		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
-		return get_shop_address( $atts )."<br/>".get_oxfam_shop_data( 'telephone', $atts['node'], false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'tax', $atts['node'], false, $atts['id'] );
+		return get_shop_address( $atts )."<br/>".get_oxfam_shop_data( 'telephone', $atts['node'] )."<br/>".get_oxfam_shop_data( 'tax', $atts['node'] );
 	}
 	
 	function get_shop_address( $atts = [] ) {
 		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
-		return get_oxfam_shop_data( 'place', $atts['node'], false, $atts['id'] )."<br/>".get_oxfam_shop_data( 'zipcode', $atts['node'], false, $atts['id'] )." ".get_oxfam_shop_data( 'city', $atts['node'], false, $atts['id'] );
+		return get_oxfam_shop_data( 'place', $atts['node'] )."<br/>".get_oxfam_shop_data( 'zipcode', $atts['node'] )." ".get_oxfam_shop_data( 'city', $atts['node'] );
 	}
 	
 	function get_company_and_year() {

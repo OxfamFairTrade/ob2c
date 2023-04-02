@@ -58,7 +58,7 @@
 							$txt .= "<name><![CDATA[".$shop_name."]]></name>";
 							$txt .= "<styleUrl>#pickup</styleUrl>";
 							$oww_store_data = get_external_wpsl_store( $shop_node );
-							$txt .= "<description><![CDATA[<p>".get_shop_address( array( 'node' => $shop_node ) )."</p><p><a href=''https://oxfambelgie.be/winkels".$oww_store_data['slug']."' target='_blank'>Naar de winkelpagina »</a></p>]]></description>";
+							$txt .= "<description><![CDATA[<p>".get_shop_address( array( 'node' => $shop_node ) )."</p><p><a href='https://oxfambelgie.be/winkels".$oww_store_data['slug']."' target='_blank'>Naar de winkelpagina »</a></p>]]></description>";
 							$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $shop_node, false )."</coordinates></Point>";
 							$txt .= "</Placemark>";
 							

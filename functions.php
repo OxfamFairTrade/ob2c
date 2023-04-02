@@ -4426,10 +4426,7 @@
 	}
 
 	// Haal de openingsuren van de node voor een bepaalde dag op (werkt met dagindexes van 0 tot 6)
-	function get_office_hours_for_day( $day, $shop_node = 0, $shop_post_id = 0 ) {
-		if ( $shop_post_id === 0 ) {
-			$shop_post_id = get_option('oxfam_shop_post_id');
-		}
+	function get_office_hours_for_day( $day, $shop_node = 0 ) {
 		if ( $shop_node === 0 ) {
 			$shop_node = get_option('oxfam_shop_node');
 		}
@@ -4458,20 +4455,13 @@
 	}
 
 	// Stop de openingsuren in een logische array (werkt met dagindices van 1 tot 7)
-	function get_office_hours( $shop_node = 0, $shop_post_id = 0 ) {
-		if ( intval( $shop_post_id ) > 0 ) {
-			write_log("get_office_hours() was invoked with deprecated post-ID parameter! (value: ".$shop_post_id.")");
-		}
-		
-		if ( $shop_post_id === 0 ) {
-			$shop_post_id = get_option('oxfam_shop_post_id');
-		}
+	function get_office_hours( $shop_node = 0 ) {
 		if ( $shop_node === 0 ) {
 			$shop_node = get_option('oxfam_shop_node');
 		}
 		
-		if ( ! is_numeric( $shop_post_id ) ) {
-			$hours = get_site_option( 'oxfam_opening_hours_'.$shop_post_id );
+		if ( ! is_numeric( $shop_node ) ) {
+			$hours = get_site_option( 'oxfam_opening_hours_'.$shop_node );
 		} else {
 			for ( $day = 0; $day <= 6; $day++ ) {
 				// Forceer 'natuurlijke' nummering
@@ -4483,21 +4473,14 @@
 	}
 
 	// Stop de uitzonderlijke sluitingsdagen in een array
-	function get_closing_days( $shop_node = 0, $shop_post_id = 0 ) {
-		if ( intval( $shop_post_id ) > 0 ) {
-			write_log("get_closing_days() was invoked with deprecated post-ID parameter! (value: ".$shop_post_id.")");
-		}
-		
-		if ( $shop_post_id === 0 ) {
-			$shop_post_id = get_option('oxfam_shop_post_id');
-		}
+	function get_closing_days( $shop_node = 0 ) {
 		if ( $shop_node === 0 ) {
 			$shop_node = get_option('oxfam_shop_node');
 		}
 
-		if ( ! is_numeric( $shop_post_id ) ) {
+		if ( ! is_numeric( $shop_node ) ) {
 			// Retourneert ook false indien onbestaande
-			return get_site_option( 'oxfam_closing_days_'.$shop_post_id );
+			return get_site_option( 'oxfam_closing_days_'.$shop_node );
 		} elseif ( intval( $shop_node ) > 0 ) {
 			$oww_store_data = get_external_wpsl_store( $shop_node );
 			if ( $oww_store_data !== false ) {
@@ -5678,11 +5661,12 @@
 
 	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
-		register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		// @toDo: Verwijderen, heeft geen echte betekenis meer (maar wordt in get_webshops_by_postcode() nog gebruikt!)
+		// register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
+		// register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
+		
 		register_setting( 'oxfam-options-global', 'oxfam_shop_node', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
-		// @toDo: Verwijderen, heeft geen echte betekenis meer (maar wordt in get_webshops_by_postcode() nog gebruikt!)
-		register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		// We geven hier bewust geen defaultwaarde mee, aangezien die in de front-end toch niet geïnterpreteerd wordt ('admin_init')
 		register_setting( 'oxfam-options-local', 'oxfam_minimum_free_delivery', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
@@ -7184,7 +7168,7 @@
 		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node'), 'start' => 'today' ), $atts );
 		$output = '';
 
-		$hours = get_office_hours( $atts['node'], $atts['id'] );
+		$hours = get_office_hours( $atts['node'] );
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array();
 		if ( in_array( $atts['node'], $exceptions ) ) {
@@ -7370,7 +7354,7 @@
 	function print_oxfam_shop_data( $key, $atts ) {
 		// Overschrijf defaults door opgegeven attributen
 		$atts = shortcode_atts( array( 'node' => get_option('oxfam_shop_node') ), $atts );
-		return get_oxfam_shop_data( $key, $atts['node'], false, $atts['id'] );
+		return get_oxfam_shop_data( $key, $atts['node'] );
 	}
 
 	function print_mail( $atts = [] ) {
@@ -7499,10 +7483,7 @@
 	###########
 	
 	// Parameter $raw bepaalt of we de correcties voor de webshops willen uitschakelen
-	function get_oxfam_shop_data( $key, $shop_node = 0, $raw = false, $shop_post_id = 0 ) {
-		if ( $shop_post_id === 0 ) {
-			$shop_post_id = get_option('oxfam_shop_post_id');
-		}
+	function get_oxfam_shop_data( $key, $shop_node = 0, $raw = false ) {
 		if ( $shop_node === 0 ) {
 			$shop_node = get_option('oxfam_shop_node');
 		}
