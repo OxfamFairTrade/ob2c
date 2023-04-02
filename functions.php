@@ -4735,7 +4735,7 @@
 
 		$hours = get_office_hours( $shop_node );
 		// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met fallback naar algemene feestdagen
-		$holidays = get_site_option( 'oxfam_holidays_'.$shop_node, get_site_option('oxfam_holidays') );
+		$holidays = get_site_option( 'oxfam_holidays_'.$shop_node );
 		foreach ( $holidays as $holiday ) {
 			// Argument 'N' want get_office_hours() werkt van 1 tot 7!
 			$weekday_number = date_i18n( 'N', strtotime( $holiday ) );
@@ -7193,7 +7193,7 @@
 			$holidays = array( '2022-12-25', '2023-01-01' );
 		} else {
 			// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met fallback naar algemene feestdagen
-			$holidays = get_site_option( 'oxfam_holidays_'.$atts['node'], get_site_option('oxfam_holidays') );
+			$holidays = get_site_option( 'oxfam_holidays_'.$atts['node'] );
 		}
 
 		if ( $atts['start'] === 'today' ) {

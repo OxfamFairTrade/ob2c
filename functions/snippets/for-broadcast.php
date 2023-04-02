@@ -487,12 +487,6 @@
 	
 	
 	
-	// Default feestdagen bijwerken
-	$default_holidays = array( '2023-04-09', '2023-04-10', '2023-05-01', '2023-05-18', '2023-05-28', '2023-05-29', '2023-07-21', '2023-08-15', '2023-11-01', '2023-11-11', '2023-12-25', '2024-01-01' );
-	update_site_option( 'oxfam_holidays', $default_holidays );
-	
-	
-	
 	// Default productcategorie wijzigen
 	$term = get_term_by( 'slug', 'geschenken-wenskaarten', 'product_cat' );
 	if ( $term !== false ) {

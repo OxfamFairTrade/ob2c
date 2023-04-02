@@ -31,7 +31,7 @@
 						if ( update_option( 'woocommerce_demo_store', 'yes' ) ) {
 							write_log("Speciale banner geactiveerd op ".$site->blogname."!");
 						}
-					} elseif ( in_array( date_i18n('Y-m-d'), get_site_option( 'oxfam_holidays_'.get_option('oxfam_shop_node'), get_site_option('oxfam_holidays') ) ) ) {
+					} elseif ( in_array( date_i18n('Y-m-d'), get_site_option( 'oxfam_holidays_'.get_option('oxfam_shop_node') ) ) ) {
 						// Stel de afwezigheidsboodschap in, op voorwaarde dat er momenteel geen andere boodschap getoond wordt
 						if ( get_option('woocommerce_demo_store') === 'no' ) {
 							// @toDo: Personaliseerbaar maken? Eerste werkdag zoeken na vakantie?
