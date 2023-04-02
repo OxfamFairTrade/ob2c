@@ -34,8 +34,6 @@
 	}
 	
 	function get_external_wpsl_stores( $domain = 'oxfambelgie.be', $page = 1 ) {
-		$all_stores = array();
-		
 		if ( $domain === 'oxfamwereldwinkels.be' ) {
 			$uri = 'www.oxfamwereldwinkels.be/wp-json/wp/v2/wpsl_stores';
 			$context = array( 'source' => 'WordPress API' );
@@ -53,32 +51,28 @@
 			$stores = json_decode( wp_remote_retrieve_body( $response ), true );
 			
 			if ( $page === 1 ) {
-				$all_stores = array_merge( $all_stores, $stores );
-				
 				if ( $domain === 'oxfamwereldwinkels.be' ) {
 					// Systeem voor OWW API, met header die aangeeft hoeveel resultatenpagina's er in totaal zijn
 					$total_pages = intval( wp_remote_retrieve_header( $response, 'X-WP-TotalPages' ) );
 					for ( $i = 2; $i <= $total_pages; $i++ ) {
-						$all_stores = array_merge( $all_stores, get_external_wpsl_stores( $domain, $i ) );
+						$stores = array_merge( $stores, get_external_wpsl_stores( $domain, $i ) );
 					}
 				} else {
 					// Systeem voor OBE API, waar geen header met totaal aantal pagina's bestaat
 					$i = 2;
 					while ( count( $stores ) === 10 ) {
-						$stores = get_external_wpsl_stores( $domain, $i );
-						$all_stores = array_merge( $all_stores, $stores );
+						$extra_stores = get_external_wpsl_stores( $domain, $i );
+						$stores = array_merge( $stores, $extra_stores );
 						$i++;
 					}
 				}
-			} else {
-				$all_stores = $stores;
 			}
 		} else {
 			$logger = wc_get_logger();
 			$logger->critical( 'Could not retrieve shops on page '.$page, $context );
 		}
 		
-		return $all_stores;
+		return $stores;
 	}
 	
 	function get_external_partner( $partner_name, $domain = 'www.oxfamfairtrade.be/nl' ) {

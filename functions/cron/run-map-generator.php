@@ -133,7 +133,7 @@
 			$store_args = array(
 				'ID' =>	$wpsl_store_id,
 				// Titel is niét beschikbaar in de OBE API ... Val terug op de slug!
-				'post_title' => 'Oxfam-Wereldwinkel '.trim_and_uppercase( str_replace( '/', '', $oww_store_data['slug'] ) ),
+				'post_title' => trim_and_uppercase( str_replace( '/', '', $oww_store_data['slug'] ) ),
 				'post_status' => 'publish',
 				'post_author' => 1,
 				'post_type' => 'wpsl_stores',
