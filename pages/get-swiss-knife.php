@@ -168,6 +168,7 @@
 	function check_coupons_on_recent_orders( $since, $sites ) {
 		$args = array(
 			'type' => 'shop_order',
+			'status' => array( 'wc-processing', 'wc-claimed', 'wc-completed' ),
 			'date_created' => '>='.$since,
 			'limit' => -1,
 		);
