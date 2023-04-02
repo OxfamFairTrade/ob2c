@@ -1520,15 +1520,19 @@
 	add_action( 'woocommerce_order_status_completed_to_processing', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 	add_action( 'woocommerce_order_status_completed_to_claimed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 	add_action( 'woocommerce_order_status_cancelled_to_pending', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_pending_to_completed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_pending_to_completed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 	// add_action( 'woocommerce_order_status_refunded_to_processing', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 	// add_action( 'woocommerce_order_status_refunded_to_completed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 	// add_action( 'woocommerce_order_status_cancelled_to_processing', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_cancelled_to_claimed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
-	// add_action( 'woocommerce_order_status_cancelled_to_completed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_cancelled_to_claimed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
+	add_action( 'woocommerce_order_status_cancelled_to_completed', 'ob2c_warn_if_suspicious_status_change', 10, 2 );
 
 	function ob2c_warn_if_suspicious_status_change( $order_id, $order ) {
 		// Acties door admins negeren?
+		$logger = wc_get_logger();
+		$context = array( 'source' => 'Oxfam Emails' );
+		$logger->warning( $order->get_order_number().': verdachte statuswijziging naar '.$order->get_status(), $context );
+		
 		send_automated_mail_to_helpdesk( 'Bestelling '.$order->get_order_number().' onderging een verdachte statuswijziging naar '.$order->get_status(), '<p>Gelieve de logs te checken <a href="'.$order->get_edit_order_url().'">in de back-end</a>!</p>' );
 	}
 

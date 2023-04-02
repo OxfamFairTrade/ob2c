@@ -31,7 +31,7 @@ if ( $order->has_shipping_method('local_pickup_plus') ) {
 	if ( $order->get_meta('is_b2b_sale') === 'no' ) {
 		// Haal geschatte leverdatum op VIA GET_POST_META() WANT $ORDER->GET_META() OP DIT MOMENT NOG NIET BEPAALD
 		$delivery = get_post_meta( $order->get_id(), 'estimated_delivery', true );
-		$logger->debug( $order->get_order_number().': estimated delivery returns '.$order->get_meta('estimated_delivery').' via get_meta()', $context );
+		$logger->debug( $order->get_order_number().': estimated delivery returns '.serialize( $order->get_meta('estimated_delivery') ).' via get_meta()', $context );
 		
 		if ( $delivery === '' ) {
 			// Aangepast bericht zonder tijdsinschatting indien waarde ontbreekt (bv. door ontbreken van openingsuren tijdens lockdown)
