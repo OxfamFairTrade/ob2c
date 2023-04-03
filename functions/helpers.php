@@ -370,11 +370,15 @@
 		return $zips;
 	}
 	
-	// Deze actie wordt doorlopen na elke wijziging aan WooCommerce-instellingen, dus ook verzendmethodes
+	// Deze actie wordt doorlopen na elke wijziging aan WooCommerce-instellingen
 	add_action( 'woocommerce_settings_saved', 'invalidate_custom_transients' );
+	// Maar niet bij opslaan verzendzones, daarom ook deze actie
+	add_action( 'woocommerce_after_shipping_zone_object_save', 'invalidate_custom_transients' );
 	
 	function invalidate_custom_transients() {
-		delete_transient('oxfam_covered_zips');
+		if ( delete_transient('oxfam_covered_zips') ) {
+			write_log( "Transient 'oxfam_covered_zips' reset in ".get_bloginfo('name') );
+		}
 	}
 	
 	
