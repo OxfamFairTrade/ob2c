@@ -5903,18 +5903,9 @@
 	}
 
 	// Voeg netwerkpagina's toe voor exports en rapporten
-	add_action( 'network_admin_menu', 'oxfam_register_custom_network_pages' );
+	add_action( 'network_admin_menu', 'oxfam_register_custom_network_pages', 20 );
 
 	function oxfam_register_custom_network_pages() {
-		add_submenu_page(
-			'woonet-woocommerce',
-			'Dashboard Info',
-			'Dashboard Info',
-			'create_sites',
-			'woonet-woocommerce-dashboard-info',
-			'oxfam_set_dashboard_info_callback'
-		);
-		
 		add_settings_section(
 			'products',
 			__( 'Productaankondigingen', 'oxfam-webshop' ),
@@ -5983,11 +5974,29 @@
 		
 		add_submenu_page(
 			'woonet-woocommerce',
+			'Dashboard Info',
+			'Dashboard Info',
+			'create_sites',
+			'woonet-woocommerce-dashboard-info',
+			'oxfam_set_dashboard_info_callback'
+		);
+		
+		add_submenu_page(
+			'woonet-woocommerce',
 			'Voucher Export',
 			'Voucher Export',
 			'create_sites',
 			'woonet-woocommerce-used-vouchers-export',
 			'oxfam_export_used_vouchers_callback'
+		);
+		
+		add_submenu_page(
+			'woonet-woocommerce',
+			'Voucher Analysis',
+			'Voucher Analysis',
+			'create_sites',
+			'woonet-woocommerce-voucher-orders-export',
+			'oxfam_export_voucher_analysis_callback'
 		);
 		
 		add_submenu_page(
@@ -6010,11 +6019,11 @@
 		
 		add_submenu_page(
 			'woonet-woocommerce',
-			'Voucher Analysis',
-			'Voucher Analysis',
+			'Activiteitenlogs',
+			'Activiteitenlogs',
 			'create_sites',
-			'woonet-woocommerce-voucher-orders-export',
-			'oxfam_export_voucher_analysis_callback'
+			'woonet-woocommerce-activity-logs',
+			'oxfam_activity_logs_callback'
 		);
 	}
 
@@ -6044,6 +6053,10 @@
 	
 	function oxfam_postcode_repartition_callback() {
 		include get_stylesheet_directory().'/pages/get-postcode-repartition.php';
+	}
+	
+	function oxfam_activity_logs_callback() {
+		include get_stylesheet_directory().'/pages/get-activity-logs.php';
 	}
 	
 	function oxfam_export_voucher_analysis_callback() {
