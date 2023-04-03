@@ -68,7 +68,7 @@ if ( ! is_main_site() ) {
 					// Filter de webshoploze winkels weg
 					$neighbouring_webshops = wp_filter_object_list( $stores, array( 'webshopBlogId' => '' ), 'not' );
 					// Er kunnen dubbels voorkomen (= meerdere winkels onder één webshop) maar dat lossen we later op
-					set_transient( 'oxfam_neighbouring_webshops', $neighbouring_webshops, DAY_IN_SECONDS );
+					set_transient( 'oxfam_neighbouring_webshops', $neighbouring_webshops, WEEK_IN_SECONDS );
 
 					// write_log( count( $stores )." winkels gevonden in de buurt van ".$lat.",".$lng." waarvan ".count( $neighbouring_webshops )." met webshop" );
 				}

@@ -320,6 +320,7 @@
 			// If all goes well ...
 			// delete_option('oxfam_zip_codes');
 			// delete_option('oxfam_shop_post_id');
+			// delete_option('cookie_notice_options');
 			echo '<br/>';
 		}
 	}
@@ -363,10 +364,17 @@
 				sort( $zips, SORT_NUMERIC );
 			}
 			
-			set_transient( 'oxfam_covered_zips', $zips, HOUR_IN_SECONDS );
+			set_transient( 'oxfam_covered_zips', $zips, WEEK_IN_SECONDS );
 		}
 		
 		return $zips;
+	}
+	
+	// Deze actie wordt doorlopen na elke wijziging aan WooCommerce-instellingen, dus ook verzendmethodes
+	add_action( 'woocommerce_settings_saved', 'invalidate_custom_transients' );
+	
+	function invalidate_custom_transients() {
+		delete_transient('oxfam_covered_zips');
 	}
 	
 	

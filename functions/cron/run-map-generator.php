@@ -77,6 +77,8 @@
 					fwrite( $local_file, $txt );
 					fclose( $local_file );
 				}
+				
+				delete_transient('oxfam_neighbouring_webshops');
 			}
 			
 			restore_current_blog();
@@ -90,6 +92,7 @@
 			// Voorlopig behelpen met de aanwezigheid van '2h' in de slug, maar dat geldt enkel voor steden waar beide types opduiken ...
 			// Betere oplossing is wellicht om de assortimenten te laten toevoegen aan de API?
 			$forbidden_nodes = array( 413, 420, 436, 1513, 1598 );
+			// if ( stristr( $obe_store['title'], 'Oxfam-Wereldwinkel' ) or in_array( 'Voeding', $obe_store['assortment'] ) ) {
 			if ( ! stristr( $obe_store['slug'], '-2h' ) and ! stristr( $obe_store['slug'], '-2m' ) and ! in_array( $obe_store['id'], $forbidden_nodes ) ) {
 				$oww_stores[] = $obe_store;
 			}
@@ -133,6 +136,7 @@
 			$store_args = array(
 				'ID' =>	$wpsl_store_id,
 				// Titel is nog niet beschikbaar in OBE API ... Val voorlopig terug op de slug!
+				// 'post_title' => str_replace( 'Oxfam-Wereldwinkel ', '', $oww_store_data['title'] ),
 				'post_title' => trim_and_uppercase( str_replace( '-', ' ', str_replace( '/', '', $oww_store_data['slug'] ) ) ),
 				'post_status' => 'publish',
 				'post_author' => 1,
@@ -146,12 +150,13 @@
 					'wpsl_lat' => $ll[0],
 					'wpsl_lng' => $ll[1],
 					'wpsl_phone' => $oww_store_data['location']['telephone'],
+					// 'wpsl_url' => $oww_store_data['link'],
 					'wpsl_url' => 'https://oxfambelgie.be/winkels'.$oww_store_data['slug'],
 					'wpsl_webshop' => $webshop_url,
 					'wpsl_webshop_blog_id' => $webshop_blog_id,
 					// Vul hier bewust het algemene mailadres in (ook voor winkels mét webshop)
 					'wpsl_email' => $oww_store_data['location']['mail'],
-					// Openingsuren ook opslaan in WPSL-object
+					// Openingsuren en sluitingsdagen ook opslaan in WPSL-object (ter info)
 					'wpsl_hours' => $oww_store_data['opening_hours'],
 					'wpsl_holidays' => implode( ', ', $oww_store_data['closing_days'] ),
 				),
@@ -183,7 +188,7 @@
 					var_dump_pre( "Statussen voor verwijdering gewist op post-ID ".$result_post_id );
 				}
 				
-				// Winkelcategorie instellen DEPRECATED
+				// Winkelcategorie instellen (ter info)
 				wp_set_object_terms( $result_post_id, 'afhaling', 'wpsl_store_category', false );
 				if ( $home_delivery ) {
 					// Tweede categorie instellen indien niet enkel afhaling
@@ -192,7 +197,7 @@
 			}
 		}
 		
-		write_log( count( $oww_stores )." winkels geïmporteerd!" );
+		write_log( count( $oww_stores )." winkels via API geïmporteerd uit oxfambelgie.be" );
 	} else {
 		die("Access prohibited!");
 	}
