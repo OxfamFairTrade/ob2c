@@ -656,7 +656,7 @@
 	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
 	// Laad géén extra NM-stijlen rechtstreeks in de pagina!
 	add_filter( 'nm_include_custom_styles', '__return_false' );
-
+	
 	// Geautomatiseerde manier om diverse instellingen te kopiëren naar subsites
 	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_placeholder_image', 'sync_settings_to_subsites', 10, 3 );
@@ -773,9 +773,10 @@
 		return $value;
 	}
 
-	// Schakel Gutenberg uit
+	// Schakel Gutenberg-editor uit (ook voor widgets)
 	add_filter( 'use_block_editor_for_post', '__return_false', 100 );
 	add_filter( 'use_block_editor_for_post_type', '__return_false', 100 );
+	add_filter( 'use_widgets_block_editor', '__return_false', 100 );
 
 	add_filter( 'wc_product_enable_dimensions_display', '__return_false' );
 	add_filter( 'woocommerce_get_availability_text', 'modify_backorder_text', 10, 2 );
@@ -5992,6 +5993,15 @@
 		
 		add_submenu_page(
 			'woonet-woocommerce',
+			'Voucher Lookup',
+			'Voucher Lookup',
+			'create_sites',
+			'woonet-woocommerce-voucher-lookup',
+			'oxfam_voucher-lookup_callback'
+		);
+		
+		add_submenu_page(
+			'woonet-woocommerce',
 			'Voucher Analysis',
 			'Voucher Analysis',
 			'create_sites',
@@ -6047,6 +6057,14 @@
 		include get_stylesheet_directory().'/functions/vouchers/get-credit-export.php';
 	}
 	
+	function oxfam_voucher_lookup_callback() {
+		include get_stylesheet_directory().'/functions/vouchers/do-voucher-lookup.php';
+	}
+	
+	function oxfam_export_voucher_analysis_callback() {
+		include get_stylesheet_directory().'/functions/vouchers/get-global-analysis.php';
+	}
+	
 	function oxfam_swiss_knife_callback() {
 		include get_stylesheet_directory().'/pages/get-swiss-knife.php';
 	}
@@ -6057,10 +6075,6 @@
 	
 	function oxfam_activity_logs_callback() {
 		include get_stylesheet_directory().'/pages/get-activity-logs.php';
-	}
-	
-	function oxfam_export_voucher_analysis_callback() {
-		include get_stylesheet_directory().'/functions/vouchers/get-global-analysis.php';
 	}
 	
 	function oxfam_shop_dashboard_notice_new_products_callback() {

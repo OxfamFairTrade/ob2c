@@ -6,7 +6,7 @@
 	require_once dirname( __FILE__, 6 ) . '/wp-load.php';
 	
 	if ( ( isset( $_GET['import_key'] ) and $_GET['import_key'] === IMPORT_KEY ) or ( isset( $argv ) and $argv[1] === 'RUN_FROM_CRON' ) ) {
-		// Vraag alle huidige winkels in de OWW-site op
+		// Vraag alle huidige winkels in de OBE-site op
 		$obe_stores = get_external_wpsl_stores();
 		
 		// Ga enkel verder als we effectief resultaten doorkregen

@@ -152,7 +152,7 @@
 						// In dat geval maken we de code handmatig ongeldig in de MySQL-tabel en gebruiken we 'OFFLINE' als ordernummer
 						if ( $row->order === 'OFFLINE' ) {
 							$voucher_ids[] = $row->id;
-							if ( intval( $row->id ) > 0 ) {
+							if ( intval( $row->blog_id ) > 0 ) {
 								// Wis de bewoording 'regio' bij pseudo-regiowebshops, om verwarring bij het ingeven in Access te vermijden
 								$blog_path = str_replace( array( '/regio', '/' ), '', $current_blog->path );
 							} else {
