@@ -5997,7 +5997,7 @@
 			'Voucher Lookup',
 			'create_sites',
 			'woonet-woocommerce-voucher-lookup',
-			'oxfam_voucher-lookup_callback'
+			'oxfam_voucher_lookup_callback'
 		);
 		
 		add_submenu_page(
