@@ -14,12 +14,12 @@
 			$labels['promotion'] = '-15% per 2 flessen';
 		}
 		
-		$fifty_percent_off_second_products = get_option( 'oxfam_shop_promotion_products_fifty_percent_off_second', array() );
+		$fifty_percent_off_second_products = get_site_option( 'oxfam_shop_promotion_products_fifty_percent_off_second', array() );
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}
 
-		$one_plus_one_products = get_option( 'oxfam_shop_promotion_products_one_plus_one', array() );
+		$one_plus_one_products = get_site_option( 'oxfam_shop_promotion_products_one_plus_one', array() );
 		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
