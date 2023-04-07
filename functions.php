@@ -6109,7 +6109,7 @@
 	function oxfam_shop_dashboard_notice_new_products_callback() {
 		$key = 'oxfam_shop_dashboard_notice_new_products';
 		$value = get_site_option( $key, array() );
-		echo '<input type="text" name="' . $key . '" style="width: 100%; max-width: 800px;" value="' . implode( ', ', $value ) . '" /><br/><small>Scheid meerdere ompaknummers met een (punt)komma.</small>';
+		echo '<input type="text" name="' . $key . '" style="width: 100%; max-width: 800px;" value="' . implode( ', ', $value ) . '" /><br/><small>Het label zal automatisch enkel verschijnen tijdens de actieperiode, zoals ingesteld op de productdetailpagina. Je kunt het dus al op voorhand instellen!<br/>Scheid meerdere ompaknummers met een (punt)komma.</small>';
 	}
 	
 	function oxfam_shop_dashboard_notice_replaced_products_callback() {
