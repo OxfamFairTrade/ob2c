@@ -777,6 +777,7 @@
 	add_filter( 'use_block_editor_for_post', '__return_false', 100 );
 	add_filter( 'use_block_editor_for_post_type', '__return_false', 100 );
 	add_filter( 'use_widgets_block_editor', '__return_false', 100 );
+	add_filter( 'wp_is_application_passwords_available', '__return_false' );
 
 	add_filter( 'wc_product_enable_dimensions_display', '__return_false' );
 	add_filter( 'woocommerce_get_availability_text', 'modify_backorder_text', 10, 2 );
@@ -5973,6 +5974,34 @@
 			array( 'label_for' => 'oxfam_shop_dashboard_notice_warning' )
 		);
 		
+		add_settings_section(
+			'labels',
+			__( 'Productlabels', 'oxfam-webshop' ),
+			NULL,
+			'woonet-woocommerce-dashboard-info'
+		);
+		
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_fifty_percent_off_second' );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_one_plus_one' );
+		
+		add_settings_field(
+			'oxfam_shop_promotion_products_fifty_percent_off_second',
+			__( 'Promo 2de -50%', 'oxfam-webshop' ),
+			'oxfam_shop_promotion_products_fifty_percent_off_second_callback',
+			'woonet-woocommerce-dashboard-info',
+			'labels',
+			array( 'label_for' => 'oxfam_shop_promotion_products_fifty_percent_off_second' )
+		);
+		
+		add_settings_field(
+			'oxfam_shop_promotion_products_one_plus_one',
+			__( 'Promo 1+1 gratis', 'oxfam-webshop' ),
+			'oxfam_shop_promotion_products_one_plus_one_callback',
+			'woonet-woocommerce-dashboard-info',
+			'labels',
+			array( 'label_for' => 'oxfam_shop_promotion_products_one_plus_one' )
+		);
+		
 		add_submenu_page(
 			'woonet-woocommerce',
 			'Dashboard Info',
@@ -6105,6 +6134,20 @@
 		$key = 'oxfam_shop_dashboard_notice_' . $type;
 		$value = get_site_option( $key, '' );
 		echo '<textarea name="' . $key . '" rows="5" style="width: 100%; max-width: 800px;">' . stripslashes( $value ) . '</textarea><br/><small>Mag HTML-code bevatten.</small>';
+	}
+	
+	function oxfam_shop_promotion_products_fifty_percent_off_second_callback() {
+		oxfam_shop_promotion_products_field_callback('fifty_percent_off_second');
+	}
+	
+	function oxfam_shop_promotion_products_one_plus_one_callback() {
+		oxfam_shop_promotion_products_field_callback('one_plus_one');
+	}
+	
+	function oxfam_shop_promotion_products_field_callback( $type ) {
+		$key = 'oxfam_shop_promotion_products_' . $type;
+		$value = get_site_option( $key, array() );
+		echo '<input type="text" name="' . $key . '" style="width: 100%; max-width: 800px;" value="' . implode( ', ', $value ) . '" /><br/><small>Scheid meerdere waarden met een (punt)komma.</small>';
 	}
 	
 	add_action( 'network_admin_edit_woonet-woocommerce-dashboard-info-update', 'update_network_settings_dashboard' );
