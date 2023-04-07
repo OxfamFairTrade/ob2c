@@ -5981,8 +5981,8 @@
 			'woonet-woocommerce-dashboard-info'
 		);
 		
-		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_fifty_percent_off_second' );
-		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_one_plus_one' );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_fifty_percent_off_second', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_one_plus_one', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		
 		add_settings_field(
 			'oxfam_shop_promotion_products_fifty_percent_off_second',
