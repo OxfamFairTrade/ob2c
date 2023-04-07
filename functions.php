@@ -5977,7 +5977,7 @@
 		add_settings_section(
 			'labels',
 			__( 'Productlabels', 'oxfam-webshop' ),
-			NULL,
+			'oxfam_shop_promotion_products_intro_callback',
 			'woonet-woocommerce-dashboard-info'
 		);
 		
@@ -6134,6 +6134,10 @@
 		$key = 'oxfam_shop_dashboard_notice_' . $type;
 		$value = get_site_option( $key, '' );
 		echo '<textarea name="' . $key . '" rows="5" style="width: 100%; max-width: 800px;">' . stripslashes( $value ) . '</textarea><br/><small>Mag HTML-code bevatten.</small>';
+	}
+	
+	function oxfam_shop_promotion_products_intro_callback() {
+		echo '<p>We tonen hier enkel de meest courante promolabels. Speciale labels, bv. voor het wijnfestival, moeten nog steeds ingesteld worden via de template file (zie <i>/template-parts/woocommerce/product-labels.php</i>).</p>';
 	}
 	
 	function oxfam_shop_promotion_products_fifty_percent_off_second_callback() {
