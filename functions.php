@@ -3520,36 +3520,37 @@
 					$delivery_timestamp = get_post_meta( $order->get_id(), 'estimated_delivery', true );
 					$pickup_text .= ' vanaf '.date_i18n( 'j/n/y \o\m H:i', $delivery_timestamp );
 				}
-
+				
 				switch ( $shipping_method['method_id'] ) {
 					case stristr( $shipping_method['method_id'], 'flat_rate' ):
-
+						
 						// Leveradres invullen (is in principe zeker beschikbaar!)
 						$pick_sheet->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 						break;
-
+						
 					case stristr( $shipping_method['method_id'], 'free_shipping' ):
 					// KAN IN DE TOEKOMST OOK BETALEND ZIJN
 					case stristr( $shipping_method['method_id'], 'b2b_home_delivery' ):
-
+						
 						// Leveradres invullen (is in principe zeker beschikbaar!)
 						$pick_sheet->setCellValue( 'B4', $order->get_shipping_first_name().' '.$order->get_shipping_last_name() )->setCellValue( 'B5', $order->get_shipping_address_1() )->setCellValue( 'B6', $order->get_shipping_postcode().' '.$order->get_shipping_city() )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 						break;
-
+						
 					case stristr( $shipping_method['method_id'], 'service_point_shipping_method' ):
-
+					case stristr( $shipping_method['method_id'], 'sc_service_point' ):
+						
 						// Verwijzen naar postpunt
 						$service_point = $order->get_meta('sendcloudshipping_service_point_meta');
 						$service_point_info = explode ( '|', $service_point['extra'] );
 						$pick_sheet->setCellValue( 'B4', 'Postpunt '.$service_point_info[0] )->setCellValue( 'B5', $service_point_info[1].', '.$service_point_info[2] )->setCellValue( 'B6', 'Etiket verplicht aan te maken via SendCloud!' )->setCellValue( 'D1', mb_strtoupper( get_webshop_name(true) ) );
 						break;
-
+						
 					default:
 						$pickup_location_name = ob2c_get_pickup_location_name( $shipping_method );
 						$pick_sheet->setCellValue( 'B4', $pickup_text )->setCellValue( 'D1', mb_strtoupper( $pickup_location_name ) );
 						break;
 				}
-
+				
 				// Vermeld de totale korting (inclusief/exclusief BTW)
 				// Kortingsbedrag per coupon apart vermelden is lastig: https://stackoverflow.com/questions/44977174/get-coupon-discount-type-and-amount-in-woocommerce-orders
 				if ( count( $used_coupon_codes ) >= 1 ) {
@@ -4359,6 +4360,7 @@
 				break;
 			// Alle instances van postpuntlevering
 			case stristr( $method->id, 'service_point_shipping_method' ):
+			case stristr( $method->id, 'sc_service_point' ):
 				$descr .= sprintf( __( 'Uiterste dag (%s) waarop het pakje beschikbaar zal zijn in postpunt / automaat', 'oxfam-webshop' ),  date_i18n( 'l d/m/Y', $timestamp ) );
 				if ( floatval( $method->cost ) == 0 ) {
 					$label = str_replace( 'Afhaling', 'Gratis afhaling', $label );
@@ -4804,6 +4806,7 @@
 		// Bevat 'local_pickup' reeds via core en 'local_pickup_plus' via filter in plugin
 		// Instances worden er afgeknipt bij de check dus achterwege laten
 		$hide_on_methods[] = 'service_point_shipping_method';
+		$hide_on_methods[] = 'sc_service_point';
 		return $hide_on_methods;
 	}
 
@@ -5144,7 +5147,7 @@
 			if ( ! $free_home_available ) {
 				foreach ( $rates as $rate_key => $rate ) {
 					switch ( $rate_key ) {
-						case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method' ) ):
+						case in_array( $rate->method_id, array( 'flat_rate', 'service_point_shipping_method', 'sc_service_point' ) ):
 							// Zie WC_Shipping_Rate-klasse, geen save() nodig
 							$rate->set_cost( $cost );
 							// Dit verwijdert meteen ook het andere BTW-tarief
