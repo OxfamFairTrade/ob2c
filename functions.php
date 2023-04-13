@@ -687,6 +687,8 @@
 	add_action( 'update_option_mollie_wc_gateway_creditcard_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_applepay_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_mollie_wc_gateway_ideal_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_mollie_wc_gateway_voucher_settings', 'sync_settings_to_subsites', 10, 3 );
+	add_action( 'update_option_woocommerce_cod_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_gateway_order', 'sync_settings_to_subsites', 10, 3 );
 	
 	function sync_settings_to_subsites( $old_value, $new_value, $option ) {
