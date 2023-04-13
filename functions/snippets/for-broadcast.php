@@ -219,6 +219,8 @@
 			write_log( get_bloginfo('name').": could not delete '".$tax_class."' tax class" );
 		}
 	}
+	
+	
 
 	// Verwijder overtollige verzendklasses
 	$taxonomy = 'product_shipping_class';

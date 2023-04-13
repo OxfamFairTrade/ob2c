@@ -25,7 +25,11 @@
 					set_site_transient( $shop_id.'_store_data', $store_data, DAY_IN_SECONDS );
 				} else {
 					$logger = wc_get_logger();
-					$logger->notice( 'Could not retrieve shop data for ID '.$shop_id, $context );
+					$extra_info = '';
+					if ( is_wp_error( $response ) ) {
+						$extra_info = ': '.$response->get_error_message();
+					}
+					$logger->notice( 'Could not retrieve shop data for ID '.$shop_id.$extra_info, $context );
 				}
 			}
 		}
