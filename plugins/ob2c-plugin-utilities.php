@@ -1,8 +1,8 @@
 <?php
 	/*
 	Plugin Name: OB2C Plugin Utilities
-	Description: Kleine functies die we niet vanuit het WordPress-thema kunnen regelen. Met dank aan Kailey Lampert.
-	Version:     0.1.0
+	Description: Schermt ontwikkelomgevingen af (behalve voor Mollie) en leidt mailcommunicatie naar klanten om naar webmaster. Is enkel actief indien WP_ENVIRONMENT_TYPE in wp-config.php niet op 'production' staat!
+	Version:     0.2.0
 	Author:      Full Stack Ahead
 	Author URI:  https://www.fullstackahead.be
 	TextDomain:  mss
@@ -19,6 +19,117 @@
 	// Schakel nieuwe WooCommerce-features uit
 	add_filter( 'woocommerce_admin_disabled', '__return_true' );
 	add_filter( 'woocommerce_marketing_menu_items', '__return_empty_array' );
+	
+	if ( wp_get_environment_type() !== 'production' ) {
+		// Afschermen met login (i.p.v. via IP-adres)
+		add_action( 'template_redirect', 'fsa_force_user_login' );
+		
+		// Alle WordPress-mails afleiden naar admin
+		add_filter( 'wp_mail', 'fsa_divert_and_flag_wordpress_mails' );
+		
+		// Uitleg op dashboard plaatsen
+		add_action( 'admin_notices', 'fsa_show_admin_notice', 1000 );
+	}
+	
+	function fsa_show_admin_notice() {
+		global $pagenow, $post_type;
+		$screen = get_current_screen();
+		
+		if ( 'index.php' === $pagenow and 'dashboard' === $screen->base ) {
+			echo '<div class="notice notice-error">';
+				echo '<p>Deze website staat in testmodus. Ze kan enkel bekeken worden door ingelogde admins en alle uitgaande e-mails worden afgeleid naar de admin mailbox (momenteel <i>'.implode( ', ', fsa_get_email_addressees() ).'</i>).</p>';
+			echo '</div>';
+		}
+	}
+	
+	function fsa_force_user_login() {
+		if ( defined('DOING_AJAX') and DOING_AJAX ) {
+			return;
+		}
+		
+		if ( defined('DOING_CRON') and DOING_CRON ) {
+			return;
+		}
+		
+		if ( defined('WP_CLI') and WP_CLI ) {
+			return;
+		}
+		
+		$mollie_ips = array(
+			'23.251.137.244',
+			'34.89.231.130',
+			'34.90.137.245',
+			'34.90.10.225',
+			'35.204.34.167',
+			'35.204.72.248',
+			'35.246.254.59',
+			'87.233.217.240',
+			'87.233.217.241',
+			'87.233.217.243',
+			'87.233.217.244',
+			'87.233.217.245',
+			'87.233.217.246',
+			'87.233.217.247',
+			'87.233.217.248',
+			'87.233.217.249',
+			'87.233.217.250',
+			'87.233.217.251',
+			'87.233.217.253',
+			'87.233.217.254',
+			'87.233.217.255',
+			'87.233.229.26',
+			'87.233.229.27',
+			'146.148.31.21',
+		);
+		if ( in_array( $_SERVER['REMOTE_ADDR'], $mollie_ips ) ) {
+			// Lijkt niet nodig te zijn, fsa_force_user_login() wordt niet doorlopen bij webhooks?
+			$logger = wc_get_logger();
+			$context = array( 'source' => 'DEV Utilities' );
+			$logger->debug( "Access granted for Mollie IP address ".$_SERVER['REMOTE_ADDR'], $context );
+			return;
+		}
+		
+		if ( is_user_logged_in() ) {
+			return;
+		}
+		
+		$url = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		// Sta het bekijken van de inlogpagina wél toe, anders belanden we in een oneindige loop
+		if ( preg_replace( '/\?.*/', '', wp_login_url() ) === preg_replace( '/\?.*/', '', $url ) ) {
+			return;
+		}
+		
+		// Stel headers in om caching te verhinderen
+		nocache_headers();
+		
+		// Redirect verboden bezoekers
+		wp_safe_redirect( wp_login_url( $url ), 302 );
+		exit;
+	}
+	
+	function fsa_divert_and_flag_wordpress_mails( $args ) {
+		if ( array_key_exists( 'to', $args ) ) {
+			if ( is_array( $args['to'] ) ) {
+				$old_addresses = implode( ', ', $args['to'] );
+			} else {
+				$old_addresses = $args['to'];
+			}
+			error_log( "Diverting mail from " . $old_addresses . " to " . implode( ', ', fsa_get_email_addressees() ) );
+		}
+		
+		$args['to'] = fsa_get_email_addressees();
+		$args['subject'] = "TEST - " . $args['subject'] . " - NO ACTION REQUIRED";
+		
+		return $args;
+	}
+	
+	function fsa_get_email_addressees() {
+		if ( is_multisite() ) {
+			return array( get_site_option('admin_email') );
+		} else {
+			return array( get_option('admin_email') );	
+		}
+	}
 
 	// Instant search in de lange lijst substies
 	// Zie https://github.com/trepmal/my-sites-search

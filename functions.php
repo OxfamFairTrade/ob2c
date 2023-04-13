@@ -2156,22 +2156,6 @@
 		return $subject;
 	}
 
-	// Wijzig de bestemmelingen van de adminmails
-	add_filter( 'woocommerce_email_recipient_new_order', 'switch_admin_recipient_dynamically', 10, 1 );
-	add_filter( 'woocommerce_email_recipient_cancelled_order', 'switch_admin_recipient_dynamically', 10, 1 );
-
-	function switch_admin_recipient_dynamically( $recipients ) {
-		return get_staged_recipients( $recipients );
-	}
-
-	// Leid mails op DEV-omgevingen om naar de site admin
-	function get_staged_recipients( $recipients ) {
-		if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
-			return get_site_option('admin_email');
-		}
-		return $recipients;
-	}
-
 	// Verhinder dat er meerdere mails vertrekken als er meerdere labels aangemaakt worden in Sendcloud
 	// FILTER WORDT SOWIESO MEERDERE KEREN DOORLOPEN, OOK BIJ EENMALIGE MAIL, DUS NIET GEBRUIKEN
 	// add_filter( 'woocommerce_email_recipient_customer_completed_order', 'prevent_multiple_shipping_confirmations', 10, 2 );
@@ -4289,20 +4273,20 @@
 			<?php
 		}
 	}
-
+	
 	// Zet webshopbeheerder in BCC bij versturen van B2B-uitnodigingsmails
 	add_filter( 'woocommerce_email_headers', 'put_shop_manager_in_bcc', 10, 3 );
-
+	
 	function put_shop_manager_in_bcc( $headers, $type, $object ) {
 		$extra_recipients = array();
-
+		
 		// We hernoemden de 'customer_new_account'-template maar het type blijft ongewijzigd!
 		if ( $type === 'customer_reset_password' ) {
 			// Bij dit type mogen we ervan uit gaan dat $object een WP_User bevat met de property ID
 			if ( is_b2b_customer( $object->ID ) ) {
 				$logger = wc_get_logger();
 				$context = array( 'source' => 'Oxfam' );
-
+				
 				// Door bestaan van tijdelijke file te checken, vermijden we om ook in BCC te belanden bij échte wachtwoordresets van B2B-gebruikers
 				if ( file_exists( get_stylesheet_directory().'/woocommerce/emails/temporary.php' ) ) {
 					$extra_recipients[] = get_webshop_name().' <'.get_webshop_email().'>';
@@ -4312,10 +4296,11 @@
 				}
 			}
 		} elseif ( in_array( $type, array( 'new_order', 'customer_processing_order', 'customer_refunded_order', 'customer_completed_order', 'customer_note' ) ) ) {
-			$extra_recipients[] = get_staged_recipients('webshop@oft.be');
+			$extra_recipients[] = 'webshop@oft.be';
 		}
-
-		if ( count( $extra_recipients ) > 0 ) {
+		
+		// BCC-header enkel toevoegen indien zinvol
+		if ( count( $extra_recipients ) > 0 and wp_get_environment_type() === 'production' ) {
 			// Gebruik voor alle zekerheid dubbele quotes rond newline command
 			$headers .= "BCC: ".implode( ',', $extra_recipients )."\r\n";
 		}

@@ -577,17 +577,11 @@
 	
 	// Verstuur een mail naar de helpdesk uit naam van de lokale webshop
 	function send_automated_mail_to_helpdesk( $subject, $body ) {
-		if ( wp_get_environment_type() !== 'production' ) {
-			$subject = 'TEST - '.$subject.' - NO ACTION REQUIRED';
-			// Mails eventueel volledig uitschakelen
-			// return;
-		}
-		
 		$headers = array();
 		$headers[] = 'From: '.get_webshop_name().' <'.get_option('admin_email').'>';
 		$headers[] = 'Content-Type: text/html';
 		// $body moét effectief HTML-code bevatten, anders werpt WP Mail Log soms een error op!
-		wp_mail( get_staged_recipients('webshop@oft.be'), $subject, $body, $headers );
+		wp_mail( 'webshop@oft.be', $subject, $body, $headers );
 	}
 	
 	// Definitie van labels en verplichte voedingswaarden
