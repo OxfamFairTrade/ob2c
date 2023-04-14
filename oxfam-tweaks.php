@@ -1,18 +1,22 @@
 <?php
-
+	
 	if ( ! defined('ABSPATH') ) exit;
-
+	
+	##########
+	# TWEAKS #
+	##########
+	
 	// Toon custom Oxfam-berichten met actuele info bovenaan adminpagina's
 	// Moet een latere prioriteit hebben dan hide_non_oxfam_notices!
 	add_action( 'admin_head', 'show_oxfam_notices', 20000 );
-
+	
 	function show_oxfam_notices() {
 		add_action( 'admin_notices', 'oxfam_admin_notices_dashboard' );
 		add_action( 'admin_notices', 'oxfam_admin_notices_reports' );
 		// Uitgeschakeld
 		// add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
 	}
-
+	
 	function oxfam_admin_notices_dashboard() {
 		global $pagenow, $post_type;
 		$screen = get_current_screen();
@@ -166,11 +170,11 @@
 			$credit_month_timestamp = strtotime( '-1 month', strtotime('first day of this month') );
 			$query = "SELECT * FROM {$wpdb->base_prefix}universal_coupons WHERE blog_id = ".get_current_blog_id()." AND DATE(credited) = '".date_i18n( 'Y-m-d', $credit_date_timestamp )."';";
 			$results = $wpdb->get_results( $query );
-
+			
 			$sum = array_reduce( $results, function( $carry, $row ) {
 				return $carry + $row->value;
 			}, 0 );
-
+			
 			if ( $sum > 0 ) {
 				echo '<div class="notice notice-success"><p>';
 					if ( $credit_date_timestamp >= strtotime('today') ) {
