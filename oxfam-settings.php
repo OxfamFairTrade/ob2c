@@ -46,6 +46,13 @@
 		return $access;
 	}
 	
+	// Aanpassingen voor iPhone 10+
+	add_filter( 'admin_viewport_meta', 'oft_change_admin_viewport', 10, 1 );
+	
+	function oft_change_admin_viewport( $value ) {
+		return 'width=device-width, initial-scale=1, viewport-fit=cover';
+	}
+	
 	// Toon breadcrumbs wél op shoppagina's
 	add_filter( 'nm_shop_breadcrumbs_hide', '__return_false' );
 	// Laad géén extra NM-stijlen rechtstreeks in de pagina!

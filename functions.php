@@ -6978,9 +6978,6 @@
 	add_action( 'admin_head', 'hide_non_oxfam_notices', 10000 );
 	
 	function hide_non_oxfam_notices() {
-		// Aanpassingen voor iPhone 10+
-		echo '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">';
-	
 		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor niet inschakelen!
 		if ( ! current_user_can('create_sites') ) {
 			remove_all_actions('admin_notices');
