@@ -2251,7 +2251,7 @@
 	add_filter( 'ure_post_edit_access_authors_list', 'ure_modify_authors_list', 10, 1 );
 
 	function ure_modify_authors_list( $authors ) {
-		// Producten die aangemaakt werden door een voormalige beheerder dreigen onbewerkbaar te worden
+		// Opgelet: producten die aangemaakt werden door een voormalige beheerder dreigen onbewerkbaar te worden!
 		// Zie daarom change_products_author_on_local_manager_demote()
 		if ( count( get_local_manager_user_ids() ) > 0 ) {
 			// write_log( get_webshop_name().": allow edit products of these author IDs: ".get_local_manager_user_ids( true ) );
@@ -2259,6 +2259,24 @@
 		} else {
 			return $authors;
 		}
+	}
+	
+	// Toon ook de nationale producten die de gebruiker niét kan bewerken
+	add_filter( 'ure_posts_show_full_list', '__return_true' );
+	
+	// 'Posts edit access'-module blokkeert automatisch ook het inkijken van andere post types, zoals orders!
+	add_filter( 'ure_restrict_edit_post_type', 'exclude_posts_from_edit_restrictions' );
+	
+	function exclude_posts_from_edit_restrictions( $post_type ) {
+		$restrict_it = false;
+		if ( $post_type === 'product' ) {
+			$user_meta = get_userdata( get_current_user_id() );
+			if ( in_array( 'local_manager', $user_meta->roles ) ) {
+				// write_log( get_webshop_name().": restrict edit products for local manager with user-ID ".get_current_user_id() );
+				$restrict_it = true;
+			}
+		}
+		return $restrict_it;
 	}
 	
 	// Pas bij het degraderen van een local manager de auteur van zijn/haar producten aan naar de hoofdbeheerder
@@ -2323,25 +2341,6 @@
 			return array();
 		}
 	}
-
-	// 'Posts edit access'-module blokkeert automatisch ook het inkijken van andere post types zoals orders!
-	add_filter( 'ure_restrict_edit_post_type', 'exclude_posts_from_edit_restrictions' );
-
-	function exclude_posts_from_edit_restrictions( $post_type ) {
-		$restrict_it = false;
-		if ( $post_type === 'product' ) {
-			$user_meta = get_userdata( get_current_user_id() );
-			if ( in_array( 'local_manager', $user_meta->roles ) ) {
-				// write_log( get_webshop_name().": restrict edit products for local manager with user-ID ".get_current_user_id() );
-				$restrict_it = true;
-			}
-		}
-		return $restrict_it;
-	}
-
-	// Lijst ook de posts op die de gebruiker niét kan bewerken (standaard uitgeschakeld)
-	// Toch niet doen, in dat geval retourneert is_restriction_applicable() false en wordt 'ure_restrict_edit_post_type' niet doorlopen!
-	// add_filter( 'ure_posts_show_full_list', '__return_true' );
 
 	// Enkel admins mogen producten dupliceren
 	add_filter( 'woocommerce_duplicate_product_capability', function( $cap ) {
