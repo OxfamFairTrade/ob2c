@@ -257,8 +257,8 @@ class URE_Grant_Roles {
             $bbp_roles = $bbpress->extract_bbp_roles( $user->roles );
         }
         $user->remove_all_caps();
-        $roles = array_merge(array( $primary_role ), $bbp_roles, $roles );
-        foreach( $roles as $role ) {
+        $roles2 = ure_array_merge( array( $primary_role ), $bbp_roles, $roles );
+        foreach( $roles2 as $role ) {
             $user->add_role( $role );
         }
         
@@ -401,7 +401,6 @@ class URE_Grant_Roles {
 <?php        
         $show_admin_role = $this->lib->show_admin_role_allowed();        
         $roles = $this->lib->get_all_editable_roles(); 
-        ksort( $roles );
         foreach ($roles as $role_id => $role) {
             if (!$show_admin_role && $role_id=='administrator') {
                 continue;
@@ -429,7 +428,7 @@ class URE_Grant_Roles {
     
     
     public function show_roles_manage_html() {
-                      
+        
         // GEWIJZIGD: Rechten verhogen zodat verwarrende buttons niet verschijnen
         if ( ! current_user_can('update_core') ) {
             return;
