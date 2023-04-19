@@ -28,10 +28,10 @@
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
 	}
 	
-	// Toon custom Oxfam-berichten met actuele info bovenaan adminpagina's
-	add_action( 'admin_head', 'hide_non_oxfam_notices', 1000 );
+	// Toon custom Oxfam-berichten met actuele info bovenaan bepaalde adminpagina's
+	add_action( 'admin_head', 'show_oxfam_notices', 1000 );
 	
-	function hide_non_oxfam_notices() {
+	function show_oxfam_notices() {
 		// Verberg alle berichten van plugins voor non-admins
 		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor Pro niét inschakelen!
 		if ( ! current_user_can('create_sites') ) {
@@ -65,129 +65,105 @@
 				echo '</div>';
 			}
 			
-			if ( get_current_site()->domain === 'shop.oxfamwereldwinkels.be' ) {
-				if ( '' !== ( $success = get_site_option( 'oxfam_shop_dashboard_notice_success', '' ) ) ) {
-					echo '<div class="notice notice-success">';
-						echo '<p>' . stripslashes( $success ) . '</p>';
-					echo '</div>';
-				}
-				
-				// Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder <a href="admin.php?page=oxfam-options">Winkelgegevens</a> kan de geschenkmand ook thuisgeleverd worden.
-				if ( '' !== ( $info = get_site_option( 'oxfam_shop_dashboard_notice_info', '' ) ) ) {
-					echo '<div class="notice notice-info">';
-						echo '<p>' . stripslashes( $info ) . '</p>';
-					echo '</div>';
-				}
-				
-				if ( '' !== ( $warning = get_site_option( 'oxfam_shop_dashboard_notice_warning', '' ) ) ) {
-					echo '<div class="notice notice-warning">';
-						echo '<p>' . stripslashes( $warning ) . '</p>';
-					echo '</div>';
-				}
-				
-				$new_skus = get_site_option( 'oxfam_shop_dashboard_notice_new_products', array() );
-				if ( count( $new_skus ) > 0 ) {
-					echo '<div class="notice notice-success">';
-						echo '<p>Deze nieuwigheden werden onlangs toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
-							foreach ( $new_skus as $sku ) {
-								$product_id = wc_get_product_id_by_sku( $sku );
-								if ( $product_id ) {
-									$product = wc_get_product( $product_id );
-									echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-								}
+			if ( '' !== ( $success = get_site_option( 'oxfam_shop_dashboard_notice_success', '' ) ) ) {
+				echo '<div class="notice notice-success">';
+					echo '<p>' . stripslashes( $success ) . '</p>';
+				echo '</div>';
+			}
+			
+			// Er werden twee geschenkverpakkingen toegevoegd: een geschenkmand (servicekost: 3,95 euro, enkel afhaling) en een geschenkdoos (servicekost: 2,50 euro, ook thuislevering). Door minstens één product op voorraad te zetten activeer je de module. Onder het winkelmandje verschijnt dan een opvallende knop om een geschenkverpakking toe te voegen. <a href="https://github.com/OxfamFairTrade/ob2c/wiki/9.-Lokaal-assortiment#geschenkverpakkingen" target="_blank">Raadpleeg de handleiding voor info over de werking en hoe je zelf geschenkverpakkingen kunt aanmaken met andere prijzen/voorwaarden.</a> Opmerking: indien je thuislevering van breekbare goederen inschakelde onder <a href="admin.php?page=oxfam-options">Winkelgegevens</a> kan de geschenkmand ook thuisgeleverd worden.
+			if ( '' !== ( $info = get_site_option( 'oxfam_shop_dashboard_notice_info', '' ) ) ) {
+				echo '<div class="notice notice-info">';
+					echo '<p>' . stripslashes( $info ) . '</p>';
+				echo '</div>';
+			}
+			
+			if ( '' !== ( $warning = get_site_option( 'oxfam_shop_dashboard_notice_warning', '' ) ) ) {
+				echo '<div class="notice notice-warning">';
+					echo '<p>' . stripslashes( $warning ) . '</p>';
+				echo '</div>';
+			}
+			
+			$new_skus = get_site_option( 'oxfam_shop_dashboard_notice_new_products', array() );
+			if ( count( $new_skus ) > 0 ) {
+				echo '<div class="notice notice-success">';
+					echo '<p>Deze nieuwigheden werden onlangs toegevoegd aan de database:</p><ul style="margin-left: 2em; column-count: 2;">';
+						foreach ( $new_skus as $sku ) {
+							$product_id = wc_get_product_id_by_sku( $sku );
+							if ( $product_id ) {
+								$product = wc_get_product( $product_id );
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
 							}
-						echo '</ul><p>';
-						if ( current_user_can('manage_network_users') ) {
-							echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
 						}
-						echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
-					echo '</div>';
-				}
-				
-				$replaced_skus = get_site_option( 'oxfam_shop_dashboard_notice_replaced_products', array() );
-				if ( count( $replaced_skus ) > 0 ) {	
-					echo '<div class="notice notice-success">';
-						echo '<p>Volgende referenties vervangen een bestaand product (met ongewijzigde verpakking):</p><ul style="margin-left: 2em; column-count: 2;">';
-							foreach ( $replaced_skus as $old_new ) {
-								$parts = explode( '-', $old_new );
-								if ( count( $parts ) !== 2 ) {
-									continue;
-								}
-								$old_sku = $parts[0];
-								$new_sku = $parts[1];
-								$product_id = wc_get_product_id_by_sku( $new_sku );
-								if ( $product_id ) {
-									$product = wc_get_product( $product_id );
-									echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_sku().' '.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')';
-									
-									$old_product_id = wc_get_product_id_by_sku( $old_sku );
-									$old_product = wc_get_product( $old_product_id );
-									if ( $old_product ) {
-										echo ', vervangt '.$old_product->get_sku().' '.$old_product->get_title();
-									}
-									
-									echo '</li>';
-								}
+					echo '</ul><p>';
+					if ( current_user_can('manage_network_users') ) {
+						echo 'Je herkent deze producten aan de blauwe achtergrond onder \'<a href="admin.php?page=oxfam-products-list">Voorraadbeheer</a>\'. ';
+					}
+					echo 'Pas wanneer een beheerder ze in voorraad plaatst, worden deze producten bestelbaar voor klanten.</p>';
+				echo '</div>';
+			}
+			
+			$replaced_skus = get_site_option( 'oxfam_shop_dashboard_notice_replaced_products', array() );
+			if ( count( $replaced_skus ) > 0 ) {	
+				echo '<div class="notice notice-success">';
+					echo '<p>Volgende referenties vervangen een bestaand product (met ongewijzigde verpakking):</p><ul style="margin-left: 2em; column-count: 2;">';
+						foreach ( $replaced_skus as $old_new ) {
+							$parts = explode( '-', $old_new );
+							if ( count( $parts ) !== 2 ) {
+								continue;
 							}
-						echo '</ul><p>De voorraadstatus van het bestaande product werd overgenomen en het oude ompaknummer werd verborgen.</p>';
-					echo '</div>';
-				}
-				
-				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
-				// echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra referenties beschikbaar die de voorbije maanden verschenen:</p>';
-				// echo '<ul>';
-				// 	echo '<li>Kalenders en agenda\'s voor 2023:<ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 87570, 87571, 87420, 87421, 87422, 87423, 87424, 87425, 87426, 87427, 87428, 87429, 87430, 87431 );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product( $product_id );
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul></li>';
-				// 	
-				// 	echo '<li>Nieuwe verzorgingsproducten:<ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 45247, 45258, 45262, 45267, 45390, 65200, 65202, 65204, 65205, 65207, 65208, 65209, 65215, 65228, 65229, 65269, 65270, 65273, 65274, 87359, 87360, 87361 );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product( $product_id );
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul></li>';
-				// 	
-				// 	echo '<li>Nieuwe onderhoudsproducten:<ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 87309, 87312, 87351, 80282, 80283, 80306, 80313, 80314, 80315 );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product( $product_id );
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul></li>';
-				// 	
-				// 	echo '<li>Nieuwe Dopper-drinkflessen:<ul style="margin-left: 2em; column-count: 2;">';
-				// 		$skus = array( 12374, 12375, 12376, 12377, 12378, 12379, 12380, 12381 );
-				// 		foreach ( $skus as $sku ) {
-				// 			$product_id = wc_get_product_id_by_sku( $sku );
-				// 			if ( $product_id ) {
-				// 				$product = wc_get_product( $product_id );
-				// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
-				// 			}
-				// 		}
-				// 	echo '</ul><p>Omdat sommige van deze producten al langer dan 3 maanden bestelbaar zijn, krijgen ze niet allemaal een blauwe achtergrond in de voorraadlijst!</p></li>';
-				// echo '</ul>';
-				
-				if ( does_home_delivery() ) {
-					// Boodschappen voor winkels die thuislevering doen
-				}
-				
-				if ( does_sendcloud_delivery() ) {
-					// Boodschappen voor winkels die verzenden met SendCloud
-				}
+							$old_sku = $parts[0];
+							$new_sku = $parts[1];
+							$product_id = wc_get_product_id_by_sku( $new_sku );
+							if ( $product_id ) {
+								$product = wc_get_product( $product_id );
+								echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_sku().' '.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')';
+								
+								$old_product_id = wc_get_product_id_by_sku( $old_sku );
+								$old_product = wc_get_product( $old_product_id );
+								if ( $old_product ) {
+									echo ', vervangt '.$old_product->get_sku().' '.$old_product->get_title();
+								}
+								
+								echo '</li>';
+							}
+						}
+					echo '</ul><p>De voorraadstatus van het bestaande product werd overgenomen en het oude ompaknummer werd verborgen.</p>';
+				echo '</div>';
+			}
+			
+			// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
+			// echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra referenties beschikbaar die de voorbije maanden verschenen:</p>';
+			// echo '<ul>';
+			// 	echo '<li>Kalenders en agenda\'s voor 2023:<ul style="margin-left: 2em; column-count: 2;">';
+			// 		$skus = array( 87570, 87571, 87420, 87421, 87422, 87423, 87424, 87425, 87426, 87427, 87428, 87429, 87430, 87431 );
+			// 		foreach ( $skus as $sku ) {
+			// 			$product_id = wc_get_product_id_by_sku( $sku );
+			// 			if ( $product_id ) {
+			// 				$product = wc_get_product( $product_id );
+			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+			// 			}
+			// 		}
+			// 	echo '</ul></li>';
+			// 	
+			// 	echo '<li>Nieuwe Dopper-drinkflessen:<ul style="margin-left: 2em; column-count: 2;">';
+			// 		$skus = array( 12374, 12375, 12376, 12377, 12378, 12379, 12380, 12381 );
+			// 		foreach ( $skus as $sku ) {
+			// 			$product_id = wc_get_product_id_by_sku( $sku );
+			// 			if ( $product_id ) {
+			// 				$product = wc_get_product( $product_id );
+			// 				echo '<li><a href="'.$product->get_permalink().'" target="_blank">'.$product->get_title().'</a> ('.$product->get_meta('_shopplus_code').')</li>';
+			// 			}
+			// 		}
+			// 	echo '</ul><p>Omdat sommige van deze producten al langer dan 3 maanden bestelbaar zijn, krijgen ze niet allemaal een blauwe achtergrond in de voorraadlijst!</p></li>';
+			// echo '</ul>';
+			
+			if ( does_home_delivery() ) {
+				// Boodschappen voor winkels die thuislevering doen
+			}
+			
+			if ( does_sendcloud_delivery() ) {
+				// Boodschappen voor winkels die verzenden met SendCloud
 			}
 		}
 	}
