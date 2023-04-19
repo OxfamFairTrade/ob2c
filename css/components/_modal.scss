@@ -165,8 +165,11 @@
           color: $shop-grey;
         }
         
-        span {
-          width: 100%;
+        @media (max-width: 767px) {
+          span {
+            width: 100%;
+            text-align: center;
+          }
         }
       }
     }
@@ -202,7 +205,7 @@
     .wpsl-delivery-wrap {
       .delivery-options {
         > li {
-          padding: 0 !important;
+          padding: 5px 0 0 0 !important;
           margin: 0 5px 0 0 !important;
           display: inline-block;
 
