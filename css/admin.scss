@@ -7,22 +7,30 @@
 	Text Domain:	oxfam-admin
 */
 
-// Veilige marges voor iPhone 10+
+/* Veilige marges voor iPhone 10+ */
 #wpbody {
 	margin-right: env(safe-area-inset-right);
 }
 
-#woocommerce_dashboard_status .wc_status_list {
-	li.claimed-orders a::before {
-		font-family: 'Dashicons';
-		content: '\f513';
-		color: #e70052;
-	}
-
-	li.pending-orders a::before {
-		font-family: 'WooCommerce';
-		content: '\e012';
-		color: #ffba00;
+/* Verberg default WooCommerce-widgets op dashboard, en stel icoontjes in voor custom widgets */
+#woocommerce_dashboard_status {
+	.wc_status_list {
+		.processing-orders,
+		.on-hold-orders {
+			display: none;
+		}
+		
+		.orders-to-claim a::before {
+			font-family: 'WooCommerce';
+			content: '\e012';
+			color: #ffba00;
+		}
+		
+		.orders-to-pick a::before {
+			font-family: 'Dashicons';
+			content: '\f513';
+			color: #e70052;
+		}
 	}
 }
 
