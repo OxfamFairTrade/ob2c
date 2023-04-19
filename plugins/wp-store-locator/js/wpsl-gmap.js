@@ -689,8 +689,8 @@ function handleGeolocationQuery( startLatLng, position, resetMap, infoWindow ) {
  * @returns {void}
  */
 function searchLocationBtn( infoWindow ) {
-	/* GEWIJZIGD: Verwijder .unbind( "click" ) NOG NODIG?? */
-	$( "#wpsl-search-btn" ).unbind( "click" ).bind( "click", function( e ) {
+	/* GEWIJZIGD: Verwijder .unbind( "click" ), anders werkt onze postcodelijst niet (door auto complete) */
+	$( "#wpsl-search-btn" ).bind( "click", function( e ) {
 		$( "#wpsl-search-input" ).removeClass();
 
 		if ( !$( "#wpsl-search-input" ).val() ) {
