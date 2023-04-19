@@ -135,7 +135,7 @@
   }
 
   &.wpsl-store-below #wpsl-result-list > div > ul > li {
-    padding: 10px 20px;
+    padding: 10px 5px;
     border-bottom: 1px solid $wpsl-grey;
 
     &:hover {
@@ -163,6 +163,10 @@
         a {
           text-decoration: underline;
           color: $shop-grey;
+        }
+        
+        span {
+          width: 100%;
         }
       }
     }
@@ -245,6 +249,7 @@
         font-size: 14px;
         line-height: 25px;
         text-align: center;
+        margin: 0 auto;
       }
     }
   }
