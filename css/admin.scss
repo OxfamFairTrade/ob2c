@@ -20,16 +20,32 @@
 			display: none;
 		}
 		
-		.orders-to-claim a::before {
-			font-family: 'WooCommerce';
-			content: '\e012';
-			color: #ffba00;
+		.orders-claimed {
+			border-right: 1px solid #ececec;
+			
+			a::before {
+				font-family: 'Dashicons';
+				content: '\e012';
+				color: #e70052;
+			}
 		}
 		
-		.orders-to-pick a::before {
-			font-family: 'Dashicons';
-			content: '\f513';
-			color: #e70052;
+		.orders-processing {
+			border-right: 1px solid #ececec;
+			
+			a::before {
+				font-family: 'WooCommerce';
+				content: '\e011';
+				color: #7ad03a;
+			}
+		}
+		
+		.orders-on-hold {
+			a::before {
+				font-family: 'WooCommerce';
+				content: '\e033';
+				color: #999999;
+			}
 		}
 	}
 }

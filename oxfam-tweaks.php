@@ -2,19 +2,51 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 	
-	##########
-	# TWEAKS #
-	##########
+	################
+	# COMMUNICATIE #
+	################
+	
+	// Schakel onnuttige widgets uit voor iedereen
+	add_action( 'admin_init', 'remove_dashboard_meta' );
+	
+	function remove_dashboard_meta() {
+		remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
+		remove_meta_box( 'dashboard_activity', 'dashboard', 'normal' );
+		remove_meta_box( 'woocommerce_dashboard_recent_reviews', 'dashboard', 'normal' );
+		remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
+		remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
+		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item', 'side' );
+		remove_meta_box( 'wpb_visual_composer', 'vc_grid_item-network', 'side' );
+		
+		if ( ! current_user_can('create_sites') ) {
+			remove_meta_box( 'dashboard_primary', 'dashboard-network', 'normal' );
+			remove_meta_box( 'network_dashboard_right_now', 'dashboard-network', 'normal' );
+			// Want lukt niet via User Role Editor Pro
+			remove_meta_box( 'postcustom', 'shop_order', 'normal' );
+		}
+		
+		remove_action( 'welcome_panel', 'wp_welcome_panel' );
+	}
 	
 	// Toon custom Oxfam-berichten met actuele info bovenaan adminpagina's
-	// Moet een latere prioriteit hebben dan hide_non_oxfam_notices!
-	add_action( 'admin_head', 'show_oxfam_notices', 20000 );
+	add_action( 'admin_head', 'hide_non_oxfam_notices', 1000 );
 	
-	function show_oxfam_notices() {
+	function hide_non_oxfam_notices() {
+		// Verberg alle berichten van plugins voor non-admins
+		// Gelijkaardige 'Show plugins/themes notices to admin only'-optie van User Role Editor Pro niét inschakelen!
+		if ( ! current_user_can('create_sites') ) {
+			remove_all_actions('admin_notices');
+		} else {
+			// Extra info voor beheerders (bv. statistieken van een lopende promotie)
+			// add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
+		}
+		
+		// Toon meldingen bovenaan dashboard (zoals ingesteld via de 'Dashboard'-pagina)
 		add_action( 'admin_notices', 'oxfam_admin_notices_dashboard' );
+		// Toon meldingen bovenaan rapporten (bv. aantal digicheques die gecrediteerd zullen worden)
 		add_action( 'admin_notices', 'oxfam_admin_notices_reports' );
-		// Uitgeschakeld
-		// add_action( 'network_admin_notices', 'oxfam_network_admin_notices' );
+		// Toon meldingen bovenaan bestellingen (indien bulkwijziging op geblokkeerd werd)
+		add_action( 'admin_notices', 'oxfam_admin_notices_orders' );
 	}
 	
 	function oxfam_admin_notices_dashboard() {
@@ -190,7 +222,21 @@
 			}
 		}
 	}
-
+	
+	function oxfam_admin_notices_orders() {
+		global $pagenow, $post_type;
+		
+		if ( 'edit.php' === $pagenow and 'shop_order' === $post_type ) {
+			if ( isset( $_REQUEST['bulk_action'] ) ) {
+				if ( $_REQUEST['bulk_action'] === 'marked_completed' ) {
+					$number = isset( $_REQUEST['changed'] ) ? absint( $_REQUEST['changed'] ) : 0;
+					$message = sprintf( _n( '%d bestelstatus proberen te wijzigen.', '%d bestelstatussen proberen te wijzigen.', $number, 'woocommerce' ), number_format_i18n( $number ) );
+					echo '<div class="updated"><p>' . esc_html( $message ) . ' Ongeldige wijzigingen kunnen tegengehouden zijn door het systeem! Raadpleeg de logs in de rechterkolom van het orderdetail als je merkt dat de status onveranderd gebleven is.</p></div>';
+				}
+			}
+		}
+	}
+	
 	function oxfam_network_admin_notices() {
 		global $pagenow;
 		$screen = get_current_screen();
@@ -227,4 +273,25 @@
 				echo '</ul>';
 			echo '</div>';
 		}
+	}
+	
+	// Voeg een custom dashboard widget toe met nieuws over het pilootproject
+	add_action( 'wp_dashboard_setup', 'add_pilot_widget' );
+	
+	function add_pilot_widget() {
+		global $wp_meta_boxes;
+		
+		wp_add_dashboard_widget(
+			'dashboard_pilot_news_widget',
+			'Info voor webshopmedewerkers',
+			'dashboard_pilot_news_widget_callback'
+		);
+	}
+	
+	function dashboard_pilot_news_widget_callback() {
+		echo '<div class="rss-widget">';
+		echo '<p>De <a href="https://github.com/OxfamFairTrade/ob2c/wiki" target="_blank">online FAQ voor webshopbeheerders</a> staat online. Hierin verzamelen we alle mogelijke vragen die jullie als lokale webshopbeheerders kunnen hebben en beantwoorden we ze punt per punt met tekst en screenshots. Gebruik eventueel de zoekfunctie bovenaan rechts.</p>';
+		echo '<p>Daarnaast kun je de nieuwe slides van de voorbije opleidingssessies raadplegen voor een overzicht van alle afspraken en praktische details: <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-concept.pdf" download>Deel 1: Concept</a> (16/05/2020) en <a href="https://shop.oxfamwereldwinkels.be/wp-content/uploads/slides-opleiding-B2C-webshop-praktisch.pdf" download>Deel 2: Praktisch</a> (30/05/2020). Op <a href="https://copain.oww.be/webshop" target="_blank">de webshoppagina op Copain</a> vind je een overzicht van de belangrijkste documenten.</p>';
+		echo '<p>Stuur een mailtje naar de <a href="mailto:webshop@oft.be">Helpdesk E-Commerce</a> als er toch nog iets onduidelijk is, of als je een suggestie hebt. Tineke, Ive en Sam helpen je zo snel mogelijk verder.</p>';
+		echo '</div>';
 	}

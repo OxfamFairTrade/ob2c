@@ -2,10 +2,6 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 	
-	############
-	# SETTINGS #
-	############
-	
 	// Schakel Gutenberg-editor uit (ook voor widgets)
 	add_filter( 'use_block_editor_for_post', '__return_false', 100 );
 	add_filter( 'use_block_editor_for_post_type', '__return_false', 100 );

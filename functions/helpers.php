@@ -528,6 +528,112 @@
 	
 	
 	
+	####################
+	# ORDER PROPERTIES #
+	####################
+	
+	function get_tracking_info( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+		
+		// Query alle order comments waarin het over SendCloud gaat en zet de oudste bovenaan
+		$args = array( 'post_id' => $order->get_id(), 'type' => 'order_note', 'orderby' => 'comment_date_gmt', 'order' => 'ASC', 'search' => 'sendcloud' );
+		// Want anders zien we de private opmerkingen niet!
+		remove_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
+		$comments = get_comments( $args );
+		
+		$tracking_info = false;
+		if ( count( $comments ) > 0 ) {
+			// Geef alle waardes door!
+			$tracking_info = array();
+			
+			foreach ( $comments as $sendcloud_note ) {
+				// Enkel waarde in meest recente comment zal geretourneerd worden!
+				// $tracking_info = array();
+				
+				if ( preg_match( '/[0-9]{24}/', $sendcloud_note->comment_content, $numbers ) === 1 ) {
+					// We hebben 24-cijferig tracking number van Bpost gevonden
+					$params = array(
+						'carrier' => 'Bpost',
+						'number' => $numbers[0],
+					);
+				} elseif ( preg_match( '/[0-9]{14}/', $sendcloud_note->comment_content, $numbers ) === 1 ) {
+					// We hebben 14-cijferig tracking number van DPD gevonden
+					$params = array(
+						'carrier' => 'DPD',
+						'number' => $numbers[0],
+					);
+				}
+				
+				// Zeer gevoelig voor wijzigingen van SendCloud uit!
+				$parts = explode( 'traced at: ', $sendcloud_note->comment_content );
+				if ( count( $parts ) > 1 ) {
+					$params['link'] = $parts[1];
+				}
+				
+				$tracking_info[] = $params;
+			}
+		}
+		
+		// Reactiveer filter
+		add_filter( 'comments_clauses', array( 'WC_Comments', 'exclude_order_comments' ) );
+		
+		return $tracking_info;
+	}
+	
+	function get_logistic_params( $order, $echo = false ) {
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+		
+		$params = array();
+		$params['volume'] = 0.0;
+		$params['maximum'] = 0.0;
+		$params['weight'] = 0.0;
+		
+		foreach ( $order->get_items() as $line_item ) {
+			if ( false !== ( $product = $line_item->get_product() ) ) {
+				$volume = 1.0;
+				
+				if ( ( $length = floatval( $product->get_length() ) ) > 0 ) {
+					$volume *= $length;
+					if ( $length > $params['maximum'] ) {
+						$params['maximum'] = $length;
+					}
+				}
+				if ( ( $width = floatval( $product->get_width() ) ) > 0 ) {
+					$volume *= $width;
+					if ( $width > $params['maximum'] ) {
+						$params['maximum'] = $width;
+					}
+				}
+				if ( ( $height = floatval( $product->get_height() ) ) > 0 ) {
+					$volume *= $height;
+					if ( $height > $params['maximum'] ) {
+						$params['maximum'] = $height;
+					}
+				}
+				
+				if ( $echo ) {
+					echo $product->get_name().': '.number_format( $volume / 1000000, 2, ',', '.' ).' liter (x'.$line_item->get_quantity().')<br/>';
+				}
+				$params['volume'] += $line_item->get_quantity() * $volume;
+				$params['weight'] += $line_item->get_quantity() * floatval( $product->get_weight() );
+			}
+		}
+		
+		// Volume omrekenen van kubieke millimeters naar liter
+		$params['volume'] /= 1000000;
+		// Maximale afmeting omrekenen naar cm
+		$params['maximum'] = ceil( $params['maximum'] / 10 );
+		// Gewicht sowieso reeds in kilogram (maar check instellingen?)
+		
+		return $params;
+	}
+	
+	
+	
 	#############
 	# UTILITIES #
 	#############
