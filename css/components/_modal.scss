@@ -204,15 +204,15 @@
 
     .wpsl-delivery-wrap {
       .delivery-options {
+        padding-top: 5px;
+        
         > li {
-          padding: 5px 0 0 0 !important;
+          padding: 0 !important;
           margin: 0 5px 0 0 !important;
           display: inline-block;
 
           &.delivery,
           &.pickup {
-            padding: 0 !important;
-            
             &:before {
               content: "";
               display: inline-block;
