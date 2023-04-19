@@ -211,6 +211,8 @@
 
           &.delivery,
           &.pickup {
+            padding: 0 !important;
+            
             &:before {
               content: "";
               display: inline-block;
