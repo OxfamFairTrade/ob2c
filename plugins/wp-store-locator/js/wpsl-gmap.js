@@ -10,20 +10,43 @@ wpsl.gmaps = {};
  * @since 2.2.22
  * @returns {void}
  */
-function initWpslMap() {
+function wpslBorlabsCallback() {
 	var mapsLoaded;
 
 	mapsLoaded = setInterval( function() {
 		if ( typeof google === 'object' && typeof google.maps === 'object' ) {
 			clearInterval( mapsLoaded );
-
-			jQuery( ".wpsl-gmap-canvas" ).each( function( mapIndex ) {
-				var mapId = jQuery( this ).attr( "id" );
-
-				wpsl.gmaps.init( mapId, mapIndex );
-			});
+			initWpsl();
 		}
 	}, 500 );
+}
+
+/**
+ * Callback required by Google Maps.
+ */
+function wpslCallback() {
+	jQuery( document ).ready( function( $ ) {
+		initWpsl();
+	})
+}
+
+function initWpsl() {
+
+	// Create the maps
+	jQuery( ".wpsl-gmap-canvas" ).each( function ( mapIndex ) {
+		var mapId = jQuery( this ).attr( "id" );
+
+		wpsl.gmaps.init( mapId, mapIndex );
+	});
+
+	// Init JS from the WPSL add-ons.
+	if ( typeof wpslAddons === 'object' ) {
+		for ( const key in wpslAddons ) {
+			if ( wpslAddons.hasOwnProperty( key ) ) {
+				wpslAddons[key].init()
+			}
+		}
+	}
 }
 
 jQuery( document ).ready( function( $ ) {
@@ -221,29 +244,6 @@ wpsl.gmaps.init = function( mapId, mapIndex ) {
 	// Bind the zoom_changed listener.
 	zoomChangedListener();
 };
-
-// Only continue if a map is present.
-if ( $( ".wpsl-gmap-canvas" ).length ) {
-	$( "<img />" ).attr( "src", wpslSettings.url + "img/ajax-loader.gif" );
-
-	/*
-	 * The [wpsl] shortcode can only exist once on a page,
-	 * but the [wpsl_map] shortcode can exist multiple times.
-	 *
-	 * So to make sure we init all the maps we loop over them.
-	 */
-	$( ".wpsl-gmap-canvas" ).each( function( mapIndex ) {
-		var mapId = $( this ).attr( "id" );
-
-		wpsl.gmaps.init( mapId, mapIndex );
-	});
-
-	/*
-	 * Check if we are dealing with a map that's placed in a tab,
-	 * if so run a fix to prevent the map from showing up grey.
-	 */
-	maybeApplyTabFix();
-}
 
 
 /**
@@ -689,10 +689,8 @@ function handleGeolocationQuery( startLatLng, position, resetMap, infoWindow ) {
  * @returns {void}
  */
 function searchLocationBtn( infoWindow ) {
-
-	/* GEWIJZIGD: Verwijder .unbind( "click" ) */
-	$( "#wpsl-search-btn" ).bind( "click", function( e ) {
-		console.log("Executing click binding by WPSL ...");
+	/* GEWIJZIGD: Verwijder .unbind( "click" ) NOG NODIG?? */
+	$( "#wpsl-search-btn" ).unbind( "click" ).bind( "click", function( e ) {
 		$( "#wpsl-search-input" ).removeClass();
 
 		if ( !$( "#wpsl-search-input" ).val() ) {
@@ -1141,18 +1139,14 @@ function codeAddress( infoWindow ) {
 
 		if ( typeof request.componentRestrictions.postalCode !== "undefined" ) {
             request.componentRestrictions.postalCode = $( "#wpsl-search-input" ).val();
-
-            // Mogelijk problemen bij: 1500, 1540, 1541, 1570, 1600, 1620, 1630, 1640, 1650, 1671, 1673, 1700, 1701, 1730, 1740, 1741, 1745, 1755, 1760, 1770, 1790, 1800, 1818, 1830, 1840, 1850, 1852, 1860, 1861, 1880, 1931, 1933, 1934, 1950, 1970, 1980, 1981, 2000, 2018, 2020, 2242, 3321, 3501, 3724
-            // Opgelet: switch is case strict in JavaScript!
+			
+			// GEWIJZIGD: Af en toe lijken er bij Google tijdelijk problemen op te duiken met de Geocoding API NOG NODIG??
+			// Postcodes worden daardoor niet correct vertaald te worden naar locaties, ook al beperken we ons tot België
+			// Problematische postcodes (2020): 1500, 1540, 1541, 1570, 1600, 1620, 1630, 1640, 1650, 1671, 1673, 1700, 1701, 1730, 1740, 1741, 1745, 1755, 1760, 1770, 1790, 1800, 1818, 1830, 1840, 1850, 1852, 1860, 1861, 1880, 1931, 1933, 1934, 1950, 1970, 1980, 1981, 2000, 2018, 2020, 2242, 3321, 3501, 3724
+			// Opgelet: switch vergelijkt case strict in JavaScript!
 			switch( request.componentRestrictions.postalCode ) {
 				case '2000':
 					request.componentRestrictions = { country:"BE", locality:"Antwerpen" };
-					break;
-				case '1931':
-					request.componentRestrictions = { country:"BE", locality:"Brucargo" };
-					break;
-				case '1934':
-					request.componentRestrictions = { country:"BE", locality:"Brussel X" };
 					break;
 				case '3130':
 					request.componentRestrictions = { country:"BE", locality:"Begijnendijk" };
@@ -1167,12 +1161,8 @@ function codeAddress( infoWindow ) {
         request.address = $( "#wpsl-search-input" ).val();
 	}
 
-	geocoder.geocode( request, function( response, status ) {
-		console.log(request);
-		console.log("Executing codeAddress() request ...");
-		console.log(status);
-
-    	if ( status == google.maps.GeocoderStatus.OK ) {
+    geocoder.geocode( request, function( response, status ) {
+		if ( status == google.maps.GeocoderStatus.OK ) {
 
 			if ( statistics.enabled ) {
 				collectStatsData( response );

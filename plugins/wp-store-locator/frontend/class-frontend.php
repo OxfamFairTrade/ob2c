@@ -55,12 +55,12 @@ if ( !class_exists( 'WPSL_Frontend' ) ) {
                 add_action( 'init', array( $this, 'borlabs_cookie' ) );
             }
 
-            add_action( 'wp_ajax_store_search',        array( $this, 'store_search' ) );
-            add_action( 'wp_ajax_nopriv_store_search', array( $this, 'store_search' ) );
-            add_action( 'wp_enqueue_scripts',          array( $this, 'add_frontend_styles' ) );
-            add_action( 'wp_footer',                   array( $this, 'add_frontend_scripts' ) );
+            add_action( 'wp_ajax_store_search',         array( $this, 'store_search' ) );
+            add_action( 'wp_ajax_nopriv_store_search',  array( $this, 'store_search' ) );
+            add_action( 'wp_enqueue_scripts',           array( $this, 'add_frontend_styles' ) );
+            add_action( 'wp_footer',                    array( $this, 'add_frontend_scripts' ) );
 
-            add_filter( 'the_content',                 array( $this, 'cpt_template' ) );
+            add_filter( 'the_content',                  array( $this, 'cpt_template' ) );
 
             add_shortcode( 'wpsl',                 array( $this, 'show_store_locator' ) );
             add_shortcode( 'wpsl_address',         array( $this, 'show_store_address' ) );
@@ -563,7 +563,12 @@ if ( !class_exists( 'WPSL_Frontend' ) ) {
 
                 foreach ( $opening_days as $index => $day ) {
                     $i          = 0;
-                    $hour_count = count( $hours[$index] );
+
+                    if ( isset( $hours[$index] ) && is_array( $hours[$index] ) ) {
+                    	$hour_count = count( $hours[$index] );
+                    } else {
+                        $hour_count = 0;
+                    }
 
                     // If we need to hide days that are set to closed then skip them.
                     if ( $hide_closed && !$hour_count ) {
@@ -1732,6 +1737,8 @@ if ( !class_exists( 'WPSL_Frontend' ) ) {
                 wpsl_deregister_other_gmaps();
             }
 
+            wp_enqueue_script( 'wpsl-js', apply_filters( 'wpsl_gmap_js', WPSL_URL . 'js/wpsl-gmap'. $min .'.js' ), array( 'jquery' ), WPSL_VERSION_NUM, true );
+
             if ( !function_exists( 'BorlabsCookieHelper' ) ) {
                 wp_enqueue_script( 'wpsl-gmap', ( 'https://maps.google.com/maps/api/js' . wpsl_get_gmap_api_params( 'browser_key' ) . '' ), '', null, true );
             } else {
@@ -1856,7 +1863,6 @@ if ( !class_exists( 'WPSL_Frontend' ) ) {
                 $base_settings['mapStyle'] = strip_tags( stripslashes( json_decode( $wpsl_settings['map_style'] ) ) );
             }
 
-            wp_enqueue_script( 'wpsl-js', apply_filters( 'wpsl_gmap_js', WPSL_URL . 'js/wpsl-gmap'. $min .'.js' ), array( 'jquery' ), WPSL_VERSION_NUM, true );
             wp_enqueue_script( 'underscore' );
 
             // Check if we need to include all the settings and labels or just a part of them.
