@@ -10,6 +10,7 @@
 	require_once get_stylesheet_directory() . '/functions/coupons.php';
 	require_once get_stylesheet_directory() . '/functions/external-apis.php';
 	require_once get_stylesheet_directory() . '/functions/helpers.php';
+	require_once get_stylesheet_directory() . '/functions/orders.php';
 	require_once get_stylesheet_directory() . '/functions/relevanssi.php';
 	require_once get_stylesheet_directory() . '/functions/seo.php';
 	require_once get_stylesheet_directory() . '/functions/mailchimp/functions.php';
