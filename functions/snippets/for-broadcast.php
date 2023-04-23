@@ -245,7 +245,7 @@
 	// Verwijder overtollige producttags
 	$taxonomy = 'product_tag';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'b2b', 'alcoholische-dranken' );
+		$terms = array( 'oktober-2020', 'augustus-2021', 'januari-2021', 'april-2021' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {
@@ -279,7 +279,17 @@
 	write_log( get_bloginfo('name').": deleted ".$cnt." terms in ".number_format( microtime(true)-$start, 2, ',', '.' )." seconds" );
 	
 	
-
+	
+	// Verwijder verouderde metadata
+	global $wpdb;
+	$meta_keys = array( '_herkomst_nl' );
+	foreach( $meta_keys as $meta_key ) {
+		$rows_deleted = $wpdb->delete( $wpdb->prefix . 'postmeta', array( 'meta_key' => $meta_key ) );
+		write_log( get_bloginfo('name').": deleted ".$rows_deleted." rows with key '".$meta_key."'" );
+	}
+	
+	
+	
 	// Werk een productcategorie bij
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {

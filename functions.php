@@ -6210,13 +6210,13 @@
 
 		return $output;
 	}
-
+	
 	function ob2c_product_matches_assortment( $product, $assortment ) {
 		switch ( $assortment ) {
 			case 'general':
 				return true;
 				break;
-
+				
 			case 'chocolade':
 			case 'koffie':
 			case 'wijn':
@@ -6229,43 +6229,26 @@
 					return true;
 				}
 				break;
-
+				
 			case 'crafts':
 				if ( is_crafts_product( $product ) ) {
 					return true;
 				}
 				break;
-
-			case 'augustus':
-				if ( has_term( 'augustus-2021', 'product_tag', $product->get_id() ) ) {
-					return true;
-				}
-				break;
-
-			case 'april':
-				if ( has_term( 'april-2021', 'product_tag', $product->get_id() ) ) {
-					return true;
-				}
-				break;
-
-			case 'januari':
-				if ( has_term( 'januari-2021', 'product_tag', $product->get_id() ) ) {
-					return true;
-				}
-				break;
-
+				
+			// Voorlopig niet meer gebruikt
 			case 'oktober':
 				if ( has_term( 'oktober-2020', 'product_tag', $product->get_id() ) ) {
 					return true;
 				}
 				break;
-
+				
 			case 'local':
 				if ( ! is_national_product( $product ) ) {
 					return true;
 				}
 				break;
-
+				
 			// Voorlopig niet meer gebruikt
 			case 'national':
 				if ( is_national_product( $product ) ) {
@@ -6273,7 +6256,7 @@
 				}
 				break;
 		}
-
+		
 		return false;
 	}
 	
