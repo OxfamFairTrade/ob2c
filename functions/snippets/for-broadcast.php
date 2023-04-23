@@ -258,6 +258,8 @@
 				write_log( get_bloginfo('name').": product tag '".$term."' not found" );
 			}
 		}
+		// Pas beschikbaar vanaf WC 5.2+
+		// wc_recount_all_terms();
 	}
 	
 	

@@ -5756,7 +5756,7 @@
 		add_submenu_page( 'oxfam-products-list', 'Ontbijt', 'Ontbijt', 'manage_network_users', 'oxfam-products-list-ontbijt', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Snacks', 'Snacks', 'manage_network_users', 'oxfam-products-list-snacks', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Wereldkeuken', 'Wereldkeuken', 'manage_network_users', 'oxfam-products-list-wereldkeuken', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Alle craftsproducten', 'Alle craftsproducten', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Non-food', 'Non-food', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
 
 		add_menu_page( 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 'dashicons-tickets-alt', 58 );
@@ -6694,7 +6694,7 @@
 				'post_status'		=> 'publish',
 				'posts_per_page'	=> -1,
 				'meta_key'			=> 'touched_by_import',
-				'meta_value'		=> date( 'Ymd', strtotime('-10 days') ),
+				'meta_value'		=> date( 'Ymd', strtotime('-30 days') ),
 				'meta_compare'		=> '<',
 			);
 			$to_outofstock = new WP_Query( $args );
