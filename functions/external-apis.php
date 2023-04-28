@@ -43,10 +43,16 @@
 			$context = array( 'source' => 'WordPress API' );
 			$per_page = 100;
 		} else {
-			$uri = 'oxfambelgie.be/api/v1/stores';
+			if ( wp_get_environment_type() === 'production' ) {
+				$uri = 'oxfambelgie.be/api/v1/stores';
+			} else {
+				$uri = 'stage.oxfambelgie.be/api/v1/stores';
+			}
 			$context = array( 'source' => 'Drupal API' );
-			// Doet niks (altijd per 10)
-			$per_page = 10;
+			// Doet niks (altijd per 50)
+			$per_page = 50;
+			// Calibrate laat de telling vanaf 0 i.p.v. 1 beginnen ...
+			$page--;
 		}
 		
 		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!

@@ -405,8 +405,7 @@
 		// Te integreren in get_oxfam_shop_data()
 		$oww_store_data = get_external_wpsl_store( $atts['node'] );
 		if ( $oww_store_data !== false ) {
-			// Titel is nog niet beschikbaar in OBE API ... Val voorlopig terug op de slug!
-			return 'Oxfam-Wereldwinkel '.trim_and_uppercase( str_replace( '-', ' ', str_replace( '/', '', $oww_store_data['slug'] ) ) );
+			return 'Oxfam-Wereldwinkel '.$oww_store_data['title'];
 		} else {
 			return false;
 		}
