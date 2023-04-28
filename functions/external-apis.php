@@ -10,7 +10,11 @@
 			$shop_id = intval( $shop_post_id );
 			$context = array( 'source' => 'WordPress API' );
 		} else {
-			$uri = 'oxfambelgie.be/api/v1/stores';
+			if ( wp_get_environment_type() === 'production' ) {
+				$uri = 'oxfambelgie.be/api/v1/stores';
+			} else {
+				$uri = 'stage.oxfambelgie.be/api/v1/stores';
+			}
 			$shop_id = intval( $shop_node );
 			$context = array( 'source' => 'Drupal API' );
 		}
@@ -37,23 +41,15 @@
 		return $store_data;
 	}
 	
-	function get_external_wpsl_stores( $domain = 'oxfambelgie.be', $page = 1 ) {
-		if ( $domain === 'oxfamwereldwinkels.be' ) {
-			$uri = 'www.oxfamwereldwinkels.be/wp-json/wp/v2/wpsl_stores';
-			$context = array( 'source' => 'WordPress API' );
-			$per_page = 100;
+	function get_external_wpsl_stores( $domain = 'oxfambelgie.be', $page = 0 ) {
+		if ( wp_get_environment_type() === 'production' ) {
+			$uri = 'oxfambelgie.be/api/v1/stores';
 		} else {
-			if ( wp_get_environment_type() === 'production' ) {
-				$uri = 'oxfambelgie.be/api/v1/stores';
-			} else {
-				$uri = 'stage.oxfambelgie.be/api/v1/stores';
-			}
-			$context = array( 'source' => 'Drupal API' );
-			// Doet niks (altijd per 50)
-			$per_page = 50;
-			// Calibrate laat de telling vanaf 0 i.p.v. 1 beginnen ...
-			$page--;
+			$uri = 'stage.oxfambelgie.be/api/v1/stores';
 		}
+		$context = array( 'source' => 'Drupal API' );
+		// Doet niks (altijd per 50)
+		$per_page = 50;
 		
 		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!
 		$response = wp_remote_get( 'https://'.$uri.'?per_page='.$per_page.'&page='.$page );
@@ -62,22 +58,14 @@
 			// Zet het JSON-object om in een PHP-array
 			$stores = json_decode( wp_remote_retrieve_body( $response ), true );
 			
-			if ( $page === 1 ) {
-				if ( $domain === 'oxfamwereldwinkels.be' ) {
-					// Systeem voor OWW API, met header die aangeeft hoeveel resultatenpagina's er in totaal zijn
-					$total_pages = intval( wp_remote_retrieve_header( $response, 'X-WP-TotalPages' ) );
-					for ( $i = 2; $i <= $total_pages; $i++ ) {
-						$stores = array_merge( $stores, get_external_wpsl_stores( $domain, $i ) );
-					}
-				} else {
-					// Systeem voor OBE API, waar geen header met totaal aantal pagina's bestaat
-					$extra_stores = $stores;
-					$i = 2;
-					while ( count( $extra_stores ) === $per_page ) {
-						$extra_stores = get_external_wpsl_stores( $domain, $i );
-						$stores = array_merge( $stores, $extra_stores );
-						$i++;
-					}
+			if ( $page === 0 ) {
+				// OBE API heeft geen header met het totaal aantal pagina's, dus blijf opvragen tot er minder resultaten zijn dan het maximum
+				$extra_stores = $stores;
+				$i = 1;
+				while ( count( $extra_stores ) === $per_page ) {
+					$extra_stores = get_external_wpsl_stores( $domain, $i );
+					$stores = array_merge( $stores, $extra_stores );
+					$i++;
 				}
 			}
 		} else {
