@@ -3436,7 +3436,7 @@
 				if ( $product === false ) {
 					continue;
 				}
-
+				
 				switch ( $product->get_tax_class() ) {
 					case 'voeding':
 						$tax = '0.06';
@@ -3450,7 +3450,7 @@
 				}
 				$product_price = $product->get_price();
 				$line_total = $item['line_subtotal'];
-
+				
 				if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
 					// Stukprijs exclusief BTW bij B2B-bestellingen
 					$product_price /= 1+$tax;
@@ -3459,15 +3459,33 @@
 					// Afronden per regel in plaats van per subtotaal (zoals in ShopPlus)
 					$line_total = wc_round_tax_total( $line_total + $item['line_subtotal_tax'] );
 				}
-
+				
 				if ( $item->get_meta('wcgwp_note') !== '' ) {
 					// We gaan ervan uit dat er slechts 1 boodschap kan zijn
 					$gift_wrap_text = $item->get_meta('wcgwp_note');
 				}
-
+				
+				$title = $product->get_title();
 				$shopplus = ( ! empty( $product->get_meta('_shopplus_code') ) ) ? $product->get_meta('_shopplus_code') : $product->get_sku();
 				$ean = $product->get_meta('_cu_ean');
-				$pick_sheet->setCellValue( 'A'.$i, $shopplus )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $ean );
+				
+				// Juiste barcodes voor de blikjesactie (juni 2023)
+				if ( $line_total < 0.01 ) {
+					switch ( $product->get_sku() ) {
+						case 21500:
+						case 21502:
+						case 21504:
+						case 21515:
+							$shopplus = str_replace( 'W', 'WPR', $shopplus );
+							break;
+					}
+					
+					$ean = $shopplus;
+					$title = 'GRATIS '.$title;
+					$product_price = 0;
+				}
+				
+				$pick_sheet->setCellValue( 'A'.$i, $shopplus )->setCellValue( 'B'.$i, $title )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $ean );
 				$i++;
 			}
 
@@ -5309,27 +5327,14 @@
 				if ( $product !== false ) {
 					switch ( $product->get_sku() ) {
 						case '20807':
+						case '20809':
 						case '20811':
 							// Voeg 4 flesjes leeggoed toe bij clips
 							$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
 							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
 							break;
-
-						case '20809':
-							$cart_price = apply_filters('woocommerce_cart_item_price', WC()->cart->get_product_price($product), $product_item, $product_item['key'] );
-							if ( stristr( $cart_price, 'gratis' ) ) {
-								// Geen leeggoed aanrekenen bij gratis product voor World Fair Trade Day 2021
-								$empties_array['quantity'] = 0;
-								$product_item['quantity'] = 0;
-							} else {
-								// Voeg 4 flesjes leeggoed toe bij clips
-								$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
-								// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-								$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
-							}
-							break;
-
+							
 						case '19236':
 						case '19237':
 						case '19238':
