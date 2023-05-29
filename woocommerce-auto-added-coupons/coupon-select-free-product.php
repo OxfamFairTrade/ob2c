@@ -50,7 +50,8 @@ $class = 'wjecf-cols cols-' . ceil( $n / ceil( $n / 4 ) ) . ' cols-lg-' . ceil( 
 
 ?>
 <div id="wjecf-select-free-products" class="wjecf-select-free-products coupon-<?php echo esc_attr( sanitize_title( $coupon_code ) ); ?>">
-	<h3><?php echo WJECF_API()->get_select_free_product_message( $coupon ); ?></h3>
+	<!-- GEWIJZIGD: H4 i.p.v. H3 -->
+	<h4><?= WJECF_API()->get_select_free_product_message( $coupon ); ?></h4>
 	<input type="hidden" name="<?php echo $name_prefix; ?>[coupon]" value="<?php echo esc_attr( $coupon_code ); ?>" />
 	<input type="hidden" id="<?php echo $totalizer_id; ?>" data-wjecf-qty-max="<?php echo $max_quantity; ?>" />
 	<ul class="<?php echo esc_attr( $class ); ?>">
