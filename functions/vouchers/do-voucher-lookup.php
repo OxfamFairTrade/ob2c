@@ -10,7 +10,7 @@
 	<input type="text" id="voucher-code" name="voucher-code" class="" placeholder="DEMODEMODEMO">
 	<button type="submit" id="voucher-code-lookup" name="voucher-code-lookup" class="button-primary">Zoek</button>
 	<div id="result" style="margin: 1em 0; display: none;">
-		<p>Hier komt het antwoord ...</p>
+		<p>Hier komt binnenkort het antwoord, maar voorlopig doet dit formulier nog niets!</p>
 	</div>
 </div>
 
