@@ -4,13 +4,13 @@
 	# MAANDELIJKSE IMPORT #
 	#######################
 	
-	// Alle product-ID's in nieuwe kortingsbonnen lokaal maken
+	// Alle product-ID's in nieuwe, geplande kortingsbonnen lokaal maken
 	// Niet langer nodig voor leeggoed / waardebonnen in B2B-kortingsregels: criterium vervangen door regex /(^voeding$|^$)/i op '_tax_class'-metaveld
 	// Opgelet: 'post_name__in' kijkt naar de (onzichtbare) slug, kan afwijken van de (zichtbare) titel indien achteraf gewijzigd!
 	// 'post_name__in' => array( '202304-rice-crackers', '202304-amazonenoten', '202304-couscous', '202304-pesto-met-basilicum' ),
 	$args = array(
 		'post_type' => 'shop_coupon',
-		'post_status' => 'draft',
+		'post_status' => 'future',
 	);
 	$all_coupons = new WP_Query( $args );
 	
