@@ -17,7 +17,10 @@
 					$login_link = $mollie->getLoginLink( $partner_id );
 					$href = $login_link->redirect_url;
 				} catch (Exception $e) {
-					echo 'Caught exception: ', $e->getMessage(), '<br/>';
+					echo "<tr>";
+						echo "<th class='left' style='color: red;'>Reseller API Deprecated</th>";
+						echo "<td class='right'>Helaas kunnen we hier geen automatische inloglink naar jullie Mollie-account meer tonen. Gelieve handmatig in te loggen via <a href='https://my.mollie.com/dashboard/login' target='_blank'>mollie.com</a> Foutmelding: ".$e->getMessage()."</td>";
+					echo "</tr>";
 					return;
 				}
 			}
@@ -86,11 +89,6 @@
 					}
 				}
 			}
-		} else {
-			echo "<tr>";
-				echo "<th class='left' style='color: red;'>Reseller API Deprecated</th>";
-				echo "<td class='right'>Helaas kunnen we hier geen automatische inloglink naar jullie Mollie-account meer tonen. Gelieve handmatig in te loggen via <a href='https://my.mollie.com/dashboard/login' target='_blank'>mollie.com</a>. We bekijken of er alternatieve oplossingen zijn om deze functionaliteit terug te brengen.</td>";
-			echo "</tr>";
 		}
 	}
 ?>

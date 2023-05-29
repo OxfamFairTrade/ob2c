@@ -661,7 +661,6 @@
 	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_placeholder_image', 'sync_settings_to_subsites', 10, 3 );
 	// add_action( 'update_option_woocommerce_google_analytics_settings', 'sync_settings_to_subsites', 10, 3 );
-	// add_action( 'update_option_cookie_notice_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_gtm4wp-options', 'sync_settings_to_subsites', 10, 3 );
 	// add_action( 'update_option_woocommerce_local_pickup_plus_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wp_mail_smtp', 'sync_settings_to_subsites', 10, 3 );
@@ -714,7 +713,7 @@
 					}
 				}
 				
-				if ( in_array( $option, array( 'cookie_notice_options', 'gtm4wp-options' ) ) ) {
+				if ( in_array( $option, array( 'gtm4wp-options' ) ) ) {
 					// Boolean waardes worden niet goed overgenomen m.b.v. update_option() ...
 					// Manipuleer de database rechtstreeks, blog-ID zit reeds vervat in prefix!
 					global $wpdb;
@@ -5668,10 +5667,6 @@
 
 	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
-		// @toDo: Verwijderen, heeft geen echte betekenis meer (maar wordt in get_webshops_by_postcode() nog gebruikt!)
-		// register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
-		// register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
-		
 		register_setting( 'oxfam-options-global', 'oxfam_shop_node', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
@@ -7626,7 +7621,7 @@
 		}
 	}
 
-	function get_webshops_by_postcode( $return_store_id = false, $v2 = false, $return_all_shops = false ) {
+	function get_webshops_by_postcode( $return_store_id = false, $return_all_shops = false ) {
 		$global_zips = array();
 		// Sluit hoofdniveau + afgeschermde en niet-openbare webshops uit
 		$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
@@ -7634,13 +7629,9 @@
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			
-			if ( $v2 ) {
-				// Er kunnen meerdere webshops dezelfde postcode bedienen!
-				// In dat geval zal de site met de hoogste ID als 'winnaar' uit de bus komen (= default order get_sites())
-				$local_zips = get_oxfam_covered_zips();
-			} else {
-				$local_zips = get_option( 'oxfam_zip_codes', array() );	
-			}
+			// Er kunnen meerdere webshops dezelfde postcode bedienen!
+			// In dat geval zal de site met de hoogste ID als 'winnaar' uit de bus komen (= default order get_sites())
+			$local_zips = get_oxfam_covered_zips();
 			
 			foreach ( $local_zips as $zip ) {
 				$zip = intval( $zip );
