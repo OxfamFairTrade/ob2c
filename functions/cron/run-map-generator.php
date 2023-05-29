@@ -135,9 +135,7 @@
 			
 			$store_args = array(
 				'ID' =>	$wpsl_store_id,
-				// Titel is nog niet beschikbaar in OBE API ... Val voorlopig terug op de slug!
-				// 'post_title' => str_replace( 'Oxfam-Wereldwinkel ', '', $oww_store_data['title'] ),
-				'post_title' => trim_and_uppercase( str_replace( '-', ' ', str_replace( '/', '', $oww_store_data['slug'] ) ) ),
+				'post_title' => str_replace( 'Oxfam-Wereldwinkel ', '', $oww_store_data['title'] ),
 				'post_status' => 'publish',
 				'post_author' => 1,
 				'post_type' => 'wpsl_stores',
@@ -150,8 +148,7 @@
 					'wpsl_lat' => $ll[0],
 					'wpsl_lng' => $ll[1],
 					'wpsl_phone' => $oww_store_data['location']['telephone'],
-					// 'wpsl_url' => $oww_store_data['link'],
-					'wpsl_url' => 'https://oxfambelgie.be/winkels'.$oww_store_data['slug'],
+					'wpsl_url' => $oww_store_data['link'],
 					'wpsl_webshop' => $webshop_url,
 					'wpsl_webshop_blog_id' => $webshop_blog_id,
 					// Vul hier bewust het algemene mailadres in (ook voor winkels mét webshop)
