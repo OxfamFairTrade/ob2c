@@ -7251,7 +7251,7 @@
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array();
 		if ( in_array( $atts['node'], $exceptions ) ) {
-			$holidays = array( '2023-04-09', '2023-04-10', '2023-05-01', '2023-05-18', '2023-05-28', '2023-05-29', '2023-07-21', '2023-08-15', '2023-11-01', '2023-11-11', '2023-12-25', '2024-01-01' );
+			$holidays = array( '2023-07-21', '2023-08-15', '2023-11-01', '2023-11-11', '2023-12-25', '2024-01-01', '2024-03-31', '2024-04-01', '2024-05-01', '2024-05-09', '2024-05-19', '2024-05-20' );
 		} else {
 			// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met fallback naar algemene feestdagen
 			$holidays = get_site_option( 'oxfam_holidays_'.$atts['node'] );
