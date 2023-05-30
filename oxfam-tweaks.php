@@ -100,9 +100,9 @@
 				$deleted_skus = get_site_option( 'oxfam_shop_dashboard_notice_deleted_products', array() );
 				if ( count( $deleted_skus ) > 0 ) {
 					echo '<div class="notice notice-warning">';
-						echo '<p>Volgende uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is (of omdat het niet langer relevant is):</p><ul style="margin-left: 2em; column-count: 2;">';
+						echo '<p>Volgende uitgefaseerde referenties werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is (of omdat het product niet langer relevant is):</p><ul style="margin-left: 2em; column-count: 2;">';
+							global $wpdb;
 							foreach ( $deleted_skus as $sku ) {
-								global $wpdb;
 								// Standaardfunctie wc_get_product_id_by_sku() filtert producten die in de prullenbak zitten weg!
 								// Gebruik gelijkaardige query, afgekeken van https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/data-stores/class-wc-product-data-store-cpt.php#L1010
 								$product_id = $wpdb->get_var(
@@ -122,7 +122,7 @@
 									echo '<li>'.$product->get_title().' ('.$product->get_meta('_shopplus_code').')</li>';
 								}
 							}
-						echo '</ul><p>Denk eraan &mdash; als je dat nog niet deed &mdash; om het vervangende product op voorraad te nemen, indien beschikbaar (bv. geschenkencheques => andere artikelnummers met langere geldigheidsdatum).</p>';
+						echo '</ul><p>Als je dat nog niet deed: denk eraan om het vervangende product op voorraad te nemen, indien beschikbaar (bv. geschenkencheques => nieuwe artikelnummers met langere geldigheidsdatum).</p>';
 					echo '</div>';
 				}
 				
