@@ -317,10 +317,11 @@
 				}
 			}
 			
+			delete_option('cookie_notice_options');
+			delete_option('oxfam_zip_codes');
 			// If all goes well ...
-			// delete_option('oxfam_zip_codes');
 			// delete_option('oxfam_shop_post_id');
-			// delete_option('cookie_notice_options');
+			
 			echo '<br/>';
 		}
 	}
