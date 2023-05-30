@@ -37,17 +37,11 @@
 		return $store_data;
 	}
 	
-	function get_external_wpsl_stores( $domain = 'oxfambelgie.be', $page = 1 ) {
-		if ( $domain === 'oxfamwereldwinkels.be' ) {
-			$uri = 'www.oxfamwereldwinkels.be/wp-json/wp/v2/wpsl_stores';
-			$context = array( 'source' => 'WordPress API' );
-			$per_page = 100;
-		} else {
-			$uri = 'oxfambelgie.be/api/v1/stores';
-			$context = array( 'source' => 'Drupal API' );
-			// Doet niks (altijd per 50)
-			$per_page = 50;
-		}
+	function get_external_wpsl_stores( $page = 0 ) {
+		$uri = 'oxfambelgie.be/api/v1/stores';
+		$context = array( 'source' => 'Drupal API' );
+		// Doet niks (altijd per 50)
+		$per_page = 50;
 		
 		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!
 		$response = wp_remote_get( 'https://'.$uri.'?per_page='.$per_page.'&page='.$page );
@@ -56,22 +50,13 @@
 			// Zet het JSON-object om in een PHP-array
 			$stores = json_decode( wp_remote_retrieve_body( $response ), true );
 			
-			if ( $page === 1 ) {
-				if ( $domain === 'oxfamwereldwinkels.be' ) {
-					// Systeem voor OWW API, met header die aangeeft hoeveel resultatenpagina's er in totaal zijn
-					$total_pages = intval( wp_remote_retrieve_header( $response, 'X-WP-TotalPages' ) );
-					for ( $i = 2; $i <= $total_pages; $i++ ) {
-						$stores = array_merge( $stores, get_external_wpsl_stores( $domain, $i ) );
-					}
-				} else {
-					// Systeem voor OBE API, waar geen header met totaal aantal pagina's bestaat
-					$extra_stores = $stores;
-					$i = 2;
-					while ( count( $extra_stores ) === $per_page ) {
-						$extra_stores = get_external_wpsl_stores( $domain, $i );
-						$stores = array_merge( $stores, $extra_stores );
-						$i++;
-					}
+			if ( $page === 0 ) {
+				$extra_stores = $stores;
+				// Helaas geen header die het totaal aantal pagina's aangeeft ...
+				while ( count( $extra_stores ) === $per_page ) {
+					$page++;
+					$extra_stores = get_external_wpsl_stores( $page );
+					$stores = array_merge( $stores, $extra_stores );
 				}
 			}
 		} else {
