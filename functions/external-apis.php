@@ -45,8 +45,8 @@
 		} else {
 			$uri = 'oxfambelgie.be/api/v1/stores';
 			$context = array( 'source' => 'Drupal API' );
-			// Doet niks (altijd per 10)
-			$per_page = 10;
+			// Doet niks (altijd per 50)
+			$per_page = 50;
 		}
 		
 		// Enkel gepubliceerde winkels zijn beschikbaar via API, net wat we willen!
