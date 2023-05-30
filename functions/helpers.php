@@ -318,7 +318,10 @@
 				}
 			}
 			
+			global $wpdb;
+			$wpdb->query( "DELETE FROM `$wpdb->options` WHERE `option_name` LIKE ('jetpack_%')" );
 			delete_option('cookie_notice_options');
+			delete_option('laatste_registratie_timestamp');
 			delete_option('oxfam_zip_codes');
 			// If all goes well ...
 			// delete_option('oxfam_shop_post_id');
