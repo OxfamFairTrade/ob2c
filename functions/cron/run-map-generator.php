@@ -89,7 +89,8 @@
 		$oww_stores = array();
 		foreach ( $obe_stores as $obe_store ) {
 			// Neem enkel Wereldwinkels op in store selector (o.b.v. titel of assortiment)
-			$forbidden_nodes = array();
+			// Sluit Dinant uit (biedt ook voeding aan ...)
+			$forbidden_nodes = array( 433 );
 			if ( ( stristr( $obe_store['title'], 'Oxfam-Wereldwinkel' ) or in_array( 'Voeding', $obe_store['assortment'] ) ) and ! in_array( $obe_store['id'], $forbidden_nodes ) ) {
 				$oww_stores[] = $obe_store;
 			}
