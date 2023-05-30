@@ -294,13 +294,14 @@
 						$parts = explode( ' id=', $location['note'] );
 						
 						if ( isset( $parts[1] ) ) {
+							$shop_post_id = str_replace( ']', '', $parts[1] );
 							if ( ! is_numeric( $shop_post_id ) ) {
 								// Bij externe afhaalpunten vervangen we 'id' gewoon door 'node'
 								foreach ( $keys_to_modify as $key_to_modify ) {
 									$locations[ $location_key ][ $key_to_modify ] = str_replace( ' id=', ' node=', $locations[ $location_key ][ $key_to_modify ] );
 								}
 							} else {
-								$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
+								$shop_post_id = intval( $shop_post_id );
 								if ( array_key_exists( $shop_post_id, $shop_post_ids_to_nodes ) ) {
 									foreach ( $keys_to_modify as $key_to_modify ) {
 										$locations[ $location_key ][ $key_to_modify ] = str_replace( ' id='.$shop_post_id, ' node='.$shop_post_ids_to_nodes[ $shop_post_id ], $locations[ $location_key ][ $key_to_modify ] );

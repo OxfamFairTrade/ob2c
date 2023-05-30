@@ -5917,6 +5917,7 @@
 		
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_new_products', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_replaced_products', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_deleted_products', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		
 		add_settings_field(
 			'oxfam_shop_dashboard_notice_new_products',
@@ -5934,6 +5935,15 @@
 			'woonet-woocommerce-dashboard-info',
 			'products',
 			array( 'label_for' => 'oxfam_shop_dashboard_notice_replaced_products' )
+		);
+		
+		add_settings_field(
+			'oxfam_shop_dashboard_notice_deleted_products',
+			__( 'Verwijderde artikelnummers', 'oxfam-webshop' ),
+			'oxfam_shop_dashboard_notice_deleted_products_callback',
+			'woonet-woocommerce-dashboard-info',
+			'products',
+			array( 'label_for' => 'oxfam_shop_dashboard_notice_deleted_products' )
 		);
 		
 		add_settings_section(
@@ -6116,6 +6126,12 @@
 		$key = 'oxfam_shop_dashboard_notice_replaced_products';
 		$value = get_site_option( $key, array() );
 		echo '<input type="text" name="' . $key . '" style="width: 100%; max-width: 800px;" value="' . implode( ', ', $value ) . '" /><br/><small>Plaats een liggend streepje tussen het oude ompaknummer (links) en het nieuwe ompaknummer (rechts).<br/>Scheid meerdere waarden met een (punt)komma. Voorbeeld: <i>20058-20081, 28802-28805</i>.</small>';
+	}
+	
+	function oxfam_shop_dashboard_notice_deleted_products_callback() {
+		$key = 'oxfam_shop_dashboard_notice_deleted_products';
+		$value = get_site_option( $key, array() );
+		echo '<input type="text" name="' . $key . '" style="width: 100%; max-width: 800px;" value="' . implode( ', ', $value ) . '" /><br/><small>Scheid meerdere ompaknummers met een (punt)komma.</small>';
 	}
 	
 	function oxfam_shop_dashboard_notice_success_callback() {

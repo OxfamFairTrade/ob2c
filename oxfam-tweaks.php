@@ -97,6 +97,35 @@
 					echo '</div>';
 				}
 				
+				$deleted_skus = get_site_option( 'oxfam_shop_dashboard_notice_deleted_products', array() );
+				if ( count( $deleted_skus ) > 0 ) {
+					echo '<div class="notice notice-warning">';
+						echo '<p>Volgende uitgefaseerde producten werden uit de database verwijderd omdat hun uiterste houdbaarheid inmiddels gepasseerd is (of omdat het niet langer relevant is):</p><ul style="margin-left: 2em; column-count: 2;">';
+							foreach ( $deleted_skus as $sku ) {
+								global $wpdb;
+								// Standaardfunctie wc_get_product_id_by_sku() filtert producten die in de prullenbak zitten weg!
+								// Gebruik gelijkaardige query, afgekeken van https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/includes/data-stores/class-wc-product-data-store-cpt.php#L1010
+								$product_id = $wpdb->get_var(
+									$wpdb->prepare(
+										"SELECT posts.ID
+										FROM {$wpdb->posts} as posts
+										INNER JOIN {$wpdb->wc_product_meta_lookup} AS lookup ON posts.ID = lookup.product_id
+										WHERE posts.post_type IN ( 'product', 'product_variation' )
+										AND lookup.sku = %s
+										LIMIT 1",
+										$sku
+									)
+								);
+								
+								if ( $product_id ) {
+									$product = wc_get_product( $product_id );
+									echo '<li>'.$product->get_title().' ('.$product->get_meta('_shopplus_code').')</li>';
+								}
+							}
+						echo '</ul><p>Denk eraan &mdash; als je dat nog niet deed &mdash; om het vervangende product op voorraad te nemen, indien beschikbaar (bv. geschenkencheques => andere artikelnummers met langere geldigheidsdatum).</p>';
+					echo '</div>';
+				}
+				
 				// Het is momenteel niet werkbaar om de volledige productcatalogus van Magasins du Monde (+/- 2.500 voorradige producten) in het webshopnetwerk te pompen: dit stelt hogere eisen aan de productdata, de zoekfunctie, het voorraadbeheer, onze server, ... Bovendien is het voor de consument weinig zinvol om alle non-food te presenteren in onze nationale catalogus, gezien de beperkte lokale beschikbaarheid van de oudere craftsproducten.
 				// echo '<p>Verder werden de prijzen van alle craftsproducten in de nationale database (eindelijk) gelijk getrokken met de adviesprijzen van MDM in ShopPlus (incl. de meest recente wijzigingen van 1 oktober). Daarnaast maakten we een resem extra referenties beschikbaar die de voorbije maanden verschenen:</p>';
 				// echo '<ul>';
