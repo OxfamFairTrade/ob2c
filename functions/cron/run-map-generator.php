@@ -52,14 +52,16 @@
 					$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 					
 					foreach ( $locations as $shop_node => $shop_name ) {
-						// Want get_shop_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
+						// Want get_shop_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor Wereldwinkels!
 						if ( $shop_node > 0 ) {
 							$txt .= "<Placemark>";
 							$txt .= "<name><![CDATA[".$shop_name."]]></name>";
 							$txt .= "<styleUrl>#pickup</styleUrl>";
 							$oww_store_data = get_external_wpsl_store( $shop_node );
 							$txt .= "<description><![CDATA[<p>".get_shop_address( array( 'node' => $shop_node ) )."</p><p><a href='https://oxfambelgie.be/winkels".$oww_store_data['slug']."' target='_blank'>Naar de winkelpagina »</a></p>]]></description>";
-							$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $shop_node, false )."</coordinates></Point>";
+							// Longitude/Latitude
+							$ll = explode( ',', get_oxfam_shop_data( 'll', $shop_node, false ) );
+							$txt .= "<Point><coordinates>".$ll[1]",".$ll[0]."</coordinates></Point>";
 							$txt .= "</Placemark>";
 							
 							// Maak een handige lijst met alle shop-ID's en hun bijbehorende blog-ID
