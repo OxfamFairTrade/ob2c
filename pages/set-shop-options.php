@@ -133,14 +133,6 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_shop_post_id" title="Aan de hand van deze ID haalden we adressen en openingsuren vroeger op uit de database achter de publieke site van Oxfam-Wereldwinkels.">Post-ID OWW-site:</label>
-				</th>
-				<td class="right">
-					<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?= get_option('oxfam_shop_post_id'); ?>" readonly>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th class="left">
 					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam België.">Node OBE-site:</label>
 				</th>
 				<td class="right">

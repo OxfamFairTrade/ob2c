@@ -61,7 +61,7 @@
 							$txt .= "<description><![CDATA[<p>".get_shop_address( array( 'node' => $shop_node ) )."</p><p><a href='https://oxfambelgie.be/winkels".$oww_store_data['slug']."' target='_blank'>Naar de winkelpagina »</a></p>]]></description>";
 							// Longitude/Latitude
 							$ll = explode( ',', get_oxfam_shop_data( 'll', $shop_node, false ) );
-							$txt .= "<Point><coordinates>".$ll[1]",".$ll[0]."</coordinates></Point>";
+							$txt .= "<Point><coordinates>".$ll[1].",".$ll[0]."</coordinates></Point>";
 							$txt .= "</Placemark>";
 							
 							// Maak een handige lijst met alle shop-ID's en hun bijbehorende blog-ID

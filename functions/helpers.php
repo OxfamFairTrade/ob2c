@@ -323,8 +323,7 @@
 			delete_option('cookie_notice_options');
 			delete_option('laatste_registratie_timestamp');
 			delete_option('oxfam_zip_codes');
-			// If all goes well ...
-			// delete_option('oxfam_shop_post_id');
+			delete_option('oxfam_shop_post_id');
 			
 			echo '<br/>';
 		}
