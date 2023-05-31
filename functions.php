@@ -2734,7 +2734,7 @@
 		return $query_args;
 	}
 
-	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje DUS NIET GEBRUIKEN OM HANDMATIG TOEVOEGEN VAN LEEGGOED TE VERHINDEREN
+	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje
 	add_filter( 'woocommerce_is_purchasable', 'ob2c_disable_products_not_in_assortment', 10, 2 );
 
 	function ob2c_disable_products_not_in_assortment( $purchasable, $product ) {
@@ -2787,17 +2787,22 @@
 	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_customer', 10, 3 );
 
 	function ob2c_check_product_availability_for_customer( $product_id, $is_b2b_customer, $available ) {
-		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
+		// Sta toe dat ook medewerkers de B2B-producten te zien krijgen
 		if ( ! $is_b2b_customer and ! current_user_can('manage_woocommerce') ) {
 			if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
-				$product = wc_get_product( $product_id );
 				$available = false;
 			}
 		}
-
+		
+		// Zwier producten die tijdelijk uit voorraad zijn uit het winkelmandje
+		$product = wc_get_product( $product_id );
+		if ( $product and $product->is_on_backorder() ) {
+			$available = false;
+		}
+		
 		return $available;
 	}
-
+	
 	// Herlaad winkelmandje automatisch na aanpassing en trigger geschenkverpakking indien nodig
 	add_action( 'wp_footer', 'cart_update_qty_script' );
 
