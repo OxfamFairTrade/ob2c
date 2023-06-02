@@ -11,10 +11,9 @@
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'Clean & Tidy' );
 		
-		// Let op met SPF-verificatie nu dit een '@oft.be'-adres geworden is!
 		$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
 		$headers[] = 'Content-Type: text/html';
-			
+		
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			echo get_bloginfo('name').'<br/>';
@@ -47,7 +46,7 @@
 					}
 				}
 			}
-
+			
 			$unfinished_args = array(
 				'type' => 'shop_order',
 				'status' => 'processing',
@@ -55,11 +54,11 @@
 				'limit' => -1,
 			);
 			$unfinished_orders = wc_get_orders( $unfinished_args );
-
+			
 			// Bij custom statussen moeten we de 'wc'-prefix blijven toevoegen, anders vinden we gewoon alle orders! 
 			$unfinished_args['status'] = 'wc-claimed';
 			$unfinished_orders = array_merge( $unfinished_orders, wc_get_orders( $unfinished_args ) );
-
+			
 			if ( count( $unfinished_orders ) > 0 ) {
 				echo 'LATE ORDERS<br/>';
 				foreach ( $unfinished_orders as $order ) {
@@ -75,12 +74,12 @@
 								if ( wp_mail( get_webshop_email(), $order->get_order_number().' wacht op verwerking', '<html>'.$body.'</html>', $headers, $attachments ) ) {
 									$logger->warning( $order->get_order_number().": waarschuwing verstuurd over laattijdige afwerking", $context );
 									$order->add_order_note( 'Bestelling nog niet afgewerkt! Automatische herinnering verstuurd naar webshopmailbox.' );
-
+									
 									if ( $order->get_meta('_overdue_reminder_sent') !== '' ) {
 										// Admins enkel verwittigen vanaf 2de herinnering
 										send_automated_mail_to_helpdesk( $order->get_order_number().' wacht op verwerking bij '.get_webshop_name(), $body );
 									}
-
+									
 									$order->update_meta_data( '_overdue_reminder_sent', current_time('timestamp') );
 									$order->save();
 								} else {
@@ -93,7 +92,7 @@
 					}
 				}
 			}
-
+			
 			// DOOR EEN BUG IN DE MOLLIE-PLUGIN WORDEN GEDEELTELIJK TERUGBETAALDE BESTELLINGEN OP ON-HOLD GEZET
 			$refunded_args = array(
 				'type' => 'shop_order',
@@ -101,7 +100,7 @@
 				'limit' => -1,
 			);
 			$refunded_orders = wc_get_orders( $refunded_args );
-
+			
 			if ( count( $refunded_orders ) > 0 ) {
 				echo 'REFUNDED ORDERS<br/>';
 				foreach ( $refunded_orders as $order ) {
@@ -117,7 +116,7 @@
 					}
 				}
 			}
-
+			
 			echo '<br/>';
 			restore_current_blog();
 		}
