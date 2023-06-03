@@ -200,13 +200,13 @@
 		
 		write_log( $oww_stores_imported." winkels via API geïmporteerd uit oxfambelgie.be" );
 		
-		// if ( $oww_stores_imported <= 150 ) {
+		if ( $oww_stores_imported <= 150 ) {
 			$headers = array();
 			$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
 			$headers[] = 'Content-Type: text/html';
 			$body = '<p>Er werden slechts '.$oww_stores_imported.' winkels geïmporteerd tijdens de dagelijkse synchronisatie met <a href="https://oxfambelgie.be/api/v1/stores" target="_blank">oxfambelgie.be</a>. Controleer <a href="'.admin_url('edit.php?post_type=wpsl_stores').'" target="_blank">het winkeloverzicht</a> om te zien of er geen winkels achterbleven in de prullenbak.</p><p><i>Dit is een automatisch bericht.</i></p>';
 			wp_mail( array( 'info@fullstackahead.be' ), 'Mogelijk probleem met winkelimport', '<html>'.$body.'</html>', $headers );
-		// }
+		}
 	} else {
 		die("Access prohibited!");
 	}
