@@ -140,6 +140,8 @@
 	
 	function ob2c_invalidate_digital_voucher( $order_id ) {
 		$order = wc_get_order( $order_id );
+		$total_voucher_amount = 0.0;
+		
 		if ( $order !== false ) {
 			foreach ( $order->get_coupons() as $coupon_item ) {
 				// Wees in deze stap niet te kieskeurig met validatie: deze actie is eenmalig én cruciaal voor het ongeldig maken van de voucher!
@@ -161,7 +163,7 @@
 							array( 'order' => $order->get_order_number(), 'used' => date_i18n('Y-m-d H:i:s'), 'blog_id' => get_current_blog_id() ),
 							array( 'code' => $code )
 						);
-	
+						
 						if ( $rows_updated === 1 ) {
 							// Converteer korting naar pseudo betaalmethode voor correcte omzetrapporten en verwerking van BTW
 							$fee = new WC_Order_Item_Fee();
@@ -174,11 +176,18 @@
 							$fee->set_tax_status('none');
 							$fee->update_meta_data( 'voucher_code', $code );
 							$fee->update_meta_data( 'voucher_value', $db_coupon->value );
+							
 							// Bewaar het effectieve bedrag dat betaald werd via de voucher (kan minder zijn dan de totale waarde!) for future reference
-							// Bij bestellingen die VOLLEDIG met vouchers betaald werden wordt toch de waarde van de volledige voucher doorgegeven?
-							$fee->update_meta_data( 'voucher_amount', $coupon_item->get_discount() + $coupon_item->get_discount_tax() );
+							// Bij bestellingen die VOLLEDIG met MEERDERE vouchers betaald werden, wordt toch de waarde van de volledige voucher doorgegeven
+							// Bouw daarom een extra check in
+							$extra_voucher_amount = $coupon_item->get_discount() + $coupon_item->get_discount_tax();
+							if ( $total_voucher_amount + $extra_voucher_amount > $order->get_total() ) {
+								$extra_voucher_amount = $order->get_total() - $total_voucher_amount;
+							}
+							$fee->update_meta_data( 'voucher_amount', $extra_voucher_amount );
 							$fee->save();
-	
+							$total_voucher_amount += $extra_voucher_amount;
+							
 							if ( $order->add_item( $fee ) !== false ) {
 								// Verwijder de kortingscode volledig van het order
 								// Gebruik bewust niet de uppercase versie maar de originele waarde!
