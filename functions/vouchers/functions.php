@@ -179,11 +179,11 @@
 							
 							// Bewaar het effectieve bedrag dat betaald werd via de voucher (kan minder zijn dan de totale waarde!) for future reference
 							// Bij bestellingen die VOLLEDIG met MEERDERE vouchers betaald werden, wordt toch de waarde van de volledige voucher doorgegeven
-							// Bouw daarom een extra check in
 							$extra_voucher_amount = $coupon_item->get_discount() + $coupon_item->get_discount_tax();
-							if ( $total_voucher_amount + $extra_voucher_amount > $order->get_total() ) {
-								$extra_voucher_amount = $order->get_total() - $total_voucher_amount;
-							}
+							// Bouw extra check in WERKT NIET, AANGEZIEN GET_TOTAL() OOK DE KORTINGEN BEVAT
+							// if ( ( $total_voucher_amount + $extra_voucher_amount ) > $order->get_total() ) {
+							// 	$extra_voucher_amount = $order->get_total() - $total_voucher_amount;
+							// }
 							$fee->update_meta_data( 'voucher_amount', $extra_voucher_amount );
 							$fee->save();
 							$total_voucher_amount += $extra_voucher_amount;
