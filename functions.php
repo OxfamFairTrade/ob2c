@@ -6865,6 +6865,8 @@
 		delete_site_option('oft_import_active');
 		
 		if ( $import_id == 7 ) {
+			write_log("Productimport succesvol afgerond!");
+			
 			// Vind alle producten die vandaag niet bijgewerkt werden door de ERP-import
 			// Als we dit in gebruik willen nemen, moeten we vooraf de craftsvoorraden bijwerken
 			// Zodat 'touched_by_import' ook bij hen op vandaag staat
@@ -6873,13 +6875,13 @@
 				'post_status'		=> 'publish',
 				'posts_per_page'	=> -1,
 				'meta_key'			=> 'touched_by_import',
-				'meta_value'		=> date( 'Ymd', strtotime('-10 days') ),
+				'meta_value'		=> date( 'Ymd', strtotime('-15 days') ),
 				'meta_compare'		=> '<',
 			);
 			$to_outofstock = new WP_Query( $args );
 			
 			if ( $to_outofstock->have_posts() ) {
-				write_log( $to_outofstock->found_posts." DEPRECATED PRODUCTS" );
+				write_log( $to_outofstock->found_posts." producten werden de voorbije 15 dagen niet bijgewerkt door de import" );
 				$products_to_deprecate = array();
 				
 				while ( $to_outofstock->have_posts() ) {
@@ -6893,9 +6895,15 @@
 						if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 							// Metadata lijkt automatisch gesynchroniseerd te worden naar subsites terwijl voorraadstatus behouden wordt, perfect!
 							$product->save();
-							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
+							write_log( $product->get_sku()." uit voorraad gehaald op hoofdniveau" );
 						} elseif ( ! is_crafts_product( $product ) ) {
-							$instructions = '<a href="'.admin_url('post.php?post='.$product->get_id().'&action=edit').'" target="_blank">'.$product->get_name().'</a> &mdash; laatst geïmporteerd: '.$product->get_meta('touched_by_import');
+							// Ook biersets en OPU-kaartjes negeren (hebben geen ShopPlus-code die met een M begint, dus geen crafts)
+							// Handmatig aangemaakte producten hebben geen 'touched_by_import'-key en worden dus automatisch genegeerd
+							if ( in_array( $product->get_sku(), array( 19236, 19237, 41000, 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008, 41009 ) ) ) {
+								continue;
+							}
+							
+							$instructions = '<a href="'.admin_url('post.php?post='.$product->get_id().'&action=edit').'" target="_blank">'.$product->get_name().'</a> ('.$product->get_sku().') &mdash; laatst geïmporteerd: '.$product->get_meta('touched_by_import');
 							if ( $product->is_in_stock() ) {
 								$instructions .= ' &mdash; nog uit voorraad te halen!';
 							}
@@ -6914,6 +6922,7 @@
 				$headers[] = 'Content-Type: text/html';
 				$body = '<p>Je taak voor deze maand zit er bijna op. Gelieve wel nog onderstaande producten uit te faseren: niet verwijderen (dat doen we pas als alle lokale voorraden uitgeput zijn en/of de laatst uitgeleverde THT-datum gepaseerd is!) maar wel de voorraad op 0 zetten en nabestellingen blokkeren (indien dit nog niet automatisch gebeurde) én de BestelWeb-dropdown op \'nee\' zetten.</p><ol><li>'.implode( '</li><li>', $products_to_deprecate ).'</li></ol><p>&nbsp;</p><p><i>Dit is een automatisch bericht.</i></p>';
 				wp_mail( array( 'kristof.beausaert@oft.be', 'info@fullstackahead.be' ), 'Hoera, de productimport is afgelopen!', '<html>'.$body.'</html>', $headers );
+				write_log( "Lijst van ".count( $products_to_deprecate )." uit te faseren producten gemaild naar beheerders" );
 			}
 			
 			$old = WP_CONTENT_DIR."/erp-import.csv";
