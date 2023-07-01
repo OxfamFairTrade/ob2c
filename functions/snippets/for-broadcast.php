@@ -6,11 +6,12 @@
 	
 	// Alle product-ID's in nieuwe, geplande kortingsbonnen lokaal maken
 	// Niet langer nodig voor leeggoed / waardebonnen in B2B-kortingsregels: criterium vervangen door regex /(^voeding$|^$)/i op '_tax_class'-metaveld
-	// Opgelet: 'post_name__in' kijkt naar de (onzichtbare) slug, kan afwijken van de (zichtbare) titel indien achteraf gewijzigd!
-	// 'post_name__in' => array( '202306-beertjes', '202306-cashew-gekruid' ),
 	$args = array(
 		'post_type' => 'shop_coupon',
 		'post_status' => 'future',
+		// Alternatieve methode (bv. als de bon inmiddels al op publish staat)
+		// 'Opgelet: 'post_name__in' kijkt naar de (onzichtbare) originele slug, dit kan afwijken van de (zichtbare) titel indien achteraf gewijzigd!
+		// 'post_name__in' => array( '202307-zwarte-rice-cracker', '202307-08-choco-espressobeans', '202307-08-rijstwafels', '202307-08-beertjes' ),
 	);
 	$all_coupons = new WP_Query( $args );
 	
