@@ -26,7 +26,7 @@
 	
 	function ob2c_tweak_canonical_url( $url, $post ) {
 		if ( ! is_main_site() ) {
-			if ( get_post_type( $post ) === 'product' ) {
+			if ( is_product() ) {
 				if ( is_national_product( $post->ID ) ) {
 					// Haal link van hoofdproduct op
 					$national_post_id = get_post_meta( $post->ID, '_woonet_network_is_child_product_id', true );
