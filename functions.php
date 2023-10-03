@@ -6179,7 +6179,7 @@
 		oxfam_shop_promotion_products_field_callback('one_plus_one');
 	}
 	
-	function oxfam_shop_promotion_products_one_plus_one_callback() {
+	function oxfam_shop_promotion_products_two_plus_one_callback() {
 		oxfam_shop_promotion_products_field_callback('two_plus_one');
 	}
 	

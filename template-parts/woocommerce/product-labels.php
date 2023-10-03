@@ -39,7 +39,7 @@
 			$labels['promotion'] = 'Promo -50%';
 		}
 
-		$two_plus_one_products = get_site_option( 'oxfam_shop_promotion_products_one_plus_one', array() );
+		$two_plus_one_products = get_site_option( 'oxfam_shop_promotion_products_two_plus_one', array() );
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
