@@ -39,7 +39,7 @@
 			$labels['promotion'] = 'Promo -50%';
 		}
 
-		$two_plus_one_products = array();
+		$two_plus_one_products = array( 25618, 26015, 26488, 27055, 28021 );
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
@@ -59,7 +59,7 @@
 			$labels['promotion'] = 'Promo 4+2 gratis';
 		}
 
-		$five_plus_one_products = array();
+		$five_plus_one_products = array( 20070, 20265 );
 		if ( in_array( $product->get_sku(), $five_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 5+1 gratis';
 		}
