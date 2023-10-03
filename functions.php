@@ -5998,6 +5998,7 @@
 		
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_fifty_percent_off_second', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_one_plus_one', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_two_plus_one', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		
 		add_settings_field(
 			'oxfam_shop_promotion_products_fifty_percent_off_second',
@@ -6015,6 +6016,15 @@
 			'woonet-woocommerce-dashboard-info',
 			'labels',
 			array( 'label_for' => 'oxfam_shop_promotion_products_one_plus_one' )
+		);
+		
+		add_settings_field(
+			'oxfam_shop_promotion_products_two_plus_one',
+			__( 'Promo 2+1 gratis', 'oxfam-webshop' ),
+			'oxfam_shop_promotion_products_two_plus_one_callback',
+			'woonet-woocommerce-dashboard-info',
+			'labels',
+			array( 'label_for' => 'oxfam_shop_promotion_products_two_plus_one' )
 		);
 		
 		add_submenu_page(
@@ -6167,6 +6177,10 @@
 	
 	function oxfam_shop_promotion_products_one_plus_one_callback() {
 		oxfam_shop_promotion_products_field_callback('one_plus_one');
+	}
+	
+	function oxfam_shop_promotion_products_one_plus_one_callback() {
+		oxfam_shop_promotion_products_field_callback('two_plus_one');
 	}
 	
 	function oxfam_shop_promotion_products_field_callback( $type ) {
