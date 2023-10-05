@@ -178,22 +178,22 @@
 					<div class="col-row md-display-flex">
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://www.mo.be" target="_blank"><img width="111" height="62" src="https://<?= OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-1.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://www.mo.be" target="_blank"><img width="111" height="62" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/mo.jpg" class="attachment-medium size-medium" alt="Logo MO"></a>
 							</div>
 						</div>
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://11.be" target="_blank"><img width="140" height="60" src="https://<?= OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-2.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://11.be" target="_blank"><img width="140" height="60" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/11.11.11.png" class="attachment-medium size-medium" alt="Logo 11.11.11"></a>
 							</div>
 						</div>
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<a href="https://www.vlaanderen.be" target="_blank"><img width="153" height="60" src="https://<?= OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-3.png" class="attachment-medium size-medium" alt=""></a>
+								<a href="https://www.vlaanderen.be" target="_blank"><img width="153" height="60" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/vlaanderen.svg" class="attachment-medium size-medium" alt="Logo Vlaanderen"></a>
 							</div>
 						</div>
 						<div class="col-xs-3 md-align-self-center">
 							<div class="logo">
-								<img width="252" height="60" src="https://<?= OXFAM_MAIN_SITE_DOMAIN; ?>/wp-content/uploads/2019/04/footer-logo-4.png" class="attachment-medium size-medium" alt="">
+								<img width="252" height="60" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/enabel.svg" class="attachment-medium size-medium" alt="Logo Enabel">
 							</div>
 						</div>
 					</div>
