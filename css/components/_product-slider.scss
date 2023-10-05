@@ -6,7 +6,7 @@
 .nm-product-slider {
   // Dirty fix voor niet-verschijnende sliders op homepage
   .nm-products {
-    opacity: 1;
+    opacity: 1 !important;
   }
   
   .slick-dots {
