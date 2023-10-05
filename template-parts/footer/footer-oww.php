@@ -178,7 +178,7 @@
 					<div class="col-row display-flex">
 						<div class="col-xs-3 align-self-center">
 							<div class="logo">
-								<a href="https://www.mo.be" target="_blank"><img height="55" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/mo.jpg" class="attachment-medium size-medium" alt="Logo MO"></a>
+								<a href="https://www.mo.be" target="_blank"><img src="<?= get_stylesheet_directory_uri(); ?>/images/logos/mo.jpg" class="attachment-medium size-medium" alt="Logo MO" style="max-height: 55px;"></a>
 							</div>
 						</div>
 						<div class="col-xs-3 align-self-center">
