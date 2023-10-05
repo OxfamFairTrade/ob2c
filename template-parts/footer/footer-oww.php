@@ -175,25 +175,25 @@
 					</div>
 				</div>
 				<div class="col-sm-10 col-xs-12">
-					<div class="col-row md-display-flex">
-						<div class="col-xs-3 md-align-self-center">
+					<div class="col-row display-flex">
+						<div class="col-xs-3 align-self-center">
 							<div class="logo">
-								<a href="https://www.mo.be" target="_blank"><img width="111" height="62" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/mo.jpg" class="attachment-medium size-medium" alt="Logo MO"></a>
+								<a href="https://www.mo.be" target="_blank"><img height="55" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/mo.jpg" class="attachment-medium size-medium" alt="Logo MO"></a>
 							</div>
 						</div>
-						<div class="col-xs-3 md-align-self-center">
+						<div class="col-xs-3 align-self-center">
 							<div class="logo">
-								<a href="https://11.be" target="_blank"><img width="140" height="60" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/11.11.11.png" class="attachment-medium size-medium" alt="Logo 11.11.11"></a>
+								<a href="https://11.be" target="_blank"><img src="<?= get_stylesheet_directory_uri(); ?>/images/logos/111111.png" class="attachment-medium size-medium" alt="Logo 11.11.11"></a>
 							</div>
 						</div>
-						<div class="col-xs-3 md-align-self-center">
+						<div class="col-xs-3 align-self-center">
 							<div class="logo">
-								<a href="https://www.vlaanderen.be" target="_blank"><img width="153" height="60" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/vlaanderen.svg" class="attachment-medium size-medium" alt="Logo Vlaanderen"></a>
+								<a href="https://www.vlaanderen.be" target="_blank"><img src="<?= get_stylesheet_directory_uri(); ?>/images/logos/vlaanderen.svg" class="attachment-medium size-medium" alt="Logo Vlaanderen"></a>
 							</div>
 						</div>
-						<div class="col-xs-3 md-align-self-center">
+						<div class="col-xs-3 align-self-center">
 							<div class="logo">
-								<img width="252" height="60" src="<?= get_stylesheet_directory_uri(); ?>/images/logos/enabel.svg" class="attachment-medium size-medium" alt="Logo Enabel">
+								<a href="https://www.enabel.be" target="_blank"><img src="<?= get_stylesheet_directory_uri(); ?>/images/logos/enabel.svg" class="attachment-medium size-medium" alt="Logo Enabel"></a>
 							</div>
 						</div>
 					</div>
