@@ -41,12 +41,8 @@
 		return $store_data;
 	}
 	
-	function get_external_wpsl_stores( $domain = 'oxfambelgie.be', $page = 0 ) {
-		if ( wp_get_environment_type() === 'production' ) {
-			$uri = 'oxfambelgie.be/api/v1/stores';
-		} else {
-			$uri = 'stage.oxfambelgie.be/api/v1/stores';
-		}
+	function get_external_wpsl_stores( $page = 0 ) {
+		$uri = 'oxfambelgie.be/api/v1/stores';
 		$context = array( 'source' => 'Drupal API' );
 		// Doet niks (altijd per 50)
 		$per_page = 50;
@@ -59,13 +55,12 @@
 			$stores = json_decode( wp_remote_retrieve_body( $response ), true );
 			
 			if ( $page === 0 ) {
-				// OBE API heeft geen header met het totaal aantal pagina's, dus blijf opvragen tot er minder resultaten zijn dan het maximum
 				$extra_stores = $stores;
-				$i = 1;
+				// Helaas geen header die het totaal aantal pagina's aangeeft ...
 				while ( count( $extra_stores ) === $per_page ) {
-					$extra_stores = get_external_wpsl_stores( $domain, $i );
+					$page++;
+					$extra_stores = get_external_wpsl_stores( $page );
 					$stores = array_merge( $stores, $extra_stores );
-					$i++;
 				}
 			}
 		} else {

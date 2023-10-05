@@ -5,7 +5,8 @@
 	// dirname() enkel geldig vanuit een Antagonist-domeinmap!
 	require_once dirname( __FILE__, 1 ) . '/public_html/wp-load.php';
 	
-	$sites = get_sites( array( 'public' => 1, 'site__not_in' => get_site_option('oxfam_blocked_sites') ) );
+	// Altijd op alle subsites laten draaien!
+	$sites = get_sites();
 	
 	global $wp_version;
 	$agent = 'WordPress/' . $wp_version . '; ' . home_url();
@@ -20,8 +21,9 @@
 		// $rc = shell_exec( $command );
 		
 		switch_to_blog( $site->blog_id );
-	
-		$to_unhook = array( 'check_plugin_updates-user-role-editor-pro', 'jp_purge_transients_cron', 'jetpack_v2_heartbeat', 'woocommerce_tracker_send_event' );
+		
+		// Schakel enkele onbelangrijke maar trage acties uit
+		$to_unhook = array( 'check_plugin_updates-user-role-editor-pro', 'woocommerce_tracker_send_event' );
 		foreach ( $to_unhook as $event ) {
 			$unhooked = wp_clear_scheduled_hook( $event );
 			if ( intval( $unhooked ) > 0 ) {
@@ -37,7 +39,7 @@
 		
 		print_r( number_format( microtime(true)-$start, 2, ',', '.' ) . ' s - ' . $command . PHP_EOL );
 		restore_current_blog();
-	
+		
 		// Doe het rustig aan (telt niet mee voor max_execution_time)
 		sleep( $interval );
 	}

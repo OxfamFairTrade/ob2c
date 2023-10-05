@@ -294,13 +294,14 @@
 						$parts = explode( ' id=', $location['note'] );
 						
 						if ( isset( $parts[1] ) ) {
+							$shop_post_id = str_replace( ']', '', $parts[1] );
 							if ( ! is_numeric( $shop_post_id ) ) {
 								// Bij externe afhaalpunten vervangen we 'id' gewoon door 'node'
 								foreach ( $keys_to_modify as $key_to_modify ) {
 									$locations[ $location_key ][ $key_to_modify ] = str_replace( ' id=', ' node=', $locations[ $location_key ][ $key_to_modify ] );
 								}
 							} else {
-								$shop_post_id = intval( str_replace( ']', '', $parts[1] ) );
+								$shop_post_id = intval( $shop_post_id );
 								if ( array_key_exists( $shop_post_id, $shop_post_ids_to_nodes ) ) {
 									foreach ( $keys_to_modify as $key_to_modify ) {
 										$locations[ $location_key ][ $key_to_modify ] = str_replace( ' id='.$shop_post_id, ' node='.$shop_post_ids_to_nodes[ $shop_post_id ], $locations[ $location_key ][ $key_to_modify ] );
@@ -317,10 +318,13 @@
 				}
 			}
 			
-			// If all goes well ...
-			// delete_option('oxfam_zip_codes');
-			// delete_option('oxfam_shop_post_id');
-			// delete_option('cookie_notice_options');
+			global $wpdb;
+			$wpdb->query( "DELETE FROM `$wpdb->options` WHERE `option_name` LIKE ('jetpack_%')" );
+			delete_option('cookie_notice_options');
+			delete_option('laatste_registratie_timestamp');
+			delete_option('oxfam_zip_codes');
+			delete_option('oxfam_shop_post_id');
+			
 			echo '<br/>';
 		}
 	}
@@ -405,7 +409,7 @@
 		// Te integreren in get_oxfam_shop_data()
 		$oww_store_data = get_external_wpsl_store( $atts['node'] );
 		if ( $oww_store_data !== false ) {
-			return 'Oxfam-Wereldwinkel '.$oww_store_data['title'];
+			return 'Oxfam-Wereldwinkel '.str_replace( 'Oxfam-Wereldwinkel ', '', $oww_store_data['title'] );
 		} else {
 			return false;
 		}

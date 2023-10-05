@@ -600,7 +600,6 @@
 	add_action( 'update_option_woocommerce_enable_reviews', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_woocommerce_placeholder_image', 'sync_settings_to_subsites', 10, 3 );
 	// add_action( 'update_option_woocommerce_google_analytics_settings', 'sync_settings_to_subsites', 10, 3 );
-	// add_action( 'update_option_cookie_notice_options', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_gtm4wp-options', 'sync_settings_to_subsites', 10, 3 );
 	// add_action( 'update_option_woocommerce_local_pickup_plus_settings', 'sync_settings_to_subsites', 10, 3 );
 	add_action( 'update_option_wp_mail_smtp', 'sync_settings_to_subsites', 10, 3 );
@@ -655,7 +654,7 @@
 					}
 				}
 				
-				if ( in_array( $option, array( 'cookie_notice_options', 'gtm4wp-options' ) ) ) {
+				if ( in_array( $option, array( 'gtm4wp-options' ) ) ) {
 					// Boolean waardes worden niet goed overgenomen m.b.v. update_option() ...
 					// Manipuleer de database rechtstreeks, blog-ID zit reeds vervat in prefix!
 					global $wpdb;
@@ -2607,7 +2606,7 @@
 		return $query_args;
 	}
 
-	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje DUS NIET GEBRUIKEN OM HANDMATIG TOEVOEGEN VAN LEEGGOED TE VERHINDEREN
+	// Doet de koopknop verdwijnen bij verboden producten én zwiert reeds toegevoegde producten uit het winkelmandje
 	add_filter( 'woocommerce_is_purchasable', 'ob2c_disable_products_not_in_assortment', 10, 2 );
 
 	function ob2c_disable_products_not_in_assortment( $purchasable, $product ) {
@@ -2660,17 +2659,22 @@
 	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_customer', 10, 3 );
 
 	function ob2c_check_product_availability_for_customer( $product_id, $is_b2b_customer, $available ) {
-		// Sta ook toe dat medewerkers de B2B-producten te zien krijgen
+		// Sta toe dat ook medewerkers de B2B-producten te zien krijgen
 		if ( ! $is_b2b_customer and ! current_user_can('manage_woocommerce') ) {
 			if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
-				$product = wc_get_product( $product_id );
 				$available = false;
 			}
 		}
-
+		
+		// Zwier producten die tijdelijk uit voorraad zijn uit het winkelmandje
+		$product = wc_get_product( $product_id );
+		if ( $product and $product->is_on_backorder() ) {
+			$available = false;
+		}
+		
 		return $available;
 	}
-
+	
 	// Herlaad winkelmandje automatisch na aanpassing en trigger geschenkverpakking indien nodig
 	add_action( 'wp_footer', 'cart_update_qty_script' );
 
@@ -3308,7 +3312,7 @@
 				if ( $product === false ) {
 					continue;
 				}
-
+				
 				switch ( $product->get_tax_class() ) {
 					case 'voeding':
 						$tax = '0.06';
@@ -3322,7 +3326,7 @@
 				}
 				$product_price = $product->get_price();
 				$line_total = $item['line_subtotal'];
-
+				
 				if ( $order->get_meta('is_b2b_sale') === 'yes' ) {
 					// Stukprijs exclusief BTW bij B2B-bestellingen
 					$product_price /= 1+$tax;
@@ -3331,15 +3335,33 @@
 					// Afronden per regel in plaats van per subtotaal (zoals in ShopPlus)
 					$line_total = wc_round_tax_total( $line_total + $item['line_subtotal_tax'] );
 				}
-
+				
 				if ( $item->get_meta('wcgwp_note') !== '' ) {
 					// We gaan ervan uit dat er slechts 1 boodschap kan zijn
 					$gift_wrap_text = $item->get_meta('wcgwp_note');
 				}
-
+				
+				$title = $product->get_title();
 				$shopplus = ( ! empty( $product->get_meta('_shopplus_code') ) ) ? $product->get_meta('_shopplus_code') : $product->get_sku();
 				$ean = $product->get_meta('_cu_ean');
-				$pick_sheet->setCellValue( 'A'.$i, $shopplus )->setCellValue( 'B'.$i, $product->get_title() )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $ean );
+				
+				// Juiste barcodes voor de blikjesactie (juni 2023)
+				if ( $line_total < 0.01 ) {
+					switch ( $product->get_sku() ) {
+						case 21500:
+						case 21502:
+						case 21504:
+						case 21515:
+							$shopplus = str_replace( 'W', 'WPR', $shopplus );
+							break;
+					}
+					
+					$ean = $shopplus;
+					$title = 'GRATIS '.$title;
+					$product_price = 0;
+				}
+				
+				$pick_sheet->setCellValue( 'A'.$i, $shopplus )->setCellValue( 'B'.$i, $title )->setCellValue( 'C'.$i, $item['qty'] )->setCellValue( 'D'.$i, $product_price )->setCellValue( 'E'.$i, $tax )->setCellValue( 'F'.$i, $line_total )->setCellValue( 'H'.$i, $ean );
 				$i++;
 			}
 
@@ -5168,27 +5190,14 @@
 				if ( $product !== false ) {
 					switch ( $product->get_sku() ) {
 						case '20807':
+						case '20809':
 						case '20811':
 							// Voeg 4 flesjes leeggoed toe bij clips
 							$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
 							// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
 							$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
 							break;
-
-						case '20809':
-							$cart_price = apply_filters('woocommerce_cart_item_price', WC()->cart->get_product_price($product), $product_item, $product_item['key'] );
-							if ( stristr( $cart_price, 'gratis' ) ) {
-								// Geen leeggoed aanrekenen bij gratis product voor World Fair Trade Day 2021
-								$empties_array['quantity'] = 0;
-								$product_item['quantity'] = 0;
-							} else {
-								// Voeg 4 flesjes leeggoed toe bij clips
-								$empties_array['quantity'] = 4 * intval( $product_item['quantity'] );
-								// OVERRULE OOK PRODUCTHOEVEELHEID MET HET OOG OP ONDERSTAANDE LOGICA
-								$product_item['quantity'] = 4 * intval( $product_item['quantity'] );
-							}
-							break;
-
+							
 						case '19236':
 						case '19237':
 						case '19238':
@@ -5522,10 +5531,6 @@
 
 	// Let op: $option_group = $page in de oude documentatie!
 	function register_oxfam_settings() {
-		// @toDo: Verwijderen, heeft geen echte betekenis meer (maar wordt in get_webshops_by_postcode() nog gebruikt!)
-		// register_setting( 'oxfam-options-global', 'oxfam_zip_codes', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_numeric_array' ) );
-		// register_setting( 'oxfam-options-global', 'oxfam_shop_post_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
-		
 		register_setting( 'oxfam-options-global', 'oxfam_shop_node', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_mollie_partner_id', array( 'type' => 'integer', 'sanitize_callback' => 'absint' ) );
 		register_setting( 'oxfam-options-global', 'oxfam_member_shops', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
@@ -5776,6 +5781,7 @@
 		
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_new_products', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_replaced_products', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_dashboard_notice_deleted_products', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		
 		add_settings_field(
 			'oxfam_shop_dashboard_notice_new_products',
@@ -5793,6 +5799,15 @@
 			'woonet-woocommerce-dashboard-info',
 			'products',
 			array( 'label_for' => 'oxfam_shop_dashboard_notice_replaced_products' )
+		);
+		
+		add_settings_field(
+			'oxfam_shop_dashboard_notice_deleted_products',
+			__( 'Verwijderde artikelnummers', 'oxfam-webshop' ),
+			'oxfam_shop_dashboard_notice_deleted_products_callback',
+			'woonet-woocommerce-dashboard-info',
+			'products',
+			array( 'label_for' => 'oxfam_shop_dashboard_notice_deleted_products' )
 		);
 		
 		add_settings_section(
@@ -5842,6 +5857,7 @@
 		
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_fifty_percent_off_second', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_one_plus_one', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
+		register_setting( 'woonet-woocommerce-dashboard-info', 'oxfam_shop_promotion_products_two_plus_one', array( 'type' => 'array', 'sanitize_callback' => 'comma_string_to_array' ) );
 		
 		add_settings_field(
 			'oxfam_shop_promotion_products_fifty_percent_off_second',
@@ -5859,6 +5875,15 @@
 			'woonet-woocommerce-dashboard-info',
 			'labels',
 			array( 'label_for' => 'oxfam_shop_promotion_products_one_plus_one' )
+		);
+		
+		add_settings_field(
+			'oxfam_shop_promotion_products_two_plus_one',
+			__( 'Promo 2+1 gratis', 'oxfam-webshop' ),
+			'oxfam_shop_promotion_products_two_plus_one_callback',
+			'woonet-woocommerce-dashboard-info',
+			'labels',
+			array( 'label_for' => 'oxfam_shop_promotion_products_two_plus_one' )
 		);
 		
 		add_submenu_page(
@@ -5977,6 +6002,12 @@
 		echo '<input type="text" name="' . $key . '" style="width: 100%; max-width: 800px;" value="' . implode( ', ', $value ) . '" /><br/><small>Plaats een liggend streepje tussen het oude ompaknummer (links) en het nieuwe ompaknummer (rechts).<br/>Scheid meerdere waarden met een (punt)komma. Voorbeeld: <i>20058-20081, 28802-28805</i>.</small>';
 	}
 	
+	function oxfam_shop_dashboard_notice_deleted_products_callback() {
+		$key = 'oxfam_shop_dashboard_notice_deleted_products';
+		$value = get_site_option( $key, array() );
+		echo '<input type="text" name="' . $key . '" style="width: 100%; max-width: 800px;" value="' . implode( ', ', $value ) . '" /><br/><small>Scheid meerdere ompaknummers met een (punt)komma.</small>';
+	}
+	
 	function oxfam_shop_dashboard_notice_success_callback() {
 		oxfam_shop_dashboard_notice_callback('success');
 	}
@@ -6005,6 +6036,10 @@
 	
 	function oxfam_shop_promotion_products_one_plus_one_callback() {
 		oxfam_shop_promotion_products_field_callback('one_plus_one');
+	}
+	
+	function oxfam_shop_promotion_products_two_plus_one_callback() {
+		oxfam_shop_promotion_products_field_callback('two_plus_one');
 	}
 	
 	function oxfam_shop_promotion_products_field_callback( $type ) {
@@ -6686,6 +6721,8 @@
 		delete_site_option('oft_import_active');
 		
 		if ( $import_id == 7 ) {
+			write_log("Productimport succesvol afgerond!");
+			
 			// Vind alle producten die vandaag niet bijgewerkt werden door de ERP-import
 			// Als we dit in gebruik willen nemen, moeten we vooraf de craftsvoorraden bijwerken
 			// Zodat 'touched_by_import' ook bij hen op vandaag staat
@@ -6694,13 +6731,13 @@
 				'post_status'		=> 'publish',
 				'posts_per_page'	=> -1,
 				'meta_key'			=> 'touched_by_import',
-				'meta_value'		=> date( 'Ymd', strtotime('-30 days') ),
+				'meta_value'		=> date( 'Ymd', strtotime('-15 days') ),
 				'meta_compare'		=> '<',
 			);
 			$to_outofstock = new WP_Query( $args );
 			
 			if ( $to_outofstock->have_posts() ) {
-				write_log( $to_outofstock->found_posts." DEPRECATED PRODUCTS" );
+				write_log( $to_outofstock->found_posts." producten werden de voorbije 15 dagen niet bijgewerkt door de import" );
 				$products_to_deprecate = array();
 				
 				while ( $to_outofstock->have_posts() ) {
@@ -6714,9 +6751,15 @@
 						if ( get_current_site()->domain !== 'shop.oxfamwereldwinkels.be' ) {
 							// Metadata lijkt automatisch gesynchroniseerd te worden naar subsites terwijl voorraadstatus behouden wordt, perfect!
 							$product->save();
-							write_log( $product->get_sku()." DISABLED ON MAIN SITE" );
+							write_log( $product->get_sku()." uit voorraad gehaald op hoofdniveau" );
 						} elseif ( ! is_crafts_product( $product ) ) {
-							$instructions = '<a href="'.admin_url('post.php?post='.$product->get_id().'&action=edit').'" target="_blank">'.$product->get_name().'</a> &mdash; laatst geïmporteerd: '.$product->get_meta('touched_by_import');
+							// Ook biersets en OPU-kaartjes negeren (hebben geen ShopPlus-code die met een M begint, dus geen crafts)
+							// Handmatig aangemaakte producten hebben geen 'touched_by_import'-key en worden dus automatisch genegeerd
+							if ( in_array( $product->get_sku(), array( 19236, 19237, 41000, 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008, 41009 ) ) ) {
+								continue;
+							}
+							
+							$instructions = '<a href="'.admin_url('post.php?post='.$product->get_id().'&action=edit').'" target="_blank">'.$product->get_name().'</a> ('.$product->get_sku().') &mdash; laatst geïmporteerd: '.$product->get_meta('touched_by_import');
 							if ( $product->is_in_stock() ) {
 								$instructions .= ' &mdash; nog uit voorraad te halen!';
 							}
@@ -6735,6 +6778,7 @@
 				$headers[] = 'Content-Type: text/html';
 				$body = '<p>Je taak voor deze maand zit er bijna op. Gelieve wel nog onderstaande producten uit te faseren: niet verwijderen (dat doen we pas als alle lokale voorraden uitgeput zijn en/of de laatst uitgeleverde THT-datum gepaseerd is!) maar wel de voorraad op 0 zetten en nabestellingen blokkeren (indien dit nog niet automatisch gebeurde) én de BestelWeb-dropdown op \'nee\' zetten.</p><ol><li>'.implode( '</li><li>', $products_to_deprecate ).'</li></ol><p>&nbsp;</p><p><i>Dit is een automatisch bericht.</i></p>';
 				wp_mail( array( 'kristof.beausaert@oft.be', 'info@fullstackahead.be' ), 'Hoera, de productimport is afgelopen!', '<html>'.$body.'</html>', $headers );
+				write_log( "Lijst van ".count( $products_to_deprecate )." uit te faseren producten gemaild naar beheerders" );
 			}
 			
 			$old = WP_CONTENT_DIR."/erp-import.csv";
@@ -6900,7 +6944,7 @@
 		// Kijk niet naar sluitingsdagen bij winkels waar we expliciete afhaaluren ingesteld hebben
 		$exceptions = array();
 		if ( in_array( $atts['node'], $exceptions ) ) {
-			$holidays = array( '2023-04-09', '2023-04-10', '2023-05-01', '2023-05-18', '2023-05-28', '2023-05-29', '2023-07-21', '2023-08-15', '2023-11-01', '2023-11-11', '2023-12-25', '2024-01-01' );
+			$holidays = array( '2023-07-21', '2023-08-15', '2023-11-01', '2023-11-11', '2023-12-25', '2024-01-01', '2024-03-31', '2024-04-01', '2024-05-01', '2024-05-09', '2024-05-19', '2024-05-20' );
 		} else {
 			// @toCheck: Kijk naar 'closing_days' van specifieke post-ID, met fallback naar algemene feestdagen
 			$holidays = get_site_option( 'oxfam_holidays_'.$atts['node'] );
@@ -7275,7 +7319,7 @@
 		}
 	}
 
-	function get_webshops_by_postcode( $return_store_id = false, $v2 = false, $return_all_shops = false ) {
+	function get_webshops_by_postcode( $return_store_id = false, $return_all_shops = false ) {
 		$global_zips = array();
 		// Sluit hoofdniveau + afgeschermde en niet-openbare webshops uit
 		$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1 ) );
@@ -7283,13 +7327,9 @@
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site->blog_id );
 			
-			if ( $v2 ) {
-				// Er kunnen meerdere webshops dezelfde postcode bedienen!
-				// In dat geval zal de site met de hoogste ID als 'winnaar' uit de bus komen (= default order get_sites())
-				$local_zips = get_oxfam_covered_zips();
-			} else {
-				$local_zips = get_option( 'oxfam_zip_codes', array() );	
-			}
+			// Er kunnen meerdere webshops dezelfde postcode bedienen!
+			// In dat geval zal de site met de hoogste ID als 'winnaar' uit de bus komen (= default order get_sites())
+			$local_zips = get_oxfam_covered_zips();
 			
 			foreach ( $local_zips as $zip ) {
 				$zip = intval( $zip );

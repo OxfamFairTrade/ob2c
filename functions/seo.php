@@ -26,7 +26,7 @@
 	
 	function ob2c_tweak_canonical_url( $url, $post ) {
 		if ( ! is_main_site() ) {
-			if ( get_post_type( $post ) === 'product' ) {
+			if ( is_product() ) {
 				if ( is_national_product( $post->ID ) ) {
 					// Haal link van hoofdproduct op
 					$national_post_id = get_post_meta( $post->ID, '_woonet_network_is_child_product_id', true );
@@ -34,7 +34,7 @@
 					$url = get_permalink( $national_post_id );
 					restore_current_blog();
 				}
-			} elseif ( is_product_tag() or is_product_category() ) {
+			} elseif ( is_product_tag() or is_product_category() or is_tax('product_partner') ) {
 				// Verwijder het site path (bv. /gemeente/) uit de URL
 				// Pattern komt in principe nergens anders voor, dus veilig
 				$url = str_replace( get_site()->path, '/', $url );

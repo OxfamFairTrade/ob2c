@@ -17,7 +17,10 @@
 					$login_link = $mollie->getLoginLink( $partner_id );
 					$href = $login_link->redirect_url;
 				} catch (Exception $e) {
-					echo 'Caught exception: ', $e->getMessage(), '<br/>';
+					echo "<tr>";
+						echo "<th class='left' style='color: red;'>Reseller API Deprecated</th>";
+						echo "<td class='right'>Helaas kunnen we hier geen automatische inloglink naar jullie Mollie-account meer tonen. Gelieve handmatig in te loggen via <a href='https://my.mollie.com/dashboard/login' target='_blank'>mollie.com</a> Foutmelding: ".$e->getMessage()."</td>";
+					echo "</tr>";
 					return;
 				}
 			}
@@ -86,11 +89,6 @@
 					}
 				}
 			}
-		} else {
-			echo "<tr>";
-				echo "<th class='left' style='color: red;'>Reseller API Deprecated</th>";
-				echo "<td class='right'>Helaas kunnen we hier geen automatische inloglink naar jullie Mollie-account meer tonen. Gelieve handmatig in te loggen via <a href='https://my.mollie.com/dashboard/login' target='_blank'>mollie.com</a>. We bekijken of er alternatieve oplossingen zijn om deze functionaliteit terug te brengen.</td>";
-			echo "</tr>";
 		}
 	}
 ?>
@@ -135,15 +133,7 @@
 			</tr>
 			<tr valign="top">
 				<th class="left">
-					<label for="oxfam_shop_post_id">Post-ID OWW-site:</label>
-				</th>
-				<td class="right">
-					<input type="text" name="oxfam_shop_post_id" class="text-input" value="<?= get_option('oxfam_shop_post_id'); ?>" readonly>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th class="left">
-					<label for="oxfam_shop_node">Node OBE-site:<br/><small>Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam België.</small></label>
+					<label for="oxfam_shop_node" title="Aan de hand van deze ID halen we adressen en openingsuren op uit de database achter de publieke site van Oxfam België.">Node OBE-site:</label>
 				</th>
 				<td class="right">
 					<input type="text" name="oxfam_shop_node" class="text-input" value="<?= get_option('oxfam_shop_node'); ?>"<?php if ( ! current_user_can('create_sites') ) echo ' readonly'; ?>>

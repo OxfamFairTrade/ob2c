@@ -52,14 +52,16 @@
 					$txt .= "<Style id='pickup'><IconStyle><w>32</w><h>32</h><Icon><href>".get_stylesheet_directory_uri()."/images/markers/placemarker-afhaling.png</href></Icon></IconStyle></Style>";
 					
 					foreach ( $locations as $shop_node => $shop_name ) {
-						// Want get_shop_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor wereldwinkels!
+						// Want get_shop_address() en get_oxfam_shop_data('ll') enkel gedefinieerd voor Wereldwinkels!
 						if ( $shop_node > 0 ) {
 							$txt .= "<Placemark>";
 							$txt .= "<name><![CDATA[".$shop_name."]]></name>";
 							$txt .= "<styleUrl>#pickup</styleUrl>";
 							$oww_store_data = get_external_wpsl_store( $shop_node );
 							$txt .= "<description><![CDATA[<p>".get_shop_address( array( 'node' => $shop_node ) )."</p><p><a href='https://oxfambelgie.be/winkels".$oww_store_data['slug']."' target='_blank'>Naar de winkelpagina »</a></p>]]></description>";
-							$txt .= "<Point><coordinates>".get_oxfam_shop_data( 'll', $shop_node, false )."</coordinates></Point>";
+							// Longitude/Latitude (= coördinaten omkeren!)
+							$ll = explode( ',', get_oxfam_shop_data( 'll', $shop_node, false ) );
+							$txt .= "<Point><coordinates>".$ll[1].",".$ll[0]."</coordinates></Point>";
 							$txt .= "</Placemark>";
 							
 							// Maak een handige lijst met alle shop-ID's en hun bijbehorende blog-ID
@@ -87,8 +89,13 @@
 		var_dump_pre( $site_ids_vs_blog_ids );
 		
 		$oww_stores = array();
+		$oww_stores_imported = 0;
+		
 		foreach ( $obe_stores as $obe_store ) {
-			if ( stristr( $obe_store['title'], 'Oxfam-Wereldwinkel' ) or in_array( 'Voeding', $obe_store['assortment'] ) ) {
+			// Neem enkel Wereldwinkels op in store selector (o.b.v. titel of assortiment)
+			// Sluit Dinant uit (biedt ook voeding aan ...)
+			$forbidden_nodes = array( 433 );
+			if ( ( stristr( $obe_store['title'], 'Oxfam-Wereldwinkel' ) or in_array( 'Voeding', $obe_store['assortment'] ) ) and ! in_array( $obe_store['id'], $forbidden_nodes ) ) {
 				$oww_stores[] = $obe_store;
 			}
 		}
@@ -144,7 +151,6 @@
 					'wpsl_lng' => $ll[1],
 					'wpsl_phone' => $oww_store_data['location']['telephone'],
 					'wpsl_url' => $oww_store_data['link'],
-					'wpsl_url' => 'https://oxfambelgie.be/winkels'.$oww_store_data['slug'],
 					'wpsl_webshop' => $webshop_url,
 					'wpsl_webshop_blog_id' => $webshop_blog_id,
 					// Vul hier bewust het algemene mailadres in (ook voor winkels mét webshop)
@@ -187,10 +193,20 @@
 					// Tweede categorie instellen indien niet enkel afhaling
 					wp_set_object_terms( $result_post_id, 'levering', 'wpsl_store_category', true );
 				}
+				
+				$oww_stores_imported++;
 			}
 		}
 		
-		write_log( count( $oww_stores )." winkels via API geïmporteerd uit oxfambelgie.be" );
+		write_log( $oww_stores_imported." winkels via API geïmporteerd uit oxfambelgie.be" );
+		
+		if ( $oww_stores_imported <= 150 ) {
+			$headers = array();
+			$headers[] = 'From: "Helpdesk E-Commerce" <'.get_site_option('admin_email').'>';
+			$headers[] = 'Content-Type: text/html';
+			$body = '<p>Er werden slechts '.$oww_stores_imported.' winkels geïmporteerd tijdens de dagelijkse synchronisatie met <a href="https://oxfambelgie.be/api/v1/stores" target="_blank">oxfambelgie.be</a>. Controleer <a href="'.admin_url('edit.php?post_type=wpsl_stores').'" target="_blank">het winkeloverzicht</a> om te zien of er geen winkels achterbleven in de prullenbak.</p><p><i>Dit is een automatisch bericht.</i></p>';
+			wp_mail( array( 'info@fullstackahead.be' ), 'Mogelijk probleem met winkelimport', '<html>'.$body.'</html>', $headers );
+		}
 	} else {
 		die("Access prohibited!");
 	}

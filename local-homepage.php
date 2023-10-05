@@ -92,10 +92,13 @@
 				
 				<?php
 					if ( count( wc_get_product_ids_on_sale() ) > 0 ) {
-						// Check of ze effectief op voorraad zijn
+						// wc_get_product_ids_on_sale() werkt met een transient cache, waarbij toekomstige promo's ook al opgenomen zijn
+						// Filter daarom nogmaals op 'vandaag in promo' én check of ze bestelbaar zijn
 						$args = array(
 							'stock_status' => 'instock',
 							'include' => wc_get_product_ids_on_sale(),
+							'date_on_sale_from' => '<='.date_i18n('Y-m-d'),
+							'date_on_sale_to' => '>='.date_i18n('Y-m-d'),
 						);
 						$sale_products = wc_get_products( $args );
 						
