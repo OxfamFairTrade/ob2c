@@ -2760,7 +2760,7 @@
 	function ob2c_prevent_access_to_product_page() {
 		if ( is_product() ) {
 			$product = wc_get_product( get_the_ID() );
-			$available = apply_filters( 'ob2c_product_is_available', get_the_ID(), is_b2b_customer(), true );
+			$available = apply_filters( 'ob2c_product_is_available', get_the_ID(), is_b2b_customer(), true, true );
 
 			if ( ! $available or ( $product !== false and in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) ) {
 				// Als de klant nog niets in het winkelmandje zitten heeft, is er nog geen sessie om notices aan toe te voegen!
@@ -2784,9 +2784,9 @@
 	}
 
 	// Definieer een eigen filter zodat we de voorwaarden slecht één keer centraal hoeven in te geven
-	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_customer', 10, 3 );
+	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_customer', 10, 4 );
 
-	function ob2c_check_product_availability_for_customer( $product_id, $is_b2b_customer, $available ) {
+	function ob2c_check_product_availability_for_customer( $product_id, $is_b2b_customer, $available, $view_product_detail = false ) {
 		// Sta toe dat ook medewerkers de B2B-producten te zien krijgen
 		if ( ! $is_b2b_customer and ! current_user_can('manage_woocommerce') ) {
 			if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
@@ -2795,9 +2795,12 @@
 		}
 		
 		// Zwier producten die tijdelijk uit voorraad zijn uit het winkelmandje
-		$product = wc_get_product( $product_id );
-		if ( $product and $product->is_on_backorder() ) {
-			$available = false;
+		// Logica niet doorlopen bij raadplegen van productdetailpagina
+		if ( ! $view_product_detail ) {
+			$product = wc_get_product( $product_id );
+			if ( $product and $product->is_on_backorder() ) {
+				$available = false;
+			}
 		}
 		
 		return $available;
