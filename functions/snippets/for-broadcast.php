@@ -11,7 +11,7 @@
 		'post_status' => 'future',
 		// Alternatieve methode (bv. als de bon inmiddels al op publish staat)
 		// 'Opgelet: 'post_name__in' kijkt naar de (onzichtbare) originele slug, dit kan afwijken van de (zichtbare) titel indien achteraf gewijzigd!
-		// 'post_name__in' => array( '202307-zwarte-rice-cracker', '202307-08-choco-espressobeans', '202307-08-rijstwafels', '202307-08-beertjes' ),
+		// 'post_name__in' => array( 'wijnfestival-w10262', 'wijnfestival-w10415', 'wijnfestival-w10225', 'wijnfestival-w10068' ),
 		'posts_per_page' => -1,
 	);
 	$all_coupons = new WP_Query( $args );
