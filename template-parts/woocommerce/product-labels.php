@@ -9,7 +9,7 @@
 		// Zoek vervolgens de details van de actie op
 		// Handmatig beheerde lijst, want simpeler dan afleiden uit de kortingsregels!
 
-		$wijnfestival_products = array();
+		$wijnfestival_products = array( 20031, 20067, 20212, 20261, 20413, 20416 );
 		if ( in_array( $product->get_sku(), $wijnfestival_products ) ) {
 			$labels['promotion'] = '-15% per 2 flessen';
 		}
@@ -59,7 +59,7 @@
 			$labels['promotion'] = 'Promo 4+2 gratis';
 		}
 
-		$five_plus_one_products = array( 20070, 20265 );
+		$five_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $five_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 5+1 gratis';
 		}
