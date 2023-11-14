@@ -1163,6 +1163,7 @@
 		wp_enqueue_script('jquery-ui-tooltip');
 
 		// Inladen in de footer om dependency issues met jQuery te vermijden
+		// @toDo: https://github.com/jedfoster/Readmore.js is verouderd, vervangen door https://github.com/stephenscaff/read-smore?
 		wp_enqueue_script( 'readmore', get_stylesheet_directory_uri() . '/libraries/readmore/readmore.min.js', array(), false, true );
 		wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts-min.js', array(), false, true );
 
