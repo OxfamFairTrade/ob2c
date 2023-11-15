@@ -97,27 +97,32 @@
 						$args = array(
 							'stock_status' => 'instock',
 							'include' => wc_get_product_ids_on_sale(),
-							'date_on_sale_from' => '<='.date_i18n('Y-m-d'),
+							// Is blanco na de start van de promoperiode ...
+							// 'date_on_sale_from' => '<='.date_i18n('Y-m-d'),
 							'date_on_sale_to' => '>='.date_i18n('Y-m-d'),
 						);
 						$sale_products = wc_get_products( $args );
 						
 						if ( count( $sale_products ) > 0 ) {
+							$term = get_term_by( 'slug', 'promotie', 'product_tag' );
+							if ( $term !== false ) {
+								$term_link = get_term_link( $term );
+								$url = $term_link.'#nm-shop-products';
+							} else {
+								$url = get_permalink( wc_get_page_id('shop') );
+							}
 							?>
 							<div class="col-row lh-header">
 								<div class="col-xs-12 col-sm-6">
 									<h2>Promoties</h2>
 								</div>
 								<div class="col-xs-12 col-sm-6">
-									<a href="<?= get_permalink( wc_get_page_id('shop') ); ?>">Alle producten</a>
+									<a href="<?= esc_url( $url ); ?>">Alle promoties</a>
 								</div>
 							</div>
 							<div class="col-row lh-promo">
 								<div class="col-xs-12">
-									<?php
-										// Shortcode lijkt geen rekening te houden met toekomstige promoperiodes?
-										echo do_shortcode('[nm_product_slider shortcode="sale_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]');
-									?>
+									<?= do_shortcode('[nm_product_slider shortcode="sale_products" per_page="-1" columns="4" columns_mobile="1" orderby="menu_order" order="ASC" arrows="1"]'); ?>
 								</div>
 							</div>
 							<?php
