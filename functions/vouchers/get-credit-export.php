@@ -63,9 +63,9 @@
 					'08935' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2024-01-01' ),
 					'08936' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2024-01-01' ),
 					'08937' => array( 'issuer' => 'Cera', 'value' => 30, 'expires' => '2024-03-01' ),
-					// NIEUWE BONNEN 2024
-					// '089??' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2025-01-01' ),
-					// '089??' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2025-01-01' ),
+					// Nieuwe bonnen voor 2024
+					'08953' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2025-01-01' ),
+					'08954' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2025-01-01' ),
 					// Nieuwe acties hier aanvullen met de parameters issuer / value / expires, zoals ze aangemaakt zijn in de MySQL-tabel
 					// Op die manier kunnen de bonnen in het rapport aan de juiste crediteringscode gelinkt worden
 					// Odisy-artikelnummer te ontvangen van Aike Detelder

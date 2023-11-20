@@ -3523,13 +3523,13 @@
 					// $coupon_value = $db_coupon->expires;
 					switch ( $coupon_value ) {
 						case 50:
-							$sku = 'WGCD502023';
-							$ean = '5400164190374';
+							$sku = 'WGCD502024';
+							$ean = '5400164190282';
 							break;
 							
 						case 25:
-							$sku = 'WGCD252023';
-							$ean = '5400164190367';
+							$sku = 'WGCD252024';
+							$ean = '5400164190299';
 							break;
 							
 						default:
