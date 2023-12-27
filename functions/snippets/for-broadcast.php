@@ -16,7 +16,7 @@
 	);
 	$all_coupons = new WP_Query( $args );
 	
-	if ( $all_coupons->have_posts() ) {
+	if ( $all_coupons->have_posts() and ! is_main_site() ) {
 		while ( $all_coupons->have_posts() ) {
 			$all_coupons->the_post();
 			$ids = get_post_meta( get_the_ID(), 'product_ids', true );
@@ -43,16 +43,19 @@
 	
 	// Alle nieuwe artikels lokaal uit voorraad zetten
 	$new_skus = get_site_option( 'oxfam_shop_dashboard_notice_new_products', array() );
-	foreach ( $new_skus as $sku ) {
-		$product_id = wc_get_product_id_by_sku( $sku );
-		if ( $product_id ) {
-			$product = wc_get_product( $product_id );
-			// On first publish wordt nationale voorraadbeheer automatisch ook lokaal geactiveerd
-			// Dit moet sowieso op 'no' gezet worden, anders zal het lokale voorraadbeheer niet functioneren!
-			$product->set_manage_stock('no');
-			$product->set_stock_status('outofstock');
-			$product->save();
-			write_log( get_bloginfo('name').": stock status of SKU ".$sku." reset to 'outofstock'" );
+	
+	if ( count( $new_skus ) > 0 and ! is_main_site() ) {
+		foreach ( $new_skus as $sku ) {
+			$product_id = wc_get_product_id_by_sku( $sku );
+			if ( $product_id ) {
+				$product = wc_get_product( $product_id );
+				// On first publish wordt nationale voorraadbeheer automatisch ook lokaal geactiveerd
+				// Dit moet sowieso op 'no' gezet worden, anders zal het lokale voorraadbeheer niet functioneren!
+				$product->set_manage_stock('no');
+				$product->set_stock_status('outofstock');
+				$product->save();
+				write_log( get_bloginfo('name').": stock status of SKU ".$sku." reset to 'outofstock'" );
+			}
 		}
 	}
 	
