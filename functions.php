@@ -6948,38 +6948,48 @@
 			rename( $old, $new );
 		}
 	}
-
+	
 	// Functie die product-ID's van de hoofdsite vertaalt en het metaveld opslaat in de huidige subsite (op basis van artikelnummer)
-	/**
-	* @param int $local_product_id
-	* @param string $meta_key
-	* @param array $product_meta_item_row
-	*/
-	function translate_main_to_local_ids( $local_product_id, $meta_key, $product_meta_item_row ) {
-		// write_log( "MAAK POST ".get_the_ID()." LOKAAL IN BLOG ".get_current_blog_id() );
-
-		if ( $product_meta_item_row ) {
-			foreach ( $product_meta_item_row as $main_product_id ) {
+	function translate_main_to_local_ids( $local_post_id, $meta_key, $product_ids_to_translate ) {
+		write_log( "Localize ".serialize( $product_ids_to_translate )." for coupon ID ".$local_post_id." in blog ID ".get_current_blog_id()." ..." );
+		
+		if ( is_array( $product_ids_to_translate ) ) {
+			$local_product_ids = array();
+			
+			foreach ( $product_ids_to_translate as $main_product_id ) {
 				switch_to_blog(1);
 				$main_product = wc_get_product( $main_product_id );
+				if ( ! $main_product instanceof WC_Product ) {
+					write_log( "Product with ID ".$main_product_id." not found in blog ID ".get_current_blog_id()." while localizing ".$meta_key." field for coupon ID ".$local_post_id );
+					continue;
+				}
 				restore_current_blog();
-				$local_product_ids[] = wc_get_product_id_by_sku( $main_product->get_sku() );
+				
+				$local_product_id = wc_get_product_id_by_sku( $main_product->get_sku() );
+				if ( $local_product_id === 0 ) {
+					write_log( "Product with SKU ".$main_product->get_sku()." not found in blog ID ".get_current_blog_id()." while localizing ".$meta_key." field for coupon ID ".$local_post_id );
+					continue;
+				}
+				
+				$local_product_ids[] = $local_product_id;
 			}
+			
 			// Niet serialiseren voor coupons
 			$coupon_keys = array( 'product_ids', 'exclude_product_ids', '_wjecf_free_product_ids' );
 			if ( in_array( $meta_key, $coupon_keys ) ) {
 				$local_product_ids = implode( ',', $local_product_ids );
 			}
-			update_post_meta( $local_product_id, $meta_key, $local_product_ids );
+			
+			update_post_meta( $local_post_id, $meta_key, $local_product_ids );
 		} else {
 			// Zorg ervoor dat het veld ook bij de child geleegd wordt!
-			update_post_meta( $local_product_id, $meta_key, NULL );
+			update_post_meta( $local_post_id, $meta_key, NULL );
 		}
 	}
-
+	
 	function translate_master_to_slave_ids( $meta_key, $main_product_ids, $master_blog_id, $master_product ) {
 		// write_log( "MAAK EIGENSCHAP ".$meta_key." VAN SKU ".$master_product->get_sku()." LOKAAL IN BLOG ".get_current_blog_id() );
-
+		
 		if ( is_array( $main_product_ids ) ) {
 			$slave_product_ids = array();
 			foreach ( $main_product_ids as $main_product_id ) {
@@ -6997,13 +7007,13 @@
 			// Indien $main_product_ids leeg is, mogen we dit gewoon zo doorgeven, zodat het ook lokaal leeggemaakt kan worden
 			$slave_product_ids = $main_product_ids;
 		}
-
+		
 		return $slave_product_ids;
 	}
-
+	
 	function broadcast_master_to_slave_ids( $meta_key, $main_product_ids ) {
 		$main_product_ids = explode( ',', $main_product_ids );
-
+		
 		if ( is_array( $main_product_ids ) ) {
 			$slave_product_ids = array();
 			foreach ( $main_product_ids as $main_product_id ) {
@@ -7018,12 +7028,12 @@
 				}
 			}
 		}
-
+		
 		// Verschijnt in de logs van de subsite!
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'Oxfam' );
 		$logger->debug( "Translated property '".$meta_key."' from ".implode( ', ', $main_product_ids )." to ".implode( ', ', $slave_product_ids ), $context );
-
+		
 		return implode( ',', $slave_product_ids );
 	}
 
