@@ -69,6 +69,7 @@
 					// Nieuwe acties hier aanvullen met de parameters issuer / value / expires, zoals ze aangemaakt zijn in de MySQL-tabel
 					// Op die manier kunnen de bonnen in het rapport aan de juiste crediteringscode gelinkt worden
 					// Odisy-artikelnummer te ontvangen van Aike Detelder
+					// '?????' => array( 'issuer' => 'Cera', 'value' => 30, 'expires' => '2025-03-01' ),
 				);
 			}
 			
