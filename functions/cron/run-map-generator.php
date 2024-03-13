@@ -16,7 +16,7 @@
 		
 		// Verplaats alle WP Stores naar de prullenbak
 		$all_store_args = array(
-			'post_type'	=> 'wpsl_stores',
+			'post_type' => 'wpsl_stores',
 			'post_status' => 'publish',
 			'posts_per_page' => -1,
 		);
