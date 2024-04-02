@@ -5264,16 +5264,16 @@
 			echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <a class="dashicons dashicons-editor-help tooltip" title="'.$title.'"></a></td></tr>';
 		}
 	}
-
+	
 	function get_oxfam_empties_skus_array() {
 		return array( 'WLFSK', 'W19916', 'WLBS24', 'W29917', 'W29919' );
 	}
-
+	
 	function get_oxfam_cheques_skus_array() {
-		// Geldig tot eind 2023 en 2024
-		return array( '19056', '19057', '19058', '19041', '19042', '19043' );
+		// Geldig tot eind 2024 en 2025
+		return array( '19041', '19042', '19043', '19031', '19032', '19033' );
 	}
-
+	
 	function get_oxfam_cheques_ids_array() {
 		if ( false === ( $product_ids = get_transient('oxfam_cheques_ids_array') ) ) {
 			$product_ids = array();
@@ -5288,7 +5288,7 @@
 		
 		return $product_ids;
 	}
-
+	
 	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_gift_wrap_explainer', 10, 1 );
 	add_filter( 'wcgwp_add_wrap_prompt', 'ob2c_change_gift_wrap_button', 10, 1 );
 
