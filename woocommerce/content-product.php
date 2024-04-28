@@ -137,17 +137,17 @@ if ( ! $nm_theme_options['product_action_link'] ) {
 
 <?php if ( wc_get_loop_prop('current_page') === 1 ) : ?>
     <?php $vertical_shown = false; ?>
-    <?php $coupon = new WC_Coupon('202210-wvdft-sesam'); ?>
+    <?php $coupon = new WC_Coupon('202405-palestina'); ?>
     
     <!-- Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit! -->
     <?php if ( $coupon->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) : ?>
         <?php global $woocommerce_loop; ?>
-        <?php $sesamreep = wc_get_product( wc_get_product_id_by_sku('25317') ); ?>
+        <?php $couscous = wc_get_product( wc_get_product_id_by_sku('27055') ); ?>
         <?php $shopper = wc_get_product( wc_get_product_id_by_sku('19039') ); ?>
         
-        <?php if ( is_woocommerce() and $woocommerce_loop['name'] === '' and $sesamreep !== false and $sesamreep->get_stock_status() === 'instock' and $position_in_grid === 3 ) : ?>
+        <?php if ( is_woocommerce() and $woocommerce_loop['name'] === '' and $couscous !== false and $couscous->get_stock_status() === 'instock' and $position_in_grid === 3 and 1 === 2 ) : ?>
             <li class="promo-banner vertical">
-                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/wvdft-2022-sesam.png' ); ?>" />
+                <img src="<?php esc_attr_e( get_stylesheet_directory_uri().'/images/promoties/palestina-2024.png' ); ?>" />
             </li>
             <?php $position_in_grid++; ?>
             <?php $vertical_shown = true; ?>

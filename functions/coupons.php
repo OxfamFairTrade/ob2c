@@ -90,7 +90,7 @@
 				// Pas de korting niet toe als het gratis product niet op voorraad is
 				return false;
 			}
-	
+			
 			// Vergelijk met het subtotaal NA kortingen m.u.v. digitale vouchers (inclusief BTW, exclusief verzendkosten)
 			// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
 			$totals = WC()->cart->get_totals();
@@ -105,10 +105,10 @@
 					return true;
 				}
 			}
-	
+			
 			return false;
 		}
-	
+		
 		return $can_be_applied;
 	}
 	
@@ -116,10 +116,10 @@
 	add_action( 'wjecf_assert_coupon_is_valid', 'check_if_free_products_are_on_stock', 1000, 2 );
 	
 	function check_if_free_products_are_on_stock( $coupon, $wc_discounts  ) {
-		if ( in_array( $coupon->get_code(), array( '202210-koffie-250g', '202210-koffie-1kg' ) ) and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
-			$shopper = wc_get_product( wc_get_product_id_by_sku('19039') );
-			if ( $shopper !== false and $shopper->get_stock_status() !== 'instock' ) {
-				throw new Exception( __( 'Deze webshop heeft helaas geen shoppers op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
+		if ( in_array( $coupon->get_code(), array( '202405-palestina' ) ) and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
+			$couscous = wc_get_product( wc_get_product_id_by_sku('27055') );
+			if ( $couscous !== false and $couscous->get_stock_status() !== 'instock' ) {
+				throw new Exception( __( 'Deze webshop heeft helaas geen couscous op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
 			}
 		}
 	}

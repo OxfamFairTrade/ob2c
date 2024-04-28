@@ -9,7 +9,7 @@
 		// Zoek vervolgens de details van de actie op
 		// Handmatig beheerde lijst, want simpeler dan afleiden uit de kortingsregels!
 
-		$wijnfestival_products = array( 20031, 20067, 20212, 20261, 20413, 20416 );
+		$wijnfestival_products = array();
 		if ( in_array( $product->get_sku(), $wijnfestival_products ) ) {
 			$labels['promotion'] = '-15% per 2 flessen';
 		}
@@ -18,47 +18,52 @@
 		if ( in_array( $product->get_sku(), $fifty_percent_off_second_products ) ) {
 			$labels['promotion'] = 'Promo 2de -50%';
 		}
-
+		
 		$one_plus_one_products = get_site_option( 'oxfam_shop_promotion_products_one_plus_one', array() );
 		if ( in_array( $product->get_sku(), $one_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 1+1 gratis';
 		}
-
+		
 		$two_plus_two_products = array();
 		if ( in_array( $product->get_sku(), $two_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 2+2 gratis';
 		}
-
+		
 		$three_plus_two_products = array();
 		if ( in_array( $product->get_sku(), $three_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 3+2 gratis';
 		}
-
+		
+		$twenty_percent_off_products = array( 11126, 18596, 19760, 28712, 28728, 29925, 35393, 35394, 35395, 36280, 36379, 64875, 64876, 65200, 65202, 65204, 65205, 65270, 65273, 65274, 95325 );
+		if ( in_array( $product->get_sku(), $twenty_percent_off_products ) ) {
+			$labels['promotion'] = 'Promo -20%';
+		}
+		
+		$twentyfive_percent_off_products = array( 24553 );
+		if ( in_array( $product->get_sku(), $twentyfive_percent_off_products ) ) {
+			$labels['promotion'] = 'Promo -25%';
+		}
+		
 		$fifty_percent_off_products = array();
 		if ( in_array( $product->get_sku(), $fifty_percent_off_products ) ) {
 			$labels['promotion'] = 'Promo -50%';
 		}
-
+		
 		$two_plus_one_products = get_site_option( 'oxfam_shop_promotion_products_two_plus_one', array() );
 		if ( in_array( $product->get_sku(), $two_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 2+1 gratis';
 		}
-
+		
 		$three_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $three_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 3+1 gratis';
 		}
-
-		$twentyfive_percent_off_products = array();
-		if ( in_array( $product->get_sku(), $twentyfive_percent_off_products ) ) {
-			$labels['promotion'] = 'Promo -25%';
-		}
-
+		
 		$four_plus_two_products = array();
 		if ( in_array( $product->get_sku(), $four_plus_two_products ) ) {
 			$labels['promotion'] = 'Promo 4+2 gratis';
 		}
-
+		
 		$five_plus_one_products = array();
 		if ( in_array( $product->get_sku(), $five_plus_one_products ) ) {
 			$labels['promotion'] = 'Promo 5+1 gratis';
