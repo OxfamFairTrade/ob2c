@@ -152,7 +152,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
             <?php $vertical_shown = true; ?>
         <?php endif; ?>
         
-        <?php if ( is_woocommerce() and $woocommerce_loop['name'] === '' and $couscous !== false and $couscous->get_stock_status() === 'instock' and $position_in_grid === 4 ) : ?>
+        <?php if ( is_woocommerce() and $woocommerce_loop['name'] === '' and $couscous !== false and $couscous->get_stock_status() === 'instock' and $position_in_grid === 4 and 1 === 2 ) : ?>
             <li class="promo-banner horizontal">
                 <?php
                     $image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/palestina-2024-liggend.jpg' ).'" />';
