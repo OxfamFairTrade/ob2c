@@ -2278,11 +2278,11 @@
 		echo '<div class="options_group oft"><p class="form-field">';
 			if ( count( $shops_instock ) > 0 ) {
 				echo '<label>Op voorraad ('.count( $shops_instock ).'/'.count( $sites ).')</label>';
-				echo implode( '<br/>', $shops_instock ).'<br/>';
+				echo implode( '<br/>', $shops_instock ).'<br/><br/>';
 			}
 			if ( count( $shops_outofstock ) > 0 ) {
 				echo '<label>Niet op voorraad ('.count( $shops_outofstock ).'/'.count( $sites ).')</label>';
-				echo implode( '<br/>', $shops_outofstock ).'<br/>';
+				echo implode( '<br/>', $shops_outofstock );
 			}
 		echo '</p></div>';
 	}
