@@ -2254,20 +2254,35 @@
 
 	function add_inventory_fields() {
 		global $product_object;
-		echo '<div class="options_group oft"><p class="form-field">';
-			$shops_instock = array();
-			$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'orderby' => 'path' ) );
-			foreach ( $sites as $site ) {
-				switch_to_blog( $site->blog_id );
-				$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
-				if ( $local_product !== false and $local_product->get_stock_status() === 'instock' ) {
-					$shops_instock[] = get_webshop_name();
-				}
-				restore_current_blog();
+		$shops_instock = array();
+		$shops_outofstock = array();
+		$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'orderby' => 'path' ) );
+		
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site->blog_id );
+			
+			$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
+			if ( $local_product === false ) {
+				continue;
 			}
-			echo '<label>Op voorraad? ('.count( $shops_instock ).'/'.count( $sites ).')</label>';
+			
+			if ( $local_product->get_stock_status() === 'instock' ) {
+				$shops_instock[] = get_webshop_name();
+			} else {
+				$shops_outofstock[] = get_webshop_name();
+			}
+			
+			restore_current_blog();
+		}
+		
+		echo '<div class="options_group oft"><p class="form-field">';
 			if ( count( $shops_instock ) > 0 ) {
-				echo implode( '<br/>', $shops_instock );
+				echo '<label>Op voorraad ('.count( $shops_instock ).'/'.count( $sites ).')</label>';
+				echo implode( '<br/>', $shops_instock ).'<br/>';
+			}
+			if ( count( $shops_outofstock ) > 0 ) {
+				echo '<label>Niet op voorraad ('.count( $shops_outofstock ).'/'.count( $sites ).')</label>';
+				echo implode( '<br/>', $shops_outofstock ).'<br/>';
 			}
 		echo '</p></div>';
 	}
