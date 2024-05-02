@@ -136,7 +136,7 @@
 									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.youtube.com/@OxfamwereldwinkelsBe" target="_blank">YouTube</a></li>
 									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.instagram.com/oxfam.BE/" target="_blank">Instagram</a></li>
 									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://twitter.com/OxfamBE" target="_blank">Twitter</a></li>
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a ref="https://www.linkedin.com/company/oxfam-belgie-belgique/" target="_blank">LinkedIn</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.linkedin.com/company/oxfam-belgie-belgique/" target="_blank">LinkedIn</a></li>
 								</ul>
 							</div>
 						</div>
