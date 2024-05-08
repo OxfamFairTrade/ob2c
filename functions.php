@@ -5921,7 +5921,7 @@
 		add_submenu_page( 'oxfam-products-list', 'Ontbijt', 'Ontbijt', 'manage_network_users', 'oxfam-products-list-ontbijt', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Snacks', 'Snacks', 'manage_network_users', 'oxfam-products-list-snacks', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Wereldkeuken', 'Wereldkeuken', 'manage_network_users', 'oxfam-products-list-wereldkeuken', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Alle craftsproducten', 'Alle craftsproducten', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Assortiment MDM', 'Assortiment MDM', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
 		
 		if ( ! is_main_site() ) {
