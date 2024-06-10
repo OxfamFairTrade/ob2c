@@ -120,7 +120,7 @@
 		// 'status' => 'wc-cancelled',
 		// Alle shop_order_refund's op het order worden automatisch mee verwijderd!
 		'type' => 'shop_order',
-		'date_created' => '<2021-01-01',
+		'date_created' => '<2022-01-01',
 		// Als we in blokken van 3 à 4 maanden wissen, moet het lukken om alle orders in alle webshops in één keer te wissen (zonder time-out)
 		'limit' => -1,
 		// Begin met de oudste orders
@@ -179,7 +179,7 @@
 				// Pas bijgehouden na installatie van WordFence op 21/12/2020
 				// Alle bestaande klanten kregen timestamp '1608508800' tijdens migratie
 				// 'key' => 'wfls-last-login',
-				'value' => strtotime('2021-01-01'),
+				'value' => strtotime('2022-01-01'),
 				'compare' => '<=',
 			),
 		),
@@ -199,13 +199,34 @@
 		$customer_orders = wc_get_orders( array( 'customer_id' => $user->ID, 'limit' => -1 ) );
 		if ( count( $customer_orders ) > 0 ) {
 			// Er zijn nog orders gelinkt aan de user, account niet wissen
+			write_log( "Account tied to ".$user->user_email." has orders left" );
 			continue;
 		}
 		
+		$user_to_delete = true;
 		$member_sites = get_blogs_of_user( $user->ID );
-		if ( count( $member_sites ) === 0 or ( count( $member_sites ) === 1 and get_current_blog_id() === reset( $member_sites )->userblog_id ) ) {
+		foreach ( $member_sites as $site_id => $site ) {
+			switch_to_blog( $site_id );
+			$roles = get_userdata( $user->ID )->roles;
+			write_log( implode( ', ', $roles ) );
+			if ( in_array( 'customer', $roles ) ) {
+				$customer_orders = wc_get_orders( array( 'customer_id' => $user->ID, 'limit' => -1 ) );
+				if ( count( $customer_orders ) > 0 ) {
+					// Er zijn nog orders in een andere webshop gelinkt aan de user, account niet wissen
+					write_log( "Account tied to ".$user->user_email." has orders left in ".$site->path );
+					$user_to_delete = false;
+				}
+			} else {
+				// User is geen gewone klant, account niet wissen
+				write_log( "Account tied to ".$user->user_email." is no ordinary customer in ".$site->path );
+				$user_to_delete = false;
+			}
+			restore_current_blog();
+		}
+		
+		if ( count( $member_sites ) === 0 or $user_to_delete ) {
 			// User is enkel en alleen lid van deze site (of enkel lid van een inmiddels gearchiveerde webshop)
-			write_log( "Account tied to ".$user->user_email." is only a member of this site and has no orders left, schedule delete ..." );
+			write_log( "Account tied to ".$user->user_email." has no orders left and is not a manager, schedule delete ..." );
 			if ( wpmu_delete_user( $user->ID ) ) {
 				write_log( "User deleted from the entire network!" );
 			}
