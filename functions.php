@@ -14,7 +14,7 @@
 	require_once get_stylesheet_directory() . '/functions/mailchimp/functions.php';
 	require_once get_stylesheet_directory() . '/functions/vouchers/functions.php';
 	require_once get_stylesheet_directory() . '/functions/subsites/brugge.php';
-	require_once get_stylesheet_directory() . '/functions/subsites/houthalen.php';
+	require_once get_stylesheet_directory() . '/functions/subsites/evergem.php';
 	
 	
 	
@@ -7745,7 +7745,7 @@
 						}
 						$global_zips[ $zip ][] = 'https://' . $site->domain . $site->path;
 					} else {
-						$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;	
+						$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;
 					}
 				}
 			}
