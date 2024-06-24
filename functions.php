@@ -20,7 +20,7 @@
 	
 	// Als de Mollie-account geblokkeerd geraakt, verdwijnen alle betaalmethodes
 	// Geef een woordje uitleg (zeer late prioriteit gebruiken om lege tekst te vermijden!)
-	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_when_mollie_account_blocked', 1000, 1 );
+	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_when_mollie_account_blocked', 100, 1 );
 	
 	function print_explanation_when_mollie_account_blocked( $text ) {
 		return 'Door een administratief probleem bij onze betaalprovider is het momenteel niet mogelijk om bestellingen te plaatsen. We werken aan een oplossing!';

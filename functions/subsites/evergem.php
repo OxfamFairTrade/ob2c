@@ -12,7 +12,7 @@
 		if ( get_current_blog_id() === 13 ) {
 			// Schakel afrekenen in de webshop van Evergem uit van 23/06/2024 t.e.m. 29/07/2024
 			add_filter( 'woocommerce_available_payment_gateways', 'evergem_disable_all_payment_methods', 10, 1 );
-			add_filter( 'woocommerce_no_available_payment_methods_message', 'evergem_print_explanation_if_disabled', 10, 1 );
+			add_filter( 'woocommerce_no_available_payment_methods_message', 'evergem_print_explanation_if_disabled', 1000, 1 );
 			add_filter( 'woocommerce_order_button_html', 'evergem_disable_checkout_button', 10, 1 );
 		}
 	}
