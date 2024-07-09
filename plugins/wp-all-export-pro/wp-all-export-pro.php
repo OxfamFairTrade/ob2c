@@ -3,7 +3,7 @@
 Plugin Name: WP All Export Pro
 Plugin URI: http://www.wpallimport.com/export/
 Description: Export any post type to a CSV or XML file. Edit the exported data, and then re-import it later using WP All Import.
-Version: 1.8.8
+Version: 1.8.9
 Author: Soflyy
 */
 
@@ -46,7 +46,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
      */
     define('PMXE_PREFIX', 'pmxe_');
 
-    define('PMXE_VERSION', '1.8.8');
+    define('PMXE_VERSION', '1.8.9');
 
     define('PMXE_EDITION', 'paid');
 
@@ -266,7 +266,7 @@ if (class_exists('PMXE_Plugin') and PMXE_EDITION == "free") {
          */
         protected function __construct()
         {
-            if(!is_multisite() || defined('WPAI_WPAE_ALLOW_INSECURE_MULTISITE') && 1 === WPAI_WPAE_ALLOW_INSECURE_MULTISITE){
+            if(defined('WPAI_WPAE_ALLOW_INSECURE_MULTISITE') && 1 === WPAI_WPAE_ALLOW_INSECURE_MULTISITE){
                 self::$capabilities = 'manage_options';
             }
 
@@ -551,18 +551,37 @@ Some of the features you used in WP All Export Pro now require paid add-ons. If 
 					            die( \__( 'The User Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN ) );
 				            }
 
-				            if (
-					            ( in_array( 'shop_order', $cpt ) && ! $addons->isWooCommerceOrderAddonActive() && ! $addons->isWooCommerceAddonActive() ) ||
-					            ( ( in_array( 'shop_review', $cpt ) || in_array( 'shop_coupon', $cpt ) ) && ! $addons->isWooCommerceAddonActive() ) ||
-					            ( $export->options['export_type'] == 'advanced' && isset( $export->options['exportquery']->query['post_type'] ) && in_array( $export->options['exportquery']->query['post_type'], array( 'shop_coupon' ) ) && ! $addons->isWooCommerceAddonActive() ) ||
-					            ( $export->options['export_type'] == 'advanced' && isset( $export->options['exportquery']->query['post_type'] ) && in_array( $export->options['exportquery']->query['post_type'], array( 'shop_order' ) ) && ! $addons->isWooCommerceAddonActive() && ! $addons->isWooCommerceOrderAddonActive() ) ||
-					            ( isset( $export->options['exportquery'] ) && isset( $export->options['exportquery']->query['post_type'] ) && $export->options['exportquery']->query['post_type'] == array(
-							            'product',
-							            'product_variation'
-						            ) && \class_exists( 'WooCommerce' ) && ! $addons->isWooCommerceAddonActive() && ! $addons->isWooCommerceProductAddonActive() )
-				            ) {
-					            die( \__( 'The WooCommerce Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN ) );
-				            }
+							if((
+									$export->options['export_type'] == 'advanced'
+									&& $export->options['wp_query_selector'] != 'wp_user_query'
+									&& is_object( $export->options['exportquery'] )
+									&& property_exists( $export->options['exportquery'], 'query' )
+									&& isset($export->options['exportquery']->query['post_type'])
+									&& (
+											(
+												$export->options['exportquery']->query['post_type'] == array(
+													'product',
+													'product_variation'
+												) && \class_exists( 'WooCommerce' ) && ! $addons->isWooCommerceAddonActive() && ! $addons->isWooCommerceProductAddonActive()
+											)
+											||
+											(
+												$export->options['exportquery']->query['post_type'] == 'shop_order' && ! $addons->isWooCommerceAddonActive() && ! $addons->isWooCommerceOrderAddonActive()
+											)
+											||
+											(
+												$export->options['exportquery']->query['post_type'] == 'shop_coupon' && ! $addons->isWooCommerceAddonActive()
+											)
+										)
+								) ||
+				                (
+					                in_array( 'shop_order', $cpt ) && ! $addons->isWooCommerceOrderAddonActive() && ! $addons->isWooCommerceAddonActive()
+				                ) ||
+							   (
+								   ( in_array( 'shop_review', $cpt ) || in_array( 'shop_coupon', $cpt ) ) && ! $addons->isWooCommerceAddonActive()
+							   )){
+								die( \__( 'The WooCommerce Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN ) );
+							}
 
 				            if ( ( in_array( 'product', $cpt ) && \class_exists( 'WooCommerce' ) ) && ! $addons->isWooCommerceAddonActive() && ! $addons->isWooCommerceProductAddonActive() ) {
 					            die( \__( 'The WooCommerce Export Add-On Pro is required to run this export. If you already own it, you can download the add-on here: <a href="https://www.wpallimport.com/portal/downloads" target="_blank">https://www.wpallimport.com/portal/downloads</a>', \PMXE_Plugin::LANGUAGE_DOMAIN ) );
@@ -802,23 +821,36 @@ Some of the features you used in WP All Export Pro now require paid add-ons. If 
             return $this->options;
         }
 
-		/**
-		 * @param $value
-		 * @return string
-		 */
-		public static function encode($value){
-			$salt = defined('AUTH_SALT') ? AUTH_SALT : wp_salt();
-			return base64_encode(md5($salt) . $value . md5(md5($salt)));
-		}
+	    /**
+	     * @param $value
+	     * @return string
+	     */
+	    public static function encode($value){
+		    $salt = md5(defined('AUTH_SALT') ? AUTH_SALT : wp_salt());
+		    // This new salt storage is to avoid the problems encountered
+		    // when the AUTH_SALT value changes on a site.
+		    $new_salt = get_option('wpae_config_version', false);
+		    if($new_salt){
+			    $salt = $new_salt;
+		    }else{
+			    // Save the salt for later use.
+			    update_option('wpae_config_version', $salt, false);
+		    }
+		    return base64_encode($salt . $value . md5($salt));
+	    }
 
-		/**
-		 * @param $encoded
-		 * @return mixed
-		 */
-		public static function decode($encoded){
-			$salt = defined('AUTH_SALT') ? AUTH_SALT : wp_salt();
-			return preg_match('/^[a-f0-9]{32}$/', $encoded) ? $encoded : str_replace(array(md5($salt), md5(md5($salt))), '', base64_decode($encoded));
-		}
+	    /**
+	     * @param $encoded
+	     * @return mixed
+	     */
+	    public static function decode($encoded){
+		    $salt = md5(defined('AUTH_SALT') ? AUTH_SALT : wp_salt());
+		    $new_salt = get_option('wpae_config_version', false);
+		    if($new_salt){
+			    $salt = $new_salt;
+		    }
+		    return preg_match('/^[a-f0-9]{32}$/', $encoded) ? $encoded : str_replace(array($salt, md5($salt)), '', base64_decode($encoded));
+	    }
 
         /**
          * Plugin activation logic
@@ -934,9 +966,9 @@ Some of the features you used in WP All Export Pro now require paid add-ons. If 
             $wpdb->query("CREATE TABLE IF NOT EXISTS {$table_prefix}posts (
 				id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				post_id BIGINT(20) UNSIGNED NOT NULL,
-				export_id BIGINT(20) UNSIGNED NOT NULL,	
+				export_id BIGINT(20) UNSIGNED NOT NULL,
 				iteration BIGINT(20) NOT NULL DEFAULT 0,
-				PRIMARY KEY  (id)	
+				PRIMARY KEY  (id)
 			) $charset_collate;");
 
             $googleCatsTableExists = $wpdb->query("SHOW TABLES LIKE '{$table_prefix}google_cats'");
