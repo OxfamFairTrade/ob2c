@@ -6968,7 +6968,7 @@
 	
 	// Functie die product-ID's van de hoofdsite vertaalt en het metaveld opslaat in de huidige subsite (op basis van artikelnummer)
 	function translate_main_to_local_ids( $local_post_id, $meta_key, $product_ids_to_translate ) {
-		write_log( "Localize ".serialize( $product_ids_to_translate )." for coupon ID ".$local_post_id." in blog ID ".get_current_blog_id()." ..." );
+		write_log( "Localising IDs ".implode( ', ', $product_ids_to_translate )." in '".$meta_key."' for coupon ID ".$local_post_id." in blog ID ".get_current_blog_id()." ..." );
 		
 		if ( is_array( $product_ids_to_translate ) ) {
 			$local_product_ids = array();
