@@ -6976,11 +6976,11 @@
 			foreach ( $product_ids_to_translate as $main_product_id ) {
 				switch_to_blog(1);
 				$main_product = wc_get_product( $main_product_id );
+				restore_current_blog();
 				if ( ! $main_product instanceof WC_Product ) {
-					write_log( "Product with ID ".$main_product_id." not found in blog ID ".get_current_blog_id()." while localizing ".$meta_key." field for coupon ID ".$local_post_id );
+					write_log( "Product with ID ".$main_product_id." not found in main site while localizing ".$meta_key." field for coupon ID ".$local_post_id );
 					continue;
 				}
-				restore_current_blog();
 				
 				$local_product_id = wc_get_product_id_by_sku( $main_product->get_sku() );
 				if ( $local_product_id === 0 ) {
