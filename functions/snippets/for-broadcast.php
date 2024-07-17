@@ -11,12 +11,13 @@
 		'post_status' => 'future',
 		// Alternatieve methode (bv. als de bon inmiddels al op publish staat)
 		// 'Opgelet: 'post_name__in' kijkt naar de (onzichtbare) originele slug, dit kan afwijken van de (zichtbare) titel indien achteraf gewijzigd!
-		// 'post_name__in' => array( '202307-zwarte-rice-cracker', '202307-08-choco-espressobeans', '202307-08-rijstwafels', '202307-08-beertjes' ),
+		// 'post_name__in' => array( '20240708-blikjes' ),
 		'posts_per_page' => -1,
 	);
 	$all_coupons = new WP_Query( $args );
 	
-	if ( $all_coupons->have_posts() ) {
+	// Beveiliging tegen lokaal proberen maken van kortingsbonnen op hoofdniveau
+	if ( $all_coupons->have_posts() and ! is_main_site() ) {
 		while ( $all_coupons->have_posts() ) {
 			$all_coupons->the_post();
 			$ids = get_post_meta( get_the_ID(), 'product_ids', true );
@@ -43,16 +44,19 @@
 	
 	// Alle nieuwe artikels lokaal uit voorraad zetten
 	$new_skus = get_site_option( 'oxfam_shop_dashboard_notice_new_products', array() );
-	foreach ( $new_skus as $sku ) {
-		$product_id = wc_get_product_id_by_sku( $sku );
-		if ( $product_id ) {
-			$product = wc_get_product( $product_id );
-			// On first publish wordt nationale voorraadbeheer automatisch ook lokaal geactiveerd
-			// Dit moet sowieso op 'no' gezet worden, anders zal het lokale voorraadbeheer niet functioneren!
-			$product->set_manage_stock('no');
-			$product->set_stock_status('outofstock');
-			$product->save();
-			write_log( get_bloginfo('name').": stock status of SKU ".$sku." reset to 'outofstock'" );
+	
+	if ( count( $new_skus ) > 0 and ! is_main_site() ) {
+		foreach ( $new_skus as $sku ) {
+			$product_id = wc_get_product_id_by_sku( $sku );
+			if ( $product_id ) {
+				$product = wc_get_product( $product_id );
+				// On first publish wordt nationale voorraadbeheer automatisch ook lokaal geactiveerd
+				// Dit moet sowieso op 'no' gezet worden, anders zal het lokale voorraadbeheer niet functioneren!
+				$product->set_manage_stock('no');
+				$product->set_stock_status('outofstock');
+				$product->save();
+				write_log( get_bloginfo('name').": stock status of SKU ".$sku." reset to 'outofstock'" );
+			}
 		}
 	}
 	
@@ -117,7 +121,7 @@
 		// 'status' => 'wc-cancelled',
 		// Alle shop_order_refund's op het order worden automatisch mee verwijderd!
 		'type' => 'shop_order',
-		'date_created' => '<2021-01-01',
+		'date_created' => '<2022-01-01',
 		// Als we in blokken van 3 à 4 maanden wissen, moet het lukken om alle orders in alle webshops in één keer te wissen (zonder time-out)
 		'limit' => -1,
 		// Begin met de oudste orders
@@ -176,7 +180,7 @@
 				// Pas bijgehouden na installatie van WordFence op 21/12/2020
 				// Alle bestaande klanten kregen timestamp '1608508800' tijdens migratie
 				// 'key' => 'wfls-last-login',
-				'value' => strtotime('2021-01-01'),
+				'value' => strtotime('2022-01-01'),
 				'compare' => '<=',
 			),
 		),
@@ -196,13 +200,34 @@
 		$customer_orders = wc_get_orders( array( 'customer_id' => $user->ID, 'limit' => -1 ) );
 		if ( count( $customer_orders ) > 0 ) {
 			// Er zijn nog orders gelinkt aan de user, account niet wissen
+			write_log( "Account tied to ".$user->user_email." has orders left" );
 			continue;
 		}
 		
+		$user_to_delete = true;
 		$member_sites = get_blogs_of_user( $user->ID );
-		if ( count( $member_sites ) === 0 or ( count( $member_sites ) === 1 and get_current_blog_id() === reset( $member_sites )->userblog_id ) ) {
+		foreach ( $member_sites as $site_id => $site ) {
+			switch_to_blog( $site_id );
+			$roles = get_userdata( $user->ID )->roles;
+			write_log( implode( ', ', $roles ) );
+			if ( in_array( 'customer', $roles ) ) {
+				$customer_orders = wc_get_orders( array( 'customer_id' => $user->ID, 'limit' => -1 ) );
+				if ( count( $customer_orders ) > 0 ) {
+					// Er zijn nog orders in een andere webshop gelinkt aan de user, account niet wissen
+					write_log( "Account tied to ".$user->user_email." has orders left in ".$site->path );
+					$user_to_delete = false;
+				}
+			} else {
+				// User is geen gewone klant, account niet wissen
+				write_log( "Account tied to ".$user->user_email." is no ordinary customer in ".$site->path );
+				$user_to_delete = false;
+			}
+			restore_current_blog();
+		}
+		
+		if ( count( $member_sites ) === 0 or $user_to_delete ) {
 			// User is enkel en alleen lid van deze site (of enkel lid van een inmiddels gearchiveerde webshop)
-			write_log( "Account tied to ".$user->user_email." is only a member of this site and has no orders left, schedule delete ..." );
+			write_log( "Account tied to ".$user->user_email." has no orders left and is not a manager, schedule delete ..." );
 			if ( wpmu_delete_user( $user->ID ) ) {
 				write_log( "User deleted from the entire network!" );
 			}

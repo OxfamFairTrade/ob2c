@@ -132,11 +132,11 @@
 							<div class="footer-menu">
 								<h3>Blijf op de hoogte</h3>
 								<ul id="menu-footer-menu-4" class="menu">
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.facebook.com/OxfamWereldwinkels" target="_blank">Facebook</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.facebook.com/OxfamFairTradeBE" target="_blank">Facebook</a></li>
 									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.youtube.com/@OxfamwereldwinkelsBe" target="_blank">YouTube</a></li>
 									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.instagram.com/oxfam.BE/" target="_blank">Instagram</a></li>
 									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://twitter.com/OxfamBE" target="_blank">Twitter</a></li>
-									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a ref="https://www.linkedin.com/company/oxfam-fair-trade/" target="_blank">LinkedIn</a></li>
+									<li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="https://www.linkedin.com/company/oxfam-belgie-belgique/" target="_blank">LinkedIn</a></li>
 								</ul>
 							</div>
 						</div>

@@ -2,10 +2,6 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 	
-	function get_wvdft2022_disclaimer() {
-		return '1 gratis exemplaar van de afgebeelde shopper bij aankoop van 4 pakjes koffie uit het assortiment van Oxfam Fair Trade (keuze uit alle koffiereferenties: 250 g gemalen of bonen, pads, cups, oploskoffie) of bij aankoop van 1 verpakking van 1 kg (gemalen of bonen), verschillende soorten koffie combineren is toegestaan. Actie geldig t.e.m. 15/10/2022. Zolang de voorraad strekt. Niet cumuleerbaar met andere acties en/of klantenkortingen.';
-	}
-	
 	// Registreer aantal gratis capsules over alle webshops heen
 	// add_filter( 'woocommerce_coupon_get_usage_count', 'get_sitewide_coupon_usage', 10, 2 );
 	// add_action( 'woocommerce_increase_coupon_usage_count', 'increase_coupon_usage_count_sitewide', 10, 3 );
@@ -40,10 +36,10 @@
 		global $wpdb;
 		$total_count = 0;
 		$orders = array();
-	
+		
 		$query = "SELECT p.ID AS order_id FROM {$wpdb->prefix}posts AS p INNER JOIN {$wpdb->prefix}woocommerce_order_items AS woi ON p.ID = woi.order_id WHERE p.post_type = 'shop_order' AND p.post_status IN ('" . implode( "','", array( 'wc-processing', 'wc-claimed', 'wc-completed' ) ) . "') AND woi.order_item_type = 'coupon' AND woi.order_item_name = '" . $coupon_code . "' AND DATE(p.post_date) BETWEEN '" . $start_date . "' AND '" . $end_date . "';";
 		$rows = $wpdb->get_results( $query );
-	
+		
 		foreach ( $rows as $key => $row ) {
 			$order = wc_get_order( $row->order_id );
 			if ( $order !== false ) {
@@ -55,7 +51,7 @@
 				}
 			}
 		}
-	
+		
 		if ( $return_orders ) {
 			return $orders;
 		} else {
@@ -90,7 +86,7 @@
 				// Pas de korting niet toe als het gratis product niet op voorraad is
 				return false;
 			}
-	
+			
 			// Vergelijk met het subtotaal NA kortingen m.u.v. digitale vouchers (inclusief BTW, exclusief verzendkosten)
 			// Of toch gewoon 'ignore_discounts' inschakelen op alle levermethodes?
 			$totals = WC()->cart->get_totals();
@@ -105,10 +101,10 @@
 					return true;
 				}
 			}
-	
+			
 			return false;
 		}
-	
+		
 		return $can_be_applied;
 	}
 	
@@ -116,10 +112,10 @@
 	add_action( 'wjecf_assert_coupon_is_valid', 'check_if_free_products_are_on_stock', 1000, 2 );
 	
 	function check_if_free_products_are_on_stock( $coupon, $wc_discounts  ) {
-		if ( in_array( $coupon->get_code(), array( '202210-koffie-250g', '202210-koffie-1kg' ) ) and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
-			$shopper = wc_get_product( wc_get_product_id_by_sku('19039') );
-			if ( $shopper !== false and $shopper->get_stock_status() !== 'instock' ) {
-				throw new Exception( __( 'Deze webshop heeft helaas geen shoppers op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
+		if ( in_array( $coupon->get_code(), array( '202405-palestina' ) ) and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) {
+			$couscous = wc_get_product( wc_get_product_id_by_sku('27055') );
+			if ( $couscous !== false and $couscous->get_stock_status() !== 'instock' ) {
+				throw new Exception( __( 'Deze webshop heeft helaas geen couscous op voorraad. Gelieve een ander afhaalpunt te kiezen.', 'oxfam-webshop' ), 79106 );
 			}
 		}
 	}
@@ -131,17 +127,17 @@
 		if ( is_admin() ) {
 			return $apply_quantity;
 		}
-	
+		
 		// Schuimwijnen hebben dezelfde prijs, dus zij mogen wel gemixt worden
 		if ( stristr( $coupon->get_code(), 'wijnduo' ) !== false and stristr( $coupon->get_code(), 'schuimwijn' ) === false ) {
 			$this_quantity = 0;
 			$other_quantity = 0;
 			$old_apply_quantity = $apply_quantity;
-	
+			
 			// Check of beide vereiste producten in gelijke hoeveelheid aanwezig zijn
 			foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
 				$product_in_cart = $values['data'];
-	
+				
 				// Cart item maakt deel uit van de promotie
 				if ( in_array( $product_in_cart->get_id(), $coupon->get_product_ids() ) ) {
 					if ( $product_in_cart->get_id() === $item->product->get_id() ) {
@@ -151,7 +147,7 @@
 						$other_quantity = intval( $values['quantity'] );
 						$other_sku = intval( $product_in_cart->get_sku() );
 					}
-	
+					
 					if ( $other_quantity !== 0 and $this_quantity !== 0 ) {
 						// We passen de korting VOLLEDIG toe op het kleinste artikelnummer van het duo
 						if ( $this_sku < $other_sku ) {
@@ -160,7 +156,7 @@
 						} else {
 							$apply_quantity = 0;
 						}
-	
+						
 						// We hebben beide producten gevonden en kunnen afsluiten
 						// write_log( "APPLY QUANTITY FOR ".$coupon->get_code()." ON SKU ".$item->product->get_sku().": ".$old_apply_quantity." => ".$apply_quantity );
 						break;
@@ -168,6 +164,6 @@
 				}
 			}
 		}
-	
+		
 		return $apply_quantity;
 	}

@@ -16,13 +16,13 @@
 	require_once get_stylesheet_directory() . '/functions/mailchimp/functions.php';
 	require_once get_stylesheet_directory() . '/functions/vouchers/functions.php';
 	require_once get_stylesheet_directory() . '/functions/subsites/brugge.php';
-	require_once get_stylesheet_directory() . '/functions/subsites/houthalen.php';
+	require_once get_stylesheet_directory() . '/functions/subsites/evergem.php';
 	
 	
 	
 	// Als de Mollie-account geblokkeerd geraakt, verdwijnen alle betaalmethodes
 	// Geef een woordje uitleg (zeer late prioriteit gebruiken om lege tekst te vermijden!)
-	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_when_mollie_account_blocked', 1000, 1 );
+	add_filter( 'woocommerce_no_available_payment_methods_message', 'print_explanation_when_mollie_account_blocked', 100, 1 );
 	
 	function print_explanation_when_mollie_account_blocked( $text ) {
 		return 'Door een administratief probleem bij onze betaalprovider is het momenteel niet mogelijk om bestellingen te plaatsen. We werken aan een oplossing!';
@@ -1052,6 +1052,7 @@
 		wp_enqueue_script('jquery-ui-tooltip');
 
 		// Inladen in de footer om dependency issues met jQuery te vermijden
+		// @toDo: https://github.com/jedfoster/Readmore.js is verouderd, vervangen door https://github.com/stephenscaff/read-smore?
 		wp_enqueue_script( 'readmore', get_stylesheet_directory_uri() . '/libraries/readmore/readmore.min.js', array(), false, true );
 		wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts-min.js', array(), false, true );
 
@@ -2126,20 +2127,35 @@
 
 	function add_inventory_fields() {
 		global $product_object;
-		echo '<div class="options_group oft"><p class="form-field">';
-			$shops_instock = array();
-			$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'orderby' => 'path' ) );
-			foreach ( $sites as $site ) {
-				switch_to_blog( $site->blog_id );
-				$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
-				if ( $local_product !== false and $local_product->get_stock_status() === 'instock' ) {
-					$shops_instock[] = get_webshop_name();
-				}
-				restore_current_blog();
+		$shops_instock = array();
+		$shops_outofstock = array();
+		$sites = get_sites( array( 'path__not_in' => array('/'), 'site__not_in' => get_site_option('oxfam_blocked_sites'), 'public' => 1, 'orderby' => 'path' ) );
+		
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site->blog_id );
+			
+			$local_product = wc_get_product( wc_get_product_id_by_sku( $product_object->get_sku() ) );
+			if ( $local_product === false ) {
+				continue;
 			}
-			echo '<label>Op voorraad? ('.count( $shops_instock ).'/'.count( $sites ).')</label>';
+			
+			if ( $local_product->get_stock_status() === 'instock' ) {
+				$shops_instock[] = get_webshop_name();
+			} else {
+				$shops_outofstock[] = get_webshop_name();
+			}
+			
+			restore_current_blog();
+		}
+		
+		echo '<div class="options_group oft"><p class="form-field">';
 			if ( count( $shops_instock ) > 0 ) {
-				echo implode( '<br/>', $shops_instock );
+				echo '<label>Op voorraad ('.count( $shops_instock ).'/'.count( $sites ).')</label>';
+				echo implode( '<br/>', $shops_instock ).'<br/><br/>';
+			}
+			if ( count( $shops_outofstock ) > 0 ) {
+				echo '<label>Niet op voorraad ('.count( $shops_outofstock ).'/'.count( $sites ).')</label>';
+				echo implode( '<br/>', $shops_outofstock );
 			}
 		echo '</p></div>';
 	}
@@ -2632,7 +2648,7 @@
 	function ob2c_prevent_access_to_product_page() {
 		if ( is_product() ) {
 			$product = wc_get_product( get_the_ID() );
-			$available = apply_filters( 'ob2c_product_is_available', get_the_ID(), is_b2b_customer(), true );
+			$available = apply_filters( 'ob2c_product_is_available', get_the_ID(), is_b2b_customer(), true, true );
 
 			if ( ! $available or ( $product !== false and in_array( $product->get_sku(), get_oxfam_empties_skus_array() ) ) ) {
 				// Als de klant nog niets in het winkelmandje zitten heeft, is er nog geen sessie om notices aan toe te voegen!
@@ -2656,9 +2672,9 @@
 	}
 
 	// Definieer een eigen filter zodat we de voorwaarden slecht één keer centraal hoeven in te geven
-	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_customer', 10, 3 );
+	add_filter( 'ob2c_product_is_available', 'ob2c_check_product_availability_for_customer', 10, 4 );
 
-	function ob2c_check_product_availability_for_customer( $product_id, $is_b2b_customer, $available ) {
+	function ob2c_check_product_availability_for_customer( $product_id, $is_b2b_customer, $available, $view_product_detail = false ) {
 		// Sta toe dat ook medewerkers de B2B-producten te zien krijgen
 		if ( ! $is_b2b_customer and ! current_user_can('manage_woocommerce') ) {
 			if ( has_term( 'Grootverbruik', 'product_cat', $product_id ) ) {
@@ -2667,9 +2683,12 @@
 		}
 		
 		// Zwier producten die tijdelijk uit voorraad zijn uit het winkelmandje
-		$product = wc_get_product( $product_id );
-		if ( $product and $product->is_on_backorder() ) {
-			$available = false;
+		// Logica niet doorlopen bij raadplegen van productdetailpagina
+		if ( ! $view_product_detail ) {
+			$product = wc_get_product( $product_id );
+			if ( $product and $product->is_on_backorder() ) {
+				$available = false;
+			}
 		}
 		
 		return $available;
@@ -3391,18 +3410,18 @@
 					// $coupon_value = $db_coupon->expires;
 					switch ( $coupon_value ) {
 						case 50:
-							$sku = 'WGCD502023';
-							$ean = '5400164190374';
+							$sku = 'WGCD502024';
+							$ean = '5400164190282';
 							break;
 							
 						case 25:
-							$sku = 'WGCD252023';
-							$ean = '5400164190367';
+							$sku = 'WGCD252024';
+							$ean = '5400164190299';
 							break;
 							
 						default:
-							$sku = 'WGCD302024';
-							$ean = '5400164190350';
+							$sku = 'WGCD302025';
+							$ean = '5400164190275';
 							break;
 					}
 
@@ -5119,16 +5138,16 @@
 			echo '<tr><td colspan="2" class="shipping-explanation">Waarom is verzending niet beschikbaar? <a class="dashicons dashicons-editor-help tooltip" title="'.$title.'"></a></td></tr>';
 		}
 	}
-
+	
 	function get_oxfam_empties_skus_array() {
 		return array( 'WLFSK', 'W19916', 'WLBS24', 'W29917', 'W29919' );
 	}
-
+	
 	function get_oxfam_cheques_skus_array() {
-		// Geldig tot eind 2023 en 2024
-		return array( '19056', '19057', '19058', '19041', '19042', '19043' );
+		// Geldig tot eind 2024 en 2025
+		return array( '19041', '19042', '19043', '19031', '19032', '19033' );
 	}
-
+	
 	function get_oxfam_cheques_ids_array() {
 		if ( false === ( $product_ids = get_transient('oxfam_cheques_ids_array') ) ) {
 			$product_ids = array();
@@ -5143,7 +5162,7 @@
 		
 		return $product_ids;
 	}
-
+	
 	add_filter( 'wcgwp_add_wrap_message', 'ob2c_change_gift_wrap_explainer', 10, 1 );
 	add_filter( 'wcgwp_add_wrap_prompt', 'ob2c_change_gift_wrap_button', 10, 1 );
 
@@ -5761,11 +5780,13 @@
 		add_submenu_page( 'oxfam-products-list', 'Ontbijt', 'Ontbijt', 'manage_network_users', 'oxfam-products-list-ontbijt', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Snacks', 'Snacks', 'manage_network_users', 'oxfam-products-list-snacks', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Wereldkeuken', 'Wereldkeuken', 'manage_network_users', 'oxfam-products-list-wereldkeuken', 'oxfam_products_list_callback' );
-		add_submenu_page( 'oxfam-products-list', 'Non-food', 'Non-food', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
+		add_submenu_page( 'oxfam-products-list', 'Assortiment MDM', 'Assortiment MDM', 'manage_network_users', 'oxfam-products-list-crafts', 'oxfam_products_list_callback' );
 		add_submenu_page( 'oxfam-products-list', 'Lokaal assortiment', 'Lokaal assortiment', 'manage_network_users', 'oxfam-products-list-local', 'oxfam_products_list_callback' );
-
-		add_menu_page( 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 'dashicons-tickets-alt', 58 );
-		add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', 58 );
+		
+		if ( ! is_main_site() ) {
+			add_menu_page( 'Ingeruilde digicheques', 'Digicheques', 'edit_shop_orders', 'oxfam-vouchers-list', 'oxfam_vouchers_list_callback', 'dashicons-tickets-alt', 58 );
+			add_menu_page( 'Handige gegevens voor je lokale webshop', 'Winkelgegevens', 'manage_network_users', 'oxfam-options', 'oxfam_options_callback', 'dashicons-megaphone', 58 );
+		}
 	}
 
 	// Voeg netwerkpagina's toe voor exports en rapporten
@@ -6786,38 +6807,48 @@
 			rename( $old, $new );
 		}
 	}
-
+	
 	// Functie die product-ID's van de hoofdsite vertaalt en het metaveld opslaat in de huidige subsite (op basis van artikelnummer)
-	/**
-	* @param int $local_product_id
-	* @param string $meta_key
-	* @param array $product_meta_item_row
-	*/
-	function translate_main_to_local_ids( $local_product_id, $meta_key, $product_meta_item_row ) {
-		// write_log( "MAAK POST ".get_the_ID()." LOKAAL IN BLOG ".get_current_blog_id() );
-
-		if ( $product_meta_item_row ) {
-			foreach ( $product_meta_item_row as $main_product_id ) {
+	function translate_main_to_local_ids( $local_post_id, $meta_key, $product_ids_to_translate ) {
+		write_log( "Localising IDs ".implode( ', ', $product_ids_to_translate )." in '".$meta_key."' for coupon ID ".$local_post_id." in blog ID ".get_current_blog_id()." ..." );
+		
+		if ( is_array( $product_ids_to_translate ) ) {
+			$local_product_ids = array();
+			
+			foreach ( $product_ids_to_translate as $main_product_id ) {
 				switch_to_blog(1);
 				$main_product = wc_get_product( $main_product_id );
 				restore_current_blog();
-				$local_product_ids[] = wc_get_product_id_by_sku( $main_product->get_sku() );
+				if ( ! $main_product instanceof WC_Product ) {
+					write_log( "Product with ID ".$main_product_id." not found in main site while localizing ".$meta_key." field for coupon ID ".$local_post_id );
+					continue;
+				}
+				
+				$local_product_id = wc_get_product_id_by_sku( $main_product->get_sku() );
+				if ( $local_product_id === 0 ) {
+					write_log( "Product with SKU ".$main_product->get_sku()." not found in blog ID ".get_current_blog_id()." while localizing ".$meta_key." field for coupon ID ".$local_post_id );
+					continue;
+				}
+				
+				$local_product_ids[] = $local_product_id;
 			}
+			
 			// Niet serialiseren voor coupons
 			$coupon_keys = array( 'product_ids', 'exclude_product_ids', '_wjecf_free_product_ids' );
 			if ( in_array( $meta_key, $coupon_keys ) ) {
 				$local_product_ids = implode( ',', $local_product_ids );
 			}
-			update_post_meta( $local_product_id, $meta_key, $local_product_ids );
+			
+			update_post_meta( $local_post_id, $meta_key, $local_product_ids );
 		} else {
 			// Zorg ervoor dat het veld ook bij de child geleegd wordt!
-			update_post_meta( $local_product_id, $meta_key, NULL );
+			update_post_meta( $local_post_id, $meta_key, NULL );
 		}
 	}
-
+	
 	function translate_master_to_slave_ids( $meta_key, $main_product_ids, $master_blog_id, $master_product ) {
 		// write_log( "MAAK EIGENSCHAP ".$meta_key." VAN SKU ".$master_product->get_sku()." LOKAAL IN BLOG ".get_current_blog_id() );
-
+		
 		if ( is_array( $main_product_ids ) ) {
 			$slave_product_ids = array();
 			foreach ( $main_product_ids as $main_product_id ) {
@@ -6835,13 +6866,13 @@
 			// Indien $main_product_ids leeg is, mogen we dit gewoon zo doorgeven, zodat het ook lokaal leeggemaakt kan worden
 			$slave_product_ids = $main_product_ids;
 		}
-
+		
 		return $slave_product_ids;
 	}
-
+	
 	function broadcast_master_to_slave_ids( $meta_key, $main_product_ids ) {
 		$main_product_ids = explode( ',', $main_product_ids );
-
+		
 		if ( is_array( $main_product_ids ) ) {
 			$slave_product_ids = array();
 			foreach ( $main_product_ids as $main_product_id ) {
@@ -6856,12 +6887,12 @@
 				}
 			}
 		}
-
+		
 		// Verschijnt in de logs van de subsite!
 		$logger = wc_get_logger();
 		$context = array( 'source' => 'Oxfam' );
 		$logger->debug( "Translated property '".$meta_key."' from ".implode( ', ', $main_product_ids )." to ".implode( ', ', $slave_product_ids ), $context );
-
+		
 		return implode( ',', $slave_product_ids );
 	}
 
@@ -7368,7 +7399,7 @@
 						}
 						$global_zips[ $zip ][] = 'https://' . $site->domain . $site->path;
 					} else {
-						$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;	
+						$global_zips[ $zip ] = 'https://' . $site->domain . $site->path;
 					}
 				}
 			}

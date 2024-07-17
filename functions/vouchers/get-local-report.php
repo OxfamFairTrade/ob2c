@@ -46,9 +46,10 @@
 				// Tellers op 0 zetten
 				$credit_refs = array(
 					'08924' => array( 'issuer' => 'CM', 'value' => 10, 'count' => 0 ),
-					'08935' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'count' => 0 ),
-					'08936' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'count' => 0 ),
-					'08937' => array( 'issuer' => 'Cera', 'value' => 30, 'count' => 0 ),
+					// Nieuwe bonnen voor 2024
+					'08953' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'count' => 0 ),
+					'08954' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'count' => 0 ),
+					'08955' => array( 'issuer' => 'Cera', 'value' => 30, 'count' => 0 ),
 				);
 				
 				if ( $credit_date === '0000-00-00' ) {
@@ -56,9 +57,6 @@
 					echo '<p>Deze codes zijn nog niet verwerkt op het Nationaal Secretariaat. Als de bestelling al afgerond is, hoef je zelf niets meer te doen.<br/>Hou er rekening mee dat we een wachtperiode inlassen van min. 1 maand na de besteldatum vòòr we overgaan tot creditering, om ruimte te laten voor retours en correcties.</p>';
 				} else {
 					echo '<h2>Kredietnota van '.$credit_date_formatted.'</h2>';
-					if ( $credit_date === '2022-01-03' ) {
-						echo '<p>Opgelet: door een vergetelheid tijdens de kerstvakantie werd deze creditering uiteindelijk pas rond 1 februari doorgevoerd!</p>';
-					}
 				}
 				
 				// Externe variabelen zijn standaard niet beschikbaar binnen callback, gebruik 'use'!

@@ -60,9 +60,12 @@
 					// '08900' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2023-01-01' ),
 					// '08917' => array( 'issuer' => 'Cera', 'value' => 30, 'expires' => '2023-01-01' ),
 					// '08924' => array( 'issuer' => 'CM', 'value' => 10, 'expires' => '2023-01-01' ),
-					'08935' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2024-01-01' ),
-					'08936' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2024-01-01' ),
+					// '08935' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2024-01-01' ),
+					// '08936' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2024-01-01' ),
 					'08937' => array( 'issuer' => 'Cera', 'value' => 30, 'expires' => '2024-03-01' ),
+					'08953' => array( 'issuer' => 'Gezinsbond', 'value' => 50, 'expires' => '2025-01-01' ),
+					'08954' => array( 'issuer' => 'Gezinsbond', 'value' => 25, 'expires' => '2025-01-01' ),
+					'08955' => array( 'issuer' => 'Cera', 'value' => 30, 'expires' => '2025-03-01' ),
 					// Nieuwe acties hier aanvullen met de parameters issuer / value / expires, zoals ze aangemaakt zijn in de MySQL-tabel
 					// Op die manier kunnen de bonnen in het rapport aan de juiste crediteringscode gelinkt worden
 					// Odisy-artikelnummer te ontvangen van Aike Detelder
@@ -232,8 +235,9 @@
 				try {
 					$spreadsheet->setActiveSheetIndexByName( $credit_ref );
 				} catch (Exception $e) {
-					// Maak het werkblad aan indien de referentie nog niet bestaat in de template, anders fatale error!
+					// Maak het werkblad aan indien de referentie nog niet bestaat in de template
 					write_log("Excel-werkblad bestaat nog niet, probeer het aan te maken ...");
+					// @toCheck: Werkt niet goed, nog steeds fatale error ...
 					$empty_sheet->setTitle( $credit_ref );
 					$spreadsheet->addSheet( $empty_sheet );
 					$spreadsheet->setActiveSheetIndexByName( $credit_ref );
