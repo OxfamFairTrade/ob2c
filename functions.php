@@ -1052,9 +1052,10 @@
 		wp_enqueue_script('jquery-ui-tooltip');
 
 		// Inladen in de footer om dependency issues met jQuery te vermijden
-		// @toDo: https://github.com/jedfoster/Readmore.js is verouderd, vervangen door https://github.com/stephenscaff/read-smore?
 		wp_enqueue_script( 'readmore', get_stylesheet_directory_uri() . '/libraries/readmore/readmore.min.js', array(), false, true );
-		wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts-min.js', array(), false, true );
+		// @toDo: https://github.com/jedfoster/Readmore.js vervangen door https://github.com/stephenscaff/read-smore
+		wp_enqueue_script( 'read-smore', 'https://unpkg.com/read-smore@2.5.1/dist/index.umd.js', array(), '2.5.1' );
+		wp_enqueue_script( 'scripts', get_stylesheet_directory_uri() . '/js/scripts-min.js', array( 'jquery', 'readmore', 'read-smore' ), '1.0.0' );
 
 		// Dashicons worden niet ingeladen bij niet-ingelogde gebruikers (maar gebruiken we in de tooltips!)
 		wp_enqueue_style('dashicons');
@@ -6411,7 +6412,7 @@
 			'show_admin_column' => true,
 			'query_var' => true,
 			'capabilities' => array( 'manage_terms' => 'create_sites', 'edit_terms' => 'create_sites', 'delete_terms' => 'create_sites', 'assign_terms' => 'edit_products' ),
-			'rewrite' => array( 'slug' => 'partner', 'with_front' => false, 'ep_mask' => 'test' ),
+			'rewrite' => array( 'slug' => 'partner', 'with_front' => false ),
 		);
 
 		register_taxonomy( $taxonomy_name, 'product', $args );

@@ -2,10 +2,6 @@
 	
 	if ( ! defined('ABSPATH') ) exit;
 	
-	##############
-	# RELEVANSSI #
-	##############
-	
 	// Verleng de logs tot 90 dagen
 	add_filter( 'relevanssi_30days', function() { return 90; } );
 	
