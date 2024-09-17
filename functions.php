@@ -93,22 +93,30 @@
 		
 		return $address;
 	}
-
+	
 	// Wijzig de formattering van de dropdownopties
 	add_filter( 'wc_local_pickup_plus_pickup_location_option_label', 'change_pickup_location_options_formatting', 10, 3 );
-
+	
 	function change_pickup_location_options_formatting( $name, $context, $pickup_location ) {
 		if ( 'frontend' === $context ) {
 			$name = 'Oxfam-Wereldwinkel '.$pickup_location->get_name();
 		}
 		return $name;
 	}
-
+	
 	// Met deze filter kunnen we het winkeladres in CC zetten bij een afhaling!
 	// add_filter( 'wc_local_pickup_plus_pickup_location_email_recipients', 'add_shop_email' );
-
-
-
+	
+	// Schakel mails naar beheerder over gewijzigde wachtwoorden uit
+	add_filter( 'wp_password_change_notification_email', 'ob2c_disable_password_change_notifications', 10, 1 );
+	
+	function ob2c_disable_password_change_notifications( $email ) {
+		$email['to'] = '';
+		return $email;
+	}
+	
+	
+	
 	######################
 	# LOKAAL ASSORTIMENT #
 	######################

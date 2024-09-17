@@ -264,9 +264,12 @@
 				if ( $file['name'] === 'latest.xlsx' ) {
 					$id = 'latest';
 					$title = 'Download openstaande export';
-					// Afsluiten ten vroegste toestaan vanaf de 20ste van de maand
 					if ( intval( date_i18n('j') ) >= 20 ) {
+						// Afsluiten ten vroegste toestaan vanaf de 20ste van de maand
 						$extras = ' <button id="'.$id.'" data-voucher-ids="'.implode( ',', $voucher_ids ).'" data-start-date="'.str_replace( '-', '', $start_date ).'" data-end-date="'.str_replace( '-', '', $end_date ).'" class="button confirm-export" disabled>Bevestig creditering</button>';
+					} else {
+						// Ook downloadknop niet tonen vòòr 20ste van de maand, om onafgesloten crediteringen te vermijden
+						continue;
 					}
 				}
 				
