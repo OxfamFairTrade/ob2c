@@ -123,9 +123,11 @@
 		$screen = get_current_screen();
 		
 		if ( 'index.php' === $pagenow and 'dashboard' === $screen->base ) {
-			echo '<div class="notice notice-error">';
-				echo '<p>Deze website staat in testmodus. Ze kan enkel bekeken worden door ingelogde admins en alle uitgaande e-mails worden afgeleid naar de admin mailbox (momenteel <i>'.implode( ', ', fsa_get_email_addressees() ).'</i>).</p>';
-			echo '</div>';
+			if ( wp_get_environment_type() !== 'production' ) {
+				echo '<div class="notice notice-error">';
+					echo '<p>Deze website staat in testmodus. Ze kan enkel bekeken worden door ingelogde admins en alle uitgaande e-mails worden afgeleid naar de admin mailbox (momenteel <i>'.implode( ', ', fsa_get_email_addressees() ).'</i>).</p>';
+				echo '</div>';
+			}
 		}
 	}
 	
