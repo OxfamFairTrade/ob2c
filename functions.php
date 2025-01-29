@@ -6749,6 +6749,21 @@
 					echo $promo_text.' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').' in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
 				echo '</p>';
 			}
+			
+			if ( wp_date('Y-m-d') >= '2025-03-01' and wp_date('Y-m-d') <= '2025-03-31' ) {
+				$terms = array( 'bonen', 'gemalen', 'pads', 'instant' );
+				foreach ( $terms as $term ) {
+					$coffee_term = get_term_by( 'slug', $term, 'product_cat' );
+					if ( $coffee_term !== false ) {
+						if ( in_array( $coffee_term->term_id, $product->get_category_ids() ) ) {
+							echo '<p class="promotie">';
+								echo 'Gratis reep Bite to Fight-chocolade (met koffieroom of karamel/zeezout) bij elk pakje koffie! Maak je keuze bij het afrekenen. Geldig t.e.m. 31 maart 2025 in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
+							echo '</p>';
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 
