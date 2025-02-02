@@ -328,11 +328,11 @@
 	
 	
 
-	// Verwijder overtollige productcategorieën
+	// Verwijder overtollige productcategorieën (gaat niet automatisch bij syncen taxonomie via Broadcast)
 	// Import maakt onbestaande categorieën automatisch aan, als er iets misliep in de mapping moet je dus wat opkuis doen
 	$taxonomy = 'product_cat';
 	if ( taxonomy_exists( $taxonomy ) ) {
-		$terms = array( 'winkelmateriaal', 'koffiezetsystemen' );
+		$terms = array( 'capsules' );
 		foreach ( $terms as $term ) {
 			$term_to_delete = get_term_by( 'slug', $term, $taxonomy );
 			if ( $term_to_delete !== false ) {
