@@ -10,7 +10,7 @@
 	
 	function delay_actions_and_filters_till_load_completed_13() {
 		if ( get_current_blog_id() === 17 ) {
-			// Schakel afrekenen in de webshop van Evergem uit van 08/03/2025 t.e.m. 21/03/2025
+			// Schakel afrekenen uit van 08/03/2025 t.e.m. 21/03/2025
 			add_filter( 'woocommerce_available_payment_gateways', 'hoeilaart_disable_all_payment_methods', 10, 1 );
 			add_filter( 'woocommerce_no_available_payment_methods_message', 'hoeilaart_print_explanation_if_disabled', 1000, 1 );
 			add_filter( 'woocommerce_order_button_html', 'hoeilaart_disable_checkout_button', 10, 1 );
