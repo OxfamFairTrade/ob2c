@@ -44,8 +44,8 @@ $tooltip    = sprintf(
 
 // Decide what is the prettiest amount of columns to display
 // Defaults to 4, 3 on large screen, 2 on small screen. Use less columns if possible without adding an extra row on screen.
-// GEWIJZIGD: Toon producten altijd in 4 kolommen
-$n = 4;
+// GEWIJZIGD: Toon producten altijd in 2 kolommen
+$n = 2;
 $class = 'wjecf-cols cols-' . ceil( $n / ceil( $n / 4 ) ) . ' cols-lg-' . ceil( $n / ceil( $n / 3 ) ) . ' cols-sm-' . ceil( $n / ceil( $n / 2 ) );
 
 ?>

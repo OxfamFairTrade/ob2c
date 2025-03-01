@@ -20,21 +20,23 @@
 	if ( $all_coupons->have_posts() and ! is_main_site() ) {
 		while ( $all_coupons->have_posts() ) {
 			$all_coupons->the_post();
-			$ids = get_post_meta( get_the_ID(), 'product_ids', true );
-			if ( $ids !== '' ) {
-				$global_ids = explode( ',', $ids );
-				translate_main_to_local_ids( get_the_ID(), 'product_ids', $global_ids );
+			$keys_to_localize = array( 'product_ids', 'exclude_product_ids', '_wjecf_free_product_ids', 'product_categories', 'exclude_product_categories' );
+			
+			foreach ( $keys_to_localize as $key ) {
+				$global_value = get_post_meta( get_the_ID(), $key, true );
+				
+				if ( str_contains( $key, '_categories' ) ) {
+					if ( is_array( $global_value ) ) {
+						translate_main_to_local_ids( get_the_ID(), $key, $global_value, 'product_cat' );
+					}
+				} else {
+					if ( $global_value !== '' ) {
+						$global_ids = explode( ',', $global_value );
+						translate_main_to_local_ids( get_the_ID(), $key, $global_ids );
+					}
+				}
 			}
-			$exclude_ids = get_post_meta( get_the_ID(), 'exclude_product_ids', true );
-			if ( $exclude_ids !== '' ) {
-				$exclude_global_ids = explode( ',', $exclude_ids );
-				translate_main_to_local_ids( get_the_ID(), 'exclude_product_ids', $exclude_global_ids );
-			}
-			$free_product_ids = get_post_meta( get_the_ID(), '_wjecf_free_product_ids', true );
-			if ( $free_product_ids !== '' ) {
-				$free_product_global_ids = explode( ',', $free_product_ids );
-				translate_main_to_local_ids( get_the_ID(), '_wjecf_free_product_ids', $free_product_global_ids );
-			}
+			
 			write_log( get_bloginfo('name').": made coupon '".get_the_title()."' local" );
 		}
 		wp_reset_postdata();

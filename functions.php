@@ -6746,8 +6746,13 @@
 			// Opgelet: nu verbergen we alle promotekstjes voor B2B-klanten, ook indien er een coupon met 'b2b' aangemaakt zou zijn
 			if ( $product->is_on_sale() and $product->get_meta('promo_text') !== '' ) {
 				$promo_text = $product->get_meta('promo_text');
+				if ( $product->get_date_on_sale_to() instanceof WC_DateTime ) {
+					$end_date = 't.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y');
+				} else {
+					$end_date = 'zolang de voorraad strekt';
+				}
 				echo '<p class="promotie">';
-					echo $promo_text.' Geldig t.e.m. '.$product->get_date_on_sale_to()->date_i18n('l j F Y').' in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
+					echo $promo_text.' Geldig '.$end_date.' in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
 				echo '</p>';
 			}
 			
@@ -6758,7 +6763,7 @@
 					if ( $coffee_term !== false ) {
 						if ( in_array( $coffee_term->term_id, $product->get_category_ids() ) ) {
 							echo '<p class="promotie">';
-								echo 'Gratis reep Bite to Fight-chocolade (met koffieroom of karamel/zeezout) bij elk pakje koffie! Maak je keuze bij het afrekenen. Geldig t.e.m. 31 maart 2025 in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
+								echo 'Gratis reep Bite to Fight-chocolade met koffieroom of geroosterde maïs bij elk pakje koffie! Maak je keuze bij het afrekenen. Geldig t.e.m. 31 maart 2025 in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
 							echo '</p>';
 							break;
 						}
@@ -6991,37 +6996,61 @@
 	}
 	
 	// Functie die product-ID's van de hoofdsite vertaalt en het metaveld opslaat in de huidige subsite (op basis van artikelnummer)
-	function translate_main_to_local_ids( $local_post_id, $meta_key, $product_ids_to_translate ) {
-		write_log( "Localising IDs ".implode( ', ', $product_ids_to_translate )." in '".$meta_key."' for coupon ID ".$local_post_id." in blog ID ".get_current_blog_id()." ..." );
+	function translate_main_to_local_ids( $local_post_id, $meta_key, $ids_to_translate, $taxonomy = 'product' ) {
+		write_log( "Localising IDs ".implode( ', ', $ids_to_translate )." in '".$meta_key."' for coupon ID ".$local_post_id." in blog ID ".get_current_blog_id()." ..." );
 		
-		if ( is_array( $product_ids_to_translate ) ) {
-			$local_product_ids = array();
+		if ( is_array( $ids_to_translate ) ) {
+			$local_ids = array();
 			
-			foreach ( $product_ids_to_translate as $main_product_id ) {
-				switch_to_blog(1);
-				$main_product = wc_get_product( $main_product_id );
-				restore_current_blog();
-				if ( ! $main_product instanceof WC_Product ) {
-					write_log( "Product with ID ".$main_product_id." not found in main site while localizing ".$meta_key." field for coupon ID ".$local_post_id );
-					continue;
-				}
+			switch ( $taxonomy ) {
+				case 'product':
+					foreach ( $ids_to_translate as $main_product_id ) {
+						switch_to_blog(1);
+						$main_product = wc_get_product( $main_product_id );
+						restore_current_blog();
+						if ( ! $main_product instanceof WC_Product ) {
+							write_log( "Product with ID ".$main_product_id." not found in main site while localizing ".$meta_key." field for coupon ID ".$local_post_id );
+							continue;
+						}
+						
+						$local_product_id = wc_get_product_id_by_sku( $main_product->get_sku() );
+						if ( $local_product_id === 0 ) {
+							write_log( "Product with SKU ".$main_product->get_sku()." not found in blog ID ".get_current_blog_id()." while localizing ".$meta_key." field for coupon ID ".$local_post_id );
+							continue;
+						}
+						
+						$local_ids[] = $local_product_id;
+					}
+					
+					// Array opnieuw serialiseren voor bepaalde keys
+					$coupon_keys = array( 'product_ids', 'exclude_product_ids', '_wjecf_free_product_ids' );
+					if ( in_array( $meta_key, $coupon_keys ) ) {
+						$local_ids = implode( ',', $local_ids );
+					}
+					break;
 				
-				$local_product_id = wc_get_product_id_by_sku( $main_product->get_sku() );
-				if ( $local_product_id === 0 ) {
-					write_log( "Product with SKU ".$main_product->get_sku()." not found in blog ID ".get_current_blog_id()." while localizing ".$meta_key." field for coupon ID ".$local_post_id );
-					continue;
-				}
-				
-				$local_product_ids[] = $local_product_id;
+				case 'product_cat':
+					foreach ( $ids_to_translate as $main_category_id ) {
+						switch_to_blog(1);
+						$main_category = get_term( $main_category_id, $taxonomy );
+						restore_current_blog();
+						if ( ! $main_category instanceof WP_Term ) {
+							write_log( "Category with ID ".$main_category->term_id." not found in main site while localizing ".$meta_key." field for coupon ID ".$local_post_id );
+							continue;
+						}
+						
+						$local_category = get_term_by( 'slug', $main_category->slug );
+						if ( ! $local_category instanceof WP_Term ) {
+							write_log( "Category '".$main_category->slug."' not found in blog ID ".get_current_blog_id()." while localizing ".$meta_key." field for coupon ID ".$local_post_id );
+							continue;
+						}
+						
+						$local_ids[] = $local_category->term_id;
+					}
+					break;
 			}
 			
-			// Niet serialiseren voor coupons
-			$coupon_keys = array( 'product_ids', 'exclude_product_ids', '_wjecf_free_product_ids' );
-			if ( in_array( $meta_key, $coupon_keys ) ) {
-				$local_product_ids = implode( ',', $local_product_ids );
-			}
-			
-			update_post_meta( $local_post_id, $meta_key, $local_product_ids );
+			update_post_meta( $local_post_id, $meta_key, $local_ids );
 		} else {
 			// Zorg ervoor dat het veld ook bij de child geleegd wordt!
 			update_post_meta( $local_post_id, $meta_key, NULL );
