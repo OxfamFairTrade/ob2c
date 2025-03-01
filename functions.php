@@ -7039,7 +7039,7 @@
 							continue;
 						}
 						
-						$local_category = get_term_by( 'slug', $main_category->slug );
+						$local_category = get_term_by( 'slug', $main_category->slug, $taxonomy );
 						if ( ! $local_category instanceof WP_Term ) {
 							write_log( "Category '".$main_category->slug."' not found in blog ID ".get_current_blog_id()." while localizing ".$meta_key." field for coupon ID ".$local_post_id );
 							continue;

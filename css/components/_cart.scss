@@ -288,7 +288,7 @@
             padding: 0 0 20px 0 !important;
           }
 
-          @media (min-width: 768px) { 
+          @media (min-width: 768px) {
             &.asymmetrical {
               width: 70%;
             }
@@ -299,7 +299,7 @@
           }
         }
 
-        @media (max-width: 767px) { 
+        @media (max-width: 767px) {
           th {
             border-bottom: none !important;
           }
@@ -470,32 +470,56 @@
   }
 }
 
-.wjecf-select-free-products {
-  li {
-    position: relative;
-    margin-bottom: 0;
-
-    > input[type=radio] {
-      display: none;
-
-      & + label {
-        font-weight: bold !important;
+.wjecf-fragment-cart-select-free-product {
+  padding-left: 0;
+  padding-right: 0;
+  
+  #wjecf-select-free-products {
+    border: 3px solid $red-promo;
+    border-radius: 5px;
+    padding: 10px;
+    
+    li {
+      position: relative;
+      margin-bottom: 0;
+      
+      label {
         text-align: center;
-        padding: 1em;
-        border: 1px solid $light-grey;
-        border-radius: 10px;
-        cursor: pointer;
-        opacity: 0.75;
-        transition: opacity 0.25s;
+        
+        > img {
+          max-width: 200px;
+        }
       }
-
-      &:checked + label {
-        border-color: $oxfam-green;
-        opacity: 1;
+      
+      // Indien meerdere gratis producten
+      > input[type=number] {
+        max-width: 100px;
+        margin: 0 auto;
       }
-
-      & + label:hover {
-        opacity: 1;
+      
+      // Indien één gratis product product
+      > input[type=radio] {
+        display: none;
+        
+        & + label {
+          font-weight: bold !important;
+          text-align: center;
+          padding: 1em;
+          border: 1px solid $light-grey;
+          border-radius: 10px;
+          cursor: pointer;
+          opacity: 0.75;
+          transition: opacity 0.25s;
+        }
+        
+        &:checked + label {
+          border-color: $oxfam-green;
+          opacity: 1;
+        }
+        
+        & + label:hover {
+          opacity: 1;
+        }
       }
     }
   }
