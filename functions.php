@@ -6763,7 +6763,7 @@
 					if ( $coffee_term !== false ) {
 						if ( in_array( $coffee_term->term_id, $product->get_category_ids() ) ) {
 							echo '<p class="promotie">';
-								echo 'Gratis reep Bite to Fight-chocolade met koffieroom of geroosterde maïs bij elk pakje koffie! Voeg één of meerdere pakjes koffie toe, en kies de gewenste repen <a href="'.home_url('/winkelmand/').'">op de winkelmandpagina</a>. Geldig t.e.m. 31 maart 2025 in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
+								echo 'Gratis reep Bite to Fight-chocolade met koffieroom of geroosterde maïs bij elk pakje koffie! Voeg één of meerdere pakjes koffie toe, en kies de gewenste repen <a href="'.home_url('/winkelmandje/').'">op de winkelmandpagina</a>. Geldig t.e.m. 31 maart 2025 in alle Oxfam-Wereldwinkels en in onze webshops. <a class="dashicons dashicons-editor-help tooltip" title="Niet cumuleerbaar met andere acties. Niet van toepassing bij verkoop op factuur."></a>';
 							echo '</p>';
 							break;
 						}
