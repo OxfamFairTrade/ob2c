@@ -479,9 +479,10 @@
   #wjecf-select-free-products {
     border: 3px solid $red-promo;
     border-radius: 5px;
-    padding: 10px;
+    padding: 15px;
     
     li {
+      text-align: center;
       position: relative;
       margin-bottom: 0;
       
@@ -490,7 +491,6 @@
       }
       
       label {
-        text-align: center;
         font-weight: bold !important;
       }
       
@@ -502,6 +502,7 @@
         max-width: 80px;
         margin: 0 auto;
         padding: 0;
+        border-radius: 5px;
       }
       
       // Indien één gratis product product
