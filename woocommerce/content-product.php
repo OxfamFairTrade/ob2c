@@ -135,12 +135,12 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     </div>
 </li>
 
-<?php if ( wc_get_loop_prop('current_page') === 1 ) : ?>
+<?php if ( is_woocommerce() and wc_get_loop_prop('current_page') === 1 ) : ?>
     <?php $vertical_shown = false; ?>
     <?php $coupon = new WC_Coupon('202503-koffie'); ?>
     
     <!-- Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit! -->
-    <?php if ( is_woocommerce() and $coupon->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) : ?>
+    <?php if ( $coupon->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) : ?>
         <?php
             global $woocommerce_loop;
             $koffieroom = wc_get_product( wc_get_product_id_by_sku('24128') );
@@ -149,7 +149,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
         ?>
         
         <?php if ( $woocommerce_loop['name'] === '' and $koffieroom !== false and $mais !== false and ( $koffieroom->get_stock_status() === 'instock' or $mais->get_stock_status() === 'instock' ) ) : ?>
-            <?php if ( $position_in_grid === 3 and 1 === 2 ) : ?>
+            <?php if ( $position_in_grid === 3 ) : ?>
                 <li class="promo-banner vertical">
                     <?php
                         $image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/koffie-2025-staand.jpg' ).'" />';
@@ -164,7 +164,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
                 </li>
             <?php endif; ?>
             
-            <?php if ( $position_in_grid === 4 and 1 === 2 ) : ?>
+            <?php if ( $position_in_grid === 4 ) : ?>
                 <li class="promo-banner horizontal">
                     <?php
                         $image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/koffie-2025-liggend.jpg' ).'" />';

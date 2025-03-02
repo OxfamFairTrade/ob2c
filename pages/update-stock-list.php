@@ -7,7 +7,7 @@
 
 	<nav class="nav-tab-wrapper">
 		<?php
-			// Om het submenu de tabselectie netjes te laten volgen, kijken we beter naar het laatste deel van de parameter 'oxfam-product-list-...' i.p.v. de nieuwe parameter 'assortment' 
+			// Om het submenu de tabselectie netjes te laten volgen, kijken we beter naar het laatste deel van de parameter 'oxfam-product-list-...' i.p.v. de nieuwe parameter 'assortment'
 			$tabs = array( 'general' => 'Alle producten', 'chocolade' => 'Chocolade', 'koffie' => 'Koffie', 'wijn' => 'Wijn', 'andere-dranken' => 'Andere dranken', 'ontbijt' => 'Ontbijt', 'snacks' => 'Snacks', 'wereldkeuken' => 'Wereldkeuken', 'crafts' => 'Assortiment MDM', 'local' => 'Lokaal assortiment' );
 			
 			$parts = explode( 'oxfam-products-list-', $_REQUEST['page'] );
@@ -102,9 +102,6 @@
 					$content .= '">';
 						$content .= '<div class="cell" style="padding: 0.25em; width: 3%; text-align: center;"><a href="'.get_permalink().'" target="_blank">'.$product->get_image( 'wc_order_status_icon', null, false ).'</a></div>';
 						$content .= '<div class="cell '.$class.'" style="width: 40%; text-align: left;"><span class="title">'.$product->get_sku().': '.$product->get_title().' ('.$product->get_meta('_shopplus_code').')';
-						if ( has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
-							$content .= ' <small>ENKEL ZICHTBAAR VOOR B2B-KLANTEN</small>';
-						}
 						$content .= '</span></div>';
 						$content .= '<div class="cell"><select class="toggle" id="'.get_the_ID().'-stockstatus">';
 							$content .= '<option value="instock" '.selected( $product->get_stock_status(), 'instock', false ).'>'.$stock_statuses['instock'].'</option>';
@@ -114,6 +111,9 @@
 						$content .= '<div class="cell">';
 						if ( $product->get_catalog_visibility() !== 'hidden' and ! has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
 							$content .= '<input class="toggle" type="checkbox" id="'.get_the_ID().'-featured" '.checked( $product->is_featured(), true, false ).'> <label for="'.get_the_ID().'-featured">In de kijker?</label>';
+						}
+						if ( has_term( 'Grootverbruik', 'product_cat', get_the_ID() ) ) {
+							$content .= '<small>ENKEL ZICHTBAAR VOOR B2B-KLANTEN</small>';
 						}
 						$content .= '</div>';
 					$content .= '<div class="cell output"></div>';
@@ -127,7 +127,7 @@
 				
 				echo $content;
 				
-				echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> bestelbaar</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan op de homepage.</p>';	
+				echo '<p style="text-align: right; width: 100%;">Deze pagina toont <b>'.$i.' producten</b>, waarvan er momenteel <b><span class="instock-cnt">'.$instock_cnt.'</span> bestelbaar</b> zijn en <b><span class="featured-cnt">'.$featured_cnt.'</span> in de kijker</b> staan op de homepage.</p>';
 			}
 		?>
 		<?php if ( $i < 500 ) : ?>

@@ -541,7 +541,7 @@
 		// @toDo: Attributen komen niet consequent door op subsites, check import
 		if ( is_main_site() ) {
 			echo '<div class="small-container"><div class="row">';
-				if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'capsules', 'pads' ) ) ) {
+				if ( is_product_category( array( 'koffie', 'bonen', 'gemalen', 'pads' ) ) ) {
 					echo '<div class="col-md-3 supplementary-filter">';
 						$args = array(
 							'display_type' => 'dropdown',
@@ -5294,8 +5294,8 @@
 	}
 	
 	function get_oxfam_cheques_skus_array() {
-		// Geldig tot eind 2024 en 2025
-		return array( '19041', '19042', '19043', '19031', '19032', '19033' );
+		// Geldig tot eind 2025 en 2026
+		return array( '19031', '19032', '19033', '19023', '19024', '19025' );
 	}
 	
 	function get_oxfam_cheques_ids_array() {
