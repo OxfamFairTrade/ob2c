@@ -44,6 +44,53 @@ if ( ! $nm_theme_options['product_action_link'] ) {
     remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
 }
 ?>
+
+<?php if ( is_woocommerce() and wc_get_loop_prop('current_page') === 1 ) : ?>
+    <?php $vertical_shown = false; ?>
+    <?php $coupon = new WC_Coupon('202503-koffie'); ?>
+    
+    <!-- Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit! -->
+    <?php if ( $coupon->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) : ?>
+        <?php
+            global $woocommerce_loop;
+            $koffieroom = wc_get_product( wc_get_product_id_by_sku('24128') );
+            $mais = wc_get_product( wc_get_product_id_by_sku('24129') );
+            $term_link = get_term_link( 'koffie', 'product_cat' );
+        ?>
+        
+        <?php if ( $woocommerce_loop['name'] === '' and $koffieroom !== false and $mais !== false and ( $koffieroom->get_stock_status() === 'instock' or $mais->get_stock_status() === 'instock' ) ) : ?>
+            <?php if ( ! is_product_tag('promotie') and $position_in_grid === 3 ) : ?>
+                <li class="promo-banner vertical">
+                    <?php
+                        $image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/koffie-2025-staand.jpg' ).'" />';
+                        if ( ! is_wp_error( $term_link ) ) {
+                            echo '<a href="'.esc_url( $term_link ).'#nm-shop-products">'.$image.'</a>';
+                        } else {
+                            echo $image;
+                        }
+                        $position_in_grid++;
+                        $vertical_shown = true;
+                    ?>
+                </li>
+            <?php endif; ?>
+            
+            <?php if ( is_product_tag('promotie') and $position_in_grid === 1 ) : ?>
+                <li class="promo-banner horizontal">
+                    <?php
+                        $image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/koffie-2025-liggend.jpg' ).'" />';
+                        if ( ! is_wp_error( $term_link ) ) {
+                            echo '<a href="'.esc_url( $term_link ).'#nm-shop-products">'.$image.'</a>';
+                        } else {
+                            echo $image;
+                        }
+                        $position_in_grid++;
+                    ?>
+                </li>
+            <?php endif; ?>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endif; ?>
+
 <li <?php wc_product_class( $product_class, $product ); ?> data-product-id="<?php echo esc_attr( $product->get_id() ); ?>">
 	<div class="nm-shop-loop-product-wrap">
         <?php
@@ -134,51 +181,5 @@ if ( ! $nm_theme_options['product_action_link'] ) {
         </div>
     </div>
 </li>
-
-<?php if ( is_woocommerce() and wc_get_loop_prop('current_page') === 1 ) : ?>
-    <?php $vertical_shown = false; ?>
-    <?php $coupon = new WC_Coupon('202503-koffie'); ?>
-    
-    <!-- Geen is_valid() gebruiken, zal pas true retourneren als de korting al effectief in het winkelmandje zit! -->
-    <?php if ( $coupon->get_date_expires() instanceof WC_DateTime and date_i18n('Y-m-d') < $coupon->get_date_expires()->date_i18n('Y-m-d') ) : ?>
-        <?php
-            global $woocommerce_loop;
-            $koffieroom = wc_get_product( wc_get_product_id_by_sku('24128') );
-            $mais = wc_get_product( wc_get_product_id_by_sku('24129') );
-            $term_link = get_term_link( 'koffie', 'product_cat' );
-        ?>
-        
-        <?php if ( $woocommerce_loop['name'] === '' and $koffieroom !== false and $mais !== false and ( $koffieroom->get_stock_status() === 'instock' or $mais->get_stock_status() === 'instock' ) ) : ?>
-            <?php if ( ! is_product_tag('promotie') and $position_in_grid === 3 ) : ?>
-                <li class="promo-banner vertical">
-                    <?php
-                        $image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/koffie-2025-staand.jpg' ).'" />';
-                        if ( ! is_wp_error( $term_link ) ) {
-                            echo '<a href="'.esc_url( $term_link ).'#nm-shop-products">'.$image.'</a>';
-                        } else {
-                            echo $image;
-                        }
-                        $position_in_grid++;
-                        $vertical_shown = true;
-                    ?>
-                </li>
-            <?php endif; ?>
-            
-            <?php if ( is_product_tag('promotie') and $position_in_grid === 0 ) : ?>
-                <li class="promo-banner horizontal">
-                    <?php
-                        $image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/koffie-2025-liggend.jpg' ).'" />';
-                        if ( ! is_wp_error( $term_link ) ) {
-                            echo '<a href="'.esc_url( $term_link ).'#nm-shop-products">'.$image.'</a>';
-                        } else {
-                            echo $image;
-                        }
-                        $position_in_grid++;
-                    ?>
-                </li>
-            <?php endif; ?>
-        <?php endif; ?>
-    <?php endif; ?>
-<?php endif; ?>
 
 <?php $position_in_grid++; ?>
