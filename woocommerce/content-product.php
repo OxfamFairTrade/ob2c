@@ -164,7 +164,7 @@ if ( ! $nm_theme_options['product_action_link'] ) {
                 </li>
             <?php endif; ?>
             
-            <?php if ( $position_in_grid === 4 and 1 === 2 ) : ?>
+            <?php if ( is_product_tag('promotie') and $position_in_grid === 1 ) : ?>
                 <li class="promo-banner horizontal">
                     <?php
                         $image = '<img src="'.esc_attr( get_stylesheet_directory_uri().'/images/promoties/koffie-2025-liggend.jpg' ).'" />';
